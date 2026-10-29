@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sistemas de ecuaciones con matrices</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap');
+
+:root {
+  --color-fondo: #F5F0E8;
+  --color-fondo-card: #FDFAF3;
+  --color-texto: #2C1F0E;
+  --color-texto-suave: #6B4F35;
+  --color-acento: #A0522D;
+  --color-acento-hover: #7B3B1E;
+  --color-borde: #C9A96E;
+  --color-borde-suave: #E0CEAA;
+  --color-cabecera: #3B2510;
+  --color-cabecera-txt: #F5EDD8;
+  --color-correcto: #2E6B3E;
+  --color-incorrecto: #8B1A1A;
+  --color-neutro: #E8DFC8;
+  --fondo-correcto: #EAF4EC;
+  --fondo-incorrecto: #F9EAEA;
+  --serif: 'Libre Baskerville', Georgia, 'Times New Roman', serif;
+  --sans: 'Lato', 'Segoe UI', system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+body {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--color-texto);
+  background-color: var(--color-fondo);
+  transition: background-color .6s ease;
+}
+body.perfecto { background-color: #1a7a1a; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
+/* ---------- Cabecera ---------- */
+.cabecera {
+  background-color: var(--color-cabecera);
+  color: var(--color-cabecera-txt);
+  font-family: var(--serif);
+  text-align: center;
+  padding: 12px 20px;
+  border-bottom: 3px solid var(--color-borde);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+}
+
+.pagina { padding: 0 12px 40px; }
+
+.ficha-container {
+  max-width: 860px;
+  margin: 28px auto;
+  background: var(--color-fondo-card);
+  border: 2px solid var(--color-borde);
+  border-radius: 6px;
+  box-shadow: 0 3px 12px rgba(44, 31, 14, 0.15);
+  padding: 32px 36px;
+}
+
+.titulo-ficha {
+  font-family: var(--serif);
+  font-size: 1.6rem;
+  line-height: 1.3;
+  color: var(--color-texto);
+  text-align: center;
+  margin: 0 0 6px;
+}
+.titulo-ficha::after {
+  content: '';
+  display: block;
+  width: 60px; height: 3px;
+  background: var(--color-borde);
+  margin: 12px auto 0;
+  border-radius: 2px;
+}
+.subtitulo {
+  text-align: center;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 0.95rem;
+  color: var(--color-texto-suave);
+  margin: 14px 0 22px;
+}
+
+/* ---------- Barra de estado (siempre visible) ---------- */
+.barra {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+  gap: 10px 24px;
+  background: var(--color-fondo-card);
+  border-bottom: 1px solid var(--color-borde-suave);
+  margin: 0 -36px 22px;
+  padding: 10px 36px;
+}
+.campo-nombre { display: flex; align-items: center; gap: 8px; }
+.campo-nombre label {
+  font-family: var(--serif);
+  font-size: 0.8rem;
+  letter-spacing: .04em;
+  color: var(--color-texto-suave);
+  white-space: nowrap;
+}
+.campo-nombre input[type="text"] {
+  width: 15rem; max-width: 42vw;
+  background-color: var(--color-fondo);
+  border: 1.5px solid var(--color-borde);
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-family: var(--sans);
+  font-size: 0.92rem;
+  color: var(--color-texto);
+}
+.campo-nombre input[type="text"].falta { border-color: var(--color-incorrecto); background: #FFF6F6; }
+.marcador {
+  font-family: var(--serif);
+  font-size: 0.92rem;
+  color: var(--color-texto-suave);
+  display: flex; flex-wrap: wrap; gap: 4px 20px;
+}
+.marcador span { color: var(--color-acento); font-weight: 700; }
+
+/* ---------- Pie de ficha ---------- */
+.pie {
+  display: flex; justify-content: center;
+  margin-top: 26px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-borde-suave);
+}
+
+/* ---------- Botones ---------- */
+.btn-primario, .btn-secundario, .btn-finalizar {
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  font-weight: 700;
+  border-radius: 4px;
+  cursor: pointer;
+  letter-spacing: 0.03em;
+  transition: background-color .2s ease, border-color .2s ease, color .2s ease, transform .1s ease;
+}
+.btn-primario {
+  background-color: var(--color-acento); color: #FDFAF3;
+  border: 2px solid var(--color-acento); padding: 10px 26px;
+}
+.btn-primario:hover { background-color: var(--color-acento-hover); border-color: var(--color-acento-hover); }
+.btn-primario:disabled { background: var(--color-neutro); border-color: var(--color-borde-suave); color: var(--color-texto-suave); cursor: not-allowed; }
+.btn-secundario {
+  background-color: transparent; color: var(--color-acento);
+  border: 2px solid var(--color-borde); padding: 9px 22px;
+}
+.btn-secundario:hover { border-color: var(--color-acento); color: var(--color-acento-hover); }
+.btn-finalizar {
+  background-color: var(--color-cabecera); color: var(--color-cabecera-txt);
+  border: 2px solid var(--color-borde); padding: 8px 20px;
+  font-family: var(--serif); letter-spacing: 0.04em;
+}
+.btn-finalizar:hover { background-color: #2C1A0A; }
+.btn-finalizar.destacado { animation: latido 1.8s ease-in-out infinite; }
+button:active { transform: translateY(1px); }
+button:focus-visible, input:focus-visible {
+  outline: 3px solid rgba(160, 82, 45, .45); outline-offset: 2px;
+}
+@keyframes latido {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(201, 169, 110, .0); }
+  50%      { box-shadow: 0 0 0 6px rgba(201, 169, 110, .55); }
+}
+
+/* ---------- Enunciado ---------- */
+.consigna { margin: 0 0 14px; font-size: 1.02rem; }
+.reglas {
+  background: var(--color-fondo);
+  border: 1.5px solid var(--color-borde-suave);
+  border-left: 4px solid var(--color-borde);
+  border-radius: 4px;
+  padding: 12px 18px;
+  font-size: 0.92rem;
+  color: var(--color-texto-suave);
+  margin: 0 0 22px;
+}
+.reglas b { color: var(--color-texto); }
+
+.ejercicio-card {
+  background: var(--color-fondo);
+  border: 1.5px solid var(--color-borde-suave);
+  border-left: 4px solid var(--color-borde);
+  border-radius: 4px;
+  padding: 22px 24px;
+  margin-bottom: 20px;
+}
+.etiqueta-seccion {
+  font-family: var(--serif);
+  font-size: 0.8rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--color-texto-suave);
+  margin: 0 0 12px;
+}
+
+.sistema {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  font-family: var(--serif);
+  font-size: 1.5rem;
+  margin: 4px 0 6px;
+}
+.llave-svg { height: 5.6rem; width: 20px; flex-shrink: 0; overflow: visible; }
+.llave-svg path { fill: none; stroke: var(--color-borde); stroke-width: 1.6; stroke-linecap: round; }
+.ecs { display: grid; gap: 6px; }
+.ecs div { white-space: nowrap; }
+.v { font-style: italic; font-weight: 700; }
+
+.datos {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 14px 40px;
+  margin-top: 18px;
+}
+.bloque { display: flex; align-items: center; gap: 10px; }
+.nombre-mat { font-family: var(--serif); font-size: 1.3rem; font-weight: 700; font-style: italic; }
+
+/* ---------- Matrices ---------- */
+.matriz {
+  --w: 2.6rem;
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, var(--w));
+  gap: 5px;
+  padding: 7px 13px;
+}
+.matriz::before, .matriz::after {
+  content: ""; position: absolute; top: 0; bottom: 0; width: 8px;
+  border: 2px solid var(--color-texto);
+}
+.matriz::before { left: 0; border-right: none; }
+.matriz::after  { right: 0; border-left: none; }
+.matriz .c {
+  height: 2.1rem;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--serif);
+  font-size: 0.95rem;
+}
+.matriz.mini { --w: 1.9rem; gap: 3px; padding: 4px 10px; }
+.matriz.mini .c { height: 1.55rem; font-size: .82rem; }
+.matriz.mini::before, .matriz.mini::after { width: 6px; border-width: 1.5px; }
+
+input.celda {
+  width: 100%; height: 2.1rem; min-width: 0;
+  padding: 0;
+  text-align: center;
+  font-family: var(--serif);
+  font-size: 0.95rem;
+  color: var(--color-texto);
+  background-color: var(--color-fondo-card);
+  border: 1.5px solid var(--color-borde);
+  border-radius: 4px;
+  transition: border-color .2s, background-color .2s;
+}
+input.celda:focus { border-color: var(--color-acento); background: #fff; }
+input.celda.falta { border-color: var(--color-acento); border-style: dashed; background: #FFF6EC; }
+input.celda.ok { background: var(--fondo-correcto); border-color: var(--color-correcto); color: var(--color-correcto); font-weight: 700; }
+input.celda.mal { background: var(--fondo-incorrecto); border-color: var(--color-incorrecto); color: var(--color-incorrecto); font-weight: 700; }
+input.celda:disabled { cursor: default; opacity: 1; }
+
+.respuesta { display: flex; flex-wrap: wrap; justify-content: center; gap: 18px 44px; }
+
+.acciones { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 8px; }
+.aviso { text-align: center; min-height: 1.5em; margin: 12px 0 0; color: var(--color-acento-hover); font-weight: 700; font-size: .92rem; }
+
+/* ---------- Retroalimentación ---------- */
+#feedback { margin-top: 18px; }
+.feedback-correcto {
+  background-color: var(--fondo-correcto);
+  border: 1.5px solid var(--color-correcto);
+  color: var(--color-texto);
+  border-radius: 4px; padding: 14px 18px;
+}
+.feedback-incorrecto {
+  background-color: var(--fondo-incorrecto);
+  border: 1.5px solid var(--color-incorrecto);
+  color: var(--color-texto);
+  border-radius: 4px; padding: 14px 18px;
+}
+.fb-titulo { font-family: var(--serif); font-weight: 700; font-size: 1.05rem; margin-bottom: 6px; }
+.feedback-correcto .fb-titulo { color: var(--color-correcto); }
+.feedback-incorrecto .fb-titulo { color: var(--color-incorrecto); }
+#feedback h4 {
+  font-family: var(--serif); font-size: .82rem; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--color-texto-suave); margin: 16px 0 6px;
+}
+#feedback p { margin: 6px 0; }
+#feedback ul { margin: 4px 0 4px 1.1rem; padding: 0; }
+#feedback li { margin: 4px 0; }
+.paso {
+  background: rgba(253, 250, 243, .8);
+  border: 1px solid var(--color-borde-suave);
+  border-radius: 4px; padding: 10px 14px; margin: 8px 0;
+}
+.fila-mat { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin-top: 8px; font-family: var(--serif); }
+.nota-final { font-style: italic; color: var(--color-texto-suave); }
+
+/* ---------- Modal de calificación ---------- */
+.overlay {
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(44, 31, 14, 0.55);
+  display: flex; align-items: center; justify-content: center;
+  padding: 16px; overflow-y: auto;
+}
+.modal-calificacion {
+  border: 3px solid var(--color-borde);
+  border-radius: 8px;
+  font-family: var(--serif);
+  box-shadow: 0 6px 24px rgba(44, 31, 14, 0.35);
+  padding: 30px 34px;
+  width: min(620px, 100%);
+  max-height: 92vh; overflow-y: auto;
+  text-align: center;
+}
+.modal-calificacion h2 { margin: 0 0 4px; font-size: 1.15rem; letter-spacing: .04em; }
+.nota-grande { font-size: 4rem; font-weight: 700; line-height: 1.1; margin: 6px 0 2px; }
+.nota-grande small { font-size: 1.3rem; font-weight: 400; opacity: .85; }
+.meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin: 16px 0; }
+.meta div { background: rgba(255,255,255,.16); border-radius: 6px; padding: 8px 10px; font-family: var(--sans); }
+.meta dt { font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; opacity: .85; }
+.meta dd { margin: 2px 0 0; font-weight: 700; font-size: 1rem; word-break: break-word; }
+.desglose { background: rgba(255,255,255,.16); border-radius: 6px; padding: 12px 14px; margin: 14px 0; text-align: left; font-family: var(--sans); font-size: .93rem; }
+.desglose h3 { margin: 0 0 8px; font-family: var(--serif); font-size: .95rem; }
+.desglose .fila { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; padding: 3px 0; }
+.estado-tipo { font-weight: 700; }
+.desglose table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: .88rem; }
+.desglose th, .desglose td { padding: 4px 6px; text-align: center; border-bottom: 1px solid currentColor; border-bottom-color: rgba(128,128,128,.45); }
+.desglose th { font-size: .74rem; text-transform: uppercase; letter-spacing: .05em; }
+.modal-calificacion .aviso-modal { font-family: var(--sans); font-size: .9rem; margin: 8px 0; }
+.modal-calificacion .btn-cerrar {
+  margin-top: 6px; background: rgba(255,255,255,.92); color: var(--color-cabecera);
+  border: 2px solid var(--color-borde); border-radius: 4px; padding: 9px 26px;
+  font-family: var(--sans); font-weight: 700; cursor: pointer;
+}
+.modal-calificacion .btn-cerrar:hover { background: #fff; }
+
+@media (max-width: 640px) {
+  .ficha-container { padding: 20px 16px; margin: 16px auto; }
+  .barra { margin: 0 -16px 18px; padding: 10px 16px; }
+  .campo-nombre input[type="text"] { width: 11rem; max-width: 55vw; }
+  .titulo-ficha { font-size: 1.3rem; }
+  .ejercicio-card { padding: 16px 12px; }
+  .sistema { font-size: 1.2rem; }
+  .llave-svg { height: 4.4rem; }
+  .modal-calificacion { padding: 22px 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="cabecera">Material elaborado por Marta L Letona S. Basado en el trabajo de Javier Cayetano</div>
+
+<div class="pagina">
+  <main class="ficha-container" id="ficha">
+    <h1 class="titulo-ficha">Sistemas de ecuaciones con matrices</h1>
+    <p class="subtitulo">Método de reducción aplicado a ecuaciones matriciales</p>
+
+    <div class="barra">
+      <div class="campo-nombre">
+        <label for="inputNombre">Nombre y apellidos</label>
+        <input type="text" id="inputNombre" maxlength="60" autocomplete="name" placeholder="Escribe tu nombre">
+      </div>
+      <div class="marcador" aria-live="polite">
+        <div>Puntuación disponible: <span id="mDisponible">10</span> / 10</div>
+        <div>Casillas incorrectas: <span id="mCasillas">0</span></div>
+        <div>Intentos: <span id="mIntentos">0</span></div>
+      </div>
+    </div>
+
+    <p class="consigna">Resuelve el sistema y calcula las matrices <span class="v">X</span> e <span class="v">Y</span>. Escribe un número entero en cada casilla.</p>
+    <p class="reglas"><b>Solo necesitas resolver bien un ejercicio.</b> Cada casilla incorrecta resta 1 punto de los 10 iniciales. Si fallas, verás la explicación y te saldrá un ejercicio nuevo, con otros números.</p>
+
+    <section class="ejercicio-card" aria-label="Enunciado">
+      <p class="etiqueta-seccion">Sistema</p>
+      <div class="sistema">
+        <svg class="llave-svg" viewBox="0 0 20 100" aria-hidden="true" preserveAspectRatio="none">
+          <path d="M17,2 C8,2 8,16 8,28 C8,40 2,46 1,50 C2,54 8,60 8,72 C8,84 8,98 17,98"/>
+        </svg>
+        <div class="ecs">
+          <div id="eq1"></div>
+          <div id="eq2"></div>
+        </div>
+      </div>
+
+      <div class="datos">
+        <div class="bloque"><span class="nombre-mat">A =</span><div id="matA"></div></div>
+        <div class="bloque"><span class="nombre-mat">B =</span><div id="matB"></div></div>
+      </div>
+    </section>
+
+    <section class="ejercicio-card" aria-label="Tu respuesta">
+      <p class="etiqueta-seccion">Tu respuesta</p>
+      <div class="respuesta" id="respuesta">
+        <div class="bloque"><span class="nombre-mat">X =</span><div class="matriz" id="gridX"></div></div>
+        <div class="bloque"><span class="nombre-mat">Y =</span><div class="matriz" id="gridY"></div></div>
+      </div>
+      <p class="aviso" id="aviso" aria-live="polite"></p>
+      <div class="acciones">
+        <button type="button" class="btn-primario" id="btnCorregir">Corregir</button>
+        <button type="button" class="btn-secundario" id="btnNuevo" hidden>Nuevo ejercicio</button>
+      </div>
+    </section>
+
+    <div id="feedback" aria-live="polite"></div>
+
+    <div class="pie">
+      <button type="button" class="btn-finalizar" id="btnFinalizar">Finalizar y Calificar</button>
+    </div>
+  </main>
+</div>
+
+<!-- Modal de calificación -->
+<div class="overlay" id="overlayModal" hidden>
+  <div class="modal-calificacion" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitulo" tabindex="-1"></div>
+</div>
+
+<noscript><p style="text-align:center;padding:20px">Esta ficha necesita JavaScript para funcionar.</p></noscript>
+
+<script>
+(function () {
+  'use strict';
+
+  /* =========================================================
+     Configuración y estado
+     Modelo de puntuación (ficha de un único tipo):
+       - Se parte de 10 puntos.
+       - Cada casilla incorrecta en un intento resta 1 punto.
+       - Basta con resolver bien UN ejercicio (tipo superado y cerrado).
+       - Nota final = 10 − casillas incorrectas acumuladas (mínimo 0)
+         si se supera el tipo; 0 si no se supera.
+     ========================================================= */
+  var N = 3;
+  var TIPO = 'sistema';
+  var PENALIZACION_POR_CASILLA = 1;
+
+  var state = {
+    inicio: null,
+    fin: null,
+    penalizacion: 0,
+    tipos: {}
+  };
+  state.tipos[TIPO] = {
+    nombre: 'Sistema de ecuaciones con matrices',
+    intentos: [],      // { n, erroneas, correcto }
+    superado: false,
+    cerrado: false
+  };
+  var PUNTO_POR_TIPO = 10 / Object.keys(state.tipos).length;
+
+  var ej = null;       // ejercicio actual
+
+  /* =========================================================
+     Generador pseudoaleatorio
+     Producción: semilla aleatoria por sesión.
+     Test/QA: añadir ?seed=123 a la URL para reproducir la secuencia.
+     ========================================================= */
+  function crearRng(seed) {
+    var a = seed >>> 0;
+    return function () {
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      var t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function semillaInicial() {
+    try {
+      var p = new URLSearchParams(window.location.search).get('seed');
+      if (p !== null && /^-?\d+$/.test(p)) return parseInt(p, 10);
+    } catch (e) { /* sin acceso a la URL */ }
+    try { return window.crypto.getRandomValues(new Uint32Array(1))[0]; }
+    catch (e) { return Math.floor(Math.random() * 4294967296); }
+  }
+  var rnd = crearRng(semillaInicial());
+  function entero(a, b) { return a + Math.floor(rnd() * (b - a + 1)); }
+  function elegir(arr) { return arr[Math.floor(rnd() * arr.length)]; }
+
+  /* =========================================================
+     Álgebra de matrices 3×3 (enteros)
+     ========================================================= */
+  function matrizAleatoria() {
+    var m = [];
+    for (var i = 0; i < N; i++) {
+      var f = [];
+      for (var j = 0; j < N; j++) f.push(entero(-3, 3));
+      m.push(f);
+    }
+    return m;
+  }
+  function comb(M1, k1, M2, k2) {           // k1·M1 + k2·M2
+    return M1.map(function (f, i) { return f.map(function (v, j) { return k1 * v + k2 * M2[i][j]; }); });
+  }
+  function neg(M) { return M.map(function (f) { return f.map(function (v) { return -v; }); }); }
+  function plana(M) { return [].concat.apply([], M); }
+  function matEq(a, b) { return a.every(function (f, i) { return f.every(function (v, j) { return v === b[i][j]; }); }); }
+  function ceros(M) { return plana(M).filter(function (v) { return v === 0; }).length; }
+
+  /* Sistema:   X + b·Y = A     c·X + Y = B
+     Se eligen X e Y enteras y se calculan A y B, de modo que la solución
+     es siempre entera. Determinante del sistema: 1 − b·c ≠ 0.
+     Despejando:  (b·c − 1)·Y = c·A − B     (b·c − 1)·X = b·B − A          */
+  function construir(b, c, X, Y) {
+    var A = comb(X, 1, Y, b);
+    var B = comb(X, c, Y, 1);
+    return {
+      b: b, c: c, d: b * c - 1, X: X, Y: Y, A: A, B: B,
+      NX: comb(B, b, A, -1),
+      NY: comb(A, c, B, -1),
+      corregido: false
+    };
+  }
+  function generarEjercicio() {
+    for (var k = 0; k < 500; k++) {
+      var b = elegir([2, 3]);
+      var c = elegir([2, 3, 4, 5]);
+      var X = matrizAleatoria();
+      var Y = matrizAleatoria();
+      if (ceros(X) > 3 || ceros(Y) > 3) continue;          // evita matrices casi vacías
+      if (matEq(X, Y) || matEq(X, neg(Y))) continue;        // evita X = ±Y
+      var e = construir(b, c, X, Y);
+      var alto = plana(e.A).concat(plana(e.B)).some(function (v) { return Math.abs(v) > 18; });
+      if (alto) continue;
+      return e;
+    }
+    return construir(2, 5,
+      [[1, -2, 3], [0, 2, -1], [3, 1, -3]],
+      [[2, 1, -1], [-2, 3, 1], [1, -3, 2]]);
+  }
+
+  /* =========================================================
+     Utilidades de presentación
+     ========================================================= */
+  function $(id) { return document.getElementById(id); }
+  function fmt(n) { return n < 0 ? '\u2212' + Math.abs(n) : String(n); }
+  function par(n) { return n < 0 ? '(' + fmt(n) + ')' : fmt(n); }
+  function co(n) { return n === 1 ? '' : String(n); }
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (ch) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
+    });
+  }
+  function plural(n, s, p) { return n + ' ' + (n === 1 ? s : p); }
+  function V(l) { return '<span class="v">' + l + '</span>'; }
+
+  function htmlMatriz(M, mini) {
+    var h = '<div class="matriz' + (mini ? ' mini' : '') + '" role="group">';
+    M.forEach(function (f) { f.forEach(function (v) { h += '<div class="c">' + fmt(v) + '</div>'; }); });
+    return h + '</div>';
+  }
+
+  /* =========================================================
+     Estructura de la ficha
+     ========================================================= */
+  var gridX = $('gridX'), gridY = $('gridY');
+  var celdas = [];
+
+  function crearGrid(cont, nombre) {
+    cont.innerHTML = '';
+    for (var i = 0; i < N; i++) {
+      for (var j = 0; j < N; j++) {
+        var inp = document.createElement('input');
+        inp.type = 'text';
+        inp.className = 'celda';
+        inp.maxLength = 4;
+        inp.autocomplete = 'off';
+        inp.spellcheck = false;
+        inp.setAttribute('autocapitalize', 'off');
+        inp.setAttribute('aria-label', 'Matriz ' + nombre + ', fila ' + (i + 1) + ', columna ' + (j + 1));
+        inp.dataset.m = nombre;
+        inp.dataset.i = i;
+        inp.dataset.j = j;
+        cont.appendChild(inp);
+        celdas.push(inp);
+      }
+    }
+  }
+  crearGrid(gridX, 'X');
+  crearGrid(gridY, 'Y');
+
+  function pintarEjercicio() {
+    $('eq1').innerHTML = V('X') + ' + ' + co(ej.b) + V('Y') + ' = ' + V('A');
+    $('eq2').innerHTML = co(ej.c) + V('X') + ' + ' + V('Y') + ' = ' + V('B');
+    $('matA').innerHTML = htmlMatriz(ej.A, false);
+    $('matB').innerHTML = htmlMatriz(ej.B, false);
+  }
+
+  function actualizarMarcador() {
+    var t = state.tipos[TIPO];
+    $('mDisponible').textContent = Math.max(0, 10 - state.penalizacion);
+    $('mCasillas').textContent = state.penalizacion;
+    $('mIntentos').textContent = t.intentos.length;
+  }
+
+  function notaActual() {
+    var superados = Object.keys(state.tipos).filter(function (k) { return state.tipos[k].superado; }).length;
+    var base = superados * PUNTO_POR_TIPO;
+    return Math.max(0, Math.min(10, base - state.penalizacion));
+  }
+
+  function nuevoEjercicio() {
+    ej = generarEjercicio();
+    pintarEjercicio();
+    celdas.forEach(function (c) {
+      c.value = '';
+      c.disabled = false;
+      c.className = 'celda';
+    });
+    $('feedback').innerHTML = '';
+    $('aviso').textContent = '';
+    $('btnCorregir').hidden = false;
+    $('btnCorregir').disabled = false;
+    $('btnNuevo').hidden = true;
+    celdas[0].focus();
+  }
+
+  /* =========================================================
+     Entrada de datos
+     ========================================================= */
+  $('respuesta').addEventListener('input', function (e) {
+    var el = e.target;
+    if (!el.classList || !el.classList.contains('celda')) return;
+    var v = el.value.replace(/[\u2212\u2013\u2014]/g, '-').replace(/[^0-9-]/g, '');
+    var negativo = v.charAt(0) === '-';
+    v = (negativo ? '-' : '') + v.replace(/-/g, '');
+    el.value = v.slice(0, negativo ? 4 : 3);
+    el.classList.remove('falta');
+  });
+
+  $('respuesta').addEventListener('keydown', function (e) {
+    var el = e.target;
+    if (!el.classList || !el.classList.contains('celda')) return;
+    var idx = celdas.indexOf(el);
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (idx < celdas.length - 1) celdas[idx + 1].focus();
+      else corregir();
+    } else if (e.key === 'ArrowDown' && idx + N < celdas.length && (idx % 9) + N < 9) {
+      e.preventDefault(); celdas[idx + N].focus();
+    } else if (e.key === 'ArrowUp' && (idx % 9) - N >= 0) {
+      e.preventDefault(); celdas[idx - N].focus();
+    }
+  });
+
+  function leerCeldas() {
+    var S = { X: [[], [], []], Y: [[], [], []] };
+    var invalidas = [];
+    celdas.forEach(function (c) {
+      var i = +c.dataset.i, j = +c.dataset.j, v = c.value.trim();
+      if (!/^-?\d+$/.test(v)) { invalidas.push(c); return; }
+      S[c.dataset.m][i][j] = parseInt(v, 10);
+    });
+    return { S: S, invalidas: invalidas };
+  }
+
+  /* =========================================================
+     Corrección
+     ========================================================= */
+  function nombreActual() {
+    return $('inputNombre').value.trim().replace(/\s+/g, ' ');
+  }
+
+  function exigirNombre() {
+    if (nombreActual().length >= 2) {
+      $('inputNombre').classList.remove('falta');
+      return true;
+    }
+    $('inputNombre').classList.add('falta');
+    $('aviso').textContent = 'Escribe tu nombre y apellidos en la cabecera antes de corregir.';
+    $('inputNombre').focus();
+    return false;
+  }
+
+  function corregir() {
+    var t = state.tipos[TIPO];
+    if (!ej || ej.corregido || t.cerrado) return;
+    if (!exigirNombre()) return;
+
+    var lec = leerCeldas();
+    if (lec.invalidas.length) {
+      lec.invalidas.forEach(function (c) { c.classList.add('falta'); });
+      $('aviso').textContent = 'Completa todas las casillas con números enteros antes de corregir (faltan ' + lec.invalidas.length + ').';
+      lec.invalidas[0].focus();
+      return;
+    }
+    $('aviso').textContent = '';
+    ej.corregido = true;                       // bloquea dobles correcciones
+
+    var S = lec.S;
+    var wr = { X: [], Y: [] };
+    ['X', 'Y'].forEach(function (k) {
+      for (var i = 0; i < N; i++) for (var j = 0; j < N; j++) {
+        if (S[k][i][j] !== ej[k][i][j]) wr[k].push([i, j]);
+      }
+    });
+    var erroneas = wr.X.length + wr.Y.length;
+
+    celdas.forEach(function (c) {
+      var i = +c.dataset.i, j = +c.dataset.j, k = c.dataset.m;
+      c.classList.remove('falta');
+      c.classList.add(S[k][i][j] === ej[k][i][j] ? 'ok' : 'mal');
+      c.disabled = true;
+    });
+    $('btnCorregir').hidden = true;
+
+    registrarIntento(erroneas);
+
+    if (erroneas === 0) {
+      $('feedback').innerHTML = htmlAcierto();
+      $('btnFinalizar').classList.add('destacado');
+      if (notaActual() === 10) document.body.classList.add('perfecto');
+    } else {
+      $('feedback').innerHTML = htmlFallo(S, wr, erroneas);
+      $('btnNuevo').hidden = false;
+      $('btnNuevo').focus();
+    }
+  }
+
+  function registrarIntento(erroneas) {
+    var t = state.tipos[TIPO];
+    if (t.cerrado) return;
+    t.intentos.push({ n: t.intentos.length + 1, erroneas: erroneas, correcto: erroneas === 0 });
+    if (erroneas > 0) {
+      state.penalizacion += erroneas * PENALIZACION_POR_CASILLA;
+    } else {
+      t.superado = true;
+      t.cerrado = true;
+      state.fin = Date.now();
+    }
+    actualizarMarcador();
+  }
+
+  /* =========================================================
+     Retroalimentación pedagógica
+     ========================================================= */
+  function posiciones(arr) {
+    return arr.map(function (p) { return '(' + (p[0] + 1) + ', ' + (p[1] + 1) + ')'; }).join(', ');
+  }
+
+  function diagnosticar(S, wr) {
+    var msgs = [];
+    var b = ej.b, c = ej.c, d = ej.d;
+
+    if (matEq(S.X, ej.Y) && matEq(S.Y, ej.X)) {
+      msgs.push('Has intercambiado las matrices: lo que has escrito en ' + V('X') + ' corresponde a ' + V('Y') + ' y viceversa. Antes de operar, decide qué incógnita eliminas en cada paso y qué incógnita te queda.');
+      return msgs;
+    }
+
+    ['X', 'Y'].forEach(function (k) {
+      var errs = wr[k];
+      if (!errs.length) return;
+      var M = ej[k], NM = ej['N' + k], Sm = S[k];
+      var sinDividir = errs.every(function (p) { return Sm[p[0]][p[1]] === NM[p[0]][p[1]]; });
+      var signo = errs.every(function (p) { return Sm[p[0]][p[1]] === -M[p[0]][p[1]]; });
+      if (sinDividir) {
+        msgs.push('En ' + V(k) + ' has llegado al resultado de la resta, que es ' + d + V(k) + ', pero falta el último paso: <b>dividir entre ' + d + '</b>. Al eliminar una incógnita queda ' + d + V(k) + ', no ' + V(k) + '.');
+      } else if (signo) {
+        msgs.push('En ' + V(k) + ' las casillas incorrectas tienen el valor absoluto bien pero el <b>signo cambiado</b>. Es un error típico al restar ecuaciones: revisa el orden de la resta y recuerda que restar un número negativo equivale a sumar su opuesto.');
+      } else if (errs.length <= 3) {
+        msgs.push('En ' + V(k) + ' el fallo parece de <b>cálculo en casillas concretas</b> ' + posiciones(errs) + ': el planteamiento va bien, pero alguna operación con signos no ha salido. Repasa esas casillas una a una.');
+      } else {
+        msgs.push('En ' + V(k) + ' fallan muchas casillas (' + errs.length + '), lo que apunta a un problema de <b>planteamiento</b> y no de cálculo: para eliminar una incógnita hay que multiplicar una ecuación por un número y restarle la otra <i>casilla a casilla</i>.');
+      }
+    });
+
+    var eq1 = true, eq2 = true;
+    for (var i = 0; i < N; i++) for (var j = 0; j < N; j++) {
+      if (S.X[i][j] + b * S.Y[i][j] !== ej.A[i][j]) eq1 = false;
+      if (c * S.X[i][j] + S.Y[i][j] !== ej.B[i][j]) eq2 = false;
+    }
+    if (eq1 && !eq2) {
+      msgs.push('Tus matrices <b>cumplen la 1.ª ecuación pero no la 2.ª</b>. Con una sola ecuación hay infinitas parejas (' + V('X') + ', ' + V('Y') + ') posibles; la solución es la única que cumple las dos a la vez.');
+    } else if (eq2 && !eq1) {
+      msgs.push('Tus matrices <b>cumplen la 2.ª ecuación pero no la 1.ª</b>. Con una sola ecuación hay infinitas parejas (' + V('X') + ', ' + V('Y') + ') posibles; la solución es la única que cumple las dos a la vez.');
+    }
+    return msgs;
+  }
+
+  function pasosSolucion() {
+    var b = ej.b, c = ej.c, d = ej.d, bc = b * c;
+    var h = '';
+    h += '<div class="paso"><b>1. Obtener ' + V('Y') + ' (eliminar ' + V('X') + ').</b> Multiplica la 1.ª ecuación por ' + c +
+         ': ' + c + V('X') + ' + ' + bc + V('Y') + ' = ' + c + V('A') + '. Réstale la 2.ª (' + c + V('X') + ' + ' + V('Y') + ' = ' + V('B') + '): ' +
+         d + V('Y') + ' = ' + c + V('A') + ' \u2212 ' + V('B') + '.' +
+         '<div class="fila-mat"><span>' + c + V('A') + ' \u2212 ' + V('B') + ' =</span>' + htmlMatriz(ej.NY, true) +
+         '<span>y al dividir entre ' + d + ': ' + V('Y') + ' =</span>' + htmlMatriz(ej.Y, true) + '</div></div>';
+    h += '<div class="paso"><b>2. Obtener ' + V('X') + ' (eliminar ' + V('Y') + ').</b> Multiplica la 2.ª ecuación por ' + b +
+         ': ' + bc + V('X') + ' + ' + b + V('Y') + ' = ' + b + V('B') + '. Réstale la 1.ª (' + V('X') + ' + ' + co(b) + V('Y') + ' = ' + V('A') + '): ' +
+         d + V('X') + ' = ' + b + V('B') + ' \u2212 ' + V('A') + '.' +
+         '<div class="fila-mat"><span>' + b + V('B') + ' \u2212 ' + V('A') + ' =</span>' + htmlMatriz(ej.NX, true) +
+         '<span>y al dividir entre ' + d + ': ' + V('X') + ' =</span>' + htmlMatriz(ej.X, true) + '</div></div>';
+    h += '<div class="paso"><b>3. Comprobar.</b> Sustituir en las dos ecuaciones es la forma de detectar errores antes de corregir. Con la casilla (1, 1): ' +
+         fmt(ej.X[0][0]) + ' + ' + b + '\u00B7' + par(ej.Y[0][0]) + ' = ' + fmt(ej.A[0][0]) + ' = A<sub>11</sub> y ' +
+         c + '\u00B7' + par(ej.X[0][0]) + ' + ' + par(ej.Y[0][0]) + ' = ' + fmt(ej.B[0][0]) + ' = B<sub>11</sub>.</div>';
+    return h;
+  }
+
+  function htmlFallo(S, wr, erroneas) {
+    var disponible = Math.max(0, 10 - state.penalizacion);
+    var h = '<div class="feedback-incorrecto">';
+    h += '<div class="fb-titulo">\u2717 ' + plural(erroneas, 'casilla incorrecta', 'casillas incorrectas') + ': \u2212' + plural(erroneas * PENALIZACION_POR_CASILLA, 'punto', 'puntos') + '</div>';
+    h += '<p>Puntuación disponible ahora: <b>' + disponible + ' / 10</b>.' +
+         (disponible === 0 ? ' Has agotado la puntuación: puedes seguir practicando, pero la nota final será 0.' : '') + '</p>';
+
+    h += '<h4>Dónde ha estado el fallo</h4><ul>';
+    ['X', 'Y'].forEach(function (k) {
+      h += '<li>Matriz ' + V(k) + ': ' + (wr[k].length
+        ? plural(wr[k].length, 'casilla incorrecta', 'casillas incorrectas') + ' (fila, columna): ' + posiciones(wr[k]) + '.'
+        : 'todas las casillas correctas.') + '</li>';
+    });
+    h += '</ul>';
+
+    h += '<h4>Motivo probable</h4><ul>';
+    diagnosticar(S, wr).forEach(function (m) { h += '<li>' + m + '</li>'; });
+    h += '</ul>';
+
+    h += '<h4>Resolución de este ejercicio</h4>' + pasosSolucion();
+    h += '<p class="nota-final">Las operaciones con matrices (sumar, restar y multiplicar por un número) se hacen casilla a casilla, por eso el método de reducción funciona igual que con números. Pulsa «Nuevo ejercicio» para intentarlo con otros números.</p>';
+    return h + '</div>';
+  }
+
+  function htmlAcierto() {
+    var t = state.tipos[TIPO];
+    var nota = notaActual();
+    var h = '<div class="feedback-correcto">';
+    h += '<div class="fb-titulo">\u2713 ¡Correcto! Tus matrices cumplen las dos ecuaciones a la vez.</div>';
+    h += '<p><b>Por qué funciona:</b> las matrices se suman, se restan y se multiplican por un número casilla a casilla, así que el sistema se resuelve como uno de números: se multiplica una ecuación por un número, se resta la otra para eliminar una incógnita y se divide entre el coeficiente que queda (' + ej.d + ').</p>';
+    h += '<p><b>Comprobación</b> con la casilla (1, 1): ' + fmt(ej.X[0][0]) + ' + ' + ej.b + '\u00B7' + par(ej.Y[0][0]) + ' = ' + fmt(ej.A[0][0]) +
+         ' y ' + ej.c + '\u00B7' + par(ej.X[0][0]) + ' + ' + par(ej.Y[0][0]) + ' = ' + fmt(ej.B[0][0]) + '.</p>';
+    if (state.penalizacion > 0) {
+      h += '<p>Has perdido ' + plural(state.penalizacion, 'punto', 'puntos') + ' en ' + (t.intentos.length - 1 === 1 ? 'un intento anterior' : (t.intentos.length - 1) + ' intentos anteriores') + '. Tu nota es <b>' + nota + ' / 10</b>.</p>';
+    } else {
+      h += '<p>Sin fallos a la primera: nota <b>10 / 10</b>.</p>';
+    }
+    h += '<p class="nota-final">Ficha superada. Pulsa «Finalizar y Calificar» para ver tu informe.</p>';
+    return h + '</div>';
+  }
+
+  /* =========================================================
+     Modal "Finalizar y Calificar"
+     ========================================================= */
+  function estiloNota(n) {
+    if (n >= 10) return { bg: '#1a7a1a', fg: '#ffffff' };
+    if (n >= 9)  return { bg: '#6dbf6d', fg: '#ffffff' };
+    if (n >= 8)  return { bg: '#1a4f8a', fg: '#ffffff' };
+    if (n >= 7)  return { bg: '#5b9bd5', fg: '#ffffff' };
+    if (n >= 6)  return { bg: '#c05c00', fg: '#ffffff' };
+    if (n >= 5)  return { bg: '#f5a623', fg: '#000000' };
+    return { bg: '#c0392b', fg: '#ffffff' };
+  }
+
+  var focoPrevio = null;
+
+  function abrirModal() {
+    if (!exigirNombre()) return;
+    var t = state.tipos[TIPO];
+    var nota = notaActual();
+    var est = estiloNota(nota);
+    var ahora = new Date();
+    var fecha = pad(ahora.getDate()) + '/' + pad(ahora.getMonth() + 1) + '/' + ahora.getFullYear();
+    var hora = pad(ahora.getHours()) + ':' + pad(ahora.getMinutes()) + ':' + pad(ahora.getSeconds());
+    var fin = state.fin || Date.now();
+    var minutos = Math.max(1, Math.ceil((fin - state.inicio) / 60000));
+    var tiempo = pad(Math.floor(minutos / 60)) + ':' + pad(minutos % 60);
+
+    var aciertos = t.intentos.filter(function (x) { return x.correcto; }).length;
+    var fallos = t.intentos.length - aciertos;
+
+    var h = '<h2 id="modalTitulo">Informe de la actividad</h2>';
+    h += '<div class="nota-grande">' + nota + ' <small>/ 10</small></div>';
+    h += '<dl class="meta">' +
+         '<div><dt>Alumno</dt><dd>' + esc(nombreActual()) + '</dd></div>' +
+         '<div><dt>Fecha</dt><dd>' + fecha + '</dd></div>' +
+         '<div><dt>Hora</dt><dd>' + hora + '</dd></div>' +
+         '<div><dt>Tiempo empleado</dt><dd>' + tiempo + '</dd></div>' +
+         '</dl>';
+
+    h += '<div class="desglose"><h3>' + esc(t.nombre) + '</h3>';
+    h += '<div class="fila"><span>Estado</span><span class="estado-tipo">' + (t.superado ? 'Superado' : 'No superado') + '</span></div>';
+    h += '<div class="fila"><span>Intentos realizados</span><b>' + t.intentos.length + '</b></div>';
+    h += '<div class="fila"><span>Aciertos / errores</span><b>' + aciertos + ' / ' + fallos + '</b></div>';
+    h += '<div class="fila"><span>Casillas incorrectas acumuladas (máximo 18 por intento)</span><b>' + state.penalizacion + '</b></div>';
+    if (t.intentos.length) {
+      h += '<table><thead><tr><th>Intento</th><th>Casillas incorrectas</th><th>Resultado</th></tr></thead><tbody>';
+      t.intentos.forEach(function (x) {
+        h += '<tr><td>' + x.n + '</td><td>' + x.erroneas + '</td><td>' + (x.correcto ? 'Correcto' : 'Con errores') + '</td></tr>';
+      });
+      h += '</tbody></table>';
+    }
+    h += '</div>';
+
+    if (!t.superado) {
+      h += '<p class="aviso-modal">Todavía no has resuelto bien ningún ejercicio, por eso la nota es 0. Puedes cerrar este informe y seguir practicando.</p>';
+    }
+    h += '<button type="button" class="btn-cerrar" id="btnCerrarModal">Cerrar</button>';
+
+    var modal = $('modal');
+    modal.innerHTML = h;
+    modal.style.background = est.bg;
+    modal.style.color = est.fg;
+    $('overlayModal').hidden = false;
+    if (nota >= 10) document.body.classList.add('perfecto');
+    focoPrevio = document.activeElement;
+    $('btnCerrarModal').addEventListener('click', cerrarModal);
+    $('btnCerrarModal').focus();
+  }
+
+  function cerrarModal() {
+    $('overlayModal').hidden = true;
+    if (focoPrevio && typeof focoPrevio.focus === 'function' && !focoPrevio.disabled) focoPrevio.focus();
+  }
+
+  $('overlayModal').addEventListener('click', function (e) {
+    if (e.target === $('overlayModal')) cerrarModal();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !$('overlayModal').hidden) cerrarModal();
+  });
+
+  /* =========================================================
+     Arranque — la ficha se muestra directamente, sin pantalla
+     previa; el nombre se pide en la cabecera, en la misma línea
+     que la puntuación, y se exige antes de corregir o calificar.
+     ========================================================= */
+  $('inputNombre').addEventListener('input', function () {
+    $('inputNombre').classList.remove('falta');
+  });
+  $('btnCorregir').addEventListener('click', corregir);
+  $('btnNuevo').addEventListener('click', nuevoEjercicio);
+  $('btnFinalizar').addEventListener('click', abrirModal);
+
+  state.inicio = Date.now();
+  actualizarMarcador();
+  nuevoEjercicio();
+  $('inputNombre').focus();
+})();
+</script>
+</body>
+</html>
