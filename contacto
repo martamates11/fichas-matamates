@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pide una ficha o reporta una incidencia · Martamates</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1a2744;
+    --navy-mid: #243358;
+    --gold: #b8922a;
+    --gold-light: #d4aa4a;
+    --cream: #f7f4ee;
+    --cream-dark: #ede8de;
+    --text: #2c2c2c;
+    --text-light: #5a5550;
+    --rule: rgba(184,146,42,0.25);
+    --ok: #3f7a4f;
+    --error: #a13f2f;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Source Serif 4', Georgia, serif;
+    background-color: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 48px 20px;
+  }
+
+  .wrap { width: 100%; max-width: 620px; }
+
+  .eyebrow {
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+  h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(1.7rem, 4vw, 2.3rem);
+    font-weight: 700;
+    color: var(--navy);
+    line-height: 1.2;
+    margin-bottom: 12px;
+  }
+  .lead {
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: var(--text-light);
+    margin-bottom: 32px;
+    max-width: 480px;
+  }
+
+  .tabs {
+    display: flex;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 32px;
+  }
+  .tab-btn {
+    flex: 1;
+    background: none;
+    border: none;
+    font-family: 'Source Serif 4', serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-light);
+    padding: 14px 8px;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.2s ease;
+  }
+  .tab-btn::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: -1px;
+    height: 2px;
+    background: var(--gold);
+    transform: scaleX(0);
+    transition: transform 0.2s ease;
+  }
+  .tab-btn.active { color: var(--navy); }
+  .tab-btn.active::after { transform: scaleX(1); }
+  .tab-btn:focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
+
+  .panel { display: none; }
+  .panel.active { display: block; animation: fadein 0.25s ease; }
+  @keyframes fadein { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+  label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+  .req { color: var(--gold); }
+  .field { margin-bottom: 18px; }
+
+  input, textarea {
+    width: 100%;
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 11px 13px;
+    color: var(--text);
+    font-family: 'Source Serif 4', serif;
+    font-size: 0.95rem;
+    transition: border-color 0.15s;
+  }
+  textarea { resize: vertical; min-height: 90px; }
+  input::placeholder, textarea::placeholder { color: #a39d92; }
+  input:focus, textarea:focus {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(184,146,42,0.12);
+  }
+
+  input[type="file"] {
+    border: 1px dashed var(--rule);
+    background: var(--cream-dark);
+    padding: 10px 12px;
+    font-size: 0.85rem;
+  }
+
+  .hint {
+    font-size: 0.74rem;
+    color: #a39d92;
+    margin-top: 5px;
+  }
+
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 520px) { .row2 { grid-template-columns: 1fr; } }
+
+  button.submit {
+    width: 100%;
+    background: var(--navy);
+    color: #fff;
+    border: 1px solid var(--navy);
+    border-radius: 2px;
+    padding: 14px;
+    font-family: 'Source Serif 4', serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    margin-top: 6px;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+  button.submit:hover { background: var(--navy-mid); transform: translateY(-1px); }
+  button.submit:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+  #panel-incidencia button.submit { background: var(--error); border-color: var(--error); }
+  #panel-incidencia button.submit:hover { background: #8a3527; }
+
+  .status {
+    margin-top: 14px;
+    padding: 11px 13px;
+    border-radius: 2px;
+    font-size: 0.85rem;
+    display: none;
+  }
+  .status.ok { display: block; background: rgba(63,122,79,0.08); border: 1px solid rgba(63,122,79,0.3); color: var(--ok); }
+  .status.error { display: block; background: rgba(161,63,47,0.08); border: 1px solid rgba(161,63,47,0.3); color: var(--error); }
+
+  .hp { position: absolute; left: -9999px; top: -9999px; }
+
+  footer {
+    margin-top: 40px;
+    text-align: center;
+    font-size: 0.78rem;
+    font-style: italic;
+    color: #a39d92;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <p class="eyebrow">martaprofes · fichas interactivas</p>
+  <h1>¿Necesitas una ficha o algo no funciona?</h1>
+  <p class="lead">Usa la pestaña que corresponda. Todas las fichas siguen siendo, y seguirán siendo, gratuitas.</p>
+
+  <div class="tabs" role="tablist">
+    <button class="tab-btn active" role="tab" aria-selected="true" aria-controls="panel-pedir" id="tab-pedir">Pedir una ficha</button>
+    <button class="tab-btn" role="tab" aria-selected="false" aria-controls="panel-incidencia" id="tab-incidencia">Reportar una incidencia</button>
+  </div>
+
+  <!-- PANEL: PEDIR FICHA -->
+  <section class="panel active" id="panel-pedir" role="tabpanel" aria-labelledby="tab-pedir">
+    <form id="form-pedir" autocomplete="off">
+      <input type="text" name="empresa" class="hp" tabindex="-1" autocomplete="off">
+
+      <div class="row2">
+        <div class="field">
+          <label for="p-curso">Curso <span class="req">*</span></label>
+          <input type="text" id="p-curso" name="curso" placeholder="ej. 2º ESO" required>
+        </div>
+        <div class="field">
+          <label for="p-tipo">Tipo de ejercicio</label>
+          <input type="text" id="p-tipo" name="tipo_ejercicio" placeholder="ej. problemas, cálculo...">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="p-tema">Tema <span class="req">*</span></label>
+        <input type="text" id="p-tema" name="tema" placeholder="ej. proporcionalidad, ecuaciones de 2º grado..." required>
+      </div>
+
+      <div class="field">
+        <label for="p-comentarios">Comentarios</label>
+        <textarea id="p-comentarios" name="comentarios" placeholder="Cualquier detalle extra que te parezca útil"></textarea>
+      </div>
+
+      <div class="row2">
+        <div class="field">
+          <label for="p-nombre">Nombre (opcional)</label>
+          <input type="text" id="p-nombre" name="nombre" placeholder="Tu nombre">
+        </div>
+        <div class="field">
+          <label for="p-email">Email (opcional)</label>
+          <input type="email" id="p-email" name="email" placeholder="Para avisarte si sale">
+        </div>
+      </div>
+
+      <button type="submit" class="submit">Enviar solicitud</button>
+      <div class="status" id="status-pedir"></div>
+    </form>
+  </section>
+
+  <!-- PANEL: INCIDENCIA -->
+  <section class="panel" id="panel-incidencia" role="tabpanel" aria-labelledby="tab-incidencia">
+    <form id="form-incidencia" autocomplete="off">
+      <input type="text" name="empresa" class="hp" tabindex="-1" autocomplete="off">
+
+      <div class="field">
+        <label for="i-ficha">Ficha afectada <span class="req">*</span></label>
+        <input type="text" id="i-ficha" name="ficha" placeholder="Nombre o tema de la ficha (tal como aparece en el menú)" required>
+      </div>
+
+      <div class="field">
+        <label for="i-url">Dirección de la ficha (URL)</label>
+        <input type="text" id="i-url" name="url" placeholder="Copia y pega la dirección de arriba del navegador">
+      </div>
+
+      <div class="field">
+        <label for="i-descripcion">¿Qué ha pasado? <span class="req">*</span></label>
+        <textarea id="i-descripcion" name="descripcion" placeholder="Describe el error: qué esperabas que pasara y qué pasó en realidad" required></textarea>
+      </div>
+
+      <div class="field">
+        <label for="i-pasos">¿En qué momento ocurrió?</label>
+        <textarea id="i-pasos" name="pasos_repro" placeholder="ej. al pulsar 'comprobar' en el segundo ejercicio, en el móvil..."></textarea>
+      </div>
+
+      <div class="field">
+        <label for="i-captura">Captura de pantalla (opcional)</label>
+        <input type="file" id="i-captura" name="captura" accept="image/png,image/jpeg,image/webp,image/gif">
+        <p class="hint">Máximo 5MB. Formatos: PNG, JPG, WEBP, GIF.</p>
+      </div>
+
+      <div class="row2">
+        <div class="field">
+          <label for="i-nombre">Nombre (opcional)</label>
+          <input type="text" id="i-nombre" name="nombre" placeholder="Tu nombre">
+        </div>
+        <div class="field">
+          <label for="i-email">Email (opcional)</label>
+          <input type="email" id="i-email" name="email" placeholder="Para avisarte cuando esté resuelto">
+        </div>
+      </div>
+
+      <button type="submit" class="submit">Reportar incidencia</button>
+      <div class="status" id="status-incidencia"></div>
+    </form>
+  </section>
+
+  <footer>martaprofes · IES Castelar</footer>
+</div>
+
+<script type="module">
+  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+  const supabase = createClient(
+    'https://lldoyjifjbmktdvftvns.supabase.co',
+    'sb_publishable_PQ8iqbV-J_807M5GKCV68A_fafwnaBF'
+  );
+
+  // ---- Tabs ----
+  const tabPedir = document.getElementById('tab-pedir');
+  const tabIncidencia = document.getElementById('tab-incidencia');
+  const panelPedir = document.getElementById('panel-pedir');
+  const panelIncidencia = document.getElementById('panel-incidencia');
+
+  function activate(tab) {
+    const isPedir = tab === 'pedir';
+    tabPedir.classList.toggle('active', isPedir);
+    tabIncidencia.classList.toggle('active', !isPedir);
+    tabPedir.setAttribute('aria-selected', isPedir);
+    tabIncidencia.setAttribute('aria-selected', !isPedir);
+    panelPedir.classList.toggle('active', isPedir);
+    panelIncidencia.classList.toggle('active', !isPedir);
+  }
+  tabPedir.addEventListener('click', () => activate('pedir'));
+  tabIncidencia.addEventListener('click', () => activate('incidencia'));
+
+  // ---- Formulario: pedir ficha ----
+  const formPedir = document.getElementById('form-pedir');
+  const statusPedir = document.getElementById('status-pedir');
+
+  formPedir.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    statusPedir.className = 'status';
+    if (formPedir.empresa.value) return;
+
+    const data = {
+      curso: formPedir.curso.value.trim(),
+      tema: formPedir.tema.value.trim(),
+      tipo_ejercicio: formPedir.tipo_ejercicio.value.trim() || null,
+      comentarios: formPedir.comentarios.value.trim() || null,
+      nombre: formPedir.nombre.value.trim() || null,
+      email: formPedir.email.value.trim() || null,
+    };
+    if (!data.curso || !data.tema) {
+      statusPedir.className = 'status error';
+      statusPedir.textContent = 'Falta el curso o el tema.';
+      return;
+    }
+
+    const btn = formPedir.querySelector('button');
+    btn.disabled = true; btn.textContent = 'Enviando...';
+    const { error } = await supabase.from('solicitudes_fichas').insert(data);
+    btn.disabled = false; btn.textContent = 'Enviar solicitud';
+
+    if (error) {
+      statusPedir.className = 'status error';
+      statusPedir.textContent = 'Algo ha fallado. Inténtalo de nuevo en unos minutos.';
+      console.error(error);
+      return;
+    }
+    statusPedir.className = 'status ok';
+    statusPedir.textContent = '¡Gracias! Tu petición se ha registrado.';
+    formPedir.reset();
+  });
+
+  // ---- Formulario: incidencia ----
+  const formIncidencia = document.getElementById('form-incidencia');
+  const statusIncidencia = document.getElementById('status-incidencia');
+
+  formIncidencia.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    statusIncidencia.className = 'status';
+    if (formIncidencia.empresa.value) return;
+
+    const fileInput = document.getElementById('i-captura');
+    const file = fileInput.files[0];
+
+    if (file && file.size > 5 * 1024 * 1024) {
+      statusIncidencia.className = 'status error';
+      statusIncidencia.textContent = 'La imagen pesa más de 5MB. Reduce el tamaño e inténtalo de nuevo.';
+      return;
+    }
+
+    const data = {
+      ficha: formIncidencia.ficha.value.trim(),
+      url: formIncidencia.url.value.trim() || null,
+      descripcion: formIncidencia.descripcion.value.trim(),
+      pasos_repro: formIncidencia.pasos_repro.value.trim() || null,
+      nombre: formIncidencia.nombre.value.trim() || null,
+      email: formIncidencia.email.value.trim() || null,
+      captura_url: null,
+    };
+    if (!data.ficha || !data.descripcion) {
+      statusIncidencia.className = 'status error';
+      statusIncidencia.textContent = 'Falta el nombre de la ficha o la descripción.';
+      return;
+    }
+
+    const btn = formIncidencia.querySelector('button');
+    btn.disabled = true;
+
+    if (file) {
+      btn.textContent = 'Subiendo captura...';
+      const ext = file.name.split('.').pop();
+      const path = `${crypto.randomUUID()}.${ext}`;
+      const { error: uploadError } = await supabase.storage
+        .from('incidencias-capturas')
+        .upload(path, file);
+
+      if (uploadError) {
+        btn.disabled = false;
+        btn.textContent = 'Reportar incidencia';
+        statusIncidencia.className = 'status error';
+        statusIncidencia.textContent = 'No se pudo subir la captura. Puedes enviar el reporte sin ella e inténtalo luego.';
+        console.error(uploadError);
+        return;
+      }
+
+      const { data: publicData } = supabase.storage
+        .from('incidencias-capturas')
+        .getPublicUrl(path);
+      data.captura_url = publicData.publicUrl;
+    }
+
+    btn.textContent = 'Enviando...';
+    const { error } = await supabase.from('incidencias_fichas').insert(data);
+    btn.disabled = false; btn.textContent = 'Reportar incidencia';
+
+    if (error) {
+      statusIncidencia.className = 'status error';
+      statusIncidencia.textContent = 'Algo ha fallado. Inténtalo de nuevo en unos minutos.';
+      console.error(error);
+      return;
+    }
+    statusIncidencia.className = 'status ok';
+    statusIncidencia.textContent = 'Gracias por avisar, lo reviso en cuanto pueda.';
+    formIncidencia.reset();
+  });
+</script>
+
+</body>
+</html>
