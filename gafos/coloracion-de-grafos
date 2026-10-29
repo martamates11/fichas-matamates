@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Coloración de Grafos | Ficha interactiva</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #F5F0E8; color: #2C1F0E; font-family: 'Lato', sans-serif; font-size: 14px; line-height: 1.4; transition: background-color 0.3s ease; }
+        .contenedor-principal { max-width: 1100px; margin: 20px auto; padding: 0 15px; }
+        .ficha-container { background: #FDFAF3; border: 2px solid #C9A96E; border-radius: 12px; padding: 20px 25px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: background-color 0.3s ease; }
+        .cabecera { background-color: #3B2510; color: #F5EDD8; text-align: center; padding: 8px; font-size: 0.75rem; border-bottom: 2px solid #C9A96E; }
+        .seccion-titulo { text-align: center; margin-bottom: 10px; }
+        .titulo-ficha { font-family: 'Libre Baskerville', serif; font-size: 1.8rem; margin-bottom: 10px; color: #3B2510; }
+        .progreso-etapas { display: flex; gap: 10px; justify-content: center; margin: 10px 0 20px; flex-wrap: wrap; }
+        .badge-etapa { background: #E0CEAA; padding: 6px 18px; border-radius: 30px; font-size: 0.8rem; font-weight: 700; }
+        .badge-etapa.activa { background: #A0522D; color: white; }
+        .badge-etapa.completada { background: #2E6B3E; color: white; }
+        .barra-alumno { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin: 15px 0 20px; padding: 10px 15px; background: #F0E8DA; border-radius: 50px; border: 1px solid #C9A96E; }
+        .campo-nombre { background: white; padding: 5px 15px; border-radius: 40px; font-weight: 600; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .campo-nombre input { background: #FDFAF3; border: 1px solid #C9A96E; border-radius: 30px; padding: 8px 12px; font-size: 0.9rem; width: 180px; }
+        .marcador { background: white; padding: 5px 20px; border-radius: 40px; font-size: 0.9rem; font-weight: bold; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .marcador span { color: #A0522D; font-size: 1.1rem; font-weight: 800; }
+        .seccion-instrucciones { background: #F0E6D2; border-left: 5px solid #A0522D; padding: 10px 15px; margin: 15px 0; border-radius: 8px; font-size: 0.85rem; }
+        .tabla-datos { width: 100%; border-collapse: collapse; margin: 15px 0; background: #F5F0E8; border: 1px solid #C9A96E; font-size: 0.8rem; }
+        .tabla-datos th, .tabla-datos td { border: 1px solid #D4C4A8; padding: 8px 10px; text-align: center; }
+        .tabla-datos th { background: #C9A96E; color: #2C1F0E; font-weight: 700; }
+        .tabla-datos td { background: #FDFAF3; }
+        .tabla-inscritos th, .tabla-inscritos td { border: 1px solid #D4C4A8; padding: 6px 8px; text-align: center; font-size: 0.75rem; }
+        .tabla-inscritos th { background: #C9A96E; }
+        .tabla-scroll { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 10px 0; border-radius: 8px; }
+        .tabla-scroll table { width: auto; min-width: 100%; margin: 0; }
+        .contenedor-grafo { background: #FAF6ED; border: 1px solid #E0CEAA; border-radius: 10px; padding: 15px; margin: 15px 0; display: flex; justify-content: center; min-height: 320px; align-items: center; touch-action: manipulation; }
+        canvas, svg { max-width: 100%; height: auto; background: #FAF6ED; border-radius: 8px; cursor: pointer; display: block; margin: 0 auto; }
+        @keyframes shake { 0%,100%{ transform: translate(0,0); } 25%{ transform: translate(-3px,0); } 75%{ transform: translate(3px,0); } }
+        .shake-node { animation: shake 0.2s ease-in-out; }
+        .btn-primario { background-color: #A0522D; color: white; border: none; border-radius: 40px; padding: 8px 24px; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: 0.2s; margin: 5px; touch-action: manipulation; }
+        .btn-primario:hover { background-color: #7B3B1E; }
+        .paleta-colores { display: flex; gap: 20px; justify-content: center; margin: 10px 0; flex-wrap: wrap; }
+        .item-color { text-align: center; cursor: pointer; transition: transform 0.1s ease; padding: 8px; touch-action: manipulation; }
+        .item-color:active { transform: scale(0.95); }
+        .circulo-color { width: 50px; height: 50px; border-radius: 50%; border: 2px solid #ccc; margin-bottom: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .nombre-color { font-size: 0.8rem; font-weight: 600; }
+        .celda-color-muestra { width: 24px; height: 24px; border-radius: 50%; margin: 0 auto; border: 1px solid #aaa; }
+        .panel-coloreado { background: #EEE4D4; border-radius: 10px; padding: 15px; margin-top: 15px; }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 99; }
+        .modal-calificacion { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); background: white; border-radius: 20px; padding: 25px; text-align: center; z-index: 100; min-width: 300px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); flex-direction: column; gap: 12px; }
+        .modal-calificacion.activo { display: flex; }
+        .modal-calificacion .nota-grande { font-size: 2.2rem; font-weight: 800; margin: 10px 0; }
+        .cerrar-modal-btn { background: #A0522D; color: white; border: none; border-radius: 30px; padding: 8px 25px; margin-top: 15px; cursor: pointer; }
+        .aviso-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); background: white; border-radius: 15px; padding: 20px; text-align: center; z-index: 101; min-width: 280px; }
+        .aviso-modal.activo { display: block; }
+        .btn-finalizar { position: fixed; bottom: 20px; right: 20px; background: #3B2510; color: white; padding: 8px 22px; border-radius: 40px; font-weight: bold; border: none; cursor: pointer; z-index: 80; touch-action: manipulation; }
+        .lista-checkbox { display: flex; flex-direction: column; gap: 5px; max-height: 130px; overflow-y: auto; border: 1px solid #C9A96E; border-radius: 5px; padding: 8px; background: white; }
+        .lista-checkbox label { font-size: 0.8rem; display: flex; align-items: center; gap: 8px; padding: 4px 0; }
+        .dias-input { width: 80px; padding: 4px; text-align: center; font-size: 1rem; }
+        .etapa { transition: 0.2s; }
+        .feedback-correcto { color: #2E6B3E; font-weight: bold; margin-top: 8px; }
+        .feedback-incorrecto { color: #c0392b; font-weight: bold; margin-top: 8px; }
+        .feedback-info { color: #A0522D; font-weight: bold; margin-top: 8px; }
+        .error-nombre { color: #c0392b; font-size: 0.7rem; margin-left: 10px; display: inline-block; }
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+        .btn-primario:disabled { opacity: 0.55; cursor: not-allowed; }
+        .btn-secundario { background-color: #6c757d; }
+        .btn-secundario:hover { background-color: #565e64; }
+        @media (max-width: 600px) { .ficha-container { padding: 15px; } .barra-alumno { flex-direction: column; align-items: stretch; } .campo-nombre { justify-content: space-between; } .btn-primario { padding: 10px 16px; } }
+    </style>
+</head>
+<body>
+<div class="cabecera">Material elaborado por Marta L Letona S. Basado en el trabajo de Javier Cayetano</div>
+<div class="contenedor-principal">
+    <div class="ficha-container" id="fichaPrincipal">
+        <div class="seccion-titulo">
+            <h1 class="titulo-ficha">🎨 Coloración de Grafos</h1>
+            <div class="progreso-etapas"><span class="badge-etapa activa" id="badge0">1. Grafo</span><span class="badge-etapa" id="badge1">2. Grados</span><span class="badge-etapa" id="badge2">3. Colorear</span><span class="badge-etapa" id="badge3">4. Conclusión</span></div>
+        </div>
+        <div class="barra-alumno"><div class="campo-nombre"><label for="nombreAlumno">👤 Alumno/a:</label> <input type="text" id="nombreAlumno" placeholder="Tu nombre completo"><span id="errorNombre" class="error-nombre" aria-live="polite"></span></div><div class="marcador">🎯 Puntuación: <span id="puntuacionActual">0</span> / 10</div></div>
+        <div id="etapa0" class="etapa"><div class="seccion-instrucciones">📌 Una empresa ocupacional imparte diferentes talleres en un centro todas las tardes a la misma hora. A continuación está el listado de estos talleres con el nombre de las personas que se han apuntado. Si no queremos que coincidan en el mismo día dos talleres, ¿en cuántos días hay que impartirlos?</div><div id="enunciadoDinamico" style="background:#F5F0E8; padding:10px; border-radius:8px; margin-bottom:10px;"></div><h3>📋 Inscripciones</h3><div class="tabla-scroll"><table class="tabla-inscritos" id="tablaInscritos"></table></div><h3>✏️ Construye el grafo (toca dos vértices → arista, pulsación larga o botón derecho → eliminar)</h3><div class="contenedor-grafo" id="contenedorGrafoCanvas"></div><div style="text-align:center"><button class="btn-primario" id="btnVerificarGrafo">✅ Verificar grafo</button></div><div id="feedbackGrafo" aria-live="polite"></div></div>
+        <div id="etapa1" class="etapa" style="display:none"><div class="seccion-instrucciones">📊 Escribe el grado de cada vértice (número de aristas).</div><div class="contenedor-grafo" id="contenedorGrafoEstatico"></div><h3>📐 Grados</h3><div class="tabla-scroll"><table class="tabla-datos" id="tablaGradosContainer"><thead id="theadGrados"></thead><tbody id="tbodyGrados"></tbody></table></div><div style="text-align:center"><button class="btn-primario" id="btnValidarGrados">✔️ Verificar grados</button></div><div id="feedbackGrados" aria-live="polite"></div></div>
+        <div id="etapa2" class="etapa" style="display:none"><div class="seccion-instrucciones" id="instruccionColoreo">🎨 Toca el vértice de MAYOR GRADO sin colorear.</div><div class="contenedor-grafo" id="contenedorGrafoColor"></div><h3>🎯 Estado de colores</h3><div class="tabla-scroll"><table class="tabla-datos" id="tablaColoresContainer"><thead id="theadColores"></thead><tbody id="tbodyColores"></tbody></table></div><div class="panel-coloreado"><div id="mensajeEstado" style="font-weight:bold; text-align:center; margin-bottom:10px;" aria-live="polite"></div><div class="paleta-colores" id="paletaColores"></div><div id="feedbackColor" aria-live="polite"></div><div id="botoneraPaso" class="botonera" style="text-align:center"></div></div></div>
+        <div id="etapa3" class="etapa" style="display:none"><div class="seccion-instrucciones">📝 Responde las preguntas finales.</div><div class="conclusion-box" style="background:#F0E6D2; border-radius:10px; padding:15px; margin-top:15px;"><h4>📌 Días necesarios</h4><label for="respuestaDias" class="sr-only">Número de días necesarios</label><input type="number" id="respuestaDias" class="dias-input" placeholder="Nº días" min="1"><button class="btn-primario" id="btnGenerarTabla">📅 Generar tabla</button><div id="feedbackDias" style="margin-top:8px;" aria-live="polite"></div><h4>📌 Asigna talleres a cada día (marca los que van juntos)</h4><div id="tablaAgrupacionContainer"></div><div style="text-align:center; margin-top:15px;"><button class="btn-primario" id="btnValidarConclusion">✅ Validar</button></div><div id="feedbackConclusion" aria-live="polite"></div></div></div>
+    </div>
+</div>
+<button class="btn-finalizar" id="btnFinalizarFicha">📋 Ver calificación</button>
+<button class="btn-primario btn-secundario" id="btnNuevaFicha" style="position: fixed; bottom: 20px; left: 20px; z-index: 80;">🔄 Nueva ficha</button>
+<div class="overlay" id="overlayModal"></div>
+<div class="modal-calificacion" id="modalCalif"><h3>📊 Resultado final</h3><p id="modalNombre"></p><p><strong>Ficha:</strong> Coloración de Grafos</p><div class="nota-grande" id="modalNota"></div><p id="modalFecha"></p><p id="modalHora"></p><p id="modalTiempo"></p><div class="recordatorio" style="background: #f0e6d2; padding: 8px; border-radius: 8px; margin-top: 6px;">📸 Haz una captura de pantalla y entrégala en Google Classroom.</div><button class="cerrar-modal-btn" id="cerrarModalBtn">Seguir practicando</button></div>
+<div class="aviso-modal" id="avisoModal"><p>⚠️ Si finalizas la ficha ya no podrás seguir sumando puntos. ¿Continuar?</p><button class="btn-primario" id="confirmarAviso">Sí, finalizar</button><button class="btn-primario" id="cancelarAviso" style="background:#6c757d">Seguir</button></div>
+
+<script>
+    (function(){
+        const TALLERES_BASE = [{nombre:'Informática',inicial:'I'},{nombre:'Yoga',inicial:'Y'},{nombre:'Cocina',inicial:'C'},{nombre:'Pintura',inicial:'P'},{nombre:'Lectura',inicial:'L'},{nombre:'Escritura',inicial:'E'},{nombre:'Danza',inicial:'D'},{nombre:'Fotografía',inicial:'F'}];
+        const PERSONAS_BASE = ['Juan','Eloy','Susana','Francisco','Miguel','Carmen','Elena','Javier','Manuel','Fernanda','Rosa','Pedro','Lucía','Marta'];
+        const COLORES_BASE = ['#27AE60','#3498DB','#8E44AD','#E67E22','#E74C3C','#F39C12','#1ABC9C','#9B59B6'];
+        const NOMBRES_BASE = ['Verde','Azul','Púrpura','Naranja','Rojo','Ámbar','Turquesa','Violeta'];
+        
+        let alumno = { nombre:'', puntuacion:0, inicio:new Date(), concluido:false };
+        // Puntuación desglosada por bloque. Se recalcula por completo cada vez (nunca se acumula con +=),
+        // de modo que repetir una acción ya validada no puede sumar dos veces.
+        let puntos = { grafo:0, grados:0, conclusion:0, penalizaciones:0 };
+        let problem = { talleres:[], inscritos:[], areaInscritos:{}, grafo:{}, grados:{}, coloracion:{} };
+        let grafoConst = { vertices:[], aristas:[], posiciones:{}, vertSel:null, canvas:null, ctx:null };
+        let estadoColor = { paso:'seleccionar', vertice:null, color:null, noAdy:[] };
+        let svgActual = null;
+        let coloresUsados = [];
+        let coloresDisponibles = [...COLORES_BASE];
+        let nombresColores = [...NOMBRES_BASE];
+
+        function estimarNumeroCromatico(grafo, vertices) {
+            const grados = {}; vertices.forEach(v => { grados[v] = grafo[v].length; });
+            const orden = [...vertices].sort((a,b) => grados[b] - grados[a]);
+            const colores = {};
+            for (const v of orden) {
+                const usados = new Set();
+                for (const nb of grafo[v]) if (colores[nb] !== undefined) usados.add(colores[nb]);
+                let c = 1;
+                while (usados.has(c)) c++;
+                colores[v] = c;
+            }
+            return Math.max(...Object.values(colores));
+        }
+
+        function generarProblemaSeguro() {
+            for (let intento = 0; intento < 25; intento++) {
+                let nTall = Math.floor(Math.random() * 3) + 5;
+                let tall = [...TALLERES_BASE].sort(() => Math.random() - 0.5).slice(0, nTall);
+                let nPer = Math.min(PERSONAS_BASE.length, Math.floor(Math.random() * 6) + 7);
+                let pers = [...PERSONAS_BASE].sort(() => Math.random() - 0.5).slice(0, nPer);
+                let v = tall.map(t => t.inicial);
+                let area = {};
+                v.forEach(vx => area[vx] = []);
+                
+                for (let p of pers) {
+                    let mezcla = [...v];
+                    for (let i = mezcla.length - 1; i > 0; i--) { let j = Math.floor(Math.random() * (i + 1)); [mezcla[i], mezcla[j]] = [mezcla[j], mezcla[i]]; }
+                    let eleg = mezcla.slice(0, 2);
+                    eleg.forEach(vx => area[vx].push(p));
+                }
+                for (let vx of v) if (area[vx].length === 0 && pers.length) {
+                    for (let p of pers) { let ex = v.find(t => area[t].includes(p)); if (ex) { area[vx].push(p); break; } }
+                    if (area[vx].length === 0) area[vx].push(pers[0]);
+                }
+                
+                let grafo = {};
+                v.forEach(vx => grafo[vx] = []);
+                for (let i = 0; i < v.length; i++) for (let j = i+1; j < v.length; j++)
+                    if (area[v[i]].some(p => area[v[j]].includes(p))) { grafo[v[i]].push(v[j]); grafo[v[j]].push(v[i]); }
+                v.forEach(vx => grafo[vx].sort());
+                
+                let crom = estimarNumeroCromatico(grafo, v);
+                if (crom <= 4) {
+                    problem.talleres = tall;
+                    problem.inscritos = pers;
+                    problem.areaInscritos = area;
+                    problem.grafo = grafo;
+                    problem.grados = {};
+                    v.forEach(vx => problem.grados[vx] = grafo[vx].length);
+                    problem.coloracion = {};
+                    v.forEach(vx => problem.coloracion[vx] = null);
+                    return;
+                }
+            }
+            // Fallback bipartito
+            let tall = [TALLERES_BASE[0], TALLERES_BASE[1], TALLERES_BASE[2], TALLERES_BASE[3]];
+            let v = tall.map(t => t.inicial);
+            let area = {};
+            v.forEach(vx => area[vx] = []);
+            let pers = [PERSONAS_BASE[0], PERSONAS_BASE[1]];
+            area[v[0]] = [pers[0]]; area[v[1]] = [pers[0], pers[1]]; area[v[2]] = [pers[1]]; area[v[3]] = [pers[0]];
+            let grafo = { [v[0]]:[v[1]], [v[1]]:[v[0],v[2]], [v[2]]:[v[1]], [v[3]]:[] };
+            v.forEach(vx => { if(!grafo[vx]) grafo[vx]=[]; grafo[vx].sort(); });
+            problem.talleres = tall;
+            problem.inscritos = pers;
+            problem.areaInscritos = area;
+            problem.grafo = grafo;
+            problem.grados = {};
+            v.forEach(vx => problem.grados[vx] = grafo[vx].length);
+            problem.coloracion = {};
+            v.forEach(vx => problem.coloracion[vx] = null);
+        }
+
+        function dibujarGrafoSVG(grafo, colores, w=540, h=340, interactivo=false) {
+            const svg = document.createElementNS("http://www.w3.org/2000/svg","svg");
+            svg.setAttribute("viewBox",`0 0 ${w} ${h}`); svg.setAttribute("width","100%"); svg.setAttribute("height","100%");
+            svg.style.touchAction = "manipulation";
+            const vertices = Object.keys(grafo).sort();
+            if(vertices.length === 0) return svg;
+            const cx = w/2, cy = h/2, r = Math.min(w,h)/3.2;
+            const pos = {};
+            vertices.forEach((v,i) => { let ang = (2*Math.PI*i)/vertices.length - Math.PI/2; pos[v] = {x: cx + r*Math.cos(ang), y: cy + r*Math.sin(ang)}; });
+            const aristasSet = new Set();
+            vertices.forEach(v => grafo[v].forEach(u => { let key = [v,u].sort().join('-'); aristasSet.add(key); }));
+            for (let key of aristasSet) {
+                let [v1,v2] = key.split('-');
+                let line = document.createElementNS("http://www.w3.org/2000/svg","line");
+                line.setAttribute("x1", pos[v1].x); line.setAttribute("y1", pos[v1].y);
+                line.setAttribute("x2", pos[v2].x); line.setAttribute("y2", pos[v2].y);
+                line.setAttribute("stroke","#9B7B4C"); line.setAttribute("stroke-width","3");
+                svg.appendChild(line);
+            }
+            vertices.forEach(v => {
+                const grupo = document.createElementNS("http://www.w3.org/2000/svg","g");
+                grupo.setAttribute("data-vertice", v);
+                const color = (colores && colores[v]) || "#FDFAF3";
+                const circle = document.createElementNS("http://www.w3.org/2000/svg","circle");
+                circle.setAttribute("cx", pos[v].x); circle.setAttribute("cy", pos[v].y);
+                circle.setAttribute("r", "28");
+                circle.setAttribute("fill", color);
+                circle.setAttribute("stroke", "#B48C48"); circle.setAttribute("stroke-width", "2");
+                if(interactivo) circle.style.cursor = "pointer";
+                grupo.appendChild(circle);
+                const text = document.createElementNS("http://www.w3.org/2000/svg","text");
+                text.setAttribute("x", pos[v].x); text.setAttribute("y", pos[v].y);
+                text.setAttribute("text-anchor","middle"); text.setAttribute("dominant-baseline","central");
+                text.setAttribute("font-size","18"); text.setAttribute("font-weight","bold");
+                text.setAttribute("fill", (colores && colores[v]) ? "white" : "#2C1F0E");
+                text.textContent = v;
+                grupo.appendChild(text);
+                svg.appendChild(grupo);
+            });
+            if(interactivo) {
+                svg.addEventListener("click", (e) => {
+                    const pt = svg.createSVGPoint();
+                    pt.x = e.clientX; pt.y = e.clientY;
+                    const ctm = svg.getScreenCTM();
+                    if(!ctm) return;
+                    const localPt = pt.matrixTransform(ctm.inverse());
+                    let minDist = 45; let selected = null;
+                    for(let v of vertices) {
+                        const dx = localPt.x - pos[v].x, dy = localPt.y - pos[v].y;
+                        const dist = Math.hypot(dx, dy);
+                        if(dist < minDist) { minDist = dist; selected = v; }
+                    }
+                    if(selected) clicNodo(selected);
+                });
+            }
+            return svg;
+        }
+
+        function actPuntos(){ document.getElementById('puntuacionActual').innerText = alumno.puntuacion.toFixed(1); }
+
+        // Puntos de la etapa de coloreado: SIEMPRE 4 puntos en total repartidos a partes iguales
+        // entre los vértices existentes, sean 5, 6 o 7. Así la nota máxima teórica es siempre 10,
+        // no depende del número de vértices que el generador aleatorio haya elegido.
+        function puntosColoreadoActuales(){
+            let vertices = Object.keys(problem.grados || {});
+            if(vertices.length === 0) return 0;
+            let coloreados = Object.values(problem.coloracion).filter(c => c !== null).length;
+            return 4 * (coloreados / vertices.length);
+        }
+
+        function recalcularPuntuacion(){
+            let total = puntos.grafo + puntos.grados + puntosColoreadoActuales() + puntos.conclusion - puntos.penalizaciones;
+            total = Math.max(0, Math.min(10, total));
+            total = Math.round(total * 10) / 10; // evita arrastre de errores de coma flotante
+            alumno.puntuacion = total;
+            actPuntos();
+        }
+
+        function restar(){ puntos.penalizaciones += 1; recalcularPuntuacion(); }
+        
+        function validarNombre() {
+            let nom = document.getElementById('nombreAlumno').value.trim();
+            if (!nom) {
+                document.getElementById('errorNombre').textContent = "⚠️ Escribe tu nombre antes de finalizar";
+                return false;
+            }
+            document.getElementById('errorNombre').textContent = "";
+            alumno.nombre = nom;
+            return true;
+        }
+
+        function renderEtapa0(){
+            let html = '<strong>📌 Talleres y participantes:</strong><br>';
+            problem.talleres.forEach(t=> html += `• ${t.nombre} (${t.inicial}): ${problem.areaInscritos[t.inicial].join(', ')}<br>`);
+            html += `<br>🎯 Construye el grafo conectando talleres que comparten al menos una persona.`;
+            document.getElementById('enunciadoDinamico').innerHTML = html;
+            let tabla = document.getElementById('tablaInscritos');
+            tabla.innerHTML = `<tr><th>Persona</th>${problem.talleres.map(t=>`<th>${t.inicial}</th>`).join('')}</tr>`;
+            for(let p of problem.inscritos){
+                let row = `<tr><td style="background:#E8DFCE;">${p}</td>`;
+                for(let t of problem.talleres) row += `<td><input type="checkbox" ${problem.areaInscritos[t.inicial].includes(p) ? 'checked' : ''} disabled></td>`;
+                row += `</tr>`;
+                tabla.innerHTML += row;
+            }
+            iniciarCanvas();
+        }
+
+        function iniciarCanvas(){
+            let cont = document.getElementById('contenedorGrafoCanvas');
+            cont.innerHTML = '';
+            let canvas = document.createElement('canvas');
+            canvas.width = 650; canvas.height = 380;
+            canvas.style.border = '1px solid #C9A96E'; canvas.style.borderRadius = '10px';
+            canvas.style.touchAction = "manipulation";
+            cont.appendChild(canvas);
+            grafoConst.canvas = canvas;
+            grafoConst.ctx = canvas.getContext('2d');
+            grafoConst.vertices = problem.talleres.map(t=>t.inicial).sort();
+            grafoConst.aristas = [];
+            let w=canvas.width, h=canvas.height, cx=w/2, cy=h/2, rad=Math.min(w,h)/3.2;
+            grafoConst.posiciones = {};
+            grafoConst.vertices.forEach((v,i)=>{ let ang=(2*Math.PI*i)/grafoConst.vertices.length - Math.PI/2; grafoConst.posiciones[v]={x: cx + rad*Math.cos(ang), y: cy + rad*Math.sin(ang), radio: 32}; });
+            
+            const getTouchCoord = (e) => {
+                let rect = canvas.getBoundingClientRect();
+                let scaleX = canvas.width/rect.width, scaleY = canvas.height/rect.height;
+                let clientX, clientY;
+                if(e.touches) { clientX = e.touches[0].clientX; clientY = e.touches[0].clientY; }
+                else { clientX = e.clientX; clientY = e.clientY; }
+                return { x: (clientX - rect.left)*scaleX, y: (clientY - rect.top)*scaleY };
+            };
+            
+            const manejarClick = (e) => {
+                e.preventDefault();
+                let {x,y} = getTouchCoord(e);
+                let v = null;
+                for(let vert of grafoConst.vertices){
+                    let p = grafoConst.posiciones[vert];
+                    if(Math.hypot(x-p.x, y-p.y) <= p.radio) { v = vert; break; }
+                }
+                if(!v){ grafoConst.vertSel = null; dibujarCanvas(); return; }
+                if(grafoConst.vertSel === null){ grafoConst.vertSel = v; dibujarCanvas(); return; }
+                let v1 = grafoConst.vertSel, v2 = v;
+                if(v1===v2){ grafoConst.vertSel=null; dibujarCanvas(); return; }
+                let existe = grafoConst.aristas.some(a=>(a.v1===v1&&a.v2===v2)||(a.v1===v2&&a.v2===v1));
+                if(!existe){
+                    let comparten = problem.areaInscritos[v1].some(p=>problem.areaInscritos[v2].includes(p));
+                    if(comparten){ grafoConst.aristas.push({v1,v2}); document.getElementById('feedbackGrafo').innerHTML='<div class="feedback-correcto">✓ Arista añadida</div>'; }
+                    else document.getElementById('feedbackGrafo').innerHTML=`<div class="feedback-incorrecto">✗ ${v1} y ${v2} no comparten inscritos</div>`;
+                } else document.getElementById('feedbackGrafo').innerHTML='<div class="feedback-incorrecto">✗ Arista ya existe</div>';
+                grafoConst.vertSel = null;
+                dibujarCanvas();
+            };
+            
+            canvas.addEventListener('click', manejarClick);
+            canvas.addEventListener('touchstart', (e) => { e.preventDefault(); manejarClick(e); });
+            canvas.addEventListener('contextmenu', (e) => { e.preventDefault();
+                let rect = canvas.getBoundingClientRect();
+                let sx = canvas.width/rect.width, sy = canvas.height/rect.height;
+                let x = (e.clientX - rect.left)*sx, y = (e.clientY - rect.top)*sy;
+                for(let i=0;i<grafoConst.aristas.length;i++){
+                    let a=grafoConst.aristas[i];
+                    let p1=grafoConst.posiciones[a.v1], p2=grafoConst.posiciones[a.v2];
+                    let A=x-p1.x,B=y-p1.y,C=p2.x-p1.x,D=p2.y-p1.y;
+                    let dot=A*C+B*D, len2=C*C+D*D;
+                    let t = len2===0 ? -1 : dot/len2;
+                    let xx,yy;
+                    if(t<0){ xx=p1.x; yy=p1.y; } else if(t>1){ xx=p2.x; yy=p2.y; } else{ xx=p1.x+t*C; yy=p1.y+t*D; }
+                    if(Math.hypot(x-xx,y-yy)<15){ grafoConst.aristas.splice(i,1); dibujarCanvas(); document.getElementById('feedbackGrafo').innerHTML='<div class="feedback-correcto">🗑️ Arista eliminada</div>'; return; }
+                }
+            });
+            dibujarCanvas();
+        }
+        
+        function dibujarCanvas(){
+            let ctx=grafoConst.ctx, canvas=grafoConst.canvas;
+            ctx.fillStyle='#FAF6ED'; ctx.fillRect(0,0,canvas.width,canvas.height);
+            for(let a of grafoConst.aristas){
+                let p1=grafoConst.posiciones[a.v1], p2=grafoConst.posiciones[a.v2];
+                ctx.beginPath(); ctx.moveTo(p1.x,p1.y); ctx.lineTo(p2.x,p2.y);
+                ctx.strokeStyle='#7B5F3A'; ctx.lineWidth=4; ctx.stroke();
+            }
+            for(let v of grafoConst.vertices){
+                let p=grafoConst.posiciones[v];
+                let sel = v===grafoConst.vertSel;
+                ctx.fillStyle= sel ? '#A0522D' : '#FDFAF3';
+                ctx.strokeStyle= sel ? '#7B3B1E' : '#B48C48';
+                ctx.beginPath(); ctx.arc(p.x,p.y,p.radio,0,2*Math.PI); ctx.fill(); ctx.stroke();
+                ctx.fillStyle= sel ? 'white' : '#2C1F0E';
+                ctx.font='bold 18px Lato'; ctx.textAlign='center'; ctx.textBaseline='middle';
+                ctx.fillText(v,p.x,p.y);
+            }
+        }
+
+        function validarGrafo(){
+            if(document.getElementById('btnVerificarGrafo').disabled) return;
+            let correctas = new Set(), verts = grafoConst.vertices;
+            for(let i=0;i<verts.length;i++) for(let j=i+1;j<verts.length;j++) if(problem.areaInscritos[verts[i]].some(p=>problem.areaInscritos[verts[j]].includes(p))) correctas.add(`${verts[i]}-${verts[j]}`);
+            let dibujadas = new Set(); grafoConst.aristas.forEach(a=> dibujadas.add([a.v1,a.v2].sort().join('-')));
+            let ok = true;
+            for(let c of correctas) if(!dibujadas.has(c)) ok=false;
+            for(let d of dibujadas) if(!correctas.has(d)) ok=false;
+            if(ok){
+                document.getElementById('feedbackGrafo').innerHTML='<div class="feedback-correcto">✅ Grafo correcto.</div>';
+                let nuevo={}; verts.forEach(v=>nuevo[v]=[]);
+                grafoConst.aristas.forEach(a=>{ nuevo[a.v1].push(a.v2); nuevo[a.v2].push(a.v1); });
+                verts.forEach(v=>nuevo[v].sort());
+                problem.grafo = nuevo;
+                verts.forEach(v=> problem.grados[v] = nuevo[v].length);
+                puntos.grafo = 2; // asignación fija, no suma: repetir esta validación nunca duplica puntos
+                recalcularPuntuacion();
+                document.getElementById('btnVerificarGrafo').disabled = true;
+                setTimeout(()=> irAEtapa1(), 600);
+            } else document.getElementById('feedbackGrafo').innerHTML='<div class="feedback-incorrecto">✗ El grafo no es correcto.</div>';
+        }
+        
+        function irAEtapa1(){
+            document.getElementById('etapa0').style.display='none'; document.getElementById('etapa1').style.display='block';
+            document.getElementById('badge0').classList.remove('activa'); document.getElementById('badge0').classList.add('completada');
+            document.getElementById('badge1').classList.add('activa');
+            let cont = document.getElementById('contenedorGrafoEstatico'); 
+            cont.innerHTML = ''; 
+            cont.appendChild(dibujarGrafoSVG(problem.grafo, {}, 540, 340, false));
+            let vertices = problem.talleres.map(t=>t.inicial).sort();
+            document.getElementById('theadGrados').innerHTML = `<tr><th>Vértice</th>${vertices.map(v=>`<th>${v}</th>`).join('')}</tr>`;
+            document.getElementById('tbodyGrados').innerHTML = `<tr><th>Grado</th>${vertices.map(v=>`<td><label for="grado_${v}" class="sr-only">Grado del vértice ${v}</label><input type="number" id="grado_${v}" min="0" style="width:70px; text-align:center; padding:6px;"></td>`).join('')}</tr>`;
+            vertices.forEach(v => {
+                document.getElementById(`grado_${v}`).addEventListener('keydown', e => {
+                    if(e.key === 'Enter'){ e.preventDefault(); validarGrados(); }
+                });
+            });
+        }
+        
+        function validarGrados(){
+            if(document.getElementById('btnValidarGrados').disabled) return;
+            let vertices = problem.talleres.map(t=>t.inicial).sort(), ok=true;
+            for(let v of vertices) if(parseInt(document.getElementById(`grado_${v}`).value) !== problem.grados[v]) ok=false;
+            if(ok){
+                document.getElementById('feedbackGrados').innerHTML='<div class="feedback-correcto">✅ Grados correctos.</div>';
+                puntos.grados = 2; // asignación fija, no suma
+                recalcularPuntuacion();
+                document.getElementById('btnValidarGrados').disabled = true;
+                setTimeout(()=> irAEtapa2(), 600);
+            } else document.getElementById('feedbackGrados').innerHTML='<div class="feedback-incorrecto">✗ Grados incorrectos.</div>';
+        }
+        
+        function irAEtapa2(){
+            document.getElementById('etapa1').style.display='none'; document.getElementById('etapa2').style.display='block';
+            document.getElementById('badge1').classList.remove('activa'); document.getElementById('badge1').classList.add('completada');
+            document.getElementById('badge2').classList.add('activa');
+            problem.coloracion = {}; problem.talleres.forEach(t=> problem.coloracion[t.inicial]=null);
+            estadoColor = { paso:'seleccionar', vertice:null, color:null, noAdy:[] };
+            actualizarColoreo();
+            let pal = document.getElementById('paletaColores');
+            pal.innerHTML = '';
+            let numColors = Math.max(4, Math.max(...Object.values(problem.grados))+1);
+            coloresDisponibles = COLORES_BASE.slice(0, Math.min(numColors, COLORES_BASE.length));
+            nombresColores = NOMBRES_BASE.slice(0, coloresDisponibles.length);
+            for(let i=0;i<coloresDisponibles.length;i++){
+                let div = document.createElement('div'); div.className='item-color';
+                div.innerHTML = `<div class="circulo-color" style="background:${coloresDisponibles[i]}"></div><div class="nombre-color">${nombresColores[i]}</div>`;
+                div.onclick = () => selecColor(coloresDisponibles[i]);
+                pal.appendChild(div);
+            }
+            actMensaje(); document.getElementById('botoneraPaso').innerHTML = '';
+        }
+
+        function actMensaje(){
+            let msg = estadoColor.paso === 'seleccionar' ? 'Toca el vértice de MAYOR GRADO sin colorear.' : (estadoColor.paso === 'elegir' ? `Elige un COLOR para ${estadoColor.vertice}.` : `Toca vértices NO ADYACENTES a ${estadoColor.vertice}. Luego "Completar paso".`);
+            document.getElementById('mensajeEstado').innerHTML = msg;
+            document.getElementById('instruccionColoreo').innerHTML = `🎨 ${msg}`;
+        }
+
+        function actualizarColoreo(){
+            let cont = document.getElementById('contenedorGrafoColor'); cont.innerHTML = '';
+            let svg = dibujarGrafoSVG(problem.grafo, problem.coloracion, 540, 340, true);
+            svgActual = svg;
+            cont.appendChild(svg);
+            let vertices = problem.talleres.map(t=>t.inicial).sort();
+            document.getElementById('theadColores').innerHTML = `<tr><th>Vértice</th>${vertices.map(v=>`<th>${v}</th>`).join('')}</tr>`;
+            let gradosRow = `<tr><th>Grado</th>${vertices.map(v=>`<td>${problem.grados[v]}</td>`).join('')}</tr>`;
+            let colorRow = `<tr><th>Color</th>` + vertices.map(v=>`<td>${problem.coloracion[v] ? `<div class="celda-color-muestra" style="background:${problem.coloracion[v]}"></div>` : '⚪'}</td>`).join('') + `</tr>`;
+            document.getElementById('tbodyColores').innerHTML = gradosRow + colorRow;
+        }
+
+        function clicNodo(v){
+            if(estadoColor.paso === 'seleccionar'){
+                if(problem.coloracion[v] !== null){ document.getElementById('feedbackColor').innerHTML='<div class="feedback-incorrecto">⚠️ Ya coloreado.</div>'; return; }
+                let sinColor = Object.keys(problem.grados).filter(x=>problem.coloracion[x]===null);
+                if(sinColor.length===0) return;
+                let maxG = Math.max(...sinColor.map(x=>problem.grados[x]));
+                if(problem.grados[v] !== maxG){
+                    let circle = svgActual?.querySelector(`g[data-vertice="${v}"] circle`);
+                    if(circle) circle.classList.add('shake-node');
+                    setTimeout(()=> circle?.classList.remove('shake-node'),300);
+                    restar();
+                    document.getElementById('feedbackColor').innerHTML = `<div class="feedback-incorrecto">❌ Elige grado máximo (${maxG}). -1 punto</div>`;
+                    return;
+                }
+                estadoColor.vertice = v; estadoColor.paso = 'elegir'; actMensaje();
+                document.getElementById('feedbackColor').innerHTML = `<div class="feedback-info">✅ Seleccionado ${v} (grado ${problem.grados[v]}). Elige color.</div>`;
+                return;
+            }
+            if(estadoColor.paso === 'noAdy'){
+                if(problem.coloracion[v] !== null){ document.getElementById('feedbackColor').innerHTML='<div class="feedback-incorrecto">⚠️ Ya coloreado.</div>'; return; }
+                if(problem.grafo[estadoColor.vertice].includes(v)){
+                    let circle = svgActual?.querySelector(`g[data-vertice="${v}"] circle`);
+                    if(circle) circle.classList.add('shake-node');
+                    setTimeout(()=> circle?.classList.remove('shake-node'),300);
+                    restar();
+                    document.getElementById('feedbackColor').innerHTML = `<div class="feedback-incorrecto">❌ ${v} es ADYACENTE. -1 punto</div>`;
+                    return;
+                }
+                problem.coloracion[v] = estadoColor.color;
+                recalcularPuntuacion();
+                actualizarColoreo();
+                document.getElementById('feedbackColor').innerHTML = `<div class="feedback-correcto">✅ ${v} coloreado igual.</div>`;
+                let ady = problem.grafo[estadoColor.vertice];
+                estadoColor.noAdy = Object.keys(problem.grados).filter(x=> x!==estadoColor.vertice && problem.coloracion[x]===null && !ady.includes(x));
+                actMensaje();
+            }
+        }
+
+        function selecColor(hex){
+            if(estadoColor.paso !== 'elegir'){ document.getElementById('feedbackColor').innerHTML='<div class="feedback-incorrecto">❌ Primero selecciona vértice.</div>'; return; }
+            estadoColor.color = hex; estadoColor.paso = 'noAdy';
+            problem.coloracion[estadoColor.vertice] = hex;
+            recalcularPuntuacion();
+            actualizarColoreo(); actMensaje();
+            document.getElementById('feedbackColor').innerHTML = `<div class="feedback-info">🎨 Color aplicado. Toca vértices NO ADYACENTES.</div>`;
+            let botonera = document.getElementById('botoneraPaso'); botonera.innerHTML = '';
+            let btn = document.createElement('button'); btn.textContent = '✓ Completar paso'; btn.className = 'btn-primario';
+            btn.onclick = () => finPaso(); botonera.appendChild(btn);
+        }
+
+        function finPaso(){
+            if(estadoColor.paso !== 'noAdy') return;
+            let rest = Object.values(problem.coloracion).filter(x=>x===null).length;
+            if(rest===0){
+                document.getElementById('feedbackColor').innerHTML = '<div class="feedback-correcto">🏆 ¡Grafo coloreado! Ve a Conclusión.</div>';
+                let btn = document.createElement('button'); btn.textContent = '📝 Conclusión'; btn.className = 'btn-primario';
+                btn.onclick = () => irAEtapa3();
+                document.getElementById('botoneraPaso').innerHTML = ''; document.getElementById('botoneraPaso').appendChild(btn);
+                estadoColor.paso = 'fin'; return;
+            }
+            estadoColor = { paso:'seleccionar', vertice:null, color:null, noAdy:[] };
+            actMensaje(); actualizarColoreo();
+            document.getElementById('feedbackColor').innerHTML = '<div class="feedback-info">✅ Paso completado. Siguiente vértice de MAYOR GRADO.</div>';
+            document.getElementById('botoneraPaso').innerHTML = '';
+        }
+
+        function irAEtapa3(){
+            document.getElementById('etapa2').style.display='none'; document.getElementById('etapa3').style.display='block';
+            document.getElementById('badge2').classList.remove('activa'); document.getElementById('badge2').classList.add('completada');
+            document.getElementById('badge3').classList.add('activa');
+            let extra = document.createElement('div'); extra.className='contenedor-grafo';
+            extra.appendChild(dibujarGrafoSVG(problem.grafo, problem.coloracion, 540, 340, false));
+            let contenedor = document.querySelector('#etapa3 .conclusion-box');
+            document.getElementById('etapa3').insertBefore(extra, contenedor);
+            coloresUsados = [...new Set(Object.values(problem.coloracion))];
+            document.getElementById('btnGenerarTabla').onclick = ()=>{
+                let dias = parseInt(document.getElementById('respuestaDias').value);
+                if(isNaN(dias) || dias !== coloresUsados.length){ document.getElementById('feedbackDias').innerHTML = `<div class="feedback-incorrecto">❌ Usaste ${coloresUsados.length} colores. Debe coincidir.</div>`; return; }
+                document.getElementById('feedbackDias').innerHTML = `<div class="feedback-correcto">✅ Correcto! ${coloresUsados.length} días.</div>`;
+                generarCheckboxes(dias);
+            };
+            document.getElementById('btnValidarConclusion').onclick = ()=> validarCheck();
+        }
+
+        function generarCheckboxes(dias){
+            let cont = document.getElementById('tablaAgrupacionContainer');
+            let talleres = problem.talleres.map(t=> ({nombre:t.nombre, ini:t.inicial}));
+            let html = '<table class="tabla-datos"><thead><tr><th>Día</th><th>Color</th><th>Talleres</th></tr></thead><tbody>';
+            for(let i=0;i<dias;i++){
+                html += `<tr><td style="font-weight:bold">Día ${i+1}</td>
+                          <td><select id="colorSelect_${i}" style="width:120px">${coloresDisponibles.map((hex,idx)=>`<option value="${hex}">${nombresColores[idx]}</option>`).join('')}</select></td>
+                          <td><div class="lista-checkbox" id="lista_${i}">`;
+                for(let t of talleres) html += `<label><input type="checkbox" value="${t.ini}"> ${t.nombre} (${t.ini})</label>`;
+                html += `</div><button class="btn-primario" style="padding:6px 12px" onclick="window.marcarTodos(${i})">✓ Todos</button> <button class="btn-primario" style="padding:6px 12px" onclick="window.deseleccionarTodos(${i})">✗ Ninguno</button></td></tr>`;
+            }
+            html += '</tbody></table>'; cont.innerHTML = html;
+            window.marcarTodos = (d)=>{ document.querySelectorAll(`#lista_${d} input`).forEach(c=>c.checked=true); };
+            window.deseleccionarTodos = (d)=>{ document.querySelectorAll(`#lista_${d} input`).forEach(c=>c.checked=false); };
+        }
+
+        function validarCheck(){
+            let dias = parseInt(document.getElementById('respuestaDias').value);
+            if(dias !== coloresUsados.length){ document.getElementById('feedbackConclusion').innerHTML='<div class="feedback-incorrecto">❌ Número de días incorrecto.</div>'; return; }
+            let asign = {};
+            for(let i=0;i<dias;i++){
+                let color = document.getElementById(`colorSelect_${i}`).value;
+                document.querySelectorAll(`#lista_${i} input:checked`).forEach(cb=>{ if(asign[cb.value]){ document.getElementById('feedbackConclusion').innerHTML='<div class="feedback-incorrecto">❌ Taller repetido.</div>'; } asign[cb.value] = color; });
+            }
+            let todos = problem.talleres.map(t=>t.inicial);
+            for(let t of todos) if(!asign[t]){ document.getElementById('feedbackConclusion').innerHTML='<div class="feedback-incorrecto">❌ Faltan talleres.</div>'; return; }
+            let ok = true;
+            for(let t of todos) if(asign[t] !== problem.coloracion[t]) ok=false;
+            if(ok){
+                document.getElementById('feedbackConclusion').innerHTML = '<div class="feedback-correcto">✅ ¡Correcto! +2 puntos.</div>';
+                if(!alumno.concluido){ puntos.conclusion = 2; recalcularPuntuacion(); alumno.concluido=true; }
+            } else document.getElementById('feedbackConclusion').innerHTML = '<div class="feedback-incorrecto">❌ No coincide con tu coloreo.</div>';
+        }
+
+        function mostrarModal(){
+            if(!validarNombre()) return;
+            let nom = alumno.nombre, ahora = new Date();
+            let segTranscurridos = (ahora - alumno.inicio) / 1000;
+            let minutosTotales = Math.ceil(segTranscurridos / 60); // redondeo hacia arriba: cualquier fracción de minuto cuenta como minuto completo
+            let horas = Math.floor(minutosTotales / 60), mins = minutosTotales % 60;
+            let tiempo = `${horas.toString().padStart(2,'0')}:${mins.toString().padStart(2,'0')}`;
+            let fecha = ahora.toLocaleDateString('es-ES'), hora = ahora.toLocaleTimeString('es-ES'), nota = alumno.puntuacion;
+            document.getElementById('modalNombre').innerHTML = `🧑‍🎓 ${nom}`;
+            document.getElementById('modalNota').innerHTML = `${nota.toFixed(1)} / 10`;
+            document.getElementById('modalFecha').innerHTML = `📅 ${fecha}`;
+            document.getElementById('modalHora').innerHTML = `⏰ ${hora}`;
+            document.getElementById('modalTiempo').innerHTML = `⏱️ ${tiempo}`;
+            let modal = document.getElementById('modalCalif'), bg, txt;
+            if(nota===10){ bg='#1a7a1a'; txt='white'; document.body.style.backgroundColor='#e0f0e0'; document.querySelector('.ficha-container').style.backgroundColor='#d4f0d4'; }
+            else if(nota>=9){ bg='#6dbf6d'; txt='white'; } else if(nota>=8){ bg='#1a4f8a'; txt='white'; } else if(nota>=7){ bg='#5b9bd5'; txt='white'; } else if(nota>=6){ bg='#c05c00'; txt='white'; } else if(nota>=5){ bg='#f5a623'; txt='black'; } else { bg='#c0392b'; txt='white'; }
+            modal.style.backgroundColor = bg; modal.style.color = txt;
+            document.getElementById('overlayModal').classList.add('activo'); modal.classList.add('activo');
+        }
+        
+        function cerrarModal(){ document.getElementById('overlayModal').classList.remove('activo'); document.getElementById('modalCalif').classList.remove('activo'); document.body.style.backgroundColor='#F5F0E8'; document.querySelector('.ficha-container').style.backgroundColor='#FDFAF3'; }
+        
+        function aviso(){ 
+            if(validarNombre()){ 
+                document.getElementById('avisoModal').classList.add('activo'); 
+                document.getElementById('overlayModal').classList.add('activo'); 
+            } 
+        }
+        
+        function cerrarAviso(){ document.getElementById('avisoModal').classList.remove('activo'); document.getElementById('overlayModal').classList.remove('activo'); }
+        function finYMostrar(){ cerrarAviso(); mostrarModal(); }
+
+        function reiniciarFicha(){
+            cerrarModal(); cerrarAviso();
+            alumno.puntuacion = 0; alumno.inicio = new Date(); alumno.concluido = false;
+            puntos = { grafo:0, grados:0, conclusion:0, penalizaciones:0 };
+            document.getElementById('errorNombre').textContent = '';
+            document.getElementById('puntuacionActual').innerText = '0';
+            document.getElementById('btnVerificarGrafo').disabled = false;
+            document.getElementById('btnValidarGrados').disabled = false;
+            document.getElementById('feedbackGrafo').innerHTML = '';
+            document.getElementById('feedbackGrados').innerHTML = '';
+            document.getElementById('feedbackColor').innerHTML = '';
+            document.getElementById('feedbackDias').innerHTML = '';
+            document.getElementById('feedbackConclusion').innerHTML = '';
+            document.getElementById('respuestaDias').value = '';
+            document.getElementById('tablaAgrupacionContainer').innerHTML = '';
+            // Eliminar el bloque extra de grafo coloreado que se inserta al entrar en la etapa 4
+            document.querySelectorAll('#etapa3 .contenedor-grafo').forEach(el => el.remove());
+            ['badge0','badge1','badge2','badge3'].forEach(id => document.getElementById(id).classList.remove('activa','completada'));
+            document.getElementById('badge0').classList.add('activa');
+            ['etapa1','etapa2','etapa3'].forEach(id => document.getElementById(id).style.display = 'none');
+            document.getElementById('etapa0').style.display = 'block';
+            generarProblemaSeguro();
+            renderEtapa0();
+        }
+
+        window.onload = ()=>{
+            generarProblemaSeguro();
+            renderEtapa0();
+            document.getElementById('btnVerificarGrafo').onclick = validarGrafo;
+            document.getElementById('btnValidarGrados').onclick = validarGrados;
+            document.getElementById('btnFinalizarFicha').onclick = aviso;
+            document.getElementById('btnNuevaFicha').onclick = reiniciarFicha;
+            document.getElementById('confirmarAviso').onclick = finYMostrar;
+            document.getElementById('cancelarAviso').onclick = cerrarAviso;
+            document.getElementById('cerrarModalBtn').onclick = cerrarModal;
+            document.getElementById('overlayModal').onclick = ()=>{ cerrarAviso(); cerrarModal(); };
+            document.getElementById('nombreAlumno').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); validarNombre(); e.target.blur(); } });
+            document.getElementById('respuestaDias').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); document.getElementById('btnGenerarTabla').click(); } });
+        };
+    })();
+</script>
+</body>
+</html>
