@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Operaciones con Matrices — Ficha Interactiva</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap');
+:root{
+  --color-fondo:#F5F0E8;
+  --color-fondo-card:#FDFAF3;
+  --color-texto:#2C1F0E;
+  --color-texto-suave:#6B4F35;
+  --color-acento:#A0522D;
+  --color-acento-hover:#7B3B1E;
+  --color-borde:#C9A96E;
+  --color-borde-suave:#E0CEAA;
+  --color-cabecera:#3B2510;
+  --color-cabecera-txt:#F5EDD8;
+  --color-correcto:#2E6B3E;
+  --color-incorrecto:#8B1A1A;
+  --color-neutro:#E8DFC8;
+  --shadow:0 3px 12px rgba(44,31,14,.15);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+body{font-family:'Lato',sans-serif;font-size:16px;background:var(--color-fondo);color:var(--color-texto);min-height:100vh;display:flex;flex-direction:column;}
+#topbar{background:var(--color-cabecera);color:var(--color-cabecera-txt);border-bottom:3px solid var(--color-borde);padding:12px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-family:'Libre Baskerville',serif;text-align:center;letter-spacing:.02em}
+.topbar-left{flex:1;min-width:160px;text-align:left}
+.topbar-credit{font-size:.68rem;color:var(--color-borde);letter-spacing:.06em;text-transform:uppercase;display:block;font-family:'Lato',sans-serif}
+.topbar-title{font-family:'Libre Baskerville',serif;font-size:1.15rem;font-weight:700;color:var(--color-cabecera-txt)}
+#name-field{background:rgba(255,255,255,.1);border:1.5px solid var(--color-borde);border-radius:4px;color:var(--color-cabecera-txt);padding:8px 14px;font-size:.9rem;font-family:'Lato',sans-serif;width:220px}
+#name-field::placeholder{color:rgba(245,237,216,.55)}
+#name-field:focus{outline:none;border-color:#fff}
+#scorebar{background:var(--color-neutro);border-bottom:1px solid var(--color-borde-suave);padding:8px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;font-family:'Libre Baskerville',serif}
+.score-item{text-align:center}
+.score-label{font-size:.62rem;color:var(--color-texto-suave);text-transform:uppercase;letter-spacing:1.1px;font-weight:700;font-family:'Lato',sans-serif}
+.score-val{font-size:1.15rem;font-weight:700;color:var(--color-acento)}
+#score-fail{color:var(--color-incorrecto)}
+main{flex:1;max-width:1000px;width:100%;margin:0 auto;padding:20px 16px 100px}
+@media (max-width:480px){ main{padding-bottom:210px} }
+.card{background:var(--color-fondo-card);border-radius:6px;border:2px solid var(--color-borde);padding:24px;margin-bottom:16px;box-shadow:var(--shadow)}
+.card h2{font-family:'Libre Baskerville',serif;font-size:1.3rem;color:var(--color-texto);margin-bottom:14px;font-weight:700;display:flex;align-items:center;gap:10px;flex-wrap:wrap;text-align:center;border-bottom:2px solid var(--color-borde);padding-bottom:10px}
+.card-tag{display:inline-block;background:var(--color-neutro);color:var(--color-texto-suave);border:1px solid var(--color-borde-suave);border-radius:20px;padding:2px 10px;font-size:.68rem;letter-spacing:.5px;font-weight:700;text-transform:uppercase;font-family:'Lato',sans-serif}
+.matrix-section{display:flex;flex-wrap:wrap;gap:30px;justify-content:center;margin:20px 0 30px}
+.matrix-card{background:var(--color-neutro);border-radius:10px;padding:16px 20px;text-align:center;border:1px solid var(--color-borde-suave)}
+.matrix-letter{font-family:'Libre Baskerville',serif;font-size:1.2rem;font-weight:700;color:var(--color-texto);margin-bottom:12px}
+.matrix{display:inline-flex;align-items:center;gap:4px;font-family:'Courier New',monospace}
+.matrix-paren{font-size:3.6rem;font-weight:400;color:var(--color-texto-suave);line-height:1}
+.matrix-content{display:flex;flex-direction:column}
+.matrix-row{display:flex;gap:14px;padding:2px 0}
+.matrix-cell{min-width:34px;text-align:center;font-weight:600;font-size:.9rem;color:var(--color-texto)}
+.operations-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin:20px 0}
+.op-card{background:var(--color-fondo);border:1.5px solid var(--color-borde-suave);border-left:4px solid var(--color-borde);border-radius:4px;padding:18px}
+.op-card.mastered{background:var(--color-neutro);border-left-color:var(--color-correcto)}
+.op-card.locked{opacity:.9}
+.op-title{font-weight:700;font-size:.98rem;color:var(--color-texto);margin-bottom:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-family:'Libre Baskerville',serif}
+.op-name sup{font-size:.65em;vertical-align:super;line-height:0}
+.input-matrix{display:inline-grid;gap:8px;margin:10px 0}
+.input-row{display:flex;gap:12px;justify-content:center}
+.input-cell{width:52px;padding:8px 6px;text-align:center;font-family:'Courier New',monospace;font-weight:600;background:var(--color-fondo);border:1.5px solid var(--color-borde);border-radius:4px;color:var(--color-texto);transition:border-color .2s}
+.input-cell:focus{outline:none;border-color:var(--color-acento)}
+.input-cell:disabled{background:var(--color-neutro);color:var(--color-texto-suave);cursor:not-allowed}
+.feedback{margin-top:14px;padding:10px 14px;border-radius:4px;font-size:.87rem;line-height:1.55;display:none}
+.feedback.ok{background:#EAF4EC;border:1.5px solid var(--color-correcto);color:var(--color-correcto);font-weight:700;display:block}
+.feedback.err{background:#F9EAEA;border:1.5px solid var(--color-incorrecto);color:var(--color-incorrecto);display:block}
+.feedback.err .motivo{color:var(--color-texto);font-style:italic;display:block;margin:6px 0}
+.feedback.err .celdas{color:var(--color-texto);display:block;margin:4px 0;font-size:.82rem}
+.feedback.err .solucion{margin-top:6px;color:var(--color-texto);font-weight:700}
+.status-badge{font-size:.7rem;padding:3px 10px;border-radius:20px;background:var(--color-neutro);color:var(--color-texto-suave);font-family:'Lato',sans-serif;font-weight:700}
+.status-badge.done{background:#EAF4EC;color:var(--color-correcto)}
+.status-badge.blocked{background:#F9EAEA;color:var(--color-incorrecto)}
+.btn-check-individual{margin-top:12px;background:var(--color-acento);color:#FDFAF3;border:none;border-radius:4px;padding:8px 16px;font-size:.85rem;font-weight:700;cursor:pointer;font-family:'Lato',sans-serif;letter-spacing:.02em;transition:background-color .2s}
+.btn-check-individual:hover{background:var(--color-acento-hover)}
+.btn-check-individual:disabled{background:var(--color-neutro);color:var(--color-texto-suave);cursor:not-allowed}
+#actionbar{position:fixed;bottom:0;left:0;right:0;background:var(--color-fondo-card);border-top:2px solid var(--color-borde);padding:12px 20px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;box-shadow:0 -4px 16px rgba(44,31,14,.15);z-index:100}
+.btn{padding:10px 22px;border-radius:4px;border:none;cursor:pointer;font-size:.92rem;font-weight:700;transition:all .2s;letter-spacing:.03em;font-family:'Lato',sans-serif}
+.btn-primary{background:var(--color-acento);color:#FDFAF3}.btn-primary:hover{background:var(--color-acento-hover)}
+.btn-secondary{background:transparent;color:var(--color-acento);border:2px solid var(--color-borde)}.btn-secondary:hover{border-color:var(--color-acento);color:var(--color-acento-hover)}
+.btn-finish{background:var(--color-cabecera);color:var(--color-cabecera-txt);border:2px solid var(--color-borde);font-family:'Libre Baskerville',serif}.btn-finish:hover{background:#2C1A0A}
+.progress-bar{background:var(--color-neutro);padding:8px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--color-borde-suave);font-size:.75rem;color:var(--color-texto-suave);flex-wrap:wrap;gap:8px;font-family:'Lato',sans-serif}
+.progress-steps{display:flex;gap:8px;flex-wrap:wrap}
+.step-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;border:2px solid var(--color-borde-suave);background:var(--color-fondo);color:var(--color-texto-suave);transition:all .3s}
+.step-dot.done{border-color:var(--color-correcto);background:#EAF4EC;color:var(--color-correcto)}
+#modal-overlay{display:none;position:fixed;inset:0;background:rgba(44,31,14,.55);z-index:999;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
+#modal-box{border:3px solid var(--color-borde);border-radius:8px;font-family:'Libre Baskerville',serif;box-shadow:0 6px 24px rgba(44,31,14,.35);padding:32px 36px;min-width:320px;max-width:440px;width:90%;text-align:center;position:relative}
+#modal-close{position:absolute;top:12px;right:16px;background:none;border:none;font-size:1.6rem;cursor:pointer;opacity:.8;font-family:'Lato',sans-serif}
+#modal-close:hover{opacity:1}
+#modal-nota{font-family:'Libre Baskerville',serif;font-size:3rem;font-weight:700;margin:8px 0}
+#modal-data{text-align:left;border-radius:6px;padding:14px 18px;margin:16px 0;font-size:.95rem;line-height:1.8;background:rgba(255,255,255,.15);font-family:'Lato',sans-serif}
+.modal-screenshot{background:rgba(0,0,0,0.08);border-radius:6px;padding:10px;margin-top:12px;font-size:0.85rem;display:flex;align-items:center;justify-content:center;gap:8px;font-family:'Lato',sans-serif}
+#modal-btn{padding:10px 28px;border-radius:4px;border:none;cursor:pointer;font-size:.95rem;font-weight:700;margin-top:16px;font-family:'Lato',sans-serif}
+pre{font-family:'Courier New',monospace;font-size:.8rem;margin-top:6px}
+#confirm-overlay{display:none;position:fixed;inset:0;background:rgba(44,31,14,.55);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
+#confirm-box{background:var(--color-fondo-card);border:3px solid var(--color-borde);border-radius:8px;font-family:'Lato',sans-serif;box-shadow:0 6px 24px rgba(44,31,14,.35);padding:28px 30px;min-width:280px;max-width:420px;width:90%;text-align:center;color:var(--color-texto)}
+#confirm-icon{font-size:2.2rem;margin-bottom:10px}
+#confirm-title{font-family:'Libre Baskerville',serif;font-size:1.15rem;font-weight:700;margin-bottom:10px;color:var(--color-texto)}
+#confirm-message{font-size:.92rem;line-height:1.6;color:var(--color-texto-suave);margin-bottom:20px;text-align:left}
+#confirm-buttons{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<div id="modal-overlay">
+  <div id="modal-box">
+    <button id="modal-close" onclick="closeModal()" aria-label="Cerrar">✕</button>
+    <div style="font-size:2.5rem;margin-bottom:8px">📊</div>
+    <h2 id="modal-title" style="font-size:1.4rem;margin-bottom:8px"></h2>
+    <div id="modal-nota"></div>
+    <div id="modal-data"></div>
+    <div class="modal-screenshot">
+      <span>📸</span> <strong>Haz una captura de pantalla y entrégala en Google Classroom.</strong>
+    </div>
+    <button id="modal-btn" onclick="closeModal()">Seguir practicando</button>
+  </div>
+</div>
+<div id="confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+  <div id="confirm-box">
+    <div id="confirm-icon">⚠️</div>
+    <div id="confirm-title"></div>
+    <div id="confirm-message"></div>
+    <div id="confirm-buttons"></div>
+  </div>
+</div>
+<div id="topbar">
+  <div class="topbar-left">
+    <span class="topbar-credit">Material elaborado por Marta L Letona S. · Basado en el trabajo de Javier Cayetano</span>
+    <span class="topbar-title">Operaciones con Matrices 3×3 — Ficha Interactiva</span>
+  </div>
+  <label for="name-field" class="sr-only">Nombre y apellidos del alumno</label>
+  <input id="name-field" type="text" placeholder="Tu nombre y apellidos..." maxlength="60">
+</div>
+<div id="scorebar">
+  <div class="score-item"><div class="score-label">Puntuación</div><div class="score-val" id="score-pts" aria-live="polite">0</div></div>
+  <div class="score-item"><div class="score-label">Máxima</div><div class="score-val" style="color:var(--color-texto-suave)">60</div></div>
+  <div class="score-item"><div class="score-label">Aciertos</div><div class="score-val" id="score-ok" aria-live="polite">0</div></div>
+  <div class="score-item"><div class="score-label">Fallos</div><div class="score-val" id="score-fail" aria-live="polite">0</div></div>
+</div>
+<div class="progress-bar">
+  <span>📋 Progreso (tipos superados)</span>
+  <div class="progress-steps" id="progress-steps"></div>
+</div>
+<main><div id="ex"></div></main>
+<div id="actionbar">
+  <button class="btn btn-primary" id="btn-check">✔ Corregir todo lo pendiente</button>
+  <button class="btn btn-secondary" id="btn-new">🔄 Nueva ficha</button>
+  <button class="btn btn-finish" id="btn-finish">🏁 Finalizar y Calificar</button>
+</div>
+
+<script>
+const N = 3;
+const MAX_PTS = 60;
+const startTime = Date.now();
+
+let score = 0, aciertos = 0, fallos = 0;
+let currentA = [], currentB = [];
+let operationResults = {};
+
+let masteredEver = { sum:false, diff:false, twoA:false, product:false, productBA:false, productATBT:false };
+let attemptedThisInstance = { sum:false, diff:false, twoA:false, product:false, productBA:false, productATBT:false };
+
+const I3 = [[1,0,0],[0,1,0],[0,0,1]];
+const OPERATIONS = [
+  { id: 'sum', name: 'A + B', pts: 10,
+    motivo: 'En la suma de matrices se suma cada elemento con el que ocupa la misma posición: (A+B)ᵢⱼ = Aᵢⱼ + Bᵢⱼ.' },
+  { id: 'diff', name: 'A − B', pts: 10,
+    motivo: 'En la resta de matrices se resta cada elemento con el que ocupa la misma posición: (A−B)ᵢⱼ = Aᵢⱼ − Bᵢⱼ.' },
+  { id: 'twoA', name: '2A − 3I', pts: 10,
+    motivo: 'Primero se multiplica cada elemento de A por 2. Después se resta 3 solo en la diagonal principal, ya que 3I únicamente tiene valores en esa diagonal (el resto son ceros).' },
+  { id: 'product', name: 'A × B', pts: 10,
+    motivo: 'En el producto de matrices cada elemento se calcula multiplicando la fila correspondiente de la primera matriz por la columna correspondiente de la segunda y sumando los productos. No se multiplican los elementos posición a posición.' },
+  { id: 'productBA', name: 'B × A', pts: 10,
+    motivo: 'El producto de matrices no es conmutativo: B×A no tiene por qué coincidir con A×B. Aquí debes multiplicar cada fila de B por cada columna de A.' },
+  { id: 'productATBT', name: 'A<sup>T</sup> × B<sup>T</sup>', pts: 10,
+    motivo: 'Primero se transponen A y B (se intercambian filas por columnas) y después se multiplican esas matrices transpuestas siguiendo la regla fila por columna.' }
+];
+
+function randomInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+function stripHtml(str) { return str.replace(/<[^>]*>/g, ''); }
+
+function generateMatrix() {
+  const M = [];
+  for(let i=0;i<N;i++){
+    const row = [];
+    for(let j=0;j<N;j++) row.push(randomInt(-3, 3));
+    M.push(row);
+  }
+  return M;
+}
+
+function addMatrices(A, B) {
+  const R = [];
+  for(let i=0;i<N;i++){
+    const row = [];
+    for(let j=0;j<N;j++) row.push(A[i][j] + B[i][j]);
+    R.push(row);
+  }
+  return R;
+}
+
+function subMatrices(A, B) {
+  const R = [];
+  for(let i=0;i<N;i++){
+    const row = [];
+    for(let j=0;j<N;j++) row.push(A[i][j] - B[i][j]);
+    R.push(row);
+  }
+  return R;
+}
+
+function scalarMul(k, M) {
+  const R = [];
+  for(let i=0;i<N;i++){
+    const row = [];
+    for(let j=0;j<N;j++) row.push(k * M[i][j]);
+    R.push(row);
+  }
+  return R;
+}
+
+function mulMatrices(A, B) {
+  const R = [];
+  for(let i=0;i<N;i++){
+    const row = [];
+    for(let j=0;j<N;j++){
+      let s = 0;
+      for(let k=0;k<N;k++) s += A[i][k] * B[k][j];
+      row.push(s);
+    }
+    R.push(row);
+  }
+  return R;
+}
+
+function transpose(M) {
+  const R = [];
+  for(let i=0;i<N;i++){
+    const row = [];
+    for(let j=0;j<N;j++) row.push(M[j][i]);
+    R.push(row);
+  }
+  return R;
+}
+
+function twoAMinus3I(A) {
+  let twoA = scalarMul(2, A);
+  let threeI = scalarMul(3, I3);
+  return subMatrices(twoA, threeI);
+}
+
+function matricesEqual(M1, M2) {
+  for(let i=0;i<N;i++) for(let j=0;j<N;j++) if(Math.abs(M1[i][j]-M2[i][j])>1e-5) return false;
+  return true;
+}
+
+function renderMatrixParentesis(M, label) {
+  let rowsHtml = '';
+  for(let i=0;i<N;i++){
+    let cells = '';
+    for(let j=0;j<N;j++){
+      cells += `<div class="matrix-cell">${M[i][j]}</div>`;
+    }
+    rowsHtml += `<div class="matrix-row">${cells}</div>`;
+  }
+  return `
+    <div class="matrix-card">
+      <div class="matrix-letter">${label}</div>
+      <div class="matrix">
+        <span class="matrix-paren">(</span>
+        <div class="matrix-content">
+          ${rowsHtml}
+        </div>
+        <span class="matrix-paren">)</span>
+      </div>
+    </div>
+  `;
+}
+
+function renderInputs(opId, disabled) {
+  const dis = disabled ? 'disabled' : '';
+  let rowsHtml = '';
+  for(let i=0;i<N;i++){
+    let cells = '';
+    for(let j=0;j<N;j++){
+      const pos = `${i}${j}`;
+      cells += `
+        <label class="sr-only" for="${opId}_${pos}">Elemento fila ${i+1} columna ${j+1} de ${opId}</label>
+        <input type="text" class="input-cell" id="${opId}_${pos}" placeholder="a${i+1}${j+1}" ${dis}>`;
+    }
+    rowsHtml += `<div class="input-row">${cells}</div>`;
+  }
+  return `
+    <div class="input-matrix">
+      ${rowsHtml}
+    </div>
+  `;
+}
+
+function readAnswer(opId) {
+  const m = [];
+  for(let i=0;i<N;i++){
+    const row = [];
+    for(let j=0;j<N;j++){
+      const el = document.getElementById(`${opId}_${i}${j}`);
+      const val = el.value.trim();
+      if(val === "") return null;
+      const num = parseFloat(val);
+      if(isNaN(num)) return null;
+      row.push(num);
+    }
+    m.push(row);
+  }
+  return m;
+}
+
+function updateScoresUI() {
+  document.getElementById('score-pts').textContent = (Math.round(score*10)/10);
+  document.getElementById('score-ok').textContent = aciertos;
+  document.getElementById('score-fail').textContent = fallos;
+}
+
+function updateProgressDots() {
+  const container = document.getElementById('progress-steps');
+  if(!container) return;
+  let html = '';
+  OPERATIONS.forEach((op, idx) => {
+    html += `<div class="step-dot ${masteredEver[op.id] ? 'done' : ''}" title="${stripHtml(op.name)}">${idx+1}</div>`;
+  });
+  container.innerHTML = html;
+}
+
+function cellFeedbackList(opId, userMat, correctMat) {
+  let wrongCells = [];
+  for(let i=0;i<N;i++){
+    for(let j=0;j<N;j++){
+      if(Math.abs(userMat[i][j]-correctMat[i][j])>1e-5){
+        wrongCells.push(`(fila ${i+1}, columna ${j+1})`);
+      }
+    }
+  }
+  if(wrongCells.length === N*N) return 'Todos los elementos son incorrectos.';
+  return `Revisa el/los elemento(s) en la posición ${wrongCells.join(', ')}.`;
+}
+
+function matrixToPre(correctMat) {
+  let lines = [];
+  for(let i=0;i<N;i++){
+    let line = '';
+    for(let j=0;j<N;j++){
+      line += (j===0 ? '' : '  ') + correctMat[i][j];
+    }
+    lines.push(line);
+  }
+  const openSyms = ['⎛','⎜','⎝'];
+  const closeSyms = ['⎞','⎟','⎠'];
+  let html = '';
+  for(let i=0;i<N;i++){
+    html += `${openSyms[i]} ${lines[i]} ${closeSyms[i]}<br>`;
+  }
+  return html;
+}
+
+function markCorrect(opId, earnedPts) {
+  if(masteredEver[opId]) return;
+  masteredEver[opId] = true;
+  attemptedThisInstance[opId] = true;
+  score += earnedPts;
+  aciertos++;
+  updateScoresUI();
+  updateProgressDots();
+
+  const fbDiv = document.getElementById(`fb-${opId}`);
+  const statusSpan = document.getElementById(`status-${opId}`);
+  if(statusSpan) {
+    statusSpan.innerHTML = '✓ superado';
+    statusSpan.className = 'status-badge done';
+  }
+  if(fbDiv) {
+    fbDiv.className = 'feedback ok';
+    fbDiv.innerHTML = `✅ <strong>Correcto</strong> +${earnedPts} pts. Este tipo de operación queda superado para el resto de la sesión.`;
+  }
+  lockCard(opId);
+  setTimeout(() => renderFullFicha(), 900);
+}
+
+function markWrong(opId, correctMat, userMat) {
+  if(masteredEver[opId] || attemptedThisInstance[opId]) return;
+  attemptedThisInstance[opId] = true;
+  fallos++;
+  // Este tipo de apartado revela el resultado numérico exacto en el feedback de fallo,
+  // así que queda cerrado en 0 puntos para este intento (ver lockCard). No se aplica
+  // ninguna deducción adicional sobre el score global: los puntos ya ganados en OTROS
+  // tipos no deben verse afectados por un fallo en este.
+  updateScoresUI();
+  const fbDiv = document.getElementById(`fb-${opId}`);
+  const statusSpan = document.getElementById(`status-${opId}`);
+  const opDef = OPERATIONS.find(o=>o.id===opId);
+  if(statusSpan) {
+    statusSpan.innerHTML = '✗ bloqueada';
+    statusSpan.className = 'status-badge blocked';
+  }
+  if(fbDiv) {
+    fbDiv.className = 'feedback err';
+    fbDiv.innerHTML = `❌ <strong>Incorrecto — este apartado queda en 0 pts para este intento</strong>
+      <span class="celdas">${cellFeedbackList(opId, userMat, correctMat)}</span>
+      <span class="motivo">💡 ${opDef.motivo}</span>
+      <span class="solucion">🔍 Solución correcta:</span>
+      <pre>${matrixToPre(correctMat)}</pre>
+      <div style="margin-top:8px;font-size:.8rem">Pulsa "🔄 Nueva ficha" para obtener otra instancia de este tipo de operación.</div>`;
+  }
+  lockCard(opId);
+}
+
+function lockCard(opId) {
+  for(let i=0;i<N;i++){
+    for(let j=0;j<N;j++){
+      const el = document.getElementById(`${opId}_${i}${j}`);
+      if(el) el.disabled = true;
+    }
+  }
+  const btn = document.getElementById(`chk-${opId}`);
+  if(btn) btn.disabled = true;
+}
+
+function checkOperation(opId) {
+  if(masteredEver[opId]) return;
+  if(attemptedThisInstance[opId]) return;
+  const userMat = readAnswer(opId);
+  if(userMat === null) {
+    const fb = document.getElementById(`fb-${opId}`);
+    if(fb) { fb.className = 'feedback err'; fb.innerHTML = `⚠️ Completa los ${N*N} valores numéricos de la matriz.`; }
+    return;
+  }
+  const correctMat = operationResults[opId];
+  if(matricesEqual(userMat, correctMat)) {
+    markCorrect(opId, OPERATIONS.find(o=>o.id===opId).pts);
+  } else {
+    markWrong(opId, correctMat, userMat);
+  }
+}
+
+function checkAll() {
+  OPERATIONS.forEach(op => {
+    if(!masteredEver[op.id] && !attemptedThisInstance[op.id]) checkOperation(op.id);
+  });
+  const allMastered = OPERATIONS.every(op => masteredEver[op.id]);
+  const globalDiv = document.getElementById('global-feedback');
+  if(allMastered) {
+    globalDiv.className = 'feedback ok';
+    globalDiv.innerHTML = '🎉 ¡Has superado los 6 tipos de operación! Pulsa "Finalizar y Calificar" para registrar tu nota.';
+  } else {
+    globalDiv.className = 'feedback err';
+    globalDiv.innerHTML = '📌 Aún quedan tipos de operación por superar.';
+  }
+}
+
+function newExercise() {
+  currentA = generateMatrix();
+  currentB = generateMatrix();
+  const At = transpose(currentA);
+  const Bt = transpose(currentB);
+  operationResults = {
+    sum: addMatrices(currentA, currentB),
+    diff: subMatrices(currentA, currentB),
+    twoA: twoAMinus3I(currentA),
+    product: mulMatrices(currentA, currentB),
+    productBA: mulMatrices(currentB, currentA),
+    productATBT: mulMatrices(At, Bt)
+  };
+  OPERATIONS.forEach(op => { attemptedThisInstance[op.id] = false; });
+  renderFullFicha();
+  const gf = document.getElementById('global-feedback');
+  gf.className = 'feedback'; gf.innerHTML = '';
+}
+
+function renderFullFicha() {
+  const matricesHtml = renderMatrixParentesis(currentA, 'Matriz A =') + renderMatrixParentesis(currentB, 'Matriz B =');
+  let opsHtml = `<div class="operations-grid">`;
+  OPERATIONS.forEach(op => {
+    const isMastered = masteredEver[op.id];
+    const cardClass = isMastered ? 'op-card mastered' : 'op-card';
+    const statusClass = isMastered ? 'status-badge done' : 'status-badge';
+    const statusText = isMastered ? '✓ superado' : '◌ pendiente';
+    if(isMastered) {
+      opsHtml += `
+        <div class="${cardClass}">
+          <div class="op-title"><span class="op-name">${op.name}</span><span class="${statusClass}" id="status-${op.id}">${statusText}</span></div>
+          <p style="font-size:.85rem;color:var(--color-texto-suave)">Ya superaste este tipo de operación. No hace falta repetirlo.</p>
+        </div>`;
+    } else {
+      opsHtml += `
+        <div class="${cardClass}">
+          <div class="op-title"><span class="op-name">${op.name}</span><span class="${statusClass}" id="status-${op.id}">${statusText}</span></div>
+          ${renderInputs(op.id, false)}
+          <button class="btn-check-individual" id="chk-${op.id}" onclick="checkOperation('${op.id}')">Corregir</button>
+          <div class="feedback" id="fb-${op.id}" aria-live="polite"></div>
+        </div>`;
+    }
+  });
+  opsHtml += `</div><div class="feedback" id="global-feedback" aria-live="polite"></div>`;
+  document.getElementById('ex').innerHTML = `
+    <div class="card">
+      <h2>📐 Ejercicio <span id="exercise-counter">${OPERATIONS.filter(o=>masteredEver[o.id]).length}</span>/6
+        <span class="card-tag">matrices 3×3 aleatorias</span>
+      </h2>
+      <div class="matrix-section">${matricesHtml}</div>
+      ${opsHtml}
+    </div>
+  `;
+  updateProgressDots();
+  OPERATIONS.forEach(op => {
+    if(masteredEver[op.id]) return;
+    for(let i=0;i<N;i++){
+      for(let j=0;j<N;j++){
+        const el = document.getElementById(`${op.id}_${i}${j}`);
+        if(el) {
+          el.addEventListener('keydown', (e) => {
+            if(e.key === 'Enter') { e.preventDefault(); checkOperation(op.id); }
+          });
+        }
+      }
+    }
+  });
+}
+
+function formatElapsed(ms) {
+  const totalMinutesCeil = Math.ceil(ms / 60000);
+  const h = Math.floor(totalMinutesCeil / 60);
+  const m = totalMinutesCeil % 60;
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+}
+
+function showConfirmModal({icon = '⚠️', title, message, buttons}) {
+  document.getElementById('confirm-icon').textContent = icon;
+  document.getElementById('confirm-title').textContent = title;
+  document.getElementById('confirm-message').innerHTML = message;
+  const container = document.getElementById('confirm-buttons');
+  container.innerHTML = '';
+  buttons.forEach(b => {
+    const btn = document.createElement('button');
+    btn.className = 'btn ' + (b.primary ? 'btn-primary' : 'btn-secondary');
+    btn.textContent = b.label;
+    btn.onclick = () => {
+      document.getElementById('confirm-overlay').style.display = 'none';
+      if (b.onClick) b.onClick();
+    };
+    container.appendChild(btn);
+  });
+  document.getElementById('confirm-overlay').style.display = 'flex';
+}
+
+function finishAndGrade() {
+  const studentName = document.getElementById('name-field').value.trim();
+  if(!studentName) {
+    showConfirmModal({
+      icon: '✏️',
+      title: 'Falta tu nombre',
+      message: 'Escribe tu nombre y apellidos en la barra superior antes de finalizar y calificar.',
+      buttons: [{ label: 'Entendido', primary: true, onClick: () => document.getElementById('name-field').focus() }]
+    });
+    return;
+  }
+  const resolvedCount = OPERATIONS.filter(o => masteredEver[o.id]).length;
+  if (resolvedCount < OPERATIONS.length) {
+    const missing = OPERATIONS.filter(o => !masteredEver[o.id]).map(o => o.name).join(', ');
+    const provisionalNota = Math.min(10, Math.max(0, (score / MAX_PTS) * 10)).toFixed(1);
+    showConfirmModal({
+      icon: '📌',
+      title: 'Todavía quedan tipos sin superar',
+      message: `Te faltan por superar: <strong>${missing}</strong> (${resolvedCount}/${OPERATIONS.length} completados).<br><br>Si finalizas ahora, tu nota sería <strong>${provisionalNota} / 10</strong>.`,
+      buttons: [
+        { label: 'Seguir practicando', primary: false },
+        { label: 'Finalizar igualmente', primary: true, onClick: () => actuallyFinish() }
+      ]
+    });
+    return;
+  }
+  actuallyFinish();
+}
+
+function actuallyFinish() {
+  const studentName = document.getElementById('name-field').value.trim();
+  const resolvedCount = OPERATIONS.filter(o => masteredEver[o.id]).length;
+  const finalScore = score;
+  const maxPossible = MAX_PTS;
+  let nota = (finalScore / maxPossible) * 10;
+  nota = Math.min(10, Math.max(0, nota)).toFixed(1);
+  const notaNum = parseFloat(nota);
+
+  const now = new Date();
+  const fecha = now.toLocaleDateString('es-ES');
+  const hora = now.toLocaleTimeString('es-ES');
+  const tiempo = formatElapsed(Date.now() - startTime);
+
+  let bgColor, textColor;
+  if (notaNum === 10) { bgColor = '#1a7a1a'; textColor = 'white'; }
+  else if (notaNum >= 9) { bgColor = '#6dbf6d'; textColor = 'white'; }
+  else if (notaNum >= 8) { bgColor = '#1a4f8a'; textColor = 'white'; }
+  else if (notaNum >= 7) { bgColor = '#5b9bd5'; textColor = 'white'; }
+  else if (notaNum >= 6) { bgColor = '#c05c00'; textColor = 'white'; }
+  else if (notaNum >= 5) { bgColor = '#f5a623'; textColor = 'black'; }
+  else { bgColor = '#c0392b'; textColor = 'white'; }
+
+  const modalBox = document.getElementById('modal-box');
+  modalBox.style.backgroundColor = bgColor;
+  modalBox.style.color = textColor;
+  document.getElementById('modal-close').style.color = textColor;
+  document.getElementById('modal-btn').style.backgroundColor = 'rgba(255,255,255,0.2)';
+  document.getElementById('modal-btn').style.color = textColor;
+  document.getElementById('modal-btn').style.border = `1.5px solid ${textColor}`;
+
+  document.getElementById('modal-title').innerHTML = `🎓 ${escapeHtml(studentName)}`;
+  document.getElementById('modal-nota').innerHTML = `${nota} / 10`;
+  document.getElementById('modal-data').innerHTML = `
+    <div><strong>📋 Ficha:</strong> Operaciones con Matrices 3×3</div>
+    <div><strong>📅 Fecha:</strong> ${fecha}</div>
+    <div><strong>⏰ Hora:</strong> ${hora}</div>
+    <div><strong>⏱️ Tiempo transcurrido:</strong> ${tiempo}</div>
+    <div><strong>✅ Aciertos:</strong> ${aciertos} &nbsp;|&nbsp; <strong>❌ Fallos:</strong> ${fallos}</div>
+    <div><strong>🎯 Puntuación:</strong> ${Math.round(finalScore*10)/10} / ${maxPossible}</div>
+    <div><strong>📊 Tipos de operación superados:</strong> ${resolvedCount} / 6</div>
+  `;
+  document.getElementById('modal-overlay').style.display = 'flex';
+}
+
+function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
+function escapeHtml(str) { return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
+
+document.getElementById('btn-check').onclick = () => checkAll();
+document.getElementById('btn-new').onclick = () => newExercise();
+document.getElementById('btn-finish').onclick = () => finishAndGrade();
+
+newExercise();
+</script>
+</body>
+</html>
