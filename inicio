@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Martamates Interactivo</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1a2744;
+    --navy-mid: #243358;
+    --gold: #b8922a;
+    --gold-light: #d4aa4a;
+    --cream: #f7f4ee;
+    --cream-dark: #ede8de;
+    --text: #2c2c2c;
+    --text-light: #5a5550;
+    --rule: rgba(184,146,42,0.25);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Source Serif 4', Georgia, serif;
+    background-color: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  header {
+    background-color: var(--navy);
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(184,146,42,0.06) 39px, rgba(184,146,42,0.06) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(184,146,42,0.06) 39px, rgba(184,146,42,0.06) 40px);
+    pointer-events: none;
+  }
+  .header-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 52px 40px 48px;
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1fr 240px;
+    gap: 32px;
+    align-items: center;
+  }
+  .header-text .rule {
+    width: 52px; height: 3px;
+    background: var(--gold);
+    margin-bottom: 20px;
+  }
+  h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(2.2rem, 5vw, 3.4rem);
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.12;
+    margin-bottom: 14px;
+  }
+  .site-sub {
+    font-size: 1rem;
+    font-weight: 300;
+    font-style: italic;
+    color: rgba(255,255,255,0.6);
+    letter-spacing: 0.03em;
+    margin-bottom: 24px;
+  }
+  .badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 28px; }
+  .badge {
+    padding: 3px 11px;
+    border: 1px solid rgba(184,146,42,0.45);
+    color: var(--gold-light);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-family: 'Source Serif 4', serif;
+  }
+
+  .intro-strip {
+    background: var(--cream-dark);
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+  .intro-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 40px 40px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: start;
+  }
+  .intro-block h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--navy);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .intro-block p {
+    font-size: 0.95rem;
+    line-height: 1.75;
+    color: var(--text-light);
+    font-weight: 300;
+  }
+
+  .steps-section {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 52px 40px 56px;
+  }
+  .sec-head {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.45rem;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+  .sec-rule { width: 38px; height: 2px; background: var(--gold); margin-bottom: 30px; }
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    border: 1px solid var(--rule);
+  }
+  .step {
+    padding: 28px 22px;
+    border-right: 1px solid var(--rule);
+  }
+  .step:last-child { border-right: none; }
+  .step-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.6rem;
+    font-weight: 700;
+    color: var(--gold);
+    opacity: 0.28;
+    line-height: 1;
+    margin-bottom: 10px;
+  }
+  .step h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 8px;
+    letter-spacing: 0.02em;
+  }
+  .step p {
+    font-size: 0.85rem;
+    line-height: 1.65;
+    color: var(--text-light);
+    font-weight: 300;
+  }
+
+  .scoring-band {
+    background: var(--navy);
+    padding: 32px 40px;
+  }
+  .scoring-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    display: flex;
+    gap: 28px;
+    align-items: center;
+  }
+  .scoring-icon {
+    flex-shrink: 0;
+    width: 48px; height: 48px;
+    border: 1.5px solid rgba(184,146,42,0.45);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .scoring-text p {
+    font-size: 0.92rem;
+    line-height: 1.72;
+    color: rgba(255,255,255,0.6);
+    font-weight: 300;
+  }
+  .scoring-text strong {
+    color: var(--gold-light);
+    font-weight: 600;
+    font-style: normal;
+  }
+
+  footer {
+    background: #12193a;
+    padding: 36px 40px;
+    text-align: center;
+  }
+  .credits-box {
+    max-width: 620px;
+    margin: 0 auto;
+    border: 1px solid rgba(184,146,42,0.2);
+    padding: 24px 32px;
+  }
+  .gold-rule { width: 32px; height: 2px; background: var(--gold); margin: 0 auto 16px; }
+  footer p {
+    font-size: 0.85rem;
+    line-height: 1.75;
+    color: rgba(255,255,255,0.45);
+    font-style: italic;
+  }
+  footer strong { color: rgba(255,255,255,0.7); font-style: normal; font-weight: 600; }
+
+  /* ── QUOTE BLOCK ── */
+  .quote-band {
+    background: var(--cream);
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    padding: 52px 40px;
+  }
+  .quote-inner {
+    max-width: 720px;
+    margin: 0 auto;
+    position: relative;
+    padding: 0 32px 48px;
+  }
+
+  blockquote {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(1.25rem, 2.5vw, 1.65rem);
+    font-weight: 400;
+    font-style: italic;
+    color: var(--navy);
+    line-height: 1.55;
+    margin-bottom: 20px;
+  }
+  .quote-inner::before {
+    content: '\201C';
+    position: absolute;
+    left: -8px;
+    top: -28px;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 7rem;
+    line-height: 1;
+    color: var(--gold);
+    opacity: 0.18;
+    pointer-events: none;
+  }
+
+  .quote-sub {
+    font-size: 0.85rem;
+    font-weight: 300;
+    color: var(--text-light);
+    letter-spacing: 0.04em;
+    padding-left: 2px;
+    border-left: 2px solid var(--gold);
+    padding-left: 12px;
+    font-style: normal;
+  }
+
+  @media (max-width: 680px) {
+    .header-inner { grid-template-columns: 1fr; }
+    .header-illo { display: none; }
+    .intro-inner { grid-template-columns: 1fr; gap: 28px; }
+    .steps-grid { grid-template-columns: 1fr 1fr; }
+    .step { border-right: 1px solid var(--rule); }
+    .step:nth-child(even) { border-right: none; }
+    .step:nth-child(3), .step:nth-child(4) { border-top: 1px solid var(--rule); }
+    .scoring-inner { flex-direction: column; gap: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="header-text">
+      <div class="rule"></div>
+      <h1>Martamates<br>Interactivo</h1>
+      <p class="site-sub">Fichas de práctica con corrección automática<br>y retroalimentación inmediata</p>
+      <div class="badges">
+        <span class="badge">ESO</span>
+        <span class="badge">1.º Bachillerato</span>
+        <span class="badge">2.º Bachillerato</span>
+        <span class="badge">Matemáticas</span>
+      </div>
+    </div>
+
+    <div class="header-illo">
+      <svg viewBox="0 0 220 290" xmlns="http://www.w3.org/2000/svg" width="220" height="290">
+        <circle cx="110" cy="148" r="100" fill="none" stroke="rgba(184,146,42,0.10)" stroke-width="1"/>
+        <circle cx="110" cy="148" r="76"  fill="none" stroke="rgba(184,146,42,0.08)" stroke-width="1"/>
+        <circle cx="110" cy="148" r="52"  fill="none" stroke="rgba(184,146,42,0.06)" stroke-width="1"/>
+        <line x1="20" y1="210" x2="200" y2="210" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+        <line x1="110" y1="88" x2="110" y2="218" stroke="rgba(255,255,255,0.12)" stroke-width="1" stroke-dasharray="4,3"/>
+        <path d="M 22 210 Q 48 210 62 178 Q 76 148 92 126 Q 101 112 110 108 Q 119 112 128 126 Q 144 148 158 178 Q 172 210 198 210 L 198 218 L 22 218 Z"
+              fill="rgba(184,146,42,0.07)"/>
+        <path d="M 22 210 Q 48 210 62 178 Q 76 148 92 126 Q 101 112 110 108 Q 119 112 128 126 Q 144 148 158 178 Q 172 210 198 210"
+              fill="none" stroke="#b8922a" stroke-width="1.8" stroke-linecap="round"/>
+        <text x="110" y="232" text-anchor="middle" fill="rgba(184,146,42,0.65)" font-family="Georgia,serif" font-style="italic" font-size="13">μ</text>
+        <line x1="76" y1="207" x2="76" y2="213" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+        <line x1="144" y1="207" x2="144" y2="213" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+        <text x="76"  y="228" text-anchor="middle" fill="rgba(255,255,255,0.2)" font-family="Georgia,serif" font-style="italic" font-size="10">−σ</text>
+        <text x="144" y="228" text-anchor="middle" fill="rgba(255,255,255,0.2)" font-family="Georgia,serif" font-style="italic" font-size="10">+σ</text>
+        <rect x="12" y="18" width="92" height="40" rx="2" fill="rgba(255,255,255,0.04)" stroke="rgba(184,146,42,0.22)" stroke-width="1"/>
+        <text x="22" y="35" fill="rgba(184,146,42,0.6)" font-family="Georgia,serif" font-style="italic" font-size="12">P(A∩B) =</text>
+        <text x="22" y="51" fill="rgba(255,255,255,0.22)" font-family="Georgia,serif" font-style="italic" font-size="11">P(A) · P(B|A)</text>
+        <rect x="116" y="18" width="92" height="40" rx="2" fill="rgba(255,255,255,0.04)" stroke="rgba(184,146,42,0.22)" stroke-width="1"/>
+        <text x="126" y="35" fill="rgba(184,146,42,0.6)" font-family="Georgia,serif" font-style="italic" font-size="12">x̄ = Σfᵢxᵢ / n</text>
+        <text x="126" y="51" fill="rgba(255,255,255,0.22)" font-family="Georgia,serif" font-style="italic" font-size="11">σ² = Σfᵢxᵢ² / n − x̄²</text>
+        <rect x="50"  y="248" width="11" height="24" rx="1" fill="rgba(184,146,42,0.13)" stroke="rgba(184,146,42,0.2)"  stroke-width="0.5"/>
+        <rect x="66"  y="240" width="11" height="32" rx="1" fill="rgba(184,146,42,0.19)" stroke="rgba(184,146,42,0.26)" stroke-width="0.5"/>
+        <rect x="82"  y="234" width="11" height="38" rx="1" fill="rgba(184,146,42,0.27)" stroke="rgba(184,146,42,0.32)" stroke-width="0.5"/>
+        <rect x="98"  y="238" width="11" height="34" rx="1" fill="rgba(184,146,42,0.22)" stroke="rgba(184,146,42,0.28)" stroke-width="0.5"/>
+        <rect x="114" y="243" width="11" height="29" rx="1" fill="rgba(184,146,42,0.17)" stroke="rgba(184,146,42,0.23)" stroke-width="0.5"/>
+        <rect x="130" y="249" width="11" height="23" rx="1" fill="rgba(184,146,42,0.12)" stroke="rgba(184,146,42,0.18)" stroke-width="0.5"/>
+        <rect x="146" y="254" width="11" height="18" rx="1" fill="rgba(184,146,42,0.09)" stroke="rgba(184,146,42,0.15)" stroke-width="0.5"/>
+        <line x1="42" y1="272" x2="166" y2="272" stroke="rgba(184,146,42,0.18)" stroke-width="0.5"/>
+        <circle cx="42"  cy="165" r="2.2" fill="rgba(184,146,42,0.38)"/>
+        <circle cx="60"  cy="152" r="1.8" fill="rgba(184,146,42,0.3)"/>
+        <circle cx="78"  cy="140" r="2.8" fill="rgba(184,146,42,0.42)"/>
+        <circle cx="96"  cy="131" r="1.8" fill="rgba(184,146,42,0.32)"/>
+        <circle cx="124" cy="134" r="2.2" fill="rgba(184,146,42,0.38)"/>
+        <circle cx="142" cy="143" r="1.8" fill="rgba(184,146,42,0.3)"/>
+        <circle cx="160" cy="155" r="2.6" fill="rgba(184,146,42,0.4)"/>
+        <circle cx="178" cy="168" r="1.8" fill="rgba(184,146,42,0.28)"/>
+      </svg>
+    </div>
+  </div>
+</header>
+
+<div class="intro-strip">
+  <div class="intro-inner">
+    <div class="intro-block">
+      <h2>Sobre este recurso</h2>
+      <p>Estas fichas interactivas han sido diseñadas para que el alumnado pueda practicar matemáticas de forma autónoma, con ejercicios de generación aleatoria, corrección inmediata y explicación detallada de cada error. Cada ficha registra los aciertos, los fallos y la nota final.</p>
+    </div>
+    <div class="intro-block">
+      <h2>Sistema de puntuación</h2>
+      <p>Cada acierto suma puntos y cada fallo resta. Para alcanzar la puntuación máxima es necesario completar con éxito todos los tipos de ejercicios de la ficha. Al conseguirlo, la ficha se ilumina en verde y muestra un certificado con tu nombre, fecha, hora y nota.</p>
+    </div>
+  </div>
+</div>
+
+<section class="steps-section">
+  <h2 class="sec-head">Cómo usar las fichas</h2>
+  <div class="sec-rule"></div>
+  <div class="steps-grid">
+    <div class="step">
+      <div class="step-num">01</div>
+      <h3>Escribe tu nombre</h3>
+      <p>Al abrir la ficha introduce tu nombre completo. Aparecerá en el resumen final.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <h3>Resuelve el ejercicio</h3>
+      <p>Lee el enunciado con atención e introduce tu respuesta en el campo indicado.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <h3>Revisa el resultado</h3>
+      <p>Si fallas, recibirás la explicación del error y la solución correcta paso a paso.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">04</div>
+      <h3>Sigue practicando</h3>
+      <p>Pulsa «hacer otro ejercicio» para continuar con el mismo tipo y nuevos datos.</p>
+    </div>
+  </div>
+</section>
+
+<div class="quote-band">
+  <div class="quote-inner">
+    <blockquote>
+      Equivocarse no es fracasar: es el primer paso de todo aprendizaje real. Cada error que cometes en estas fichas es una oportunidad de entender algo que antes no entendías.
+    </blockquote>
+  </div>
+  <p class="quote-sub" style="max-width:720px; margin: 10px auto 0; padding: 0 32px;">Aquí los errores se explican. Vuelve a intentarlo cuantas veces necesites.</p>
+</div>
+
+<div class="scoring-band">
+  <div class="scoring-inner">
+    <div class="scoring-icon">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
+        <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"
+                 stroke="#b8922a" stroke-width="1.5" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="scoring-text">
+      <p>Cuando alcances la <strong>puntuación máxima</strong>, la ficha se pondrá en verde y aparecerá un recuadro con tu nombre, la fecha, la hora, el número de aciertos, el número de fallos y la nota final — listo para captura de pantalla.</p>
+    </div>
+  </div>
+</div>
+
+
+<footer>
+  <div class="credits-box">
+    <div class="gold-rule"></div>
+    <p>
+      <strong>Material elaborado por Marta L. Letona S.</strong><br>
+      Basado en el trabajo de <strong>Javier Cayetano</strong><br><br>
+      Recurso de libre uso para fines educativos no comerciales.
+    </p>
+  </div>
+<p xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/">
+  <span property="dct:title">Fichas interactivas de matemáticas</span> by 
+  <span property="cc:attributionName">Marta López de Letona</span> is licensed under 
+  <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;">
+    CC BY-NC-SA 4.0
+    <img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" alt="">
+    <img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg" alt="">
+    <img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/nc.svg" alt="">
+    <img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/sa.svg" alt="">
+  </a>
+</p>
+</footer>
+
+</body>
+</html>
