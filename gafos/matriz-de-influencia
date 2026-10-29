@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GRAFOS · Matriz de Influencia · Aprendizaje guiado</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap');
+:root{
+  --cream:#faf6ef;--cream2:#f3ece0;--cream3:#e8dece;
+  --brown:#6b4c2a;--brown-light:#8b6340;--brown-dark:#3e2a14;
+  --gold:#b8860b;--gold-light:#d4a843;
+  --green:#3a6b4a;--green-light:#eaf3ec;
+  --red:#8b2020;--red-light:#fdf0f0;
+  --blue:#1e3a5f;--blue-light:#eaf0f8;
+  --text:#2c1f0e;--text-muted:#8a7560;
+  --border:#d6c8b0;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Lato',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+body.success-mode-full{background:#1a7a1a !important;}
+#topbar{background:var(--brown-dark);border-bottom:3px solid var(--gold);padding:10px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.topbar-left{flex:1;min-width:160px}
+.topbar-credit{font-size:.65rem;color:var(--gold-light);letter-spacing:1px;text-transform:uppercase;display:block}
+.topbar-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:#faf6ef}
+#name-field{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3);border-radius:8px;color:#faf6ef;padding:7px 14px;font-size:.9rem;width:220px}
+#name-field::placeholder{color:rgba(255,255,255,.45)}
+#scorebar{background:var(--cream2);border-bottom:1px solid var(--border);padding:7px 20px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px}
+.score-item{text-align:center}
+.score-label{font-size:.6rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.2px;font-weight:700}
+.score-val{font-size:1.1rem;font-weight:700}
+#score-pts{color:var(--gold)}#score-ok{color:var(--green)}#score-fail{color:var(--red)}
+main{flex:1;max-width:1000px;width:100%;margin:0 auto;padding:20px 16px 90px}
+.card{background:#fff;border-radius:12px;border:1px solid var(--border);padding:22px;margin-bottom:16px;box-shadow:0 2px 12px rgba(0,0,0,.08)}
+.card h2{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--brown-dark);margin-bottom:10px}
+.enunciado{background:var(--blue-light);padding:14px 18px;border-radius:12px;border-left:5px solid var(--blue);margin-bottom:20px;font-weight:500;}
+#cy{width:100%;height:350px;border-radius:14px;background:#fff;border:1px solid var(--border);margin:15px 0}
+.section{border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-top:18px;background:var(--cream);transition:all 0.1s}
+.section.locked{opacity:.55;pointer-events:none}
+.section.done-ok{border-color:var(--green);background:var(--green-light)}
+.section.done-err{border-color:var(--red);background:var(--red-light)}
+.section-title{font-weight:700;color:var(--brown-dark);font-size:.95rem;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.fb-inline{font-size:.85rem;margin-top:10px;padding:10px 12px;border-radius:9px;display:none;line-height:1.5}
+.fb-inline.ok{background:var(--green-light);color:var(--green);border-left:3px solid var(--green);display:block}
+.fb-inline.err{background:var(--red-light);color:var(--red);border-left:3px solid var(--red);display:block}
+.fb-inline.hint{background:var(--blue-light);color:var(--blue);border-left:3px solid var(--blue);display:block}
+.btn{padding:8px 20px;border-radius:8px;border:none;cursor:pointer;font-size:.85rem;font-weight:700;font-family:'Lato',sans-serif;margin-right:8px;margin-top:6px}
+.btn-check{background:var(--gold);color:#fff}.btn-check:hover{background:#9a7209}
+.btn-reset{background:var(--cream2);color:var(--brown-light);border:1px solid var(--border)}.btn-reset:hover{background:var(--cream3)}
+#actionbar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:2px solid var(--border);padding:12px 20px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;z-index:100}
+.btn-finish{background:var(--brown);color:var(--cream)}.btn-finish:hover{background:var(--brown-dark)}
+table.matriz-vacia{border-collapse:collapse;margin:12px 0;background:#fff9f0;border-radius:10px;overflow:hidden;width:auto}
+table.matriz-vacia td, table.matriz-vacia th{padding:10px 12px;border:1px solid var(--border);text-align:center;font-family:'Courier New', monospace;font-weight:500}
+table.matriz-vacia th{background:var(--cream2);font-weight:700;font-size:1rem}
+table.matriz-vacia td{background:white}
+.input-m{width:60px;padding:8px;text-align:center;border:2px solid var(--border);border-radius:8px;background:white;font-weight:600;font-size:0.9rem}
+.input-m:focus{outline:none;border-color:var(--gold)}
+.input-m.ok{border-color:var(--green);background:var(--green-light);pointer-events:none}
+.opciones-group{display:flex;flex-direction:column;gap:8px;margin:12px 0;background:#fef8e7;padding:12px;border-radius:12px}
+.opcion-radio{display:flex;align-items:center;gap:10px;cursor:pointer;font-size:0.95rem}
+.explicacion-detalle{background:#f0f2f5;padding:10px;border-radius:8px;margin-top:8px;font-size:0.85rem;border-left:3px solid var(--gold)}
+#modal-overlay, #confirm-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:998;align-items:center;justify-content:center}
+#modal-box, #confirm-box{background:white;border-radius:16px;padding:28px 32px;max-width:450px;width:90%;text-align:center}
+.confirm-buttons{display:flex;gap:12px;justify-content:center;margin-top:18px}
+.btn-confirm-yes{background:#1a7a1a;color:white;padding:10px 24px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
+.btn-confirm-no{background:#c0392b;color:white;padding:10px 24px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
+#modal-nota{font-family:'Playfair Display',serif;font-size:3rem;font-weight:700;margin:8px 0}
+#modal-data{text-align:left;background:rgba(0,0,0,.1);border-radius:10px;padding:14px;margin-bottom:16px}
+.casilla-destacada{background:#fff1b5 !important; border:2px solid var(--gold) !important}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.tabla-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
+.cy-fallback{display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-muted);font-size:.82rem;text-align:left;padding:16px;line-height:1.5}
+@media (max-width:480px){
+  main{padding:16px 8px 90px}
+  .card{padding:14px 10px}
+  .input-m{width:34px;padding:4px 2px;font-size:.72rem}
+  table.matriz-vacia td, table.matriz-vacia th{padding:4px 5px;font-size:.78rem}
+  #topbar{padding:8px 10px}
+  #name-field{width:100%}
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.21.1/cytoscape.min.js"></script>
+</head>
+<body>
+
+<div id="confirm-overlay"><div id="confirm-box"><p>⚠️ <strong>¿Finalizar y calificar?</strong></p><p style="font-size:0.9rem;">No podrás modificar los ejercicios.</p><div class="confirm-buttons"><button class="btn-confirm-yes" onclick="proceedToFinalize()">✅ Sí</button><button class="btn-confirm-no" onclick="closeConfirm()">❌ Seguir</button></div></div></div>
+<div id="modal-overlay"><div id="modal-box"><button onclick="closeResultModal()" style="float:right;background:none;border:none;font-size:1.5rem;cursor:pointer">✕</button><div style="font-size:2rem">📊</div><h2 id="modal-title"></h2><div id="modal-nota"></div><div id="modal-data"></div><div id="modal-screenshot">📸 Captura y entrega en Classroom</div><button class="btn-reset" style="margin-top:16px" onclick="closeResultModal()">Cerrar</button></div></div>
+
+<div id="topbar"><div class="topbar-left"><span class="topbar-credit">Material elaborado por Marta L Letona S.</span><span class="topbar-title">GRAFOS · Matriz de influencia</span></div><input id="name-field" type="text" placeholder="Tu nombre y apellidos..." maxlength="60"></div>
+<div id="scorebar"><div class="score-item"><div class="score-label">Puntuación</div><div class="score-val" id="score-pts">0</div></div><div class="score-item"><div class="score-label">Máxima</div><div class="score-val">10</div></div><div class="score-item"><div class="score-label">Aciertos</div><div class="score-val" id="score-ok">0</div></div><div class="score-item"><div class="score-label">Fallos</div><div class="score-val" id="score-fail">0</div></div></div>
+<main><div id="app"></div></main>
+<div id="actionbar"><button class="btn btn-reset" onclick="resetGlobalScore()">⟳ Reiniciar</button><button class="btn btn-finish" onclick="openConfirmModal()">🏁 Finalizar</button></div>
+
+<script>
+const NODOS = ['A','B','C','D','E'];
+let currentGraphEdges = [], currentAdjMatrix = null, currentM2 = null, currentSumM_M2 = null, currentRowSums = null, correctInfluential = [];
+let secState = { mat:0, m2:0, interpretacion:0 };
+let currentExerciseCompleted = false, isFinalized = false;
+let score = 0, aciertos = 0, fallos = 0, startTime = new Date();
+let cyInstance = null;
+const appDiv = document.getElementById('app');
+
+function addPts(v){ if(!isFinalized){ score = Math.min(10, Math.max(0, score+v)); document.getElementById('score-pts').textContent = score; } }
+function addOk(){ if(!isFinalized){ aciertos++; document.getElementById('score-ok').textContent = aciertos; } }
+function addFail(){ if(!isFinalized){ fallos++; document.getElementById('score-fail').textContent = fallos; } }
+
+function generateRandomEdges() {
+  const target = Math.floor(Math.random() * 5) + 6; // 6-10
+  let edgesSet = new Set(), edgesList = [];
+  for(let a=0; a<200 && edgesList.length<target; a++){
+    let s = NODOS[Math.floor(Math.random()*5)], t = NODOS[Math.floor(Math.random()*5)];
+    if(s!==t && !edgesSet.has(s+'=>'+t)){ edgesSet.add(s+'=>'+t); edgesList.push({source:s, target:t}); }
+  }
+  if(edgesList.length<5){ let fallback=[['A','B'],['B','C'],['C','D'],['D','E'],['E','A'],['A','C']]; for(let[s,t] of fallback) if(edgesList.length<6 && !edgesSet.has(s+'=>'+t)) edgesList.push({source:s,target:t}); }
+  return edgesList;
+}
+function buildMatrix(edges){ let M=Array(5).fill().map(()=>Array(5).fill(0)); const idx={A:0,B:1,C:2,D:3,E:4}; for(let e of edges){ let i=idx[e.source], j=idx[e.target]; if(i!==undefined) M[i][j]=1; } return M; }
+function multiply(A,B){ let n=A.length, res=Array(n).fill().map(()=>Array(n).fill(0)); for(let i=0;i<n;i++) for(let j=0;j<n;j++) for(let k=0;k<n;k++) res[i][j]+=A[i][k]*B[k][j]; return res; }
+function sumMat(A,B){ let n=A.length, res=Array(n).fill().map(()=>Array(n).fill(0)); for(let i=0;i<n;i++) for(let j=0;j<n;j++) res[i][j]=A[i][j]+B[i][j]; return res; }
+
+function edgesToText(edges){
+  return edges.map(e=>`${e.source} → ${e.target}`).join(', ');
+}
+function drawGraph(edges){
+  const cyContainer = document.getElementById('cy');
+  if(typeof cytoscape === 'undefined'){
+    cyContainer.innerHTML = `<div class="cy-fallback">⚠️ No se ha podido cargar la librería del grafo (puede deberse a un bloqueo de red del centro). No te preocupes, aquí tienes las mismas relaciones de influencia en texto para poder completar la matriz:<br><br><strong>${edgesToText(edges)}</strong></div>`;
+    return;
+  }
+  try {
+  const elements = [];
+  NODOS.forEach(n => elements.push({ data: { id: n } }));
+  edges.forEach((e, idx) => {
+    elements.push({ 
+      data: { 
+        id: `e${idx}`, 
+        source: e.source, 
+        target: e.target 
+      } 
+    });
+  });
+  if(cyInstance) cyInstance.destroy();
+  cyInstance = cytoscape({
+    container: document.getElementById('cy'),
+    elements: elements,
+    style: [
+      { 
+        selector: 'node', 
+        style: { 
+          'background-color': '#2c6e9e', 
+          'label': 'data(id)', 
+          'color': '#ffffff', 
+          'text-valign': 'center', 
+          'text-halign': 'center', 
+          'font-weight': 'bold',
+          'font-size': '18px',
+          'width': '48px',
+          'height': '48px',
+          'border-width': 2,
+          'border-color': '#ffffff'
+        } 
+      },
+      { 
+        selector: 'edge', 
+        style: { 
+          'width': 3, 
+          'line-color': '#b8860b', 
+          'target-arrow-color': '#b8860b', 
+          'target-arrow-shape': 'triangle',
+          'curve-style': 'bezier',
+          'arrow-scale': 1.3,
+          'opacity': 0.95
+        } 
+      }
+    ],
+    layout: { name: 'circle', padding: 35 }
+  });
+  } catch(e){
+    console.error('Error al dibujar el grafo:', e);
+    cyContainer.innerHTML = `<div class="cy-fallback">⚠️ Ha ocurrido un error al dibujar el grafo. Aquí tienes las relaciones de influencia en texto:<br><br><strong>${edgesToText(edges)}</strong></div>`;
+  }
+}
+
+function generarNuevoEjercicio(){
+  if(isFinalized) return;
+  currentExerciseCompleted = false;
+  secState = { mat:0, m2:0, interpretacion:0 };
+  let rowSums, attempts = 0;
+  do {
+    currentGraphEdges = generateRandomEdges();
+    currentAdjMatrix = buildMatrix(currentGraphEdges);
+    currentM2 = multiply(currentAdjMatrix, currentAdjMatrix);
+    currentSumM_M2 = sumMat(currentAdjMatrix, currentM2);
+    rowSums = currentSumM_M2.map(r=>r.reduce((a,b)=>a+b,0));
+    let maxV = Math.max(...rowSums);
+    correctInfluential = rowSums.reduce((acc,v,i)=> (v===maxV ? [...acc, NODOS[i]] : acc), []);
+    attempts++;
+  } while (correctInfluential.length >= 4 && attempts < 30); // evita el empate trivial "todos igual de influyentes"
+  currentRowSums = rowSums;
+  renderVista();
+  drawGraph(currentGraphEdges);
+}
+
+function renderVista(){
+  let html = `<div class="card"><h2>📈 Influencia en un grupo social</h2><div class="enunciado">📢 El siguiente grafo muestra la influencia DIRECTA entre los miembros (A → B significa que A influye directamente sobre B). Las flechas indican el sentido de la influencia.</div><div id="cy"></div>
+  <div class="section" id="sec-mat"><div class="section-title">✏️ Apartado A — Matriz de influencia DIRECTA (M)</div><div class="tabla-wrap" id="matrizA"></div><div id="fb-mat" class="fb-inline" aria-live="polite"></div><button class="btn btn-check" onclick="verificarMatrizM()">✓ Verificar M</button></div>
+  <div class="section locked" id="sec-m2"><div class="section-title">📐 Apartado B — Matriz de influencia a través de UNA PERSONA INTERMEDIA (M²)</div><p style="font-size:0.85rem"><strong>📌 M² (influencia indirecta):</strong> Cuenta cuántos caminos de EXACTAMENTE 2 pasos existen (es decir, A influye sobre C porque A influye sobre B y B influye sobre C). Aquí sólo calcularás una casilla para entender el método. El resto de valores ya están dados para que no te canses haciendo cuentas repetitivas.</p><div class="tabla-wrap" id="matrizM2Preview"></div><div id="fb-m2" class="fb-inline" aria-live="polite"></div><button class="btn btn-check" onclick="verificarM2()">✓ Verificar casilla</button>
+  <div class="interpret-box" style="margin-top:16px; background:#fef4e8; border-radius:12px; padding:12px"><label style="font-weight:700" id="lbl-interpret">💬 Interpretación: Sumando la influencia DIRECTA (M) + la influencia a través de UNA PERSONA INTERMEDIA (M²), ¿quién tiene la mayor influencia TOTAL en el grupo?</label><div id="opciones-group" role="group" aria-labelledby="lbl-interpret"></div><div id="fb-interpret" class="fb-inline" aria-live="polite"></div><button class="btn btn-check" onclick="verificarInterpretacion()">✓ Verificar interpretación</button></div></div></div>`;
+  appDiv.innerHTML = html;
+  
+  // Matriz A con cabeceras claras de filas y columnas
+  let tablaA = '<table class="matriz-vacia" style="border-collapse:collapse">';
+  tablaA += '<thead><tr><th style="background:#e8dece;">→</th>';
+  for(let col of NODOS) tablaA += `<th style="background:#e8dece; font-size:1rem;">${col}</th>`;
+  tablaA += '</tr></thead><tbody>';
+  for(let i=0;i<5;i++){
+    tablaA += `<tr><th style="background:#e8dece; font-size:1rem;">${NODOS[i]}</th>`;
+    for(let j=0;j<5;j++){
+      tablaA += `<td><label class="sr-only" for="mat_${i}_${j}">Influencia de ${NODOS[i]} sobre ${NODOS[j]}</label><input type="text" inputmode="numeric" id="mat_${i}_${j}" class="input-m" placeholder="0/1" style="width:60px" onkeydown="if(event.key==='Enter'){event.preventDefault();verificarMatrizM();}"></td>`;
+    }
+    tablaA += '</tr>';
+  }
+  tablaA += '</tbody></table>';
+  document.getElementById('matrizA').innerHTML = tablaA;
+  
+  // Matriz M²: mostrar todos los valores excepto una casilla aleatoria
+  let filaRandom, colRandom;
+  do {
+    filaRandom = Math.floor(Math.random()*5);
+    colRandom = Math.floor(Math.random()*5);
+  } while (filaRandom === colRandom); // se excluye la diagonal: "influencia de X sobre sí mismo" no se explica en la ficha
+  window.casillaM2 = {i:filaRandom, j:colRandom};
+  
+  let tablaM2 = '<table class="matriz-vacia" style="border-collapse:collapse">';
+  tablaM2 += '<thead><tr><th style="background:#e8dece;">M²</th>';
+  for(let col of NODOS) tablaM2 += `<th style="background:#e8dece; font-size:1rem;">${col}</th>`;
+  tablaM2 += '</tr></thead><tbody>';
+  for(let i=0;i<5;i++){
+    tablaM2 += `<tr><th style="background:#e8dece; font-size:1rem;">${NODOS[i]}</th>`;
+    for(let j=0;j<5;j++){
+      if(i===filaRandom && j===colRandom){
+        tablaM2 += `<td style="background:#fff1b5;"><label class="sr-only" for="m2_casilla">Valor de M² de ${NODOS[filaRandom]} sobre ${NODOS[colRandom]}</label><input type="text" inputmode="numeric" id="m2_casilla" class="input-m" placeholder="?" style="width:60px; border:2px solid #b8860b;" onkeydown="if(event.key==='Enter'){event.preventDefault();verificarM2();}"></td>`;
+      } else {
+        tablaM2 += `<td style="background:#f5f2ed; font-weight:600; text-align:center; padding:10px;">${currentM2[i][j]}</td>`;
+      }
+    }
+    tablaM2 += '</tr>';
+  }
+  tablaM2 += '</tbody></table>';
+  tablaM2 += `<p style="font-size:0.85rem; margin-top:10px; background:#fef0d8; padding:8px; border-radius:8px;">⭐ <strong>Casilla destacada en amarillo:</strong> ${NODOS[filaRandom]} → ${NODOS[colRandom]}. Corresponde a la influencia que ejerce ${NODOS[filaRandom]} sobre ${NODOS[colRandom]} a través de otra persona. Es la única que debes calcular. El resto de valores ya están dados para que aprendas el concepto sin cansarte.</p>`;
+  document.getElementById('matrizM2Preview').innerHTML = tablaM2;
+  
+  // Opciones interpretación (4 opciones)
+  let allPeople = ['A','B','C','D','E'];
+  let correctoStr = correctInfluential.join(', ');
+  let opciones = [correctoStr];
+  while(opciones.length<4){
+    let fake;
+    if(correctInfluential.length===1){
+      let others = allPeople.filter(p=>!correctInfluential.includes(p));
+      fake = others[Math.floor(Math.random()*others.length)];
+    } else {
+      fake = allPeople[Math.floor(Math.random()*5)];
+    }
+    if(!opciones.includes(fake)) opciones.push(fake);
+  }
+  opciones = opciones.sort(()=>Math.random()-0.5);
+  let optsHtml = '';
+  opciones.forEach(opt=>{ optsHtml += `<label class="opcion-radio"><input type="radio" name="interpret" value="${opt}"> <span>${opt}</span></label>`; });
+  document.getElementById('opciones-group').innerHTML = optsHtml;
+}
+
+function verificarMatrizM(){
+  if(secState.mat===1 || currentExerciseCompleted || isFinalized) return;
+  let userMat = [];
+  for(let i=0;i<5;i++){
+    let row=[];
+    for(let j=0;j<5;j++){
+      let raw = document.getElementById(`mat_${i}_${j}`).value.trim();
+      if(raw !== '0' && raw !== '1'){ document.getElementById('fb-mat').className='fb-inline err'; document.getElementById('fb-mat').innerHTML='❌ Solo se permiten valores 0 o 1 (revisa la celda, no se aceptan letras ni decimales).'; return; }
+      row.push(parseInt(raw,10));
+    }
+    userMat.push(row);
+  }
+  let ok = true;
+  for(let i=0;i<5;i++) for(let j=0;j<5;j++) if(userMat[i][j] !== currentAdjMatrix[i][j]) ok=false;
+  if(ok){
+    secState.mat=1; addPts(3); addOk();
+    document.getElementById('fb-mat').className='fb-inline ok';
+    document.getElementById('fb-mat').innerHTML='✅ Matriz de influencia DIRECTA (M) correcta. ¡Has identificado perfectamente quién influye directamente sobre quién! Ahora pasamos a la influencia a través de otra persona intermedia (M²).';
+    document.getElementById('sec-mat').classList.remove('done-err');
+    document.getElementById('sec-mat').classList.add('done-ok');
+    for(let i=0;i<5;i++) for(let j=0;j<5;j++){ let inp = document.getElementById(`mat_${i}_${j}`); if(inp){ inp.classList.add('ok'); inp.disabled=true; } }
+    document.getElementById('sec-m2').classList.remove('locked');
+  } else {
+    secState.mat=-1; addPts(-1); addFail();
+    document.getElementById('fb-mat').className='fb-inline err';
+    document.getElementById('fb-mat').innerHTML='✗ Matriz de influencia DIRECTA incorrecta. Recuerda: el grafo muestra las flechas de influencia directa. Coloca un 1 si la flecha va del nodo fila al nodo columna. Corrige las celdas que creas necesarias y vuelve a pulsar "Verificar M".';
+    document.getElementById('sec-mat').classList.add('done-err');
+  }
+}
+
+function verificarM2(){
+  if(secState.m2===1 || currentExerciseCompleted || isFinalized) return;
+  let inputVal = document.getElementById('m2_casilla');
+  if(!inputVal) return;
+  let raw = inputVal.value.trim();
+  if(!/^\d+$/.test(raw)){
+    document.getElementById('fb-m2').className='fb-inline hint';
+    document.getElementById('fb-m2').innerHTML='⚠️ Introduce un número entero (sin letras ni decimales) en la casilla destacada (amarilla). Recuerda que mide cuántos caminos de 2 pasos existen.';
+    return;
+  }
+  let respuesta = parseInt(raw,10);
+  const i = window.casillaM2.i, j = window.casillaM2.j;
+  const valorCorrecto = currentM2[i][j];
+  const esCorrecto = (respuesta === valorCorrecto);
+  
+  // Explicación detallada de cómo calcular esa posición
+  let explicacion = `<div class="explicacion-detalle"><strong>📐 Cálculo de la influencia INDIRECTA (M²)[${NODOS[i]}][${NODOS[j]}] = </strong><br>`;
+  explicacion += `Para saber cuántos caminos de EXACTAMENTE 2 pasos (influencia a través de una persona intermedia) existen de ${NODOS[i]} hacia ${NODOS[j]}, multiplicamos la fila ${NODOS[i]} de la matriz M (influencia directa) por la columna ${NODOS[j]} de M:<br>`;
+  let suma = 0;
+  let operacion = '';
+  for(let k=0;k<5;k++){
+    let a = currentAdjMatrix[i][k];
+    let b = currentAdjMatrix[k][j];
+    suma += a*b;
+    operacion += `${a}·${b}`;
+    if(k<4) operacion += ' + ';
+    else operacion += ` = ${suma}`;
+  }
+  explicacion += `Fila ${NODOS[i]} (influencia directa de ${NODOS[i]}): [${currentAdjMatrix[i].join(', ')}]<br>`;
+  explicacion += `Columna ${NODOS[j]} (influencia directa hacia ${NODOS[j]}): [${currentAdjMatrix.map(row=>row[j]).join(', ')}]<br>`;
+  explicacion += `Producto punto (suma de los productos de cada posible persona intermedia): ${operacion}<br>`;
+  explicacion += `Por lo tanto, la influencia de ${NODOS[i]} sobre ${NODOS[j]} a través de UNA persona intermedia es <strong>${suma}</strong>.`;
+  
+  if(esCorrecto){
+    secState.m2=1; addPts(4); addOk();
+    document.getElementById('fb-m2').className='fb-inline ok';
+    document.getElementById('fb-m2').innerHTML = `✅ ¡Correcto! Has calculado bien la influencia a través de otra persona.<br><br>${explicacion}<br><br>🎉 Perfecto. Ahora interpreta la influencia TOTAL (directa + a través de una intermedia).`;
+    document.getElementById('sec-m2').classList.remove('done-err');
+    document.getElementById('sec-m2').classList.add('done-ok');
+    inputVal.classList.remove('err'); inputVal.classList.add('ok'); inputVal.disabled=true;
+  } else {
+    secState.m2=-1; addPts(-1); addFail();
+    document.getElementById('fb-m2').className='fb-inline err';
+    document.getElementById('fb-m2').innerHTML = `❌ El valor introducido (${respuesta}) es incorrecto. Esa no es la cantidad de caminos de 2 pasos (influencia a través de otra persona).<br><br>${explicacion}<br><br>Revisa la multiplicación fila por columna, corrige la casilla y vuelve a pulsar "Verificar casilla".`;
+    document.getElementById('sec-m2').classList.add('done-err');
+    inputVal.classList.add('err');
+    setTimeout(()=>inputVal.classList.remove('err'),2000);
+  }
+}
+
+function verificarInterpretacion(){
+  if(secState.interpretacion===1 || currentExerciseCompleted || isFinalized) return;
+  const selected = document.querySelector('input[name="interpret"]:checked');
+  if(!selected){
+    document.getElementById('fb-interpret').className='fb-inline hint';
+    document.getElementById('fb-interpret').innerHTML='⚠️ Selecciona una opción para saber quién tiene la mayor influencia total (directa + a través de una persona intermedia).';
+    return;
+  }
+  const respuesta = selected.value;
+  const correcto = correctInfluential.join(', ');
+  const esCorrecto = (respuesta === correcto);
+  
+  // Explicación detallada del porqué
+  let explicacion = `<div class="explicacion-detalle"><strong>🔍 Análisis de influencia TOTAL (M + M²):</strong><br>`;
+  explicacion += `La influencia TOTAL que ejerce cada persona se obtiene sumando su influencia DIRECTA (matriz M) más su influencia a través de UNA PERSONA INTERMEDIA (matriz M²).<br><br>`;
+  explicacion += `<strong>Suma por fila (influencia total de cada persona):</strong><br>`;
+  for(let idx=0;idx<5;idx++){
+    let suma = currentRowSums[idx];
+    explicacion += `• ${NODOS[idx]}: ${suma}  `;
+  }
+  let maxVal = Math.max(...currentRowSums);
+  explicacion += `<br><br>La persona(s) con mayor influencia TOTAL es <strong>${correcto}</strong> porque `;
+  explicacion += (correctInfluential.length>1 ? 'tienen' : 'tiene');
+  explicacion += ` el valor más alto (${maxVal})`;
+  explicacion += `, lo que significa que ejerce${correctInfluential.length>1 ? 'n' : ''} más influencia en el grupo, considerando tanto la influencia directa como la que llega a través de otra persona intermedia.</div>`;
+  
+  if(esCorrecto){
+    secState.interpretacion=1; addPts(3); addOk();
+    document.getElementById('fb-interpret').className='fb-inline ok';
+    document.getElementById('fb-interpret').innerHTML = `✅ ¡Interpretación correcta! ${explicacion}<br><br>🎉 Ejercicio completado. Has comprendido la diferencia entre influencia directa (M), influencia a través de otra persona (M²) y la suma total. Puedes reiniciar para practicar con otro grafo.`;
+    document.getElementById('sec-m2').classList.remove('done-err');
+    document.getElementById('sec-m2').classList.add('done-ok');
+    currentExerciseCompleted = true;
+    document.querySelectorAll('input[name="interpret"]').forEach(r=>r.disabled=true);
+  } else {
+    secState.interpretacion=-1; addPts(-1); addFail();
+    document.getElementById('fb-interpret').className='fb-inline err';
+    document.getElementById('fb-interpret').innerHTML = `❌ Opción "${respuesta}" incorrecta.<br><br>${explicacion}<br><br>La respuesta correcta es <strong>${correcto}</strong>. Revisa las sumas por fila de M+M², elige otra opción y vuelve a pulsar "Verificar interpretación".`;
+    document.getElementById('sec-m2').classList.add('done-err');
+  }
+}
+
+function resetGlobalScore(){
+  if(confirm('⚠️ Reiniciar toda la puntuación y generar nuevo grafo.')){
+    score=0; aciertos=0; fallos=0; isFinalized=false; currentExerciseCompleted=false;
+    document.getElementById('score-pts').textContent='0'; document.getElementById('score-ok').textContent='0'; document.getElementById('score-fail').textContent='0';
+    document.body.classList.remove('success-mode-full');
+    startTime=new Date();
+    generarNuevoEjercicio();
+  }
+}
+function openConfirmModal(){ if(!isFinalized) document.getElementById('confirm-overlay').style.display='flex'; else alert('Ya finalizado. Reinicia para continuar.'); }
+function closeConfirm(){ document.getElementById('confirm-overlay').style.display='none'; }
+function formatElapsed(ms){
+  const totalMin = Math.max(1, Math.ceil(ms/60000));
+  const h = Math.floor(totalMin/60), m = totalMin%60;
+  return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
+}
+function proceedToFinalize(){
+  closeConfirm(); isFinalized=true; const name=document.getElementById('name-field').value.trim();
+  if(!name){ alert('Escribe tu nombre.'); isFinalized=false; return; }
+  const nota=Math.min(10,Math.max(0,score)); const now=new Date(); const fecha=now.toLocaleDateString('es-ES'); const hora=now.toLocaleTimeString('es-ES');
+  let bg, col; if(nota>=10){bg='#1a7a1a';col='white';document.body.classList.add('success-mode-full');} else if(nota>=9){bg='#6dbf6d';col='white';} else if(nota>=8){bg='#1a4f8a';col='white';} else if(nota>=7){bg='#5b9bd5';col='white';} else if(nota>=6){bg='#c05c00';col='white';} else if(nota>=5){bg='#f5a623';col='black';} else {bg='#c0392b';col='white';}
+  const box=document.getElementById('modal-box'); box.style.background=bg; box.style.color=col;
+  const tiempoTranscurrido = formatElapsed(now - startTime);
+  document.getElementById('modal-title').textContent=name; document.getElementById('modal-nota').textContent=nota.toFixed(1)+'/10';
+  document.getElementById('modal-data').innerHTML=`<div>📅 ${fecha} ${hora}</div><div>⏱️ Tiempo empleado: ${tiempoTranscurrido}</div><div>✅ Aciertos: ${aciertos} ❌ Fallos: ${fallos}</div><div>📊 Ejercicios: ${aciertos+fallos}</div>`;
+  document.getElementById('modal-overlay').style.display='flex';
+}
+function closeResultModal(){ document.getElementById('modal-overlay').style.display='none'; }
+generarNuevoEjercicio();
+</script>
+</body>
+</html>
