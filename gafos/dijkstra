@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dijkstra · Ruta más corta a casa de mis amigas</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap');
+:root{
+  --cream:#faf6ef;--cream2:#f3ece0;--cream3:#e8dece;
+  --brown:#6b4c2a;--brown-light:#8b6340;--brown-dark:#3e2a14;
+  --gold:#b8860b;--gold-light:#d4a843;
+  --green:#2e7d32;--green-light:#c8e6c9;
+  --red:#c62828;--red-light:#ffebee;
+  --blue:#1565c0;--blue-light:#bbdef5;
+  --orange:#e67e22;--orange-light:#fdebd0;
+  --text:#2c1f0e;--text-muted:#8a7560;
+  --border:#d6c8b0;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Lato',sans-serif;
+  background:var(--cream);
+  color:var(--text);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+#topbar{
+  background:var(--brown-dark);
+  border-bottom:3px solid var(--gold);
+  padding:10px 20px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap
+}
+.topbar-left{flex:1;min-width:200px}
+.topbar-credit{font-size:.65rem;color:var(--gold-light);letter-spacing:1px;text-transform:uppercase;display:block}
+.topbar-subcredit{font-size:.6rem;color:#c9a87b;display:block;margin-top:2px}
+.topbar-title{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:#faf6ef;margin-top:3px}
+#name-field{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3);border-radius:8px;color:#faf6ef;padding:7px 14px;font-size:.9rem;width:220px}
+#name-field::placeholder{color:rgba(255,255,255,.45)}
+#scorebar{
+  background:var(--cream2);
+  border-bottom:1px solid var(--border);
+  padding:7px 20px;
+  display:flex;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:6px
+}
+.score-item{text-align:center}
+.score-label{font-size:.6rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.2px;font-weight:700}
+.score-val{font-size:1.1rem;font-weight:700}
+#score-pts{color:var(--gold)}#score-ok{color:var(--green)}#score-fail{color:var(--red)}
+main{
+  flex:1;
+  max-width:900px;
+  width:100%;
+  margin:0 auto;
+  padding:20px 16px 90px
+}
+.card{
+  background:#fff;
+  border-radius:12px;
+  border:1px solid var(--border);
+  padding:22px;
+  margin-bottom:16px;
+  box-shadow:0 2px 12px rgba(0,0,0,.08)
+}
+.card h2{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--brown-dark);margin-bottom:10px}
+.enunciado{
+  background:var(--blue-light);
+  padding:14px 18px;
+  border-radius:12px;
+  border-left:5px solid var(--blue);
+  margin-bottom:20px;
+  font-weight:500;
+}
+#cy{
+  width:100%;
+  height:350px;
+  border-radius:14px;
+  background:#fefcf8;
+  border:1px solid var(--border);
+  margin:15px 0
+}
+.panel-control{
+  background:var(--cream2);
+  border-radius:12px;
+  padding:20px;
+  margin-top:20px;
+  border:1px solid var(--border);
+}
+.panel-titulo{
+  font-weight:700;
+  color:var(--brown-dark);
+  margin-bottom:12px;
+  font-size:1rem;
+}
+.tabla-dijkstra{
+  border-collapse:collapse;
+  margin:12px 0;
+  background:#fff9f0;
+  border-radius:10px;
+  overflow:hidden;
+  width:100%;
+  font-size:0.85rem
+}
+.tabla-dijkstra td,.tabla-dijkstra th{
+  padding:10px 6px;
+  border:1px solid var(--border);
+  text-align:center;
+  vertical-align:middle;
+}
+.tabla-dijkstra th{background:var(--cream2);font-weight:700}
+.input-d{
+  width:70px;
+  padding:6px;
+  text-align:center;
+  border:2px solid var(--border);
+  border-radius:8px;
+  background:white;
+  font-weight:600;
+  transition: all 0.1s ease;
+}
+.select-ant{
+  width:70px;
+  padding:6px;
+  text-align:center;
+  border:2px solid var(--border);
+  border-radius:8px;
+  background:white;
+  font-weight:600;
+  cursor:pointer;
+}
+.input-d.ok, .select-ant.ok{border-color:var(--green);background:var(--green-light);pointer-events:none}
+.input-d.error, .select-ant.error{
+  border-color:var(--red);
+  background:var(--red-light);
+  animation: shake 0.3s ease-in-out 0s 2;
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+.fila-visitada{background:#c8e6c9 !important;}
+.fila-normal{background:white;}
+.fila-seleccionable{cursor:pointer;}
+.fila-seleccionable:hover{background:#f5f0e0;}
+.fila-seleccionada{background:#fdebd0 !important;}
+.btn{
+  padding:8px 20px;
+  border-radius:8px;
+  border:none;
+  cursor:pointer;
+  font-size:.85rem;
+  font-weight:700;
+  font-family:'Lato',sans-serif;
+  margin-right:8px;
+  margin-top:6px
+}
+.btn-primary{background:var(--gold);color:#fff}.btn-primary:hover{background:#9a7209}
+.btn-reset{background:var(--cream2);color:var(--brown-light);border:1px solid var(--border)}.btn-reset:hover{background:var(--cream3)}
+.btn-aux{background:var(--brown);color:white;border:none;padding:4px 12px;border-radius:20px;font-size:0.75rem;cursor:pointer;margin-right:8px}
+.btn-aux:hover{background:var(--brown-dark)}
+#actionbar{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  background:#fff;
+  border-top:2px solid var(--border);
+  padding:12px 20px;
+  display:flex;
+  gap:12px;
+  justify-content:center;
+  flex-wrap:wrap;
+  z-index:100
+}
+.hint{font-size:0.8rem;margin-top:8px;color:var(--brown-light);background:#fef5e0;padding:8px;border-radius:8px}
+.fb-inline{font-size:.85rem;margin-top:10px;padding:10px 12px;border-radius:9px;display:none;line-height:1.5}
+.fb-inline.ok{background:var(--green-light);color:var(--green);border-left:3px solid var(--green);display:block}
+.fb-inline.err{background:var(--red-light);color:var(--red);border-left:3px solid var(--red);display:block}
+#modal-overlay, #confirm-overlay{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.6);
+  z-index:998;
+  align-items:center;
+  justify-content:center
+}
+#modal-box, #confirm-box{
+  background:white;
+  border-radius:16px;
+  padding:28px 32px;
+  max-width:450px;
+  width:90%;
+  text-align:center
+}
+.confirm-buttons{display:flex;gap:12px;justify-content:center;margin-top:18px}
+.btn-confirm-yes{background:#1a7a1a;color:white;padding:10px 24px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
+.btn-confirm-no{background:#c0392b;color:white;padding:10px 24px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
+#modal-nota{font-family:'Playfair Display',serif;font-size:3rem;font-weight:700;margin:8px 0}
+#modal-data{text-align:left;background:rgba(0,0,0,.1);border-radius:10px;padding:14px;margin-bottom:16px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.cy-fallback{padding:20px;font-size:0.85rem;color:var(--brown-light);text-align:left}
+.cy-fallback ul{margin:10px 0 0 18px}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.21.1/cytoscape.min.js"></script>
+</head>
+<body>
+
+<div id="confirm-overlay"><div id="confirm-box"><p>⚠️ <strong id="confirm-titulo">¿Finalizar y calificar?</strong></p><p id="confirm-subtitulo" style="font-size:0.9rem;">No podrás modificar los ejercicios.</p><div class="confirm-buttons"><button class="btn-confirm-yes" onclick="confirmarAccionPendiente()">✅ Sí</button><button class="btn-confirm-no" onclick="closeConfirm()">❌ Seguir</button></div></div></div>
+<div id="modal-overlay"><div id="modal-box"><button onclick="closeResultModal()" style="float:right;background:none;border:none;font-size:1.5rem;cursor:pointer">✕</button><div style="font-size:2rem">🚶‍♀️</div><h2 id="modal-title"></h2><div id="modal-nota"></div><div id="modal-data"></div><div id="modal-screenshot">📸 Captura y entrega en Classroom</div><button class="btn-reset" style="margin-top:16px" onclick="closeResultModal()">Cerrar</button></div></div>
+
+<div id="topbar"><div class="topbar-left"><span class="topbar-credit">Material elaborado por Marta L Letona S.</span><span class="topbar-subcredit">Basado en el trabajo de Javier Cayetano</span><span class="topbar-title">GRAFOS · Algoritmo de Dijkstra</span></div><label for="name-field" class="sr-only">Tu nombre y apellidos</label><input id="name-field" type="text" placeholder="Tu nombre y apellidos..." maxlength="60"></div>
+<div id="scorebar"><div class="score-item"><div class="score-label">Puntuación</div><div class="score-val" id="score-pts">0</div></div><div class="score-item"><div class="score-label">Máxima</div><div class="score-val">10</div></div><div class="score-item"><div class="score-label">Aciertos</div><div class="score-val" id="score-ok">0</div></div><div class="score-item"><div class="score-label">Fallos</div><div class="score-val" id="score-fail">0</div></div></div>
+<main>
+  <div id="grafico-container" class="card">
+    <h2>🚶‍♀️ La ruta más corta a casa de mis amigas</h2>
+    <div class="enunciado">🏠 <strong>Marta Gema</strong> quiere visitar a sus amigas (A, B, C, D, E). Ayúdala a encontrar la <strong>ruta más corta</strong> desde su casa (O) hasta cada una aplicando el <strong>Algoritmo de Dijkstra</strong>. Los nodos <span style="background:#c8e6c9;padding:2px 6px;">verdes</span> son los ya visitados.</div>
+    <div id="cy"></div>
+  </div>
+  <div id="panel-container"></div>
+</main>
+<div id="actionbar"><button class="btn btn-reset" onclick="pedirConfirmacion('reiniciar')">⟳ Reiniciar grafo</button><button class="btn btn-primary" onclick="pedirConfirmacion('finalizar')">🏁 Finalizar</button></div>
+
+<script>
+const AMIGAS = ['A', 'B', 'C', 'D', 'E'];
+const NOMBRES = {
+  'A': 'Ana', 'B': 'Beatriz', 'C': 'Carla', 'D': 'Daniela', 'E': 'Elena'
+};
+
+let currentEdges = [];
+let correctDist = null, correctPrev = null;
+let visitados = ['O'];
+let distanciasActuales = {};
+let anterioresActuales = {};
+let score = 0, aciertos = 0, fallos = 0;
+let isFinalized = false;
+let cyInstance = null;
+
+// Candados anti-doble-conteo y anti-farming de fallos por reenvío idéntico
+let paso1Bloqueado = false;
+let ultimaFirmaPaso1 = null;
+let seleccionBloqueada = false;
+let ultimoNodoSeleccionadoFallido = null;
+let relajacionBloqueada = false;
+let ultimaFirmaRelajacion = null;
+
+function addPts(v){ if(!isFinalized){ score = Math.min(10, Math.max(0, score+v)); document.getElementById('score-pts').textContent = score.toFixed(1); } }
+function addOk(){ if(!isFinalized){ aciertos++; document.getElementById('score-ok').textContent = aciertos; } }
+function addFail(){ if(!isFinalized){ fallos++; document.getElementById('score-fail').textContent = fallos; } }
+
+function generarAristasAleatorias() {
+  const baseAristas = [
+    ['O','A'], ['O','B'], ['O','C'],
+    ['A','B'], ['A','D'],
+    ['B','C'], ['B','E'],
+    ['C','D'], ['C','E'],
+    ['D','E']
+  ];
+  const aristas = [];
+  for(let [u,v] of baseAristas) {
+    let peso = Math.floor(Math.random() * 100) + 20;
+    aristas.push({source:u, target:v, weight:peso});
+  }
+  return aristas;
+}
+
+function dijkstra(edges, start='O') {
+  const graph = {};
+  const todos = ['O', ...AMIGAS];
+  todos.forEach(n => graph[n] = []);
+  edges.forEach(edge => {
+    graph[edge.source].push({node: edge.target, weight: edge.weight});
+    graph[edge.target].push({node: edge.source, weight: edge.weight});
+  });
+  const dist = {}; const prev = {}; const unvisited = new Set(todos);
+  todos.forEach(n => { dist[n] = Infinity; prev[n] = null; });
+  dist[start] = 0;
+  const orderFixed = [];
+  while(unvisited.size > 0) {
+    let current = null, minDist = Infinity;
+    for(let node of unvisited) if(dist[node] < minDist) { minDist = dist[node]; current = node; }
+    if(current === null) break;
+    unvisited.delete(current);
+    orderFixed.push(current);
+    for(let neighbor of graph[current]) {
+      let alt = dist[current] + neighbor.weight;
+      if(alt < dist[neighbor.node]) { dist[neighbor.node] = alt; prev[neighbor.node] = current; }
+    }
+  }
+  return { dist, prev, orderFixed };
+}
+
+function getPesoArco(u, v) {
+  const edge = currentEdges.find(e => (e.source === u && e.target === v) || (e.source === v && e.target === u));
+  return edge ? edge.weight : null;
+}
+
+function getCaminoHastaNodo(nodo, prev) {
+  let camino = [];
+  let actual = nodo;
+  while(actual && actual !== 'O') {
+    camino.unshift(actual);
+    actual = prev[actual];
+  }
+  return ['O', ...camino];
+}
+
+function colorGraphConCamino(nodoActual) {
+  if(!cyInstance) return;
+  
+  cyInstance.nodes().forEach(node => {
+    let id = node.id();
+    if(id === 'O') {
+      if(visitados.length > 1) node.style('background-color', '#2e7d32');
+      else node.style('background-color', '#b8860b');
+    }
+    else if(visitados.includes(id)) node.style('background-color', '#2e7d32');
+    else node.style('background-color', '#2c6e9e');
+    node.style('border-color', '#f3e0b0');
+    node.style('border-width', '2px');
+  });
+  
+  cyInstance.edges().forEach(edge => {
+    edge.style('line-color', '#b8860b');
+    edge.style('width', '3px');
+  });
+  
+  // Colorear el camino desde O hasta el nodo actual (si existe)
+  if(nodoActual && anterioresActuales[nodoActual]) {
+    let camino = [];
+    let actual = nodoActual;
+    while(actual && actual !== 'O') {
+      let previo = anterioresActuales[actual];
+      if(previo) {
+        camino.push([previo, actual]);
+        actual = previo;
+      } else {
+        break;
+      }
+    }
+    
+    for(let [u,v] of camino) {
+      let edge = cyInstance.edges().find(e => (e.source().id() === u && e.target().id() === v) || (e.source().id() === v && e.target().id() === u));
+      if(edge) {
+        edge.style('line-color', '#2e7d32');
+        edge.style('width', '5px');
+      }
+    }
+  }
+  
+  // También colorear caminos de nodos ya visitados
+  for(let nodo of visitados) {
+    if(nodo !== 'O' && correctPrev && correctPrev[nodo]) {
+      let edge = cyInstance.edges().find(e => (e.source().id() === correctPrev[nodo] && e.target().id() === nodo) || (e.source().id() === nodo && e.target().id() === correctPrev[nodo]));
+      if(edge && edge.style('line-color') !== '#2e7d32') {
+        edge.style('line-color', '#2e7d32');
+        edge.style('width', '5px');
+      }
+    }
+  }
+}
+
+function drawGraph(edges) {
+  const elements = [];
+  const todos = ['O', ...AMIGAS];
+  todos.forEach(n => { elements.push({ data: { id: n, label: n === 'O' ? '🏠 Marta' : n } }); });
+  edges.forEach((e, idx) => { elements.push({ data: { id: `e${idx}`, source: e.source, target: e.target, weight: e.weight } }); });
+  if(cyInstance) cyInstance.destroy();
+  cyInstance = cytoscape({
+    container: document.getElementById('cy'),
+    elements: elements,
+    style: [
+      { selector: 'node', style: { 'background-color': '#2c6e9e', 'label': 'data(label)', 'color': '#fff', 'text-valign': 'center', 'text-halign': 'center', 'font-weight': 'bold', 'font-size': '14px', 'width': '46px', 'height': '46px', 'border-width': '2px', 'border-color': '#f3e0b0' } },
+      { selector: 'edge', style: { 'width': 3, 'line-color': '#b8860b', 'label': `data(weight)`, 'font-size': '11px', 'text-background-color': '#fff8e7', 'text-background-opacity': 0.9, 'curve-style': 'bezier', 'target-arrow-shape': 'none' } }
+    ],
+    layout: { name: 'cose', padding: 40, idealEdgeLength: 100, nodeRepulsion: 4000 }
+  });
+  colorGraphConCamino(null);
+}
+
+function generarNuevoEjercicio() {
+  if(isFinalized) return;
+  currentEdges = generarAristasAleatorias();
+  const { dist, prev } = dijkstra(currentEdges, 'O');
+  correctDist = dist;
+  correctPrev = prev;
+  
+  visitados = ['O'];
+  paso1Bloqueado = false; ultimaFirmaPaso1 = null;
+  seleccionBloqueada = false; ultimoNodoSeleccionadoFallido = null;
+  relajacionBloqueada = false; ultimaFirmaRelajacion = null;
+
+  for(let a of AMIGAS) {
+    distanciasActuales[a] = null;
+    anterioresActuales[a] = null;
+  }
+
+  try {
+    drawGraph(currentEdges);
+  } catch(err) {
+    console.error('No se pudo inicializar el grafo visual (Cytoscape no disponible):', err);
+    mostrarGrafoFallback(currentEdges);
+    cyInstance = null;
+  }
+  renderPasoInicial();
+}
+
+function mostrarGrafoFallback(edges) {
+  const cyEl = document.getElementById('cy');
+  if(!cyEl) return;
+  let lista = edges.map(e => `<li><strong>${e.source} – ${e.target}</strong>: ${e.weight} m</li>`).join('');
+  cyEl.innerHTML = `<div class="cy-fallback">
+    ⚠️ No se ha podido cargar el diagrama del grafo (sin conexión a internet). Puedes seguir resolviendo el ejercicio: estas son las conexiones y sus distancias.
+    <ul>${lista}</ul>
+  </div>`;
+}
+
+function renderPasoInicial() {
+  const panel = document.getElementById('panel-container');
+  panel.innerHTML = `
+    <div class="panel-control">
+      <div class="panel-titulo">📌 Paso 1 — Rellena la tabla inicial</div>
+      <p>Completa las <strong>distancias</strong> desde <strong>O</strong> (casa de Marta) hasta cada amiga. Si no hay conexión directa, escribe "inf".</p>
+      <div id="tablaContainer"></div>
+      <div style="margin:10px 0">
+        <button class="btn-aux" onclick="rellenarInfinitos()">∞ Rellenar infinitos</button>
+        <button id="btn-verificar-inicial" class="btn-primary" onclick="verificarPasoInicial()">✓ Verificar Tabla Inicial</button>
+      </div>
+      <div id="fb-inicial" class="fb-inline" role="status" aria-live="polite"></div>
+      <div class="hint">💡 Observa el grafo: las aristas muestran las distancias directas desde O.</div>
+    </div>
+  `;
+  
+  let html = `<table class="tabla-dijkstra"><thead><tr><th>Amiga</th><th>Distancia desde O (m)</th><th>Anterior</th></thead><tbody>`;
+  for(let a of AMIGAS) {
+    html += `<tr id="fila-${a}">
+      <td><strong>${a}</strong> (${NOMBRES[a]})</td>
+      <td><label for="dist_${a}" class="sr-only">Distancia desde O hasta ${a}</label><input type="text" id="dist_${a}" class="input-d" placeholder="ej: 50 o inf" value=""></td>
+      <td><label for="ant_${a}" class="sr-only">Nodo anterior de ${a}</label><select id="ant_${a}" class="select-ant">
+        <option value="—">—</option>
+        <option value="O">O</option>
+        <option value="A">A</option>
+        <option value="B">B</option>
+        <option value="C">C</option>
+        <option value="D">D</option>
+        <option value="E">E</option>
+      </select></td>
+    </tr>`;
+  }
+  html += `</tbody></table>`;
+  document.getElementById('tablaContainer').innerHTML = html;
+}
+
+function rellenarInfinitos() {
+  for(let a of AMIGAS) {
+    let peso = getPesoArco('O', a);
+    let distInput = document.getElementById(`dist_${a}`);
+    let antSelect = document.getElementById(`ant_${a}`);
+    if(peso === null) {
+      if(distInput) distInput.value = 'inf';
+      if(antSelect) antSelect.value = '—';
+    }
+  }
+}
+
+function verificarPasoInicial() {
+  if(paso1Bloqueado) return; // candado: ya superado, ignorar clics repetidos
+
+  let correcto = true;
+  let errores = [];
+  let camposMal = [];
+  let firmaPartes = [];
+
+  for(let a of AMIGAS) {
+    let peso = getPesoArco('O', a);
+    let expectedDist = (peso !== null) ? peso.toString() : 'inf';
+    let expectedAnt = (peso !== null) ? 'O' : '—';
+    let userDist = document.getElementById(`dist_${a}`).value.trim().toLowerCase();
+    let userAnt = document.getElementById(`ant_${a}`).value;
+    firmaPartes.push(`${userDist}|${userAnt}`);
+
+    if(userDist !== expectedDist) {
+      correcto = false;
+      errores.push(`${a}: distancia debe ser ${expectedDist}`);
+      camposMal.push(`dist_${a}`);
+    } else {
+      distanciasActuales[a] = (userDist === 'inf') ? Infinity : parseInt(userDist);
+    }
+
+    if(userAnt !== expectedAnt) {
+      correcto = false;
+      errores.push(`${a}: anterior debe ser ${expectedAnt}`);
+      camposMal.push(`ant_${a}`);
+    } else {
+      anterioresActuales[a] = (expectedAnt === 'O') ? 'O' : null;
+    }
+  }
+
+  // Animación de error siempre (feedback visual), pero solo se penaliza si la
+  // respuesta enviada es distinta de la última respuesta incorrecta ya penalizada
+  for(let id of camposMal) {
+    let el = document.getElementById(id);
+    if(el){ el.classList.add('error'); setTimeout(() => el.classList.remove('error'), 500); }
+  }
+
+  if(!correcto) {
+    let firma = firmaPartes.join(';');
+    if(firma !== ultimaFirmaPaso1) {
+      ultimaFirmaPaso1 = firma;
+      for(let _ of camposMal) { addPts(-0.2); addFail(); }
+    }
+  }
+
+  if(correcto) {
+    ultimaFirmaPaso1 = null;
+    paso1Bloqueado = true;
+    const btn = document.getElementById('btn-verificar-inicial');
+    if(btn) btn.disabled = true;
+    addPts(2); addOk();
+    document.getElementById('fb-inicial').className='fb-inline ok';
+    document.getElementById('fb-inicial').innerHTML = '✅ Tabla inicial correcta.';
+    for(let a of AMIGAS) {
+      let di = document.getElementById(`dist_${a}`);
+      let ai = document.getElementById(`ant_${a}`);
+      if(di) { di.classList.add('ok'); di.disabled = true; }
+      if(ai) { ai.classList.add('ok'); ai.disabled = true; }
+    }
+    setTimeout(() => {
+      colorGraphConCamino(null);
+      mostrarSeleccionNodo();
+    }, 1500);
+  } else {
+    document.getElementById('fb-inicial').className='fb-inline err';
+    document.getElementById('fb-inicial').innerHTML = '❌ ' + errores.join('; ');
+  }
+}
+
+function mostrarSeleccionNodo() {
+  seleccionBloqueada = false;
+  ultimoNodoSeleccionadoFallido = null;
+  const panel = document.getElementById('panel-container');
+  panel.innerHTML = `
+    <div class="panel-control">
+      <div class="panel-titulo">📍 Paso 2 — Selecciona el nodo con menor distancia</div>
+      <p>Observa la tabla y <strong>haz clic en la fila del nodo no visitado con menor distancia</strong>.</p>
+      <div id="tablaContainer"></div>
+      <button id="btn-confirmar-seleccion" class="btn-primary" onclick="confirmarSeleccionNodo()">✓ Confirmar selección</button>
+      <div id="fb-seleccion" class="fb-inline" role="status" aria-live="polite"></div>
+    </div>
+  `;
+  
+  let html = `<table class="tabla-dijkstra"><thead><tr><th>Amiga</th><th>Distancia (m)</th><th>Anterior</th></thead><tbody>`;
+  for(let a of AMIGAS) {
+    let distVal = (distanciasActuales[a] === Infinity) ? 'inf' : distanciasActuales[a];
+    let antVal = (anterioresActuales[a] === null) ? '—' : anterioresActuales[a];
+    let clase = visitados.includes(a) ? 'fila-visitada' : 'fila-normal fila-seleccionable';
+    html += `<tr id="fila-${a}" data-nodo="${a}" class="${clase}" onclick="seleccionarFila('${a}')">
+      <td><strong>${a}</strong> (${NOMBRES[a]})</td>
+      <td>${distVal}</td>
+      <td>${antVal}</td>
+    </tr>`;
+  }
+  html += `</tbody></table>`;
+  document.getElementById('tablaContainer').innerHTML = html;
+  
+  window.nodoSeleccionado = null;
+}
+
+function seleccionarFila(nodo) {
+  if(visitados.includes(nodo)) return;
+  document.querySelectorAll('#tablaContainer tr').forEach(row => {
+    row.classList.remove('fila-seleccionada');
+  });
+  let fila = document.getElementById(`fila-${nodo}`);
+  if(fila) {
+    fila.classList.add('fila-seleccionada');
+    window.nodoSeleccionado = nodo;
+  }
+}
+
+function confirmarSeleccionNodo() {
+  if(seleccionBloqueada) return; // candado: ya superado este paso, ignorar clics repetidos
+
+  if(!window.nodoSeleccionado) {
+    document.getElementById('fb-seleccion').className='fb-inline err';
+    document.getElementById('fb-seleccion').innerHTML = '❌ Debes hacer clic en una fila para seleccionar un nodo.';
+    return;
+  }
+  
+  let menorNodo = null;
+  let menorDist = Infinity;
+  for(let a of AMIGAS) {
+    if(!visitados.includes(a) && distanciasActuales[a] !== null && distanciasActuales[a] < menorDist) {
+      menorDist = distanciasActuales[a];
+      menorNodo = a;
+    }
+  }
+  
+  // En lugar de: if(window.nodoSeleccionado !== menorNodo)
+  // Usa esto:
+  if (distanciasActuales[window.nodoSeleccionado] !== menorDist) {
+    // Error real: el alumno no ha elegido un nodo con la distancia mínima absoluta.
+    document.getElementById('fb-seleccion').className='fb-inline err';
+    document.getElementById('fb-seleccion').innerHTML = `❌ El nodo con menor distancia es ${menorNodo} (${menorDist} m), has seleccionado ${window.nodoSeleccionado}.`;
+    // Solo penaliza si es una selección incorrecta distinta de la última ya penalizada
+    if(window.nodoSeleccionado !== ultimoNodoSeleccionadoFallido) {
+      ultimoNodoSeleccionadoFallido = window.nodoSeleccionado;
+      addPts(-0.2); addFail();
+    }
+    return;
+  }
+  
+  let nodoVisitado = window.nodoSeleccionado;
+  visitados.push(nodoVisitado);
+  seleccionBloqueada = true;
+  const btnSel = document.getElementById('btn-confirmar-seleccion');
+  if(btnSel) btnSel.disabled = true;
+  
+  addPts(0.64); addOk();
+  document.getElementById('fb-seleccion').className='fb-inline ok';
+  document.getElementById('fb-seleccion').innerHTML = `✅ ¡Correcto! ${nodoVisitado} es el nodo más cercano. Ahora actualiza las distancias desde ${nodoVisitado}.`;
+  
+  colorGraphConCamino(nodoVisitado);
+  
+  setTimeout(() => {
+    mostrarPasoRelajacion(nodoVisitado);
+  }, 1500);
+}
+
+function mostrarPasoRelajacion(nodoActual) {
+  relajacionBloqueada = false;
+  ultimaFirmaRelajacion = null;
+  // Reutilizamos el helper compartido en vez de reconstruir el camino a mano
+  let rutaCompleta = getCaminoHastaNodo(nodoActual, anterioresActuales).join(' → ');
+  
+  const panel = document.getElementById('panel-container');
+  panel.innerHTML = `
+    <div class="panel-control">
+      <div class="panel-titulo">📍 Paso 3 — Relajación desde ${nodoActual}</div>
+      <p>Desde <strong>${nodoActual}</strong> (distancia ${distanciasActuales[nodoActual]} m).</p>
+      <p><strong>Ruta hasta ${nodoActual}:</strong> ${rutaCompleta} = ${distanciasActuales[nodoActual]} m</p>
+      <p><strong>Fórmula:</strong> distancia(${nodoActual}) + peso(${nodoActual} → vecino) = suma. Si suma es menor que la distancia actual en tabla, actualiza.</p>
+      <div id="tablaContainer"></div>
+      <button id="btn-verificar-relajacion" class="btn-primary" onclick="verificarRelajacion('${nodoActual}')">✓ Verificar actualizaciones</button>
+      <div id="fb-relajacion" class="fb-inline" role="status" aria-live="polite"></div>
+    </div>
+  `;
+  
+  let html = `<table class="tabla-dijkstra"><thead><tr><th>Amiga</th><th>Distancia actual (m)</th><th>Nueva distancia (${nodoActual}→vecino)</th><th>¿Actualizar?</th><th>Nuevo anterior</th></thead><tbody>`;
+  for(let a of AMIGAS) {
+    if(a === nodoActual) {
+      html += `<tr style="background:#fdebd0;">
+        <td><strong>${a}</strong> (${NOMBRES[a]}) - NODO ACTUAL</td>
+        <td>${distanciasActuales[a]}</td>
+        <td>—</td>
+        <td>—</td>
+        <td>—</td>
+       </tr>`;
+      continue;
+    }
+    let distanciaActual = (distanciasActuales[a] === Infinity) ? 'inf' : distanciasActuales[a];
+    
+    html += `<tr id="fila-${a}">
+      <td><strong>${a}</strong> (${NOMBRES[a]})</td>
+      <td>${distanciaActual}</td>
+      <td><label for="newdist_${a}" class="sr-only">Nueva distancia propuesta para ${a}</label><input type="text" id="newdist_${a}" class="input-d" placeholder="suma" value="" style="width:70px"></td>
+      <td><label for="update_${a}" class="sr-only">Actualizar distancia de ${a}</label><input type="checkbox" id="update_${a}" onchange="toggleUpdate('${a}')"></td>
+      <td><label for="newant_${a}" class="sr-only">Nuevo nodo anterior de ${a}</label><select id="newant_${a}" class="select-ant" style="width:70px" disabled>
+        <option value="—">—</option>
+        <option value="O">O</option>
+        <option value="A">A</option>
+        <option value="B">B</option>
+        <option value="C">C</option>
+        <option value="D">D</option>
+        <option value="E">E</option>
+      </select></td>
+     </tr>`;
+  }
+  html += `</tbody></table>
+  <div class="hint">💡 Solo debes actualizar los vecinos de <strong>${nodoActual}</strong> si la nueva distancia es menor que la actual. Marca la casilla y selecciona el nuevo anterior.</div>`;
+  document.getElementById('tablaContainer').innerHTML = html;
+  
+  window.nodoRelajacion = nodoActual;
+  window.distOrigenRelajacion = distanciasActuales[nodoActual];
+}
+
+function toggleUpdate(nodo) {
+  let chk = document.getElementById(`update_${nodo}`);
+  let newAnt = document.getElementById(`newant_${nodo}`);
+  let newDist = document.getElementById(`newdist_${nodo}`);
+  if(chk.checked) {
+    newAnt.disabled = false;
+    let peso = getPesoArco(window.nodoRelajacion, nodo);
+    if(peso !== null) {
+      let nuevaDist = window.distOrigenRelajacion + peso;
+      newDist.value = nuevaDist;
+      newAnt.value = window.nodoRelajacion;
+    }
+  } else {
+    newAnt.disabled = true;
+    newDist.value = '';
+    newAnt.value = '—';
+  }
+}
+
+function verificarRelajacion(nodoActual) {
+  if(relajacionBloqueada) return; // candado: ya superado este paso, ignorar clics repetidos
+
+  let correcto = true;
+  let errores = [];
+  let numPenalizaciones = 0;
+  let firmaPartes = [];
+
+  let nuevasDistancias = {...distanciasActuales};
+  let nuevosAnteriores = {...anterioresActuales};
+  
+  for(let a of AMIGAS) {
+    if(a === nodoActual) continue;
+    let peso = getPesoArco(nodoActual, a);
+    if(peso !== null) {
+      let nuevaDist = distanciasActuales[nodoActual] + peso;
+      if(nuevaDist < distanciasActuales[a]) {
+        nuevasDistancias[a] = nuevaDist;
+        nuevosAnteriores[a] = nodoActual;
+      }
+    }
+  }
+  
+  for(let a of AMIGAS) {
+    if(a === nodoActual) continue;
+    let chk = document.getElementById(`update_${a}`);
+    let newDistInput = document.getElementById(`newdist_${a}`);
+    let newAntSelect = document.getElementById(`newant_${a}`);
+    let deberiaActualizar = (nuevasDistancias[a] !== distanciasActuales[a]);
+    firmaPartes.push(`${a}:${chk && chk.checked ? 1 : 0}:${newDistInput ? newDistInput.value : ''}:${newAntSelect ? newAntSelect.value : ''}`);
+
+    if(deberiaActualizar) {
+      if(!chk || !chk.checked) {
+        correcto = false;
+        errores.push(`${a}: debes marcar la casilla de actualización`);
+        numPenalizaciones++;
+      } else {
+        let userDist = parseInt(newDistInput.value);
+        if(userDist !== nuevasDistancias[a]) {
+          correcto = false;
+          errores.push(`${a}: nueva distancia debe ser ${nuevasDistancias[a]}`);
+          newDistInput.classList.add('error');
+          setTimeout(() => newDistInput.classList.remove('error'), 500);
+          numPenalizaciones++;
+        }
+        let userAnt = newAntSelect.value;
+        if(userAnt !== nodoActual) {
+          correcto = false;
+          errores.push(`${a}: nuevo anterior debe ser ${nodoActual}`);
+          newAntSelect.classList.add('error');
+          setTimeout(() => newAntSelect.classList.remove('error'), 500);
+          numPenalizaciones++;
+        }
+      }
+    } else {
+      if(chk && chk.checked) {
+        correcto = false;
+        errores.push(`${a}: no debes actualizar este nodo (la ruta actual es mejor o no hay conexión)`);
+        numPenalizaciones++;
+      }
+    }
+  }
+
+  if(!correcto) {
+    let firma = firmaPartes.join(';');
+    if(firma !== ultimaFirmaRelajacion) {
+      ultimaFirmaRelajacion = firma;
+      for(let i=0;i<numPenalizaciones;i++){ addPts(-0.2); addFail(); }
+    }
+  }
+
+  if(correcto) {
+    relajacionBloqueada = true;
+    const btnRel = document.getElementById('btn-verificar-relajacion');
+    if(btnRel) btnRel.disabled = true;
+    ultimaFirmaRelajacion = null;
+    for(let a of AMIGAS) {
+      if(a === nodoActual) continue;
+      let peso = getPesoArco(nodoActual, a);
+      if(peso !== null) {
+        let nuevaDist = distanciasActuales[nodoActual] + peso;
+        if(nuevaDist < distanciasActuales[a]) {
+          distanciasActuales[a] = nuevaDist;
+          anterioresActuales[a] = nodoActual;
+        }
+      }
+    }
+    
+    addPts(0.96); addOk();
+    document.getElementById('fb-relajacion').className='fb-inline ok';
+    document.getElementById('fb-relajacion').innerHTML = `✅ ¡Correcto! Has actualizado correctamente desde ${nodoActual}.`;
+    
+    if(visitados.length === AMIGAS.length + 1) {
+      setTimeout(() => mostrarResultadosFinales(), 1500);
+    } else {
+      setTimeout(() => mostrarSeleccionNodo(), 1500);
+    }
+  } else {
+    document.getElementById('fb-relajacion').className='fb-inline err';
+    document.getElementById('fb-relajacion').innerHTML = '❌ ' + errores.join('; ');
+  }
+}
+
+function mostrarResultadosFinales() {
+  const panel = document.getElementById('panel-container');
+  
+  let html = `
+    <div class="panel-control">
+      <div class="panel-titulo">🏆 Resultados finales — Rutas más cortas</div>
+      <p>Estas son las distancias mínimas desde O (casa de Marta) hasta cada amiga y el camino seguido:</p>
+      <table class="tabla-dijkstra">
+        <thead>
+          <tr><th>Amiga</th><th>Distancia mínima (m)</th><th>Camino (ruta)</th></thead>
+        </thead>
+        <tbody>`;
+  
+  for(let a of AMIGAS) {
+    let distancia = correctDist[a];
+    let distanciaStr = (distancia === Infinity) ? '∞ (no alcanzable)' : distancia + ' m';
+    
+    let caminoStr = getCaminoHastaNodo(a, correctPrev).join(' → ');
+    
+    html += `<tr>
+      <td><strong>${a}</strong> (${NOMBRES[a]})</td>
+      <td>${distanciaStr}</td>
+      <td>${caminoStr}</td>
+    </tr>`;
+  }
+  
+  html += `
+        </tbody>
+      </table>
+      <div class="hint">🎉 ¡Enhorabuena! Has completado el algoritmo de Dijkstra. Las rutas en color verde en el grafo muestran los caminos mínimos.</div>
+    </div>
+  `;
+  
+  panel.innerHTML = html;
+}
+
+let accionPendiente = null;
+
+function pedirConfirmacion(tipo){
+  accionPendiente = tipo;
+  const titulo = document.getElementById('confirm-titulo');
+  const subtitulo = document.getElementById('confirm-subtitulo');
+  if(tipo === 'reiniciar'){
+    titulo.textContent = '¿Reiniciar todo y generar un nuevo grafo?';
+    subtitulo.textContent = 'Se perderá el progreso actual (puntuación, aciertos y fallos).';
+    document.getElementById('confirm-overlay').style.display = 'flex';
+  } else {
+    if(isFinalized){ alert('Ya finalizado.'); return; }
+    titulo.textContent = '¿Finalizar y calificar?';
+    subtitulo.textContent = 'No podrás modificar los ejercicios.';
+    document.getElementById('confirm-overlay').style.display = 'flex';
+  }
+}
+function confirmarAccionPendiente(){
+  closeConfirm();
+  if(accionPendiente === 'reiniciar') resetGlobalScore();
+  else if(accionPendiente === 'finalizar') proceedToFinalize();
+  accionPendiente = null;
+}
+function resetGlobalScore() {
+  score=0; aciertos=0; fallos=0; isFinalized=false;
+  document.getElementById('score-pts').textContent='0';
+  document.getElementById('score-ok').textContent='0';
+  document.getElementById('score-fail').textContent='0';
+  generarNuevoEjercicio();
+}
+function closeConfirm(){ document.getElementById('confirm-overlay').style.display='none'; }
+function proceedToFinalize(){
+  closeConfirm(); isFinalized=true; const name=document.getElementById('name-field').value.trim();
+  if(!name){ alert('Escribe tu nombre.'); isFinalized=false; return; }
+  const nota=Math.min(10,Math.max(0,score)); const now=new Date(); const fecha=now.toLocaleDateString('es-ES'); const hora=now.toLocaleTimeString('es-ES');
+  let bg, col;
+  if(nota>=10){bg='#1a7a1a';col='white';}
+  else if(nota>=9){bg='#6dbf6d';col='white';}
+  else if(nota>=8){bg='#1a4f8a';col='white';}
+  else if(nota>=7){bg='#5b9bd5';col='white';}
+  else if(nota>=6){bg='#c05c00';col='white';}
+  else if(nota>=5){bg='#f5a623';col='black';}
+  else {bg='#c0392b';col='white';}
+  const box=document.getElementById('modal-box'); box.style.background=bg; box.style.color=col;
+  document.getElementById('modal-title').textContent=name; document.getElementById('modal-nota').textContent=nota.toFixed(1)+'/10';
+  document.getElementById('modal-data').innerHTML=`<div>📅 ${fecha} ${hora}</div><div>✅ Aciertos: ${aciertos} ❌ Fallos: ${fallos}</div>`;
+  document.getElementById('modal-overlay').style.display='flex';
+}
+function closeResultModal(){ document.getElementById('modal-overlay').style.display='none'; }
+
+document.getElementById('panel-container').addEventListener('keydown', function(e){
+  if(e.key === 'Enter'){
+    const btn = document.querySelector('#panel-container .btn-primary');
+    if(btn && !btn.disabled){ e.preventDefault(); btn.click(); }
+  }
+});
+
+generarNuevoEjercicio();
+</script>
+</body>
+</html>
