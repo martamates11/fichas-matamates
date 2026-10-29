@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Producto de matrices en contexto — 2º Bachillerato</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap');
+
+:root {
+  --color-fondo: #F5F0E8;
+  --color-fondo-card: #FDFAF3;
+  --color-texto: #2C1F0E;
+  --color-texto-suave: #6B4F35;
+  --color-acento: #A0522D;
+  --color-acento-hover: #7B3B1E;
+  --color-borde: #C9A96E;
+  --color-borde-suave: #E0CEAA;
+  --color-cabecera: #3B2510;
+  --color-cabecera-txt: #F5EDD8;
+  --color-correcto: #2E6B3E;
+  --color-incorrecto: #8B1A1A;
+  --color-neutro: #E8DFC8;
+}
+* { box-sizing: border-box; }
+body { margin:0; font-family:'Lato',sans-serif; font-size:16px; color:var(--color-texto); background:var(--color-fondo); }
+h1,h2,h3,.titulo-ficha { font-family:'Libre Baskerville',serif; color:var(--color-texto); }
+
+.cabecera { background:var(--color-cabecera); color:var(--color-cabecera-txt); font-family:'Libre Baskerville',serif; text-align:center; padding:12px 20px; border-bottom:3px solid var(--color-borde); font-size:.78rem; letter-spacing:.04em; }
+
+.ficha-container { max-width:920px; margin:28px auto; background:var(--color-fondo-card); border:2px solid var(--color-borde); border-radius:6px; box-shadow:0 3px 12px rgba(44,31,14,.15); padding:32px 36px 40px; }
+
+.titulo-ficha { font-size:1.5rem; text-align:center; padding-bottom:10px; margin-bottom:2px; }
+.titulo-ficha::after { content:''; display:block; width:60px; height:3px; background:var(--color-borde); margin:8px auto 0; border-radius:2px; }
+.subtitulo { text-align:center; color:var(--color-texto-suave); font-size:.9rem; margin:10px 0 8px; }
+.nota-criterio { text-align:center; color:var(--color-texto-suave); font-size:.85rem; margin:0 0 22px; background:var(--color-neutro); border-radius:4px; padding:8px 16px; }
+.nota-criterio b { color:var(--color-acento); }
+
+/* ---- marcador / cabecera fija (nombre + nota, siempre visible) ---- */
+.marcador { font-family:'Libre Baskerville',serif; font-size:.95rem; color:var(--color-texto-suave); display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; border-bottom:1px solid var(--color-borde-suave); padding-bottom:12px; flex-wrap:wrap; gap:10px 18px; position:sticky; top:0; background:var(--color-fondo-card); z-index:10; padding-top:4px; }
+.marcador span.num { color:var(--color-acento); font-weight:700; }
+.marcador .estado-tipo { font-size:.85rem; padding:3px 10px; border-radius:12px; background:var(--color-neutro); }
+.marcador .estado-tipo.superado { background:#EAF4EC; color:var(--color-correcto); font-weight:700; }
+.marcador-alumno { display:flex; align-items:center; gap:8px; font-family:'Lato',sans-serif; font-size:.9rem; }
+.marcador-alumno input { width:190px; max-width:42vw; padding:6px 10px; font-size:.92rem; }
+.marcador-alumno input.falta-nombre { border-color:var(--color-incorrecto); }
+
+/* ---- avisos inline (sustituyen a alert(), que puede bloquearse en el visor) ---- */
+.aviso { background:#FCEFD9; border:1.5px solid var(--color-borde); color:var(--color-texto-suave); border-radius:4px; padding:10px 16px; margin-bottom:14px; font-weight:700; text-align:center; }
+
+/* ---- botones ---- */
+.btn-primario { background:var(--color-acento); color:#FDFAF3; border:none; border-radius:4px; padding:10px 22px; font-family:'Lato',sans-serif; font-size:.95rem; font-weight:700; cursor:pointer; letter-spacing:.03em; transition:background-color .2s ease; }
+.btn-primario:hover { background:var(--color-acento-hover); }
+.btn-primario:disabled { background:var(--color-neutro); color:var(--color-texto-suave); cursor:not-allowed; }
+.btn-secundario { background:transparent; color:var(--color-acento); border:2px solid var(--color-borde); border-radius:4px; padding:9px 20px; font-family:'Lato',sans-serif; font-size:.95rem; font-weight:700; cursor:pointer; transition:border-color .2s,color .2s; }
+.btn-secundario:hover { border-color:var(--color-acento); color:var(--color-acento-hover); }
+.btn-finalizar { background:var(--color-cabecera); color:var(--color-cabecera-txt); border:2px solid var(--color-borde); border-radius:4px; padding:10px 24px; font-family:'Libre Baskerville',serif; font-size:.9rem; font-weight:700; cursor:pointer; letter-spacing:.04em; transition:background-color .2s; display:block; margin:30px auto 0; }
+.btn-finalizar:hover { background:#2C1A0A; }
+.fila-botones { display:flex; gap:14px; justify-content:center; margin-top:22px; flex-wrap:wrap; }
+
+input[type="text"], input[type="number"], select { background:var(--color-fondo); border:1.5px solid var(--color-borde); border-radius:4px; padding:8px 10px; font-family:'Lato',sans-serif; font-size:1rem; color:var(--color-texto); outline:none; transition:border-color .2s; }
+input[type="text"]:focus, input[type="number"]:focus, select:focus { border-color:var(--color-acento); }
+input[type="number"] { width:64px; text-align:center; font-variant-numeric:tabular-nums; }
+input[type="number"]::-webkit-inner-spin-button { opacity:.3; }
+
+.ejercicio-card { background:var(--color-fondo); border:1.5px solid var(--color-borde-suave); border-left:4px solid var(--color-borde); border-radius:4px; padding:20px 24px; margin-bottom:20px; }
+.enunciado { line-height:1.55; margin-bottom:18px; }
+.enunciado b { color:var(--color-acento); }
+
+/* ---- matrices ---- */
+.bloque-matrices { display:flex; gap:40px; flex-wrap:wrap; justify-content:center; margin:20px 0 26px; }
+.matriz-etiqueta { text-align:center; font-family:'Libre Baskerville',serif; font-weight:700; margin-bottom:6px; }
+table.matriz { border-collapse:collapse; margin:0 auto; }
+table.matriz td { padding:6px 4px; text-align:center; vertical-align:middle; }
+table.matriz td.esquina { }
+table.matriz td.cabecera-col, table.matriz td.cabecera-fila { font-family:'Libre Baskerville',serif; font-style:italic; color:var(--color-texto-suave); font-size:.9rem; padding:6px 10px; }
+table.matriz td.val { padding:9px 16px; font-variant-numeric:tabular-nums; }
+table.matriz td.val-primera-fila { border-top:2.5px solid var(--color-borde); }
+table.matriz td.val-ultima-fila { border-bottom:2.5px solid var(--color-borde); }
+table.matriz td.val-primera-col { border-left:2.5px solid var(--color-borde); }
+table.matriz td.val-ultima-col { border-right:2.5px solid var(--color-borde); }
+table.matriz td.val-primera-fila.val-primera-col { border-top-left-radius:6px; }
+table.matriz td.val-primera-fila.val-ultima-col { border-top-right-radius:6px; }
+table.matriz td.val-ultima-fila.val-primera-col { border-bottom-left-radius:6px; }
+table.matriz td.val-ultima-fila.val-ultima-col { border-bottom-right-radius:6px; }
+table.matriz td.val input[type="number"] { width:58px; }
+table.matriz td.val.correcto { background:#EAF4EC; }
+table.matriz td.val.incorrecto { background:#F9EAEA; }
+table.matriz td.val.vacia input { outline:2px solid var(--color-incorrecto); border-radius:3px; }
+table.matriz td.val.destacada { position:relative; }
+table.matriz td.val.destacada input, table.matriz td.val.destacada .num-fija { outline:2px solid var(--color-acento); border-radius:3px; }
+table.matriz td.val.destacada::after { content:'★'; position:absolute; top:-2px; right:-2px; color:var(--color-acento); font-size:.6rem; }
+.correccion-celda { display:block; font-size:.68rem; color:var(--color-incorrecto); margin-top:2px; }
+
+.leyenda-destacado { text-align:center; font-size:.82rem; color:var(--color-texto-suave); font-style:italic; margin-top:-8px; margin-bottom:20px; }
+.leyenda-destacado b { color:var(--color-acento); }
+
+/* ---- feedback ---- */
+.feedback-correcto { background:#EAF4EC; border:1.5px solid var(--color-correcto); color:var(--color-correcto); border-radius:4px; padding:10px 16px; font-weight:700; margin-bottom:12px; }
+.feedback-incorrecto { background:#F9EAEA; border:1.5px solid var(--color-incorrecto); color:var(--color-incorrecto); border-radius:4px; padding:10px 16px; margin-bottom:12px; }
+.feedback-incorrecto .explicacion { margin-top:6px; color:var(--color-texto); font-style:italic; font-weight:400; }
+
+/* ---- preguntas conceptuales ---- */
+.pregunta-conceptual { background:var(--color-fondo-card); border:1.5px solid var(--color-borde-suave); border-radius:4px; padding:18px 22px; margin-bottom:18px; }
+.pregunta-conceptual.falta { border-color:var(--color-incorrecto); }
+.pregunta-conceptual p.enunciado-p { margin-top:0; font-weight:700; }
+.opcion { display:block; margin:8px 0; padding:9px 12px; border:1.5px solid var(--color-borde-suave); border-radius:4px; cursor:pointer; transition:border-color .15s, background .15s; }
+.opcion:hover { border-color:var(--color-acento); }
+.opcion input { margin-right:8px; }
+.opcion.correcta-marcada { border-color:var(--color-correcto); background:#EAF4EC; }
+.opcion.incorrecta-marcada { border-color:var(--color-incorrecto); background:#F9EAEA; }
+.explicacion-pregunta { margin-top:10px; padding:10px 14px; border-left:3px solid var(--color-borde); background:var(--color-fondo); border-radius:0 4px 4px 0; font-size:.92rem; }
+
+.pregunta-final select { margin:0 4px; }
+
+.oculto { display:none !important; }
+
+/* ---- overlay / modal ---- */
+.overlay { position:fixed; inset:0; background:rgba(44,31,14,.55); display:flex; align-items:center; justify-content:center; z-index:50; padding:16px; }
+.modal-calificacion { border:3px solid var(--color-borde); border-radius:8px; font-family:'Libre Baskerville',serif; box-shadow:0 6px 24px rgba(44,31,14,.35); padding:30px 34px; min-width:320px; max-width:480px; width:100%; text-align:center; background:var(--color-fondo-card); max-height:88vh; overflow-y:auto; }
+.modal-calificacion h2 { margin-top:0; }
+.nota-grande { font-size:2.6rem; font-weight:700; margin:6px 0 14px; }
+.modal-datos { text-align:left; font-family:'Lato',sans-serif; font-size:.92rem; margin:16px 0; line-height:1.6; }
+.modal-datos hr { border:none; border-top:1px solid rgba(0,0,0,.15); margin:10px 0; }
+.desglose-tipo { text-align:left; font-family:'Lato',sans-serif; font-size:.88rem; background:rgba(255,255,255,.25); border-radius:6px; padding:10px 14px; margin-top:8px; }
+.modal-calificacion .btn-secundario { margin-top:16px; }
+
+@media (max-width:600px) {
+  .ficha-container { padding:22px 16px; }
+  .bloque-matrices { gap:24px; }
+}
+</style>
+</head>
+<body>
+
+<div class="cabecera">Material elaborado por Marta L Letona S. Basado en el trabajo de Javier Cayetano</div>
+
+<div class="ficha-container">
+
+  <h1 class="titulo-ficha">Producto de matrices en contexto</h1>
+  <p class="subtitulo">2º Bachillerato CCSS — Calcula C = A·B y D = B·A, y responde qué significa cada elemento en la situación real</p>
+  <p class="nota-criterio">Cada uno de los 5 apartados (matriz C, matriz D y las 3 preguntas) vale <b>2 puntos</b>. En las matrices, cada celda incorrecta resta <b>0,5 puntos</b> dentro de ese apartado.</p>
+
+  <div class="marcador">
+    <span class="marcador-alumno">Alumno/a:
+      <input type="text" id="input-nombre" placeholder="Nombre y apellidos" aria-label="Nombre y apellidos del alumno o alumna">
+    </span>
+    <span>Nota actual: <span class="num" id="marcador-nota">0</span> / 10</span>
+    <span class="estado-tipo" id="marcador-estado">Apartados corregidos: 0/5</span>
+  </div>
+
+  <div id="aviso-nombre" class="aviso oculto" aria-live="polite"></div>
+
+  <div id="zona-problema"></div>
+
+  <button class="btn-finalizar" id="btn-finalizar">Finalizar y Calificar</button>
+
+</div>
+
+<script>
+/* ================= Utilidades ================= */
+function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+function randChoice(arr) { return arr[randInt(0, arr.length - 1)]; }
+function roundTo5(x) { return Math.round(x / 5) * 5; }
+function sub(letra, i) { return letra + '<sub>' + i + '</sub>'; }
+
+function matMul(X, Y) {
+  const p = X.length, q = Y.length, r = Y[0].length;
+  const Z = Array.from({length:p}, () => Array(r).fill(0));
+  for (let i=0;i<p;i++) for (let j=0;j<r;j++) { let s=0; for (let k=0;k<q;k++) s += X[i][k]*Y[k][j]; Z[i][j]=s; }
+  return Z;
+}
+function matrizRand(filas, cols, min, max, step5) {
+  return Array.from({length:filas}, () => Array.from({length:cols}, () => {
+    let v = randInt(min, max);
+    return step5 ? roundTo5(v) : v;
+  }));
+}
+
+/* Avisos inline — no usamos alert(), que el visor de artefactos puede bloquear */
+function mostrarAviso(id, mensaje) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = mensaje;
+  el.classList.remove('oculto');
+  el.scrollIntoView({ behavior:'smooth', block:'center' });
+}
+function ocultarAviso(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.add('oculto');
+  el.textContent = '';
+}
+
+/* ================= Escenarios ================= */
+const ESCENARIOS = [
+  {
+    intro: (Ps, Ms, n, m) => `En una clínica dental colocan ${n} tipos de prótesis, ${Ps}, en ${m} modelos diferentes, ${Ms}. El número de prótesis que tienen ya construidas viene dado en la matriz A. El precio, en euros, de cada prótesis viene dado en la matriz B.`,
+    unidadPlural: 'prótesis',
+    categoriaMArt: 'el modelo',
+    categoriaMPlural: 'modelos'
+  },
+  {
+    intro: (Ps, Ms, n, m) => `En una pastelería elaboran ${n} tipos de tarta, ${Ps}, en ${m} tamaños diferentes, ${Ms}. El número de tartas que tienen ya horneadas viene dado en la matriz A. El precio, en euros, de cada tarta viene dado en la matriz B.`,
+    unidadPlural: 'tartas',
+    categoriaMArt: 'el tamaño',
+    categoriaMPlural: 'tamaños'
+  },
+  {
+    intro: (Ps, Ms, n, m) => `En un taller de carpintería fabrican ${n} tipos de mueble, ${Ps}, en ${m} acabados diferentes, ${Ms}. El número de muebles que tienen ya fabricados viene dado en la matriz A. El precio, en euros, de cada mueble viene dado en la matriz B.`,
+    unidadPlural: 'muebles',
+    categoriaMArt: 'el acabado',
+    categoriaMPlural: 'acabados'
+  },
+  {
+    intro: (Ps, Ms, n, m) => `En una imprenta producen ${n} tipos de folleto, ${Ps}, en ${m} formatos diferentes, ${Ms}. El número de folletos que tienen ya impresos viene dado en la matriz A. El precio, en euros, de cada folleto viene dado en la matriz B.`,
+    unidadPlural: 'folletos',
+    categoriaMArt: 'el formato',
+    categoriaMPlural: 'formatos'
+  },
+  {
+    intro: (Ps, Ms, n, m) => `En una fábrica textil confeccionan ${n} tipos de camiseta, ${Ps}, en ${m} tallas diferentes, ${Ms}. El número de camisetas que tienen ya confeccionadas viene dado en la matriz A. El precio, en euros, de cada camiseta viene dado en la matriz B.`,
+    unidadPlural: 'camisetas',
+    categoriaMArt: 'la talla',
+    categoriaMPlural: 'tallas'
+  }
+];
+
+/* ================= Estado (perfil proporcional por apartado, un único intento) ================= */
+const state = {
+  puntosGlobal: 0,
+  // null = apartado aún sin corregir; número = puntos ya obtenidos (fijos, no se puede repetir)
+  apartados: { matrizC: null, matrizD: null, preg2: null, preg3: null, preg4: null },
+  inicio: Date.now(),
+  nombre: ''
+};
+const PUNTOS_POR_APARTADO = 2;
+const DEDUCCION_CELDA = 0.5;
+
+function registrarApartado(nombre, puntos) {
+  if (state.apartados[nombre] !== null) return; // ya corregido: un único intento, no se re-suma
+  state.apartados[nombre] = puntos;
+  state.puntosGlobal = Math.min(10, state.puntosGlobal + puntos);
+  actualizarMarcador();
+}
+
+function haySProgresoPuntuable() {
+  return Object.values(state.apartados).some(v => v !== null);
+}
+
+let problemaActual = null;
+
+/* ================= Generación de un problema ================= */
+function generarProblema() {
+  const esc = randChoice(ESCENARIOS);
+  const n = randChoice([2,3]);
+  const m = randChoice([2,3]);
+  const A = matrizRand(n, m, 4, 35, false);
+  const B = matrizRand(m, n, 15, 300, true);
+  const C = matMul(A, B); // n x n
+  const D = matMul(B, A); // m x m
+  const k = randInt(1, n); // producto P_k para la pregunta final
+  const Psyms = Array.from({length:n}, (_,i) => sub('P', i+1));
+  const Msyms = Array.from({length:m}, (_,i) => sub('M', i+1));
+  return { esc, n, m, A, B, C, D, k, Psyms, Msyms };
+}
+
+/* ================= Render de una matriz (tabla) ================= */
+// valorFn(i,j) -> string HTML del contenido de la celda (número fijo o <input>)
+// destacada(i,j) -> boolean, marca la celda con borde+estrella
+function renderMatriz(rowLabels, colLabels, valorFn, destacadaFn) {
+  const n = rowLabels.length, m = colLabels.length;
+  let html = '<table class="matriz"><tr><td class="esquina"></td>';
+  for (let j=0;j<m;j++) html += `<td class="cabecera-col">${colLabels[j]}</td>`;
+  html += '</tr>';
+  for (let i=0;i<n;i++) {
+    html += `<tr><td class="cabecera-fila">${rowLabels[i]}</td>`;
+    for (let j=0;j<m;j++) {
+      let cls = 'val';
+      if (i===0) cls += ' val-primera-fila';
+      if (i===n-1) cls += ' val-ultima-fila';
+      if (j===0) cls += ' val-primera-col';
+      if (j===m-1) cls += ' val-ultima-col';
+      if (destacadaFn && destacadaFn(i,j)) cls += ' destacada';
+      html += `<td class="${cls}" data-i="${i}" data-j="${j}">${valorFn(i,j)}</td>`;
+    }
+    html += '</tr>';
+  }
+  html += '</table>';
+  return html;
+}
+
+/* ================= Render del problema completo ================= */
+function renderProblema() {
+  const p = problemaActual;
+  const rowLabelsP = p.Psyms, colLabelsM = p.Msyms;
+
+  const introTexto = p.esc.intro(p.Psyms.join(', '), p.Msyms.join(', '), p.n, p.m);
+
+  const matrizA = renderMatriz(rowLabelsP, colLabelsM, (i,j)=>p.A[i][j]);
+  const matrizB = renderMatriz(colLabelsM, rowLabelsP, (i,j)=>p.B[i][j]);
+
+  const matrizC = renderMatriz(rowLabelsP, rowLabelsP,
+    (i,j) => `<input type="number" id="c-${i}-${j}" aria-label="Elemento c${i+1},${j+1} de la matriz C">`,
+    (i,j) => (i===0 && j===1));
+  const matrizD = renderMatriz(colLabelsM, colLabelsM,
+    (i,j) => `<input type="number" id="d-${i}-${j}" aria-label="Elemento d${i+1},${j+1} de la matriz D">`,
+    (i,j) => (i===1 && j===1));
+
+  const html = `
+    <div class="ejercicio-card">
+      <p class="enunciado">${introTexto}</p>
+      <div class="bloque-matrices">
+        <div><div class="matriz-etiqueta">A</div>${matrizA}</div>
+        <div><div class="matriz-etiqueta">B</div>${matrizB}</div>
+      </div>
+      <p class="enunciado"><b>1.</b> Calcula, si es posible, las matrices <b>C = A·B</b> y <b>D = B·A</b>. Rellena todas las celdas. <span style="color:var(--color-texto-suave); font-style:italic;">(2 puntos cada matriz; −0,5 por celda incorrecta)</span></p>
+      <div class="bloque-matrices">
+        <div><div class="matriz-etiqueta">C</div>${matrizC}</div>
+        <div><div class="matriz-etiqueta">D</div>${matrizD}</div>
+      </div>
+      <p class="leyenda-destacado">Las celdas marcadas con <b>★</b> (c<sub>1,2</sub> y d<sub>2,2</sub>) se comentarán después de comprobar la matriz.</p>
+      <div id="aviso-comprobar" class="aviso oculto" aria-live="polite"></div>
+      <div class="fila-botones">
+        <button class="btn-primario" id="btn-comprobar">Comprobar matrices</button>
+      </div>
+      <div id="zona-preguntas" class="oculto"></div>
+      <div id="zona-feedback-final" aria-live="polite"></div>
+      <div class="fila-botones oculto" id="fila-otro-problema">
+        <button class="btn-secundario" id="btn-otro-problema">Otro problema</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('zona-problema').innerHTML = html;
+  document.getElementById('btn-comprobar').addEventListener('click', comprobarMatrices);
+}
+
+/* ================= Comprobación de matrices (2 puntos por matriz, -0,5 por celda) ================= */
+function comprobarMatrices() {
+  const p = problemaActual;
+
+  // Validación previa: todas las celdas deben estar rellenas antes de tocar nada.
+  // Se marcan en rojo las que faltan y se avisa, sin bloquear ni comprobar nada todavía.
+  const todosLosInputs = document.querySelectorAll('#zona-problema table.matriz input[type="number"]');
+  let hayVacias = false;
+  todosLosInputs.forEach(inp => {
+    const celda = inp.closest('td');
+    if (inp.value.trim() === '') {
+      hayVacias = true;
+      celda.classList.add('vacia');
+    } else {
+      celda.classList.remove('vacia');
+    }
+  });
+  if (hayVacias) {
+    mostrarAviso('aviso-comprobar', 'Faltan celdas por rellenar en C o en D (marcadas en rojo). Complétalas para poder comprobar.');
+    return;
+  }
+  ocultarAviso('aviso-comprobar');
+
+  function comprobarBloque(prefijo, matrizCorrecta) {
+    const size = matrizCorrecta.length;
+    let errores = 0;
+    for (let i=0;i<size;i++) {
+      for (let j=0;j<size;j++) {
+        const input = document.getElementById(`${prefijo}-${i}-${j}`);
+        const celda = input.closest('td');
+        const val = input.value.trim();
+        const correcto = parseFloat(val) === matrizCorrecta[i][j];
+        celda.classList.remove('correcto','incorrecto');
+        if (correcto) {
+          celda.classList.add('correcto');
+        } else {
+          celda.classList.add('incorrecto');
+          errores++;
+          const span = document.createElement('span');
+          span.className = 'correccion-celda';
+          span.textContent = 'Correcto: ' + matrizCorrecta[i][j];
+          celda.appendChild(span);
+        }
+        input.disabled = true;
+      }
+    }
+    return errores;
+  }
+
+  const erroresC = comprobarBloque('c', p.C);
+  const erroresD = comprobarBloque('d', p.D);
+  const puntosC = Math.max(0, PUNTOS_POR_APARTADO - DEDUCCION_CELDA * erroresC);
+  const puntosD = Math.max(0, PUNTOS_POR_APARTADO - DEDUCCION_CELDA * erroresD);
+  const fmt = n => n.toFixed(1).replace(/\.0$/, '');
+
+  document.getElementById('btn-comprobar').disabled = true;
+
+  const zonaFeedbackFinal = document.getElementById('zona-feedback-final');
+  const bloqueC = `<div class="${erroresC===0 ? 'feedback-correcto' : 'feedback-incorrecto'}">
+      Matriz C: ${erroresC===0 ? '✅ todas las celdas correctas' : `${erroresC} celda(s) incorrecta(s)`} — <b>${fmt(puntosC)}/2 puntos</b>
+      ${erroresC>0 ? '<div class="explicacion">Cada elemento c<sub>i,j</sub> es la suma de los productos de la fila i de A por la columna j de B.</div>' : ''}
+    </div>`;
+  const bloqueD = `<div class="${erroresD===0 ? 'feedback-correcto' : 'feedback-incorrecto'}">
+      Matriz D: ${erroresD===0 ? '✅ todas las celdas correctas' : `${erroresD} celda(s) incorrecta(s)`} — <b>${fmt(puntosD)}/2 puntos</b>
+      ${erroresD>0 ? '<div class="explicacion">Cada elemento d<sub>i,j</sub> es la suma de los productos de la fila i de B por la columna j de A. Cuidado con el orden: D = B·A, no A·B.</div>' : ''}
+    </div>`;
+  zonaFeedbackFinal.innerHTML = bloqueC + bloqueD;
+
+  registrarApartado('matrizC', puntosC);
+  registrarApartado('matrizD', puntosD);
+
+  mostrarPreguntas();
+}
+
+/* ================= Preguntas conceptuales ================= */
+function mostrarPreguntas() {
+  const p = problemaActual;
+  const esc = p.esc;
+
+  const opcionesQ1 = [
+    { id:'a', correcta:true, texto:'No tiene una interpretación real en el contexto del problema: mezcla la cantidad de P₁ con el precio de P₂, dos productos distintos, así que es solo un resultado matemático del producto de matrices.' },
+    { id:'b', correcta:false, texto:'El valor total en euros de todas las unidades de P₁, sumando todos los modelos.' },
+    { id:'c', correcta:false, texto:'El número total de unidades de P₁ construidas en el modelo M₂.' },
+    { id:'d', correcta:false, texto:'La diferencia de precio entre P₁ y P₂.' }
+  ];
+  const opcionesQ2 = [
+    { id:'a', correcta:false, texto:'El precio de una única unidad del modelo M₂.' },
+    { id:'b', correcta:true, texto:`El valor total en euros de todas las ${esc.unidadPlural} del modelo M₂, sumando todos los tipos de producto.` },
+    { id:'c', correcta:false, texto:'El número total de unidades fabricadas en el modelo M₂, sin tener en cuenta el precio.' },
+    { id:'d', correcta:false, texto:'El valor total en euros de todas las unidades del tipo P₂, en cualquier modelo (esto sería c₂,₂, no d₂,₂).' }
+  ];
+
+  function shuffle(arr) { return arr.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(v=>v[1]); }
+  const q1shuf = shuffle(opcionesQ1);
+  const q2shuf = shuffle(opcionesQ2);
+
+  const optsHtml = (opts, nombre) => opts.map(o => `
+    <label class="opcion" data-correcta="${o.correcta}">
+      <input type="radio" name="${nombre}" value="${o.id}"> ${o.texto}
+    </label>`).join('');
+
+  const html = `
+    <div class="pregunta-conceptual" id="preg1">
+      <p class="enunciado-p">2. En la matriz C, el elemento c<sub>1,2</sub> (marcado con ★) se ha calculado como la suma, para cada modelo, del producto entre la cantidad de P₁ construidas en ese modelo y el precio de P₂ en ese mismo modelo. ¿Qué representa este valor dentro del problema? <span style="font-weight:400; font-style:italic; color:var(--color-texto-suave);">(2 puntos)</span></p>
+      ${optsHtml(q1shuf, 'preg1')}
+      <div class="explicacion-pregunta oculto" id="exp-preg1" aria-live="polite"></div>
+    </div>
+    <div class="pregunta-conceptual" id="preg2">
+      <p class="enunciado-p">3. El elemento d<sub>2,2</sub> de D (marcado con ★) se ha calculado sumando, para cada tipo de producto, el precio de ese producto en ${esc.categoriaMArt} M₂ multiplicado por la cantidad fabricada de ese producto en ${esc.categoriaMArt} M₂. ¿Qué representa este valor? <span style="font-weight:400; font-style:italic; color:var(--color-texto-suave);">(2 puntos)</span></p>
+      ${optsHtml(q2shuf, 'preg2')}
+      <div class="explicacion-pregunta oculto" id="exp-preg2" aria-live="polite"></div>
+    </div>
+    <div class="pregunta-conceptual pregunta-final" id="preg3">
+      <p class="enunciado-p">4. ¿Qué elemento, de C o de D, te da el valor total en euros de todas las ${esc.unidadPlural} del tipo P${p.k}? <span style="font-weight:400; font-style:italic; color:var(--color-texto-suave);">(2 puntos)</span></p>
+      <p>
+        Matriz:
+        <select id="preg3-matriz" aria-label="Matriz donde está el elemento buscado">
+          <option value="">—</option>
+          <option value="C">C</option>
+          <option value="D">D</option>
+        </select>
+        , fila
+        <select id="preg3-fila" aria-label="Fila del elemento buscado"><option value="">—</option></select>
+        , columna
+        <select id="preg3-col" aria-label="Columna del elemento buscado"><option value="">—</option></select>
+      </p>
+      <div class="explicacion-pregunta oculto" id="exp-preg3" aria-live="polite"></div>
+    </div>
+    <div id="aviso-preguntas" class="aviso oculto" aria-live="polite"></div>
+    <div class="fila-botones">
+      <button class="btn-primario" id="btn-comprobar-preguntas">Comprobar respuestas</button>
+    </div>
+  `;
+
+  const zona = document.getElementById('zona-preguntas');
+  zona.innerHTML = html;
+  zona.classList.remove('oculto');
+
+  const selMatriz = document.getElementById('preg3-matriz');
+  const selFila = document.getElementById('preg3-fila');
+  const selCol = document.getElementById('preg3-col');
+  selMatriz.addEventListener('change', () => {
+    const size = selMatriz.value === 'C' ? p.n : (selMatriz.value === 'D' ? p.m : 0);
+    const opts = '<option value="">—</option>' + Array.from({length:size}, (_,i)=>`<option value="${i}">${i+1}</option>`).join('');
+    selFila.innerHTML = opts;
+    selCol.innerHTML = opts;
+  });
+
+  document.getElementById('btn-comprobar-preguntas').addEventListener('click', comprobarPreguntas);
+}
+
+function comprobarPreguntas() {
+  const p = problemaActual;
+
+  // Validación previa: las tres preguntas deben estar respondidas antes de tocar nada
+  const preg1Marcada = document.querySelector('#preg1 input[type="radio"]:checked');
+  const preg2Marcada = document.querySelector('#preg2 input[type="radio"]:checked');
+  const matriz3 = document.getElementById('preg3-matriz').value;
+  const fila3 = document.getElementById('preg3-fila').value;
+  const col3 = document.getElementById('preg3-col').value;
+
+  document.getElementById('preg1').classList.toggle('falta', !preg1Marcada);
+  document.getElementById('preg2').classList.toggle('falta', !preg2Marcada);
+  document.getElementById('preg3').classList.toggle('falta', matriz3==='' || fila3==='' || col3==='');
+
+  if (!preg1Marcada || !preg2Marcada || matriz3==='' || fila3==='' || col3==='') {
+    mostrarAviso('aviso-preguntas', 'Responde a las tres preguntas (marcadas en la ficha) antes de comprobar.');
+    return;
+  }
+  ocultarAviso('aviso-preguntas');
+  document.querySelectorAll('.pregunta-conceptual').forEach(el => el.classList.remove('falta'));
+
+  function comprobarPregunta(idPreg) {
+    const cont = document.getElementById(idPreg);
+    const marcada = cont.querySelector('input[type="radio"]:checked');
+    const label = marcada.closest('label');
+    const esCorrecta = label.dataset.correcta === 'true';
+    cont.querySelectorAll('label.opcion').forEach(l => {
+      l.querySelectorAll('input').forEach(inp => inp.disabled = true);
+      if (l === label) l.classList.add(esCorrecta ? 'correcta-marcada' : 'incorrecta-marcada');
+      if (l.dataset.correcta === 'true' && !esCorrecta) l.classList.add('correcta-marcada');
+    });
+    return esCorrecta;
+  }
+
+  const ok1 = comprobarPregunta('preg1');
+  const ok2 = comprobarPregunta('preg2');
+
+  const ok3 = (matriz3 === 'C' && parseInt(fila3) === (p.k-1) && parseInt(col3) === (p.k-1));
+  document.getElementById('preg3-matriz').disabled = true;
+  document.getElementById('preg3-fila').disabled = true;
+  document.getElementById('preg3-col').disabled = true;
+
+  document.getElementById('exp-preg1').classList.remove('oculto');
+  document.getElementById('exp-preg1').innerHTML = (ok1
+    ? 'Correcto (2/2 puntos). Un elemento fuera de la diagonal de C combina la cantidad de un producto con el precio de otro distinto: el resultado numérico existe, pero no mide nada real del problema.'
+    : 'No es correcto (0/2 puntos). c₁,₂ mezcla la cantidad de P₁ con el precio de P₂ (productos distintos), así que no corresponde a ninguna magnitud real: es solo el resultado del cálculo matricial. La opción correcta está marcada en verde.');
+  document.getElementById('exp-preg2').classList.remove('oculto');
+  document.getElementById('exp-preg2').innerHTML = (ok2
+    ? `Correcto (2/2 puntos). Al estar en la diagonal de D, d₂,₂ suma, para cada producto, cantidad × precio de ese producto en M₂: es el valor total en euros de M₂.`
+    : `No es correcto (0/2 puntos). Los elementos de la diagonal de D sí tienen sentido real: d₂,₂ suma cantidad × precio para cada producto en el modelo M₂, es decir, el valor total en euros de todas las ${p.esc.unidadPlural} de M₂. La opción correcta está marcada en verde.`);
+  document.getElementById('exp-preg3').classList.remove('oculto');
+  document.getElementById('exp-preg3').innerHTML = (ok3
+    ? `Correcto (2/2 puntos). El elemento c${p.k},${p.k} de C (en la diagonal) suma, para cada modelo, cantidad × precio de P${p.k}: es exactamente el valor total de P${p.k}.`
+    : `No es correcto (0/2 puntos). El valor total de P${p.k} lo da el elemento de la diagonal de C en la posición (${p.k},${p.k}), es decir c${p.k},${p.k} — no d${p.k},${p.k} ni ningún elemento fuera de la diagonal.`);
+
+  registrarApartado('preg2', ok1 ? PUNTOS_POR_APARTADO : 0);
+  registrarApartado('preg3', ok2 ? PUNTOS_POR_APARTADO : 0);
+  registrarApartado('preg4', ok3 ? PUNTOS_POR_APARTADO : 0);
+
+  document.getElementById('fila-otro-problema').classList.remove('oculto');
+  document.getElementById('btn-otro-problema').onclick = solicitarNuevoProblema;
+}
+
+/* ================= Marcador ================= */
+function actualizarMarcador() {
+  document.getElementById('marcador-nota').textContent = state.puntosGlobal.toFixed(1).replace(/\.0$/, '');
+  const corregidos = Object.values(state.apartados).filter(v => v !== null).length;
+  const estadoEl = document.getElementById('marcador-estado');
+  estadoEl.textContent = `Apartados corregidos: ${corregidos}/5`;
+  estadoEl.classList.toggle('superado', corregidos === 5);
+}
+
+/* ================= Nuevo problema (con aviso de reinicio si hay nota en juego) ================= */
+function iniciarNuevoProblema() {
+  state.puntosGlobal = 0;
+  state.apartados = { matrizC: null, matrizD: null, preg2: null, preg3: null, preg4: null };
+  problemaActual = generarProblema();
+  renderProblema();
+  actualizarMarcador();
+}
+
+function solicitarNuevoProblema() {
+  if (!haySProgresoPuntuable()) { iniciarNuevoProblema(); return; }
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.innerHTML = `
+    <div class="modal-calificacion" style="max-width:400px;">
+      <h2>¿Empezar un problema nuevo?</h2>
+      <p style="text-align:left; font-family:'Lato',sans-serif;">Tu nota actual (<b>${state.puntosGlobal.toFixed(1).replace(/\.0$/,'')}/10</b>) se pondrá a <b>0</b> y empezarás un problema distinto desde cero. Esta acción no se puede deshacer.</p>
+      <div class="fila-botones">
+        <button class="btn-secundario" id="btn-cancelar-reinicio">Cancelar</button>
+        <button class="btn-primario" id="btn-confirmar-reinicio">Sí, reiniciar</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  document.getElementById('btn-cancelar-reinicio').addEventListener('click', () => overlay.remove());
+  document.getElementById('btn-confirmar-reinicio').addEventListener('click', () => { overlay.remove(); iniciarNuevoProblema(); });
+}
+
+/* ================= Modal Finalizar y Calificar ================= */
+function colorPorNota(nota) {
+  if (nota >= 10) return { fondo:'#1a7a1a', texto:'#fff' };
+  if (nota >= 9) return { fondo:'#6dbf6d', texto:'#fff' };
+  if (nota >= 8) return { fondo:'#1a4f8a', texto:'#fff' };
+  if (nota >= 7) return { fondo:'#5b9bd5', texto:'#fff' };
+  if (nota >= 6) return { fondo:'#c05c00', texto:'#fff' };
+  if (nota >= 5) return { fondo:'#f5a623', texto:'#000' };
+  return { fondo:'#c0392b', texto:'#fff' };
+}
+
+function mostrarModal() {
+  const nota = state.puntosGlobal;
+  const colores = colorPorNota(nota);
+  const ahora = new Date();
+  const fecha = ahora.toLocaleDateString('es-ES');
+  const hora = ahora.toLocaleTimeString('es-ES');
+  const segundos = Math.ceil((Date.now() - state.inicio) / 1000);
+  const hh = String(Math.floor(segundos/3600)).padStart(2,'0');
+  const mm = String(Math.floor((segundos%3600)/60)).padStart(2,'0');
+  const tiempo = `${hh}:${mm}`;
+  const fmt = n => n.toFixed(1).replace(/\.0$/, '');
+  const corregidos = Object.values(state.apartados).filter(v => v !== null).length;
+
+  if (nota === 10) document.body.style.background = '#eaf4ea';
+
+  const filaApartado = (etiqueta, valor) => `<div>${etiqueta}: <b>${valor === null ? 'sin corregir — 0/2' : fmt(valor) + '/2'}</b></div>`;
+
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.innerHTML = `
+    <div class="modal-calificacion" style="background-color:${colores.fondo}; color:${colores.texto};">
+      <h2 style="color:${colores.texto};">Informe de la actividad</h2>
+      <div class="nota-grande">${fmt(nota)} / 10</div>
+      <div class="modal-datos" style="background:rgba(255,255,255,.18); border-radius:6px; padding:14px 16px; color:${colores.texto};">
+        <div><b>Alumno/a:</b> ${state.nombre}</div>
+        <div><b>Fecha:</b> ${fecha} — <b>Hora:</b> ${hora}</div>
+        <div><b>Tiempo total:</b> ${tiempo}</div>
+        ${corregidos < 5 ? `<div style="margin-top:8px; font-style:italic;">⚠ ${5-corregidos} apartado(s) sin corregir todavía: cuentan como 0 puntos.</div>` : ''}
+        <hr>
+        <div class="desglose-tipo" style="background:rgba(255,255,255,.25);">
+          ${filaApartado('1. Matriz C', state.apartados.matrizC)}
+          ${filaApartado('1. Matriz D', state.apartados.matrizD)}
+          ${filaApartado('2. Interpretar c₁,₂', state.apartados.preg2)}
+          ${filaApartado('3. Interpretar d₂,₂', state.apartados.preg3)}
+          ${filaApartado('4. Identificar elemento', state.apartados.preg4)}
+        </div>
+      </div>
+      <button class="btn-secundario" id="btn-cerrar-modal" style="border-color:${colores.texto}; color:${colores.texto};">Seguir practicando</button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  document.getElementById('btn-cerrar-modal').addEventListener('click', () => overlay.remove());
+}
+
+/* ================= Inicio ================= */
+const inputNombre = document.getElementById('input-nombre');
+inputNombre.addEventListener('input', () => {
+  state.nombre = inputNombre.value.trim();
+  if (state.nombre) {
+    inputNombre.classList.remove('falta-nombre');
+    ocultarAviso('aviso-nombre');
+  }
+});
+
+iniciarNuevoProblema();
+
+/* Tecla Enter por delegación: funciona también en los inputs/selects
+   generados dinámicamente en cada problema nuevo, sin reengancharse. */
+document.getElementById('zona-problema').addEventListener('keydown', (ev) => {
+  if (ev.key !== 'Enter') return;
+  if (ev.target.closest('table.matriz')) {
+    const btn = document.getElementById('btn-comprobar');
+    if (btn && !btn.disabled) { ev.preventDefault(); btn.click(); }
+  } else if (ev.target.closest('.pregunta-conceptual') || ev.target.closest('.pregunta-final')) {
+    const btn = document.getElementById('btn-comprobar-preguntas');
+    if (btn && !btn.disabled) { ev.preventDefault(); btn.click(); }
+  }
+});
+
+document.getElementById('btn-finalizar').addEventListener('click', () => {
+  if (!state.nombre) {
+    inputNombre.classList.add('falta-nombre');
+    mostrarAviso('aviso-nombre', 'Escribe tu nombre en la cabecera antes de finalizar y calificar.');
+    inputNombre.focus();
+    return;
+  }
+  mostrarModal();
+});
+</script>
+</body>
+</html>
