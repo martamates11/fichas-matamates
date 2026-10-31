@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matrices y determinantes · Ficha interactiva</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap');
+:root{
+  --color-fondo:#F5F0E8; --color-fondo-card:#FDFAF3; --color-texto:#2C1F0E; --color-texto-suave:#6B4F35;
+  --color-acento:#A0522D; --color-acento-hover:#7B3B1E; --color-borde:#C9A96E; --color-borde-suave:#E0CEAA;
+  --color-cabecera:#3B2510; --color-cabecera-txt:#F5EDD8; --color-barra-alumno:#EFE4CC;
+  --color-correcto:#2E6B3E; --color-incorrecto:#8B1A1A; --color-neutro:#E8DFC8;
+  --color-apagado:#A8998A; --color-apagado-fondo:#F3EFE6; --color-k:#B07A10;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:'Lato',sans-serif;font-size:16px;color:var(--color-texto);background:var(--color-fondo);transition:background .4s}
+body.exito{background:#E3F1E3}
+h1,h2,h3,.titulo-ficha{font-family:'Libre Baskerville',serif;color:var(--color-texto)}
+
+.cabecera{background:var(--color-cabecera);color:var(--color-cabecera-txt);font-family:'Libre Baskerville',serif;text-align:center;padding:12px 20px;border-bottom:3px solid var(--color-borde);font-size:.78rem;letter-spacing:.04em}
+
+.ficha-container{max-width:820px;margin:28px auto;background:var(--color-fondo-card);border:2px solid var(--color-borde);border-radius:6px;box-shadow:0 3px 12px rgba(44,31,14,.15);padding:32px 36px}
+.titulo-ficha{font-size:1.6rem;text-align:center;border-bottom:2px solid var(--color-borde);padding-bottom:10px;margin:0 0 8px}
+.titulo-ficha::after{content:'';display:block;width:60px;height:3px;background:var(--color-borde);margin:8px auto 0;border-radius:2px}
+.subtitulo{text-align:center;color:var(--color-texto-suave);font-family:'Libre Baskerville',serif;font-style:italic;font-size:.95rem;margin:0 0 20px}
+
+.barra{position:sticky;top:0;z-index:50;background:var(--color-barra-alumno);border:1.5px solid var(--color-borde);border-radius:6px;margin:0 0 22px;box-shadow:0 2px 6px rgba(44,31,14,.08);color:var(--color-texto);padding:9px 20px;display:flex;flex-wrap:wrap;gap:10px 26px;align-items:center;justify-content:center;font-size:.92rem}
+.barra label{font-family:'Libre Baskerville',serif;font-size:.85rem;color:var(--color-texto-suave)}
+.barra input#nombre{background:var(--color-fondo-card);border:1.5px solid var(--color-borde);border-radius:4px;padding:6px 10px;font-family:'Lato',sans-serif;font-size:.95rem;color:var(--color-texto);width:230px;max-width:60vw;outline:none}
+.barra input#nombre:focus{border-color:var(--color-acento)}
+.barra input#nombre.falta{border-color:var(--color-incorrecto);box-shadow:0 0 0 3px rgba(139,26,26,.18)}
+.barra .dato{color:var(--color-texto-suave)}
+.barra .dato b{color:var(--color-acento);font-family:'Libre Baskerville',serif}
+.aviso-nombre{color:var(--color-incorrecto);font-size:.82rem;font-weight:700;display:none;width:100%;text-align:center}
+.aviso-nombre.visible{display:block}
+
+.instrucciones{background:var(--color-fondo);border:1px solid var(--color-borde-suave);border-radius:4px;padding:10px 18px;margin-bottom:18px;font-size:.9rem;color:var(--color-texto-suave)}
+.instrucciones summary{cursor:pointer;font-family:'Libre Baskerville',serif;color:var(--color-texto);font-size:.92rem}
+.instrucciones ul{margin:10px 0 4px;padding-left:20px;line-height:1.6}
+.instrucciones b{color:var(--color-texto)}
+
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:0 0 18px}
+.tab{border:1.5px solid var(--color-borde-suave);background:var(--color-fondo);border-radius:6px;padding:8px 6px 7px;cursor:pointer;text-align:center;font-family:'Lato',sans-serif;color:var(--color-texto);display:flex;flex-direction:column;align-items:center;gap:2px;transition:border-color .2s,background .2s}
+.tab:hover{border-color:var(--color-borde)}
+.tab .tn{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--color-texto-suave);font-weight:700}
+.tab .tt{font-family:'Libre Baskerville',serif;font-size:.84rem}
+.tab.activa{border-color:var(--color-acento);background:var(--color-fondo-card);box-shadow:inset 0 -3px 0 var(--color-acento)}
+.tab.superado{background:#EAF4EC;border-color:var(--color-correcto)}
+.tab.superado .tn{color:var(--color-correcto)}
+.ventana{display:flex;gap:4px;margin-top:3px}
+.ventana i{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--color-borde);display:inline-block}
+.ventana i.ok{background:var(--color-correcto);border-color:var(--color-correcto)}
+.ventana i.mal{background:var(--color-incorrecto);border-color:var(--color-incorrecto)}
+
+.ejercicio-card{background:var(--color-fondo);border:1.5px solid var(--color-borde-suave);border-left:4px solid var(--color-borde);border-radius:4px;padding:20px 24px;margin-bottom:20px}
+.ej-cab{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px 14px;border-bottom:1px solid var(--color-borde-suave);padding-bottom:8px;margin-bottom:12px}
+.ej-cab h2{font-size:1.1rem;margin:0}
+.estado-tipo{font-size:.8rem;color:var(--color-texto-suave)}
+.ejercicio-card p{line-height:1.65;margin:8px 0}
+.enunciado{font-size:1.02rem}
+.ecuacion{font-family:'Libre Baskerville',serif;font-weight:700;background:var(--color-fondo-card);border:1px solid var(--color-borde-suave);border-radius:4px;padding:2px 10px;white-space:nowrap}
+.nota-in{font-size:.86rem;color:var(--color-texto-suave)}
+.k{color:var(--color-k);font-family:'Libre Baskerville',serif;font-style:italic;font-weight:700}
+
+.mfila{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin:10px 0}
+.mexp{display:inline-flex;align-items:center;gap:6px}
+.mlab{font-family:'Libre Baskerville',serif;font-weight:700;white-space:nowrap}
+.mat{display:inline-grid;position:relative;padding:6px 13px;gap:5px 16px;vertical-align:middle;margin:3px 2px;align-items:center}
+.mat::before,.mat::after{content:'';position:absolute;top:0;bottom:0;width:7px;border:2px solid var(--color-texto-suave)}
+.mat::before{left:0;border-right:0;border-radius:7px 0 0 7px}
+.mat::after{right:0;border-left:0;border-radius:0 7px 7px 0}
+.mat .mc{min-width:1.5em;text-align:center;font-variant-numeric:tabular-nums;display:flex;align-items:center;justify-content:center;font-size:1rem}
+.mat.sol::before,.mat.sol::after{border-color:var(--color-correcto)}
+.mat.sol .mc{color:var(--color-correcto);font-weight:700}
+.mat.in{gap:6px 8px;padding:6px 12px}
+.op{color:var(--color-texto-suave)}
+.num{display:inline-flex;align-items:center;gap:2px;white-space:nowrap}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:.86em;line-height:1.15;margin:0 1px}
+.fr>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.sist{display:inline-block;background:var(--color-fondo-card);border:1px solid var(--color-borde-suave);border-left:4px solid var(--color-borde);border-radius:4px;padding:8px 22px;margin:6px 0;font-family:'Libre Baskerville',serif;font-size:1.05rem;line-height:1.8}
+.respuestas{display:flex;flex-wrap:wrap;gap:8px 30px;align-items:center;margin-top:12px}
+
+input[type="text"],select{background:var(--color-fondo-card);border:1.5px solid var(--color-borde);border-radius:4px;padding:8px 12px;font-family:'Lato',sans-serif;font-size:1rem;color:var(--color-texto);outline:none;transition:border-color .2s,background .2s}
+input[type="text"]:focus,select:focus{border-color:var(--color-acento)}
+input.mi{width:62px;padding:6px 4px;text-align:center}
+input.mi.ancho{width:96px}
+input.mi.ok,select.ok{border-color:var(--color-correcto);background:#EAF4EC}
+input.mi.mal,select.mal{border-color:var(--color-incorrecto);background:#F9EAEA}
+input.mi.rev,select.rev{border-style:dashed;border-color:var(--color-apagado);background:var(--color-apagado-fondo)}
+input:disabled,select:disabled{color:var(--color-texto);opacity:1;cursor:default}
+
+.teclas{display:inline-flex;gap:6px;align-items:center}
+.teclas small{color:var(--color-texto-suave);font-size:.74rem;margin-right:2px}
+.tecla{min-width:34px;height:32px;border:1.5px solid var(--color-borde-suave);background:var(--color-fondo-card);border-radius:4px;font-family:'Libre Baskerville',serif;font-size:1rem;color:var(--color-texto-suave);cursor:pointer}
+.tecla:hover{border-color:var(--color-borde);color:var(--color-texto)}
+
+.apartados{list-style:none;padding:0;margin:12px 0 0}
+.apartados>li{margin:0 0 14px;padding-left:2px}
+.apartados .letra{font-family:'Libre Baskerville',serif;font-weight:700;color:var(--color-acento);margin-right:6px}
+
+.acciones{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.btn-primario{background:var(--color-acento);color:#FDFAF3;border:none;border-radius:4px;padding:10px 22px;font-family:'Lato',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;letter-spacing:.03em;transition:background-color .2s}
+.btn-primario:hover:not(:disabled){background:var(--color-acento-hover)}
+.btn-secundario{background:transparent;color:var(--color-acento);border:2px solid var(--color-borde);border-radius:4px;padding:8px 20px;font-family:'Lato',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;transition:border-color .2s,color .2s}
+.btn-secundario:hover:not(:disabled){border-color:var(--color-acento);color:var(--color-acento-hover)}
+button:disabled{opacity:.45;cursor:default}
+
+.fb{margin-top:16px;border-radius:4px;padding:12px 16px;line-height:1.6;font-size:.94rem}
+.fb[hidden]{display:none}
+.fb.correcto{background:#EAF4EC;border:1.5px solid var(--color-correcto)}
+.fb.correcto>.cab{color:var(--color-correcto)}
+.fb.incorrecto{background:#F9EAEA;border:1.5px solid var(--color-incorrecto)}
+.fb.incorrecto>.cab{color:var(--color-incorrecto)}
+.fb.aviso{background:#FBF3E2;border:1.5px solid var(--color-borde);color:var(--color-texto)}
+.fb.pista{background:var(--color-fondo-card);border:1.5px solid var(--color-borde-suave);border-left:4px solid var(--color-k)}
+.fb.solucion{background:var(--color-apagado-fondo);border:1.5px dashed var(--color-apagado)}
+.fb .cab{font-weight:700}
+.fb .pen{font-weight:700;margin-left:6px}
+.fb .cuerpo{color:var(--color-texto);margin-top:6px}
+.diag{background:#FFF8EC;border-left:3px solid var(--color-acento);border-radius:3px;padding:8px 12px;margin:8px 0 10px}
+.diag b.t{color:var(--color-acento);display:block;font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px}
+.pasos{margin:8px 0 4px;padding-left:22px}
+.pasos>li{margin:6px 0}
+.formula{font-family:'Libre Baskerville',serif;white-space:nowrap}
+.sarrus{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;margin:6px 0;font-size:.92rem}
+.sarrus .sg{font-weight:700;color:var(--color-acento);text-align:center}
+.estado-linea{margin-top:10px;font-size:.88rem;color:var(--color-texto-suave)}
+.logro{margin-top:10px;font-family:'Libre Baskerville',serif;color:var(--color-correcto);font-weight:700}
+.neutro{margin-top:10px;font-size:.88rem;color:var(--color-texto-suave);font-style:italic}
+.bloque-cerrado{text-align:center;padding:26px 10px}
+.bloque-cerrado .sello{font-family:'Libre Baskerville',serif;font-size:1.25rem;color:var(--color-correcto);margin-bottom:6px}
+
+.pie{display:flex;flex-direction:column;align-items:center;gap:16px;margin-top:26px;padding-top:20px;border-top:1px solid var(--color-borde-suave)}
+.btn-finalizar{background:var(--color-cabecera);color:var(--color-cabecera-txt);border:2px solid var(--color-borde);border-radius:4px;padding:10px 24px;font-family:'Libre Baskerville',serif;font-size:.95rem;font-weight:700;cursor:pointer;letter-spacing:.04em;transition:background-color .2s}
+.btn-finalizar:hover{background:#2C1A0A}
+.btn-soluciones{background:transparent;color:var(--color-apagado);border:1px solid #DDD0B6;border-radius:4px;padding:5px 14px;font-family:'Lato',sans-serif;font-size:.78rem;font-weight:400;cursor:pointer;transition:color .2s,border-color .2s}
+.btn-soluciones:hover:not(:disabled){color:var(--color-texto-suave);border-color:var(--color-borde)}
+.btn-soluciones:disabled{opacity:.4;cursor:default}
+.btn-reinicio{background:none;border:none;color:var(--color-apagado);font-size:.74rem;text-decoration:underline;cursor:pointer;font-family:'Lato',sans-serif}
+
+.overlay{position:fixed;inset:0;background:rgba(44,31,14,.55);display:none;align-items:center;justify-content:center;z-index:200;padding:16px}
+.overlay.abierto{display:flex}
+.modal{background:var(--color-fondo-card);border:3px solid var(--color-borde);border-radius:8px;max-width:470px;width:100%;padding:26px 28px;box-shadow:0 6px 24px rgba(44,31,14,.35);max-height:92vh;overflow:auto}
+.modal h3{margin:0 0 10px;font-size:1.15rem}
+.modal p{line-height:1.6;margin:8px 0;font-size:.94rem}
+.modal .acciones{justify-content:flex-end}
+.modal-calificacion{border:3px solid var(--color-borde);border-radius:8px;font-family:'Libre Baskerville',serif;box-shadow:0 6px 24px rgba(44,31,14,.35);padding:28px 30px;max-width:560px;width:100%;text-align:center;max-height:94vh;overflow:auto;position:relative}
+.modal-calificacion .inf-titulo{font-size:1.2rem;font-weight:700}
+.modal-calificacion .inf-sub{font-style:italic;font-size:.85rem;opacity:.9;margin-top:2px}
+.modal-calificacion hr{border:none;border-top:1px solid currentColor;opacity:.4;margin:12px 0}
+.modal-calificacion .inf-enc{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;opacity:.9}
+.modal-calificacion .inf-nombre{font-size:1.1rem;margin-top:6px}
+.modal-calificacion .inf-nota{font-size:3rem;font-weight:700;margin:4px 0}
+.inf-datos{font-family:'Lato',sans-serif;background:rgba(255,255,255,.14);border-radius:6px;padding:10px 14px;text-align:left;font-size:.9rem;line-height:1.7}
+.inf-tabla-wrap{overflow-x:auto;margin-top:12px}
+.inf-tabla{width:100%;border-collapse:collapse;font-family:'Lato',sans-serif;font-size:.8rem;background:rgba(255,255,255,.14);border-radius:6px}
+.inf-tabla th,.inf-tabla td{padding:6px 5px;border-bottom:1px solid rgba(0,0,0,.14);text-align:center}
+.inf-tabla th:first-child,.inf-tabla td:first-child{text-align:left}
+.inf-tabla th{font-weight:700;font-size:.74rem}
+.inf-tabla .sh{display:none}
+.inf-captura{font-family:'Lato',sans-serif;background:rgba(0,0,0,.1);border-radius:6px;padding:9px;margin-top:12px;font-size:.86rem;font-weight:700}
+.btn-cerrar-inf{margin-top:14px;padding:9px 26px;border-radius:4px;background:rgba(255,255,255,.2);border:1.5px solid currentColor;color:inherit;font-family:'Lato',sans-serif;font-weight:700;cursor:pointer}
+.x-cerrar{position:absolute;top:8px;right:12px;background:none;border:none;font-size:1.4rem;color:inherit;cursor:pointer;opacity:.8}
+
+@media (max-width:620px){
+  .ficha-container{margin:0;border-radius:0;border-left:0;border-right:0;padding:20px 14px}
+  .tabs{grid-template-columns:repeat(2,1fr)}
+  .ejercicio-card{padding:16px 14px}
+  input.mi{width:54px}
+  .barra{padding:8px 10px;gap:6px 14px}
+  .mat{gap:5px 11px}
+  .inf-tabla .lg{display:none}
+  .inf-tabla .sh{display:inline}
+  .inf-tabla th,.inf-tabla td{padding:5px 3px}
+  .modal-calificacion{padding:24px 14px}
+  .tecla{min-width:42px;height:40px}
+}
+</style>
+</head>
+<body>
+
+<header class="cabecera">Material elaborado por Marta L Letona S. Basado en el trabajo de Javier Cayetano</header>
+
+<div class="ficha-container">
+  <h1 class="titulo-ficha">Matrices y determinantes</h1>
+  <p class="subtitulo">2.º Bachillerato · Ecuaciones y sistemas matriciales, inversa y potencias</p>
+
+  <div class="barra">
+    <label for="nombre">Alumno/a:</label>
+    <input type="text" id="nombre" placeholder="Nombre y apellidos" autocomplete="off" maxlength="60">
+    <span class="dato">Nota: <b id="m-nota">0</b> / 10</span>
+    <span class="dato">Tipos superados: <b id="m-sup">0</b> / 4</span>
+    <span class="dato">Fallos: <b id="m-fallos">0</b></span>
+    <div class="aviso-nombre" id="aviso-nombre">Escribe tu nombre y apellidos antes de continuar.</div>
+  </div>
+
+  <details class="instrucciones" open>
+    <summary>Cómo funciona esta ficha</summary>
+    <ul>
+      <li>Hay <b>4 tipos de ejercicio</b>; cada uno vale <b>2,5 puntos</b>. Puedes hacerlos en el orden que quieras.</li>
+      <li>Un tipo queda <b>superado con 2 aciertos entre tus 3 últimos intentos</b>. Los círculos de cada pestaña muestran esos intentos.</li>
+      <li>Cada fallo resta <b>0,5 puntos</b>. Las <b>pistas no restan</b>.</li>
+      <li>Si usas «Mostrar soluciones», <b>ese ejercicio no cuenta para la nota</b> (los fallos que ya tuvieras sí).</li>
+      <li>Puedes escribir enteros, fracciones (<b>−3/4</b>) o decimales con coma (<b>0,5</b>). Si tu teclado no tiene el signo menos o la barra, usa los botones <b>− / ,</b> que hay junto a las casillas.</li>
+    </ul>
+  </details>
+
+  <nav class="tabs" id="tabs" role="tablist" aria-label="Tipos de ejercicio"></nav>
+
+  <section id="zona" aria-live="polite"></section>
+
+  <div class="pie">
+    <button class="btn-finalizar" id="b-finalizar" type="button">Finalizar y calificar</button>
+    <button class="btn-soluciones" id="b-soluciones" type="button">Mostrar soluciones</button>
+    <button class="btn-reinicio" id="b-reinicio" type="button">Reiniciar la ficha</button>
+  </div>
+</div>
+
+<!-- Modal: mostrar soluciones -->
+<div class="overlay" id="ov-sol" role="dialog" aria-modal="true" aria-labelledby="sol-tit">
+  <div class="modal">
+    <h3 id="sol-tit">¿Mostrar las soluciones?</h3>
+    <p>Verás resuelto, con sus explicaciones, el <b>ejercicio en curso</b>.</p>
+    <p><b>Ese ejercicio no contará para la nota.</b> Los fallos que ya hayas cometido siguen restando. Después podrás seguir con un ejercicio nuevo.</p>
+    <div class="acciones">
+      <button class="btn-secundario" id="sol-si" type="button">Sí, mostrar soluciones</button>
+      <button class="btn-primario" id="sol-no" type="button">Volver al ejercicio</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: reiniciar -->
+<div class="overlay" id="ov-rei" role="dialog" aria-modal="true" aria-labelledby="rei-tit">
+  <div class="modal">
+    <h3 id="rei-tit">¿Reiniciar la ficha?</h3>
+    <p>Se borrarán la nota, los intentos y el tiempo. Tu nombre se mantiene.</p>
+    <div class="acciones">
+      <button class="btn-secundario" id="rei-si" type="button">Sí, reiniciar</button>
+      <button class="btn-primario" id="rei-no" type="button">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: informe -->
+<div class="overlay" id="ov-inf" role="dialog" aria-modal="true" aria-label="Informe de la actividad">
+  <div class="modal-calificacion" id="inf-caja"></div>
+</div>
+
+<script>
+'use strict';
+/* =========================================================
+   Azar. En producción es Math.random; para QA: ?seed=123
+   ========================================================= */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const SEED = new URLSearchParams(location.search).get('qa_semilla_mld');
+const rand = SEED !== null ? mulberry32(Number(SEED) || 1) : Math.random;
+const rnd = (a,b) => Math.floor(rand()*(b-a+1))+a;
+const rnz = (a,b) => { let v=0; while(v===0) v=rnd(a,b); return v; };
+const pick = arr => arr[Math.floor(rand()*arr.length)];
+const $ = s => document.querySelector(s);
+
+/* =========================================================
+   Fracciones exactas
+   ========================================================= */
+function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){const t=a%b;a=b;b=t;}return a;}
+function F(n,d=1){ if(d===0) return null; if(d<0){n=-n;d=-d;} const g=gcd(n,d)||1; return {n:n/g+0, d:d/g}; }
+const fadd=(x,y)=>F(x.n*y.d+y.n*x.d,x.d*y.d);
+const fmul=(x,y)=>F(x.n*y.n,x.d*y.d);
+const feq=(x,y)=>!!x&&!!y&&x.n===y.n&&x.d===y.d;
+const fStr=f=>(f.d===1?String(f.n):f.n+'/'+f.d).replace('-','−');
+function limpiaEntrada(s){return String(s).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-');}
+function parseFr(raw){
+  if(raw==null) return null;
+  const s=limpiaEntrada(raw);
+  if(s==='') return null;
+  let m;
+  if((m=s.match(/^([+-]?)(\d+)$/))) return F((m[1]==='-'?-1:1)*parseInt(m[2],10));
+  if((m=s.match(/^([+-]?)(\d+)\/([+-]?)(\d+)$/))){
+    const den=parseInt(m[4],10); if(den===0) return null;
+    const sg=((m[1]==='-')!==(m[3]==='-'))?-1:1;
+    return F(sg*parseInt(m[2],10),den);
+  }
+  if((m=s.match(/^([+-]?)(\d*)[.,](\d{1,6})$/))){
+    const den=10**m[3].length;
+    return F((m[1]==='-'?-1:1)*(parseInt(m[2]||'0',10)*den+parseInt(m[3],10)),den);
+  }
+  return null;
+}
+function fraccionSinSimplificar(raw){const m=limpiaEntrada(raw).match(/^[+-]?(\d+)\/[+-]?(\d+)$/);return !!m&&gcd(+m[1],+m[2])>1;}
+const esDecimal=raw=>/[.,]/.test(limpiaEntrada(raw));
+
+/* =========================================================
+   Matrices (enteras y de fracciones)
+   ========================================================= */
+const I2=[[1,0],[0,1]];
+const mmul=(A,B)=>A.map(r=>B[0].map((_,j)=>r.reduce((s,v,k)=>s+v*B[k][j],0)));
+const madd=(A,B)=>A.map((r,i)=>r.map((v,j)=>v+B[i][j]));
+const msub=(A,B)=>A.map((r,i)=>r.map((v,j)=>v-B[i][j]));
+const mscl=(A,k)=>A.map(r=>r.map(v=>v*k));
+const det2=m=>m[0][0]*m[1][1]-m[0][1]*m[1][0];
+const adj2=m=>[[m[1][1],-m[0][1]],[-m[1][0],m[0][0]]];   // Adj(M)ᵗ de una 2×2
+const meqI=(A,B)=>A.every((r,i)=>r.every((v,j)=>v===B[i][j]));
+const mF=A=>A.map(r=>r.map(v=>typeof v==='number'?F(v):v));
+const fmmul=(A,B)=>A.map(r=>B[0].map((_,j)=>r.reduce((s,v,k)=>fadd(s,fmul(v,B[k][j])),F(0))));
+const fmscl=(A,f)=>A.map(r=>r.map(v=>fmul(v,f)));
+const meqF=(A,B)=>A.every((r,i)=>r.every((v,j)=>feq(v,B[i][j])));
+const invF=M=>fmscl(mF(adj2(M)),F(1,det2(M)));
+function potencia(A,n){let R=I2;for(let i=0;i<n;i++)R=mmul(R,A);return R;}
+
+/* =========================================================
+   Presentación
+   ========================================================= */
+const menos=n=>n<0?'−'+Math.abs(n):String(n);
+const par=n=>n<0?'('+menos(n)+')':String(n);
+function numH(v){
+  if(typeof v==='string') return v;
+  if(typeof v==='number') return menos(v);
+  if(v.d===1) return menos(v.n);
+  return `<span class="num">${v.n<0?'−':''}<span class="fr"><span>${Math.abs(v.n)}</span><span>${v.d}</span></span></span>`;
+}
+function matH(M,cls=''){return `<span class="mat ${cls}" style="grid-template-columns:repeat(${M[0].length},auto)">${M.flat().map(v=>`<span class="mc">${numH(v)}</span>`).join('')}</span>`;}
+const lab=(name,M,cls)=>`<span class="mexp"><span class="mlab">${name} =</span>${matH(M,cls)}</span>`;
+const fila=(...x)=>`<div class="mfila">${x.join('')}</div>`;
+function matIn(id,etq){
+  let h=`<span class="mat in" style="grid-template-columns:repeat(2,auto)">`;
+  for(let i=0;i<2;i++)for(let j=0;j<2;j++)
+    h+=`<input class="mi" id="${id}_${i}_${j}" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="${etq}: fila ${i+1}, columna ${j+1}">`;
+  return h+'</span>';
+}
+const teclas=()=>`<span class="teclas"><small>Teclas:</small><button type="button" class="tecla" data-t="−" aria-label="Signo menos">−</button><button type="button" class="tecla" data-t="/" aria-label="Barra de fracción">/</button><button type="button" class="tecla" data-t="," aria-label="Coma decimal">,</button></span>`;
+function termino(k,L,primero){const a=Math.abs(k),c=(a===1?'':a)+L;return primero?(k<0?'−':'')+c:(k<0?' − ':' + ')+c;}
+function lin(kc,c){ // expresión kc·k + c
+  if(kc===0) return menos(c);
+  let s=(kc===1?'':kc===-1?'−':menos(kc))+'<span class="k">k</span>';
+  if(c>0) s+=' + '+c; else if(c<0) s+=' − '+Math.abs(c);
+  return s;
+}
+const fmtNum=x=>String(Math.round(x*100)/100).replace('.',',');
+
+function leerMat(id){
+  const M=[],malos=[];let vacias=0;
+  for(let i=0;i<2;i++){const r=[];for(let j=0;j<2;j++){
+    const el=document.getElementById(`${id}_${i}_${j}`);const s=el.value.trim();
+    if(s===''){vacias++;r.push(null);} else {const f=parseFr(s);if(!f)malos.push(el.id);r.push(f);}
+  }M.push(r);}
+  return {M,vacias,malos};
+}
+function marcasMat(id,S,Sol){const o={};for(let i=0;i<2;i++)for(let j=0;j<2;j++)o[`${id}_${i}_${j}`]=feq(S[i][j],Sol[i][j]);return o;}
+function rellenarMat(id,M){const Mf=mF(M);for(let i=0;i<2;i++)for(let j=0;j<2;j++)document.getElementById(`${id}_${i}_${j}`).value=fStr(Mf[i][j]);}
+const MSG_INCOMPLETO='Rellena todas las casillas antes de corregir.';
+const MSG_FORMATO='No entiendo lo que has escrito en las casillas marcadas. Usa enteros (−3), fracciones (3/4) o decimales con coma (0,5).';
+function revisarEntrada(lecturas){ // lecturas: [{vacias,malos}]
+  const malos=lecturas.flatMap(l=>l.malos);
+  if(lecturas.some(l=>l.vacias>0)) return {estado:'incompleto',msg:MSG_INCOMPLETO};
+  if(malos.length){const marcas={};malos.forEach(id=>marcas[id]=false);return {estado:'formato',titulo:'Formato no válido.',msg:MSG_FORMATO,marcas};}
+  return null;
+}
+const diagBox=t=>t?`<div class="diag"><b class="t">Dónde está el error</b>${t}</div>`:'';
+const pasosH=p=>`<ol class="pasos">${p.map(x=>`<li>${x}</li>`).join('')}</ol>`;
+
+/* =========================================================
+   TIPO 1 · Ecuaciones matriciales
+   ========================================================= */
+const T1V=[
+  {eq:'AX = B',lado:'L',conC:false,k:0,signo:1,Mtxt:'A',Rtxt:'B',agrup:'X aparece una sola vez, multiplicada por A: AX = B'},
+  {eq:'XA = B',lado:'R',conC:false,k:0,signo:1,Mtxt:'A',Rtxt:'B',agrup:'X aparece una sola vez, multiplicada por A: XA = B'},
+  {eq:'AX − B = CX',lado:'L',conC:true,k:0,signo:1,Mtxt:'A − C',Rtxt:'B',agrup:'Pasamos los términos con X al primer miembro y B al segundo: AX − CX = B. Sacamos X factor común <b>por la derecha</b>: (A − C)X = B'},
+  {eq:'XA − B = XC',lado:'R',conC:true,k:0,signo:1,Mtxt:'A − C',Rtxt:'B',agrup:'Pasamos los términos con X al primer miembro: XA − XC = B. Sacamos X factor común <b>por la izquierda</b>: X(A − C) = B'},
+  {eq:'AX − X = B',lado:'L',conC:false,k:1,signo:1,Mtxt:'A − I',Rtxt:'B',agrup:'Escribimos X = I·X para poder sacar factor común: AX − IX = B ⟹ (A − I)X = B'},
+  {eq:'AX + B = 2X',lado:'L',conC:false,k:2,signo:-1,Mtxt:'A − 2I',Rtxt:'(−B)',agrup:'Pasamos 2X al primer miembro y B al segundo: AX − 2X = −B. Como 2X = 2I·X: (A − 2I)X = −B'},
+  {eq:'XA + B = 2X',lado:'R',conC:false,k:2,signo:-1,Mtxt:'A − 2I',Rtxt:'(−B)',agrup:'Pasamos 2X al primer miembro y B al segundo: XA − 2X = −B. Como 2X = X·2I: X(A − 2I) = −B'},
+];
+let ultimaVarT1=-1;
+function construirT1(v,M,X,C){
+  const R=v.lado==='L'?mmul(M,X):mmul(X,M);
+  const B=mscl(R,v.signo);
+  const A=v.conC?madd(M,C):madd(M,mscl(I2,v.k));
+  return {v,M,X,R,B,A,C};
+}
+const T1={
+  nombre:'Ecuaciones matriciales', corto:'Ecuaciones',
+  gen(){
+    let iv; do{iv=rnd(0,T1V.length-1);}while(iv===ultimaVarT1); ultimaVarT1=iv;
+    const v=T1V[iv];
+    for(let t=0;t<400;t++){
+      const M=[[rnd(-3,3),rnd(-3,3)],[rnd(-3,3),rnd(-3,3)]];
+      const dM=det2(M);
+      if(dM===0||Math.abs(dM)>6) continue;
+      if(M[0][1]===0&&M[1][0]===0) continue;
+      const X=[[rnd(-3,3),rnd(-3,3)],[rnd(-3,3),rnd(-3,3)]];
+      if(X.flat().filter(x=>x!==0).length<3) continue;
+      let C=null;
+      if(v.conC){C=[[rnd(-2,2),rnd(-2,2)],[rnd(-2,2),rnd(-2,2)]];if(C.flat().filter(x=>x!==0).length<2)continue;}
+      const d=construirT1(v,M,X,C);
+      // la solución con la inversa en el lado equivocado debe ser distinta
+      const Rf=mF(d.R),Mi=invF(M);
+      const alt=v.lado==='L'?fmmul(Rf,Mi):fmmul(Mi,Rf);
+      if(meqF(alt,mF(X))) continue;
+      if(d.A.flat().some(x=>Math.abs(x)>6)||d.B.flat().some(x=>Math.abs(x)>20)) continue;
+      return d;
+    }
+    return construirT1(T1V[0],[[2,1],[1,1]],[[1,-2],[3,0]],null);
+  },
+  html(d){
+    const {v,A,B,C}=d;
+    return `<p>Dadas las matrices</p>${fila(lab('A',A),lab('B',B),C?lab('C',C):'')}
+      <p class="enunciado">Resuelve la ecuación matricial <span class="ecuacion">${v.eq}</span>${v.k?' <span class="nota-in">(I es la matriz identidad de orden 2)</span>':''}</p>
+      <div class="respuestas"><span class="mexp"><span class="mlab">X =</span>${matIn('t1x','Matriz X')}</span>${teclas()}</div>`;
+  },
+  pista(d){
+    const k=d.v.k?` Recuerda que ${d.v.k===1?'X = I·X':'2X = 2I·X'}: no se puede restar un número a una matriz.`:'';
+    return 'Agrupa los términos con X en un miembro y saca X factor común. Si X queda a la derecha de una matriz M (MX = …), multiplica los dos miembros por M<sup>−1</sup> <b>por la izquierda</b>; si queda a la izquierda (XM = …), <b>por la derecha</b>.'+k;
+  },
+  fill(d){rellenarMat('t1x',d.X);},
+  check(d){
+    const r=leerMat('t1x');const e=revisarEntrada([r]);if(e)return e;
+    const S=r.M,ok=meqF(S,mF(d.X));
+    return {estado:'corregido',ok,marcas:marcasMat('t1x',S,mF(d.X)),cuerpo:(ok?'':diagBox(diagT1(d,S)))+pasosT1(d)};
+  }
+};
+function mpT1(v){return v.Mtxt==='A'?'A':`(${v.Mtxt})`;}
+function diagT1(d,S){
+  const {v,M,X,R,A}=d,Rf=mF(R),izq=v.lado==='L',Mp=mpT1(v);
+  const por=Q=>izq?fmmul(Q,Rf):fmmul(Rf,Q);
+  if(meqF(S,izq?fmmul(Rf,invF(M)):fmmul(invF(M),Rf)))
+    return `Has multiplicado por la inversa <b>por el lado equivocado</b>. X está a la ${izq?'derecha':'izquierda'} de ${Mp}, así que ${Mp}<sup>−1</sup> tiene que ir a la ${izq?'izquierda':'derecha'}. El producto de matrices no es conmutativo: el orden importa.`;
+  if(det2(M)===-1&&meqF(S,mF(mscl(X,-1))))
+    return `Tu matriz es la solución con el signo cambiado. Como |${v.Mtxt}| = −1, puede que te haya faltado <b>dividir entre el determinante</b>, o que el error esté al pasar términos de un miembro a otro.`;
+  if(meqF(S,mF(mscl(X,-1))))
+    return 'Tu matriz es la solución con el signo cambiado. Revisa los signos al pasar términos de un miembro a otro.';
+  if(v.Mtxt!=='A'&&det2(A)!==0&&meqF(S,por(invF(A))))
+    return `Has usado A<sup>−1</sup> en lugar de ${Mp}<sup>−1</sup>. Antes de multiplicar por una inversa hay que agrupar todos los términos con X y sacar X factor común.`;
+  if(v.k>0){
+    const Mbad=A.map(r=>r.map(x=>x-v.k));
+    if(det2(Mbad)!==0&&meqF(S,por(invF(Mbad))))
+      return `Has restado ${v.k} a todos los elementos de A. No se puede restar un número a una matriz: ${v.k===1?'X = I·X, por eso se resta I':'2X = 2I·X, por eso se resta 2I'}, que solo cambia la diagonal principal.`;
+  }
+  if(meqF(S,por(mF(M))))
+    return `Has multiplicado por ${Mp} en lugar de por su inversa ${Mp}<sup>−1</sup>.`;
+  const dM=det2(M),cofNoT=[[M[1][1],-M[1][0]],[-M[0][1],M[0][0]]];
+  if(!meqI(cofNoT,adj2(M))&&meqF(S,por(fmscl(mF(cofNoT),F(1,dM)))))
+    return 'Error al calcular la inversa: has olvidado <b>trasponer</b> la matriz adjunta.';
+  if(dM!==1&&meqF(S,por(mF(adj2(M)))))
+    return `Error al calcular la inversa: te ha faltado <b>dividir entre el determinante</b> (|${v.Mtxt}| = ${menos(dM)}).`;
+  const mal=S.flat().filter((x,i)=>!feq(x,mF(X).flat()[i])).length;
+  return `Tienes ${mal} de 4 elementos mal. Compara con los pasos: si tu inversa coincide, el error está en el último producto (fila por columna).`;
+}
+function pasosT1(d){
+  const {v,M,X,R}=d,dM=det2(M),ad=adj2(M),Mp=mpT1(v),izq=v.lado==='L';
+  const form=izq?`X = ${Mp}<sup>−1</sup>·${v.Rtxt}`:`X = ${v.Rtxt}·${Mp}<sup>−1</sup>`;
+  const p=[];
+  p.push(`<b>Despejar X.</b> ${v.agrup}. Como X queda a la <b>${izq?'derecha':'izquierda'}</b> de ${Mp}, multiplicamos por su inversa <b>por la ${izq?'izquierda':'derecha'}</b>: <span class="formula">${form}</span>.`);
+  if(v.Mtxt!=='A') p.push(`<b>Calcular ${v.Mtxt}.</b>${fila(lab(v.Mtxt,M))}`);
+  p.push(`<b>Determinante.</b> |${v.Mtxt}| = ${par(M[0][0])}·${par(M[1][1])} − ${par(M[0][1])}·${par(M[1][0])} = <b>${menos(dM)}</b> ≠ 0, así que ${Mp} tiene inversa.`);
+  p.push(`<b>Inversa.</b> En una 2×2 se intercambian los elementos de la diagonal principal, se cambia el signo de los de la secundaria y se divide entre el determinante:${fila(`<span class="mlab">${Mp}<sup>−1</sup> =</span>`,numH(F(1,dM)),matH(ad))}`);
+  if(v.signo<0) p.push(`<b>Segundo miembro.</b>${fila(lab('−B',R))}`);
+  const prod=izq?mmul(ad,R):mmul(R,ad);
+  const fac=dM===1?'':numH(F(1,dM))+' · ';
+  const factores=izq?matH(ad)+'<span class="op">·</span>'+matH(R):matH(R)+'<span class="op">·</span>'+matH(ad);
+  p.push(`<b>Resultado.</b>${fila('<span class="mlab">X =</span>',fac,factores,'<span class="op">=</span>',dM===1?'':fac+matH(prod)+'<span class="op">=</span>',matH(X,'sol'))}`);
+  return pasosH(p);
+}
+
+/* =========================================================
+   TIPO 2 · Sistemas matriciales
+   ========================================================= */
+function construirT2(a,b,c,d,X,Y){return {a,b,c,d,X,Y,A:madd(mscl(X,a),mscl(Y,b)),B:madd(mscl(X,c),mscl(Y,d))};}
+const T2={
+  nombre:'Sistemas matriciales', corto:'Sistemas',
+  gen(){
+    const CO=[-2,-1,1,2,3];
+    for(let t=0;t<500;t++){
+      const a=pick(CO),b=pick(CO),c=pick(CO),d=pick(CO),D=a*d-b*c;
+      if(D===0||Math.abs(D)>7) continue;
+      const X=[[rnd(-3,3),rnd(-3,3)],[rnd(-3,3),rnd(-3,3)]],Y=[[rnd(-3,3),rnd(-3,3)],[rnd(-3,3),rnd(-3,3)]];
+      if(X.flat().filter(x=>x).length<2||Y.flat().filter(x=>x).length<2||meqI(X,Y)) continue;
+      const s=construirT2(a,b,c,d,X,Y);
+      if(s.A.flat().concat(s.B.flat()).some(x=>Math.abs(x)>15)) continue;
+      return s;
+    }
+    return construirT2(1,1,1,-1,[[2,0],[-1,3]],[[1,-2],[0,1]]);
+  },
+  html(d){
+    return `<p>Dadas las matrices</p>${fila(lab('A',d.A),lab('B',d.B))}
+      <p class="enunciado">Halla las matrices X e Y que cumplen el sistema</p>
+      <div class="sist">${termino(d.a,'X',true)}${termino(d.b,'Y')} = A<br>${termino(d.c,'X',true)}${termino(d.d,'Y')} = B</div>
+      <div class="respuestas"><span class="mexp"><span class="mlab">X =</span>${matIn('t2x','Matriz X')}</span><span class="mexp"><span class="mlab">Y =</span>${matIn('t2y','Matriz Y')}</span>${teclas()}</div>`;
+  },
+  pista(){return 'Usa el <b>método de reducción</b>, como en un sistema de ecuaciones con números: multiplica las ecuaciones por números adecuados y réstalas para que desaparezca Y; así obtienes X. Después elimina X de la misma forma (o sustituye X en una ecuación) para obtener Y.';},
+  fill(d){rellenarMat('t2x',d.X);rellenarMat('t2y',d.Y);},
+  check(d){
+    const rx=leerMat('t2x'),ry=leerMat('t2y');const e=revisarEntrada([rx,ry]);if(e)return e;
+    const Xf=mF(d.X),Yf=mF(d.Y),okX=meqF(rx.M,Xf),okY=meqF(ry.M,Yf),ok=okX&&okY;
+    return {estado:'corregido',ok,marcas:{...marcasMat('t2x',rx.M,Xf),...marcasMat('t2y',ry.M,Yf)},
+      cuerpo:(ok?'':diagBox(diagT2(d,rx.M,ry.M,okX,okY)))+pasosT2(d)};
+  }
+};
+function factoresT2(d){
+  const {a,b,c,d:dd}=d,D=a*dd-b*c,g=gcd(b,dd),h=gcd(a,c);
+  return {D,p:dd/g,q:b/g,cx:D/g,r:a/h,s:c/h,cy:D/h};
+}
+function diagT2(d,S,T,okX,okY){
+  const {X,Y,a,b}=d,{cx,cy}=factoresT2(d);
+  if(meqF(S,mF(Y))&&meqF(T,mF(X))) return 'Has intercambiado X e Y: tus dos matrices están bien, pero cada una en el lugar de la otra.';
+  if(okX&&!okY){
+    if(Math.abs(cy)!==1&&meqF(T,mF(mscl(Y,cy)))) return `X está bien. Para Y te queda ${termino(cy,'Y',true)} = …; te ha faltado <b>dividir entre ${menos(cy)}</b>.`;
+    if(meqF(T,mF(mscl(Y,-1)))) return 'X está bien, pero Y tiene el signo cambiado. Revisa el signo al despejar.';
+    return `X está bien; el error está en Y. Puedes comprobarla sustituyendo X en la 1.ª ecuación: ${termino(b,'Y',true)} = A${termino(-a,'X')}.`;
+  }
+  if(okY&&!okX){
+    if(Math.abs(cx)!==1&&meqF(S,mF(mscl(X,cx)))) return `Y está bien. Para X te queda ${termino(cx,'X',true)} = …; te ha faltado <b>dividir entre ${menos(cx)}</b>.`;
+    if(meqF(S,mF(mscl(X,-1)))) return 'Y está bien, pero X tiene el signo cambiado. Revisa el signo al despejar.';
+    return 'Y está bien; el error está en X. Revisa la combinación de ecuaciones que elimina Y.';
+  }
+  if(Math.abs(cx)!==1&&meqF(S,mF(mscl(X,cx)))) return `Al eliminar Y te queda ${termino(cx,'X',true)} = …; te ha faltado <b>dividir entre ${menos(cx)}</b>.`;
+  if(Math.abs(cy)!==1&&meqF(T,mF(mscl(Y,cy)))) return `Al eliminar X te queda ${termino(cy,'Y',true)} = …; te ha faltado <b>dividir entre ${menos(cy)}</b>.`;
+  if(meqF(S,mF(mscl(X,-1)))&&meqF(T,mF(mscl(Y,-1)))) return 'Las dos matrices tienen el signo cambiado. Revisa los signos al restar las ecuaciones.';
+  return 'X e Y no son correctas. Sigue los pasos de abajo y, al terminar, comprueba tu resultado sustituyendo en las dos ecuaciones.';
+}
+function mulTxt(k,cual,primera){
+  if(k===1) return primera?`Tomamos la ${cual} ecuación tal cual`:`la ${cual} tal cual`;
+  return primera?`Multiplicamos la ${cual} ecuación por ${par(k)}`:`la ${cual} por ${par(k)}`;
+}
+function pasosT2(d){
+  const {A,B,X,Y}=d,{p,q,cx,r,s,cy}=factoresT2(d);
+  const RX=msub(mscl(A,p),mscl(B,q)),RY=msub(mscl(B,r),mscl(A,s));
+  const fin=(c,L,RM,Sol)=>Math.abs(c)===1?(c===1?'':fila(`<span class="mlab">${L} =</span>`,'−',matH(RM),'<span class="op">=</span>',matH(Sol,'sol'))):fila(`<span class="mlab">${L} =</span>`,numH(F(1,c)),'<span class="op">·</span>',matH(RM),'<span class="op">=</span>',matH(Sol,'sol'));
+  const pp=[];
+  pp.push(`<b>Eliminar Y.</b> ${mulTxt(p,'1.ª',true)} y ${mulTxt(q,'2.ª',false)}; al restarlas desaparece Y:${fila(`<span class="mlab">${termino(cx,'X',true)} = ${termino(p,'A',true)}${termino(-q,'B')} =</span>`,matH(RX,cx===1?'sol':''))}${fin(cx,'X',RX,X)}`);
+  pp.push(`<b>Eliminar X.</b> ${mulTxt(r,'2.ª',true)} y ${mulTxt(s,'1.ª',false)}; al restarlas desaparece X:${fila(`<span class="mlab">${termino(cy,'Y',true)} = ${termino(r,'B',true)}${termino(-s,'A')} =</span>`,matH(RY,cy===1?'sol':''))}${fin(cy,'Y',RY,Y)}`);
+  pp.push('<b>Comprobación.</b> Sustituye X e Y en las dos ecuaciones del sistema: deben cumplirse las dos.');
+  return pasosH(pp);
+}
+
+/* =========================================================
+   TIPO 3 · Inversa con parámetro (3×3, Sarrus)
+   ========================================================= */
+const SARRUS=[[1,[[0,0],[1,1],[2,2]]],[1,[[0,1],[1,2],[2,0]]],[1,[[0,2],[1,0],[2,1]]],[-1,[[0,2],[1,1],[2,0]]],[-1,[[0,0],[1,2],[2,1]]],[-1,[[0,1],[1,0],[2,2]]]];
+function construirT3(v,pos,modo,obj){
+  let cof=0,rest=0;
+  for(const [sg,cells] of SARRUS){let prod=sg,conK=false;for(const [i,j] of cells){if(i*3+j===pos)conK=true;else prod*=v[i*3+j];}if(conK)cof+=prod;else rest+=prod;}
+  return {v,pos,modo,obj,cof,rest,k:cof!==0?F(obj-rest,cof):null};
+}
+const T3={
+  nombre:'Inversa con parámetro', corto:'Inversa',
+  gen(){
+    for(let t=0;t<800;t++){
+      const v=Array.from({length:9},()=>rnd(-3,3)),pos=rnd(0,8);
+      if(v.filter((x,i)=>i!==pos&&x===0).length>2) continue;
+      const modo=rand()<0.7?'inv':'det',obj=modo==='det'?rnz(-4,4):0;
+      const d=construirT3(v,pos,modo,obj);
+      if(d.cof===0||Math.abs(d.cof)>12) continue;
+      if(d.rest===obj) continue;            // evita k = 0
+      if(Math.abs(d.k.n/d.k.d)>12||d.k.d>6) continue;
+      return d;
+    }
+    return construirT3([1,2,3,4,5,6,7,8,0],8,'inv',0);   // |A| = −3k + 27 ⟹ k = 9
+  },
+  html(d){
+    const M=[0,1,2].map(i=>[0,1,2].map(j=>i*3+j===d.pos?'<span class="k">k</span>':menos(d.v[i*3+j])));
+    const preg=d.modo==='inv'
+      ?'¿Para qué valor de <span class="k">k</span> la matriz A <b>no tiene inversa</b>?'
+      :`¿Para qué valor de <span class="k">k</span> se cumple que <b>|A| = ${menos(d.obj)}</b>?`;
+    return `<p>Dada la matriz</p>${fila(lab('A',M))}
+      <p class="enunciado">${preg}</p>
+      <p class="nota-in">Si el resultado no es entero, escríbelo como fracción (por ejemplo, −7/3).</p>
+      <div class="respuestas"><span class="mexp"><span class="mlab"><span class="k">k</span> =</span><input class="mi ancho" id="t3k" type="text" autocomplete="off" spellcheck="false" aria-label="Valor de k"></span>${teclas()}</div>`;
+  },
+  pista(d){
+    return d.modo==='inv'
+      ?'Una matriz cuadrada tiene inversa si y solo si su determinante es distinto de 0. Calcula |A| por la regla de Sarrus (te quedará una expresión con k), iguálalo a 0 y despeja k.'
+      :`Calcula |A| por la regla de Sarrus (te quedará una expresión con k), iguálalo a ${menos(d.obj)} y despeja k.`;
+  },
+  fill(d){document.getElementById('t3k').value=fStr(d.k);},
+  check(d){
+    const raw=document.getElementById('t3k').value;
+    if(raw.trim()==='') return {estado:'incompleto',msg:'Escribe el valor de k antes de corregir.'};
+    const S=parseFr(raw);
+    if(!S) return {estado:'formato',titulo:'Formato no válido.',msg:MSG_FORMATO,marcas:{t3k:false}};
+    const ok=feq(S,d.k);
+    const exacto=d.k.n/d.k.d, dif=Math.abs(S.n/S.d-exacto);
+    const nDec=esDecimal(raw)?(limpiaEntrada(raw).split(/[.,]/)[1]||'').length:0;
+    if(!ok&&d.k.d!==1&&(esDecimal(raw)?dif<10**(-nDec):dif<1))
+      return {estado:'aviso',titulo:'Valor aproximado.',msg:`Has redondeado: el valor exacto de k no es ${esDecimal(raw)?'un decimal exacto':'un número entero'}. Escríbelo como fracción (a/b). No se cuenta como fallo.`,marcas:{t3k:false}};
+    let nota='';
+    if(ok&&fraccionSinSimplificar(raw)) nota=`<p>Valor correcto. Recuerda simplificar: ${numH(d.k)}.</p>`;
+    return {estado:'corregido',ok,marcas:{t3k:ok},cuerpo:nota+(ok?'':diagBox(diagT3(d,S)))+pasosT3(d)};
+  }
+};
+function diagT3(d,S){
+  const {cof,rest,obj,k}=d;
+  if(feq(S,F(-k.n,k.d))) return 'Tienes el valor con el signo cambiado. Revisa el último paso: al pasar un término al otro miembro cambia de signo.';
+  if(d.modo==='det'&&cof!==0&&feq(S,F(obj+rest,cof))) return `Al despejar no has cambiado de signo el término independiente: de ${lin(cof,rest)} = ${menos(obj)} se obtiene ${lin(cof,0)} = ${menos(obj)} ${rest>0?'−':'+'} ${Math.abs(rest)}.`;
+  if(obj-rest!==0&&feq(S,F(cof,obj-rest))) return `Has dividido al revés: si ${lin(cof,0)} = ${menos(obj-rest)}, entonces k = ${numH(d.k)} (se divide entre el coeficiente de k).`;
+  return 'El valor no anula el determinante. Compara tu desarrollo con el de abajo, término a término: los errores más habituales están en los signos de los productos.';
+}
+function pasosT3(d){
+  const {v,pos,cof,rest,modo,obj,k}=d;
+  const fac=(i,j)=>i*3+j===pos?'<span class="k">k</span>':par(v[i*3+j]);
+  let filas='',P=[0,0],N=[0,0];
+  for(const [sg,cells] of SARRUS){
+    let prod=1,conK=false;for(const [i,j] of cells){if(i*3+j===pos)conK=true;else prod*=v[i*3+j];}
+    const val=conK?lin(prod,0):menos(prod);
+    filas+=`<span class="sg">${sg>0?'+':'−'}</span><span>${cells.map(([i,j])=>fac(i,j)).join('·')} = ${val}</span>`;
+    const acc=sg>0?P:N; if(conK)acc[0]+=prod;else acc[1]+=prod;
+  }
+  const p=[];
+  p.push(`<b>Regla de Sarrus.</b> Tres productos se suman (diagonal principal y sus paralelas) y tres se restan (diagonal secundaria y sus paralelas):<div class="sarrus">${filas}</div>`);
+  p.push(`<b>Agrupar.</b> |A| = (${lin(P[0],P[1])}) − (${lin(N[0],N[1])}) = <b>${lin(cof,rest)}</b>`);
+  if(modo==='inv')
+    p.push(`<b>Condición.</b> A no tiene inversa ⇔ |A| = 0: <span class="formula">${lin(cof,rest)} = 0 ⟹ ${lin(cof,0)} = ${menos(-rest)}${cof!==1?` ⟹ <span class="k">k</span> = ${numH(k)}`:''}</span>. Para cualquier otro valor de k, |A| ≠ 0 y A sí tiene inversa.`);
+  else
+    p.push(`<b>Ecuación.</b> <span class="formula">${lin(cof,rest)} = ${menos(obj)} ⟹ ${lin(cof,0)} = ${menos(obj-rest)}${cof!==1?` ⟹ <span class="k">k</span> = ${numH(k)}`:''}</span>`);
+  return pasosH(p);
+}
+
+/* =========================================================
+   TIPO 4 · Potencias de matrices
+   ========================================================= */
+const FAM={
+  inv:{N:a=>1-a*a,as:[-3,-2,-1,0,1,2,3],tr:0,n:[10,40],prop:'I',p:2},
+  neg:{N:a=>-1-a*a,as:[-2,-1,0,1,2],tr:0,n:[10,40],prop:'-I',p:4},
+  dos:{N:a=>2-a*a,as:[-2,-1,0,1,2],tr:0,n:[5,10],prop:'2I',p:0},
+  idem:{N:a=>a-a*a,as:[-2,-1,0,1,2,3],tr:1,n:[10,40],prop:'A',p:1},
+  ord3:{N:a=>-a-a*a-1,as:[-2,-1,0,1],tr:-1,n:[10,40],prop:'A3',p:3}
+};
+const PROPS=[['I','A² = I'],['-I','A² = −I'],['A','A² = A'],['2I','A² = 2I'],['A3','Ninguna de las anteriores, pero A³ = I']];
+function divisores(N){const r=[];const a=Math.abs(N);for(let i=1;i<=a;i++)if(a%i===0)r.push(i,-i);return r;}
+function cumpleProp(A,prop){
+  const A2=mmul(A,A);
+  return {I:()=>meqI(A2,I2),'-I':()=>meqI(A2,mscl(I2,-1)),'2I':()=>meqI(A2,mscl(I2,2)),A:()=>meqI(A2,A),A3:()=>meqI(mmul(A2,A),I2)&&!meqI(A,I2)}[prop]();
+}
+function construirT4(fk,A,n){const A2=mmul(A,A);return {fk,A,A2,n,An:potencia(A,n),prop:FAM[fk].prop,p:FAM[fk].p};}
+let ultimaFamT4='';
+const T4={
+  nombre:'Potencias de matrices', corto:'Potencias',
+  gen(){
+    for(let t=0;t<500;t++){
+      let fk;do{fk=pick(Object.keys(FAM));}while(fk===ultimaFamT4);
+      const f=FAM[fk],a=pick(f.as),N=f.N(a);let b,c;
+      if(N===0){if(rand()<.5){b=rnz(-3,3);c=0;}else{b=0;c=rnz(-3,3);}}
+      else{const ds=divisores(N).filter(x=>Math.abs(x)<=4);b=pick(ds);c=N/b;if(Math.abs(c)>8)continue;}
+      const A=[[a,b],[c,f.tr-a]];
+      if(!cumpleProp(A,f.prop)) continue;
+      if(meqI(A,I2)||meqI(A,mscl(I2,-1))) continue;
+      ultimaFamT4=fk;
+      return construirT4(fk,A,rnd(f.n[0],f.n[1]));
+    }
+    return construirT4('inv',[[0,1],[1,0]],17);
+  },
+  html(d){
+    const opts=PROPS.map(([v,t])=>`<option value="${v}">${t}</option>`).join('');
+    return `<p>Dada la matriz</p>${fila(lab('A',d.A))}
+      <ol class="apartados">
+        <li><span class="letra">a)</span>Calcula A².
+          <div class="respuestas"><span class="mexp"><span class="mlab">A² =</span>${matIn('t4a','Matriz A al cuadrado')}</span>${teclas()}</div></li>
+        <li><span class="letra">b)</span>¿Qué relación cumple A?
+          <div class="respuestas"><select id="t4p" aria-label="Relación que cumple A"><option value="">Elige una opción…</option>${opts}</select></div></li>
+        <li><span class="letra">c)</span>Utilízala para calcular A<sup>${d.n}</sup>.
+          <div class="respuestas"><span class="mexp"><span class="mlab">A<sup>${d.n}</sup> =</span>${matIn('t4n','Matriz A elevada a '+d.n)}</span>${teclas()}</div></li>
+      </ol>`;
+  },
+  pista(){return 'a) A² = A·A, multiplicando <b>filas por columnas</b> (no se elevan los elementos al cuadrado). b) Compara A² con I, −I, A y 2I; si no coincide con ninguna, calcula A³ = A²·A. c) Las potencias se repiten con un periodo: divide el exponente entre ese periodo y fíjate en el resto.';},
+  fill(d){rellenarMat('t4a',d.A2);document.getElementById('t4p').value=d.prop;rellenarMat('t4n',d.An);},
+  check(d){
+    const ra=leerMat('t4a'),rn=leerMat('t4n'),sel=document.getElementById('t4p').value;
+    const e=revisarEntrada([ra,rn]);
+    if(e&&e.estado==='incompleto'||sel==='') return {estado:'incompleto',msg:'Completa los tres apartados (a, b y c) antes de corregir.'};
+    if(e) return e;
+    const okA=meqF(ra.M,mF(d.A2)),okP=sel===d.prop,okN=meqF(rn.M,mF(d.An)),ok=okA&&okP&&okN;
+    const marcas={...marcasMat('t4a',ra.M,mF(d.A2)),...marcasMat('t4n',rn.M,mF(d.An)),t4p:okP};
+    let diag='';
+    if(!ok){
+      const l=[];
+      if(!okA){
+        const cuad=d.A.map(r=>r.map(x=>x*x));
+        l.push('<b>a)</b> '+(meqF(ra.M,mF(cuad))?'Has elevado cada elemento al cuadrado. A² = A·A se calcula multiplicando filas por columnas.':'A² no es correcta. Repasa el producto fila por columna.'));
+      }
+      if(!okP) l.push(`<b>b)</b> La relación elegida no es la correcta. ${okA?'Compara tu A² con I, −I, A y 2I.':'Con una A² mal calculada es fácil equivocarse aquí.'}`);
+      if(!okN){const t=diagT4c(d,rn.M);l.push('<b>c)</b> '+(t||`A<sup>${d.n}</sup> no es correcta. Sigue el razonamiento de abajo.`));}
+      diag=diagBox(l.join('<br>'));
+    }
+    return {estado:'corregido',ok,marcas,cuerpo:diag+pasosT4(d)};
+  }
+};
+function divisionT4(n,p){return {q:Math.floor(n/p),r:n%p};}
+function diagT4c(d,S){
+  const {fk,A,n,p}=d;
+  if(fk==='dos'){
+    for(let e=0;e<=n;e++)for(const [M,nm] of [[I2,'I'],[A,'A']])
+      if(meqF(S,mF(mscl(M,2**e)))) return `Tu resultado es 2<sup>${e}</sup>·${nm}. Revisa el exponente: si n es par, A<sup>n</sup> = 2<sup>n/2</sup>·I; si es impar, A<sup>n</sup> = 2<sup>(n−1)/2</sup>·A.`;
+    if(meqF(S,mF(mscl(d.An,-1)))) return 'Tu resultado tiene el signo cambiado.';
+    return '';
+  }
+  if(p>1){
+    const {q,r}=divisionT4(n,p);
+    for(let j=1;j<=p;j++){const Pj=potencia(A,j);
+      if(meqF(S,mF(Pj))) return `Tu resultado es A<sup>${j}</sup>${j===p?' = I':''}, pero ${n} = ${p}·${q} + ${r}, así que A<sup>${n}</sup> = A<sup>${r}</sup>${r===0?' = I':''}. Revisa el resto de dividir ${n} entre ${p}.`;}
+  }
+  if(meqF(S,mF(mscl(d.An,-1)))) return 'Tu resultado tiene el signo cambiado.';
+  return '';
+}
+function pasosT4(d){
+  const {fk,A,A2,n,An}=d,p=[];
+  p.push(`<b>a) Calcular A².</b>${fila('<span class="mlab">A² = A·A =</span>',matH(A),'<span class="op">·</span>',matH(A),'<span class="op">=</span>',matH(A2,'sol'))}`);
+  const sup=x=>`<sup>${x}</sup>`;
+  let rel,pot;
+  if(fk==='inv'){rel='A² = I.';pot=`Las potencias se repiten cada 2: A, I, A, I… Las pares valen I y las impares valen A. Como ${n} es ${n%2?'impar':'par'}, A${sup(n)} = ${n%2?'A':'I'}.`;}
+  else if(fk==='neg'){const {q,r}=divisionT4(n,4);rel='A² = −I.';pot=`Entonces A⁴ = (A²)² = (−I)² = I: las potencias se repiten cada 4 (A, −I, −A, I). Como ${n} = 4·${q} + ${r}, A${sup(n)} = (A⁴)${sup(q)}·A${sup(r)} = A${sup(r)} = ${['I','A','−I','−A'][r]}.`;}
+  else if(fk==='idem'){rel='A² = A (A es idempotente).';pot='Entonces A³ = A²·A = A·A = A, y así sucesivamente: todas las potencias valen A.';}
+  else if(fk==='dos'){rel='A² = 2I.';pot=n%2===0?`Como ${n} es par, A${sup(n)} = (A²)${sup(n/2)} = (2I)${sup(n/2)} = 2${sup(n/2)}·I = ${2**(n/2)}·I.`:`Como ${n} es impar, A${sup(n)} = (A²)${sup((n-1)/2)}·A = 2${sup((n-1)/2)}·A = ${2**((n-1)/2)}·A.`;}
+  else {const {q,r}=divisionT4(n,3);rel=`A² no coincide con I, −I, A ni 2I, así que calculamos A³ = A²·A = I.`;pot=`Las potencias se repiten cada 3 (A, A², I). Como ${n} = 3·${q} + ${r}, A${sup(n)} = (A³)${sup(q)}·A${sup(r)} = ${r===0?'I':r===1?'A':'A²'}.`;}
+  p.push(`<b>b) Relación.</b> ${rel}`);
+  p.push(`<b>c) Potencia.</b> ${pot}${fila(`<span class="mlab">A${sup(n)} =</span>`,matH(An,'sol'))}`);
+  return pasosH(p);
+}
+
+/* =========================================================
+   Estado, nota y modelo de superación (2 de 3, ventana móvil)
+   ========================================================= */
+const TIPOS=[['ecu',T1],['sis',T2],['inv',T3],['pot',T4]];
+const MOD=Object.fromEntries(TIPOS);
+const PUNTO_POR_TIPO=10/TIPOS.length;
+const PENALIZACION_FALLO=0.5;
+let state;
+function nuevoEstado(){
+  const tipos={};
+  for(const [k] of TIPOS) tipos[k]={intentos:[],superado:false,cerrado:false,fallos:0,aciertos:0,nIntentos:0,solucionesVistas:0,pistas:0,ex:null};
+  return {fallosTotales:0,tipos,inicio:Date.now(),actual:'ecu'};
+}
+function calcularNota(){
+  const sup=Object.values(state.tipos).filter(t=>t.superado).length;
+  const bruta=sup*PUNTO_POR_TIPO-state.fallosTotales*PENALIZACION_FALLO;
+  return Math.round(Math.min(10,Math.max(0,bruta))*100)/100;
+}
+function registrarIntento(key,correcto){
+  const t=state.tipos[key]; if(t.cerrado) return false;
+  t.nIntentos++;
+  t.intentos.push(correcto); if(t.intentos.length>3) t.intentos.shift();
+  if(correcto) t.aciertos++; else {t.fallos++;state.fallosTotales++;}
+  if(!t.superado&&t.intentos.filter(Boolean).length>=2){t.superado=true;t.cerrado=true;return true;}
+  return false;
+}
+function siguienteTipoDisponible(desde){
+  const keys=TIPOS.map(x=>x[0]),i0=keys.indexOf(desde);
+  for(let s=1;s<=keys.length;s++){const k=keys[(i0+s)%keys.length];if(!state.tipos[k].cerrado)return k;}
+  return null;
+}
+function textoVentana(t){
+  if(t.superado) return '✓ Tipo superado';
+  const n=t.intentos.length; if(!n) return 'Necesitas 2 aciertos entre tus 3 últimos intentos';
+  const a=t.intentos.filter(Boolean).length;
+  return `Últimos intentos: ${a} ${a===1?'acierto':'aciertos'} de ${n} · necesitas 2 de 3`;
+}
+
+/* =========================================================
+   Interfaz
+   ========================================================= */
+function pintarMarcador(){
+  $('#m-nota').textContent=fmtNum(calcularNota());
+  $('#m-sup').textContent=Object.values(state.tipos).filter(t=>t.superado).length;
+  $('#m-fallos').textContent=state.fallosTotales;
+}
+function pintarTabs(){
+  $('#tabs').innerHTML=TIPOS.map(([k,M],i)=>{
+    const t=state.tipos[k],act=state.actual===k;
+    const v=[0,1,2].map(j=>{const x=t.intentos[j];return `<i class="${x===undefined?'':x?'ok':'mal'}"></i>`;}).join('');
+    return `<button type="button" role="tab" aria-selected="${act}" class="tab${act?' activa':''}${t.superado?' superado':''}" data-k="${k}">
+      <span class="tn">Tipo ${i+1}${t.superado?' · ✓':''}</span><span class="tt">${M.corto}</span><span class="ventana" aria-hidden="true">${v}</span></button>`;
+  }).join('');
+}
+function ctrls(){return [...document.querySelectorAll('#zona input.mi, #zona select')];}
+function guardarValores(){
+  const t=state.tipos[state.actual];if(!t.ex)return;
+  if(t.ex.terminado)return;
+  t.ex.valores={};ctrls().forEach(el=>t.ex.valores[el.id]=el.value);
+}
+function aplicarMarcas(marcas,claseExtra){
+  ctrls().forEach(el=>el.classList.remove('ok','mal','rev'));
+  if(!marcas)return;
+  for(const id in marcas){const el=document.getElementById(id);if(el)el.classList.add(claseExtra||(marcas[id]?'ok':'mal'));}
+}
+function mostrarFb(cls,html){const fb=$('#fb');fb.className='fb '+cls;fb.innerHTML=html;fb.hidden=false;}
+function botonesAccion(key){
+  const t=state.tipos[key];
+  if(!t.cerrado) return `<div class="acciones"><button type="button" class="btn-primario" data-accion="otro">Otro ejercicio de este tipo →</button></div>`;
+  const sig=siguienteTipoDisponible(key);
+  return sig?`<div class="acciones"><button type="button" class="btn-primario" data-accion="ir" data-k="${sig}">Siguiente tipo →</button></div>`
+           :`<div class="acciones"><button type="button" class="btn-finalizar" data-accion="finalizar">Finalizar y calificar</button></div>`;
+}
+function render(){
+  const key=state.actual,t=state.tipos[key],M=MOD[key],idx=TIPOS.findIndex(x=>x[0]===key)+1;
+  pintarTabs();pintarMarcador();
+  if(!t.ex&&t.cerrado){
+    $('#zona').innerHTML=`<article class="ejercicio-card"><div class="ej-cab"><h2>Tipo ${idx} · ${M.nombre}</h2><span class="estado-tipo">✓ Tipo superado</span></div>
+      <div class="bloque-cerrado"><div class="sello">✓ Tipo superado · +2,5 puntos</div>
+      <p>Intentos: ${t.nIntentos} · Aciertos: ${t.aciertos} · Fallos: ${t.fallos}</p>${botonesAccion(key)}</div></article>`;
+    actualizarBtnSol();return;
+  }
+  if(!t.ex) t.ex={datos:M.gen(),terminado:false,revelado:false,valores:{},fb:null,pistaHTML:null,marcas:null,claseMarcas:null};
+  const ex=t.ex;
+  $('#zona').innerHTML=`<article class="ejercicio-card">
+    <div class="ej-cab"><h2>Tipo ${idx} · ${M.nombre}</h2><span class="estado-tipo" id="estado-tipo">${textoVentana(t)}</span></div>
+    ${M.html(ex.datos)}
+    <div class="acciones"><button type="button" class="btn-primario" id="b-corregir">Corregir</button><button type="button" class="btn-secundario" id="b-pista">💡 Pista</button></div>
+    <div class="fb pista" id="pista" hidden></div>
+    <div class="fb" id="fb" hidden></div></article>`;
+  ctrls().forEach(el=>{if(ex.valores[el.id]!==undefined)el.value=ex.valores[el.id];});
+  if(ex.pistaHTML){const p=$('#pista');p.innerHTML='<b>💡 Pista.</b> '+ex.pistaHTML;p.hidden=false;$('#b-pista').disabled=true;}
+  if(ex.fb) mostrarFb(ex.fb.cls,ex.fb.html);
+  if(ex.marcas) aplicarMarcas(ex.marcas,ex.claseMarcas);
+  if(ex.terminado) bloquear();
+  actualizarBtnSol();
+}
+function bloquear(){
+  ctrls().forEach(el=>el.disabled=true);
+  document.querySelectorAll('#zona .tecla').forEach(b=>b.disabled=true);
+  const bc=$('#b-corregir'),bp=$('#b-pista');if(bc)bc.disabled=true;if(bp)bp.disabled=true;
+}
+function actualizarBtnSol(){
+  const t=state.tipos[state.actual];
+  $('#b-soluciones').disabled=!(t.ex&&!t.ex.terminado&&!t.cerrado);
+}
+function irA(key){
+  if(key===state.actual)return;
+  guardarValores();state.actual=key;render();
+  $('#tabs').scrollIntoView({block:'nearest',behavior:'smooth'});
+}
+function exigirNombre(){
+  const inp=$('#nombre');
+  if(inp.value.trim()){inp.classList.remove('falta');$('#aviso-nombre').classList.remove('visible');return true;}
+  inp.classList.add('falta');$('#aviso-nombre').classList.add('visible');
+  inp.focus();inp.scrollIntoView({block:'center',behavior:'smooth'});
+  return false;
+}
+function corregir(){
+  const key=state.actual,t=state.tipos[key],ex=t.ex;
+  if(!ex||ex.terminado||t.cerrado)return;
+  if(!exigirNombre())return;
+  const r=MOD[key].check(ex.datos);
+  if(r.estado!=='corregido'){
+    aplicarMarcas(r.marcas||null);
+    mostrarFb('aviso',`<span class="cab">${r.titulo||'Falta algo.'}</span> ${r.msg}`);
+    return;
+  }
+  const cerrado=registrarIntento(key,r.ok);
+  ex.terminado=true;ex.marcas=r.marcas;ex.claseMarcas=null;
+  aplicarMarcas(r.marcas);
+  const cab=r.ok?'<span class="cab">✓ Correcto.</span>':'<span class="cab">✗ Incorrecto.</span><span class="pen" style="color:var(--color-incorrecto)">−0,5 puntos</span>';
+  const estado=cerrado?'<div class="logro">✓ ¡Tipo superado! +2,5 puntos.</div>':`<div class="estado-linea">${textoVentana(t)}</div>`;
+  ex.fb={cls:r.ok?'correcto':'incorrecto',html:cab+`<div class="cuerpo">${r.cuerpo}</div>`+estado+botonesAccion(key)};
+  mostrarFb(ex.fb.cls,ex.fb.html);
+  bloquear();pintarTabs();pintarMarcador();actualizarBtnSol();
+  $('#estado-tipo').textContent=textoVentana(t);
+}
+function verPista(){
+  const t=state.tipos[state.actual],ex=t.ex;if(!ex||ex.terminado||ex.pistaHTML)return;
+  ex.pistaHTML=MOD[state.actual].pista(ex.datos);t.pistas++;
+  const p=$('#pista');p.innerHTML='<b>💡 Pista.</b> '+ex.pistaHTML;p.hidden=false;$('#b-pista').disabled=true;
+}
+function revelarSoluciones(){
+  const key=state.actual,t=state.tipos[key],ex=t.ex;
+  if(!ex||ex.terminado||t.cerrado)return;
+  MOD[key].fill(ex.datos);
+  const r=MOD[key].check(ex.datos);
+  if(!(r.estado==='corregido'&&r.ok)) console.error('BUG: el validador no acepta su propia solución',key,ex.datos,r);
+  ex.terminado=true;ex.revelado=true;t.solucionesVistas++;     // no se llama a registrarIntento()
+  ex.marcas=r.marcas||{};ex.claseMarcas='rev';
+  aplicarMarcas(ex.marcas,'rev');
+  ex.fb={cls:'solucion',html:`<span class="cab">Solución.</span><div class="cuerpo">${r.cuerpo||''}</div><div class="neutro">Soluciones mostradas · ejercicio sin calificar</div>`+botonesAccion(key)};
+  mostrarFb(ex.fb.cls,ex.fb.html);
+  bloquear();actualizarBtnSol();
+}
+
+/* ---------- Modales ---------- */
+let focoPrevio=null;
+function abrir(id,foco){focoPrevio=document.activeElement;$(id).classList.add('abierto');if(foco)setTimeout(()=>$(foco).focus(),20);}
+function cerrar(id){$(id).classList.remove('abierto');if(focoPrevio&&focoPrevio.focus)focoPrevio.focus();}
+function colorNota(n){
+  if(n>=10)return['#1a7a1a','#fff'];if(n>=9)return['#6dbf6d','#0f2e0f'];if(n>=8)return['#1a4f8a','#fff'];
+  if(n>=7)return['#5b9bd5','#0d2240'];if(n>=6)return['#c05c00','#fff'];if(n>=5)return['#f5a623','#000'];return['#c0392b','#fff'];
+}
+function escapeHtml(s){return s.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function abrirInforme(){
+  if(!exigirNombre())return;
+  const nota=calcularNota(),[bg,fg]=colorNota(nota),ahora=new Date();
+  const seg=Math.floor((Date.now()-state.inicio)/1000),min=Math.ceil(seg/60);
+  const tiempo=String(Math.floor(min/60)).padStart(2,'0')+':'+String(min%60).padStart(2,'0');
+  const filas=TIPOS.map(([k,M])=>{const t=state.tipos[k];return `<tr><td><span class="lg">${M.nombre}</span><span class="sh">${M.corto}</span></td><td>${t.superado?'✓<span class="lg"> Superado</span>':'✗<span class="lg"> No superado</span>'}</td><td>${t.nIntentos}</td><td>${t.aciertos}</td><td>${t.fallos}</td><td>${t.pistas}</td><td>${t.solucionesVistas}</td></tr>`;}).join('');
+  const caja=$('#inf-caja');caja.style.background=bg;caja.style.color=fg;
+  caja.innerHTML=`<button class="x-cerrar" type="button" aria-label="Cerrar" data-cerrar="#ov-inf">✕</button>
+    <div class="inf-titulo">${escapeHtml($('.titulo-ficha').textContent)}</div>
+    <div class="inf-sub">${escapeHtml($('.subtitulo').textContent)}</div><hr>
+    <div class="inf-enc">Informe de la actividad</div>
+    <div class="inf-nombre">${escapeHtml($('#nombre').value.trim())}</div>
+    <div class="inf-nota">${fmtNum(nota)} / 10</div>
+    <div class="inf-datos">
+      <div><b>Fecha:</b> ${ahora.toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'})}</div>
+      <div><b>Hora:</b> ${ahora.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}</div>
+      <div><b>Tiempo total:</b> ${tiempo} (hh:mm)</div>
+      <div><b>Fallos totales:</b> ${state.fallosTotales}${state.fallosTotales?` (−${fmtNum(state.fallosTotales*PENALIZACION_FALLO)} ${state.fallosTotales*PENALIZACION_FALLO===1?'punto':'puntos'})`:''}</div>
+    </div>
+    <div class="inf-tabla-wrap"><table class="inf-tabla"><thead><tr><th>Tipo</th><th>Estado</th><th><span class="lg">Intentos</span><span class="sh">Int.</span></th><th><span class="lg">Aciertos</span><span class="sh">Acie.</span></th><th>Fallos</th><th>Pistas</th><th><span class="lg">Soluciones vistas</span><span class="sh">Sol.</span></th></tr></thead><tbody>${filas}</tbody></table></div>
+    <div class="inf-captura">📸 Haz una captura de pantalla y entrégala en Google Classroom.</div>
+    <button class="btn-cerrar-inf" type="button" data-cerrar="#ov-inf">Seguir practicando</button>`;
+  document.body.classList.toggle('exito',nota>=10);
+  abrir('#ov-inf','#inf-caja .btn-cerrar-inf');
+}
+
+/* ---------- Teclas de ayuda (− / ,) para el móvil ---------- */
+let ultimoInput=null;
+document.addEventListener('focusin',e=>{if(e.target.matches('#zona input.mi'))ultimoInput=e.target;});
+['pointerdown','mousedown'].forEach(ev=>document.addEventListener(ev,e=>{if(e.target.closest('.tecla'))e.preventDefault();}));
+
+/* ---------- Eventos ---------- */
+document.addEventListener('click',e=>{
+  const tab=e.target.closest('.tab');if(tab){irA(tab.dataset.k);return;}
+  const tec=e.target.closest('.tecla');
+  if(tec){
+    let el=ultimoInput;
+    if(!el||!document.body.contains(el)||el.disabled) el=document.querySelector('#zona input.mi:not(:disabled)');
+    if(!el)return;
+    const v=el.value,s=el.selectionStart??v.length,f=el.selectionEnd??s;
+    el.value=v.slice(0,s)+tec.dataset.t+v.slice(f);el.focus();el.setSelectionRange(s+1,s+1);return;
+  }
+  const acc=e.target.closest('[data-accion]');
+  if(acc){
+    const a=acc.dataset.accion;
+    if(a==='otro'){state.tipos[state.actual].ex=null;render();}
+    else if(a==='ir'){guardarValores();state.actual=acc.dataset.k;render();}
+    else if(a==='finalizar')abrirInforme();
+    return;
+  }
+  const c=e.target.closest('[data-cerrar]');if(c){cerrar(c.dataset.cerrar);return;}
+  if(e.target.id==='b-corregir')corregir();
+  else if(e.target.id==='b-pista')verPista();
+  else if(e.target.classList.contains('overlay'))cerrar('#'+e.target.id);
+});
+$('#b-finalizar').addEventListener('click',abrirInforme);
+$('#b-soluciones').addEventListener('click',()=>abrir('#ov-sol','#sol-no'));
+$('#sol-no').addEventListener('click',()=>cerrar('#ov-sol'));
+$('#sol-si').addEventListener('click',()=>{cerrar('#ov-sol');revelarSoluciones();});
+$('#b-reinicio').addEventListener('click',()=>abrir('#ov-rei','#rei-no'));
+$('#rei-no').addEventListener('click',()=>cerrar('#ov-rei'));
+$('#rei-si').addEventListener('click',()=>{cerrar('#ov-rei');state=nuevoEstado();document.body.classList.remove('exito');render();});
+$('#nombre').addEventListener('input',()=>{if($('#nombre').value.trim()){$('#nombre').classList.remove('falta');$('#aviso-nombre').classList.remove('visible');}});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){document.querySelectorAll('.overlay.abierto').forEach(o=>cerrar('#'+o.id));return;}
+  if(e.key==='Enter'&&e.target.matches('#zona input.mi, #zona select')){e.preventDefault();corregir();}
+});
+
+state=nuevoEstado();
+render();
+</script>
+</body>
+</html>
