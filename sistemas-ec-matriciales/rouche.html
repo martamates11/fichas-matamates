@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rouché-Frobenius, Cramer y Gauss — Ficha Interactiva</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap');
+:root{
+  --color-fondo:#F5F0E8;--color-fondo-card:#FDFAF3;--color-texto:#2C1F0E;--color-texto-suave:#6B4F35;
+  --color-acento:#A0522D;--color-acento-hover:#7B3B1E;--color-borde:#C9A96E;--color-borde-suave:#E0CEAA;
+  --color-cabecera:#3B2510;--color-cabecera-txt:#F5EDD8;--color-barra-alumno:#EFE4CC;
+  --color-correcto:#2E6B3E;--color-incorrecto:#8B1A1A;--color-neutro:#E8DFC8;
+  --verde-claro:#EAF4EC;--rojo-claro:#F9EAEA;--azul:#1E3A5F;--azul-claro:#EAF0F8;
+  --morado:#6A1B9A;--morado-claro:#F3E5F5;--dorado-claro:#FBF4E2;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Lato',sans-serif;font-size:16px;color:var(--color-texto);background:var(--color-fondo);min-height:100vh}
+body.success-mode{background:#DDEFD9}
+h1,h2,h3{font-family:'Libre Baskerville',serif;color:var(--color-texto)}
+
+.cabecera{background:var(--color-cabecera);color:var(--color-cabecera-txt);font-family:'Libre Baskerville',serif;text-align:center;padding:12px 20px;border-bottom:3px solid var(--color-borde);font-size:.78rem;letter-spacing:.04em}
+.ficha-container{max-width:860px;margin:28px auto;background:var(--color-fondo-card);border:2px solid var(--color-borde);border-radius:6px;box-shadow:0 3px 12px rgba(44,31,14,.15);padding:32px 36px}
+.titulo-ficha{font-size:1.6rem;text-align:center;border-bottom:2px solid var(--color-borde);padding-bottom:10px;margin-bottom:8px;line-height:1.35}
+.titulo-ficha::after{content:'';display:block;width:60px;height:3px;background:var(--color-borde);margin:8px auto 0;border-radius:2px}
+.subtitulo{text-align:center;font-family:'Libre Baskerville',serif;font-style:italic;color:var(--color-texto-suave);font-size:.95rem;margin-bottom:18px}
+
+.barra{position:sticky;top:0;z-index:50;background:var(--color-barra-alumno);border:1.5px solid var(--color-borde);border-radius:6px;margin:0 0 22px;box-shadow:0 2px 6px rgba(44,31,14,.08);padding:9px 20px;display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center;justify-content:center;font-size:.92rem}
+.barra label{font-family:'Libre Baskerville',serif;font-size:.85rem;color:var(--color-texto-suave)}
+.barra input#nombre{background:var(--color-fondo-card);border:1.5px solid var(--color-borde);border-radius:4px;padding:6px 10px;font-family:'Lato',sans-serif;font-size:.95rem;color:var(--color-texto);width:230px;max-width:60vw;outline:none}
+.barra input#nombre:focus{border-color:var(--color-acento)}
+.barra input#nombre.falta{border-color:var(--color-incorrecto);box-shadow:0 0 0 3px rgba(139,26,26,.18)}
+.barra .dato{color:var(--color-texto-suave)}
+.barra .dato b{color:var(--color-acento);font-family:'Libre Baskerville',serif}
+.chips{display:inline-flex;gap:6px;align-items:center}
+.chip{font-size:.78rem;font-weight:700;padding:2px 10px;border-radius:12px;border:1.5px solid var(--color-borde-suave);background:var(--color-fondo-card);color:var(--color-texto-suave);letter-spacing:.03em}
+.chip.ok{background:var(--verde-claro);border-color:var(--color-correcto);color:var(--color-correcto)}
+.aviso-nombre{color:var(--color-incorrecto);font-size:.82rem;font-weight:700;display:none;width:100%;text-align:center}
+.aviso-nombre.visible{display:block}
+
+.recordatorio{border:1.5px solid var(--color-borde-suave);border-radius:4px;background:var(--dorado-claro);margin-bottom:20px}
+.recordatorio summary{cursor:pointer;padding:10px 16px;font-family:'Libre Baskerville',serif;font-size:.92rem;color:var(--color-texto-suave)}
+.recordatorio .rec-body{padding:4px 18px 14px;font-size:.9rem;line-height:1.6}
+.rec-body p{margin:6px 0}
+.rec-tabla{border-collapse:collapse;margin:8px 0;width:100%;font-size:.88rem}
+.rec-tabla th,.rec-tabla td{border:1px solid var(--color-borde-suave);padding:6px 10px;text-align:left}
+.rec-tabla th{background:var(--color-barra-alumno);font-family:'Libre Baskerville',serif;font-weight:400}
+
+.ejercicio-card{background:var(--color-fondo);border:1.5px solid var(--color-borde-suave);border-left:4px solid var(--color-borde);border-radius:4px;padding:20px 24px;margin-bottom:20px}
+.ej-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.ej-head h2{font-size:1.1rem}
+.card-tag{background:var(--color-fondo-card);color:var(--color-acento);border:1px solid var(--color-borde-suave);border-radius:20px;padding:2px 10px;font-size:.72rem;letter-spacing:.5px;font-weight:700;text-transform:uppercase}
+.ejercicio-card>p{line-height:1.7;font-size:.95rem}
+.sys-wrap{display:inline-flex;align-items:center;gap:10px;margin:12px 0 4px;padding:10px 18px 10px 10px;background:var(--color-fondo-card);border:1px solid var(--color-borde-suave);border-radius:6px}
+.llave{font-family:'Libre Baskerville',serif;font-size:4.6rem;line-height:1;color:var(--color-borde);font-weight:400;transform:scaleX(.7)}
+.sys-line{margin:3px 0;font-size:1.05rem;letter-spacing:.02em}
+.sys-line i{font-family:'Libre Baskerville',serif}
+
+.section{border:1.5px solid var(--color-borde-suave);border-radius:4px;padding:14px 18px;margin-top:14px;background:var(--color-fondo-card);transition:background .25s,border-color .25s}
+.section-title{font-family:'Libre Baskerville',serif;color:var(--color-texto);font-size:.95rem;margin-bottom:8px}
+.section.locked{opacity:.42}
+.section.done-ok{border-color:var(--color-correcto);background:var(--verde-claro)}
+.section.done-err{border-color:var(--color-incorrecto);background:var(--rojo-claro)}
+.instr{font-size:.88rem;color:var(--color-texto-suave);margin-bottom:10px;line-height:1.6}
+.instr.nota{border-left:3px solid var(--color-borde);padding-left:10px}
+
+input.mi{background:var(--color-fondo);border:1.5px solid var(--color-borde);border-radius:4px;color:var(--color-texto);padding:5px 4px;font-size:.92rem;width:54px;text-align:center;font-family:'Lato',sans-serif;outline:none;transition:border-color .2s,background .2s}
+input.mi.ancho{width:64px}
+input.mi:focus{border-color:var(--color-acento);background:#fff}
+input.mi.ok{border-color:var(--color-correcto)!important;background:var(--verde-claro)!important;color:var(--color-correcto)}
+input.mi.err{border-color:var(--color-incorrecto)!important;background:var(--rojo-claro)!important;color:var(--color-incorrecto)}
+input.mi.pivot{border-color:var(--morado);background:var(--morado-claro)}
+input.mi.zero{border-color:var(--azul);background:var(--azul-claro)}
+input.mi.term{border-color:var(--color-borde);background:var(--dorado-claro)}
+input.mi:disabled{background:var(--color-neutro);border-color:var(--color-borde-suave)}
+select.sel{background:var(--color-fondo);border:1.5px solid var(--color-borde);border-radius:4px;padding:7px 10px;font-family:'Lato',sans-serif;font-size:.95rem;color:var(--color-texto);outline:none;min-width:230px}
+select.sel:focus{border-color:var(--color-acento)}
+select.sel.ok{border-color:var(--color-correcto);background:var(--verde-claro);color:var(--color-correcto)}
+select.sel.err{border-color:var(--color-incorrecto);background:var(--rojo-claro);color:var(--color-incorrecto)}
+
+.fila-campos{display:flex;flex-wrap:wrap;gap:12px 26px;align-items:center;margin:6px 0 4px}
+.campo{display:flex;align-items:center;gap:8px}
+.campo label{font-family:'Libre Baskerville',serif;font-size:.95rem}
+.disc-grid{display:grid;grid-template-columns:auto 1fr;gap:10px 14px;align-items:center;max-width:520px;margin:4px 0}
+.disc-grid label{font-family:'Libre Baskerville',serif;font-size:.9rem}
+
+.matriz{display:inline-block;position:relative;padding:6px 12px;margin:4px 2px}
+.matriz::before,.matriz::after{content:'';position:absolute;top:0;bottom:0;width:8px;border:2px solid var(--color-texto-suave)}
+.matriz::before{left:0;border-right:none;border-radius:3px 0 0 3px}
+.matriz::after{right:0;border-left:none;border-radius:0 3px 3px 0}
+.mgrid{display:grid;grid-template-columns:repeat(3,auto) 12px auto;gap:5px 5px;align-items:center}
+.vsep{width:2px;background:var(--color-texto-suave);justify-self:center;align-self:stretch;margin:-3px 0}
+.mval{min-width:34px;text-align:center;font-weight:700;font-size:.95rem;padding:2px 4px}
+.det{display:inline-block;padding:4px 10px;margin:6px 2px 4px;border-left:2px solid var(--color-texto-suave);border-right:2px solid var(--color-texto-suave)}
+.dgrid{display:grid;grid-template-columns:repeat(3,auto);gap:4px 6px;align-items:center}
+.mval.colb{background:var(--dorado-claro);border:1px solid var(--color-borde);border-radius:3px}
+.sarrus{font-size:.86rem;line-height:1.7;padding:6px 10px;margin-top:6px;background:var(--color-fondo-card);border:1px dashed var(--color-borde);border-radius:4px;color:var(--color-texto)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.78rem;margin-bottom:8px;color:var(--color-texto-suave)}
+.leg-item{display:flex;align-items:center;gap:5px}
+.leg-box{width:15px;height:15px;border-radius:3px;border:2px solid;flex-shrink:0}
+.param-col{display:flex;flex-direction:column;gap:10px;margin:6px 0}
+.param-row{display:flex;align-items:center;gap:8px;font-size:1rem;flex-wrap:wrap}
+.param-row .var{font-family:'Libre Baskerville',serif;font-weight:700;min-width:30px}
+.param-row .t{font-family:'Libre Baskerville',serif;font-style:italic}
+.param-row .formula{font-family:'Libre Baskerville',serif;color:var(--color-texto-suave);font-size:.92rem}
+
+.fb-inline{font-size:.86rem;margin-top:10px;padding:9px 13px;border-radius:4px;display:none;line-height:1.55}
+.fb-inline.ok{background:var(--verde-claro);color:var(--color-correcto);border:1.5px solid var(--color-correcto);display:block}
+.fb-inline.err{background:var(--rojo-claro);color:var(--color-incorrecto);border:1.5px solid var(--color-incorrecto);display:block}
+.fb-inline.hint{background:var(--azul-claro);color:var(--azul);border:1.5px solid var(--azul);display:block}
+.fb-inline p{margin:4px 0;color:var(--color-texto)}
+.fb-inline.ok p,.fb-inline.hint p{color:inherit}
+.sn{color:var(--color-acento);font-weight:700}
+.fb-global{margin-top:16px;padding:14px 18px;border-radius:4px;font-size:.93rem;line-height:1.7;display:none}
+.fb-global.ok{background:var(--verde-claro);border:1.5px solid var(--color-correcto);border-left-width:5px;color:#1e4430;display:block}
+.fb-global.practica{background:var(--dorado-claro);border:1.5px solid var(--color-borde);border-left-width:5px;color:var(--color-texto);display:block}
+
+.brow{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btn-primario{background:var(--color-acento);color:#FDFAF3;border:none;border-radius:4px;padding:9px 20px;font-family:'Lato',sans-serif;font-size:.92rem;font-weight:700;cursor:pointer;letter-spacing:.03em;transition:background-color .2s}
+.btn-primario:hover{background:var(--color-acento-hover)}
+.btn-secundario{background:transparent;color:var(--color-acento);border:2px solid var(--color-borde);border-radius:4px;padding:8px 18px;font-family:'Lato',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;transition:border-color .2s,color .2s}
+.btn-secundario:hover{border-color:var(--color-acento);color:var(--color-acento-hover)}
+.ej-acciones{margin-top:18px;justify-content:flex-end}
+.pie{text-align:center;margin-top:26px;padding-top:20px;border-top:1px solid var(--color-borde-suave)}
+.btn-finalizar{background:var(--color-cabecera);color:var(--color-cabecera-txt);border:2px solid var(--color-borde);border-radius:4px;padding:11px 26px;font-family:'Libre Baskerville',serif;font-size:.95rem;font-weight:700;cursor:pointer;letter-spacing:.04em;transition:background-color .2s}
+.btn-finalizar:hover{background:#2C1A0A}
+
+/* Barra auxiliar para el teclado numérico del móvil (que no trae «−» ni «/») */
+.teclado-aux{display:none;position:fixed;left:0;right:0;top:0;z-index:1000;background:var(--color-barra-alumno);border-top:2px solid var(--color-borde);box-shadow:0 -3px 10px rgba(44,31,14,.18);padding:6px 12px;align-items:center;gap:8px}
+.teclado-aux.visible{display:flex}
+.teclado-aux button{height:42px;min-width:58px;font-family:'Lato',sans-serif;font-size:1.35rem;font-weight:700;color:var(--color-texto);background:var(--color-fondo-card);border:1.5px solid var(--color-borde);border-radius:6px;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+.teclado-aux button:active{background:var(--color-borde-suave)}
+.teclado-aux .tec-ayuda{font-size:.75rem;color:var(--color-texto-suave);line-height:1.2;flex:1;min-width:0}
+.teclado-aux button.listo{font-size:.92rem;padding:0 16px;background:var(--color-acento);border-color:var(--color-acento);color:#FDFAF3}
+
+.overlay{display:none;position:fixed;inset:0;background:rgba(44,31,14,.55);z-index:999;align-items:center;justify-content:center;padding:16px}
+.modal-calificacion{border:3px solid var(--color-borde);border-radius:8px;font-family:'Libre Baskerville',serif;box-shadow:0 6px 24px rgba(44,31,14,.35);padding:30px 32px;width:min(520px,100%);max-height:92vh;overflow:auto;text-align:center;position:relative}
+#modal-close{position:absolute;top:10px;right:14px;background:none;border:none;font-size:1.3rem;cursor:pointer;opacity:.8}
+.m-titulo{font-size:1.1rem;font-weight:700;line-height:1.35}
+.m-sub{font-style:italic;font-size:.85rem;opacity:.9;margin-top:4px}
+.m-sep{border:none;border-top:1.5px solid currentColor;opacity:.4;margin:14px 0}
+.m-informe{font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;opacity:.9}
+.m-nombre{font-size:1.25rem;font-weight:700;margin-top:6px}
+.m-nota{font-size:2.8rem;font-weight:700;margin:6px 0 10px}
+.m-data{text-align:left;border-radius:6px;padding:10px 16px;font-family:'Lato',sans-serif;font-size:.92rem;line-height:1.9;background:rgba(255,255,255,.16)}
+.m-tabla{width:100%;border-collapse:collapse;margin-top:14px;font-family:'Lato',sans-serif;font-size:.86rem}
+.m-tabla th,.m-tabla td{border:1px solid rgba(255,255,255,.4);padding:6px 8px}
+.m-tabla.oscuro th,.m-tabla.oscuro td{border-color:rgba(0,0,0,.25)}
+.m-tabla th{font-weight:700;background:rgba(255,255,255,.14)}
+.m-fases{font-family:'Lato',sans-serif;font-size:.84rem;margin-top:10px;line-height:1.6;text-align:left}
+#modal-btn{padding:10px 28px;border-radius:4px;cursor:pointer;font-size:.93rem;font-weight:700;font-family:'Lato',sans-serif;margin-top:16px;background:rgba(255,255,255,.2)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+@media (max-width:640px){
+  .ficha-container{margin:12px 8px;padding:20px 14px}
+  .titulo-ficha{font-size:1.3rem}
+  .ejercicio-card{padding:16px 12px}
+  .section{padding:12px 10px}
+  input.mi{width:46px;font-size:.85rem}
+  input.mi.ancho{width:58px}
+  .disc-grid{grid-template-columns:1fr}
+  select.sel{min-width:0;width:100%}
+}
+</style>
+</head>
+<body>
+
+<div class="cabecera">Material elaborado por Marta L Letona S. Basado en el trabajo de Javier Cayetano</div>
+
+<div class="ficha-container">
+  <h1 class="titulo-ficha">Teorema de Rouché-Frobenius: discusión y resolución por Cramer y Gauss</h1>
+  <p class="subtitulo">2.º Bachillerato · Sistemas de ecuaciones lineales</p>
+
+  <div class="barra">
+    <label for="nombre">Alumno/a:</label>
+    <input type="text" id="nombre" placeholder="Nombre y apellidos" autocomplete="off" maxlength="60">
+    <span class="dato">Nota: <b id="marcador-nota">0</b> / 10</span>
+    <span class="dato chips" aria-label="Tipos superados">
+      <span class="chip" id="chip-SCD">SCD</span><span class="chip" id="chip-SCI">SCI</span><span class="chip" id="chip-SI">SI</span>
+    </span>
+    <span class="dato">Fallos: <b id="marcador-fallos">0</b></span>
+    <div class="aviso-nombre" id="aviso-nombre">Escribe tu nombre y apellidos antes de continuar.</div>
+  </div>
+
+  <details class="recordatorio">
+    <summary>📜 Recordatorio: teorema de Rouché-Frobenius y métodos de resolución</summary>
+    <div class="rec-body">
+      <p>Sea un sistema de 3 ecuaciones con 3 incógnitas, con matriz de coeficientes <b>A</b> y matriz ampliada <b>A*</b> = (A | b). El sistema tiene solución si y solo si rg(A) = rg(A*).</p>
+      <table class="rec-tabla">
+        <tr><th>Rangos</th><th>Tipo</th><th>Soluciones</th><th>Se resuelve por</th></tr>
+        <tr><td>rg(A) ≠ rg(A*)</td><td>SI · Incompatible</td><td>Ninguna</td><td>—</td></tr>
+        <tr><td>rg(A) = rg(A*) = 3 (n.º de incógnitas)</td><td>SCD · Compatible determinado</td><td>Única</td><td>Regla de Cramer</td></tr>
+        <tr><td>rg(A) = rg(A*) &lt; 3</td><td>SCI · Compatible indeterminado</td><td>Infinitas (dependen de 3 − rg parámetros)</td><td>Método de Gauss</td></tr>
+      </table>
+      <p><b>Regla de Cramer</b> (solo si |A| ≠ 0): <i>x</i> = |A<sub><i>x</i></sub>| / |A|, &nbsp;<i>y</i> = |A<sub><i>y</i></sub>| / |A|, &nbsp;<i>z</i> = |A<sub><i>z</i></sub>| / |A|, donde A<sub><i>x</i></sub> es la matriz A con la columna de <i>x</i> sustituida por la columna de términos independientes (y lo mismo para <i>y</i> y <i>z</i>).</p>
+      <p>Para superar la ficha tienes que resolver bien un sistema de cada tipo: SCD, SCI y SI. No sabrás de qué tipo es hasta que lo discutas.</p>
+    </div>
+  </details>
+
+  <div id="ex"></div>
+
+  <div class="pie">
+    <button class="btn-finalizar" onclick="openModal()">🏁 Finalizar y Calificar</button>
+  </div>
+</div>
+
+<div id="teclado-aux" class="teclado-aux" role="toolbar" aria-label="Símbolos para el teclado numérico">
+  <button type="button" data-k="signo" aria-label="Cambiar el signo">±</button>
+  <button type="button" data-k="/" aria-label="Escribir barra de fracción">/</button>
+  <span class="tec-ayuda">± cambia el signo<br>/ para fracciones</span>
+  <button type="button" class="listo" data-k="listo">Listo</button>
+</div>
+
+<div id="modal-overlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="modal-ficha">
+  <div id="modal-box" class="modal-calificacion">
+    <button id="modal-close" onclick="closeModal()" aria-label="Cerrar">✕</button>
+    <div id="modal-ficha" class="m-titulo"></div>
+    <div id="modal-sub" class="m-sub"></div>
+    <hr class="m-sep">
+    <div class="m-informe">Informe de la actividad</div>
+    <div id="modal-nombre" class="m-nombre"></div>
+    <div id="modal-nota" class="m-nota"></div>
+    <div id="modal-data" class="m-data"></div>
+    <table id="modal-tipos" class="m-tabla"></table>
+    <div id="modal-fases" class="m-fases"></div>
+    <button id="modal-btn" onclick="closeModal()">Seguir practicando</button>
+  </div>
+</div>
+
+<script>
+// ═════════ ALEATORIEDAD ═════════
+// En producción, semilla distinta en cada carga. Para QA: añadir ?seed=N a la URL.
+const params=new URLSearchParams(location.search);
+let _s=params.has('seed')?((parseInt(params.get('seed'),10)>>>0)||1):((Date.now()^Math.floor(Math.random()*4294967296))>>>0);
+function rand(){_s=(_s+0x6D2B79F5)>>>0;let t=_s;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return((t^(t>>>14))>>>0)/4294967296;}
+function ri(a,b){return Math.floor(rand()*(b-a+1))+a;}
+function pick(a){return a[Math.floor(rand()*a.length)];}
+
+// ═════════ ESTADO Y PUNTUACIÓN ═════════
+// Modelo: 3 tipos (SCD, SCI, SI). Un tipo se supera al completar correctamente un sistema
+// de ese tipo. Cada verificación fallida resta 0,5. La nota se calcula siempre desde cero.
+const TIPOS=['SCD','SCI','SI'];
+const TIPO_NOMBRE={SCD:'SCD · Compatible determinado',SCI:'SCI · Compatible indeterminado',SI:'SI · Incompatible'};
+const SOL_TIPO={SCD:'unica',SCI:'infinitas',SI:'ninguna'};
+const PUNTO_POR_TIPO=10/TIPOS.length,PENALIZACION_FALLO=0.5;
+const state={fallosTotales:0,inicio:Date.now(),practicas:0,
+  tipos:{SCD:{ejercicios:0,fallos:0,superado:false},SCI:{ejercicios:0,fallos:0,superado:false},SI:{ejercicios:0,fallos:0,superado:false}},
+  fases:{rangos:0,discusion:0,cramer:0,gauss:0,solucion:0}};
+let cur={},ejNum=0;
+
+function calcularNota(){
+  const sup=TIPOS.filter(k=>state.tipos[k].superado).length;
+  const bruta=sup*PUNTO_POR_TIPO-state.fallosTotales*PENALIZACION_FALLO;
+  return Math.round(Math.min(10,Math.max(0,bruta))*100)/100;
+}
+function fmtNota(n){return String(Math.round(n*100)/100).replace('.',',');}
+function actualizarUI(){
+  getEl('marcador-nota').textContent=fmtNota(calcularNota());
+  getEl('marcador-fallos').textContent=state.fallosTotales;
+  TIPOS.forEach(k=>{const c=getEl('chip-'+k);c.classList.toggle('ok',state.tipos[k].superado);c.textContent=(state.tipos[k].superado?'✓ ':'')+k;});
+}
+// Los ejercicios de práctica (tipo ya superado) ni suman ni restan.
+function fallo(fase){
+  if(cur.practica)return;
+  state.fallosTotales++;state.tipos[cur.tipo].fallos++;state.fases[fase]++;
+  actualizarUI();
+}
+function penTxt(){return cur.practica?'':' −0,5 ptos.';}
+
+// ═════════ UTILIDADES ═════════
+function getEl(id){return document.getElementById(id);}
+function render(h){getEl('ex').innerHTML=h;}
+function fmtN(v){const r=Math.round(v*100)/100;return Object.is(r,-0)?0:r;}
+function fmtS(v){return String(fmtN(v)).replace('.',',').replace('-','−');}
+function parseFrac(s){
+  if(s===null||s===undefined)return null;
+  s=String(s).trim().replace(/[−–]/g,'-').replace(/\s+/g,'');
+  if(s==='')return null;
+  if(s.includes('/')){
+    const p=s.split('/');if(p.length!==2)return null;
+    const n=Number(p[0].replace(',','.')),d=Number(p[1].replace(',','.'));
+    if(p[0]===''||p[1]===''||isNaN(n)||isNaN(d)||d===0)return null;return n/d;
+  }
+  const v=Number(s.replace(',','.'));return isNaN(v)?null:v;
+}
+function allFilled(...ids){return ids.every(id=>{const el=getEl(id);return el&&parseFrac(el.value)!==null;});}
+function markOk(id){const el=getEl(id);if(el){el.classList.remove('err','pivot','zero','term');el.classList.add('ok');el.readOnly=true;}}
+function markErr(id){const el=getEl(id);if(el){el.classList.remove('ok','pivot','zero','term');el.classList.add('err');el.readOnly=false;}}
+function showFb(id,cls,html){const el=getEl(id);if(el){el.className='fb-inline '+cls;el.innerHTML=html;}}
+function secOk(id){const s=getEl(id);if(s){s.classList.remove('done-err');s.classList.add('done-ok');}}
+function secErr(id){const s=getEl(id);if(s){s.classList.remove('done-ok');s.classList.add('done-err');}}
+function unlockSec(id){const s=getEl(id);if(s){s.classList.remove('locked');s.removeAttribute('inert');}}
+function requireName(){
+  const nf=getEl('nombre');
+  if(nf.value.trim()){nf.classList.remove('falta');getEl('aviso-nombre').classList.remove('visible');return true;}
+  nf.classList.add('falta');getEl('aviso-nombre').classList.add('visible');nf.focus();return false;
+}
+getEl('nombre').addEventListener('input',()=>{if(getEl('nombre').value.trim()){getEl('nombre').classList.remove('falta');getEl('aviso-nombre').classList.remove('visible');}});
+
+function allGrid(p,rows,cols){for(let i=0;i<rows;i++)for(let j=0;j<cols;j++){const el=getEl(`${p}_${i}_${j}`);if(!el||parseFrac(el.value)===null)return false;}return true;}
+function getGrid(p,rows,cols){const m=[];for(let i=0;i<rows;i++){const r=[];for(let j=0;j<cols;j++)r.push(parseFrac((getEl(`${p}_${i}_${j}`)||{}).value));m.push(r);}return m;}
+function paintGrid(p,rows,cols,correct,tol,lock){
+  for(let i=0;i<rows;i++)for(let j=0;j<cols;j++){
+    const el=getEl(`${p}_${i}_${j}`);if(!el)continue;
+    const v=parseFrac(el.value),c=correct[i][j];
+    el.classList.remove('pivot','zero','term','ok','err');
+    el.classList.add(Math.abs((v||0)-c)<tol?'ok':'err');
+    el.readOnly=!!lock;
+  }
+}
+// Una fila del alumno es válida si es múltiplo no nulo de la esperada (cambio de signo o simplificación).
+function filaEq(v,t,tol){
+  const vv=v.map(x=>x||0);
+  const j=t.findIndex(x=>Math.abs(x)>1e-10);
+  if(j===-1)return vv.every(x=>Math.abs(x)<tol);
+  if(Math.abs(vv[j])<tol)return false;
+  const lam=vv[j]/t[j],margen=tol*Math.max(1,Math.abs(lam));
+  return t.every((x,i)=>Math.abs(vv[i]-lam*x)<margen);
+}
+function filaIgual(v,t,tol){return t.every((x,i)=>Math.abs((v[i]||0)-x)<tol);}
+function paintFilas(p,rows,cols,correct,tol,lock){
+  for(let i=0;i<rows;i++){
+    const v=[];for(let j=0;j<cols;j++)v.push(parseFrac((getEl(`${p}_${i}_${j}`)||{}).value)||0);
+    const fOk=filaEq(v,correct[i],tol);
+    for(let j=0;j<cols;j++){
+      const el=getEl(`${p}_${i}_${j}`);if(!el)continue;
+      el.classList.remove('pivot','zero','term','ok','err');el.classList.add(fOk?'ok':'err');el.readOnly=!!lock;
+    }
+  }
+}
+
+// Escribe la operación elemental Fd ← Fd − f·Fs con el signo y el factor simplificados.
+function opTxt(d,sF,num,den){
+  const f=num/den;
+  if(Math.abs(f)<1e-10)return`F${d} ya tiene un 0 en esa posición: se copia igual`;
+  const g=(a,b)=>b?g(b,a%b):Math.abs(a);
+  let fs;
+  if(Number.isInteger(f))fs=Math.abs(f)===1?'':Math.abs(f)+'·';
+  else if(Number.isInteger(num)&&Number.isInteger(den)){const k=g(num,den);fs=`(${Math.abs(num/k)}/${Math.abs(den/k)})·`;}
+  else fs=`(${fmtS(Math.abs(f))})·`;
+  return`F${d} ← F${d} ${f>0?'−':'+'} ${fs}F${sF}`;
+}
+// ═════════ GAUSS ═════════
+function gaussPaso1(aug){
+  const m=aug.map(r=>[...r]);const piv=m[0][0];if(Math.abs(piv)<1e-10)return m;
+  for(let r=1;r<3;r++){const f=m[r][0]/piv;for(let c=0;c<4;c++)m[r][c]=Math.round((m[r][c]-f*m[0][c])*1e9)/1e9;}
+  return m;
+}
+function gaussPaso2(aug){
+  const m=aug.map(r=>[...r]);const piv=m[1][1];if(Math.abs(piv)<1e-10)return m;
+  const f=m[2][1]/piv;for(let c=0;c<4;c++)m[2][c]=Math.round((m[2][c]-f*m[1][c])*1e9)/1e9;
+  return m;
+}
+function paso2Candidatos(s1){
+  const c=[];
+  if(Math.abs(s1[1][1])>1e-10)c.push({swap:false,m:gaussPaso2(s1)});
+  if(Math.abs(s1[2][1])>1e-10)c.push({swap:true,m:gaussPaso2([s1[0],s1[2],s1[1]])});
+  return c;
+}
+// ═════════ DETERMINANTES Y CRAMER ═════════
+function det3(M){return M[0][0]*(M[1][1]*M[2][2]-M[1][2]*M[2][1])-M[0][1]*(M[1][0]*M[2][2]-M[1][2]*M[2][0])+M[0][2]*(M[1][0]*M[2][1]-M[1][1]*M[2][0]);}
+// Matriz A con la columna k sustituida por la de términos independientes.
+function sustCol(A,b,k){return A.map((r,i)=>r.map((v,j)=>j===k?b[i]:v));}
+function resolver(A,b){const D=det3(A);return[0,1,2].map(k=>Math.round(det3(sustCol(A,b,k))/D*1e6)/1e6);}
+const VN=['x','y','z'];
+const nomDet=k=>`|A<sub><i>${VN[k]}</i></sub>|`;
+// SCI: con z = t, resuelve x e y a partir de las dos primeras ecuaciones (su menor en x, y es no nulo).
+function paramSol(A,b){
+  const a=A[0][0],bb=A[0][1],c=A[1][0],d=A[1][1],D=a*d-bb*c;
+  const sv=z=>{const e=b[0]-A[0][2]*z,f=b[1]-A[1][2]*z;return[(e*d-bb*f)/D,(a*f-e*c)/D];};
+  const s0=sv(0),s1=sv(1);
+  return{x0:fmtN(s0[0]),xt:fmtN(s1[0]-s0[0]),y0:fmtN(s0[1]),yt:fmtN(s1[1]-s0[1])};
+}
+
+// ═════════ GENERADORES ═════════
+const NZ3=[-3,-2,-1,1,2,3],NZ2=[-2,-1,1,2];
+function mul(L,U){return L.map(r=>U[0].map((_,j)=>r.reduce((s,v,k)=>s+v*U[k][j],0)));}
+function dot(r,p){return r.reduce((s,v,i)=>s+v*p[i],0);}
+function maxAbs(arr){return Math.max(...arr.map(Math.abs));}
+function ceros(A){return A.flat().filter(v=>v===0).length;}
+// SCD: A = L·U con L unitaria → |A| = u22·u33 ≠ 0 y solución entera (los cocientes de Cramer son exactos).
+function genSC(){
+  for(let k=0;k<20000;k++){
+    const l21=ri(-2,2),l31=ri(-2,2),l32=pick(NZ2);
+    if(l21===0&&l31===0)continue;
+    const u12=ri(-3,3),u13=ri(-3,3),u22=pick([-2,-1,-1,1,1,2]),u23=pick(NZ3),u33=pick(NZ3);
+    if(l32*u23+u33===0)continue;
+    const A=mul([[1,0,0],[l21,1,0],[l31,l32,1]],[[1,u12,u13],[0,u22,u23],[0,0,u33]]);
+    if(maxAbs(A.flat())>6||ceros(A)>2)continue;
+    const sol=[ri(-4,4),ri(-4,4),ri(-4,4)];
+    if(sol.filter(v=>v===0).length>1)continue;
+    const b=A.map(r=>dot(r,sol));
+    if(maxAbs(b)>20)continue;
+    return{A,b};
+  }
+  return{A:[[1,2,1],[2,3,1],[1,1,2]],b:[8,11,7]};
+}
+// SCI: F3 = α·F1 + β·F2 con α, β ≠ 0; a22 = ±1 tras el paso 1 → parámetros enteros.
+function genRango2(){
+  for(let k=0;k<20000;k++){
+    const l21=pick(NZ2),u12=ri(-3,3),u13=ri(-3,3),u22=pick([-1,1]),u23=pick(NZ3),al=pick(NZ2),be=pick(NZ2);
+    const R1=[1,u12,u13],U2=[0,u22,u23];
+    const R2=R1.map((v,j)=>l21*v+U2[j]);
+    const R3=R1.map((v,j)=>al*v+be*R2[j]);
+    const A=[R1,R2,R3];
+    if(maxAbs(A.flat())>7||ceros(A)>2)continue;
+    const p=[ri(-3,3),ri(-3,3),ri(-3,3)];
+    const b=[dot(R1,p),dot(R2,p),0];b[2]=al*b[0]+be*b[1];
+    if(maxAbs(b)>20)continue;
+    return{A,b};
+  }
+  return{A:[[1,1,-1],[2,1,1],[3,2,0]],b:[2,3,5]};
+}
+function genSCI(){return genRango2();}
+// SI: como el SCI, pero se altera el término independiente de la 3.ª ecuación.
+function genSI(){const g=genRango2();g.b[2]+=pick(NZ3);return g;}
+const GEN={SCD:genSC,SCI:genSCI,SI:genSI};
+
+// Tipo del siguiente ejercicio: se elige solo entre los tipos que aún no se han superado.
+// Cuando los tres están superados (ejercicios de práctica), se evita repetir el tipo anterior.
+function elegirTipo(){
+  const pend=TIPOS.filter(k=>!state.tipos[k].superado);
+  const pool=pend.length?pend:TIPOS.filter(k=>k!==cur.tipo);
+  return pick(pool);
+}
+
+// ═════════ PRESENTACIÓN ═════════
+function sigStr(v,isFirst,vn){
+  if(isFirst)return v===1?vn:v===-1?`−${vn}`:v<0?`−${Math.abs(v)}${vn}`:`${v}${vn}`;
+  if(v===1)return` + ${vn}`;if(v===-1)return` − ${vn}`;
+  return v>0?` + ${v}${vn}`:` − ${Math.abs(v)}${vn}`;
+}
+function sysLine(row,bi){
+  const vars=['<i>x</i>','<i>y</i>','<i>z</i>'];let s='',first=true;
+  for(let j=0;j<3;j++){if(row[j]===0)continue;s+=sigStr(row[j],first,vars[j]);first=false;}
+  if(first)s='0';return`${s} = ${fmtS(bi)}`;
+}
+// Atributos comunes de las casillas numéricas. El teclado numérico del móvil no trae «−» ni «/»:
+// los aporta la barra auxiliar (#teclado-aux).
+const NUM_ATTR='type="text" inputmode="decimal" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="?"';
+function mIGcls(rows,cols,p,clsFn){
+  let h='<div class="matriz"><div class="mgrid">';
+  for(let i=0;i<rows;i++)for(let j=0;j<cols;j++){
+    if(j===cols-1)h+='<span class="vsep"></span>';
+    const cls=clsFn?clsFn(i,j):'';
+    const colName=j===cols-1?'término independiente':`columna ${j+1}`;
+    h+=`<input class="mi${cls?' '+cls:''}" id="${p}_${i}_${j}" ${NUM_ATTR} aria-label="Fila ${i+1}, ${colName}">`;
+  }
+  return h+'</div></div>';
+}
+function dispMat(m){
+  let h='<div class="matriz"><div class="mgrid">';
+  m.forEach(r=>r.forEach((v,j)=>{if(j===3)h+='<span class="vsep"></span>';h+=`<span class="mval">${fmtS(v)}</span>`;}));
+  return h+'</div></div>';
+}
+// Determinante 3×3 entre barras; la columna «col» se resalta (columna de términos independientes).
+function dispDet(M,col){
+  let h='<div class="det"><div class="dgrid">';
+  M.forEach(r=>r.forEach((v,j)=>{h+=`<span class="mval${j===col?' colb':''}">${fmtS(v)}</span>`;}));
+  return h+'</div></div>';
+}
+// Los seis productos de Sarrus, indicados pero sin calcular.
+function sarrusHtml(M,nombre){
+  const f=v=>v<0?`(${fmtS(v)})`:fmtS(v);
+  const t=(a,b,c)=>`${f(a)}·${f(b)}·${f(c)}`;
+  const pos=[t(M[0][0],M[1][1],M[2][2]),t(M[0][1],M[1][2],M[2][0]),t(M[0][2],M[1][0],M[2][1])];
+  const neg=[t(M[0][2],M[1][1],M[2][0]),t(M[0][0],M[1][2],M[2][1]),t(M[0][1],M[1][0],M[2][2])];
+  return`<div class="sarrus">💡 Regla de Sarrus: ${nombre} = ${pos.join(' + ')} − [ ${neg.join(' + ')} ]</div>`;
+}
+function fmtParam(c,k){
+  // c + k·t con signos bien escritos
+  const kt=k===0?'':(Math.abs(k)===1?'':String(Math.abs(fmtN(k))).replace('.',','))+'<i>t</i>';
+  if(k===0)return fmtS(c);
+  if(c===0)return(k<0?'−':'')+kt;
+  return`${fmtS(c)} ${k<0?'−':'+'} ${kt}`;
+}
+const LEG=(piv)=>`<div class="legend">
+  <div class="leg-item"><div class="leg-box" style="border-color:var(--morado);background:var(--morado-claro)"></div><span>Pivote ${piv}</span></div>
+  <div class="leg-item"><div class="leg-box" style="border-color:var(--azul);background:var(--azul-claro)"></div><span>Debe ser 0</span></div>
+  <div class="leg-item"><div class="leg-box" style="border-color:var(--color-borde);background:var(--dorado-claro)"></div><span>Término independiente</span></div></div>`;
+
+// ═════════ CARGA DE EJERCICIO ═════════
+function loadEj(){
+  ejNum++;
+  const tipo=elegirTipo();
+  const{A,b}=GEN[tipo]();
+  const practica=state.tipos[tipo].superado;
+  cur={tipo,A,b,practica,completo:false,
+    rgA:tipo==='SCD'?3:2,rgAm:tipo==='SCI'?2:3,
+    sol:tipo==='SCD'?resolver(A,b):null,par:tipo==='SCI'?paramSol(A,b):null,
+    D:tipo==='SCD'?Math.round(det3(A)):null,
+    Dk:tipo==='SCD'?[0,1,2].map(k=>Math.round(det3(sustCol(A,b,k)))):null,
+    errDet:[0,0,0,0], // fallos en |A|, |Ax|, |Ay|, |Az| (para graduar la ayuda)
+    sec:{rang:0,disc:0,detA:0,dets:0,cram:0,amp:0,paso1:0,paso2:0,back:0},aug:null,step1:null};
+  if(practica)state.practicas++;else state.tipos[tipo].ejercicios++;
+
+  render(`
+  <div class="ejercicio-card">
+    <div class="ej-head"><h2>Ejercicio ${ejNum}</h2><span class="card-tag">Rouché-Frobenius · Cramer · Gauss</span></div>
+    <p>Discute el siguiente sistema y, si es compatible, resuélvelo: por la <b>regla de Cramer</b> si es compatible determinado y por el <b>método de Gauss</b> si es compatible indeterminado.</p>
+    <div class="sys-wrap"><span class="llave" aria-hidden="true">{</span><div>
+      ${[0,1,2].map(i=>`<div class="sys-line">${sysLine(A[i],b[i])}</div>`).join('')}
+    </div></div>
+
+    <div class="section" id="sec-rang">
+      <div class="section-title">Apartado 1 — Rangos</div>
+      <p class="instr">Calcula en tu cuaderno el rango de la matriz de coeficientes <b>A</b> y el de la matriz ampliada <b>A*</b>.</p>
+      <div class="fila-campos">
+        <div class="campo"><label for="rgA">rg(A) =</label><input class="mi" id="rgA" type="text" inputmode="numeric" autocomplete="off" placeholder="?"></div>
+        <div class="campo"><label for="rgAm">rg(A*) =</label><input class="mi" id="rgAm" type="text" inputmode="numeric" autocomplete="off" placeholder="?"></div>
+      </div>
+      <div class="brow"><button class="btn-primario" onclick="verifyRang()">✓ Verificar rangos</button></div>
+      <div class="fb-inline" id="fb-rang" aria-live="polite"></div>
+    </div>
+
+    <div class="section locked" id="sec-disc" inert>
+      <div class="section-title">Apartado 2 — Discusión (teorema de Rouché-Frobenius)</div>
+      <p class="instr">Con los rangos obtenidos, clasifica el sistema e indica cuántas soluciones tiene.</p>
+      <div class="disc-grid">
+        <label for="sel-tipo">Tipo de sistema</label>
+        <select id="sel-tipo" class="sel"><option value="">— Elige —</option><option value="SCD">SCD · Compatible determinado</option><option value="SCI">SCI · Compatible indeterminado</option><option value="SI">SI · Incompatible</option></select>
+        <label for="sel-sol">Número de soluciones</label>
+        <select id="sel-sol" class="sel"><option value="">— Elige —</option><option value="unica">Única</option><option value="infinitas">Infinitas</option><option value="ninguna">Ninguna</option></select>
+      </div>
+      <div class="brow"><button class="btn-primario" onclick="verifyDisc()">✓ Verificar discusión</button></div>
+      <div class="fb-inline" id="fb-disc" aria-live="polite"></div>
+    </div>
+
+    <div id="zona-res"></div>
+    <div class="fb-global" id="fb-global" aria-live="polite"></div>
+    <div class="brow ej-acciones">
+      <button class="btn-secundario" id="btn-cambiar" onclick="loadEj()">↻ Cambiar de ejercicio</button>
+      <button class="btn-primario" id="btn-next" style="display:none" onclick="loadEj()">Siguiente ejercicio →</button>
+    </div>
+  </div>`);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ═════════ AP 1: RANGOS ═════════
+function verifyRang(){
+  if(cur.sec.rang===1)return;
+  if(!requireName())return;
+  const a=parseFrac(getEl('rgA').value),am=parseFrac(getEl('rgAm').value);
+  if(a===null||am===null){showFb('fb-rang','hint','⚠️ Escribe los dos rangos antes de verificar.');return;}
+  const snap=JSON.stringify([a,am]);
+  if(cur.sec.rang===-1&&snap===cur.snapRang)return; // reenvío idéntico: no penaliza otra vez
+  cur.snapRang=snap;
+  const okA=a===cur.rgA,okAm=am===cur.rgAm;
+  (okA?markOk:markErr)('rgA');(okAm?markOk:markErr)('rgAm');
+  if(okA&&okAm){
+    cur.sec.rang=1;secOk('sec-rang');
+    const exp={
+      SCD:'Las tres filas de A son independientes (|A| ≠ 0; al escalonar no aparece ninguna fila nula), así que rg(A) = 3. Como A* solo tiene 3 filas, rg(A*) = 3 también.',
+      SCI:'Al escalonar aparece una fila entera de ceros (0 0 0 | 0): solo hay dos ecuaciones independientes, tanto en A como en A*.',
+      SI:'Al escalonar aparece una fila 0 0 0 | k con k ≠ 0: es nula en A, pero no en A*. Por eso rg(A*) supera en 1 a rg(A).'}[cur.tipo];
+    showFb('fb-rang','ok',`✓ Rangos correctos.<p>${exp}</p>`);
+    unlockSec('sec-disc');
+  }else{
+    cur.sec.rang=-1;fallo('rangos');secErr('sec-rang');
+    let m=`✗ Incorrecto.${penTxt()} Corrige los campos en rojo y vuelve a verificar.`;
+    if(![a,am].every(v=>Number.isInteger(v)&&v>=1&&v<=3))
+      m+='<p>El rango de una matriz con 3 filas es un número entero entre 0 y 3, y aquí no puede ser 0 porque la matriz tiene elementos no nulos.</p>';
+    else if(a>am)m+='<p>No puede ocurrir que rg(A) sea mayor que rg(A*): A* contiene todas las columnas de A, así que rg(A*) ≥ rg(A).</p>';
+    else if(am-a>1)m+='<p>A* solo tiene una columna más que A, así que su rango puede superar al de A como mucho en 1.</p>';
+    else{
+      m+='<p>Escalona la matriz ampliada por Gauss y cuenta las filas no nulas: para rg(A), mira solo las tres primeras columnas; para rg(A*), la fila completa. Una fila 0 0 0 | k con k ≠ 0 cuenta para rg(A*), pero no para rg(A).</p>';
+      if(!okA&&a>cur.rgA)m+='<p>Has obtenido un rango de A demasiado alto. Comprueba si alguna ecuación es combinación de las otras: si |A| = 0, rg(A) &lt; 3.</p>';
+      else if(!okA)m+='<p>Has obtenido un rango de A demasiado bajo. Una fila solo es nula si <b>todos</b> sus elementos son 0; revisa los cálculos de la eliminación.</p>';
+      if(okA&&!okAm)m+='<p>El rango de A es correcto: revisa qué ocurre con la columna de términos independientes.</p>';
+    }
+    showFb('fb-rang','err',m);
+  }
+}
+
+// ═════════ AP 2: DISCUSIÓN ═════════
+function verifyDisc(){
+  if(cur.sec.disc===1)return;
+  if(!requireName())return;
+  const st=getEl('sel-tipo'),ss=getEl('sel-sol'),t=st.value,s=ss.value;
+  if(!t||!s){showFb('fb-disc','hint','⚠️ Elige el tipo de sistema y el número de soluciones antes de verificar.');return;}
+  const snap=t+'|'+s;
+  if(cur.sec.disc===-1&&snap===cur.snapDisc)return;
+  cur.snapDisc=snap;
+  const okT=t===cur.tipo,okS=s===SOL_TIPO[cur.tipo];
+  st.classList.remove('ok','err');ss.classList.remove('ok','err');
+  st.classList.add(okT?'ok':'err');ss.classList.add(okS?'ok':'err');
+  if(okT&&okS){
+    cur.sec.disc=1;secOk('sec-disc');st.disabled=true;ss.disabled=true;
+    const exp={
+      SCD:'rg(A) = rg(A*) = 3, que es el número de incógnitas: el sistema es compatible determinado y tiene una única solución. Como |A| ≠ 0, lo resolverás por la <b>regla de Cramer</b>.',
+      SCI:'rg(A) = rg(A*) = 2 &lt; 3: el sistema es compatible indeterminado. Tiene infinitas soluciones, que dependen de 3 − 2 = 1 parámetro. Lo resolverás por el <b>método de Gauss</b>.',
+      SI:'rg(A) = 2 ≠ rg(A*) = 3: el sistema es incompatible y no tiene solución.'}[cur.tipo];
+    let html=`✓ Discusión correcta.<p>${exp}</p>`;
+    if(cur.practica)html+='<p>ℹ️ Ya tenías superado este tipo de sistema: este ejercicio es de práctica y no suma ni resta puntos.</p>';
+    showFb('fb-disc','ok',html);
+    if(cur.tipo==='SI')mostrarSI();
+    else if(cur.tipo==='SCD')getEl('zona-res').innerHTML=htmlCramer();
+    else getEl('zona-res').innerHTML=htmlGauss();
+    comprobarFin();
+  }else{
+    cur.sec.disc=-1;fallo('discusion');secErr('sec-disc');
+    let m=`✗ Incorrecto.${penTxt()} Revisa tu elección y vuelve a verificar.`;
+    const coherente=SOL_TIPO[t]===s;
+    if(!coherente)m+='<p><b>Tu respuesta es incoherente:</b> un sistema SCD tiene solución única; uno SCI, infinitas; y uno SI, ninguna. El tipo y el número de soluciones tienen que corresponderse.</p>';
+    if(!okT){
+      if(t==='SI')m+='<p>Has elegido SI, pero los rangos de A y A* coinciden. Según el teorema de Rouché-Frobenius, cuando rg(A) = rg(A*) el sistema es compatible: tiene solución.</p>';
+      else if(cur.tipo==='SI')m+='<p>Los rangos de A y A* no coinciden. Recuerda el teorema: el sistema solo tiene solución cuando rg(A) = rg(A*).</p>';
+      else if(t==='SCD')m+='<p>Que rg(A) = rg(A*) garantiza que hay solución, pero no que sea única: para eso el rango tiene que ser igual al número de incógnitas (3).</p>';
+      else m+='<p>El rango coincide con el número de incógnitas, así que ninguna incógnita queda libre para tomar cualquier valor.</p>';
+    }
+    showFb('fb-disc','err',m);
+  }
+}
+
+// SI: no se resuelve; se muestra la forma escalonada como justificación.
+function mostrarSI(){
+  const esc=gaussPaso2(gaussPaso1(cur.A.map((r,i)=>[...r,cur.b[i]])));
+  const k=esc[2][3];
+  getEl('zona-res').innerHTML=`
+  <div class="section done-ok" id="sec-si">
+    <div class="section-title">Comprobación por Gauss</div>
+    <p class="instr">Escalonando la matriz ampliada se llega a:</p>
+    ${dispMat(esc)}
+    <p class="instr" style="margin-top:8px">La tercera fila equivale a la ecuación 0<i>x</i> + 0<i>y</i> + 0<i>z</i> = ${fmtS(k)}, que no se cumple para ningún valor de <i>x</i>, <i>y</i>, <i>z</i>. Por eso el sistema no tiene solución.</p>
+  </div>`;
+}
+
+// ═════════ BLOQUE DE CRAMER (SCD) ═════════
+function htmlCramer(){
+  const campoDet=k=>`<div class="campo"><label for="det-${VN[k]}">${nomDet(k)} =</label><input class="mi ancho" id="det-${VN[k]}" ${NUM_ATTR}></div>`;
+  const filaSol=k=>`<div class="param-row"><label class="var" for="sol-${VN[k]}"><i>${VN[k]}</i> =</label><span class="formula">${nomDet(k)} / |A| =</span><input class="mi ancho" id="sol-${VN[k]}" ${NUM_ATTR}></div>`;
+  return`
+    <div class="section" id="sec-detA">
+      <div class="section-title">Apartado 3 — Determinante de la matriz de coeficientes</div>
+      <p class="instr">Calcula |A|, por ejemplo con la regla de Sarrus. La regla de Cramer solo se puede aplicar si |A| ≠ 0.</p>
+      <div class="fila-campos"><div class="campo"><label for="detA">|A| =</label><input class="mi ancho" id="detA" ${NUM_ATTR}></div></div>
+      <div class="brow"><button class="btn-primario" onclick="verifyDetA()">✓ Verificar |A|</button></div>
+      <div class="fb-inline" id="fb-detA" aria-live="polite"></div>
+    </div>
+
+    <div class="section locked" id="sec-dets" inert>
+      <div class="section-title">Apartado 4 — Determinantes de Cramer</div>
+      <p class="instr">Construye A<sub><i>x</i></sub> sustituyendo en A la columna de los coeficientes de <i>x</i> por la columna de términos independientes. Haz lo mismo con <i>y</i> y con <i>z</i>, y calcula los tres determinantes.</p>
+      <div class="fila-campos">${[0,1,2].map(campoDet).join('')}</div>
+      <div class="brow"><button class="btn-primario" onclick="verifyDets()">✓ Verificar determinantes</button></div>
+      <div class="fb-inline" id="fb-dets" aria-live="polite"></div>
+    </div>
+
+    <div class="section locked" id="sec-cram" inert>
+      <div class="section-title">Apartado 5 — Solución por la regla de Cramer</div>
+      <p class="instr">Cada incógnita es el cociente entre su determinante y |A|. Si el resultado es una fracción, escríbela como a/b.</p>
+      <div class="param-col">${[0,1,2].map(filaSol).join('')}</div>
+      <div class="brow"><button class="btn-primario" onclick="verifyCram()">✓ Verificar solución</button></div>
+      <div class="fb-inline" id="fb-cram" aria-live="polite"></div>
+    </div>`;
+}
+
+// ═════════ AP 3 (SCD): |A| ═════════
+function verifyDetA(){
+  if(cur.sec.detA===1)return;
+  if(!requireName())return;
+  const v=parseFrac(getEl('detA').value);
+  if(v===null){showFb('fb-detA','hint','⚠️ Escribe el valor de |A| antes de verificar.');return;}
+  const snap=String(v);
+  if(cur.sec.detA===-1&&snap===cur.snapDetA)return;
+  cur.snapDetA=snap;
+  const D=cur.D;
+  if(Math.abs(v-D)<0.01){
+    cur.sec.detA=1;markOk('detA');secOk('sec-detA');
+    showFb('fb-detA','ok',`✓ Correcto: |A| = ${fmtS(D)} ≠ 0.<p>Esto confirma que rg(A) = 3 y permite aplicar la regla de Cramer.</p>`);
+    unlockSec('sec-dets');
+  }else{
+    cur.sec.detA=-1;cur.errDet[0]++;markErr('detA');fallo('cramer');secErr('sec-detA');
+    let m=`✗ Incorrecto.${penTxt()} Revisa el cálculo y vuelve a verificar.`;
+    if(Math.abs(v)<1e-9)m+='<p>Si |A| valiera 0, rg(A) sería menor que 3 y el sistema no podría ser compatible determinado, que es lo que has discutido. Revisa el cálculo.</p>';
+    else if(Math.abs(v+D)<0.01)m+='<p>Tienes el valor con el signo cambiado: revisa qué productos se suman y cuáles se restan.</p>';
+    else m+='<p>Con la regla de Sarrus se suman los productos de la diagonal principal y de sus dos paralelas, y se restan los de la diagonal secundaria y de sus dos paralelas. Cuidado con los coeficientes negativos.</p>';
+    if(cur.errDet[0]>=2)m+=sarrusHtml(cur.A,'|A|');
+    showFb('fb-detA','err',m);
+  }
+  comprobarFin();
+}
+
+// ═════════ AP 4 (SCD): |Ax|, |Ay|, |Az| ═════════
+function verifyDets(){
+  if(cur.sec.dets===1)return;
+  if(!requireName())return;
+  const ids=['det-x','det-y','det-z'];
+  if(!allFilled(...ids)){showFb('fb-dets','hint','⚠️ Completa los tres determinantes antes de verificar.');return;}
+  const v=ids.map(id=>parseFrac(getEl(id).value)),snap=JSON.stringify(v);
+  if(cur.sec.dets===-1&&snap===cur.snapDets)return;
+  cur.snapDets=snap;
+  const Dk=cur.Dk,ok=v.map((x,i)=>Math.abs(x-Dk[i])<0.01);
+  ids.forEach((id,i)=>(ok[i]?markOk:markErr)(id));
+  if(ok.every(Boolean)){
+    cur.sec.dets=1;secOk('sec-dets');
+    showFb('fb-dets','ok',`✓ Determinantes correctos: ${[0,1,2].map(k=>`${nomDet(k)} = ${fmtS(Dk[k])}`).join(', ')}.`);
+    unlockSec('sec-cram');
+  }else{
+    cur.sec.dets=-1;fallo('cramer');secErr('sec-dets');
+    let m=`✗ Incorrecto.${penTxt()} Revisa los campos en rojo.`;
+    [0,1,2].forEach(k=>{
+      if(ok[k])return;
+      cur.errDet[k+1]++;
+      const Mk=sustCol(cur.A,cur.b,k);
+      const otra=[0,1,2].find(j=>j!==k&&Math.abs(v[k]-Dk[j])<0.01&&Math.abs(Dk[j]-Dk[k])>0.01);
+      let d;
+      if(Math.abs(Dk[k])>0.01&&Math.abs(v[k]+Dk[k])<0.01)d='Tienes el signo cambiado: revisa qué productos se suman y cuáles se restan.';
+      else if(Math.abs(v[k]-cur.D)<0.01&&Math.abs(Dk[k]-cur.D)>0.01)d=`Ese es el valor de |A|: en A<sub><i>${VN[k]}</i></sub> hay que sustituir la columna de <i>${VN[k]}</i>.`;
+      else if(otra!==undefined)d=`Ese valor corresponde a ${nomDet(otra)}: has sustituido la columna de <i>${VN[otra]}</i> en lugar de la de <i>${VN[k]}</i>.`;
+      else d='Revisa los productos de la regla de Sarrus.';
+      m+=`<p><span class="sn">${nomDet(k)}:</span> ${d} Así queda A<sub><i>${VN[k]}</i></sub> (resaltada, la columna de términos independientes):</p>${dispDet(Mk,k)}`;
+      if(cur.errDet[k+1]>=2)m+=sarrusHtml(Mk,nomDet(k));
+    });
+    showFb('fb-dets','err',m);
+  }
+  comprobarFin();
+}
+
+// ═════════ AP 5 (SCD): SOLUCIÓN ═════════
+function verifyCram(){
+  if(cur.sec.cram===1)return;
+  if(!requireName())return;
+  const ids=['sol-x','sol-y','sol-z'];
+  if(!allFilled(...ids)){showFb('fb-cram','hint','⚠️ Completa las tres incógnitas antes de verificar.');return;}
+  const v=ids.map(id=>parseFrac(getEl(id).value)),snap=JSON.stringify(v);
+  if(cur.sec.cram===-1&&snap===cur.snapCram)return;
+  cur.snapCram=snap;
+  const sol=cur.sol,TOL=0.01,ok=v.map((x,i)=>Math.abs(x-sol[i])<TOL);
+  ids.forEach((id,i)=>(ok[i]?markOk:markErr)(id));
+  if(ok.every(Boolean)){
+    cur.sec.cram=1;secOk('sec-cram');
+    showFb('fb-cram','ok',`✓ Correcto: <i>x</i> = ${fmtS(sol[0])}, <i>y</i> = ${fmtS(sol[1])}, <i>z</i> = ${fmtS(sol[2])}. Es la única solución, como predijo la discusión.`);
+  }else{
+    cur.sec.cram=-1;fallo('solucion');secErr('sec-cram');
+    let m=`✗ Incorrecto.${penTxt()} Revisa los campos en rojo.`;
+    [0,1,2].forEach(k=>{
+      if(ok[k])return;
+      const Dk=cur.Dk[k];
+      let d;
+      if(Math.abs(Dk)>0.01&&Math.abs(v[k]*Dk-cur.D)<TOL&&Math.abs(Math.abs(Dk)-Math.abs(cur.D))>0.01)d='Has invertido la fracción: |A| va en el <b>denominador</b>.';
+      else if(Math.abs(sol[k])>TOL&&Math.abs(v[k]+sol[k])<TOL)d='Tiene el signo cambiado: revisa la regla de los signos al dividir.';
+      else d=`Divide ${nomDet(k)} entre |A| con los valores que obtuviste en los apartados 3 y 4.`;
+      m+=`<p><span class="sn"><i>${VN[k]}</i>:</span> ${d}</p>`;
+    });
+    m+='<p>Truco: puedes comprobar tu solución sustituyéndola en las ecuaciones originales.</p>';
+    showFb('fb-cram','err',m);
+  }
+  comprobarFin();
+}
+
+// ═════════ BLOQUE DE GAUSS (SCI) ═════════
+function htmlGauss(){
+  const campoP=(id,lab)=>`<input class="mi" id="${id}" ${NUM_ATTR} aria-label="${lab}">`;
+  return`
+    <div class="section" id="sec-amp">
+      <div class="section-title">Apartado 3 — Matriz ampliada A*</div>
+      <p class="instr">Escribe la matriz ampliada del sistema. Puedes reordenar las filas para elegir el mejor pivote.</p>
+      ${mIGcls(3,4,'amp',(i,j)=>j===3?'term':'')}
+      <div class="brow"><button class="btn-primario" onclick="verifyAmp()">✓ Verificar matriz ampliada</button></div>
+      <div class="fb-inline" id="fb-amp" aria-live="polite"></div>
+    </div>
+
+    <div class="section locked" id="sec-paso1" inert>
+      <div class="section-title">Apartado 4 — Primera eliminación (pivote a<sub>11</sub>)</div>
+      <p class="instr">Usa a<sub>11</sub> como pivote para eliminar <i>x</i> de las filas 2 y 3. Puedes cambiar de signo o simplificar cualquier fila.</p>
+      ${LEG('a<sub>11</sub>')}
+      ${mIGcls(3,4,'p1',(i,j)=>i===0&&j===0?'pivot':(j===0&&i>0?'zero':(j===3?'term':'')))}
+      <div class="brow"><button class="btn-primario" onclick="verifyPaso1()">✓ Verificar primera eliminación</button></div>
+      <div class="fb-inline" id="fb-paso1" aria-live="polite"></div>
+    </div>
+
+    <div class="section locked" id="sec-paso2" inert>
+      <div class="section-title">Apartado 5 — Segunda eliminación (pivote a<sub>22</sub>)</div>
+      <p class="instr">Usa a<sub>22</sub> como pivote para eliminar <i>y</i> de la fila 3. Como el sistema es SCI, en la fila 3 debe aparecer una fila entera de ceros.</p>
+      <p class="instr nota">⇅ Si te conviene (para que el pivote sea 1 y evitar fracciones, o porque a<sub>22</sub> vale 0), puedes <b>intercambiar las filas 2 y 3</b> antes de eliminar. Escribe directamente la matriz resultante. También puedes cambiar de signo o simplificar cualquier fila.</p>
+      ${LEG('a<sub>22</sub>')}
+      ${mIGcls(3,4,'p2',(i,j)=>{
+        if(i===1&&j===1)return'pivot';
+        if(i===2||(i===1&&j===0))return'zero';
+        if(j===3)return'term';return'';})}
+      <div class="brow"><button class="btn-primario" onclick="verifyPaso2()">✓ Verificar segunda eliminación</button></div>
+      <div class="fb-inline" id="fb-paso2" aria-live="polite"></div>
+    </div>
+
+    <div class="section locked" id="sec-back" inert>
+      <div class="section-title">Apartado 6 — Solución en función de un parámetro</div>
+      <p class="instr">La fila de ceros indica que solo quedan dos ecuaciones independientes para tres incógnitas, así que una queda libre. Toma <b><i>z</i> = <i>t</i></b>, despeja <i>y</i> de la fila 2 y, después, <i>x</i> de la fila 1.</p>
+      <p class="instr nota">Escribe cada incógnita como «número + número·<i>t</i>». Si un coeficiente es negativo, escríbelo con su signo (p. ej. −2); si un término no aparece, escribe 0.</p>
+      <div class="param-col">
+        <div class="param-row"><span class="var"><i>x</i> =</span>${campoP('back-x0','x: término independiente')}<span>+</span>${campoP('back-xt','x: coeficiente de t')}<span class="t">· t</span></div>
+        <div class="param-row"><span class="var"><i>y</i> =</span>${campoP('back-y0','y: término independiente')}<span>+</span>${campoP('back-yt','y: coeficiente de t')}<span class="t">· t</span></div>
+        <div class="param-row"><span class="var"><i>z</i> =</span><span class="t">t</span><span style="font-size:.85rem;color:var(--color-texto-suave)">&nbsp;(<i>t</i> ∈ ℝ)</span></div>
+      </div>
+      <div class="brow"><button class="btn-primario" onclick="verifyBack()">✓ Verificar solución</button></div>
+      <div class="fb-inline" id="fb-back" aria-live="polite"></div>
+    </div>`;
+}
+
+// ═════════ AP 3 (SCI): MATRIZ AMPLIADA ═════════
+function verifyAmp(){
+  if(cur.sec.amp===1)return;
+  if(!requireName())return;
+  if(!allGrid('amp',3,4)){showFb('fb-amp','hint','⚠️ Completa todos los campos de la matriz ampliada antes de verificar.');return;}
+  const m=getGrid('amp',3,4),snap=JSON.stringify(m);
+  if(cur.sec.amp===-1&&snap===cur.snapAmp)return;
+  cur.snapAmp=snap;
+  const correctRows=cur.A.map((r,i)=>[...r,cur.b[i]]);
+  const used=new Set();let ok=true;
+  for(let i=0;i<3&&ok;i++){
+    let found=false;
+    for(let ci=0;ci<3;ci++){if(used.has(ci))continue;if(correctRows[ci].every((v,j)=>Math.abs((m[i][j]||0)-v)<0.05)){used.add(ci);found=true;break;}}
+    if(!found)ok=false;
+  }
+  if(ok&&Math.abs(m[0][0])<1e-10){
+    cur.snapAmp=null;
+    showFb('fb-amp','hint','⚠️ Las filas son correctas, pero a<sub>11</sub> vale 0 y no puede ser pivote. Coloca en primer lugar una ecuación cuyo coeficiente de <i>x</i> no sea 0.');
+    return;
+  }
+  if(ok){
+    cur.sec.amp=1;cur.aug=m;cur.step1=gaussPaso1(m);
+    paintGrid('amp',3,4,m,0.05,true);secOk('sec-amp');
+    showFb('fb-amp','ok','✓ Matriz ampliada correcta. Cada fila recoge los coeficientes de una ecuación y, tras la barra, su término independiente.');
+  }else{
+    cur.sec.amp=-1;cur.aug=correctRows;cur.step1=gaussPaso1(correctRows);
+    paintGrid('amp',3,4,correctRows,0.05,false);fallo('gauss');secErr('sec-amp');
+    showFb('fb-amp','err',`✗ Incorrecta.${penTxt()} Corrige los campos en rojo y vuelve a verificar. Cada fila debe corresponder a una ecuación del sistema (en cualquier orden): coeficientes de <i>x</i>, <i>y</i>, <i>z</i> con su signo y, tras la barra, el término independiente. Si una incógnita no aparece, su coeficiente es 0.`);
+  }
+  unlockSec('sec-paso1');comprobarFin();
+}
+
+// ═════════ AP 4 (SCI): PRIMERA ELIMINACIÓN ═════════
+function verifyPaso1(){
+  if(cur.sec.paso1===1)return;
+  if(!requireName())return;
+  if(!allGrid('p1',3,4)){showFb('fb-paso1','hint','⚠️ Completa todos los campos de la matriz antes de verificar.');return;}
+  const m=getGrid('p1',3,4),snap=JSON.stringify(m);
+  if(cur.sec.paso1===-1&&snap===cur.snapP1)return;
+  cur.snapP1=snap;
+  const correct=cur.step1,TOL=0.1;
+  const f=[0,1,2].map(i=>filaEq(m[i],correct[i],TOL));
+  const ok=f.every(Boolean);
+  cur.sec.paso1=ok?1:-1;
+  paintFilas('p1',3,4,correct,TOL,ok);
+  const base=ok?m.map(r=>r.map(x=>x||0)):correct.map(r=>[...r]);
+  cur.step2cBase=base;cur.step2c=paso2Candidatos(base);
+  if(ok){
+    secOk('sec-paso1');
+    const equiv=[0,1,2].some(i=>!filaIgual(m[i],correct[i],TOL));
+    showFb('fb-paso1','ok','✓ Primera eliminación correcta: <i>x</i> ha desaparecido de las filas 2 y 3.'
+      +(equiv?'<p>Has cambiado de signo o simplificado alguna fila: es una ecuación equivalente, así que es válida.</p>':''));
+  }else{
+    fallo('gauss');secErr('sec-paso1');
+    const aug=cur.aug,piv=aug[0][0];
+    let msg=`✗ Incorrecta.${penTxt()} Corrige los campos en rojo y vuelve a verificar.`;
+    if(!f[0])msg+='<p>La fila 1 (la del pivote) se copia igual que en el apartado 3.</p>';
+    if(!f[1])msg+=`<p><span class="sn">Fila 2:</span> ${opTxt(2,1,aug[1][0],piv)}. Opera también sobre el término independiente.</p>`;
+    if(!f[2])msg+=`<p><span class="sn">Fila 3:</span> ${opTxt(3,1,aug[2][0],piv)}. Opera también sobre el término independiente.</p>`;
+    showFb('fb-paso1','err',msg);
+  }
+  unlockSec('sec-paso2');
+  comprobarFin();
+}
+
+// ═════════ AP 5 (SCI): SEGUNDA ELIMINACIÓN ═════════
+function verifyPaso2(){
+  if(cur.sec.paso2===1)return;
+  if(!requireName())return;
+  if(!allGrid('p2',3,4)){showFb('fb-paso2','hint','⚠️ Completa todos los campos de la matriz antes de verificar.');return;}
+  const m=getGrid('p2',3,4),snap=JSON.stringify(m);
+  if(cur.sec.paso2===-1&&snap===cur.snapP2)return;
+  cur.snapP2=snap;
+  const TOL=0.15,near=(a,b)=>Math.abs((a||0)-b)<TOL;
+  const evals=cur.step2c.map(c=>{
+    const k=c.m,r=[0,1,2].map(i=>filaEq(m[i],k[i],TOL));
+    let wrong=0;for(let i=0;i<3;i++)if(!r[i])wrong+=4;else for(let j=0;j<4;j++)if(!near(m[i][j],k[i][j]))wrong+=0.1;
+    return{...c,r,ok:r.every(Boolean),wrong};
+  });
+  const best=evals.find(e=>e.ok)||evals.slice().sort((a,b)=>a.wrong-b.wrong)[0];
+  const ok=best.ok;
+  cur.sec.paso2=ok?1:-1;
+  paintFilas('p2',3,4,best.m,TOL,ok);
+  const b0=cur.step2cBase,a22=b0[1][1],a32=b0[2][1];
+  if(ok){
+    secOk('sec-paso2');
+    const equiv=[0,1,2].some(i=>!filaIgual(m[i],best.m[i],TOL));
+    let txt='✓ Segunda eliminación correcta'+(best.swap?', con intercambio F2 ↔ F3':'')+'. La fila 3 se anula por completo: era combinación lineal de las otras dos.';
+    if(equiv)txt+='<p>Has cambiado de signo o simplificado alguna fila: es una ecuación equivalente, así que es válida.</p>';
+    showFb('fb-paso2','ok',txt);
+  }else{
+    fallo('gauss');secErr('sec-paso2');
+    let msg=`✗ Incorrecta.${penTxt()} Corrige los campos en rojo y vuelve a verificar.`;
+    if(best.swap){
+      if(!best.r[0]||!best.r[1])msg+='<p>Con el intercambio, la fila 1 se copia igual y la nueva fila 2 es la fila 3 del apartado 4.</p>';
+      if(!best.r[2])msg+=`<p><span class="sn">Fila 3 (antigua F2):</span> ${opTxt(3,2,a22,a32)}</p>`;
+    }else{
+      if(!best.r[0]||!best.r[1])msg+='<p>Las filas 1 y 2 se copian igual que en el apartado 4.</p>';
+      if(!best.r[2])msg+=`<p><span class="sn">Fila 3:</span> ${opTxt(3,2,a32,a22)}</p>`;
+    }
+    if(!best.r[2])msg+='<p>En un sistema SCI de rango 2, al eliminar <i>y</i> la fila 3 debe quedar entera de ceros, también el término independiente: 0 0 0 | 0. Si te sale otra cosa, hay un error de cálculo.</p>';
+    if(Math.abs(a22)<1e-10)msg+='<p>💡 a<sub>22</sub> vale 0, así que no puede ser pivote: intercambia las filas 2 y 3.</p>';
+    else if(!best.swap&&Math.abs(Math.abs(a22)-1)>1e-10&&Math.abs(Math.abs(a32)-1)<1e-10)
+      msg+=`<p>💡 Si intercambias las filas 2 y 3, el pivote pasa a ser ${fmtS(a32)} y evitas las fracciones.</p>`;
+    showFb('fb-paso2','err',msg);
+  }
+  unlockSec('sec-back');comprobarFin();
+}
+
+// ═════════ AP 6 (SCI): SOLUCIÓN PARAMÉTRICA ═════════
+function verifyBack(){
+  if(cur.sec.back===1)return;
+  if(!requireName())return;
+  const ids=['back-x0','back-xt','back-y0','back-yt'];
+  if(!allFilled(...ids)){showFb('fb-back','hint','⚠️ Completa los cuatro campos (escribe 0 si un término no aparece).');return;}
+  const v=ids.map(id=>parseFrac(getEl(id).value)),snap=JSON.stringify(v);
+  if(cur.sec.back===-1&&snap===cur.snapBack)return;
+  cur.snapBack=snap;
+  const p=cur.par,c=[p.x0,p.xt,p.y0,p.yt],TOL=0.01;
+  const okk=v.map((x,i)=>Math.abs(x-c[i])<TOL),ok=okk.every(Boolean);
+  ids.forEach((id,i)=>(okk[i]?markOk:markErr)(id));
+  cur.sec.back=ok?1:-1;
+  if(ok){
+    secOk('sec-back');
+    showFb('fb-back','ok',`✓ Correcto: <i>x</i> = ${fmtParam(p.x0,p.xt)}, <i>y</i> = ${fmtParam(p.y0,p.yt)}, <i>z</i> = <i>t</i>, con <i>t</i> ∈ ℝ.<p>Cada valor de <i>t</i> da una solución distinta (por ejemplo, con <i>t</i> = 0: (${fmtS(p.x0)}, ${fmtS(p.y0)}, 0)); por eso hay infinitas.</p>`);
+  }else{
+    fallo('solucion');secErr('sec-back');
+    let m=`✗ Incorrecto.${penTxt()} Revisa los campos en rojo.`;
+    const signo=(i)=>!okk[i]&&Math.abs(v[i]+c[i])<TOL&&Math.abs(c[i])>TOL;
+    if(!okk[2]||!okk[3]){
+      m+='<p>Empieza por <i>y</i>: en la fila 2 sustituye <i>z</i> por <i>t</i> y despeja <i>y</i>. El término con <i>t</i> pasa al otro miembro.</p>';
+      if(signo(3))m+='<p>El coeficiente de <i>t</i> en <i>y</i> tiene el signo cambiado: al pasar un término al otro miembro, cambia de signo.</p>';
+    }
+    if(!okk[0]||!okk[1]){
+      m+=(okk[2]&&okk[3])?'<p><i>y</i> está bien. Sustituye <i>y</i> y <i>z</i> = <i>t</i> en la fila 1 y agrupa por un lado los números y por otro los términos en <i>t</i>.</p>'
+        :'<p>Para <i>x</i>, sustituye la expresión de <i>y</i> y <i>z</i> = <i>t</i> en la fila 1.</p>';
+      if(signo(1))m+='<p>El coeficiente de <i>t</i> en <i>x</i> tiene el signo cambiado.</p>';
+    }
+    m+='<p>Truco: da a <i>t</i> un valor (por ejemplo 0 o 1) y comprueba que el punto obtenido cumple las tres ecuaciones originales.</p>';
+    showFb('fb-back','err',m);
+  }
+  comprobarFin();
+}
+
+// ═════════ FIN DE EJERCICIO ═════════
+function comprobarFin(){
+  const s=cur.sec;
+  const fin=s.rang===1&&s.disc===1&&(
+    cur.tipo==='SI'?true:
+    cur.tipo==='SCD'?(s.detA===1&&s.dets===1&&s.cram===1):
+    (s.amp===1&&s.paso1===1&&s.paso2===1&&s.back===1));
+  if(!fin||cur.completo)return;
+  cur.completo=true;
+  const g=getEl('fb-global');
+  const resumen={
+    SCD:`Solución única: <i>x</i> = ${cur.sol?fmtS(cur.sol[0]):''}, <i>y</i> = ${cur.sol?fmtS(cur.sol[1]):''}, <i>z</i> = ${cur.sol?fmtS(cur.sol[2]):''}.`,
+    SCI:cur.par?`Infinitas soluciones: <i>x</i> = ${fmtParam(cur.par.x0,cur.par.xt)}, <i>y</i> = ${fmtParam(cur.par.y0,cur.par.yt)}, <i>z</i> = <i>t</i>.`:'',
+    SI:'El sistema no tiene solución.'}[cur.tipo];
+  if(cur.practica){
+    g.className='fb-global practica';
+    g.innerHTML=`✔ <b>Ejercicio de práctica completado.</b> ${resumen}`;
+  }else{
+    state.tipos[cur.tipo].superado=true;actualizarUI();
+    const todos=TIPOS.every(k=>state.tipos[k].superado);
+    const pend=TIPOS.filter(k=>!state.tipos[k].superado);
+    g.className='fb-global ok';
+    g.innerHTML=`🎉 <b>¡Tipo ${cur.tipo} superado!</b> ${resumen}<br>`
+      +(todos?'Has superado los tres tipos de sistema. Pulsa <b>«🏁 Finalizar y Calificar»</b> para ver tu informe.'
+             :`Te ${pend.length===1?'falta':'faltan'} por superar: <b>${pend.join(', ')}</b>.`);
+  }
+  getEl('btn-cambiar').style.display='none';
+  getEl('btn-next').style.display='';
+  g.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+// ═════════ MODAL / INFORME ═════════
+function openModal(){
+  if(!requireName())return;
+  const name=getEl('nombre').value.trim(),now=new Date(),nota=calcularNota();
+  const fecha=now.toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const hora=now.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const minTot=Math.ceil(Math.max(1,now-state.inicio)/60000); // redondeo hacia arriba al minuto
+  const hh=String(Math.floor(minTot/60)).padStart(2,'0'),mm=String(minTot%60).padStart(2,'0');
+  let bg,col;
+  if(nota>=10){bg='#1a7a1a';col='white';document.body.classList.add('success-mode');}
+  else if(nota>=9){bg='#6dbf6d';col='white';}else if(nota>=8){bg='#1a4f8a';col='white';}
+  else if(nota>=7){bg='#5b9bd5';col='white';}else if(nota>=6){bg='#c05c00';col='white';}
+  else if(nota>=5){bg='#f5a623';col='black';}else{bg='#c0392b';col='white';}
+  const box=getEl('modal-box');box.style.background=bg;box.style.color=col;
+  getEl('modal-close').style.color=col;
+  getEl('modal-ficha').textContent=document.querySelector('.titulo-ficha').textContent;
+  getEl('modal-sub').textContent=document.querySelector('.subtitulo').textContent;
+  getEl('modal-nombre').textContent=name;
+  getEl('modal-nota').textContent=fmtNota(nota)+' / 10';
+  getEl('modal-data').innerHTML=`<div><b>Fecha:</b> ${fecha}</div><div><b>Hora:</b> ${hora}</div><div><b>Tiempo empleado:</b> ${hh}:${mm}</div><div><b>Tipos superados:</b> ${TIPOS.filter(k=>state.tipos[k].superado).length} / 3 &nbsp;·&nbsp; <b>Fallos:</b> ${state.fallosTotales}</div>`;
+  const tb=getEl('modal-tipos');tb.classList.toggle('oscuro',col==='black');
+  tb.innerHTML='<tr><th>Tipo</th><th>Estado</th><th>Ejercicios</th><th>Fallos</th></tr>'
+    +TIPOS.map(k=>{const t=state.tipos[k];return`<tr><td>${TIPO_NOMBRE[k]}</td><td>${t.superado?'✓ Superado':'✗ No superado'}</td><td>${t.ejercicios}</td><td>${t.fallos}</td></tr>`;}).join('');
+  const f=state.fases;
+  getEl('modal-fases').innerHTML=`<b>Fallos por fase:</b> rangos ${f.rangos} · discusión ${f.discusion} · Cramer ${f.cramer} · Gauss ${f.gauss} · solución ${f.solucion}`
+    +(state.practicas?`<br><b>Ejercicios de práctica</b> (tipo ya superado, sin puntuación): ${state.practicas}`:'');
+  const btn=getEl('modal-btn');btn.style.color=col;btn.style.border='1.5px solid '+col;
+  getEl('modal-overlay').style.display='flex';
+}
+function closeModal(){getEl('modal-overlay').style.display='none';}
+
+// ═════════ TECLADO FÍSICO ═════════
+const VERIFY_BY_SECTION={'sec-rang':verifyRang,'sec-disc':verifyDisc,
+  'sec-detA':verifyDetA,'sec-dets':verifyDets,'sec-cram':verifyCram,
+  'sec-amp':verifyAmp,'sec-paso1':verifyPaso1,'sec-paso2':verifyPaso2,'sec-back':verifyBack};
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&getEl('modal-overlay').style.display==='flex'){closeModal();return;}
+  if(e.key!=='Enter')return;
+  const t=e.target;
+  if(t.id==='nombre'){e.preventDefault();return;}
+  if(!t.classList||!(t.classList.contains('mi')||t.classList.contains('sel')))return;
+  const sec=t.closest('.section');
+  if(sec&&VERIFY_BY_SECTION[sec.id]){e.preventDefault();VERIFY_BY_SECTION[sec.id]();}
+});
+
+// ═════════ BARRA AUXILIAR PARA MÓVIL ═════════
+// El teclado numérico del móvil (inputmode="decimal") no tiene «−» ni «/». Esta barra aparece
+// encima del teclado al tocar una casilla numérica y añade esos dos símbolos.
+const tec=getEl('teclado-aux');
+let campoActivo=null,tecTimer=null;
+function esCampoNum(el){return!!(el&&el.matches&&el.matches('input.mi[inputmode="decimal"]')&&!el.readOnly&&!el.disabled);}
+function posTeclado(){
+  if(!tec.classList.contains('visible'))return;
+  const vv=window.visualViewport,h=tec.offsetHeight;
+  tec.style.top=((vv?vv.offsetTop+vv.height:window.innerHeight)-h)+'px';
+}
+function asegurarVisible(){
+  if(!campoActivo)return;
+  const vv=window.visualViewport,r=campoActivo.getBoundingClientRect();
+  const limite=(vv?vv.offsetTop+vv.height:window.innerHeight)-tec.offsetHeight-8;
+  if(r.bottom>limite)window.scrollBy(0,r.bottom-limite);
+}
+function mostrarTeclado(el){
+  clearTimeout(tecTimer);campoActivo=el;tec.classList.add('visible');posTeclado();
+  setTimeout(()=>{posTeclado();asegurarVisible();},350); // espera a que suba el teclado del sistema
+}
+function ocultarTeclado(){tec.classList.remove('visible');campoActivo=null;}
+function teclear(k){
+  const el=campoActivo;if(!esCampoNum(el))return;
+  if(k==='listo'){el.blur();ocultarTeclado();return;}
+  const v=el.value;let pos;
+  if(k==='signo'){
+    el.value=/^[-−]/.test(v)?v.slice(1):'-'+v;pos=el.value.length;
+  }else{
+    const s=el.selectionStart??v.length,f=el.selectionEnd??v.length;
+    el.value=v.slice(0,s)+k+v.slice(f);pos=s+k.length;
+  }
+  try{el.setSelectionRange(pos,pos);}catch(_){}
+  el.dispatchEvent(new Event('input',{bubbles:true}));
+}
+if(window.matchMedia('(pointer:coarse)').matches){
+  document.addEventListener('focusin',e=>{if(esCampoNum(e.target))mostrarTeclado(e.target);});
+  document.addEventListener('focusout',e=>{if(e.target===campoActivo)tecTimer=setTimeout(ocultarTeclado,150);});
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize',posTeclado);
+    window.visualViewport.addEventListener('scroll',posTeclado);
+  }
+  // preventDefault evita que el botón robe el foco y se cierre el teclado del sistema.
+  tec.addEventListener('pointerdown',e=>{e.preventDefault();const b=e.target.closest('button');if(b)teclear(b.dataset.k);});
+  tec.addEventListener('touchstart',e=>e.preventDefault(),{passive:false});
+  tec.addEventListener('mousedown',e=>e.preventDefault());
+}
+
+actualizarUI();
+loadEj();
+</script>
+</body>
+</html>
