@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ecuaciones matriciales</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(', '\\)']] },
+    options: { enableMenu: false },
+    startup: {
+      typeset: false,
+      ready: function () {
+        MathJax.startup.defaultReady();
+        MathJax.startup.promise.then(function () {
+          window.__mjListo = true;
+          if (window.renderFx) window.renderFx(document.body);
+        });
+      }
+    }
+  };
+</script>
+<script async id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+:root {
+  --color-fondo: #F5F0E8;
+  --color-fondo-card: #FDFAF3;
+  --color-texto: #2C1F0E;
+  --color-texto-suave: #6B4F35;
+  --color-acento: #A0522D;
+  --color-acento-hover: #7B3B1E;
+  --color-borde: #C9A96E;
+  --color-borde-suave: #E0CEAA;
+  --color-cabecera: #3B2510;
+  --color-cabecera-txt: #F5EDD8;
+  --color-barra-alumno: #EFE4CC;
+  --color-correcto: #2E6B3E;
+  --color-incorrecto: #8B1A1A;
+  --color-neutro: #E8DFC8;
+  --fondo-correcto: #EAF4EC;
+  --fondo-incorrecto: #F9EAEA;
+  --sombra: rgba(44, 31, 14, 0.15);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: 'Lato', sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-texto);
+  background-color: var(--color-fondo);
+  transition: background-color .6s ease;
+}
+body.ficha-perfecta { background-color: #1a7a1a; }
+h1, h2, h3 { font-family: 'Libre Baskerville', serif; color: var(--color-texto); }
+
+/* ---------- Cabecera de autoría ---------- */
+.cabecera {
+  background-color: var(--color-cabecera);
+  color: var(--color-cabecera-txt);
+  font-family: 'Libre Baskerville', serif;
+  text-align: center;
+  padding: 12px 20px;
+  border-bottom: 3px solid var(--color-borde);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+}
+
+/* ---------- Contenedor ---------- */
+.ficha-container {
+  max-width: 860px;
+  margin: 28px auto;
+  background: var(--color-fondo-card);
+  border: 2px solid var(--color-borde);
+  border-radius: 6px;
+  box-shadow: 0 3px 12px var(--sombra);
+  padding: 32px 36px;
+}
+.titulo-ficha {
+  font-size: 1.6rem;
+  text-align: center;
+  border-bottom: 2px solid var(--color-borde);
+  padding-bottom: 10px;
+  margin: 0 0 8px;
+}
+.titulo-ficha::after {
+  content: '';
+  display: block;
+  width: 60px; height: 3px;
+  background: var(--color-borde);
+  margin: 8px auto 0;
+  border-radius: 2px;
+}
+.subtitulo {
+  text-align: center;
+  font-family: 'Libre Baskerville', serif;
+  font-style: italic;
+  color: var(--color-texto-suave);
+  font-size: 1.02rem;
+  margin: 6px 0 20px;
+}
+
+/* ---------- Barra del alumno ---------- */
+.barra {
+  position: sticky; top: 0; z-index: 50;
+  background: var(--color-barra-alumno);
+  border: 1.5px solid var(--color-borde);
+  border-radius: 6px;
+  margin: 0 0 22px;
+  box-shadow: 0 2px 6px rgba(44, 31, 14, 0.08);
+  padding: 9px 20px;
+  display: flex; flex-wrap: wrap; gap: 10px 26px;
+  align-items: center; justify-content: center;
+  font-size: .92rem;
+}
+.barra label { font-family: 'Libre Baskerville', serif; font-size: .85rem; color: var(--color-texto-suave); }
+.barra input#nombre {
+  background: var(--color-fondo-card); border: 1.5px solid var(--color-borde); border-radius: 4px;
+  padding: 6px 10px; font-family: 'Lato', sans-serif; font-size: .95rem;
+  color: var(--color-texto); width: 230px; max-width: 60vw; outline: none;
+}
+.barra input#nombre:focus { border-color: var(--color-acento); }
+.barra input#nombre.falta { border-color: var(--color-incorrecto); box-shadow: 0 0 0 3px rgba(139,26,26,.18); }
+.barra .dato { color: var(--color-texto-suave); }
+.barra .dato b { color: var(--color-acento); font-family: 'Libre Baskerville', serif; }
+.aviso-nombre { color: var(--color-incorrecto); font-size: .82rem; font-weight: 700; display: none; width: 100%; text-align: center; }
+.aviso-nombre.visible { display: block; }
+
+/* ---------- Bloques informativos ---------- */
+.instrucciones {
+  font-size: .9rem;
+  color: var(--color-texto-suave);
+  border-left: 3px solid var(--color-borde);
+  padding: 4px 0 4px 16px;
+  margin: 0 0 18px;
+}
+.instrucciones p { margin: 4px 0; }
+.recordatorio {
+  background: var(--color-fondo);
+  border: 1.5px solid var(--color-borde);
+  border-radius: 6px;
+  padding: 14px 20px;
+  margin: 0 0 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 24px;
+}
+.recordatorio h2 {
+  grid-column: 1 / -1;
+  margin: 0 0 2px;
+  font-size: .95rem;
+  color: var(--color-acento);
+  letter-spacing: .03em;
+}
+.recordatorio .regla { font-size: .92rem; }
+.recordatorio .regla span.lbl { display: block; font-size: .78rem; color: var(--color-texto-suave); text-transform: uppercase; letter-spacing: .06em; }
+
+/* ---------- Selector de tipos ---------- */
+.tipos-titulo {
+  font-family: 'Libre Baskerville', serif;
+  font-size: .85rem;
+  color: var(--color-texto-suave);
+  text-align: center;
+  margin: 0 0 8px;
+}
+.tipos {
+  display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+  margin: 0 0 22px;
+}
+.chip {
+  font-family: 'Lato', sans-serif;
+  font-size: .88rem;
+  font-weight: 700;
+  border: 1.5px solid var(--color-borde);
+  background: var(--color-fondo-card);
+  color: var(--color-texto-suave);
+  border-radius: 999px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: all .2s ease;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.chip:hover:not(:disabled) { border-color: var(--color-acento); color: var(--color-acento); }
+.chip .bolita {
+  width: 9px; height: 9px; border-radius: 50%;
+  border: 1.5px solid currentColor;
+}
+.chip.actual { background: var(--color-acento); border-color: var(--color-acento); color: #FDFAF3; }
+.chip.actual .bolita { background: #FDFAF3; border-color: #FDFAF3; }
+.chip.superado { background: var(--fondo-correcto); border-color: var(--color-correcto); color: var(--color-correcto); cursor: default; }
+.chip.superado .bolita { background: var(--color-correcto); border-color: var(--color-correcto); }
+.chip:disabled:not(.superado):not(.actual) { opacity: .5; cursor: not-allowed; }
+.nota-tipos {
+  text-align: center; font-size: .8rem; color: var(--color-texto-suave);
+  margin: -14px 0 20px; min-height: 1.2em; font-style: italic;
+}
+
+/* ---------- Tarjeta de ejercicio ---------- */
+.ejercicio-card {
+  background: var(--color-fondo);
+  border: 1.5px solid var(--color-borde-suave);
+  border-left: 4px solid var(--color-borde);
+  border-radius: 4px;
+  padding: 20px 24px;
+  margin-bottom: 20px;
+}
+.ej-cab {
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 14px;
+  font-size: .8rem; color: var(--color-texto-suave);
+  text-transform: uppercase; letter-spacing: .07em;
+  margin-bottom: 10px;
+}
+.ej-cab b { color: var(--color-acento); }
+.enunciado { margin: 0 0 12px; }
+.ecuacion {
+  text-align: center;
+  font-size: 1.35rem;
+  font-family: 'Libre Baskerville', serif;
+  margin: 6px 0 16px;
+}
+.datos {
+  display: flex; flex-wrap: wrap; justify-content: center; align-items: center;
+  gap: 14px 34px;
+}
+.dato-mat { display: inline-flex; align-items: center; gap: 6px; font-family: 'Libre Baskerville', serif; font-size: 1.05rem; }
+
+/* ---------- Matrices ---------- */
+.mat {
+  display: inline-flex;
+  vertical-align: middle;
+  position: relative;
+  padding: 5px 13px;
+  margin: 2px 3px;
+}
+.mat::before, .mat::after {
+  content: "";
+  position: absolute;
+  top: 1px; bottom: 1px;
+  width: 9px;
+  border: 1.8px solid var(--color-texto);
+}
+.mat::before { left: 0; border-right: none; border-radius: 9px 0 0 9px / 50% 0 0 50%; }
+.mat::after  { right: 0; border-left: none;  border-radius: 0 9px 9px 0 / 0 50% 50% 0; }
+.mat-grid { display: grid; gap: 3px 14px; align-items: center; }
+.mat-c {
+  text-align: center;
+  min-width: 1.7em;
+  font-family: 'Libre Baskerville', serif;
+  font-variant-numeric: tabular-nums;
+  font-size: 1rem;
+}
+.mat.entrada .mat-grid { gap: 6px 8px; }
+.mat.entrada input {
+  width: 60px;
+  text-align: center;
+  padding: 6px 4px;
+  font-family: 'Libre Baskerville', serif;
+  font-size: 1rem;
+  background: var(--color-fondo-card);
+  border: 1.5px solid var(--color-borde);
+  border-radius: 4px;
+  color: var(--color-texto);
+  outline: none;
+  transition: border-color .2s, background-color .2s;
+}
+.mat.entrada input:focus { border-color: var(--color-acento); box-shadow: 0 0 0 2px rgba(160,82,45,.15); }
+input.celda-ok { border-color: var(--color-correcto) !important; background: var(--fondo-correcto) !important; color: var(--color-correcto) !important; }
+input.celda-ko { border-color: var(--color-incorrecto) !important; background: var(--fondo-incorrecto) !important; color: var(--color-incorrecto) !important; }
+input:disabled { cursor: default; }
+
+/* ---------- Pasos ---------- */
+.paso {
+  background: var(--color-fondo-card);
+  border: 1.5px solid var(--color-borde-suave);
+  border-radius: 6px;
+  padding: 16px 22px 18px;
+  margin: 0 0 16px;
+  position: relative;
+  animation: aparece .35s ease;
+}
+@keyframes aparece { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.paso.activo { border-color: var(--color-borde); box-shadow: 0 2px 10px rgba(44,31,14,.08); }
+.paso.ok { border-left: 4px solid var(--color-correcto); }
+.paso.ko { border-left: 4px solid var(--color-incorrecto); }
+.paso-cab { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+.paso-n {
+  flex: 0 0 auto;
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--color-acento); color: #FDFAF3;
+  font-family: 'Libre Baskerville', serif; font-weight: 700; font-size: .9rem;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.paso.ok .paso-n { background: var(--color-correcto); }
+.paso.ko .paso-n { background: var(--color-incorrecto); }
+.paso-cab h3 { margin: 0; font-size: 1.02rem; }
+.paso-ins { font-size: .9rem; color: var(--color-texto-suave); margin: 2px 0 12px 42px; }
+.paso-cuerpo { margin-left: 42px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.etiqueta { font-family: 'Libre Baskerville', serif; font-size: 1.05rem; }
+.campo-num {
+  width: 80px; text-align: center;
+  font-family: 'Libre Baskerville', serif; font-size: 1rem;
+  background: var(--color-fondo-card);
+  border: 1.5px solid var(--color-borde); border-radius: 4px;
+  padding: 7px 6px; outline: none; color: var(--color-texto);
+}
+.campo-num:focus { border-color: var(--color-acento); box-shadow: 0 0 0 2px rgba(160,82,45,.15); }
+.paso-acciones { margin: 14px 0 0 42px; }
+.consejo { font-size: .84rem; color: var(--color-texto-suave); font-style: italic; margin: 10px 0 0 42px; }
+
+.opciones { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; width: 100%; }
+.opcion {
+  display: flex; align-items: center; gap: 10px;
+  border: 1.5px solid var(--color-borde-suave);
+  border-radius: 6px;
+  padding: 10px 14px;
+  background: var(--color-fondo);
+  cursor: pointer;
+  font-family: 'Libre Baskerville', serif;
+  font-size: 1.05rem;
+  transition: border-color .2s, background-color .2s;
+}
+.opcion:hover { border-color: var(--color-borde); }
+.opcion input { accent-color: var(--color-acento); width: 17px; height: 17px; margin: 0; }
+.opcion.elegida { border-color: var(--color-acento); background: #F7EBDD; }
+.opcion.op-ok { border-color: var(--color-correcto); background: var(--fondo-correcto); }
+.opcion.op-ko { border-color: var(--color-incorrecto); background: var(--fondo-incorrecto); }
+.opcion.bloq { cursor: default; }
+
+/* ---------- Feedback ---------- */
+.feedback { margin: 12px 0 0 42px; }
+.feedback:empty { display: none; }
+.fb {
+  border-radius: 4px; padding: 10px 16px; font-size: .93rem;
+}
+.fb-ok { background: var(--fondo-correcto); border: 1.5px solid var(--color-correcto); color: var(--color-correcto); }
+.fb-ko { background: var(--fondo-incorrecto); border: 1.5px solid var(--color-incorrecto); color: var(--color-incorrecto); }
+.fb-aviso { background: #FBF3E2; border: 1.5px solid var(--color-borde); color: var(--color-texto-suave); }
+.fb strong { display: block; margin-bottom: 3px; }
+.fb .detalle { color: var(--color-texto); margin-top: 6px; }
+.fb .calc { color: var(--color-texto); margin-top: 8px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-family: 'Libre Baskerville', serif; }
+.desarrollo {
+  margin: 12px 0 0 42px;
+  background: var(--color-fondo);
+  border: 1px dashed var(--color-borde);
+  border-radius: 6px;
+  padding: 10px 16px;
+  font-size: .95rem;
+}
+.desarrollo .tit { font-size: .76rem; text-transform: uppercase; letter-spacing: .07em; color: var(--color-texto-suave); margin-bottom: 4px; }
+.desarrollo .linea { margin: 3px 0; }
+.desarrollo, .fb .calc, .resultado-inv, .ecuacion { overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; }
+.resultado-inv { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-family: 'Libre Baskerville', serif; }
+
+/* ---------- Fin de ejercicio ---------- */
+.fin-ej {
+  text-align: center;
+  border-radius: 6px;
+  padding: 18px 20px;
+  margin: 4px 0 18px;
+  animation: aparece .35s ease;
+}
+.fin-ej.exito { background: var(--fondo-correcto); border: 1.5px solid var(--color-correcto); }
+.fin-ej.repetir { background: #FBF3E2; border: 1.5px solid var(--color-borde); }
+.fin-ej h3 { margin: 0 0 6px; font-size: 1.05rem; }
+.fin-ej.exito h3 { color: var(--color-correcto); }
+.fin-ej p { margin: 0 0 12px; font-size: .93rem; }
+.fin-ej .solucion-final { display: flex; justify-content: center; align-items: center; gap: 6px; font-family: 'Libre Baskerville', serif; margin: 0 0 12px; }
+
+/* ---------- Botones ---------- */
+.btn-primario {
+  background-color: var(--color-acento); color: #FDFAF3;
+  border: none; border-radius: 4px; padding: 10px 22px;
+  font-family: 'Lato', sans-serif; font-size: .95rem; font-weight: 700;
+  cursor: pointer; letter-spacing: .03em; transition: background-color .2s ease;
+}
+.btn-primario:hover { background-color: var(--color-acento-hover); }
+.btn-secundario {
+  background-color: transparent; color: var(--color-acento);
+  border: 2px solid var(--color-borde); border-radius: 4px; padding: 9px 20px;
+  font-family: 'Lato', sans-serif; font-size: .95rem; font-weight: 700;
+  cursor: pointer; transition: border-color .2s, color .2s;
+}
+.btn-secundario:hover { border-color: var(--color-acento); color: var(--color-acento-hover); }
+.btn-finalizar {
+  background-color: var(--color-cabecera); color: var(--color-cabecera-txt);
+  border: 2px solid var(--color-borde); border-radius: 4px; padding: 11px 26px;
+  font-family: 'Libre Baskerville', serif; font-size: .95rem; font-weight: 700;
+  cursor: pointer; letter-spacing: .04em; transition: background-color .2s;
+}
+.btn-finalizar:hover { background-color: #2C1A0A; }
+.pie { text-align: center; margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--color-borde-suave); }
+
+/* ---------- Modal ---------- */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(44, 31, 14, 0.55);
+  display: none; align-items: center; justify-content: center;
+  z-index: 100; padding: 16px;
+}
+.overlay.visible { display: flex; }
+.modal-calificacion {
+  border: 3px solid var(--color-borde);
+  border-radius: 8px;
+  font-family: 'Libre Baskerville', serif;
+  box-shadow: 0 6px 24px rgba(44, 31, 14, 0.35);
+  padding: 28px 32px;
+  min-width: 320px;
+  max-width: 600px; width: 100%;
+  max-height: 92vh; overflow-y: auto;
+  text-align: center;
+}
+.modal-calificacion .m-titulo { font-size: 1.25rem; font-weight: 700; margin: 0; }
+.modal-calificacion .m-sub { font-style: italic; font-size: .9rem; margin: 4px 0 0; opacity: .92; }
+.modal-calificacion hr { border: none; border-top: 1px solid currentColor; opacity: .45; margin: 14px 0; }
+.modal-calificacion .m-inf { font-size: .8rem; text-transform: uppercase; letter-spacing: .1em; margin: 0 0 8px; opacity: .9; }
+.modal-calificacion .m-alumno { font-size: 1.1rem; margin: 0 0 4px; }
+.modal-calificacion .m-nota { font-size: 2.6rem; font-weight: 700; margin: 4px 0; }
+.modal-calificacion .m-datos { font-family: 'Lato', sans-serif; font-size: .9rem; display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 18px; }
+.desglose { width: 100%; border-collapse: collapse; margin-top: 14px; font-family: 'Lato', sans-serif; font-size: .85rem; }
+.desglose th, .desglose td { padding: 6px 6px; border-bottom: 1px solid rgba(255,255,255,.35); text-align: center; }
+.desglose th { font-size: .74rem; text-transform: uppercase; letter-spacing: .05em; }
+.desglose td:first-child, .desglose th:first-child { text-align: left; }
+.modal-calificacion.texto-negro .desglose th, .modal-calificacion.texto-negro .desglose td { border-bottom-color: rgba(0,0,0,.2); }
+.modal-calificacion .m-btns { margin-top: 18px; }
+.modal-calificacion .btn-cerrar {
+  background: rgba(255,255,255,.92); color: var(--color-texto);
+  border: 2px solid var(--color-borde); border-radius: 4px; padding: 9px 22px;
+  font-family: 'Lato', sans-serif; font-weight: 700; cursor: pointer;
+}
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+.fx { white-space: nowrap; }
+
+@media (max-width: 640px) {
+  .ficha-container { margin: 12px 8px; padding: 22px 16px; }
+  .recordatorio { grid-template-columns: 1fr; }
+  .paso { padding: 14px 14px 16px; }
+  .paso-ins, .paso-cuerpo, .paso-acciones, .feedback, .desarrollo, .consejo { margin-left: 0; }
+  .opciones { grid-template-columns: 1fr; }
+  .ejercicio-card { padding: 16px 14px; }
+  .mat.entrada input { width: 50px; font-size: .92rem; }
+  .barra { padding: 8px 10px; gap: 6px 14px; }
+  .modal-calificacion { padding: 20px 12px; min-width: 0; }
+  .desglose { font-size: .74rem; }
+  .desglose th, .desglose td { padding: 5px 3px; }
+  .desglose th { font-size: .62rem; letter-spacing: 0; }
+  .modal-calificacion { padding: 20px 8px; }
+  .desglose th, .desglose td { padding: 5px 2px; }
+}
+.tabla-wrap { overflow-x: auto; }
+.desglose td:first-child { white-space: nowrap; font-family: 'Libre Baskerville', serif; }
+</style>
+</head>
+<body>
+
+<div class="cabecera">Material elaborado por Marta L Letona S. Basado en el trabajo de Javier Cayetano</div>
+
+<main class="ficha-container" id="ficha">
+  <h1 class="titulo-ficha">Ecuaciones matriciales</h1>
+  <p class="subtitulo">2.º Bachillerato · Matrices y determinantes</p>
+
+  <div class="barra" id="barra">
+    <label for="nombre">Alumno/a:</label>
+    <input type="text" id="nombre" placeholder="Nombre y apellidos" autocomplete="off">
+    <span class="dato">Nota: <b id="marcador-nota">0</b> / 10</span>
+    <span class="dato">Tipos superados: <b id="marcador-tipos">0</b> / 5</span>
+    <span class="dato">Pasos fallados: <b id="marcador-fallos">0</b></span>
+    <div class="aviso-nombre" id="aviso-nombre">Escribe tu nombre antes de continuar.</div>
+  </div>
+
+  <div class="instrucciones">
+    <p>Hay <b>cinco tipos</b> de ecuación. Cada tipo se supera resolviendo <b>un ejercicio completo sin ningún paso fallado</b> y vale <b>2 puntos</b>. Cada paso fallado resta <b>0,5 puntos</b>.</p>
+    <p>Si fallas un paso, verás la solución de ese paso y seguirás con el resto, pero tendrás que resolver otro ejercicio de ese tipo para superarlo. <b>Ejercicio empezado, ejercicio terminado:</b> solo puedes cambiar de tipo cuando acabes el que tienes abierto.</p>
+  </div>
+
+  <section class="recordatorio" aria-label="Recordatorio">
+    <h2>Lo que necesitas</h2>
+    <div class="regla"><span class="lbl">Propiedad clave</span><span class="fx" data-tex="A\cdot A^{-1} = A^{-1}\cdot A = I"></span></div>
+    <div class="regla"><span class="lbl">Matriz inversa</span><span class="fx" data-tex="A^{-1} = \dfrac{1}{|A|}\cdot \mathrm{Adj}(A)^{t}"></span></div>
+    <div class="regla"><span class="lbl">El orden importa</span>En general, <span class="fx" data-tex="A\cdot B \neq B\cdot A"></span>: multiplica por la inversa <b>por el mismo lado</b> en ambos miembros.</div>
+    <div class="regla"><span class="lbl">Sacar factor común</span><span class="fx" data-tex="AX + kX = (A + kI)\,X"></span><br><span class="fx" data-tex="XA - XB = X\,(A - B)"></span></div>
+  </section>
+
+  <p class="tipos-titulo">Tipos de ecuación</p>
+  <nav class="tipos" id="tipos" aria-label="Tipos de ecuación"></nav>
+  <p class="nota-tipos" id="nota-tipos"></p>
+
+  <div id="zona-ejercicio"></div>
+
+  <div class="pie">
+    <button class="btn-finalizar" id="btn-finalizar" type="button">Finalizar y Calificar</button>
+  </div>
+</main>
+
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="m-titulo">
+  <div class="modal-calificacion" id="modal"></div>
+</div>
+
+<script>
+(function () {
+'use strict';
+
+/* =====================================================================
+   Aleatoriedad: sin semilla en producción; ?seed=N solo para pruebas
+   ===================================================================== */
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    var t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+var semillaURL = new URLSearchParams(location.search).get('seed');
+var semilla = semillaURL !== null ? (parseInt(semillaURL, 10) || 1)
+  : ((window.crypto && crypto.getRandomValues) ? crypto.getRandomValues(new Uint32Array(1))[0] : Math.floor(Math.random() * 4294967296));
+var rnd = mulberry32(semilla);
+function rint(a, b) { return a + Math.floor(rnd() * (b - a + 1)); }
+function barajar(arr) {
+  var a = arr.slice();
+  for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(rnd() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; }
+  return a;
+}
+
+/* =====================================================================
+   Álgebra de matrices
+   ===================================================================== */
+function randMat(r, c, lo, hi) {
+  var M = [];
+  for (var i = 0; i < r; i++) { M.push([]); for (var j = 0; j < c; j++) M[i].push(rint(lo, hi)); }
+  return M;
+}
+function eye(n) { var M = []; for (var i = 0; i < n; i++) { M.push([]); for (var j = 0; j < n; j++) M[i].push(i === j ? 1 : 0); } return M; }
+function mul(A, B) {
+  var r = A.length, c = B[0].length, n = B.length, M = [];
+  for (var i = 0; i < r; i++) { M.push([]); for (var j = 0; j < c; j++) { var s = 0; for (var k = 0; k < n; k++) s += A[i][k] * B[k][j]; M[i].push(s); } }
+  return M;
+}
+function add(A, B) { return A.map(function (f, i) { return f.map(function (x, j) { return x + B[i][j]; }); }); }
+function sub(A, B) { return A.map(function (f, i) { return f.map(function (x, j) { return x - B[i][j]; }); }); }
+function esc(k, A) { return A.map(function (f) { return f.map(function (x) { return k * x; }); }); }
+function tr(A) { return A[0].map(function (_, j) { return A.map(function (f) { return f[j]; }); }); }
+function det(M) {
+  if (M.length === 2) return M[0][0] * M[1][1] - M[0][1] * M[1][0];
+  return M[0][0] * (M[1][1] * M[2][2] - M[1][2] * M[2][1])
+       - M[0][1] * (M[1][0] * M[2][2] - M[1][2] * M[2][0])
+       + M[0][2] * (M[1][0] * M[2][1] - M[1][1] * M[2][0]);
+}
+function menor(M, i, j) {
+  if (M.length === 2) return M[1 - i][1 - j];
+  var S = M.filter(function (_, r) { return r !== i; }).map(function (f) { return f.filter(function (_, c) { return c !== j; }); });
+  return det(S);
+}
+function menores(M) { return M.map(function (f, i) { return f.map(function (_, j) { return menor(M, i, j); }); }); }
+function adjuntos(M) { return M.map(function (f, i) { return f.map(function (_, j) { return ((i + j) % 2 ? -1 : 1) * menor(M, i, j); }); }); }
+function adjT(M) { return tr(adjuntos(M)); }
+function maxAbs(M) { var m = 0; M.forEach(function (f) { f.forEach(function (x) { m = Math.max(m, Math.abs(x)); }); }); return m; }
+function ceros(M) { var z = 0; M.forEach(function (f) { f.forEach(function (x) { if (x === 0) z++; }); }); return z; }
+function iguales(A, B, tol) {
+  tol = tol || 1e-9;
+  if (!A || !B || A.length !== B.length || A[0].length !== B[0].length) return false;
+  for (var i = 0; i < A.length; i++) for (var j = 0; j < A[0].length; j++) if (Math.abs(A[i][j] - B[i][j]) > tol) return false;
+  return true;
+}
+function esEntera(M) { return M.every(function (f) { return f.every(function (x) { return Math.abs(x - Math.round(x)) < 1e-9; }); }); }
+function noTrivial2(M) {
+  return ceros(M) <= 1 && (M[0][1] !== 0 || M[1][0] !== 0) && !iguales(M, eye(2)) && !iguales(M, esc(-1, eye(2)));
+}
+function noTrivial3(M) {
+  var offNoNulos = 0;
+  for (var i = 0; i < 3; i++) for (var j = 0; j < 3; j++) if (i !== j && M[i][j] !== 0) offNoNulos++;
+  return ceros(M) <= 3 && offNoNulos >= 3;
+}
+
+/* =====================================================================
+   Formato
+   ===================================================================== */
+function fmt(x) {
+  if (Math.abs(x - Math.round(x)) < 1e-9) { x = Math.round(x); return x < 0 ? '\u2212' + (-x) : String(x); }
+  return String(Math.round(x * 100) / 100).replace('-', '\u2212').replace('.', ',');
+}
+function par(x) { return x < 0 ? '(' + fmt(x) + ')' : fmt(x); }
+function fmtNota(n) { return String(Math.round(n * 100) / 100).replace('.', ','); }
+function escAttr(s) { return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
+function texToPlain(t) {
+  return t
+    .replace(/\\d?frac\{([^{}]*)\}\{([^{}]*)\}/g, '$1/$2')
+    .replace(/\^\{-1\}/g, '\u207B\u00B9')
+    .replace(/\^\{t\}/g, '\u1D57')
+    .replace(/\\cdot/g, '\u00B7')
+    .replace(/\\neq/g, '\u2260')
+    .replace(/\\Rightarrow/g, '\u21D2')
+    .replace(/\\left|\\right/g, '')
+    .replace(/\\mathrm\{([^{}]*)\}/g, '$1')
+    .replace(/\\text\{([^{}]*)\}/g, '$1')
+    .replace(/\\[,;! ]/g, ' ')
+    .replace(/_\{([^{}]*)\}/g, '$1')
+    .replace(/\^\{([^{}]*)\}/g, '^($1)')
+    .replace(/\\quad/g, '  ')
+    .replace(/[{}]/g, '')
+    .replace(/-/g, '\u2212');
+}
+/* Fórmula: texto plano de respaldo; MathJax la sustituye si está disponible */
+function fx(tex) { return '<span class="fx" data-tex="' + escAttr(tex) + '">' + texToPlain(tex) + '</span>'; }
+window.renderFx = function (raiz) {
+  raiz = raiz || document.body;
+  var pendientes = raiz.querySelectorAll('.fx:not(.tx)');
+  if (!pendientes.length) return;
+  if (!window.__mjListo || !window.MathJax || !MathJax.typesetPromise) {
+    pendientes.forEach(function (el) { if (!el.textContent) el.textContent = texToPlain(el.getAttribute('data-tex')); });
+    return;
+  }
+  var lista = [];
+  pendientes.forEach(function (el) {
+    el.classList.add('tx');
+    el.textContent = '\\(' + el.getAttribute('data-tex') + '\\)';
+    lista.push(el);
+  });
+  MathJax.typesetPromise(lista).catch(function () {
+    lista.forEach(function (el) { el.textContent = texToPlain(el.getAttribute('data-tex')); });
+  });
+};
+
+function aFraccion(x) {
+  for (var q = 1; q <= 60; q++) { var p = Math.round(x * q); if (Math.abs(p / q - x) < 1e-9) return [p, q]; }
+  return null;
+}
+function celdaHTML(x) {
+  if (Math.abs(x - Math.round(x)) < 1e-9) return fmt(x);
+  var f = aFraccion(x);
+  if (!f) return fmt(x);
+  return fx((f[0] < 0 ? '-' : '') + '\\dfrac{' + Math.abs(f[0]) + '}{' + f[1] + '}');
+}
+function matHTML(M) {
+  var c = M[0].length, h = '<span class="mat" role="img" aria-label="matriz"><span class="mat-grid" style="grid-template-columns:repeat(' + c + ',auto)">';
+  M.forEach(function (f) { f.forEach(function (x) { h += '<span class="mat-c">' + celdaHTML(x) + '</span>'; }); });
+  return h + '</span></span>';
+}
+function matEntradaHTML(r, c, id) {
+  var h = '<span class="mat entrada"><span class="mat-grid" style="grid-template-columns:repeat(' + c + ',auto)">';
+  for (var i = 0; i < r; i++) for (var j = 0; j < c; j++)
+    h += '<input type="text" inputmode="text" autocomplete="off" class="celda" data-m="' + id + '" data-i="' + i + '" data-j="' + j + '" aria-label="Fila ' + (i + 1) + ', columna ' + (j + 1) + '">';
+  return h + '</span></span>';
+}
+function igualdad(etiquetaTex, M) { return '<span class="dato-mat">' + fx(etiquetaTex + ' =') + matHTML(M) + '</span>'; }
+function fraccionPor(d) { return d < 0 ? '-\\dfrac{1}{' + (-d) + '}' : '\\dfrac{1}{' + d + '}'; }
+
+/* =====================================================================
+   Lectura de respuestas
+   ===================================================================== */
+function leerNum(s) {
+  s = String(s).trim().replace(/\u2212/g, '-').replace(/\s+/g, '').replace(',', '.');
+  if (s === '') return { vacio: true };
+  if (/^[+-]?\d+(\.\d+)?$/.test(s)) return { v: parseFloat(s) };
+  var m = s.match(/^([+-]?\d+)\/([+-]?\d+)$/);
+  if (m && parseInt(m[2], 10) !== 0) return { v: parseInt(m[1], 10) / parseInt(m[2], 10) };
+  return { invalido: true };
+}
+
+/* =====================================================================
+   Pasos genéricos
+   ===================================================================== */
+function pasoDespeje(opciones, desarrollo) {
+  return {
+    kind: 'eleccion',
+    titulo: 'Despeja la matriz X',
+    ins: 'Elige la expresión correcta de X. Recuerda que no existe la división de matrices: se multiplica por la inversa y se usa que su producto es la identidad.',
+    opciones: barajar(opciones),
+    desarrollo: desarrollo
+  };
+}
+
+function calculoDet(M, nombreTex) {
+  if (M.length === 2) {
+    return fx('|' + nombreTex + '| = ' + texToTex(par(M[0][0])) + '\\cdot ' + texToTex(par(M[1][1])) + ' - ' + texToTex(par(M[0][1])) + '\\cdot ' + texToTex(par(M[1][0])) + ' = ' + texToTex(fmt(det(M))));
+  }
+  var s = sarrus(M);
+  return fx('|' + nombreTex + '| = (' + texToTex(fmt(s.p[0])) + ' + ' + texToTex(par(s.p[1])) + ' + ' + texToTex(par(s.p[2])) + ') - (' +
+    texToTex(fmt(s.n[0])) + ' + ' + texToTex(par(s.n[1])) + ' + ' + texToTex(par(s.n[2])) + ') = ' + texToTex(par(s.P)) + ' - ' + texToTex(par(s.N)) + ' = ' + texToTex(fmt(det(M))));
+}
+function texToTex(s) { return String(s).replace(/\u2212/g, '-'); }
+function sarrus(M) {
+  var p = [M[0][0] * M[1][1] * M[2][2], M[0][1] * M[1][2] * M[2][0], M[0][2] * M[1][0] * M[2][1]];
+  var n = [M[0][2] * M[1][1] * M[2][0], M[0][0] * M[1][2] * M[2][1], M[0][1] * M[1][0] * M[2][2]];
+  return { p: p, n: n, P: p[0] + p[1] + p[2], N: n[0] + n[1] + n[2] };
+}
+
+function pasoDet(M, nombreTex, extraDiag, insExtra) {
+  var d = det(M);
+  return {
+    kind: 'num',
+    titulo: 'Calcula el determinante |' + texToPlain(nombreTex) + '|',
+    ins: (M.length === 3 ? 'Usa la regla de Sarrus. ' : '') + (insExtra || 'Si el determinante fuera 0, la matriz no tendría inversa.'),
+    etiqueta: '|' + nombreTex + '| =',
+    esperado: d,
+    okMsg: 'Correcto: |' + texToPlain(nombreTex) + '| = ' + fmt(d) + ' \u2260 0, así que la matriz es invertible.',
+    diag: function (v) {
+      if (extraDiag) { var e = extraDiag(v); if (e) return e; }
+      if (v === -d) return 'Tienes el signo cambiado. ' + (M.length === 2
+        ? 'El determinante de orden 2 es el producto de la diagonal principal menos el de la secundaria (ad \u2212 bc), no al revés.'
+        : 'En Sarrus se suman los productos de la diagonal principal y sus paralelas, y se restan los de la secundaria y sus paralelas.');
+      if (M.length === 2 && v === M[0][0] * M[1][1] + M[0][1] * M[1][0]) return 'Has sumado los dos productos. En orden 2, |A| = ad \u2212 bc: el producto de la diagonal secundaria se resta.';
+      if (M.length === 3) {
+        var s = sarrus(M);
+        if (v === s.P + s.N) return 'Has sumado los seis productos. En Sarrus, los tres productos de la diagonal secundaria y sus paralelas se restan.';
+        if (v === s.P) return 'Solo has tenido en cuenta los productos de la diagonal principal y sus paralelas; faltan por restar los de la diagonal secundaria.';
+      }
+      return 'El valor no es correcto. Revisa cada producto y, sobre todo, los signos de los factores negativos.';
+    },
+    calc: function () { return calculoDet(M, nombreTex); }
+  };
+}
+
+function pasoAdj(M, nombreTex) {
+  var A = adjT(M), C = adjuntos(M), Mn = menores(M), n = M.length, d = det(M);
+  return {
+    kind: 'mat',
+    titulo: 'Calcula la traspuesta de la matriz adjunta de ' + texToPlain(nombreTex),
+    ins: n === 2
+      ? 'En orden 2 se intercambian los elementos de la diagonal principal y se cambian de signo los de la secundaria.'
+      : 'Calcula cada adjunto ' + fx('A_{ij} = (-1)^{i+j}\\cdot M_{ij}') + ' (M<sub>ij</sub> es el menor complementario) y después traspón la matriz de adjuntos.',
+    etiqueta: '\\mathrm{Adj}(' + nombreTex + ')^{t} =',
+    filas: n, cols: n,
+    esperado: A,
+    okMsg: 'Correcto. En el siguiente paso dividirás esta matriz entre el determinante para obtener la inversa.',
+    diag: function (U) {
+      if (!iguales(C, A) && iguales(U, C)) return 'Has escrito la matriz de adjuntos Adj(' + texToPlain(nombreTex) + ') sin trasponer. Para la inversa hay que trasponerla: las filas pasan a ser columnas.';
+      if (!iguales(tr(Mn), A) && iguales(U, tr(Mn))) return 'Te faltan los signos de los adjuntos: cada menor se multiplica por ' + fx('(-1)^{i+j}') + ', es decir, por + o \u2212 según el tablero de signos.';
+      if (!iguales(Mn, A) && iguales(U, Mn)) return 'Has escrito los menores sin signo y sin trasponer. Cada adjunto lleva el signo ' + fx('(-1)^{i+j}') + ' y la matriz de adjuntos debe trasponerse.';
+      if (d !== 1 && iguales(U, esc(1 / d, A))) return 'Has escrito ya la inversa (dividiendo entre el determinante). En este paso se pide solo Adj(' + texToPlain(nombreTex) + ')\u1D57; la división entre |' + texToPlain(nombreTex) + '| se aplica después.';
+      if (iguales(U, esc(-1, A))) return 'Todos los signos están cambiados. Revisa el tablero de signos: en la posición (1,1) el signo es +.';
+      if (n === 2 && iguales(U, [[M[0][0], -M[0][1]], [-M[1][0], M[1][1]]])) return 'Has cambiado el signo de la diagonal secundaria, pero no has intercambiado los elementos de la diagonal principal.';
+      if (n === 2 && iguales(U, [[M[1][1], M[0][1]], [M[1][0], M[0][0]]])) return 'Has intercambiado la diagonal principal, pero falta cambiar el signo de los elementos de la secundaria.';
+      return 'Hay casillas incorrectas (marcadas en rojo). Revisa los menores complementarios y el signo de cada adjunto.';
+    },
+    calc: function () {
+      if (n === 2) return fx('\\mathrm{Adj}(' + nombreTex + ')^{t} =') + matHTML(A);
+      return fx('\\mathrm{Adj}(' + nombreTex + ') =') + matHTML(C) + fx('\\Rightarrow\\ \\mathrm{Adj}(' + nombreTex + ')^{t} =') + matHTML(A);
+    }
+  };
+}
+
+function inversa(M) { return esc(1 / det(M), adjT(M)); }
+
+function pasoInversa(M, nombreTex) {
+  var A = adjT(M), C = adjuntos(M), d = det(M), INV = inversa(M), n = M.length, nom = texToPlain(nombreTex);
+  return {
+    kind: 'mat',
+    titulo: 'Calcula la matriz inversa ' + (nom.length > 1 ? '(' + nom + ')' : nom) + '\u207B\u00B9',
+    ins: 'Usa ' + fx(nombreTex.length > 1 ? '(' + nombreTex + ')^{-1} = \\dfrac{1}{|' + nombreTex + '|}\\cdot \\mathrm{Adj}(' + nombreTex + ')^{t}' : nombreTex + '^{-1} = \\dfrac{1}{|' + nombreTex + '|}\\cdot \\mathrm{Adj}(' + nombreTex + ')^{t}') +
+      '. Si un elemento es fraccionario, escríbelo con barra, por ejemplo \u22123/2.',
+    etiqueta: (nombreTex.length > 1 ? '(' + nombreTex + ')' : nombreTex) + '^{-1} =',
+    filas: n, cols: n,
+    esperado: INV,
+    okMsg: 'Correcto. Puedes comprobarlo: al multiplicar la matriz por su inversa se obtiene la identidad.',
+    diag: function (U) {
+      if (d !== 1 && iguales(U, A)) return 'Has escrito la traspuesta de la adjunta sin dividir entre el determinante |' + nom + '| = ' + fmt(d) + '.';
+      if (Math.abs(d) !== 1 && iguales(U, esc(d, A))) return 'Has multiplicado por el determinante en lugar de dividir: cada elemento de la traspuesta de la adjunta se divide entre ' + fmt(d) + '.';
+      if (iguales(U, esc(-1, INV))) return 'Todos los signos están cambiados. Fíjate en el signo del determinante: |' + nom + '| = ' + fmt(d) + '.';
+      if (!iguales(C, A) && iguales(U, esc(1 / d, C))) return 'Has dividido la matriz de adjuntos sin trasponer. La inversa usa la traspuesta de la adjunta.';
+      return 'Hay casillas incorrectas. Divide cada elemento de la traspuesta de la adjunta entre |' + nom + '| = ' + fmt(d) + ', con su signo.';
+    },
+    calc: function () {
+      var et = nombreTex.length > 1 ? '(' + nombreTex + ')' : nombreTex;
+      if (d === 1) return fx(et + '^{-1} = \\mathrm{Adj}(' + nombreTex + ')^{t} =') + matHTML(INV);
+      return fx(et + '^{-1} = ' + fraccionPor(d) + '\\cdot') + matHTML(A) + fx('=') + matHTML(INV);
+    }
+  };
+}
+
+function pasoMatriz(cfg) {
+  return {
+    kind: 'mat',
+    titulo: cfg.titulo,
+    ins: cfg.ins,
+    etiqueta: cfg.etiqueta,
+    filas: cfg.esperado.length, cols: cfg.esperado[0].length,
+    esperado: cfg.esperado,
+    okMsg: cfg.okMsg,
+    consejo: cfg.consejo,
+    diag: function (U) {
+      for (var i = 0; i < cfg.candidatos.length; i++) {
+        var c = cfg.candidatos[i];
+        if (c.M && c.M.length === U.length && c.M[0].length === U[0].length && !iguales(c.M, cfg.esperado) && iguales(U, c.M)) return c.msg;
+      }
+      return cfg.generico;
+    },
+    calc: cfg.calc
+  };
+}
+
+/* =====================================================================
+   Generadores por tipo
+   ===================================================================== */
+var DETS = [1, -1, 2, -2, 3, -3];
+
+function genInvertible2(lo, hi, dets) {
+  for (var t = 0; t < 5000; t++) {
+    var M = randMat(2, 2, lo, hi);
+    if (dets.indexOf(det(M)) >= 0 && noTrivial2(M)) return M;
+  }
+  return [[2, 1], [1, 1]];
+}
+function genX(r, c, lo, hi) {
+  for (var t = 0; t < 1000; t++) {
+    var X = randMat(r, c, lo, hi);
+    if (ceros(X) <= 1 && maxAbs(X) > 1) return X;
+  }
+  return randMat(r, c, 1, 3);
+}
+
+function gen1() {
+  var A, X, B;
+  for (var t = 0; t < 20000; t++) {
+    A = randMat(3, 3, -2, 3);
+    var d = det(A);
+    if ([1, -1, 2, -2].indexOf(d) < 0 || !noTrivial3(A) || maxAbs(adjT(A)) > 9) continue;
+    X = genX(3, 2, -3, 4);
+    B = mul(A, X);
+    if (maxAbs(B) <= 16) break;
+  }
+  var d = det(A), aT = adjT(A), P = mul(aT, B);
+  return {
+    ecuacion: 'AX = B',
+    datos: [['A', A], ['B', B]],
+    solucion: X,
+    pasos: [
+      pasoDespeje([
+        { tex: 'X = A^{-1}\\cdot B', ok: true },
+        { tex: 'X = B\\cdot A^{-1}', fb: 'El producto de matrices no es conmutativo. A está a la izquierda de X, así que se multiplica por A\u207B\u00B9 por la izquierda en ambos miembros. Además, aquí B\u00B7A\u207B\u00B9 ni siquiera se puede calcular: B es 3\u00D72 y A\u207B\u00B9 es 3\u00D73.' },
+        { tex: 'X = \\dfrac{B}{A}', fb: 'No existe la división de matrices. Para «despejar» se multiplica por la inversa y se usa que A\u207B\u00B9\u00B7A = I.' },
+        { tex: 'X = B - A', fb: 'A no está sumando a X, la está multiplicando. No se puede «pasar restando»: hay que multiplicar por A\u207B\u00B9.' }
+      ], ['AX = B', '\\Rightarrow\\ A^{-1}\\cdot A\\,X = A^{-1}\\cdot B \\quad \\text{(por la izquierda en ambos miembros)}', '\\Rightarrow\\ I\\,X = A^{-1}\\cdot B', '\\Rightarrow\\ X = A^{-1}\\cdot B']),
+      pasoDet(A, 'A'),
+      pasoAdj(A, 'A'),
+      pasoInversa(A, 'A'),
+      pasoMatriz({
+        titulo: 'Calcula la matriz solución X',
+        ins: 'Multiplica A\u207B\u00B9\u00B7B (en este orden).',
+        etiqueta: 'X =',
+        esperado: X,
+        okMsg: 'Correcto. Puedes comprobarlo: A\u00B7X debe dar B.',
+        consejo: 'Todos los elementos de X son números enteros. Si te sale una fracción, revisa los cálculos.',
+        candidatos: [
+          { M: P, msg: 'Has multiplicado por la traspuesta de la adjunta en lugar de por la inversa: falta dividir entre |A| = ' + fmt(d) + '.' },
+          { M: esc(-1, X), msg: 'Todos los signos están cambiados. Revisa los signos de A\u207B\u00B9.' }
+        ],
+        generico: 'Hay casillas incorrectas. Recuerda: cada elemento es fila de A\u207B\u00B9 por columna de B.',
+        calc: function () {
+          return fx('X = A^{-1}\\cdot B =') + matHTML(inversa(A)) + fx('\\cdot') + matHTML(B) + fx('=') + matHTML(X);
+        }
+      })
+    ]
+  };
+}
+
+function gen2() {
+  var A, X, B, d;
+  for (var t = 0; t < 5000; t++) {
+    A = genInvertible2(-3, 4, DETS); d = det(A);
+    X = genX(2, 2, -3, 4);
+    B = mul(X, A);
+    var alReves = esc(1 / d, mul(adjT(A), B));
+    if (maxAbs(B) <= 20 && !iguales(alReves, X)) break;
+  }
+  var aT = adjT(A), P = mul(B, aT), Q = esc(1 / d, mul(aT, B));
+  return {
+    ecuacion: 'XA = B',
+    datos: [['A', A], ['B', B]],
+    solucion: X,
+    pasos: [
+      pasoDespeje([
+        { tex: 'X = B\\cdot A^{-1}', ok: true },
+        { tex: 'X = A^{-1}\\cdot B', fb: 'Aquí A está a la derecha de X. Hay que multiplicar por A\u207B\u00B9 por la derecha en ambos miembros: X\u00B7A\u00B7A\u207B\u00B9 = B\u00B7A\u207B\u00B9. Como el producto no es conmutativo, A\u207B\u00B9\u00B7B da otra matriz.' },
+        { tex: 'X = \\dfrac{B}{A}', fb: 'No existe la división de matrices. Se multiplica por la inversa, por el mismo lado en ambos miembros.' },
+        { tex: 'X = B^{-1}\\cdot A', fb: 'La matriz que hay que invertir es la que acompaña a X (A), no B.' }
+      ], ['XA = B', '\\Rightarrow\\ X\\,A\\cdot A^{-1} = B\\cdot A^{-1} \\quad \\text{(por la derecha en ambos miembros)}', '\\Rightarrow\\ X\\,I = B\\cdot A^{-1}', '\\Rightarrow\\ X = B\\cdot A^{-1}']),
+      pasoDet(A, 'A'),
+      pasoAdj(A, 'A'),
+      pasoInversa(A, 'A'),
+      pasoMatriz({
+        titulo: 'Calcula la matriz solución X',
+        ins: 'Multiplica B\u00B7A\u207B\u00B9 (en este orden).',
+        etiqueta: 'X =',
+        esperado: X,
+        okMsg: 'Correcto. Comprobación: X\u00B7A debe dar B.',
+        consejo: 'Todos los elementos de X son números enteros.',
+        candidatos: [
+          { M: Q, msg: 'Has multiplicado en el orden A\u207B\u00B9\u00B7B. En XA = B la inversa va a la derecha: X = B\u00B7A\u207B\u00B9.' },
+          { M: P, msg: 'Has multiplicado por la traspuesta de la adjunta en lugar de por la inversa: falta dividir entre |A| = ' + fmt(d) + '.' },
+          { M: esc(-1, X), msg: 'Todos los signos están cambiados. Revisa los signos de A\u207B\u00B9.' }
+        ],
+        generico: 'Hay casillas incorrectas. Cada elemento es fila de B por columna de A\u207B\u00B9.',
+        calc: function () {
+          return fx('X = B\\cdot A^{-1} =') + matHTML(B) + fx('\\cdot') + matHTML(inversa(A)) + fx('=') + matHTML(X);
+        }
+      })
+    ]
+  };
+}
+
+function gen3() {
+  var A, M, X, B, k, d;
+  for (var t = 0; t < 5000; t++) {
+    k = rint(1, 3);
+    A = randMat(2, 2, -3, 3);
+    if (!noTrivial2(A)) continue;
+    M = add(A, esc(k, eye(2)));
+    d = det(M);
+    if (DETS.indexOf(d) < 0 || det(A) === d || ceros(M) > 1) continue;
+    X = genX(2, 2, -3, 4);
+    B = mul(M, X);
+    var alReves = esc(1 / d, mul(B, adjT(M)));
+    if (maxAbs(B) <= 20 && !iguales(alReves, X)) break;
+  }
+  var kTxt = k === 1 ? '' : String(k);
+  var kI = k === 1 ? 'I' : k + 'I';
+  var aT = adjT(M), P = mul(aT, B), Q = esc(1 / d, mul(B, aT));
+  var Mtex = 'A + ' + kI;
+  return {
+    ecuacion: 'AX = B - ' + kTxt + 'X',
+    datos: [['A', A], ['B', B]],
+    solucion: X,
+    pasos: [
+      pasoDespeje([
+        { tex: 'X = (A + ' + kI + ')^{-1}\\cdot B', ok: true },
+        { tex: 'X = (A + ' + k + ')^{-1}\\cdot B', fb: 'No se puede sumar un número a una matriz. ' + kTxt + 'X = ' + kI + '\u00B7X, y por eso al sacar X factor común queda (A + ' + kI + ')X.' },
+        { tex: 'X = B\\cdot (A + ' + kI + ')^{-1}', fb: 'X está a la derecha de (A + ' + kI + '), así que la inversa se multiplica por la izquierda en ambos miembros. El orden importa porque el producto no es conmutativo.' },
+        { tex: 'X = (A - ' + kI + ')^{-1}\\cdot B', fb: 'Error de signo al transponer: \u2212' + kTxt + 'X pasa al primer miembro sumando, AX + ' + kTxt + 'X = B.' }
+      ], ['AX = B - ' + kTxt + 'X', '\\Rightarrow\\ AX + ' + kTxt + 'X = B', '\\Rightarrow\\ (A + ' + kI + ')\\,X = B \\quad \\text{(factor común; } ' + kTxt + 'X = ' + kI + '\\,X\\text{)}', '\\Rightarrow\\ (A + ' + kI + ')^{-1}(A + ' + kI + ')\\,X = (A + ' + kI + ')^{-1}\\cdot B', '\\Rightarrow\\ X = (A + ' + kI + ')^{-1}\\cdot B']),
+      pasoMatriz({
+        titulo: 'Calcula la matriz que hay que invertir: A + ' + kI,
+        ins: 'Ojo: ' + kI + ' es la matriz identidad multiplicada por ' + k + ', así que solo suma en la diagonal principal.',
+        etiqueta: 'A + ' + kI + ' =',
+        esperado: M,
+        okMsg: 'Correcto. Esta es la matriz cuya inversa necesitas.',
+        candidatos: [
+          { M: add(A, [[k, k], [k, k]]), msg: 'Has sumado ' + k + ' a todos los elementos. ' + kI + ' solo tiene ' + k + ' en la diagonal principal y ceros fuera de ella.' },
+          { M: sub(A, esc(k, eye(2))), msg: 'Has restado ' + kI + '. Al pasar \u2212' + kTxt + 'X al primer miembro cambia de signo: AX + ' + kTxt + 'X = B, y queda A + ' + kI + '.' },
+          { M: add(A, eye(2)), msg: 'Has sumado I en lugar de ' + kI + ': falta multiplicar la identidad por ' + k + '.' }
+        ],
+        generico: 'Hay casillas incorrectas. Suma ' + k + ' solo a los elementos de la diagonal principal de A.',
+        calc: function () { return fx(Mtex + ' =') + matHTML(M); }
+      }),
+      pasoDet(M, 'A + ' + kI, function (v) {
+        if (v === det(A) && det(A) !== d) return 'Has calculado |A|. La matriz que hay que invertir es A + ' + kI + ', así que el determinante es el de esa matriz.';
+        return null;
+      }),
+      pasoAdj(M, 'A + ' + kI),
+      pasoInversa(M, 'A + ' + kI),
+      pasoMatriz({
+        titulo: 'Calcula la matriz solución X',
+        ins: 'Multiplica (A + ' + kI + ')\u207B\u00B9\u00B7B (en este orden).',
+        etiqueta: 'X =',
+        esperado: X,
+        okMsg: 'Correcto. Comprobación: AX + ' + kTxt + 'X debe dar B.',
+        consejo: 'Todos los elementos de X son números enteros.',
+        candidatos: [
+          { M: Q, msg: 'Has multiplicado en el orden B\u00B7(A + ' + kI + ')\u207B\u00B9. La inversa debe ir a la izquierda de B.' },
+          { M: P, msg: 'Has multiplicado por la traspuesta de la adjunta en lugar de por la inversa: falta dividir entre |A + ' + kI + '| = ' + fmt(d) + '.' },
+          { M: esc(-1, X), msg: 'Todos los signos están cambiados. Revisa los signos de la inversa.' }
+        ],
+        generico: 'Hay casillas incorrectas. Cada elemento es fila de (A + ' + kI + ')\u207B\u00B9 por columna de B.',
+        calc: function () {
+          return fx('X = (' + Mtex + ')^{-1}\\cdot B =') + matHTML(inversa(M)) + fx('\\cdot') + matHTML(B) + fx('=') + matHTML(X);
+        }
+      })
+    ]
+  };
+}
+
+function gen4() {
+  var A, B, M, X, d;
+  for (var t = 0; t < 20000; t++) {
+    A = randMat(2, 2, -2, 3);
+    B = randMat(2, 2, -2, 3);
+    if (!noTrivial2(A) || !noTrivial2(B)) continue;
+    M = sub(mul(A, B), B);
+    d = det(M);
+    if ([1, -1, 2, -2, 3, -3].indexOf(d) < 0 || maxAbs(M) > 10 || ceros(M) > 1) continue;
+    X = esc(1 / d, mul(A, adjT(M)));
+    if (!esEntera(X)) continue;
+    X = X.map(function (f) { return f.map(Math.round); });
+    if (maxAbs(X) > 10 || maxAbs(X) === 0 || ceros(X) > 1) continue;
+    if (iguales(esc(1 / d, mul(adjT(M), A)), X)) continue;
+    break;
+  }
+  var aT = adjT(M), P = mul(A, aT), Q = esc(1 / d, mul(aT, A)), AB = mul(A, B);
+  return {
+    ecuacion: 'XAB = A + XB',
+    datos: [['A', A], ['B', B]],
+    solucion: X,
+    pasos: [
+      pasoDespeje([
+        { tex: 'X = A\\cdot (AB - B)^{-1}', ok: true },
+        { tex: 'X = (AB - B)^{-1}\\cdot A', fb: 'X está a la izquierda de (AB \u2212 B), así que la inversa se multiplica por la derecha en ambos miembros: X(AB \u2212 B)(AB \u2212 B)\u207B\u00B9 = A(AB \u2212 B)\u207B\u00B9.' },
+        { tex: 'X = A\\cdot (AB - I)^{-1}', fb: 'Al sacar X factor común en XAB \u2212 XB, lo que acompaña a X en el segundo término es B, no I: queda X(AB \u2212 B).' },
+        { tex: 'X = A\\cdot (B - AB)^{-1}', fb: 'Error de signo: XB pasa al primer miembro restando, XAB \u2212 XB = A.' }
+      ], ['XAB = A + XB', '\\Rightarrow\\ XAB - XB = A', '\\Rightarrow\\ X\\,(AB - B) = A \\quad \\text{(factor común X por la izquierda)}', '\\Rightarrow\\ X\\,(AB - B)(AB - B)^{-1} = A\\cdot (AB - B)^{-1}', '\\Rightarrow\\ X = A\\cdot (AB - B)^{-1}']),
+      pasoMatriz({
+        titulo: 'Calcula la matriz que hay que invertir: AB \u2212 B',
+        ins: 'Calcula primero el producto A\u00B7B (en este orden) y después réstale B.',
+        etiqueta: 'AB - B =',
+        esperado: M,
+        okMsg: 'Correcto. Esta es la matriz cuya inversa necesitas.',
+        candidatos: [
+          { M: sub(mul(B, A), B), msg: 'Has calculado B\u00B7A \u2212 B. El producto no es conmutativo: en la ecuación aparece A\u00B7B.' },
+          { M: AB, msg: 'Has calculado A\u00B7B, pero te falta restarle B.' },
+          { M: sub(B, AB), msg: 'Tienes todos los signos cambiados: es AB \u2212 B, no B \u2212 AB.' },
+          { M: sub(AB, A), msg: 'Has restado A en lugar de B.' }
+        ],
+        generico: 'Hay casillas incorrectas. Revisa el producto A\u00B7B (fila de A por columna de B) y la resta posterior.',
+        calc: function () { return fx('A\\cdot B =') + matHTML(AB) + fx('\\Rightarrow\\ AB - B =') + matHTML(M); }
+      }),
+      pasoDet(M, 'AB - B', function (v) {
+        if (v === det(AB) && det(AB) !== d) return 'Has calculado |A\u00B7B|. El determinante que necesitas es el de AB \u2212 B.';
+        return null;
+      }),
+      pasoAdj(M, 'AB - B'),
+      pasoInversa(M, 'AB - B'),
+      pasoMatriz({
+        titulo: 'Calcula la matriz solución X',
+        ins: 'Multiplica A\u00B7(AB \u2212 B)\u207B\u00B9 (en este orden).',
+        etiqueta: 'X =',
+        esperado: X,
+        okMsg: 'Correcto. Comprobación: X\u00B7A\u00B7B debe coincidir con A + X\u00B7B.',
+        consejo: 'Todos los elementos de X son números enteros.',
+        candidatos: [
+          { M: Q, msg: 'Has multiplicado en el orden (AB \u2212 B)\u207B\u00B9\u00B7A. La inversa debe ir a la derecha de A.' },
+          { M: P, msg: 'Has multiplicado por la traspuesta de la adjunta en lugar de por la inversa: falta dividir entre |AB \u2212 B| = ' + fmt(d) + '.' },
+          { M: esc(-1, X), msg: 'Todos los signos están cambiados. Revisa los signos de la inversa.' }
+        ],
+        generico: 'Hay casillas incorrectas. Cada elemento es fila de A por columna de (AB \u2212 B)\u207B\u00B9.',
+        calc: function () {
+          return fx('X = A\\cdot (AB - B)^{-1} =') + matHTML(A) + fx('\\cdot') + matHTML(inversa(M)) + fx('=') + matHTML(X);
+        }
+      })
+    ]
+  };
+}
+
+function gen5() {
+  var A, B, X, C, dA, dB;
+  for (var t = 0; t < 5000; t++) {
+    A = genInvertible2(-2, 3, [1, -1, 2, -2]);
+    B = genInvertible2(-2, 3, [1, -1, 2, -2]);
+    if (iguales(A, B)) continue;
+    X = genX(2, 2, -2, 3);
+    C = mul(mul(A, X), B);
+    dA = det(A); dB = det(B);
+    var alReves = esc(1 / (dA * dB), mul(mul(adjT(B), C), adjT(A)));
+    if (maxAbs(C) <= 30 && !iguales(alReves, X)) break;
+  }
+  dA = det(A); dB = det(B);
+  var aA = adjT(A), aB = adjT(B), Q1 = mul(aA, C), P = mul(Q1, aB);
+  var rev = esc(1 / (dA * dB), mul(mul(aB, C), aA));
+  return {
+    ecuacion: 'AXB = C',
+    datos: [['A', A], ['B', B], ['C', C]],
+    solucion: X,
+    pasos: [
+      pasoDespeje([
+        { tex: 'X = A^{-1}\\cdot C\\cdot B^{-1}', ok: true },
+        { tex: 'X = B^{-1}\\cdot C\\cdot A^{-1}', fb: 'Has invertido los lados. A está a la izquierda de X (su inversa multiplica por la izquierda) y B a la derecha (su inversa multiplica por la derecha).' },
+        { tex: 'X = A^{-1}\\cdot B^{-1}\\cdot C', fb: 'B está a la derecha de X, así que B\u207B\u00B9 tiene que multiplicar por la derecha en ambos miembros, no por la izquierda.' },
+        { tex: 'X = C\\cdot (AB)^{-1}', fb: 'No se pueden juntar A y B: X está entre ellas. Hay que eliminar A por la izquierda y B por la derecha por separado.' }
+      ], ['AXB = C', '\\Rightarrow\\ A^{-1}A\\,XB = A^{-1}C \\ \\Rightarrow\\ XB = A^{-1}C \\quad \\text{(por la izquierda)}', '\\Rightarrow\\ XB\\,B^{-1} = A^{-1}C\\,B^{-1} \\quad \\text{(por la derecha)}', '\\Rightarrow\\ X = A^{-1}\\cdot C\\cdot B^{-1}']),
+      pasoDet(A, 'A'),
+      pasoAdj(A, 'A'),
+      pasoInversa(A, 'A'),
+      pasoDet(B, 'B'),
+      pasoAdj(B, 'B'),
+      pasoInversa(B, 'B'),
+      pasoMatriz({
+        titulo: 'Calcula la matriz solución X',
+        ins: 'Multiplica A\u207B\u00B9\u00B7C\u00B7B\u207B\u00B9 en este orden: primero A\u207B\u00B9\u00B7C y el resultado por B\u207B\u00B9.',
+        etiqueta: 'X =',
+        esperado: X,
+        okMsg: 'Correcto. Comprobación: A\u00B7X\u00B7B debe dar C.',
+        consejo: 'Todos los elementos de X son números enteros.',
+        candidatos: [
+          { M: rev, msg: 'Has multiplicado en el orden B\u207B\u00B9\u00B7C\u00B7A\u207B\u00B9. La inversa de A va a la izquierda de C y la de B a la derecha.' },
+          { M: mul(mul(C, inversa(A)), inversa(B)), msg: 'Has multiplicado C\u00B7A\u207B\u00B9\u00B7B\u207B\u00B9. A\u207B\u00B9 tiene que ir a la izquierda de C.' },
+          { M: P, msg: 'Has multiplicado por las traspuestas de las adjuntas en lugar de por las inversas: falta dividir entre |A|\u00B7|B| = ' + fmt(dA * dB) + '.' },
+          { M: esc(-1, X), msg: 'Todos los signos están cambiados. Revisa los signos de las inversas.' }
+        ],
+        generico: 'Hay casillas incorrectas. Haz los dos productos por separado y con cuidado con el orden.',
+        calc: function () {
+          var R = mul(inversa(A), C);
+          return fx('A^{-1}\\cdot C =') + matHTML(inversa(A)) + fx('\\cdot') + matHTML(C) + fx('=') + matHTML(R) +
+            fx('\\Rightarrow\\ X = (A^{-1}\\cdot C)\\cdot B^{-1} =') + matHTML(R) + fx('\\cdot') + matHTML(inversa(B)) + fx('=') + matHTML(X);
+        }
+      })
+    ]
+  };
+}
+
+/* =====================================================================
+   Tipos y estado (modelo: un acierto por tipo, fallo por paso)
+   ===================================================================== */
+var TIPOS = [
+  { id: 't1', nombre: 'AX = B (orden 3)', chip: 'AX = B', gen: gen1 },
+  { id: 't2', nombre: 'XA = B', chip: 'XA = B', gen: gen2 },
+  { id: 't3', nombre: 'AX = B \u2212 kX', chip: 'AX = B \u2212 kX', gen: gen3 },
+  { id: 't4', nombre: 'XAB = A + XB', chip: 'XAB = A + XB', gen: gen4 },
+  { id: 't5', nombre: 'AXB = C', chip: 'AXB = C', gen: gen5 }
+];
+var state = { fallosTotales: 0, tipos: {}, inicio: Date.now(), ej: null };
+TIPOS.forEach(function (t) { state.tipos[t.id] = { ejercicios: 0, aciertos: 0, fallos: 0, superado: false, cerrado: false }; });
+var PUNTO_POR_TIPO = 10 / TIPOS.length;
+var PENALIZACION_FALLO = 0.5;
+
+function calcularNota() {
+  var superados = TIPOS.filter(function (t) { return state.tipos[t.id].superado; }).length;
+  var bruta = superados * PUNTO_POR_TIPO - state.fallosTotales * PENALIZACION_FALLO;
+  return Math.round(Math.min(10, Math.max(0, bruta)) * 100) / 100;
+}
+
+/* Exponer para pruebas automáticas (solo con ?seed=N) */
+if (semillaURL !== null) window.__ficha = { state: state, calcularNota: calcularNota, TIPOS: TIPOS, gens: { t1: gen1, t2: gen2, t3: gen3, t4: gen4, t5: gen5 }, det: det, adjT: adjT, mul: mul };
+
+var $ = function (id) { return document.getElementById(id); };
+
+function actualizarBarra() {
+  $('marcador-nota').textContent = fmtNota(calcularNota());
+  $('marcador-tipos').textContent = TIPOS.filter(function (t) { return state.tipos[t.id].superado; }).length;
+  $('marcador-fallos').textContent = state.fallosTotales;
+}
+
+function ejercicioEnCurso() {
+  return state.ej && !state.ej.terminado && state.ej.respondidos > 0;
+}
+
+function renderChips() {
+  var bloq = ejercicioEnCurso();
+  var h = '';
+  TIPOS.forEach(function (t, i) {
+    var st = state.tipos[t.id];
+    var cls = 'chip' + (st.superado ? ' superado' : '') + (state.ej && state.ej.tipo === t.id && !st.superado ? ' actual' : '');
+    var dis = st.superado || bloq;
+    h += '<button type="button" class="' + cls + '" data-tipo="' + t.id + '"' + (dis ? ' disabled' : '') +
+      ' aria-label="Tipo ' + (i + 1) + ': ' + t.nombre + (st.superado ? ' (superado)' : '') + '"><span class="bolita"></span>' + t.chip + '</button>';
+  });
+  $('tipos').innerHTML = h;
+  $('nota-tipos').textContent = bloq ? 'Termina el ejercicio abierto para poder cambiar de tipo.' : '';
+}
+
+function siguienteTipoDisponible(desde) {
+  var pend = TIPOS.filter(function (t) { return !state.tipos[t.id].cerrado; });
+  if (!pend.length) return null;
+  if (desde) {
+    var idx = TIPOS.findIndex(function (t) { return t.id === desde; });
+    for (var k = 1; k <= TIPOS.length; k++) {
+      var t = TIPOS[(idx + k) % TIPOS.length];
+      if (!state.tipos[t.id].cerrado) return t.id;
+    }
+  }
+  return pend[0].id;
+}
+
+function iniciarEjercicio(tipoId) {
+  if (!tipoId) { renderCompleta(); renderChips(); return; }
+  var t = TIPOS.find(function (x) { return x.id === tipoId; });
+  var datos = t.gen();
+  state.ej = { tipo: tipoId, datos: datos, idx: 0, fallido: false, terminado: false, respondidos: 0, n: state.tipos[tipoId].ejercicios + 1 };
+  renderEjercicio();
+  renderChips();
+}
+
+function renderEjercicio() {
+  var ej = state.ej, d = ej.datos, tipo = TIPOS.find(function (x) { return x.id === ej.tipo; });
+  var num = TIPOS.indexOf(tipo) + 1;
+  var datosHTML = d.datos.map(function (p) { return igualdad(p[0], p[1]); }).join('');
+  var h = '<div class="ejercicio-card">' +
+    '<div class="ej-cab"><span>Tipo <b>' + num + '</b> de 5 · ' + tipo.nombre + '</span><span>Ejercicio n.º ' + ej.n + ' de este tipo</span></div>' +
+    '<p class="enunciado">Resuelve la siguiente ecuación matricial dadas las matrices:</p>' +
+    '<div class="ecuacion">' + fx(d.ecuacion) + '</div>' +
+    '<div class="datos">' + datosHTML + '</div></div>' +
+    '<div id="pasos"></div><div id="fin-ej"></div>';
+  $('zona-ejercicio').innerHTML = h;
+  renderPaso(0);
+  window.renderFx($('zona-ejercicio'));
+}
+
+function renderPaso(i) {
+  var p = state.ej.datos.pasos[i];
+  var cont = document.createElement('section');
+  cont.className = 'paso activo';
+  cont.id = 'paso-' + i;
+  var cuerpo = '';
+  if (p.kind === 'eleccion') {
+    cuerpo = '<div class="opciones" role="radiogroup" aria-label="Opciones de despeje">' + p.opciones.map(function (o, k) {
+      return '<label class="opcion" data-k="' + k + '"><input type="radio" name="op-' + i + '" value="' + k + '">' + fx(o.tex) + '</label>';
+    }).join('') + '</div>';
+  } else if (p.kind === 'num') {
+    cuerpo = '<span class="etiqueta">' + fx(p.etiqueta) + '</span><input type="text" inputmode="text" autocomplete="off" class="campo-num" id="num-' + i + '" aria-label="' + escAttr(texToPlain(p.etiqueta)) + '">';
+  } else {
+    cuerpo = '<span class="etiqueta">' + fx(p.etiqueta) + '</span>' + matEntradaHTML(p.filas, p.cols, 'm' + i);
+  }
+  cont.innerHTML =
+    '<div class="paso-cab"><span class="paso-n">' + (i + 1) + '</span><h3>' + p.titulo + '</h3></div>' +
+    '<p class="paso-ins">' + p.ins + '</p>' +
+    '<div class="paso-cuerpo">' + cuerpo + '</div>' +
+    (p.consejo ? '<p class="consejo">' + p.consejo + '</p>' : '') +
+    '<div class="paso-acciones"><button type="button" class="btn-primario btn-comprobar" data-paso="' + i + '">Comprobar</button></div>' +
+    '<div class="feedback" aria-live="polite" id="fb-' + i + '"></div>';
+  $('pasos').appendChild(cont);
+  window.renderFx(cont);
+  var primero = cont.querySelector('input:not([type=radio])');
+  if (primero && i > 0) primero.focus({ preventScroll: true });
+  if (i > 0) cont.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function exigirNombre() {
+  var inp = $('nombre');
+  if (inp.value.trim()) { inp.classList.remove('falta'); $('aviso-nombre').classList.remove('visible'); return true; }
+  inp.classList.add('falta');
+  $('aviso-nombre').classList.add('visible');
+  inp.focus();
+  return false;
+}
+
+function mostrarAviso(i, txt) {
+  $('fb-' + i).innerHTML = '<div class="fb fb-aviso">' + txt + '</div>';
+}
+
+function comprobar(i) {
+  var ej = state.ej;
+  if (!ej || ej.terminado || i !== ej.idx) return;
+  if (!exigirNombre()) return;
+  var p = ej.datos.pasos[i], cont = $('paso-' + i), fbEl = $('fb-' + i);
+  var correcto, msgKo = '', calcHTML = '';
+
+  if (p.kind === 'eleccion') {
+    var sel = cont.querySelector('input[type=radio]:checked');
+    if (!sel) { mostrarAviso(i, 'Elige una de las opciones antes de comprobar.'); return; }
+    var op = p.opciones[parseInt(sel.value, 10)];
+    correcto = !!op.ok;
+    cont.querySelectorAll('.opcion').forEach(function (lab) {
+      var o = p.opciones[parseInt(lab.getAttribute('data-k'), 10)];
+      lab.classList.add('bloq');
+      lab.querySelector('input').disabled = true;
+      if (o.ok) lab.classList.add('op-ok');
+      else if (o === op) lab.classList.add('op-ko');
+    });
+    if (correcto) {
+      fbEl.innerHTML = '<div class="fb fb-ok"><strong>¡Correcto!</strong>Has multiplicado por la inversa por el lado adecuado y has usado que su producto es la identidad.</div>';
+    } else {
+      fbEl.innerHTML = '<div class="fb fb-ko"><strong>No es correcto.</strong>' + op.fb + '<div class="detalle">La expresión correcta está marcada en verde.</div></div>';
+    }
+    var des = '<div class="desarrollo"><div class="tit">Desarrollo</div>' + p.desarrollo.map(function (l) { return '<div class="linea">' + fx(l) + '</div>'; }).join('') + '</div>';
+    fbEl.insertAdjacentHTML('beforeend', des);
+  } else if (p.kind === 'num') {
+    var inp = cont.querySelector('.campo-num');
+    var r = leerNum(inp.value);
+    if (r.vacio) { mostrarAviso(i, 'Escribe el valor del determinante.'); inp.focus(); return; }
+    if (r.invalido) { mostrarAviso(i, 'Escribe un número (por ejemplo, \u22123).'); inp.focus(); return; }
+    correcto = Math.abs(r.v - p.esperado) < 1e-9;
+    inp.disabled = true;
+    inp.classList.add(correcto ? 'celda-ok' : 'celda-ko');
+    if (correcto) fbEl.innerHTML = '<div class="fb fb-ok"><strong>¡Correcto!</strong>' + p.okMsg + '<div class="calc">' + p.calc() + '</div></div>';
+    else fbEl.innerHTML = '<div class="fb fb-ko"><strong>No es correcto.</strong>' + p.diag(r.v) + '<div class="calc">' + p.calc() + '</div></div>';
+  } else {
+    var celdas = cont.querySelectorAll('.celda');
+    var U = [], vacias = 0, invalidas = 0;
+    for (var a = 0; a < p.filas; a++) U.push([]);
+    celdas.forEach(function (c) {
+      var r2 = leerNum(c.value);
+      if (r2.vacio) vacias++;
+      else if (r2.invalido) invalidas++;
+      U[+c.getAttribute('data-i')][+c.getAttribute('data-j')] = r2.v;
+    });
+    if (vacias) { mostrarAviso(i, 'Completa todas las casillas de la matriz antes de comprobar.'); return; }
+    if (invalidas) { mostrarAviso(i, 'Hay casillas que no contienen un número válido. Escribe enteros o fracciones (por ejemplo, 3/2).'); return; }
+    correcto = iguales(U, p.esperado);
+    celdas.forEach(function (c) {
+      var ii = +c.getAttribute('data-i'), jj = +c.getAttribute('data-j');
+      c.disabled = true;
+      c.classList.add(Math.abs(U[ii][jj] - p.esperado[ii][jj]) < 1e-9 ? 'celda-ok' : 'celda-ko');
+    });
+    if (correcto) fbEl.innerHTML = '<div class="fb fb-ok"><strong>¡Correcto!</strong>' + p.okMsg + '<div class="calc">' + p.calc() + '</div></div>';
+    else fbEl.innerHTML = '<div class="fb fb-ko"><strong>No es correcto.</strong>' + p.diag(U) + '<div class="detalle">Solución de este paso:</div><div class="calc">' + p.calc() + '</div></div>';
+  }
+
+  if (p.despues) fbEl.insertAdjacentHTML('beforeend', p.despues());
+
+  /* Registro: un fallo por paso; el ejercicio deja de valer para superar el tipo */
+  var st = state.tipos[ej.tipo];
+  if (ej.respondidos === 0) st.ejercicios++;
+  ej.respondidos++;
+  if (!correcto) {
+    st.fallos++;
+    state.fallosTotales++;
+    ej.fallido = true;
+  }
+  cont.classList.remove('activo');
+  cont.classList.add(correcto ? 'ok' : 'ko');
+  var btn = cont.querySelector('.btn-comprobar');
+  if (btn) btn.parentNode.remove();
+  window.renderFx(cont);
+
+  ej.idx++;
+  if (ej.idx < ej.datos.pasos.length) {
+    renderPaso(ej.idx);
+  } else {
+    terminarEjercicio();
+  }
+  actualizarBarra();
+  renderChips();
+}
+
+function terminarEjercicio() {
+  var ej = state.ej, st = state.tipos[ej.tipo];
+  ej.terminado = true;
+  var h;
+  if (!ej.fallido) {
+    st.aciertos++;
+    st.superado = true;
+    st.cerrado = true;
+    var sig = siguienteTipoDisponible(ej.tipo);
+    h = '<div class="fin-ej exito"><h3>¡Tipo superado!</h3><p>Has resuelto la ecuación sin ningún paso fallado. Este tipo queda cerrado.</p>' +
+      '<div class="solucion-final">' + fx('X =') + matHTML(ej.datos.solucion) + '</div>' +
+      (sig ? '<button type="button" class="btn-primario" id="btn-siguiente">Ir al siguiente tipo</button>'
+           : '<p><b>Has superado los cinco tipos.</b> Pulsa «Finalizar y Calificar» para ver tu informe.</p>') + '</div>';
+  } else {
+    h = '<div class="fin-ej repetir"><h3>Ejercicio terminado</h3><p>Has fallado algún paso, así que este ejercicio no supera el tipo. Revisa el desarrollo y prueba con otro: tendrá matrices distintas.</p>' +
+      '<div class="solucion-final">' + fx('X =') + matHTML(ej.datos.solucion) + '</div>' +
+      '<button type="button" class="btn-primario" id="btn-otro">Otro ejercicio de este tipo</button></div>';
+  }
+  $('fin-ej').innerHTML = h;
+  window.renderFx($('fin-ej'));
+  if (calcularNota() === 10) document.body.classList.add('ficha-perfecta');
+  $('fin-ej').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function renderCompleta() {
+  $('zona-ejercicio').innerHTML = '<div class="fin-ej exito"><h3>Ficha completada</h3><p>Has superado los cinco tipos de ecuación. Pulsa «Finalizar y Calificar» para ver tu informe.</p></div>';
+}
+
+/* =====================================================================
+   Modal de calificación (informe)
+   ===================================================================== */
+var COLORES = { 10: ['#1a7a1a', '#fff'], 9: ['#6dbf6d', '#fff'], 8: ['#1a4f8a', '#fff'], 7: ['#5b9bd5', '#fff'], 6: ['#c05c00', '#fff'], 5: ['#f5a623', '#000'] };
+function dos(n) { return (n < 10 ? '0' : '') + n; }
+
+function abrirModal() {
+  if (!exigirNombre()) return;
+  var nota = calcularNota();
+  var clave = nota === 10 ? 10 : Math.floor(nota);
+  var col = COLORES[clave] || ['#c0392b', '#fff'];
+  var ahora = new Date();
+  var mins = Math.ceil((Date.now() - state.inicio) / 60000);
+  var tiempo = dos(Math.floor(mins / 60)) + ':' + dos(mins % 60);
+  var filas = TIPOS.map(function (t) {
+    var s = state.tipos[t.id];
+    return '<tr><td>' + t.chip + '</td><td>' + (s.superado ? '\u2714 Superado' : 'No superado') + '</td><td>' + s.ejercicios + '</td><td>' + s.aciertos + '</td><td>' + s.fallos + '</td></tr>';
+  }).join('');
+  var m = $('modal');
+  m.style.background = col[0];
+  m.style.color = col[1];
+  m.classList.toggle('texto-negro', col[1] === '#000');
+  m.innerHTML =
+    '<p class="m-titulo" id="m-titulo">' + document.querySelector('.titulo-ficha').textContent + '</p>' +
+    '<p class="m-sub">' + document.querySelector('.subtitulo').textContent + '</p><hr>' +
+    '<p class="m-inf">Informe de la actividad</p>' +
+    '<p class="m-alumno">' + escAttr($('nombre').value.trim()) + '</p>' +
+    '<p class="m-nota">' + fmtNota(nota) + ' <span style="font-size:1.1rem;font-weight:400">/ 10</span></p>' +
+    '<div class="m-datos"><span>Fecha: ' + dos(ahora.getDate()) + '/' + dos(ahora.getMonth() + 1) + '/' + ahora.getFullYear() + '</span>' +
+    '<span>Hora: ' + dos(ahora.getHours()) + ':' + dos(ahora.getMinutes()) + ':' + dos(ahora.getSeconds()) + '</span>' +
+    '<span>Tiempo empleado: ' + tiempo + '</span></div>' +
+    '<div class="tabla-wrap"><table class="desglose"><thead><tr><th>Tipo</th><th>Estado</th><th>Ejercicios</th><th>Sin fallos</th><th>Pasos<br>fallados</th></tr></thead><tbody>' + filas + '</tbody></table></div>' +
+    '<div class="m-btns"><button type="button" class="btn-cerrar" id="btn-cerrar">Cerrar y seguir practicando</button></div>';
+  $('overlay').classList.add('visible');
+  $('btn-cerrar').focus();
+}
+function cerrarModal() { $('overlay').classList.remove('visible'); }
+
+/* =====================================================================
+   Eventos (delegación)
+   ===================================================================== */
+document.addEventListener('click', function (e) {
+  var t = e.target.closest('button, .opcion');
+  if (!t) { if (e.target === $('overlay')) cerrarModal(); return; }
+  if (t.classList.contains('btn-comprobar')) comprobar(parseInt(t.getAttribute('data-paso'), 10));
+  else if (t.id === 'btn-siguiente') iniciarEjercicio(siguienteTipoDisponible(state.ej.tipo));
+  else if (t.id === 'btn-otro') iniciarEjercicio(state.ej.tipo);
+  else if (t.id === 'btn-finalizar') abrirModal();
+  else if (t.id === 'btn-cerrar') cerrarModal();
+  else if (t.classList.contains('chip') && !t.disabled) {
+    var id = t.getAttribute('data-tipo');
+    if (state.ej && state.ej.tipo === id && !state.ej.terminado) return;
+    iniciarEjercicio(id);
+  } else if (t.classList.contains('opcion') && !t.classList.contains('bloq')) {
+    var grupo = t.parentNode;
+    grupo.querySelectorAll('.opcion').forEach(function (o) { o.classList.remove('elegida'); });
+    t.classList.add('elegida');
+  }
+});
+document.addEventListener('change', function (e) {
+  if (e.target.type === 'radio') {
+    var lab = e.target.closest('.opcion');
+    lab.parentNode.querySelectorAll('.opcion').forEach(function (o) { o.classList.remove('elegida'); });
+    lab.classList.add('elegida');
+  }
+});
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape' && $('overlay').classList.contains('visible')) { cerrarModal(); return; }
+  if (e.key !== 'Enter') return;
+  var paso = e.target.closest && e.target.closest('.paso.activo');
+  if (!paso) return;
+  e.preventDefault();
+  if (e.target.classList.contains('celda')) {
+    var celdas = Array.prototype.slice.call(paso.querySelectorAll('.celda'));
+    var k = celdas.indexOf(e.target);
+    var vacia = celdas.find(function (c, idx) { return idx > k && !c.value.trim(); });
+    if (vacia) { vacia.focus(); return; }
+  }
+  comprobar(parseInt(paso.id.split('-')[1], 10));
+});
+$('nombre').addEventListener('input', function () {
+  if (this.value.trim()) { this.classList.remove('falta'); $('aviso-nombre').classList.remove('visible'); }
+});
+
+/* Inicio */
+actualizarBarra();
+iniciarEjercicio(TIPOS[0].id);
+window.renderFx(document.body);
+})();
+</script>
+</body>
+</html>
