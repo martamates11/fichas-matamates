@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rouché-Frobenius con parámetros — Ficha Interactiva</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap');
+:root{
+  --color-fondo:#F5F0E8;--color-fondo-card:#FDFAF3;--color-texto:#2C1F0E;--color-texto-suave:#6B4F35;
+  --color-acento:#A0522D;--color-acento-hover:#7B3B1E;--color-borde:#C9A96E;--color-borde-suave:#E0CEAA;
+  --color-cabecera:#3B2510;--color-cabecera-txt:#F5EDD8;--color-barra-alumno:#EFE4CC;
+  --color-correcto:#2E6B3E;--color-incorrecto:#8B1A1A;--color-neutro:#E8DFC8;
+  --verde-claro:#EAF4EC;--rojo-claro:#F9EAEA;--azul:#1E3A5F;--azul-claro:#EAF0F8;
+  --morado:#6A1B9A;--morado-claro:#F3E5F5;--dorado-claro:#FBF4E2;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Lato',sans-serif;font-size:16px;color:var(--color-texto);background:var(--color-fondo);min-height:100vh}
+body.success-mode{background:#DDEFD9}
+h1,h2,h3{font-family:'Libre Baskerville',serif;color:var(--color-texto)}
+
+.cabecera{background:var(--color-cabecera);color:var(--color-cabecera-txt);font-family:'Libre Baskerville',serif;text-align:center;padding:12px 20px;border-bottom:3px solid var(--color-borde);font-size:.78rem;letter-spacing:.04em}
+.ficha-container{max-width:860px;margin:28px auto;background:var(--color-fondo-card);border:2px solid var(--color-borde);border-radius:6px;box-shadow:0 3px 12px rgba(44,31,14,.15);padding:32px 36px}
+.titulo-ficha{font-size:1.6rem;text-align:center;border-bottom:2px solid var(--color-borde);padding-bottom:10px;margin-bottom:8px;line-height:1.35}
+.titulo-ficha::after{content:'';display:block;width:60px;height:3px;background:var(--color-borde);margin:8px auto 0;border-radius:2px}
+.subtitulo{text-align:center;font-family:'Libre Baskerville',serif;font-style:italic;color:var(--color-texto-suave);font-size:.95rem;margin-bottom:18px}
+
+.barra{position:sticky;top:0;z-index:50;background:var(--color-barra-alumno);border:1.5px solid var(--color-borde);border-radius:6px;margin:0 0 22px;box-shadow:0 2px 6px rgba(44,31,14,.08);padding:9px 20px;display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center;justify-content:center;font-size:.92rem}
+.barra label{font-family:'Libre Baskerville',serif;font-size:.85rem;color:var(--color-texto-suave)}
+.barra input#nombre{background:var(--color-fondo-card);border:1.5px solid var(--color-borde);border-radius:4px;padding:6px 10px;font-family:'Lato',sans-serif;font-size:.95rem;color:var(--color-texto);width:230px;max-width:60vw;outline:none}
+.barra input#nombre:focus{border-color:var(--color-acento)}
+.barra input#nombre.falta{border-color:var(--color-incorrecto);box-shadow:0 0 0 3px rgba(139,26,26,.18)}
+.barra .dato{color:var(--color-texto-suave)}
+.barra .dato b{color:var(--color-acento);font-family:'Libre Baskerville',serif}
+.chips{display:inline-flex;gap:6px;align-items:center}
+.chip{font-size:.78rem;font-weight:700;padding:2px 10px;border-radius:12px;border:1.5px solid var(--color-borde-suave);background:var(--color-fondo-card);color:var(--color-texto-suave);letter-spacing:.03em;cursor:default}
+.chip.ok{background:var(--verde-claro);border-color:var(--color-correcto);color:var(--color-correcto)}
+.aviso-nombre{color:var(--color-incorrecto);font-size:.82rem;font-weight:700;display:none;width:100%;text-align:center}
+.aviso-nombre.visible{display:block}
+
+.recordatorio{border:1.5px solid var(--color-borde-suave);border-radius:4px;background:var(--dorado-claro);margin-bottom:20px}
+.recordatorio summary{cursor:pointer;padding:10px 16px;font-family:'Libre Baskerville',serif;font-size:.92rem;color:var(--color-texto-suave)}
+.recordatorio .rec-body{padding:4px 18px 14px;font-size:.9rem;line-height:1.6}
+.recordatorio .rec-body p{margin:6px 0}
+.rec-tabla{border-collapse:collapse;margin:8px 0;width:100%;font-size:.88rem}
+.rec-tabla th,.rec-tabla td{border:1px solid var(--color-borde-suave);padding:6px 10px;text-align:left}
+.rec-tabla th{background:var(--color-barra-alumno);font-family:'Libre Baskerville',serif;font-weight:400}
+
+.ejercicio-card{background:var(--color-fondo);border:1.5px solid var(--color-borde-suave);border-left:4px solid var(--color-borde);border-radius:4px;padding:20px 24px;margin-bottom:20px}
+.ej-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.ej-head h2{font-size:1.1rem}
+.card-tag{background:var(--color-fondo-card);color:var(--color-acento);border:1px solid var(--color-borde-suave);border-radius:20px;padding:2px 10px;font-size:.72rem;letter-spacing:.5px;font-weight:700;text-transform:uppercase}
+.card-tag.practica{color:var(--color-texto-suave);background:var(--dorado-claro);border-color:var(--color-borde)}
+.ejercicio-card>p{line-height:1.7;font-size:.95rem}
+.sys-wrap{display:inline-flex;align-items:center;gap:10px;margin:12px 0 4px;padding:10px 18px 10px 10px;background:var(--color-fondo-card);border:1px solid var(--color-borde-suave);border-radius:6px}
+.llave{font-family:'Libre Baskerville',serif;font-size:4.6rem;line-height:1;color:var(--color-borde);font-weight:400;transform:scaleX(.7)}
+.sys-line{margin:3px 0;font-size:1.05rem;letter-spacing:.02em}
+.sys-line i,.mat i{font-family:'Libre Baskerville',serif}
+.mpar{color:var(--color-acento);font-weight:700}
+
+.caso{border:1.5px dashed var(--color-borde);border-radius:6px;padding:12px 14px 4px;margin-top:18px;background:rgba(253,250,243,.5)}
+.caso.locked{opacity:.42}
+.caso-titulo{font-family:'Libre Baskerville',serif;font-size:1rem;color:var(--color-acento);margin-bottom:2px}
+.section{border:1.5px solid var(--color-borde-suave);border-radius:4px;padding:14px 18px;margin-top:14px;background:var(--color-fondo-card);transition:background .25s,border-color .25s}
+.caso .section{margin:10px 0}
+.section-title{font-family:'Libre Baskerville',serif;color:var(--color-texto);font-size:.95rem;margin-bottom:8px}
+.section.locked{opacity:.42}
+.section.done-ok{border-color:var(--color-correcto);background:var(--verde-claro)}
+.section.done-err{border-color:var(--color-incorrecto);background:var(--rojo-claro)}
+.instr{font-size:.88rem;color:var(--color-texto-suave);margin-bottom:10px;line-height:1.6}
+.instr.nota{border-left:3px solid var(--color-borde);padding-left:10px}
+
+input.mi{background:var(--color-fondo);border:1.5px solid var(--color-borde);border-radius:4px;color:var(--color-texto);padding:5px 4px;font-size:.92rem;width:56px;text-align:center;font-family:'Lato',sans-serif;outline:none;transition:border-color .2s,background .2s}
+input.mi:focus{border-color:var(--color-acento);background:#fff}
+input.mi:focus-visible,select.sel:focus-visible,.barra input#nombre:focus-visible{box-shadow:0 0 0 3px rgba(160,82,45,.28)}
+button:focus-visible{outline:3px solid var(--color-borde);outline-offset:2px}
+input.mi.ok{border-color:var(--color-correcto)!important;background:var(--verde-claro)!important;color:var(--color-correcto)}
+input.mi.err{border-color:var(--color-incorrecto)!important;background:var(--rojo-claro)!important;color:var(--color-incorrecto)}
+select.sel{background:var(--color-fondo);border:1.5px solid var(--color-borde);border-radius:4px;padding:7px 10px;font-family:'Lato',sans-serif;font-size:.95rem;color:var(--color-texto);outline:none;min-width:230px}
+select.sel:focus{border-color:var(--color-acento)}
+select.sel.ok{border-color:var(--color-correcto);background:var(--verde-claro);color:var(--color-correcto)}
+select.sel.err{border-color:var(--color-incorrecto);background:var(--rojo-claro);color:var(--color-incorrecto)}
+
+.fila-campos{display:flex;flex-wrap:wrap;gap:12px 26px;align-items:center;margin:6px 0 4px}
+.campo{display:flex;align-items:center;gap:8px}
+.campo label,.campo .lbl{font-family:'Libre Baskerville',serif;font-size:.95rem}
+.poly{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-family:'Libre Baskerville',serif;font-size:1.02rem;margin:6px 0}
+.disc-grid{display:grid;grid-template-columns:auto 1fr;gap:10px 14px;align-items:center;max-width:520px;margin:4px 0}
+.disc-grid label{font-family:'Libre Baskerville',serif;font-size:.9rem}
+
+.matriz{display:inline-block;position:relative;padding:6px 12px;margin:6px 2px;vertical-align:middle}
+.matriz::before,.matriz::after{content:'';position:absolute;top:0;bottom:0;width:8px;border:2px solid var(--color-texto-suave)}
+.matriz::before{left:0;border-right:none;border-radius:3px 0 0 3px}
+.matriz::after{right:0;border-left:none;border-radius:0 3px 3px 0}
+.mgrid{display:grid;grid-template-columns:repeat(3,auto) 12px auto;gap:4px 6px;align-items:center}
+.vsep{width:2px;background:var(--color-texto-suave);justify-self:center;align-self:stretch;margin:-3px 0}
+.mval{min-width:34px;text-align:center;font-weight:700;font-size:.95rem;padding:2px 4px}
+
+.fb-inline{font-size:.86rem;margin-top:10px;padding:9px 13px;border-radius:4px;display:none;line-height:1.55}
+.fb-inline.ok{background:var(--verde-claro);color:var(--color-correcto);border:1.5px solid var(--color-correcto);display:block}
+.fb-inline.err{background:var(--rojo-claro);color:var(--color-incorrecto);border:1.5px solid var(--color-incorrecto);display:block}
+.fb-inline.hint{background:var(--azul-claro);color:var(--azul);border:1.5px solid var(--azul);display:block}
+.fb-inline p{margin:4px 0;color:var(--color-texto)}
+.fb-inline.ok p,.fb-inline.hint p{color:inherit}
+.fb-global{margin-top:16px;padding:14px 18px;border-radius:4px;font-size:.93rem;line-height:1.7;display:none}
+.fb-global.ok{background:var(--verde-claro);border:1.5px solid var(--color-correcto);border-left-width:5px;color:#1e4430;display:block}
+.fb-global.practica{background:var(--dorado-claro);border:1.5px solid var(--color-borde);border-left-width:5px;color:var(--color-texto);display:block}
+.res-tabla{border-collapse:collapse;margin:10px 0 4px;font-size:.88rem;background:var(--color-fondo-card);width:100%}
+.res-tabla th,.res-tabla td{border:1px solid var(--color-borde-suave);padding:6px 10px;text-align:left;color:var(--color-texto)}
+.res-tabla th{background:var(--color-barra-alumno);font-family:'Libre Baskerville',serif;font-weight:400}
+
+.brow{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btn-primario{background:var(--color-acento);color:#FDFAF3;border:none;border-radius:4px;padding:9px 20px;font-family:'Lato',sans-serif;font-size:.92rem;font-weight:700;cursor:pointer;letter-spacing:.03em;transition:background-color .2s}
+.btn-primario:hover{background:var(--color-acento-hover)}
+.btn-secundario{background:transparent;color:var(--color-acento);border:2px solid var(--color-borde);border-radius:4px;padding:8px 18px;font-family:'Lato',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;transition:border-color .2s,color .2s}
+.btn-secundario:hover{border-color:var(--color-acento);color:var(--color-acento-hover)}
+.ej-acciones{margin-top:18px;justify-content:flex-end}
+.pie{text-align:center;margin-top:26px;padding-top:20px;border-top:1px solid var(--color-borde-suave)}
+.btn-finalizar{background:var(--color-cabecera);color:var(--color-cabecera-txt);border:2px solid var(--color-borde);border-radius:4px;padding:11px 26px;font-family:'Libre Baskerville',serif;font-size:.95rem;font-weight:700;cursor:pointer;letter-spacing:.04em;transition:background-color .2s}
+.btn-finalizar:hover{background:#2C1A0A}
+
+.overlay{display:none;position:fixed;inset:0;background:rgba(44,31,14,.55);z-index:999;align-items:center;justify-content:center;padding:16px}
+.modal-calificacion{border:3px solid var(--color-borde);border-radius:8px;font-family:'Libre Baskerville',serif;box-shadow:0 6px 24px rgba(44,31,14,.35);padding:30px 32px;width:min(560px,100%);max-height:92vh;overflow:auto;text-align:center;position:relative}
+#modal-close{position:absolute;top:10px;right:14px;background:none;border:none;font-size:1.3rem;cursor:pointer;opacity:.8}
+.m-titulo{font-size:1.1rem;font-weight:700;line-height:1.35}
+.m-sub{font-style:italic;font-size:.85rem;opacity:.9;margin-top:4px}
+.m-sep{border:none;border-top:1.5px solid currentColor;opacity:.4;margin:14px 0}
+.m-informe{font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;opacity:.9}
+.m-nombre{font-size:1.25rem;font-weight:700;margin-top:6px}
+.m-nota{font-size:2.8rem;font-weight:700;margin:6px 0 10px}
+.m-data{text-align:left;border-radius:6px;padding:10px 16px;font-family:'Lato',sans-serif;font-size:.92rem;line-height:1.9;background:rgba(255,255,255,.16)}
+.m-tabla{width:100%;border-collapse:collapse;margin-top:14px;font-family:'Lato',sans-serif;font-size:.86rem}
+.m-tabla th,.m-tabla td{border:1px solid rgba(255,255,255,.4);padding:6px 8px}
+.m-tabla.oscuro th,.m-tabla.oscuro td{border-color:rgba(0,0,0,.25)}
+.m-tabla th{font-weight:700;background:rgba(255,255,255,.14)}
+.m-fases{font-family:'Lato',sans-serif;font-size:.84rem;margin-top:10px;line-height:1.6;text-align:left}
+#modal-btn{padding:10px 28px;border-radius:4px;cursor:pointer;font-size:.93rem;font-weight:700;font-family:'Lato',sans-serif;margin-top:16px;background:rgba(255,255,255,.2)}
+
+@media (max-width:640px){
+  .ficha-container{margin:12px 8px;padding:20px 14px}
+  .titulo-ficha{font-size:1.3rem}
+  .ejercicio-card{padding:16px 12px}
+  .section{padding:12px 10px}
+  .caso{padding:10px 8px 2px}
+  input.mi{width:48px;font-size:.85rem}
+  .disc-grid{grid-template-columns:1fr}
+  select.sel{min-width:0;width:100%}
+  .sys-line{font-size:.95rem}
+}
+</style>
+</head>
+<body>
+
+<div class="cabecera">Material elaborado por Marta L Letona S. Basado en el trabajo de Javier Cayetano</div>
+
+<div class="ficha-container">
+  <h1 class="titulo-ficha">Teorema de Rouché-Frobenius: sistemas con parámetros</h1>
+  <p class="subtitulo">2.º Bachillerato · Discusión de sistemas de ecuaciones lineales</p>
+
+  <div class="barra">
+    <label for="nombre">Alumno/a:</label>
+    <input type="text" id="nombre" placeholder="Nombre y apellidos" autocomplete="off" maxlength="60">
+    <span class="dato">Nota: <b id="marcador-nota">0</b> / 10</span>
+    <span class="dato chips" aria-label="Tipos superados">
+      <span class="chip" id="chip-a" title="Un valor crítico con sistema incompatible">A</span><span class="chip" id="chip-b" title="Un valor crítico con sistema compatible indeterminado">B</span><span class="chip" id="chip-c" title="Dos valores críticos">C</span>
+    </span>
+    <span class="dato">Fallos: <b id="marcador-fallos">0</b></span>
+    <div class="aviso-nombre" id="aviso-nombre">Escribe tu nombre y apellidos antes de continuar.</div>
+  </div>
+
+  <details class="recordatorio">
+    <summary>📜 Recordatorio: cómo se discute un sistema con parámetro</summary>
+    <div class="rec-body">
+      <p><b>Teorema de Rouché-Frobenius.</b> Sea <b>A</b> la matriz de coeficientes, <b>A*</b> = (A | b) la matriz ampliada y <i>n</i> = 3 el número de incógnitas. El sistema tiene solución si y solo si rg(A) = rg(A*).</p>
+      <table class="rec-tabla">
+        <tr><th>Rangos</th><th>Tipo</th><th>Soluciones</th></tr>
+        <tr><td>rg(A) ≠ rg(A*)</td><td>SI · Incompatible</td><td>Ninguna</td></tr>
+        <tr><td>rg(A) = rg(A*) = <i>n</i></td><td>SC · Compatible determinado</td><td>Única</td></tr>
+        <tr><td>rg(A) = rg(A*) &lt; <i>n</i></td><td>SCI · Compatible indeterminado</td><td>Infinitas</td></tr>
+      </table>
+      <p><b>Método.</b> 1) Calcula |A| en función de <i>m</i>. 2) Resuelve |A| = 0: sus soluciones son los <b>valores críticos</b>. 3) Para los demás valores de <i>m</i>, |A| ≠ 0 y rg(A) = rg(A*) = 3. 4) En cada valor crítico, sustituye <i>m</i> y estudia los rangos con menores.</p>
+      <p><b>Menores.</b> El rango es el orden del mayor menor no nulo. Si encuentras un menor de orden 2 no nulo en A, rg(A) ≥ 2. Para rg(A*), <b>orla</b> ese menor con la fila que falta y la columna de términos independientes: si ese determinante de orden 3 es ≠ 0, rg(A*) = 3; si es 0, rg(A*) = 2.</p>
+      <p>Para superar la ficha tienes que discutir bien un sistema de cada tipo: <b>A</b> (un valor crítico, incompatible), <b>B</b> (un valor crítico, compatible indeterminado) y <b>C</b> (dos valores críticos). No sabrás de qué tipo es hasta que lo discutas.</p>
+    </div>
+  </details>
+
+  <div id="ex"></div>
+
+  <div class="pie">
+    <button class="btn-finalizar" onclick="openModal()">🏁 Finalizar y Calificar</button>
+  </div>
+</div>
+
+<div id="modal-overlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="modal-ficha">
+  <div id="modal-box" class="modal-calificacion">
+    <button id="modal-close" onclick="closeModal()" aria-label="Cerrar">✕</button>
+    <div id="modal-ficha" class="m-titulo"></div>
+    <div id="modal-sub" class="m-sub"></div>
+    <hr class="m-sep">
+    <div class="m-informe">Informe de la actividad</div>
+    <div id="modal-nombre" class="m-nombre"></div>
+    <div id="modal-nota" class="m-nota"></div>
+    <div id="modal-data" class="m-data"></div>
+    <table id="modal-tipos" class="m-tabla"></table>
+    <div id="modal-fases" class="m-fases"></div>
+    <button id="modal-btn" onclick="closeModal()">Seguir practicando</button>
+  </div>
+</div>
+
+<script>
+// ═════════ ALEATORIEDAD ═════════
+// En producción, semilla distinta en cada carga. Para QA: añadir ?seed=N a la URL.
+const params=new URLSearchParams(location.search);
+let _s=params.has('seed')?((parseInt(params.get('seed'),10)>>>0)||1):((Date.now()^Math.floor(Math.random()*4294967296))>>>0);
+function rand(){_s=(_s+0x6D2B79F5)>>>0;let t=_s;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return((t^(t>>>14))>>>0)/4294967296;}
+function ri(a,b){return Math.floor(rand()*(b-a+1))+a;}
+function pick(a){return a[Math.floor(rand()*a.length)];}
+
+// ═════════ ESTADO Y PUNTUACIÓN ═════════
+// Modelo (igual que la ficha base de Rouché-Frobenius): 3 tipos (a, b, c). Un tipo se supera al
+// discutir correctamente un sistema de ese tipo. Cada verificación fallida resta 0,5.
+// La nota se calcula siempre desde cero; el suelo de 0 se aplica solo al resultado final.
+// Los ejercicios de un tipo ya superado son de práctica: ni suman ni restan.
+const TIPOS=['a','b','c'];
+const TIPO_NOMBRE={a:'A · Un valor crítico (SI)',b:'B · Un valor crítico (SCI)',c:'C · Dos valores críticos'};
+const SOL_TIPO={SC:'unica',SCI:'infinitas',SI:'ninguna'};
+const PUNTO_POR_TIPO=10/TIPOS.length,PENALIZACION_FALLO=0.5;
+const state={fallosTotales:0,inicio:Date.now(),practicas:0,
+  tipos:{a:{ejercicios:0,fallos:0,superado:false},b:{ejercicios:0,fallos:0,superado:false},c:{ejercicios:0,fallos:0,superado:false}},
+  fases:{det:0,valores:0,general:0,rangos:0,clasif:0}};
+let cur={},ejNum=0;
+
+function calcularNota(){
+  const sup=TIPOS.filter(k=>state.tipos[k].superado).length;
+  const bruta=sup*PUNTO_POR_TIPO-state.fallosTotales*PENALIZACION_FALLO;
+  return Math.round(Math.min(10,Math.max(0,bruta))*100)/100;
+}
+function fmtNota(n){return String(Math.round(n*100)/100).replace('.',',');}
+function actualizarUI(){
+  getEl('marcador-nota').textContent=fmtNota(calcularNota());
+  getEl('marcador-fallos').textContent=state.fallosTotales;
+  TIPOS.forEach(k=>{const c=getEl('chip-'+k);c.classList.toggle('ok',state.tipos[k].superado);c.textContent=(state.tipos[k].superado?'✓ ':'')+k.toUpperCase();});
+}
+function fallo(fase){
+  if(cur.practica)return;
+  state.fallosTotales++;state.tipos[cur.tipo].fallos++;state.fases[fase]++;
+  actualizarUI();
+}
+function penTxt(){return cur.practica?'':' −0,5 ptos.';}
+
+// ═════════ UTILIDADES ═════════
+function getEl(id){return document.getElementById(id);}
+function fmtS(v){const r=Math.round(v*1000)/1000;return String(Object.is(r,-0)?0:r).replace('.',',').replace('-','−');}
+function parseFrac(s){
+  if(s===null||s===undefined)return null;
+  s=String(s).trim().replace(/[−–]/g,'-');
+  if(s==='')return null;
+  // Solo enteros, decimales (coma o punto) y fracciones: rechaza "1e1", "0x10", "1 2"...
+  if(!/^[+-]?\s*\d+([.,]\d+)?(\s*\/\s*[+-]?\d+([.,]\d+)?)?$/.test(s))return null;
+  s=s.replace(/\s+/g,'');
+  if(s.includes('/')){
+    const p=s.split('/');
+    const n=Number(p[0].replace(',','.')),d=Number(p[1].replace(',','.'));
+    if(d===0)return null;return n/d;
+  }
+  return Number(s.replace(',','.'));
+}
+const eq=(a,b)=>Math.abs(a-b)<1e-6;
+function val(id){return parseFrac(getEl(id).value);}
+function allFilled(ids){return ids.every(id=>val(id)!==null);}
+function mark(id,ok){const el=getEl(id);if(!el)return;el.classList.remove('ok','err');el.classList.add(ok?'ok':'err');el.readOnly=false;}
+function lockInputs(sec){getEl(sec).querySelectorAll('input.mi').forEach(e=>e.readOnly=true);getEl(sec).querySelectorAll('select').forEach(e=>e.disabled=true);}
+function showFb(id,cls,html){const el=getEl(id);if(el){el.className='fb-inline '+cls;el.innerHTML=html;}}
+function secOk(id){const s=getEl(id);s.classList.remove('done-err');s.classList.add('done-ok');}
+function secErr(id){const s=getEl(id);s.classList.remove('done-ok');s.classList.add('done-err');}
+function unlock(id){const s=getEl(id);if(s){s.classList.remove('locked');s.removeAttribute('inert');}}
+function requireName(){
+  const nf=getEl('nombre');
+  if(nf.value.trim()){nf.classList.remove('falta');getEl('aviso-nombre').classList.remove('visible');return true;}
+  nf.classList.add('falta');getEl('aviso-nombre').classList.add('visible');nf.focus();return false;
+}
+getEl('nombre').addEventListener('input',()=>{if(getEl('nombre').value.trim()){getEl('nombre').classList.remove('falta');getEl('aviso-nombre').classList.remove('visible');}});
+// Evita penalizar dos veces un envío erróneo ya corregido (aunque se repita tras otros intentos).
+// Devuelve false si no hay que corregir.
+function nuevoEnvio(key,snap){
+  if(cur.sec[key]===1)return false;
+  const vistos=cur.snap[key]||(cur.snap[key]=new Set());
+  if(vistos.has(snap))return false;
+  vistos.add(snap);return true;
+}
+
+// ═════════ ÁLGEBRA ═════════
+// Cada elemento es [c0, c1] y representa c0 + c1·m.
+function det3(M){return M[0][0]*(M[1][1]*M[2][2]-M[1][2]*M[2][1])-M[0][1]*(M[1][0]*M[2][2]-M[1][2]*M[2][0])+M[0][2]*(M[1][0]*M[2][1]-M[1][1]*M[2][0]);}
+function evalA(P,m){return P.A.map(r=>r.map(e=>e[0]+e[1]*m));}
+function evalB(P,m){return P.b.map(e=>e[0]+e[1]*m);}
+function ampliada(P,m){const A=evalA(P,m),b=evalB(P,m);return A.map((r,i)=>[...r,b[i]]);}
+// |A| como polinomio a·m² + b·m + c (null si saliera de grado 3, que el generador descarta).
+function detPoly(P){const f=m=>det3(evalA(P,m));const f0=f(0),f1=f(1),fm=f(-1),f2=f(2);
+  const a=(f1+fm)/2-f0,b=(f1-fm)/2,c=f0;if(a*4+b*2+c!==f2)return null;return[a,b,c];}
+function polyEval(d,m){return d[0]*m*m+d[1]*m+d[2];}
+function menores2(M){const v=[];for(let r1=0;r1<3;r1++)for(let r2=r1+1;r2<3;r2++)for(let c1=0;c1<3;c1++)for(let c2=c1+1;c2<3;c2++)v.push(M[r1][c1]*M[r2][c2]-M[r1][c2]*M[r2][c1]);return v;}
+function rango(M){
+  const n=M[0].length;
+  for(let a=0;a<n;a++)for(let b=a+1;b<n;b++)for(let c=b+1;c<n;c++)if(det3(M.map(r=>[r[a],r[b],r[c]]))!==0)return 3;
+  for(let r1=0;r1<3;r1++)for(let r2=r1+1;r2<3;r2++)for(let c1=0;c1<n;c1++)for(let c2=c1+1;c2<n;c2++)if(M[r1][c1]*M[r2][c2]-M[r1][c2]*M[r2][c1]!==0)return 2;
+  return M.flat().some(v=>v!==0)?1:0;
+}
+// Orlados válidos: para cada par de columnas de A con algún menor 2×2 no nulo,
+// el determinante formado por esas dos columnas y la de términos independientes.
+function orlados(Am){
+  const out=[];
+  [[0,1],[0,2],[1,2]].forEach(([i,j])=>{
+    const tieneMenor=[[0,1],[0,2],[1,2]].some(([r1,r2])=>Am[r1][i]*Am[r2][j]-Am[r1][j]*Am[r2][i]!==0);
+    if(tieneMenor)out.push(det3(Am.map(r=>[r[i],r[j],r[3]])));
+  });
+  return out;
+}
+
+// ═════════ GENERADORES ═════════
+// a: |A| lineal, valor crítico → SI · b: |A| lineal, valor crítico → SCI
+// c: |A| de segundo grado con dos valores críticos enteros (patrón SI/SCI, SI/SI o SCI/SCI).
+// En todos: m aparece en A y, a veces, también en un término independiente.
+// Restricciones: valores críticos enteros (≠ 0 en a y b, |m₀| ≤ 4), rg(A) = 2 en cada valor crítico,
+// coeficientes pequeños y como mucho dos ceros en la parte fija de A.
+function gen(tipo,patron){
+  for(let k=0;k<300000;k++){
+    const P={A:[0,1,2].map(()=>[0,1,2].map(()=>[ri(-3,3),0]))};
+    let pos;
+    if(tipo==='c'){const i1=ri(0,2),j1=ri(0,2);let i2,j2;do{i2=ri(0,2);j2=ri(0,2);}while(i2===i1||j2===j1);pos=[[i1,j1],[i2,j2]];}
+    else pos=[[ri(0,2),ri(0,2)]];
+    pos.forEach(([i,j])=>{P.A[i][j][1]=pick([1,1,-1]);if(rand()<0.55)P.A[i][j][0]=0;});
+    if(P.A.flat().filter(e=>e[0]===0&&e[1]===0).length>2)continue;
+    if(P.A.some(r=>r.every(e=>e[0]===0&&e[1]===0)))continue;
+    P.b=[0,1,2].map(()=>[ri(-5,5),0]);
+    if(rand()<0.45){const i=ri(0,2);P.b[i][1]=pick([1,1,-1]);if(rand()<0.5)P.b[i][0]=0;}
+    if(P.b.every(e=>e[0]===0&&e[1]===0))continue;
+    const d=detPoly(P);if(!d)continue;
+    const[a,b,c]=d;let raices;
+    if(tipo==='c'){
+      if(a===0||Math.abs(a)>3||Math.abs(b)>16||Math.abs(c)>20)continue;
+      const D=b*b-4*a*c;if(D<=0)continue;const s=Math.round(Math.sqrt(D));if(s*s!==D)continue;
+      const r1=(-b-s)/(2*a),r2=(-b+s)/(2*a);
+      if(!Number.isInteger(r1)||!Number.isInteger(r2))continue;
+      raices=[r1,r2].sort((x,y)=>x-y);
+      if(raices.some(r=>Math.abs(r)>4))continue;
+    }else{
+      if(a!==0||b===0||Math.abs(b)>8||Math.abs(c)>20||c%b!==0)continue;
+      const r=-c/b;if(r===0||Math.abs(r)>4)continue;raices=[r];
+    }
+    let malo=false;
+    const casos=raices.map(r=>{if(rango(evalA(P,r))!==2)malo=true;return rango(ampliada(P,r))===2?'SCI':'SI';});
+    if(malo)continue;
+    if(tipo==='a'&&casos[0]!=='SI')continue;
+    if(tipo==='b'&&casos[0]!=='SCI')continue;
+    if(tipo==='c'){
+      const key=[...casos].sort().join('/');
+      if(patron==='mixto'&&key!=='SCI/SI')continue;
+      if(patron==='SI'&&key!=='SI/SI')continue;
+      if(patron==='SCI'&&key!=='SCI/SCI')continue;
+    }
+    return{P,det:d,raices,casos};
+  }
+  return null;
+}
+function generar(tipo){
+  const patron=tipo==='c'?pick(['mixto','mixto','mixto','SI','SI','SCI']):null;
+  let g=gen(tipo,patron);
+  if(!g&&tipo==='c')g=gen('c','SI');
+  return g;
+}
+
+// Tipo del siguiente ejercicio: los pendientes pesan 3 y los superados 1,
+// para que la discusión no se vuelva previsible.
+function elegirTipo(){
+  const w=TIPOS.map(k=>state.tipos[k].superado?1:3),tot=w.reduce((x,y)=>x+y,0);
+  let r=rand()*tot;for(let i=0;i<3;i++){r-=w[i];if(r<0)return TIPOS[i];}return TIPOS[2];
+}
+
+// ═════════ PRESENTACIÓN ═════════
+const M_='<i class="mpar">m</i>';
+// Expresión c0 + c1·m, sin signo inicial forzado (para términos independientes y matrices).
+function linStr(c0,c1){
+  if(c1===0)return fmtS(c0);
+  const mm=(c1===1?'':c1===-1?'−':fmtS(c1))+M_;
+  if(c0===0)return mm;
+  if(c1>0)return`${mm} ${c0>0?'+':'−'} ${fmtS(Math.abs(c0))}`;
+  return`${fmtS(c0)} − ${(Math.abs(c1)===1?'':fmtS(Math.abs(c1)))+M_}`;
+}
+// Término de una ecuación: devuelve el texto con su signo y si se ha escrito algo.
+function termStr(e,v,first){
+  const[c0,c1]=e;if(c0===0&&c1===0)return'';
+  if(c1===0){
+    if(first)return c0===1?v:c0===-1?`−${v}`:`${fmtS(c0)}${v}`;
+    return c0===1?` + ${v}`:c0===-1?` − ${v}`:(c0>0?` + ${c0}${v}`:` − ${Math.abs(c0)}${v}`);
+  }
+  if(c0===0){ // k·m·v
+    const k=Math.abs(c1),body=(k===1?'':k)+M_+v;
+    if(first)return(c1<0?'−':'')+body;
+    return(c1<0?' − ':' + ')+body;
+  }
+  // (c0 + c1·m)·v ; si los dos son negativos, se saca el signo fuera
+  let neg=false,a0=c0,a1=c1;
+  if(c1<0&&c0<0){neg=true;a0=-c0;a1=-c1;}
+  const body=`(${linStr(a0,a1)})${v}`;
+  if(first)return(neg?'−':'')+body;
+  return(neg?' − ':' + ')+body;
+}
+function sysLine(P,i){
+  const vars=['<i>x</i>','<i>y</i>','<i>z</i>'];let s='',first=true;
+  for(let j=0;j<3;j++){const t=termStr(P.A[i][j],vars[j],first);if(t){s+=t;first=false;}}
+  if(first)s='0';
+  const[b0,b1]=P.b[i];
+  return`${s} = ${linStr(b0,b1)}`;
+}
+function dispMat(M){
+  let h='<div class="matriz"><div class="mgrid">';
+  M.forEach(r=>r.forEach((v,j)=>{if(j===3)h+='<span class="vsep"></span>';h+=`<span class="mval">${fmtS(v)}</span>`;}));
+  return h+'</div></div>';
+}
+function inp(id,aria,w){return`<input class="mi" id="${id}" type="text" inputmode="decimal" autocomplete="off" placeholder="?" aria-label="${aria}"${w?` style="width:${w}px"`:''}>`;}
+function selTipo(id){return`<select id="${id}" class="sel"><option value="">— Elige —</option><option value="SC">SC · Compatible determinado</option><option value="SCI">SCI · Compatible indeterminado</option><option value="SI">SI · Incompatible</option></select>`;}
+function selSol(id){return`<select id="${id}" class="sel"><option value="">— Elige —</option><option value="unica">Única</option><option value="infinitas">Infinitas</option><option value="ninguna">Ninguna</option></select>`;}
+function mIgual(r){return`${M_} = ${fmtS(r)}`;}
+function mDistinto(){return cur.raices.map(r=>`${M_} ≠ ${fmtS(r)}`).join(' y ');}
+
+// ═════════ CARGA DE EJERCICIO ═════════
+function loadEj(){
+  ejNum++;
+  const tipo=elegirTipo();
+  let g=generar(tipo);
+  while(!g)g=generar(tipo); // en las pruebas nunca hace falta reintentar
+  const practica=state.tipos[tipo].superado;
+  cur={tipo,P:g.P,det:g.det,raices:g.raices,casos:g.casos,practica,completo:false,
+    sec:{det:0,val:0,genR:0,genC:0},snap:{},fallosDet:0};
+  g.raices.forEach((_,k)=>{cur.sec['cR'+k]=0;cur.sec['cC'+k]=0;});
+  if(practica)state.practicas++;else state.tipos[tipo].ejercicios++;
+
+  const P=cur.P;
+  getEl('ex').innerHTML=`
+  <div class="ejercicio-card">
+    <div class="ej-head"><h2>Ejercicio ${ejNum}</h2><span class="card-tag">Rouché-Frobenius · Parámetro ${M_}</span>${practica?'<span class="card-tag practica" title="Ya has superado este tipo">Práctica · no puntúa</span>':''}</div>
+    <p>Discute el siguiente sistema según los valores del parámetro ${M_}:</p>
+    <div class="sys-wrap"><span class="llave" aria-hidden="true">{</span><div>
+      ${[0,1,2].map(i=>`<div class="sys-line">${sysLine(P,i)}</div>`).join('')}
+    </div></div>
+
+    <div class="section" id="sec-det" data-verify="det">
+      <div class="section-title">Apartado 1 — Determinante de la matriz de coeficientes</div>
+      <p class="instr">Calcula |A| en función de ${M_} (por Sarrus o desarrollando por la fila o columna donde aparece ${M_}). Recuerda que A no incluye la columna de términos independientes. Si no hay término en ${M_}² o en ${M_}, escribe 0.</p>
+      <div class="poly"><span>|A| =</span>${inp('d2','Coeficiente de m al cuadrado')}<span>${M_}² +</span>${inp('d1','Coeficiente de m')}<span>${M_} +</span>${inp('d0','Término independiente')}</div>
+      <div class="brow"><button class="btn-primario" onclick="verifyDet()">✓ Verificar determinante</button></div>
+      <div class="fb-inline" id="fb-det" aria-live="polite"></div>
+    </div>
+
+    <div class="section locked" id="sec-val" inert data-verify="val">
+      <div class="section-title">Apartado 2 — Valores críticos: |A| = 0</div>
+      <p class="instr" id="val-instr">Iguala el determinante a cero y despeja ${M_}.</p>
+      <div class="fila-campos" id="val-campos"></div>
+      <div class="brow"><button class="btn-primario" onclick="verifyVal()">✓ Verificar valores</button></div>
+      <div class="fb-inline" id="fb-val" aria-live="polite"></div>
+    </div>
+
+    <div id="zona-casos"></div>
+    <div class="fb-global" id="fb-global" aria-live="polite"></div>
+    <div class="brow ej-acciones">
+      <button class="btn-secundario" id="btn-cambiar" onclick="loadEj()">↻ Cambiar de ejercicio</button>
+      <button class="btn-primario" id="btn-next" style="display:none" onclick="loadEj()">Siguiente ejercicio →</button>
+    </div>
+  </div>`;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ═════════ AP 1: DETERMINANTE ═════════
+function verifyDet(){
+  if(!requireName())return;
+  const ids=['d2','d1','d0'];
+  if(!allFilled(ids)){showFb('fb-det','hint','⚠️ Completa los tres coeficientes (escribe 0 si un término no aparece).');return;}
+  const v=ids.map(val);
+  if(!nuevoEnvio('det',JSON.stringify(v)))return;
+  const d=cur.det,ok=v.map((x,i)=>eq(x,d[i]));
+  ids.forEach((id,i)=>mark(id,ok[i]));
+  if(ok.every(Boolean)){
+    cur.sec.det=1;secOk('sec-det');lockInputs('sec-det');
+    const grado=d[0]!==0?2:1;
+    showFb('fb-det','ok',`✓ Determinante correcto: |A| = ${polyTxt(d)}.<p>${grado===2
+      ?`${M_} aparece en dos elementos de A que no están en la misma fila ni en la misma columna; por eso uno de los productos de Sarrus los multiplica y aparece ${M_}².`
+      :`${M_} aparece en un solo elemento de A, así que cada producto de Sarrus lo contiene como mucho una vez: el determinante es de primer grado.`}</p>`);
+    prepararValores();unlock('sec-val');
+    return;
+  }
+  cur.sec.det=-1;cur.fallosDet++;fallo('det');secErr('sec-det');
+  let m=`✗ Incorrecto.${penTxt()} Corrige los coeficientes en rojo y vuelve a verificar.`;
+  if(v.every((x,i)=>eq(x,-d[i]))&&d.some(x=>x!==0))
+    m+='<p><b>Tienes todo el determinante con el signo cambiado.</b> En la regla de Sarrus, los tres productos paralelos a la diagonal principal suman y los tres paralelos a la diagonal secundaria restan. Si desarrollas por adjuntos, recuerda el signo (−1)<sup>i+j</sup> de cada posición.</p>';
+  else{
+    if(!ok[0]){
+      m+=d[0]===0
+        ?`<p><b>No puede haber término en ${M_}²:</b> ${M_} aparece en un único elemento de A y ningún producto de Sarrus lo multiplica por sí mismo.</p>`
+        :`<p><b>Revisa el término en ${M_}²:</b> ${M_} aparece en dos elementos de A que no comparten fila ni columna, así que hay un producto de Sarrus que los multiplica. Busca cuál es y qué otro elemento lo acompaña.</p>`;
+    }
+    if(!ok[2])m+=`<p><b>Término independiente:</b> es el valor de |A| cuando ${M_} = 0. Compruébalo calculando el determinante numérico que se obtiene al sustituir ${M_} = 0.</p>`;
+    if(!ok[1])m+=`<p><b>Coeficiente de ${M_}:</b> agrupa todos los productos que contienen ${M_} una sola vez, con su signo. Comprobación rápida: al sustituir ${M_} = 1, |A| debe valer la suma de tus tres coeficientes.</p>`;
+  }
+  if(cur.fallosDet>=2)m+=`<p>💡 Pista: con ${M_} = 1, el determinante vale ${fmtS(polyEval(cur.det,1))}; con ${M_} = −1, vale ${fmtS(polyEval(cur.det,-1))}. Úsalo para comprobar tu polinomio.</p>`;
+  showFb('fb-det','err',m);
+}
+function polyTxt(d){
+  const parts=[];
+  if(d[0]!==0)parts.push({c:d[0],t:M_+'²'});
+  if(d[1]!==0)parts.push({c:d[1],t:M_});
+  if(d[2]!==0||parts.length===0)parts.push({c:d[2],t:''});
+  return parts.map((p,i)=>{
+    const ab=Math.abs(p.c),coef=(p.t&&ab===1)?'':fmtS(ab);
+    const sg=p.c<0?(i===0?'−':' − '):(i===0?'':' + ');
+    return sg+coef+p.t;
+  }).join('');
+}
+
+// ═════════ AP 2: VALORES CRÍTICOS ═════════
+function prepararValores(){
+  const n=cur.raices.length;
+  getEl('val-instr').innerHTML=n===2
+    ?`Resuelve la ecuación ${polyTxt(cur.det)} = 0. Al ser de segundo grado, escribe sus dos soluciones (en cualquier orden).`
+    :`Resuelve la ecuación ${polyTxt(cur.det)} = 0 y escribe el valor de ${M_}.`;
+  getEl('val-campos').innerHTML=cur.raices.map((_,k)=>`<div class="campo"><span class="lbl">${M_}${n===2?`<sub>${k+1}</sub>`:''} =</span>${inp('v'+k,'Valor crítico '+(k+1))}</div>`).join('');
+}
+function verifyVal(){
+  if(!requireName())return;
+  const ids=cur.raices.map((_,k)=>'v'+k);
+  if(!allFilled(ids)){showFb('fb-val','hint',`⚠️ Escribe ${ids.length===2?'los dos valores':'el valor'} de ${M_} antes de verificar.`);return;}
+  const v=ids.map(val);
+  if(!nuevoEnvio('val',JSON.stringify(v)))return;
+  const R=[...cur.raices],used=[false,false];
+  const ok=v.map(x=>{const i=R.findIndex((r,j)=>!used[j]&&eq(r,x));if(i>=0){used[i]=true;return true;}return false;});
+  ids.forEach((id,i)=>mark(id,ok[i]));
+  if(ok.every(Boolean)){
+    cur.sec.val=1;secOk('sec-val');lockInputs('sec-val');
+    showFb('fb-val','ok',`✓ Correcto. ${R.length===2?`Los valores críticos son ${M_} = ${fmtS(R[0])} y ${M_} = ${fmtS(R[1])}`:`El valor crítico es ${M_} = ${fmtS(R[0])}`}: solo en ${R.length===2?'ellos':'él'} se anula |A|. La discusión se divide en ${R.length+1} casos.`);
+    construirCasos();
+    return;
+  }
+  cur.sec.val=-1;fallo('valores');secErr('sec-val');
+  let m=`✗ Incorrecto.${penTxt()} Revisa los valores en rojo.`;
+  v.forEach((x,i)=>{
+    if(ok[i])return;
+    const fx=polyEval(cur.det,x);
+    if(eq(fx,0))m+=`<p>${M_} = ${fmtS(x)} sí anula |A|, pero ya lo has escrito en el otro campo. La ecuación tiene dos soluciones distintas: falta la otra.</p>`;
+    else if(R.some(r=>eq(r,-x)))m+=`<p>Con ${M_} = ${fmtS(x)}, |A| = ${fmtS(fx)} ≠ 0. Revisa los <b>signos al despejar</b>: al pasar un término al otro miembro, cambia de signo.</p>`;
+    else m+=`<p>Con ${M_} = ${fmtS(x)}, |A| = ${fmtS(fx)} ≠ 0, así que no es solución. Sustituye siempre tu resultado en el polinomio para comprobarlo.</p>`;
+  });
+  if(R.length===2)m+=`<p>Para resolver ${polyTxt(cur.det)} = 0, usa la fórmula de la ecuación de segundo grado o, si puedes, saca factor común o factoriza.</p>`;
+  showFb('fb-val','err',m);
+}
+
+// ═════════ CASOS ═════════
+function construirCasos(){
+  const R=cur.raices;
+  let h=`
+  <div class="caso" id="caso-gen">
+    <div class="caso-titulo">Caso 1 · ${mDistinto()}</div>
+    <div class="section" id="sec-genR" data-verify="genR">
+      <div class="section-title">Rangos y número de incógnitas</div>
+      <p class="instr">Para estos valores de ${M_}, |A| ≠ 0. Indica los rangos y el número de incógnitas.</p>
+      <div class="fila-campos">
+        <div class="campo"><label for="g-rgA">rg(A) =</label>${inp('g-rgA','Rango de A')}</div>
+        <div class="campo"><label for="g-rgAm">rg(A*) =</label>${inp('g-rgAm','Rango de la ampliada')}</div>
+        <div class="campo"><label for="g-n">n.º de incógnitas =</label>${inp('g-n','Número de incógnitas')}</div>
+      </div>
+      <div class="brow"><button class="btn-primario" onclick="verifyGenR()">✓ Verificar rangos</button></div>
+      <div class="fb-inline" id="fb-genR" aria-live="polite"></div>
+    </div>
+    <div class="section locked" id="sec-genC" inert data-verify="genC">
+      <div class="section-title">Clasificación (teorema de Rouché-Frobenius)</div>
+      <div class="disc-grid">
+        <label for="g-tipo">Tipo de sistema</label>${selTipo('g-tipo')}
+        <label for="g-sol">Número de soluciones</label>${selSol('g-sol')}
+      </div>
+      <div class="brow"><button class="btn-primario" onclick="verifyGenC()">✓ Verificar clasificación</button></div>
+      <div class="fb-inline" id="fb-genC" aria-live="polite"></div>
+    </div>
+  </div>`;
+  R.forEach((r,k)=>{
+    h+=`
+  <div class="caso locked" id="caso-${k}" inert>
+    <div class="caso-titulo">Caso ${k+2} · ${mIgual(r)}</div>
+    <div class="section" id="sec-cR${k}" data-verify="cR" data-k="${k}">
+      <div class="section-title">Rangos con menores</div>
+      <p class="instr">Sustituye ${M_} = ${fmtS(r)} en la matriz ampliada (también en los términos independientes, si aparece ${M_}). Elige un menor de orden 2 de A distinto de 0 y después órlalo con la fila que falta y la columna de términos independientes.</p>
+      <div class="fila-campos">
+        <div class="campo"><label for="c${k}-rgA">rg(A) =</label>${inp(`c${k}-rgA`,'Rango de A')}</div>
+        <div class="campo"><label for="c${k}-cols">columnas de tu menor:</label><select id="c${k}-cols" class="sel" style="min-width:150px"><option value="">— Elige —</option><option value="0,1">las de x e y</option><option value="0,2">las de x y z</option><option value="1,2">las de y y z</option></select></div>
+        <div class="campo"><label for="c${k}-men">valor del menor =</label>${inp(`c${k}-men`,'Valor del menor de orden 2')}</div>
+      </div>
+      <div class="fila-campos">
+        <div class="campo"><label for="c${k}-orl">valor del orlado con la columna b =</label>${inp(`c${k}-orl`,'Valor del menor orlado')}</div>
+        <div class="campo"><label for="c${k}-rgAm">rg(A*) =</label>${inp(`c${k}-rgAm`,'Rango de la ampliada')}</div>
+      </div>
+      <div class="brow"><button class="btn-primario" onclick="verifyCR(${k})">✓ Verificar rangos</button></div>
+      <div class="fb-inline" id="fb-cR${k}" aria-live="polite"></div>
+    </div>
+    <div class="section locked" id="sec-cC${k}" inert data-verify="cC" data-k="${k}">
+      <div class="section-title">Clasificación (teorema de Rouché-Frobenius)</div>
+      <div class="disc-grid">
+        <label for="c${k}-tipo">Tipo de sistema</label>${selTipo(`c${k}-tipo`)}
+        <label for="c${k}-sol">Número de soluciones</label>${selSol(`c${k}-sol`)}
+      </div>
+      <div class="brow"><button class="btn-primario" onclick="verifyCC(${k})">✓ Verificar clasificación</button></div>
+      <div class="fb-inline" id="fb-cC${k}" aria-live="polite"></div>
+    </div>
+  </div>`;
+  });
+  getEl('zona-casos').innerHTML=h;
+}
+
+// ── Caso general ──
+function verifyGenR(){
+  if(!requireName())return;
+  const ids=['g-rgA','g-rgAm','g-n'];
+  if(!allFilled(ids)){showFb('fb-genR','hint','⚠️ Completa los tres campos antes de verificar.');return;}
+  const[a,am,n]=ids.map(val);
+  if(!nuevoEnvio('genR',JSON.stringify([a,am,n])))return;
+  const ok=[a===3,am===3,n===3];ids.forEach((id,i)=>mark(id,ok[i]));
+  if(ok.every(Boolean)){
+    cur.sec.genR=1;secOk('sec-genR');lockInputs('sec-genR');
+    showFb('fb-genR','ok',`✓ Correcto. Como |A| ≠ 0, A tiene un menor de orden 3 no nulo: rg(A) = 3. A* contiene a A y solo tiene 3 filas, así que rg(A*) = 3.`);
+    unlock('sec-genC');return;
+  }
+  cur.sec.genR=-1;fallo('general');secErr('sec-genR');
+  let m=`✗ Incorrecto.${penTxt()} Revisa los campos en rojo.`;
+  if(!ok[0])m+=`<p><b>rg(A):</b> si ${mDistinto()}, entonces |A| ≠ 0. Un determinante de orden 3 no nulo es un menor de orden 3 no nulo, así que rg(A) = 3.</p>`;
+  if(!ok[1])m+='<p><b>rg(A*):</b> A* tiene 3 filas, así que su rango no puede pasar de 3; y contiene todas las columnas de A, así que rg(A*) ≥ rg(A).</p>';
+  if(!ok[2])m+='<p><b>Incógnitas:</b> cuéntalas en el sistema: <i>x</i>, <i>y</i>, <i>z</i>.</p>';
+  showFb('fb-genR','err',m);
+}
+function verifyGenC(){ verifyClasif('g-tipo','g-sol','genC','fb-genC','sec-genC','SC',
+  `rg(A) = rg(A*) = 3 = n.º de incógnitas: el sistema es compatible determinado y tiene una única solución para cada valor de ${M_} en este caso.`,
+  ()=>{for(let k=0;k<cur.raices.length;k++)unlock('caso-'+k);}); }
+
+// ── Valores críticos ──
+function verifyCR(k){
+  if(!requireName())return;
+  const r=cur.raices[k],ids=[`c${k}-rgA`,`c${k}-men`,`c${k}-orl`,`c${k}-rgAm`],selC=getEl(`c${k}-cols`);
+  if(!allFilled(ids)||!selC.value){showFb('fb-cR'+k,'hint','⚠️ Completa los cuatro campos y elige las columnas de tu menor antes de verificar.');return;}
+  const[a,men,orl,am]=ids.map(val),[ci,cj]=selC.value.split(',').map(Number);
+  if(!nuevoEnvio('cR'+k,JSON.stringify([a,ci,cj,men,orl,am])))return;
+  const Am=ampliada(cur.P,r),A=Am.map(x=>x.slice(0,3)),esSI=cur.casos[k]==='SI';
+  // Menores de orden 2 de A en las columnas elegidas, y su orlado con la columna b (las tres filas).
+  const mensCols=[[0,1],[0,2],[1,2]].map(([r1,r2])=>A[r1][ci]*A[r2][cj]-A[r1][cj]*A[r2][ci]);
+  const okCols=mensCols.some(x=>x!==0);
+  const orlVal=det3(Am.map(f=>[f[ci],f[cj],f[3]]));
+  const okA=a===2;
+  const okMen=okCols&&!eq(men,0)&&mensCols.some(x=>x!==0&&eq(Math.abs(x),Math.abs(men)));
+  const okOrl=okCols&&eq(Math.abs(orl),Math.abs(orlVal));
+  const okAm=am===(esSI?3:2);
+  [okA,okMen,okOrl,okAm].forEach((o,i)=>mark(ids[i],o));
+  selC.classList.remove('ok','err');selC.classList.add(okCols?'ok':'err');
+  if(okA&&okMen&&okOrl&&okAm){
+    cur.sec['cR'+k]=1;secOk('sec-cR'+k);lockInputs('sec-cR'+k);
+    showFb('fb-cR'+k,'ok',`✓ Rangos correctos.<p>${esSI
+      ?`Hay un menor de orden 2 no nulo y |A| = 0, así que rg(A) = 2. Su orlado con la columna de términos independientes vale ${fmtS(orlVal)} ≠ 0: A* tiene un menor de orden 3 no nulo y rg(A*) = 3.`
+      :`Hay un menor de orden 2 no nulo y |A| = 0, así que rg(A) = 2. Su orlado con la columna de términos independientes también vale 0, de modo que la columna b es combinación de las de A y rg(A*) = 2.`}</p>`);
+    unlock('sec-cC'+k);return;
+  }
+  cur.sec['cR'+k]=-1;fallo('rangos');secErr('sec-cR'+k);
+  cur.fallosCR=cur.fallosCR||{};cur.fallosCR[k]=(cur.fallosCR[k]||0)+1;
+  let m=`✗ Incorrecto.${penTxt()} Revisa los campos en rojo.`;
+  if(!okA){
+    if(a===3)m+=`<p><b>rg(A):</b> para ${mIgual(r)}, |A| = 0, así que A no tiene ningún menor de orden 3 no nulo: rg(A) &lt; 3.</p>`;
+    else m+='<p><b>rg(A):</b> si encuentras un menor de orden 2 distinto de 0, rg(A) es al menos 2.</p>';
+  }
+  if(!okCols)m+='<p><b>Columnas:</b> en esas dos columnas todos los menores de orden 2 valen 0 (las columnas son proporcionales). Elige otro par de columnas.</p>';
+  else if(!okMen){
+    if(eq(men,0))m+='<p><b>Menor:</b> un menor que vale 0 no demuestra nada sobre el rango. Elige dos filas con las que el menor sea distinto de 0.</p>';
+    else m+=`<p><b>Menor:</b> ese valor no coincide con ningún menor de orden 2 de esas columnas para ${mIgual(r)}. Revisa la sustitución de ${M_} y el cálculo a·d − b·c.</p>`;
+  }
+  if(okCols&&!okOrl)m+=`<p><b>Orlado:</b> el valor no es correcto. Se forma con las dos columnas de tu menor y la columna de términos independientes, usando las tres filas. Si usaras la columna de A que falta, obtendrías |A|, que para este valor de ${M_} es 0 y no informa sobre A*.${cur.P.b.some(e=>e[1]!==0)?` Recuerda que ${M_} también aparece en los términos independientes.`:''}</p>`;
+  if(!okAm){
+    if(okOrl)m+=`<p><b>rg(A*):</b> ${esSI?'el orlado es ≠ 0, así que A* tiene un menor de orden 3 no nulo: rg(A*) = 3.':'el orlado de tu menor con la columna b es 0, así que rg(A*) no llega a 3: es igual a rg(A).'}</p>`;
+    else m+='<p><b>rg(A*):</b> se decide con el valor del orlado: si es ≠ 0, rg(A*) = 3; si es 0, rg(A*) = rg(A) = 2.</p>';
+  }
+  if(cur.fallosCR[k]>=2)m+=`<p>💡 Para ${mIgual(r)}, la matriz ampliada queda:</p>${dispMat(Am)}`;
+  showFb('fb-cR'+k,'err',m);
+}
+function verifyCC(k){
+  const tipo=cur.casos[k],r=cur.raices[k];
+  verifyClasif(`c${k}-tipo`,`c${k}-sol`,'cC'+k,'fb-cC'+k,'sec-cC'+k,tipo,
+    tipo==='SI'
+      ?`rg(A) = 2 ≠ rg(A*) = 3: para ${mIgual(r)} el sistema es incompatible y no tiene solución.`
+      :`rg(A) = rg(A*) = 2 &lt; 3: para ${mIgual(r)} el sistema es compatible indeterminado. Tiene infinitas soluciones, que dependen de 3 − 2 = 1 parámetro.`,
+    null);
+}
+
+// ── Clasificación común ──
+function verifyClasif(idT,idS,key,fb,sec,correcto,explic,alAcertar){
+  if(!requireName())return;
+  const st=getEl(idT),ss=getEl(idS),t=st.value,s=ss.value;
+  if(!t||!s){showFb(fb,'hint','⚠️ Elige el tipo de sistema y el número de soluciones antes de verificar.');return;}
+  if(!nuevoEnvio(key,t+'|'+s))return;
+  const okT=t===correcto,okS=s===SOL_TIPO[correcto];
+  st.classList.remove('ok','err');ss.classList.remove('ok','err');
+  st.classList.add(okT?'ok':'err');ss.classList.add(okS?'ok':'err');
+  if(okT&&okS){
+    cur.sec[key]=1;secOk(sec);st.disabled=true;ss.disabled=true;
+    showFb(fb,'ok',`✓ Correcto.<p>${explic}</p>`);
+    if(alAcertar)alAcertar();
+    comprobarFin();return;
+  }
+  cur.sec[key]=-1;fallo('clasif');secErr(sec);
+  let m=`✗ Incorrecto.${penTxt()} Revisa tu elección.`;
+  if(SOL_TIPO[t]!==s)m+='<p><b>Tu respuesta es incoherente:</b> un sistema SC tiene solución única; uno SCI, infinitas; y uno SI, ninguna.</p>';
+  if(!okT){
+    if(correcto==='SI'&&t==='SCI')m+='<p><b>Error muy frecuente:</b> que |A| = 0 no significa que el sistema sea compatible indeterminado. Para ser SCI hace falta además que rg(A*) = rg(A). Aquí los rangos son distintos.</p>';
+    else if(correcto==='SCI'&&t==='SI')m+='<p>Los rangos de A y A* coinciden. Según el teorema de Rouché-Frobenius, cuando rg(A) = rg(A*) el sistema es compatible: sí tiene solución.</p>';
+    else if(correcto==='SCI'&&t==='SC')m+='<p>rg(A) = rg(A*) garantiza solución, pero solo es única si el rango coincide con el número de incógnitas (3). Aquí el rango es 2.</p>';
+    else if(correcto==='SC')m+='<p>Los rangos coinciden y valen 3, igual que el número de incógnitas: el sistema es compatible y la solución es única.</p>';
+    else if(correcto==='SI')m+='<p>Compara los rangos que has obtenido: el sistema solo tiene solución cuando rg(A) = rg(A*).</p>';
+  }
+  showFb(fb,'err',m);
+}
+
+// ═════════ FIN DE EJERCICIO ═════════
+function comprobarFin(){
+  const s=cur.sec;
+  if(!Object.values(s).every(v=>v===1)||cur.completo)return;
+  cur.completo=true;
+  const R=cur.raices,g=getEl('fb-global');
+  const filas=[`<tr><td>${mDistinto()}</td><td>3</td><td>3</td><td>SC · única solución</td></tr>`]
+    .concat(R.map((r,k)=>`<tr><td>${mIgual(r)}</td><td>2</td><td>${cur.casos[k]==='SI'?3:2}</td><td>${cur.casos[k]==='SI'?'SI · sin solución':'SCI · infinitas soluciones'}</td></tr>`));
+  const tabla=`<table class="res-tabla"><tr><th>Valores de ${M_}</th><th>rg(A)</th><th>rg(A*)</th><th>Sistema</th></tr>${filas.join('')}</table>`;
+  if(cur.practica){
+    g.className='fb-global practica';
+    g.innerHTML=`✔ <b>Ejercicio de práctica completado.</b> Resumen de la discusión:${tabla}`;
+  }else{
+    state.tipos[cur.tipo].superado=true;actualizarUI();
+    const todos=TIPOS.every(k=>state.tipos[k].superado),pend=TIPOS.filter(k=>!state.tipos[k].superado).map(k=>k.toUpperCase());
+    g.className='fb-global ok';
+    g.innerHTML=`🎉 <b>¡Tipo ${cur.tipo.toUpperCase()} superado!</b> Resumen de la discusión:${tabla}`
+      +(todos?'Has superado los tres tipos. Pulsa <b>«🏁 Finalizar y Calificar»</b> para ver tu informe.'
+             :`Te ${pend.length===1?'falta':'faltan'} por superar: <b>${pend.join(', ')}</b>.`);
+  }
+  getEl('btn-cambiar').style.display='none';
+  getEl('btn-next').style.display='';
+  g.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+// ═════════ MODAL / INFORME ═════════
+function openModal(){
+  if(!requireName())return;
+  const name=getEl('nombre').value.trim(),now=new Date(),nota=calcularNota();
+  const fecha=now.toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const hora=now.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const minTot=Math.ceil(Math.max(1,now-state.inicio)/60000);
+  const hh=String(Math.floor(minTot/60)).padStart(2,'0'),mm=String(minTot%60).padStart(2,'0');
+  let bg,col;
+  document.body.classList.remove('success-mode');
+  if(nota>=10){bg='#1a7a1a';col='white';document.body.classList.add('success-mode');}
+  else if(nota>=9){bg='#6dbf6d';col='white';}else if(nota>=8){bg='#1a4f8a';col='white';}
+  else if(nota>=7){bg='#5b9bd5';col='white';}else if(nota>=6){bg='#c05c00';col='white';}
+  else if(nota>=5){bg='#f5a623';col='black';}else{bg='#c0392b';col='white';}
+  const box=getEl('modal-box');box.style.background=bg;box.style.color=col;
+  getEl('modal-close').style.color=col;
+  getEl('modal-ficha').textContent=document.querySelector('.titulo-ficha').textContent;
+  getEl('modal-sub').textContent=document.querySelector('.subtitulo').textContent;
+  getEl('modal-nombre').textContent=name;
+  getEl('modal-nota').textContent=fmtNota(nota)+' / 10';
+  getEl('modal-data').innerHTML=`<div><b>Fecha:</b> ${fecha}</div><div><b>Hora:</b> ${hora}</div><div><b>Tiempo empleado:</b> ${hh}:${mm}</div><div><b>Tipos superados:</b> ${TIPOS.filter(k=>state.tipos[k].superado).length} / 3 &nbsp;·&nbsp; <b>Fallos:</b> ${state.fallosTotales}</div>`;
+  const tb=getEl('modal-tipos');tb.classList.toggle('oscuro',col==='black');
+  tb.innerHTML='<tr><th>Tipo</th><th>Estado</th><th>Ejercicios</th><th>Fallos</th></tr>'
+    +TIPOS.map(k=>{const t=state.tipos[k];return`<tr><td>${TIPO_NOMBRE[k]}</td><td>${t.superado?'✓ Superado':'✗ No superado'}</td><td>${t.ejercicios}</td><td>${t.fallos}</td></tr>`;}).join('');
+  const f=state.fases;
+  getEl('modal-fases').innerHTML=`<b>Fallos por fase:</b> determinante ${f.det} · valores críticos ${f.valores} · caso general ${f.general} · rangos en valores críticos ${f.rangos} · clasificación ${f.clasif}`
+    +(state.practicas?`<br><b>Ejercicios de práctica</b> (tipo ya superado, sin puntuación): ${state.practicas}`:'');
+  const btn=getEl('modal-btn');btn.style.color=col;btn.style.border='1.5px solid '+col;
+  getEl('modal-overlay').style.display='flex';
+  btn.focus();
+}
+function closeModal(){getEl('modal-overlay').style.display='none';const f=document.querySelector('.btn-finalizar');if(f)f.focus();}
+
+// ═════════ TECLADO ═════════
+document.addEventListener('keydown',e=>{
+  const modalAbierto=getEl('modal-overlay').style.display==='flex';
+  if(e.key==='Escape'&&modalAbierto){closeModal();return;}
+  if(e.key==='Tab'&&modalAbierto){e.preventDefault();(document.activeElement===getEl('modal-btn')?getEl('modal-close'):getEl('modal-btn')).focus();return;}
+  if(e.key!=='Enter')return;
+  const t=e.target;
+  if(t.id==='nombre'){e.preventDefault();return;}
+  if(!t.classList||!(t.classList.contains('mi')||t.classList.contains('sel')))return;
+  const sec=t.closest('.section');if(!sec)return;
+  const v=sec.dataset.verify,k=Number(sec.dataset.k);
+  const F={det:verifyDet,val:verifyVal,genR:verifyGenR,genC:verifyGenC,cR:()=>verifyCR(k),cC:()=>verifyCC(k)}[v];
+  if(F){e.preventDefault();F();}
+});
+
+actualizarUI();
+loadEj();
+</script>
+</body>
+</html>
