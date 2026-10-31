@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Método de Gauss — Ficha Interactiva</title>
+<script>
+window.MathJax={svg:{fontCache:'global'},tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},options:{skipHtmlTags:['script','noscript','style','textarea','input']}};
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap');
+:root{
+  --color-fondo:#F5F0E8;--color-fondo-card:#FDFAF3;--color-texto:#2C1F0E;--color-texto-suave:#6B4F35;
+  --color-acento:#A0522D;--color-acento-hover:#7B3B1E;--color-borde:#C9A96E;--color-borde-suave:#E0CEAA;
+  --color-cabecera:#3B2510;--color-cabecera-txt:#F5EDD8;--color-barra-alumno:#EFE4CC;
+  --color-correcto:#2E6B3E;--color-incorrecto:#8B1A1A;--color-neutro:#E8DFC8;
+  --color-apagado:#A8998A;--color-apagado-fondo:#F3EFE6;
+  --color-correcto-fondo:#EAF4EC;--color-incorrecto-fondo:#F9EAEA;
+  --color-pivote-fondo:#F6E3D6;--color-cero-fondo:#F4EBD6;
+  --w:56px;--h:36px;--gap:6px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Lato',sans-serif;font-size:16px;color:var(--color-texto);background:var(--color-fondo);min-height:100vh;transition:background-color .4s}
+body.ficha-diez{background:#d9eed9}
+h1,h2,h3{font-family:'Libre Baskerville',serif;color:var(--color-texto)}
+
+/* Cabecera: solo autoría */
+.cabecera{background:var(--color-cabecera);color:var(--color-cabecera-txt);font-family:'Libre Baskerville',serif;text-align:center;padding:12px 20px;border-bottom:3px solid var(--color-borde);font-size:.78rem;letter-spacing:.04em}
+
+.ficha-container{max-width:860px;margin:28px auto;background:var(--color-fondo-card);border:2px solid var(--color-borde);border-radius:6px;box-shadow:0 3px 12px rgba(44,31,14,.15);padding:32px 36px}
+.titulo-ficha{font-size:1.6rem;text-align:center;border-bottom:2px solid var(--color-borde);padding-bottom:10px;margin-bottom:8px}
+.titulo-ficha::after{content:'';display:block;width:60px;height:3px;background:var(--color-borde);margin:8px auto 0;border-radius:2px}
+.subtitulo{text-align:center;color:var(--color-texto-suave);font-size:.95rem;margin-bottom:18px;font-style:italic;font-family:'Libre Baskerville',serif}
+
+/* Barra del alumno */
+.barra{position:sticky;top:0;z-index:50;background:var(--color-barra-alumno);border:1.5px solid var(--color-borde);border-radius:6px;margin:0 0 22px;box-shadow:0 2px 6px rgba(44,31,14,.08);color:var(--color-texto);padding:9px 20px;display:flex;flex-wrap:wrap;gap:8px 24px;align-items:center;justify-content:center;font-size:.92rem}
+.barra label{font-family:'Libre Baskerville',serif;font-size:.85rem;color:var(--color-texto-suave)}
+.barra input#nombre{background:var(--color-fondo-card);border:1.5px solid var(--color-borde);border-radius:4px;padding:6px 10px;font-family:'Lato',sans-serif;font-size:.95rem;color:var(--color-texto);width:230px;max-width:60vw;outline:none}
+.barra input#nombre:focus{border-color:var(--color-acento)}
+.barra input#nombre.falta{border-color:var(--color-incorrecto);box-shadow:0 0 0 3px rgba(139,26,26,.18)}
+.barra .dato{color:var(--color-texto-suave)}
+.barra .dato b{color:var(--color-acento);font-family:'Libre Baskerville',serif}
+.aviso-nombre{color:var(--color-incorrecto);font-size:.82rem;font-weight:700;display:none;width:100%;text-align:center}
+.aviso-nombre.visible{display:block}
+
+/* Instrucciones */
+.instrucciones{background:var(--color-fondo);border:1px solid var(--color-borde-suave);border-radius:4px;padding:12px 18px;margin-bottom:22px;font-size:.88rem;color:var(--color-texto-suave);line-height:1.6}
+.instrucciones summary{cursor:pointer;font-family:'Libre Baskerville',serif;color:var(--color-texto);font-size:.9rem}
+.instrucciones ul{margin:8px 0 0 18px}
+
+/* Ejercicio */
+.ej-cabecera{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+.ej-cabecera h2{font-size:1.1rem}
+.etiqueta{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--color-texto-suave);border:1px solid var(--color-borde-suave);border-radius:20px;padding:2px 10px;background:var(--color-fondo)}
+.enunciado{margin:6px 0 4px;line-height:1.6}
+.sistema{display:inline-block;background:var(--color-fondo);border:1.5px solid var(--color-borde-suave);border-left:4px solid var(--color-borde);border-radius:4px;padding:10px 22px;margin:10px 0 6px;font-size:1.05rem}
+
+.apartado{background:var(--color-fondo);border:1.5px solid var(--color-borde-suave);border-left:4px solid var(--color-borde);border-radius:4px;padding:18px 22px;margin-top:18px;transition:opacity .25s,border-color .25s,background-color .25s}
+.apartado h3{font-size:.98rem;margin-bottom:6px}
+.apartado h3 .num{color:var(--color-acento)}
+.apartado .indic{font-size:.9rem;color:var(--color-texto-suave);line-height:1.55;margin-bottom:10px}
+.apartado .consejo{border-left:3px solid var(--color-borde);padding-left:10px}
+.apartado.bloqueado{opacity:.45}
+.apartado.bloqueado::before{content:'🔒 Se desbloquea al completar el apartado anterior';display:block;font-size:.78rem;color:var(--color-texto-suave);margin-bottom:6px}
+.apartado.ok{border-left-color:var(--color-correcto);background:#F1F7F0}
+.apartado.err{border-left-color:var(--color-incorrecto)}
+.apartado.revelado{border-left-color:var(--color-apagado);border-left-style:dashed;background:var(--color-apagado-fondo)}
+
+/* Matriz */
+.mbloque{display:flex;align-items:flex-start;gap:8px;margin:4px 0 2px;max-width:100%}
+.mlabs{display:grid;grid-template-rows:20px repeat(3,var(--h));row-gap:var(--gap);padding-top:8px;font-family:'Libre Baskerville',serif;font-size:.8rem;color:var(--color-texto-suave)}
+.mlabs span{display:flex;align-items:center;justify-content:flex-end}
+.mlabs span:first-child{visibility:hidden}
+.mhead,.matriz{display:grid;grid-template-columns:repeat(3,var(--w)) 2px var(--w);column-gap:var(--gap)}
+.mhead{height:20px;padding:0 12px;margin-bottom:var(--gap);font-family:'Libre Baskerville',serif;font-style:italic;font-size:.85rem;color:var(--color-texto-suave);text-align:center}
+.matriz{row-gap:var(--gap);padding:8px 12px;border-left:2px solid var(--color-texto-suave);border-right:2px solid var(--color-texto-suave);border-radius:14px}
+.msep{background:var(--color-texto-suave);align-self:stretch;margin:calc(var(--gap) / -2) 0}
+input.mi{width:var(--w);height:var(--h);text-align:center;background:var(--color-fondo-card);border:1.5px solid var(--color-borde);border-radius:4px;font-family:'Lato',sans-serif;font-size:.95rem;color:var(--color-texto);outline:none;transition:border-color .2s,background-color .2s;padding:0 2px}
+input.mi:focus{border-color:var(--color-acento);box-shadow:0 0 0 2px rgba(160,82,45,.15)}
+input.mi.pivote{background:var(--color-pivote-fondo);border-color:var(--color-acento)}
+input.mi.cero{background:var(--color-cero-fondo);border-style:dashed}
+input.mi.ok{border-color:var(--color-correcto);background:var(--color-correcto-fondo);color:var(--color-correcto);font-weight:700}
+input.mi.err{border-color:var(--color-incorrecto);background:var(--color-incorrecto-fondo);color:var(--color-incorrecto)}
+input.mi.formato{border-color:var(--color-incorrecto);border-style:dotted;border-width:2px}
+input.mi.sol{border-color:var(--color-apagado);background:var(--color-apagado-fondo);color:var(--color-texto-suave);border-style:dashed}
+input.mi:disabled{cursor:default;opacity:1;-webkit-text-fill-color:currentColor}
+.leyenda{display:flex;gap:16px;flex-wrap:wrap;font-size:.78rem;color:var(--color-texto-suave);margin-bottom:8px}
+.leyenda span{display:inline-flex;align-items:center;gap:6px}
+.leyenda i{display:inline-block;width:16px;height:14px;border-radius:3px;border:1.5px solid}
+.incognitas{display:flex;flex-direction:column;gap:10px;margin:4px 0}
+.incognitas label{display:flex;align-items:center;gap:10px;font-family:'Libre Baskerville',serif;font-style:italic}
+.incognitas input.mi{--w:72px}
+
+/* Botones */
+.fila-botones{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.btn-primario{background:var(--color-acento);color:#FDFAF3;border:none;border-radius:4px;padding:10px 22px;font-family:'Lato',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;letter-spacing:.03em;transition:background-color .2s}
+.btn-primario:hover{background:var(--color-acento-hover)}
+.btn-secundario{background:transparent;color:var(--color-acento);border:2px solid var(--color-borde);border-radius:4px;padding:9px 20px;font-family:'Lato',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;transition:border-color .2s,color .2s}
+.btn-secundario:hover{border-color:var(--color-acento);color:var(--color-acento-hover)}
+.btn-finalizar{background:var(--color-cabecera);color:var(--color-cabecera-txt);border:2px solid var(--color-borde);border-radius:4px;padding:10px 24px;font-family:'Libre Baskerville',serif;font-size:.95rem;font-weight:700;cursor:pointer;letter-spacing:.04em;transition:background-color .2s}
+.btn-finalizar:hover{background:#2C1A0A}
+.btn-soluciones{background:transparent;color:var(--color-apagado);border:1px solid #DDD0B6;border-radius:4px;padding:5px 14px;font-family:'Lato',sans-serif;font-size:.78rem;font-weight:400;cursor:pointer;transition:color .2s,border-color .2s}
+.btn-soluciones:hover:not(:disabled){color:var(--color-texto-suave);border-color:var(--color-borde)}
+.btn-soluciones:disabled{opacity:.4;cursor:default}
+button:focus-visible{outline:3px solid rgba(160,82,45,.45);outline-offset:2px}
+
+/* Feedback */
+.fb{display:none;margin-top:12px;border-radius:4px;padding:10px 16px;font-size:.9rem;line-height:1.6}
+.fb p{margin:4px 0}
+.fb.correcto{display:block;background:var(--color-correcto-fondo);border:1.5px solid var(--color-correcto);color:var(--color-correcto)}
+.fb.incorrecto{display:block;background:var(--color-incorrecto-fondo);border:1.5px solid var(--color-incorrecto);color:var(--color-incorrecto)}
+.fb.aviso{display:block;background:#FBF4E4;border:1.5px solid var(--color-borde);color:var(--color-texto-suave)}
+.fb.solucion{display:block;background:var(--color-apagado-fondo);border:1.5px dashed var(--color-apagado);color:var(--color-texto)}
+.fb .detalle{color:var(--color-texto);font-weight:400}
+.fb ul{margin:4px 0 0 18px}
+.resultado{display:none;margin-top:22px;text-align:center;padding:18px;border-radius:6px;border:1.5px solid var(--color-borde)}
+.resultado.visible{display:block}
+.resultado.exito{background:var(--color-correcto-fondo);border-color:var(--color-correcto);color:var(--color-correcto)}
+.resultado.neutro{background:var(--color-apagado-fondo);border-style:dashed;border-color:var(--color-apagado);color:var(--color-texto-suave)}
+.resultado p{margin-bottom:12px;font-family:'Libre Baskerville',serif}
+
+/* Pie */
+.separador{border:none;border-top:1px solid var(--color-borde-suave);margin:28px 0 22px}
+.pie{display:flex;flex-direction:column;align-items:center;gap:16px}
+.pie-fila{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+
+/* Modales */
+.overlay{display:none;position:fixed;inset:0;background:rgba(44,31,14,.55);z-index:999;align-items:center;justify-content:center;padding:16px}
+.overlay.abierto{display:flex}
+.modal{background:var(--color-fondo-card);border:3px solid var(--color-borde);border-radius:8px;box-shadow:0 6px 24px rgba(44,31,14,.35);padding:28px 30px;max-width:460px;width:100%;max-height:92vh;overflow:auto;position:relative}
+.modal h2{font-size:1.15rem;margin-bottom:10px}
+.modal p{line-height:1.6;font-size:.93rem;margin-bottom:8px}
+.modal .fila-botones{justify-content:flex-end;margin-top:18px}
+.modal-calificacion{max-width:560px;text-align:center;font-family:'Libre Baskerville',serif}
+.modal-calificacion .inf-titulo{font-size:1.15rem;font-weight:700}
+.modal-calificacion .inf-sub{font-size:.85rem;font-style:italic;opacity:.9}
+.modal-calificacion hr{border:none;border-top:1px solid currentColor;opacity:.35;margin:12px 0}
+.modal-calificacion .inf-cab{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;opacity:.85}
+.modal-calificacion .inf-nombre{font-size:1.2rem;margin:6px 0 2px}
+.modal-calificacion .inf-nota{font-size:2.8rem;font-weight:700;margin:2px 0 8px}
+.inf-datos{text-align:left;font-family:'Lato',sans-serif;font-size:.9rem;line-height:1.85;background:rgba(255,255,255,.16);border-radius:6px;padding:10px 14px;margin-bottom:12px}
+.inf-tabla{width:100%;border-collapse:collapse;font-family:'Lato',sans-serif;font-size:.84rem;margin:6px 0 12px;text-align:left}
+.inf-tabla th,.inf-tabla td{padding:5px 6px;border-bottom:1px solid rgba(255,255,255,.3)}
+.inf-tabla th{font-weight:700;opacity:.9}
+.inf-tabla caption{text-align:left;font-weight:700;padding-bottom:4px;font-size:.86rem}
+.modal-x{position:absolute;top:10px;right:14px;background:none;border:none;font-size:1.3rem;cursor:pointer;color:inherit;opacity:.75}
+.modal-calificacion .fila-botones{justify-content:center}
+.modal-calificacion .btn-modal{background:rgba(255,255,255,.18);color:inherit;border:1.5px solid currentColor;border-radius:4px;padding:9px 20px;font-family:'Lato',sans-serif;font-weight:700;cursor:pointer}
+
+@media (max-width:600px){
+  :root{--w:44px;--h:34px;--gap:4px}
+  .ficha-container{margin:12px 8px;padding:20px 14px}
+  .apartado{padding:14px 12px}
+  .matriz,.mhead{padding-left:8px;padding-right:8px}
+  input.mi{font-size:.85rem}
+  .barra{padding:8px 10px;gap:6px 14px}
+  .titulo-ficha{font-size:1.3rem}
+}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+</style>
+</head>
+<body>
+
+<header class="cabecera">Material elaborado por Marta L Letona S. Basado en el trabajo de Javier Cayetano</header>
+
+<main class="ficha-container">
+  <h1 class="titulo-ficha">Sistemas de ecuaciones: método de Gauss</h1>
+  <p class="subtitulo">Bachillerato · Sistemas lineales de tres ecuaciones con tres incógnitas</p>
+
+  <div class="barra">
+    <label for="nombre">Alumno/a:</label>
+    <input type="text" id="nombre" placeholder="Nombre y apellidos" autocomplete="off" maxlength="60">
+    <span class="dato">Ejercicio <b id="m-num">1</b></span>
+    <span class="dato">Nota: <b id="m-nota">0</b> / 10</span>
+    <span class="dato">Apartados: <b id="m-ok">0</b> / 4</span>
+    <span class="dato">Fallos: <b id="m-fallos">0</b></span>
+    <div class="aviso-nombre" id="aviso-nombre" aria-live="polite">Escribe tu nombre y apellidos antes de continuar.</div>
+  </div>
+
+  <details class="instrucciones" open>
+    <summary>Instrucciones y puntuación</summary>
+    <ul>
+      <li>Resuelve el sistema por el método de Gauss en cuatro apartados. Cada apartado se desbloquea al completar bien el anterior.</li>
+      <li>Puedes escribir enteros, decimales con coma o punto (<b>2,5</b>) o fracciones (<b>7/2</b>, <b>-1/3</b>).</li>
+      <li>Puedes cambiar de signo o simplificar cualquier fila: una ecuación equivalente también es válida.</li>
+      <li>Cada apartado correcto suma <b>2,5 puntos</b>; cada comprobación incorrecta resta <b>0,5 puntos</b>. Cada ejercicio se califica por separado, sobre 10, y la nota no baja de 0.</li>
+      <li>Si pulsas «Mostrar soluciones», los apartados que te queden se verán resueltos y <b>no sumarán puntos</b>; lo que ya hayas acertado se mantiene y los fallos que ya tengas siguen restando.</li>
+    </ul>
+  </details>
+
+  <section id="ex" aria-live="off"></section>
+
+  <hr class="separador">
+  <div class="pie">
+    <div class="pie-fila">
+      <button class="btn-secundario" id="btn-nuevo" type="button">Nuevo ejercicio</button>
+      <button class="btn-finalizar" id="btn-finalizar" type="button">Finalizar y Calificar</button>
+    </div>
+    <button class="btn-soluciones" id="btn-soluciones" type="button">Mostrar soluciones</button>
+  </div>
+</main>
+
+<!-- Modal: confirmar soluciones -->
+<div class="overlay" id="ov-soluciones">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="t-soluciones">
+    <h2 id="t-soluciones">¿Mostrar las soluciones?</h2>
+    <p>Verás resueltos, con sus explicaciones, los apartados que te quedan de <b>este ejercicio</b>.</p>
+    <p>Esos apartados <b>no contarán para la nota</b>. Lo que ya hayas acertado se mantiene y los fallos que ya hayas cometido siguen restando.</p>
+    <p>Después podrás seguir con un ejercicio nuevo.</p>
+    <div class="fila-botones">
+      <button class="btn-secundario" id="sol-si" type="button">Sí, mostrar soluciones</button>
+      <button class="btn-primario" id="sol-no" type="button">Volver al ejercicio</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: confirmar nuevo ejercicio -->
+<div class="overlay" id="ov-nuevo">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="t-nuevo">
+    <h2 id="t-nuevo">¿Empezar un ejercicio nuevo?</h2>
+    <p id="nuevo-txt"></p>
+    <div class="fila-botones">
+      <button class="btn-secundario" id="nuevo-si" type="button">Sí, ejercicio nuevo</button>
+      <button class="btn-primario" id="nuevo-no" type="button">Seguir con este</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: calificación -->
+<div class="overlay" id="ov-informe">
+  <div class="modal modal-calificacion" id="informe" role="dialog" aria-modal="true" aria-labelledby="inf-cab">
+    <button class="modal-x" id="inf-x" type="button" aria-label="Cerrar informe">✕</button>
+    <div class="inf-titulo" id="inf-titulo"></div>
+    <div class="inf-sub" id="inf-sub"></div>
+    <hr>
+    <div class="inf-cab" id="inf-cab">Informe de la actividad</div>
+    <div class="inf-nombre" id="inf-nombre"></div>
+    <div class="inf-nota" id="inf-nota"></div>
+    <div class="inf-datos" id="inf-datos"></div>
+    <div id="inf-tablas"></div>
+    <div class="fila-botones">
+      <button class="btn-modal" id="inf-volver" type="button">Volver a la ficha</button>
+      <button class="btn-modal" id="inf-nuevo" type="button">Nuevo ejercicio</button>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+/* ═════════════ CONFIGURACIÓN ═════════════
+   Modelo de puntuación: proporcional por apartado, calificado por ejercicio.
+   nota = clamp(2,5·apartadosCorrectos − 0,5·fallos, 0, 10); el suelo de 0 solo al final.
+   Los apartados vistos con «Mostrar soluciones» no suman; los fallos previos siguen restando. */
+const PTS=2.5, PEN=0.5, TOL_MAT=0.02, TOL_SOL=0.01, EPS=1e-9;
+const SECS=['amp','p1','p2','back'];
+const VARS=['x','y','z'];
+
+/* Banco: 31 sistemas originales (a11 = 1) + 8 con a11 ∈ {0, 2, 3} en los que conviene reordenar. */
+const banco=[
+  {A:[[1,3,1],[1,2,1],[1,2,3]],b:[10,6,6]},
+  {A:[[1,0,1],[-2,1,3],[3,2,0]],b:[2,0,1]},
+  {A:[[1,1,0],[1,2,1],[-2,1,0]],b:[-1,-2,2]},
+  {A:[[1,-2,0],[-2,1,-1],[-2,3,-2]],b:[4,-11,-14]},
+  {A:[[1,1,-1],[2,1,3],[3,2,1]],b:[0,9,8]},
+  {A:[[1,-1,1],[-1,3,0],[0,1,2]],b:[1,-4,-3]},
+  {A:[[1,2,-1],[2,-1,1],[1,1,2]],b:[5,1,8]},
+  {A:[[1,-1,1],[2,1,0],[1,1,3]],b:[2,6,10]},
+  {A:[[1,1,3],[1,1,-2],[2,3,0]],b:[4,4,9]},
+  {A:[[1,2,1],[2,3,1],[1,1,2]],b:[8,11,7]},
+  // Tras el paso 1, a22 = ±1
+  {A:[[1,-3,-2],[0,1,-1],[1,1,-1]],b:[0,-7,-8]},
+  {A:[[1,-2,-2],[0,1,2],[-3,1,-3]],b:[-2,0,4]},
+  {A:[[1,0,-1],[1,1,-1],[1,-3,-3]],b:[2,0,12]},
+  {A:[[1,1,2],[-2,-3,-2],[-1,-3,-2]],b:[3,-5,-5]},
+  {A:[[1,0,-2],[-2,-1,0],[-3,-1,-1]],b:[2,-6,-8]},
+  {A:[[1,-1,-1],[-1,2,2],[2,-1,0]],b:[-5,10,-1]},
+  // Tras el paso 1, a32 = ±1 y a22 no: conviene F2 ↔ F3
+  {A:[[1,-1,1],[0,3,-2],[-3,2,-1]],b:[0,11,-5]},
+  {A:[[1,2,3],[-2,-2,2],[0,1,0]],b:[8,-10,3]},
+  {A:[[1,-1,2],[-2,0,-1],[0,-1,-3]],b:[9,-6,-3]},
+  {A:[[1,-1,-2],[0,-3,2],[-1,2,0]],b:[-1,-9,4]},
+  {A:[[1,-1,1],[-1,-1,-1],[2,-1,-2]],b:[3,-3,10]},
+  {A:[[1,-2,-3],[2,-1,-1],[1,-3,1]],b:[2,-1,-2]},
+  {A:[[1,1,0],[0,3,-2],[-3,-2,2]],b:[2,-7,-3]},
+  {A:[[1,0,3],[-3,2,-3],[0,-1,-1]],b:[-6,14,-2]},
+  {A:[[1,2,-3],[1,0,3],[0,-1,2]],b:[1,-5,-2]},
+  {A:[[1,-1,-1],[-2,0,-3],[-1,2,-3]],b:[3,-4,-4]},
+  // Tras el paso 1, a22 = 0: el intercambio F2 ↔ F3 es obligatorio
+  {A:[[1,-1,-1],[-1,1,-3],[-1,2,2]],b:[0,-4,2]},
+  {A:[[1,-1,1],[-2,2,-1],[-2,3,0]],b:[-7,12,12]},
+  {A:[[1,0,1],[-1,0,-2],[-1,1,-2]],b:[1,-4,-2]},
+  {A:[[1,-1,-1],[1,-1,0],[0,-1,-3]],b:[0,3,-6]},
+  {A:[[1,1,3],[2,2,-2],[1,0,-2]],b:[-4,0,2]},
+  // a11 = 0: hay que reordenar
+  {A:[[0,1,1],[1,-3,-2],[-3,1,3]],b:[2,-6,12]},
+  {A:[[0,-1,-3],[1,-1,-2],[2,1,-2]],b:[9,2,5]},
+  {A:[[0,1,2],[1,-3,2],[2,2,3]],b:[3,5,0]},
+  // a11 = 2 o 3: conviene reordenar para que el pivote sea ±1
+  {A:[[2,0,1],[1,-1,-1],[-2,3,-2]],b:[-2,2,-7]},
+  {A:[[2,-1,-3],[3,-1,-3],[-1,1,0]],b:[4,7,-7]},
+  {A:[[2,-3,0],[-1,1,2],[-2,-2,1]],b:[1,1,14]},
+  {A:[[3,-1,-3],[1,-1,-2],[2,-3,0]],b:[-11,-3,-5]},
+  {A:[[3,1,-1],[1,0,-3],[-1,2,-2]],b:[9,5,4]},
+];
+
+/* ═════════════ ESTADO ═════════════ */
+let ex=null, numEj=0, usados=[];
+const historial=[];
+const inicioSesion=Date.now();
+
+/* ═════════════ UTILIDADES NUMÉRICAS ═════════════ */
+const $=id=>document.getElementById(id);
+const rnd=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const r9=v=>{const r=Math.round(v*1e9)/1e9;return Object.is(r,-0)?0:r;};
+const fmt=v=>String(Math.round(v*100)/100).replace('.',',');
+function toFrac(v){
+  for(let d=1;d<=500;d++){const n=Math.round(v*d);if(Math.abs(n/d-v)<1e-7)return[n,d];}
+  return null;
+}
+function txtNum(v){const f=toFrac(v);if(!f)return fmt(v);return f[1]===1?String(f[0]):`${f[0]}/${f[1]}`;}
+function texNum(v){
+  const f=toFrac(v);if(!f)return fmt(v).replace(',','{,}');
+  if(f[1]===1)return String(f[0]);
+  return (f[0]<0?'-':'')+`\\frac{${Math.abs(f[0])}}{${f[1]}}`;
+}
+const texP=v=>v<0?`\\left(${texNum(v)}\\right)`:texNum(v);
+const T=s=>`\\(${s}\\)`;
+
+/* Lectura estricta: entero, decimal (coma o punto) o fracción. Acepta el signo «−». */
+function parseCampo(s){
+  s=String(s==null?'':s).trim().replace(/[−–—]/g,'-').replace(/\s+/g,'');
+  if(s==='')return{vacio:true};
+  const num='[+-]?\\d+(?:[.,]\\d+)?';
+  let m;
+  if(new RegExp(`^${num}$`).test(s))return{v:parseFloat(s.replace(',','.'))};
+  if((m=s.match(new RegExp(`^(${num})/(${num})$`)))){
+    const n=parseFloat(m[1].replace(',','.')),d=parseFloat(m[2].replace(',','.'));
+    if(d===0)return{invalido:true,cero:true};
+    return{v:n/d};
+  }
+  return{invalido:true};
+}
+
+/* v es equivalente a t si v = λ·t con λ ≠ 0. Los ceros de t deben ser ceros exactos. Devuelve λ o null. */
+function filaLam(v,t,tol=TOL_MAT){
+  const j=t.findIndex(x=>Math.abs(x)>EPS);
+  if(j===-1)return v.every(x=>Math.abs(x)<EPS)?1:null;
+  if(Math.abs(v[j])<EPS)return null;
+  const lam=v[j]/t[j],m=tol*Math.max(1,Math.abs(lam));
+  for(let i=0;i<t.length;i++){
+    if(Math.abs(t[i])<EPS){if(Math.abs(v[i])>EPS)return null;}
+    else if(Math.abs(v[i]-lam*t[i])>m)return null;
+  }
+  return lam;
+}
+const filaIgual=(v,t)=>t.every((x,i)=>Math.abs(v[i]-x)<TOL_MAT);
+
+function gaussPaso1(M){
+  const m=M.map(r=>[...r]),p=m[0][0];
+  for(let r=1;r<3;r++){const f=m[r][0]/p;for(let c=0;c<4;c++)m[r][c]=r9(m[r][c]-f*m[0][c]);}
+  return m;
+}
+function gaussPaso2(M){
+  const m=M.map(r=>[...r]),p=m[1][1],f=m[2][1]/p;
+  for(let c=0;c<4;c++)m[2][c]=r9(m[2][c]-f*m[1][c]);
+  return m;
+}
+/* Formas triangulares válidas: sin intercambio (a22 ≠ 0) y con F2 ↔ F3 (a32 ≠ 0). */
+function candidatos(s){
+  const c=[];
+  if(Math.abs(s[1][1])>EPS)c.push({swap:false,m:gaussPaso2(s)});
+  if(Math.abs(s[2][1])>EPS)c.push({swap:true,m:gaussPaso2([s[0],s[2],s[1]])});
+  return c;
+}
+/* El camino más cómodo, para «Mostrar soluciones». */
+function candidatoPreferido(s,c){
+  const a22=Math.abs(s[1][1]),a32=Math.abs(s[2][1]);
+  let swap=false;
+  if(a22<EPS)swap=true;
+  else if(a32<EPS||Math.abs(a22-1)<EPS)swap=false;
+  else if(Math.abs(a32-1)<EPS)swap=true;
+  return c.find(k=>k.swap===swap)||c[0];
+}
+function resolver(A,b){
+  const det=M=>M[0][0]*(M[1][1]*M[2][2]-M[1][2]*M[2][1])-M[0][1]*(M[1][0]*M[2][2]-M[1][2]*M[2][0])+M[0][2]*(M[1][0]*M[2][1]-M[1][1]*M[2][0]);
+  const D=det(A);
+  return[0,1,2].map(k=>r9(det(A.map((r,i)=>r.map((v,j)=>j===k?b[i]:v)))/D));
+}
+/* Orden con pivote ±1 si lo hay; si no, el primero con coeficiente de x no nulo. */
+function mejorOrden(M){
+  let k=M.findIndex(r=>Math.abs(Math.abs(r[0])-1)<EPS);
+  if(k===-1)k=M.findIndex(r=>Math.abs(r[0])>EPS);
+  return[M[k],...M.filter((_,i)=>i!==k)].map(r=>[...r]);
+}
+
+/* ═════════════ TEXTO MATEMÁTICO ═════════════ */
+function terminoTex(c,v,primero){
+  if(Math.abs(c)<EPS)return'';
+  const a=Math.abs(c),s=c<0?'-':(primero?'':'+');
+  return `${s}${a===1?'':texNum(a)}${v}`;
+}
+function sistemaTex(A,b){
+  const filas=A.map((r,i)=>{
+    let s='',p=true;
+    r.forEach((c,j)=>{const t=terminoTex(c,VARS[j],p);if(t){s+=t;p=false;}});
+    return `${s||'0'} &= ${texNum(b[i])}`;
+  });
+  return `\\left\\{\\begin{aligned}${filas.join('\\\\')}\\end{aligned}\\right.`;
+}
+function matTex(M){
+  return `\\left(\\begin{array}{rrr|r}${M.map(r=>r.map(texNum).join('&')).join('\\\\')}\\end{array}\\right)`;
+}
+/* Fi ← Fi − k·Fj, escrita con el signo adecuado. */
+function opTex(i,k,j){
+  if(Math.abs(k)<EPS)return `F_${i}\\text{ se copia (ya tiene el }0\\text{)}`;
+  const a=Math.abs(k),c=Math.abs(a-1)<EPS?'':texNum(a)+'\\,';
+  return `F_${i}\\leftarrow F_${i}${k>0?'-':'+'}${c}F_${j}`;
+}
+function typeset(el){
+  if(window.MathJax&&typeof MathJax.typesetPromise==='function'){
+    MathJax.typesetPromise(el?[el]:undefined).catch(()=>{});
+  }
+}
+
+/* ═════════════ INTERFAZ: CONSTRUCCIÓN ═════════════ */
+function matrizHTML(p,clsFn){
+  const etiq=['F₁','F₂','F₃'];
+  let celdas='';
+  for(let i=0;i<3;i++){
+    for(let j=0;j<4;j++){
+      if(j===3)celdas+='<div class="msep" aria-hidden="true"></div>';
+      const cls=clsFn?clsFn(i,j):'';
+      const col=j===3?'término independiente':`coeficiente de ${VARS[j]}`;
+      celdas+=`<input class="mi${cls?' '+cls:''}" id="${p}_${i}_${j}" type="text" inputmode="text" autocomplete="off" placeholder="?" aria-label="Fila ${i+1}, ${col}">`;
+    }
+  }
+  return `<div class="mbloque">
+    <div class="mlabs" aria-hidden="true"><span>·</span>${etiq.map(e=>`<span>${e}</span>`).join('')}</div>
+    <div><div class="mhead" aria-hidden="true"><span>x</span><span>y</span><span>z</span><span></span><span>b</span></div>
+    <div class="matriz" role="group" aria-label="Matriz del apartado">${celdas}</div></div>
+  </div>`;
+}
+const leyenda=(piv)=>`<div class="leyenda" aria-hidden="true"><span><i style="background:var(--color-pivote-fondo);border-color:var(--color-acento)"></i>Pivote ${piv}</span><span><i style="background:var(--color-cero-fondo);border-color:var(--color-borde);border-style:dashed"></i>Debe quedar 0</span></div>`;
+
+function cargarEjercicio(){
+  numEj++;
+  if(usados.length>=banco.length)usados=[];
+  let idx;do{idx=rnd(0,banco.length-1);}while(usados.includes(idx));
+  usados.push(idx);
+  const{A,b}=banco[idx];
+  ex={num:numEj,idx,A,b,orig:A.map((r,i)=>[...r,b[i]]),sol:resolver(A,b),
+      sec:Object.fromEntries(SECS.map(s=>[s,{st:0,fallos:0,snap:null}])),
+      aug:null,step1:null,base2:null,cands:null,tri:null,
+      inicio:Date.now(),revelado:false,terminado:false,ampConsejo:null};
+  document.body.classList.remove('ficha-diez');
+
+  $('ex').innerHTML=`
+  <div class="ej-cabecera"><h2>Ejercicio ${numEj}</h2><span class="etiqueta">Eliminación de Gauss</span></div>
+  <p class="enunciado">Resuelve el siguiente sistema por el método de Gauss:</p>
+  <div class="sistema">${T(sistemaTex(A,b))}</div>
+
+  <div class="apartado" id="sec-amp">
+    <h3><span class="num">1.</span> Matriz ampliada (A | b)</h3>
+    <p class="indic">Escribe en cada fila los coeficientes de <i>x</i>, <i>y</i>, <i>z</i> y el término independiente de una ecuación. Puedes cambiar el orden de las filas para elegir el pivote más cómodo (lo ideal es que <i>a</i><sub>11</sub> valga 1 o −1).</p>
+    ${matrizHTML('amp')}
+    <div class="fila-botones"><button class="btn-primario" type="button" data-verif="amp">Comprobar matriz ampliada</button></div>
+    <div class="fb" id="fb-amp" aria-live="polite"></div>
+  </div>
+
+  <div class="apartado bloqueado" id="sec-p1" inert>
+    <h3><span class="num">2.</span> Primera eliminación (pivote <i>a</i><sub>11</sub>)</h3>
+    <p class="indic">Usa <i>a</i><sub>11</sub> como pivote para que desaparezca la <i>x</i> de las filas 2 y 3. La fila 1 se copia.</p>
+    ${leyenda('a₁₁')}
+    ${matrizHTML('p1',(i,j)=>i===0&&j===0?'pivote':(j===0&&i>0?'cero':''))}
+    <div class="fila-botones"><button class="btn-primario" type="button" data-verif="p1">Comprobar primera eliminación</button></div>
+    <div class="fb" id="fb-p1" aria-live="polite"></div>
+  </div>
+
+  <div class="apartado bloqueado" id="sec-p2" inert>
+    <h3><span class="num">3.</span> Segunda eliminación (pivote <i>a</i><sub>22</sub>)</h3>
+    <p class="indic">Usa <i>a</i><sub>22</sub> como pivote para que desaparezca la <i>y</i> de la fila 3. Las filas 1 y 2 se copian. Escribe la matriz triangular resultante.</p>
+    <p class="indic consejo">⇅ Si <i>a</i><sub>22</sub> vale 0, o si intercambiando las filas 2 y 3 el pivote pasa a ser 1 o −1, <b>intercambia las filas 2 y 3</b> y escribe directamente la matriz resultante. Si la fila 3 ya tiene un 0 en la columna de <i>y</i>, basta con copiarla.</p>
+    ${leyenda('a₂₂')}
+    ${matrizHTML('p2',(i,j)=>i===1&&j===1?'pivote':((j===0&&i>0)||(i===2&&j===1)?'cero':''))}
+    <div class="fila-botones"><button class="btn-primario" type="button" data-verif="p2">Comprobar segunda eliminación</button></div>
+    <div class="fb" id="fb-p2" aria-live="polite"></div>
+  </div>
+
+  <div class="apartado bloqueado" id="sec-back" inert>
+    <h3><span class="num">4.</span> Sustitución hacia atrás</h3>
+    <p class="indic">Con la matriz triangular, despeja <i>z</i> en la última ecuación, sustituye en la segunda para obtener <i>y</i> y, por último, en la primera para obtener <i>x</i>.</p>
+    <div class="incognitas">
+      <label><span>z =</span><input class="mi" id="back_z" type="text" autocomplete="off" placeholder="?" aria-label="Valor de z"></label>
+      <label><span>y =</span><input class="mi" id="back_y" type="text" autocomplete="off" placeholder="?" aria-label="Valor de y"></label>
+      <label><span>x =</span><input class="mi" id="back_x" type="text" autocomplete="off" placeholder="?" aria-label="Valor de x"></label>
+    </div>
+    <div class="fila-botones"><button class="btn-primario" type="button" data-verif="back">Comprobar solución</button></div>
+    <div class="fb" id="fb-back" aria-live="polite"></div>
+  </div>
+
+  <div class="resultado" id="resultado" aria-live="polite"></div>`;
+  actualizarMarcador();
+  typeset($('ex'));
+}
+
+/* ═════════════ INTERFAZ: ESTADO VISUAL ═════════════ */
+function idsGrid(p){const a=[];for(let i=0;i<3;i++)for(let j=0;j<4;j++)a.push(`${p}_${i}_${j}`);return a;}
+const idsSec=s=>s==='back'?['back_z','back_y','back_x']:idsGrid(s);
+function fb(s,cls,html){const el=$('fb-'+s);el.className='fb '+cls;el.innerHTML=html;typeset(el);}
+function marcaSec(s,cls){const el=$('sec-'+s);el.classList.remove('ok','err','revelado');if(cls)el.classList.add(cls);}
+function desbloquear(s){
+  const el=$('sec-'+s);if(!el)return;
+  el.classList.remove('bloqueado');el.removeAttribute('inert');
+  const first=$(idsSec(s)[0]);if(first&&!first.disabled)first.focus({preventScroll:false});
+}
+function cerrarSec(s){
+  idsSec(s).forEach(id=>{const e=$(id);if(e)e.disabled=true;});
+  const btn=document.querySelector(`[data-verif="${s}"]`);if(btn)btn.disabled=true,btn.style.display='none';
+}
+function pintarFila(p,i,ok){
+  for(let j=0;j<4;j++){const e=$(`${p}_${i}_${j}`);e.classList.remove('err','ok','formato','pivote','cero');e.classList.add(ok?'ok':'err');}
+}
+function limpiarFormato(ids){ids.forEach(id=>$(id).classList.remove('formato'));}
+
+const aciertosEj=(e=ex)=>SECS.filter(s=>e.sec[s].st===1).length;
+const fallosEj=(e=ex)=>SECS.reduce((a,s)=>a+e.sec[s].fallos,0);
+function notaEj(e=ex){
+  const bruta=PTS*aciertosEj(e)-PEN*fallosEj(e);
+  return Math.round(Math.min(10,Math.max(0,bruta))*100)/100;
+}
+function actualizarMarcador(){
+  $('m-num').textContent=ex.num;
+  $('m-nota').textContent=fmt(notaEj());
+  $('m-ok').textContent=aciertosEj();
+  $('m-fallos').textContent=fallosEj();
+  $('btn-soluciones').disabled=ex.terminado||ex.revelado;
+}
+
+function requiereNombre(){
+  const n=$('nombre');
+  if(n.value.trim())return true;
+  n.classList.add('falta');$('aviso-nombre').classList.add('visible');n.focus();
+  return false;
+}
+
+/* Lee los campos; devuelve la matriz o null tras avisar (vacíos o formato no válido, sin penalizar). */
+function leer(s){
+  const ids=idsSec(s);limpiarFormato(ids);
+  const vals=[],malos=[];let vacios=0,divCero=false;
+  ids.forEach(id=>{const r=parseCampo($(id).value);if(r.vacio)vacios++;else if(r.invalido){malos.push(id);if(r.cero)divCero=true;}vals.push(r.v);});
+  if(malos.length){
+    malos.forEach(id=>$(id).classList.add('formato'));
+    fb(s,'aviso',`⚠️ Hay ${malos.length===1?'una casilla':'casillas'} con un formato no válido (borde punteado).${divCero?' No se puede dividir entre 0.':''} Escribe un entero, un decimal (<b>2,5</b>) o una fracción (<b>7/2</b>). No se ha penalizado.`);
+    $(malos[0]).focus();return null;
+  }
+  if(vacios){fb(s,'aviso','⚠️ Completa todas las casillas antes de comprobar.');return null;}
+  if(s==='back')return vals;
+  return[0,1,2].map(i=>vals.slice(i*4,i*4+4));
+}
+/* Evita penalizar dos veces la misma respuesta incorrecta. */
+function repetida(s,vals){
+  const snap=JSON.stringify(vals),sec=ex.sec[s];
+  if(sec.st===-1&&sec.snap===snap){fb(s,'aviso','No has cambiado nada desde la última comprobación. Revisa las casillas marcadas.');return true;}
+  sec.snap=snap;return false;
+}
+function registrarFallo(s){ex.sec[s].st=-1;ex.sec[s].fallos++;marcaSec(s,'err');actualizarMarcador();}
+function registrarAcierto(s){ex.sec[s].st=1;marcaSec(s,'ok');cerrarSec(s);actualizarMarcador();}
+const puedeVerificar=s=>ex&&!ex.revelado&&ex.sec[s].st!==1&&ex.sec[s].st!=='rev'&&!$('sec-'+s).hasAttribute('inert');
+
+/* ═════════════ DIAGNÓSTICO DE FILAS ═════════════ */
+/* v: fila del alumno, t: fila esperada, r: fila antes de operar, p: fila pivote, k: factor (Fn ← Fn − k·Fp). */
+function diagnosticar(v,t,r,p,k,n,np,colCero){
+  const nombreCol=c=>c===3?'del término independiente':`de ${VARS[c]}`;
+  if(Math.abs(k)>EPS&&filaLam(v,r)!==null)
+    return `La fila ${n} está sin transformar: aplícale ${T(opTex(n,k,np))}.`;
+  const suma=r.map((x,c)=>x+k*p[c]);
+  if(Math.abs(k)>EPS&&filaLam(v,suma)!==null)
+    return `En la fila ${n} has <b>sumado</b> en vez de restar (o has tomado el factor con el signo cambiado). La operación correcta es ${T(opTex(n,k,np))}.`;
+  if(Math.abs(v[colCero])>EPS)
+    return `En la fila ${n}, la columna ${nombreCol(colCero)} debe quedar 0. El factor es ${T(`k=\\dfrac{${texNum(r[colCero])}}{${texNum(p[colCero])}}=${texNum(k)}`)}, es decir, ${T(opTex(n,k,np))}.`;
+  if(filaLam(v.slice(0,3),t.slice(0,3))!==null)
+    return `En la fila ${n} los coeficientes están bien, pero la operación también se aplica al <b>término independiente</b>.`;
+  // ¿Un solo error? Probar λ a partir de cada columna no nula.
+  let mejor=null;
+  t.forEach((x,j)=>{
+    if(Math.abs(x)<EPS||Math.abs(v[j])<EPS)return;
+    const lam=v[j]/x,mal=[];
+    t.forEach((y,c)=>{if(Math.abs(v[c]-lam*y)>TOL_MAT*Math.max(1,Math.abs(lam)))mal.push(c);});
+    if(!mejor||mal.length<mejor.mal.length)mejor={lam,mal};
+  });
+  if(mejor&&mejor.mal.length===1){
+    const c=mejor.mal[0];
+    if(Math.abs(t[c])>EPS&&Math.abs(v[c]+mejor.lam*t[c])<TOL_MAT*Math.max(1,Math.abs(mejor.lam)))
+      return `En la fila ${n} hay un <b>error de signo</b> en la columna ${nombreCol(c)}. Cuidado con «menos por menos».`;
+    return `En la fila ${n} solo falla la columna ${nombreCol(c)}: repasa ese cálculo.`;
+  }
+  const exp=r.map((x,c)=>`${texP(x)}-${texP(k)}\\cdot${texP(p[c])}`).join(',\\;');
+  return `Fila ${n}: ${T(opTex(n,k,np))}. Columna a columna: ${T(`(${exp})`)}.`;
+}
+
+/* ═════════════ EXPLICACIONES (aciertos y soluciones) ═════════════ */
+function explAmp(M){
+  let s=`<p class="detalle">Cada fila recoge los coeficientes de <i>x</i>, <i>y</i>, <i>z</i> y el término independiente de una ecuación; si una incógnita no aparece, su coeficiente es 0.</p>`;
+  const reord=M.some((r,i)=>!filaIgual(r,ex.orig[i]));
+  if(reord)s+=`<p class="detalle">Se ha cambiado el orden de las ecuaciones para que el pivote ${T(`a_{11}=${texNum(M[0][0])}`)} sea cómodo.</p>`;
+  return s;
+}
+function explP1(M,S){
+  const k2=M[1][0]/M[0][0],k3=M[2][0]/M[0][0];
+  return `<p class="detalle">Pivote ${T(`a_{11}=${texNum(M[0][0])}`)}: ${T(opTex(2,k2,1))} y ${T(opTex(3,k3,1))}. Así desaparece la <i>x</i> de las filas 2 y 3:</p><p class="detalle">${T(matTex(S))}</p>`;
+}
+function explP2(S,c){
+  let s='';
+  const a22=S[1][1],a32=S[2][1];
+  if(c.swap){
+    s+=`<p class="detalle">${Math.abs(a22)<EPS?`Como ${T('a_{22}=0')}, no puede ser pivote: `:`Para que el pivote sea ${T(texNum(a32))}, `}se intercambian ${T('F_2\\leftrightarrow F_3')}.</p>`;
+  }
+  const S2=c.swap?[S[0],S[2],S[1]]:S;
+  const k=S2[2][1]/S2[1][1];
+  s+=`<p class="detalle">${T(opTex(3,k,2))}. La matriz queda triangular (debajo de la diagonal solo hay ceros):</p><p class="detalle">${T(matTex(c.m))}</p>`;
+  return s;
+}
+function explBack(M,sol){
+  const[x,y,z]=sol;
+  const cf=c=>Math.abs(c-1)<EPS?'':Math.abs(c+1)<EPS?'-':texNum(c)+'\\,';
+  const l3=`${cf(M[2][2])}z=${texNum(M[2][3])}\\;\\Rightarrow\\;z=${texNum(z)}`;
+  const sust=(c,val)=>Math.abs(c)<EPS?'':`${c<0?'-':'+'}${Math.abs(Math.abs(c)-1)<EPS?'':texNum(Math.abs(c))+'\\cdot'}${texP(val)}`;
+  const l2=`${cf(M[1][1])}y${sust(M[1][2],z)}=${texNum(M[1][3])}\\;\\Rightarrow\\;y=${texNum(y)}`;
+  const l1=`${cf(M[0][0])}x${sust(M[0][1],y)}${sust(M[0][2],z)}=${texNum(M[0][3])}\\;\\Rightarrow\\;x=${texNum(x)}`;
+  return `<p class="detalle">${T(l3)}</p><p class="detalle">${T(l2)}</p><p class="detalle">${T(l1)}</p>`;
+}
+
+/* ═════════════ APARTADO 1 ═════════════ */
+function verifAmp(){
+  if(!puedeVerificar('amp')||!requiereNombre())return;
+  const m=leer('amp');if(!m)return;
+  // Asignar cada fila del alumno a una ecuación del sistema (en cualquier orden, sin repetir).
+  const usadas=new Set(),asign=m.map(row=>{
+    const k=ex.orig.findIndex((e,ci)=>!usadas.has(ci)&&e.every((v,j)=>Math.abs(row[j]-v)<EPS));
+    if(k!==-1)usadas.add(k);return k;
+  });
+  const ok=asign.every(k=>k!==-1);
+  if(ok&&Math.abs(m[0][0])<EPS){
+    fb('amp','aviso',`⚠️ Las filas son correctas, pero ${T('a_{11}=0')} y no puede ser pivote. Coloca primero una ecuación cuyo coeficiente de <i>x</i> no sea 0. No se ha penalizado.`);return;
+  }
+  const snap=JSON.stringify(m);
+  if(ok&&Math.abs(Math.abs(m[0][0])-1)>EPS&&m.some(r=>Math.abs(Math.abs(r[0])-1)<EPS)&&ex.ampConsejo!==snap){
+    ex.ampConsejo=snap;
+    fb('amp','aviso',`💡 Las filas son correctas. Consejo: si colocas primero una ecuación cuyo coeficiente de <i>x</i> sea 1 o −1, evitarás fracciones en el resto del ejercicio. Si prefieres mantener este orden, vuelve a pulsar «Comprobar». No se ha penalizado.`);return;
+  }
+  if(repetida('amp',m))return;
+  if(ok){
+    for(let i=0;i<3;i++)pintarFila('amp',i,true);
+    ex.aug=m.map(r=>[...r]);ex.step1=gaussPaso1(ex.aug);
+    registrarAcierto('amp');
+    fb('amp','correcto','✓ Matriz ampliada correcta.'+explAmp(ex.aug));
+    desbloquear('p1');
+  }else{
+    const msgs=[],genericas=[];
+    m.forEach((row,i)=>{
+      pintarFila('amp',i,asign[i]!==-1);
+      if(asign[i]!==-1)return;
+      // Ecuación más parecida entre las no asignadas.
+      let best=null;
+      ex.orig.forEach((e,ci)=>{if(usadas.has(ci))return;const mal=[0,1,2,3].filter(j=>Math.abs(row[j]-e[j])>EPS);if(!best||mal.length<best.mal.length)best={e,mal};});
+      if(!best){msgs.push(`La fila ${i+1} repite una ecuación que ya está en otra fila.`);return;}
+      if(best.mal.length===1){
+        const j=best.mal[0],esp=best.e[j],v=row[j];
+        if(j===3&&Math.abs(v+esp)<EPS)msgs.push(`Fila ${i+1}: el término independiente tiene el signo cambiado; se escribe tal como aparece a la derecha del «=».`);
+        else if(j<3&&Math.abs(esp)<EPS)msgs.push(`Fila ${i+1}: la <i>${VARS[j]}</i> no aparece en esa ecuación, así que su coeficiente es 0.`);
+        else if(j<3&&Math.abs(Math.abs(esp)-1)<EPS&&Math.abs(v)<EPS)msgs.push(`Fila ${i+1}: cuando la <i>${VARS[j]}</i> aparece sin número delante, su coeficiente es ${esp>0?'1':'−1'}, no 0.`);
+        else if(Math.abs(v+esp)<EPS)msgs.push(`Fila ${i+1}: el coeficiente de ${j<3?`<i>${VARS[j]}</i>`:'término independiente'} tiene el signo cambiado.`);
+        else msgs.push(`Fila ${i+1}: revisa el valor ${j<3?`del coeficiente de <i>${VARS[j]}</i>`:'del término independiente'}.`);
+      }else genericas.push(i+1);
+    });
+    if(genericas.length){
+      const l=genericas.length===1?`La fila ${genericas[0]} no corresponde`:`Las filas ${genericas.slice(0,-1).join(', ')} y ${genericas.slice(-1)} no corresponden`;
+      msgs.push(`${l} a ninguna ecuación del sistema: escribe, en orden, los coeficientes de <i>x</i>, <i>y</i>, <i>z</i> y el término independiente.`);
+    }
+    registrarFallo('amp');
+    fb('amp','incorrecto',`✗ Incorrecta (−${fmt(PEN)} puntos). Corrige las filas en rojo y vuelve a comprobar.<ul>${msgs.map(t=>`<li class="detalle">${t}</li>`).join('')}</ul>`);
+  }
+}
+
+/* ═════════════ APARTADO 2 ═════════════ */
+function verifP1(){
+  if(!puedeVerificar('p1')||!ex.step1||!requiereNombre())return;
+  const m=leer('p1');if(!m)return;
+  if(repetida('p1',m))return;
+  const S=ex.step1,P=ex.aug,lams=m.map((r,i)=>filaLam(r,S[i]));
+  const ok=lams.every(l=>l!==null);
+  lams.forEach((l,i)=>pintarFila('p1',i,l!==null));
+  if(ok){
+    ex.base2=S.map((r,i)=>r.map(x=>r9(x*lams[i])));
+    ex.cands=candidatos(ex.base2);
+    registrarAcierto('p1');
+    const eq=lams.some(l=>Math.abs(l-1)>EPS);
+    fb('p1','correcto','✓ Primera eliminación correcta: la <i>x</i> ha desaparecido de las filas 2 y 3.'
+      +(eq?'<p class="detalle">Has cambiado de signo o simplificado alguna fila: es una ecuación equivalente, así que es válida.</p>':'')
+      +`<p class="detalle">${T(opTex(2,P[1][0]/P[0][0],1))}, ${T(opTex(3,P[2][0]/P[0][0],1))}.</p>`);
+    desbloquear('p2');
+  }else{
+    const msgs=[];
+    if(lams[0]===null)msgs.push('La fila 1 (la del pivote) se copia sin cambios del apartado 1.');
+    for(const i of[1,2])if(lams[i]===null){
+      const k=P[i][0]/P[0][0];
+      msgs.push(diagnosticar(m[i],S[i],P[i],P[0],k,i+1,1,0));
+    }
+    registrarFallo('p1');
+    fb('p1','incorrecto',`✗ Incorrecta (−${fmt(PEN)} puntos). Corrige las filas en rojo y vuelve a comprobar.<ul>${msgs.map(t=>`<li class="detalle">${t}</li>`).join('')}</ul>`);
+  }
+}
+
+/* ═════════════ APARTADO 3 ═════════════ */
+function verifP2(){
+  if(!puedeVerificar('p2')||!ex.cands||!requiereNombre())return;
+  const m=leer('p2');if(!m)return;
+  if(repetida('p2',m))return;
+  const B=ex.base2;
+  const evals=ex.cands.map(c=>{const lams=m.map((r,i)=>filaLam(r,c.m[i]));return{...c,lams,nOk:lams.filter(l=>l!==null).length};});
+  const best=evals.find(e=>e.nOk===3)||evals.slice().sort((a,b)=>b.nOk-a.nOk)[0];
+  const ok=best.nOk===3;
+  best.lams.forEach((l,i)=>pintarFila('p2',i,l!==null));
+  const a22=B[1][1],a32=B[2][1];
+  if(ok){
+    ex.tri=best.m.map((r,i)=>r.map(x=>r9(x*best.lams[i])));
+    registrarAcierto('p2');
+    const eq=best.lams.some(l=>Math.abs(l-1)>EPS);
+    const S2=best.swap?[B[0],B[2],B[1]]:B;
+    fb('p2','correcto',(best.swap?'✓ Correcta, con intercambio de filas 2 y 3. ':'✓ Correcta. ')+'La matriz ya es triangular.'
+      +(eq?'<p class="detalle">Has cambiado de signo o simplificado alguna fila: es una ecuación equivalente, así que es válida.</p>':'')
+      +`<p class="detalle">${best.swap?T('F_2\\leftrightarrow F_3')+', ':''}${T(opTex(3,S2[2][1]/S2[1][1],2))}.</p>`);
+    desbloquear('back');
+  }else{
+    const msgs=[];
+    if(best.swap){
+      if(best.lams[0]===null||best.lams[1]===null)msgs.push('Con el intercambio, la fila 1 se copia igual y la nueva fila 2 es la fila 3 del apartado 2.');
+      if(best.lams[2]===null)msgs.push(diagnosticar(m[2],best.m[2],B[1],B[2],a22/a32,3,2,1));
+    }else{
+      if(best.lams[0]===null||best.lams[1]===null)msgs.push('Las filas 1 y 2 se copian igual que en el apartado 2.');
+      if(best.lams[2]===null)msgs.push(diagnosticar(m[2],best.m[2],B[2],B[1],a32/a22,3,2,1));
+    }
+    if(Math.abs(a22)<EPS)msgs.push(`💡 ${T('a_{22}=0')}, así que no puede ser pivote: intercambia las filas 2 y 3.`);
+    else if(!best.swap&&Math.abs(a32)>EPS&&Math.abs(Math.abs(a22)-1)>EPS&&Math.abs(Math.abs(a32)-1)<EPS)
+      msgs.push(`💡 Si intercambias las filas 2 y 3, el pivote pasa a ser ${T(texNum(a32))} y evitas las fracciones.`);
+    registrarFallo('p2');
+    fb('p2','incorrecto',`✗ Incorrecta (−${fmt(PEN)} puntos). Corrige las filas en rojo y vuelve a comprobar.<ul>${msgs.map(t=>`<li class="detalle">${t}</li>`).join('')}</ul>`);
+  }
+}
+
+/* ═════════════ APARTADO 4 ═════════════ */
+function verifBack(){
+  if(!puedeVerificar('back')||!ex.tri||!requiereNombre())return;
+  const v=leer('back');if(!v)return;   // orden: z, y, x
+  if(repetida('back',v))return;
+  const[vz,vy,vx]=v,[sx,sy,sz]=ex.sol,M=ex.tri;
+  const okZ=Math.abs(vz-sz)<TOL_SOL,okY=Math.abs(vy-sy)<TOL_SOL,okX=Math.abs(vx-sx)<TOL_SOL;
+  [['back_z',okZ],['back_y',okY],['back_x',okX]].forEach(([id,o])=>{const e=$(id);e.classList.remove('ok','err','formato');e.classList.add(o?'ok':'err');});
+  if(okZ&&okY&&okX){
+    registrarAcierto('back');
+    fb('back','correcto','✓ ¡Correcto!'+explBack(M,ex.sol));
+    ex.terminado=true;finEjercicio(false);
+    return;
+  }
+  const msgs=[];
+  if(!okZ)msgs.push('<i>z</i> se despeja en la última fila de la matriz triangular: divide el término independiente entre el coeficiente de <i>z</i>.');
+  if(!okY){
+    const yCoh=(M[1][3]-M[1][2]*vz)/M[1][1];
+    if(!okZ&&Math.abs(vy-yCoh)<TOL_SOL)msgs.push('<i>y</i> es coherente con tu <i>z</i>: el error viene de <i>z</i>.');
+    else msgs.push('Para <i>y</i>, sustituye <i>z</i> en la segunda fila y despeja. Cuida los signos al pasar términos al otro lado.');
+  }
+  if(!okX){
+    const xCoh=(M[0][3]-M[0][1]*vy-M[0][2]*vz)/M[0][0];
+    if((!okY||!okZ)&&Math.abs(vx-xCoh)<TOL_SOL)msgs.push('<i>x</i> es coherente con tus valores de <i>y</i> y <i>z</i>: el error está antes.');
+    else msgs.push('Para <i>x</i>, sustituye <i>y</i> y <i>z</i> en la primera fila y despeja.');
+  }
+  registrarFallo('back');
+  fb('back','incorrecto',`✗ Incorrecto (−${fmt(PEN)} puntos). Revisa las casillas en rojo y vuelve a comprobar.<ul>${msgs.map(t=>`<li class="detalle">${t}</li>`).join('')}</ul>`);
+}
+
+const VERIF={amp:verifAmp,p1:verifP1,p2:verifP2,back:verifBack};
+
+/* ═════════════ MOSTRAR SOLUCIONES ═════════════ */
+function rellenar(s,vals){
+  idsSec(s).forEach((id,k)=>{const e=$(id);e.value=txtNum(vals[k]);e.classList.remove('ok','err','formato','pivote','cero');e.classList.add('sol');});
+}
+function revelarSoluciones(){
+  if(!ex||ex.terminado||ex.revelado)return;
+  for(const s of SECS){
+    if(ex.sec[s].st===1)continue;
+    const el=$('sec-'+s);el.classList.remove('bloqueado');el.removeAttribute('inert');
+    let html='';
+    if(s==='amp'){
+      ex.aug=mejorOrden(ex.orig);ex.step1=gaussPaso1(ex.aug);
+      rellenar(s,ex.aug.flat());html=explAmp(ex.aug)+`<p class="detalle">${T(matTex(ex.aug))}</p>`;
+    }else if(s==='p1'){
+      ex.base2=ex.step1;ex.cands=candidatos(ex.base2);
+      rellenar(s,ex.step1.flat());html=explP1(ex.aug,ex.step1);
+    }else if(s==='p2'){
+      const c=candidatoPreferido(ex.base2,ex.cands);ex.tri=c.m;
+      rellenar(s,c.m.flat());html=explP2(ex.base2,c);
+    }else{
+      const[x,y,z]=ex.sol;rellenar(s,[z,y,x]);html=explBack(ex.tri,ex.sol);
+    }
+    ex.sec[s].st='rev';marcaSec(s,'revelado');cerrarSec(s);
+    fb(s,'solucion','<b>Solución.</b>'+html);
+  }
+  ex.revelado=true;ex.terminado=true;
+  finEjercicio(true);
+}
+
+function finEjercicio(revelado){
+  const r=$('resultado');
+  if(revelado){
+    r.className='resultado visible neutro';
+    r.innerHTML=`<p>Soluciones mostradas · los apartados revelados no puntúan. Nota del ejercicio: ${fmt(notaEj())} / 10.</p><button class="btn-primario" type="button" id="res-nuevo">Nuevo ejercicio</button>`;
+  }else{
+    const n=notaEj();
+    r.className='resultado visible exito';
+    r.innerHTML=`<p>🎉 Ejercicio completado. Nota del ejercicio: ${fmt(n)} / 10${fallosEj()?` (${fallosEj()} ${fallosEj()===1?'fallo':'fallos'})`:''}.</p><button class="btn-primario" type="button" id="res-nuevo">Nuevo ejercicio</button>`;
+    if(n>=10)document.body.classList.add('ficha-diez');
+  }
+  $('res-nuevo').addEventListener('click',()=>pedirNuevo());
+  actualizarMarcador();
+}
+
+/* ═════════════ NUEVO EJERCICIO E HISTORIAL ═════════════ */
+const hayProgreso=()=>ex&&(ex.revelado||SECS.some(s=>ex.sec[s].st!==0||ex.sec[s].fallos>0));
+function estadoEj(e){return e.revelado?'Soluciones vistas':(aciertosEj(e)===4?'Completado':'Sin terminar');}
+function archivar(){
+  if(!hayProgreso())return;
+  historial.push({num:ex.num,nota:notaEj(),ok:aciertosEj(),fallos:fallosEj(),estado:estadoEj(ex),
+    detalle:SECS.map(s=>({...ex.sec[s]})),min:Math.ceil((Date.now()-ex.inicio)/60000)});
+}
+function nuevoEjercicio(){archivar();cargarEjercicio();window.scrollTo({top:0,behavior:'smooth'});}
+function pedirNuevo(){
+  if(!hayProgreso()||ex.terminado){cerrarModal();nuevoEjercicio();return;}
+  $('nuevo-txt').innerHTML=`Este ejercicio está sin terminar. Quedará registrado en el informe con su nota actual (<b>${fmt(notaEj())} / 10</b>) y no podrás volver a él.`;
+  abrirModal('ov-nuevo','nuevo-no');
+}
+
+/* ═════════════ MODALES ═════════════ */
+let modalAbierto=null,focoPrevio=null;
+function abrirModal(id,focoId){
+  if(modalAbierto)$(modalAbierto).classList.remove('abierto');
+  else focoPrevio=document.activeElement;
+  modalAbierto=id;$(id).classList.add('abierto');
+  setTimeout(()=>$(focoId).focus(),0);
+}
+function cerrarModal(){
+  if(!modalAbierto)return;
+  $(modalAbierto).classList.remove('abierto');modalAbierto=null;
+  if(focoPrevio&&document.contains(focoPrevio))focoPrevio.focus();
+}
+document.querySelectorAll('.overlay').forEach(ov=>ov.addEventListener('click',e=>{if(e.target===ov)cerrarModal();}));
+
+const etiquetaSec={amp:'1. Matriz ampliada',p1:'2. Primera eliminación',p2:'3. Segunda eliminación',back:'4. Sustitución'};
+function estadoSec(d){
+  if(d.st==='rev')return d.fallos?`Solución vista (tras ${d.fallos} ${d.fallos===1?'fallo':'fallos'})`:'Solución vista';
+  if(d.st===1)return d.fallos?`Correcto tras ${d.fallos} ${d.fallos===1?'fallo':'fallos'}`:'Correcto al primer intento';
+  if(d.st===-1)return 'Pendiente';
+  return 'Sin hacer';
+}
+const hhmm=min=>`${String(Math.floor(min/60)).padStart(2,'0')}:${String(min%60).padStart(2,'0')}`;
+function colorNota(n){
+  // Colores semánticos de la ficha; texto oscuro en 9 y 7 para que el contraste sea suficiente.
+  if(n>=10)return['#1a7a1a','#ffffff'];
+  if(n>=9)return['#6dbf6d','#0f2a10'];
+  if(n>=8)return['#1a4f8a','#ffffff'];
+  if(n>=7)return['#5b9bd5','#0b2238'];
+  if(n>=6)return['#c05c00','#ffffff'];
+  if(n>=5)return['#f5a623','#1a1205'];
+  return['#c0392b','#ffffff'];
+}
+function abrirInforme(){
+  if(!requiereNombre())return;
+  const now=new Date(),n=notaEj();
+  const[bg,fg]=colorNota(n),box=$('informe');
+  box.style.background=bg;box.style.color=fg;box.style.borderColor=fg==='#ffffff'?'var(--color-borde)':fg;
+  if(n>=10)document.body.classList.add('ficha-diez');
+  $('inf-titulo').textContent=document.querySelector('.titulo-ficha').textContent;
+  $('inf-sub').textContent=document.querySelector('.subtitulo').textContent;
+  $('inf-nombre').textContent=$('nombre').value.trim();
+  $('inf-nota').textContent=`${fmt(n)} / 10`;
+  const fecha=now.toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const hora=now.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const minTot=Math.ceil(Math.max(1,now-inicioSesion)/60000),minEj=Math.ceil(Math.max(1,now-ex.inicio)/60000);
+  $('inf-datos').innerHTML=`<div><b>Ejercicio calificado:</b> n.º ${ex.num} (${estadoEj(ex).toLowerCase()})</div>
+    <div><b>Fecha:</b> ${fecha} &nbsp;·&nbsp; <b>Hora:</b> ${hora}</div>
+    <div><b>Tiempo total:</b> ${hhmm(minTot)} &nbsp;·&nbsp; <b>En este ejercicio:</b> ${hhmm(minEj)}</div>
+    <div><b>Apartados correctos:</b> ${aciertosEj()} / 4 &nbsp;·&nbsp; <b>Fallos:</b> ${fallosEj()} &nbsp;·&nbsp; <b>Soluciones vistas:</b> ${SECS.filter(s=>ex.sec[s].st==='rev').length}</div>`;
+  let h=`<table class="inf-tabla"><caption>Desglose del ejercicio ${ex.num}</caption><thead><tr><th>Apartado</th><th>Estado</th><th>Fallos</th></tr></thead><tbody>`;
+  SECS.forEach(s=>{const d=ex.sec[s];h+=`<tr><td>${etiquetaSec[s]}</td><td>${estadoSec(d)}</td><td>${d.fallos}</td></tr>`;});
+  h+='</tbody></table>';
+  if(historial.length){
+    h+=`<table class="inf-tabla"><caption>Ejercicios anteriores</caption><thead><tr><th>N.º</th><th>Nota</th><th>Apartados</th><th>Fallos</th><th>Resultado</th></tr></thead><tbody>`;
+    historial.forEach(e=>{h+=`<tr><td>${e.num}</td><td>${fmt(e.nota)}</td><td>${e.ok} / 4</td><td>${e.fallos}</td><td>${e.estado}</td></tr>`;});
+    h+='</tbody></table>';
+  }
+  $('inf-tablas').innerHTML=h;
+  abrirModal('ov-informe','inf-volver');
+}
+
+/* ═════════════ EVENTOS ═════════════ */
+$('ex').addEventListener('click',e=>{const b=e.target.closest('[data-verif]');if(b)VERIF[b.dataset.verif]();});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&modalAbierto){e.preventDefault();cerrarModal();return;}
+  if(e.key!=='Enter')return;
+  const t=e.target;
+  if(t.id==='nombre'){e.preventDefault();const f=document.querySelector('#ex input.mi:not(:disabled)');if(f&&!f.closest('[inert]'))f.focus();return;}
+  if(!t.classList||!t.classList.contains('mi'))return;
+  const sec=t.closest('.apartado');
+  if(sec&&!sec.hasAttribute('inert')){e.preventDefault();VERIF[sec.id.replace('sec-','')]();}
+});
+$('nombre').addEventListener('input',()=>{if($('nombre').value.trim()){$('nombre').classList.remove('falta');$('aviso-nombre').classList.remove('visible');}});
+$('ex').addEventListener('input',e=>{if(e.target.classList.contains('formato'))e.target.classList.remove('formato');});
+$('btn-finalizar').addEventListener('click',abrirInforme);
+$('btn-nuevo').addEventListener('click',pedirNuevo);
+$('btn-soluciones').addEventListener('click',()=>{if(!$('btn-soluciones').disabled)abrirModal('ov-soluciones','sol-no');});
+$('sol-no').addEventListener('click',cerrarModal);
+$('sol-si').addEventListener('click',()=>{cerrarModal();revelarSoluciones();});
+$('nuevo-no').addEventListener('click',cerrarModal);
+$('nuevo-si').addEventListener('click',()=>{cerrarModal();nuevoEjercicio();});
+$('inf-x').addEventListener('click',cerrarModal);
+$('inf-volver').addEventListener('click',cerrarModal);
+$('inf-nuevo').addEventListener('click',pedirNuevo);
+
+cargarEjercicio();
+</script>
+</body>
+</html>
