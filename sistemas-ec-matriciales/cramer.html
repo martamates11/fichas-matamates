@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Regla de Cramer — Ficha interactiva</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap');
+:root{
+  --color-fondo:#F5F0E8;--color-fondo-card:#FDFAF3;--color-texto:#2C1F0E;--color-texto-suave:#6B4F35;
+  --color-acento:#A0522D;--color-acento-hover:#7B3B1E;--color-borde:#C9A96E;--color-borde-suave:#E0CEAA;
+  --color-cabecera:#3B2510;--color-cabecera-txt:#F5EDD8;--color-barra-alumno:#EFE4CC;
+  --color-correcto:#2E6B3E;--color-incorrecto:#8B1A1A;--color-neutro:#E8DFC8;
+  --color-ok-fondo:#EAF4EC;--color-mal-fondo:#F9EAEA;--color-aviso-fondo:#FBF5E6;
+  --color-apagado:#A8998A;--color-apagado-fondo:#F3EFE6;--color-b:#FBEFE3;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Lato',sans-serif;font-size:16px;color:var(--color-texto);background:var(--color-fondo);line-height:1.55;padding-bottom:40px;transition:background .4s}
+body.success-mode{background:#DCEFDC}
+h1,h2,h3{font-family:'Libre Baskerville',serif;color:var(--color-texto)}
+i{font-family:'Libre Baskerville',serif}
+
+.cabecera{background:var(--color-cabecera);color:var(--color-cabecera-txt);font-family:'Libre Baskerville',serif;text-align:center;padding:12px 20px;border-bottom:3px solid var(--color-borde);font-size:.78rem;letter-spacing:.04em}
+.ficha-container{max-width:820px;margin:28px auto;background:var(--color-fondo-card);border:2px solid var(--color-borde);border-radius:6px;box-shadow:0 3px 12px rgba(44,31,14,.15);padding:32px 36px}
+.titulo-ficha{font-size:1.6rem;text-align:center;border-bottom:2px solid var(--color-borde);padding-bottom:10px;margin-bottom:8px}
+.titulo-ficha::after{content:'';display:block;width:60px;height:3px;background:var(--color-borde);margin:8px auto 0;border-radius:2px}
+.subtitulo{text-align:center;color:var(--color-texto-suave);font-family:'Libre Baskerville',serif;font-style:italic;font-size:.95rem;margin-bottom:18px}
+
+.barra{position:sticky;top:0;z-index:50;background:var(--color-barra-alumno);border:1.5px solid var(--color-borde);border-radius:6px;margin:0 0 22px;box-shadow:0 2px 6px rgba(44,31,14,.08);padding:9px 20px;display:flex;flex-wrap:wrap;gap:8px 24px;align-items:center;justify-content:center;font-size:.92rem}
+.barra label{font-family:'Libre Baskerville',serif;font-size:.85rem;color:var(--color-texto-suave)}
+.barra input#nombre{background:var(--color-fondo-card);border:1.5px solid var(--color-borde);border-radius:4px;padding:6px 10px;font-family:'Lato',sans-serif;font-size:.95rem;color:var(--color-texto);width:230px;max-width:60vw;outline:none}
+.barra input#nombre:focus{border-color:var(--color-acento)}
+.barra input#nombre.falta{border-color:var(--color-incorrecto);box-shadow:0 0 0 3px rgba(139,26,26,.18)}
+.barra .dato{color:var(--color-texto-suave)}
+.barra .dato b{color:var(--color-acento);font-family:'Libre Baskerville',serif}
+.aviso-nombre{color:var(--color-incorrecto);font-size:.82rem;font-weight:700;display:none;width:100%;text-align:center}
+.aviso-nombre.visible{display:block}
+
+.instrucciones{background:var(--color-fondo);border:1.5px solid var(--color-borde-suave);border-left:4px solid var(--color-borde);border-radius:4px;margin-bottom:18px;font-size:.9rem;color:var(--color-texto-suave)}
+.instrucciones summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:12px 22px;font-family:'Libre Baskerville',serif;font-size:1rem;font-weight:700;color:var(--color-texto);user-select:none;border-radius:4px}
+.instrucciones summary::-webkit-details-marker{display:none}
+.instrucciones summary::after{content:'';margin-left:auto;width:8px;height:8px;border-right:2px solid var(--color-acento);border-bottom:2px solid var(--color-acento);transform:rotate(45deg);transition:transform .25s;margin-top:-4px}
+.instrucciones[open] summary::after{transform:rotate(-135deg);margin-top:4px}
+.instrucciones summary:hover{background:var(--color-barra-alumno)}
+.instrucciones summary:focus-visible{outline:2px solid var(--color-acento);outline-offset:2px}
+.instrucciones .resumen-cerrado{font-family:'Lato',sans-serif;font-weight:400;font-size:.8rem;color:var(--color-texto-suave)}
+.instrucciones[open] .resumen-cerrado{display:none}
+.instrucciones ul{margin:0 22px 14px 40px}
+.instrucciones li{margin:3px 0}
+.instrucciones b{color:var(--color-texto)}
+
+.progreso{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:20px}
+.chip{font-size:.8rem;padding:4px 12px;border-radius:20px;border:1.5px solid var(--color-borde-suave);color:var(--color-texto-suave);background:var(--color-fondo)}
+.chip.sup{border-color:var(--color-correcto);color:var(--color-correcto);background:var(--color-ok-fondo);font-weight:700}
+
+#zona-ejercicio{scroll-margin-top:90px}
+.ejercicio-card{background:var(--color-fondo);border:1.5px solid var(--color-borde-suave);border-left:4px solid var(--color-borde);border-radius:4px;padding:20px 24px;margin-bottom:20px}
+.ej-cab{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+.ej-cab h2{font-size:1.15rem}
+.ej-enun{font-size:.95rem;color:var(--color-texto-suave)}
+
+.sistema{display:flex;align-items:stretch;justify-content:center;margin:14px 0 6px;font-size:1.12rem}
+.llave{width:17px;margin-right:10px;flex-shrink:0;align-self:stretch;height:auto}
+.llave path{fill:var(--color-texto-suave)}
+.sistema table{border-collapse:collapse}
+.sistema td{padding:4px 0;text-align:right;white-space:nowrap;line-height:1.5}
+.sistema td.sg{text-align:center;width:1.5em;color:var(--color-texto)}
+.sistema td.igual{text-align:center;padding:4px 12px}
+.sistema td.tb{text-align:left;color:var(--color-acento);font-weight:700}
+
+.apartado{border:1.5px solid var(--color-borde-suave);border-radius:6px;padding:16px 20px;margin-top:16px;background:var(--color-fondo-card);transition:opacity .3s,border-color .3s}
+.apartado.bloqueado{opacity:.42;pointer-events:none}
+.apartado.activo{border-color:var(--color-borde);box-shadow:0 2px 10px rgba(160,82,45,.10)}
+.apartado.st-ok{border-left:4px solid var(--color-correcto)}
+.apartado.st-mal{border-left:4px solid var(--color-incorrecto)}
+.apartado.st-auto{border-left:4px solid var(--color-borde-suave);background:var(--color-fondo)}
+.apartado.st-revelado{border-left:4px dashed var(--color-apagado)}
+.ap-cab{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.ap-num{width:26px;height:26px;border-radius:50%;background:var(--color-acento);color:#FDFAF3;font-weight:700;font-size:.85rem;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.ap-cab h3{font-size:1rem;flex:1}
+.ap-tag{font-size:.75rem;padding:2px 10px;border-radius:20px;border:1px solid var(--color-borde-suave);color:var(--color-texto-suave);white-space:nowrap}
+.ap-tag.sup{border-color:var(--color-correcto);color:var(--color-correcto);font-weight:700}
+.ap-enun{font-size:.9rem;color:var(--color-texto-suave);margin-bottom:10px}
+.ap-cuerpo{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:14px;margin:6px 0}
+.ap-acciones{display:flex;justify-content:center;margin-top:12px}
+.ap-acciones .btn-primario[hidden]{display:none}
+
+input.c{width:52px;height:40px;text-align:center;background:var(--color-fondo);border:1.5px solid var(--color-borde);border-radius:4px;font-family:'Lato',sans-serif;font-size:1rem;font-weight:700;color:var(--color-texto);outline:none;transition:border-color .2s,background .2s}
+input.c.ancho{width:72px}
+input.c:focus{border-color:var(--color-acento);background:#fff;box-shadow:0 0 0 3px rgba(160,82,45,.12)}
+input.c.colb{background:var(--color-b);border-color:var(--color-acento);border-style:dashed}
+input.c:disabled{opacity:1;-webkit-text-fill-color:currentColor;cursor:default}
+input.c.ok{border:1.5px solid var(--color-correcto);background:var(--color-ok-fondo);color:var(--color-correcto)}
+input.c.corregida{border:1.5px solid var(--color-incorrecto);background:var(--color-mal-fondo);color:var(--color-incorrecto)}
+input.c.revelada{border:1.5px dashed var(--color-apagado);background:var(--color-apagado-fondo);color:var(--color-texto-suave)}
+input.c.auto{border:1.5px solid var(--color-borde-suave);background:var(--color-neutro);color:var(--color-texto-suave)}
+.fija{width:52px;height:40px;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--color-texto)}
+
+.mat{display:inline-grid;gap:6px;padding:6px 14px;position:relative;vertical-align:middle}
+.mat.parentesis::before,.mat.parentesis::after{content:'';position:absolute;top:0;bottom:0;width:9px;border:2px solid var(--color-texto-suave)}
+.mat.parentesis::before{left:0;border-right:none;border-radius:14px 0 0 14px}
+.mat.parentesis::after{right:0;border-left:none;border-radius:0 14px 14px 0}
+.mat.barras::before,.mat.barras::after{content:'';position:absolute;top:2px;bottom:2px;border-left:2px solid var(--color-texto-suave)}
+.mat.barras::before{left:3px}.mat.barras::after{right:3px}
+.sep{border-left:1.5px dashed var(--color-borde);justify-self:center;width:0}
+.expr{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;font-size:1.05rem}
+.lbl{font-family:'Libre Baskerville',serif;font-weight:700;white-space:nowrap}
+.cr-lista{display:flex;flex-direction:column;gap:14px;align-items:center;width:100%}
+.frac{display:inline-flex;flex-direction:column;align-items:center;font-family:'Libre Baskerville',serif;font-size:.95rem;vertical-align:middle}
+.frac span:first-child{border-bottom:1.5px solid var(--color-texto);padding:0 4px 1px}
+.frac span:last-child{padding:1px 4px 0}
+.sol-fila{display:flex;flex-wrap:wrap;gap:18px 28px;justify-content:center}
+
+.fb{display:none;margin-top:12px;border-radius:4px;padding:10px 16px;font-size:.9rem;line-height:1.6}
+.fb.visible{display:block}
+.fb p{margin:4px 0}
+.fb.ok{background:var(--color-ok-fondo);border:1.5px solid var(--color-correcto);color:var(--color-correcto)}
+.fb.mal{background:var(--color-mal-fondo);border:1.5px solid var(--color-incorrecto);color:var(--color-incorrecto)}
+.fb.aviso{background:var(--color-aviso-fondo);border:1.5px solid var(--color-borde);color:var(--color-texto-suave)}
+.fb.solucion{background:var(--color-apagado-fondo);border:1.5px dashed var(--color-apagado);color:var(--color-texto-suave)}
+.fb.auto{background:var(--color-fondo);border:1px solid var(--color-borde-suave);color:var(--color-texto-suave);font-style:italic}
+.calc{margin:8px 0 4px;padding:8px 12px;background:rgba(255,255,255,.65);border-radius:4px;color:var(--color-texto);font-size:.86rem}
+.calc div{margin:2px 0}
+.calc-et{color:var(--color-texto-suave)}
+.lista-err{margin:6px 0 4px 20px;color:var(--color-texto)}
+.nota-corr{font-style:italic;color:var(--color-texto-suave)}
+
+.res-sistema{display:none;margin-top:18px;text-align:center;border-radius:6px;padding:16px 20px}
+.res-sistema.visible{display:block}
+.res-sistema h3{font-size:1.05rem;margin-bottom:6px}
+.res-sistema p{font-size:.92rem;margin-bottom:10px}
+.res-sistema.ok{background:var(--color-ok-fondo);border:1.5px solid var(--color-correcto)}
+.res-sistema.ok h3{color:var(--color-correcto)}
+.res-sistema.mal{background:var(--color-aviso-fondo);border:1.5px solid var(--color-borde)}
+.res-sistema.neutro{background:var(--color-apagado-fondo);border:1.5px dashed var(--color-apagado)}
+.res-sistema.fin{background:var(--color-ok-fondo);border:2px solid var(--color-correcto)}
+.res-sistema.fin h3{color:var(--color-correcto);font-size:1.2rem}
+
+.btn-primario{background:var(--color-acento);color:#FDFAF3;border:none;border-radius:4px;padding:10px 22px;font-family:'Lato',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;letter-spacing:.03em;transition:background-color .2s}
+.btn-primario:hover:not(:disabled){background:var(--color-acento-hover)}
+.btn-secundario{background:transparent;color:var(--color-acento);border:2px solid var(--color-borde);border-radius:4px;padding:9px 20px;font-family:'Lato',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;transition:border-color .2s,color .2s}
+.btn-secundario:hover{border-color:var(--color-acento);color:var(--color-acento-hover)}
+.btn-finalizar{background:var(--color-cabecera);color:var(--color-cabecera-txt);border:2px solid var(--color-borde);border-radius:4px;padding:10px 24px;font-family:'Libre Baskerville',serif;font-size:.95rem;font-weight:700;cursor:pointer;letter-spacing:.04em;transition:background-color .2s}
+.btn-finalizar:hover{background:#2C1A0A}
+button:disabled{cursor:default}
+.separador{border:none;border-top:1px solid var(--color-borde-suave);margin:24px 0}
+.pie{display:flex;flex-direction:column;align-items:center;gap:16px}
+.btn-soluciones{background:transparent;color:var(--color-apagado);border:1px solid #DDD0B6;border-radius:4px;padding:5px 14px;font-family:'Lato',sans-serif;font-size:.78rem;font-weight:400;cursor:pointer;transition:color .2s,border-color .2s}
+.btn-soluciones:hover:not(:disabled){color:var(--color-texto-suave);border-color:var(--color-borde)}
+.btn-soluciones:disabled{opacity:.4}
+
+.overlay{position:fixed;inset:0;background:rgba(44,31,14,.55);z-index:999;display:none;align-items:center;justify-content:center;padding:16px}
+.overlay.abierto{display:flex}
+.modal-confirm{background:var(--color-fondo-card);border:3px solid var(--color-borde);border-radius:8px;box-shadow:0 6px 24px rgba(44,31,14,.35);padding:28px 30px;max-width:430px;width:100%;text-align:center}
+.modal-confirm h2{font-size:1.15rem;margin-bottom:10px}
+.modal-confirm p{font-size:.92rem;color:var(--color-texto-suave);margin-bottom:18px}
+.modal-botones{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.modal-calificacion{border:3px solid var(--color-borde);border-radius:8px;font-family:'Libre Baskerville',serif;box-shadow:0 6px 24px rgba(44,31,14,.35);padding:28px 30px;width:100%;max-width:580px;max-height:92vh;overflow-y:auto;text-align:center;position:relative}
+.inf-ficha{font-size:1.25rem;font-weight:700}
+.inf-sub{font-style:italic;font-size:.88rem;opacity:.9}
+.inf-hr{border:none;border-top:1px solid currentColor;opacity:.4;margin:12px 0}
+.inf-enc{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;opacity:.85}
+.inf-nombre{font-size:1.15rem;margin-top:6px}
+.inf-nota{font-size:2.8rem;font-weight:700;margin:4px 0}
+.inf-datos{font-family:'Lato',sans-serif;font-size:.9rem;display:flex;justify-content:center;flex-wrap:wrap;gap:4px 18px;margin-bottom:14px}
+.inf-tabla{width:100%;border-collapse:collapse;font-family:'Lato',sans-serif;font-size:.84rem;margin-bottom:12px}
+.inf-tabla th,.inf-tabla td{padding:6px 6px;border-bottom:1px solid rgba(255,255,255,.3)}
+.inf-tabla th{font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;background:rgba(255,255,255,.15)}
+.inf-tabla td:first-child,.inf-tabla th:first-child{text-align:left}
+.inf-tabla .corto{display:none}
+.inf-tabla-wrap{overflow-x:auto;margin-bottom:12px}
+.inf-tabla-wrap .inf-tabla{margin-bottom:0}
+.inf-sistemas{font-family:'Lato',sans-serif;font-size:.84rem;text-align:left;background:rgba(255,255,255,.14);border-radius:6px;padding:8px 14px;margin-bottom:16px}
+.inf-cerrar{font-family:'Lato',sans-serif;font-weight:700;padding:9px 26px;border-radius:4px;cursor:pointer;background:rgba(255,255,255,.2);border:1.5px solid currentColor;color:inherit}
+.modal-x{position:absolute;top:8px;right:12px;background:none;border:none;font-size:1.3rem;cursor:pointer;color:inherit;opacity:.75}
+
+@media (max-width:620px){
+  .ficha-container{margin:0;border-left:none;border-right:none;border-radius:0;padding:20px 12px}
+  .ejercicio-card{padding:14px 10px}
+  .apartado{padding:12px 8px}
+  input.c,.fija{width:42px;height:38px;font-size:.95rem}
+  input.c.ancho{width:62px}
+  .mat{gap:4px;padding:5px 11px}
+  .barra{padding:8px 10px;gap:6px 14px}
+  .sistema{font-size:1rem}
+  .modal-calificacion{padding:22px 12px}
+  .inf-nota{font-size:2.3rem}
+  .inf-tabla{font-size:.76rem}
+  .inf-tabla th,.inf-tabla td{padding:5px 3px}
+  .inf-tabla .largo{display:none}
+  .inf-tabla .corto{display:inline}
+  .barra{font-size:.84rem}
+  .barra label{display:none}
+  .barra input#nombre{width:100%;max-width:none;padding:5px 9px}
+}
+</style>
+</head>
+<body>
+
+<header class="cabecera">Material elaborado por Marta L Letona S. Basado en el trabajo de Javier Cayetano</header>
+
+<main class="ficha-container">
+  <h1 class="titulo-ficha">Regla de Cramer</h1>
+  <p class="subtitulo">Bachillerato · Sistemas de tres ecuaciones con tres incógnitas</p>
+
+  <div class="barra">
+    <label for="nombre">Alumno/a:</label>
+    <input type="text" id="nombre" placeholder="Nombre y apellidos" autocomplete="off" maxlength="60">
+    <span class="dato">Nota: <b id="marcador-nota">0</b> / 10</span>
+    <span class="dato">Apartados superados: <b id="marcador-sup">0</b> / 4</span>
+    <span class="dato">Fallos: <b id="marcador-fallos">0</b></span>
+    <div class="aviso-nombre" id="aviso-nombre" role="alert">Escribe tu nombre y apellidos antes de continuar.</div>
+  </div>
+
+  <details class="instrucciones" open>
+    <summary>Cómo funciona <span class="resumen-cerrado">· 2,5 por apartado, −0,5 por fallo</span></summary>
+    <ul>
+      <li>Resuelve cada sistema por la regla de Cramer en <b>cuatro apartados</b>. Comprueba cada uno con su botón o pulsando <b>Intro</b>.</li>
+      <li>Cada apartado vale <b>2,5 puntos</b> y queda superado la primera vez que lo resuelves sin errores, en cualquier sistema. <b>Cada fallo resta 0,5</b>.</li>
+      <li>Tienes <b>un intento por apartado</b> en cada sistema: si fallas, verás la corrección y seguirás con los datos correctos. Ese apartado podrás superarlo en un sistema nuevo. Los apartados ya superados aparecen resueltos.</li>
+      <li>Si pulsas «Mostrar soluciones», ese sistema <b>no contará para la nota</b> (los fallos que ya hayas cometido en él sí cuentan).</li>
+      <li>Escribe los negativos con el signo menos, por ejemplo −3.</li>
+    </ul>
+  </details>
+
+  <div class="progreso" id="progreso"></div>
+
+  <section id="zona-ejercicio"></section>
+
+  <hr class="separador">
+  <footer class="pie">
+    <button class="btn-finalizar" id="btn-finalizar" type="button">Finalizar y calificar</button>
+    <button class="btn-soluciones" id="btn-soluciones" type="button">Mostrar soluciones</button>
+  </footer>
+</main>
+
+<div class="overlay" id="modal-fin" aria-hidden="true">
+  <div class="modal-confirm" role="dialog" aria-modal="true" aria-labelledby="fin-tit">
+    <h2 id="fin-tit">¿Finalizar y calificar?</h2>
+    <p id="fin-txt">Se cerrará la ficha completa: ya no podrás seguir respondiendo y se calificará con la nota que llevas ahora.</p>
+    <div class="modal-botones">
+      <button class="btn-primario" id="fin-no" type="button">Seguir trabajando</button>
+      <button class="btn-secundario" id="fin-si" type="button">Sí, finalizar</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="modal-sol" aria-hidden="true">
+  <div class="modal-confirm" role="dialog" aria-modal="true" aria-labelledby="sol-tit">
+    <h2 id="sol-tit">¿Mostrar las soluciones?</h2>
+    <p>Verás resuelto, con sus explicaciones, lo que te queda del <b>sistema en curso</b>. Ese sistema <b>no contará para la nota</b>; los fallos que ya hayas cometido en él siguen restando. Después podrás seguir con un sistema nuevo.</p>
+    <div class="modal-botones">
+      <button class="btn-primario" id="sol-no" type="button">Volver al ejercicio</button>
+      <button class="btn-secundario" id="sol-si" type="button">Sí, mostrar soluciones</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="modal-informe" aria-hidden="true">
+  <div class="modal-calificacion" id="informe" role="dialog" aria-modal="true" aria-label="Informe de la actividad"></div>
+</div>
+
+<script>
+'use strict';
+/* ============ Configuración ============ */
+const APARTADOS=[
+  {id:'amp',nombre:'Matriz ampliada'},
+  {id:'det',nombre:'Determinante |A|'},
+  {id:'cramer',nombre:'Determinantes de Cramer'},
+  {id:'sol',nombre:'Solución'}
+];
+const PUNTOS=2.5, PENAL=0.5, V='xyz';
+
+/* Semilla: solo para pruebas en local (archivo abierto desde disco, ?seed=N). Publicada, siempre aleatoria. */
+let rand=Math.random;
+const MODO_PRUEBA=location.protocol==='file:';
+const seedParam=MODO_PRUEBA?new URLSearchParams(location.search).get('seed'):null;
+if(seedParam!==null){let a=(parseInt(seedParam,10)>>>0)||1;rand=function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const rint=(a,b)=>Math.floor(rand()*(b-a+1))+a;
+
+/* ============ Estado ============ */
+const state={fallosTotales:0,ap:{},sistemas:[],inicio:Date.now(),fin:null,finalizada:false};
+APARTADOS.forEach(a=>state.ap[a.id]={superado:false,aciertos:0,fallos:0,vistas:0});
+let ex=null, modalAbierto=null, ultimaComprobacion=0;
+
+function calcularNota(){
+  const sup=APARTADOS.filter(a=>state.ap[a.id].superado).length;
+  const bruta=sup*PUNTOS-state.fallosTotales*PENAL;
+  return Math.round(Math.min(10,Math.max(0,bruta))*100)/100;
+}
+const todosSuperados=()=>APARTADOS.every(a=>state.ap[a.id].superado);
+
+/* ============ Utilidades ============ */
+const $=id=>document.getElementById(id);
+const eq=(a,b)=>Math.abs(a-b)<1e-6;
+function fmt(n){
+  if(Math.abs(n-Math.round(n))<1e-9)n=Math.round(n);
+  const a=Math.abs(n);
+  const s=Number.isInteger(a)?String(a):String(Math.round(a*100)/100).replace('.',',');
+  return (n<0?'−':'')+s;
+}
+const par=n=>n<0?'('+fmt(n)+')':fmt(n);
+function leer(v){
+  if(v==null)return null;
+  let s=String(v).trim().replace(/[−–—]/g,'-');
+  if(/\d\s+[\d.,]/.test(s))return null;
+  s=s.replace(/\s+/g,'');
+  if(s==='')return null;
+  if(/^[+-]?\d+([.,]\d+)?\/[+-]?\d+([.,]\d+)?$/.test(s)){
+    const [p,q]=s.split('/');const n=+p.replace(',','.'),d=+q.replace(',','.');
+    return d===0?null:n/d;
+  }
+  if(/^[+-]?\d+([.,]\d+)?$/.test(s))return +s.replace(',','.');
+  return null;
+}
+const val=id=>{const el=$(id);return el?el.value:null;};
+function det3(m){return m[0][0]*(m[1][1]*m[2][2]-m[1][2]*m[2][1])-m[0][1]*(m[1][0]*m[2][2]-m[1][2]*m[2][0])+m[0][2]*(m[1][0]*m[2][1]-m[1][1]*m[2][0]);}
+
+/* ============ Generación algorítmica ============ */
+const usados=new Set();
+function generar(){
+  for(let it=0;it<20000;it++){
+    const s=[rint(-5,5),rint(-5,5),rint(-5,5)];
+    if(s.filter(v=>v===0).length>1)continue;
+    if(s[0]===s[1]&&s[1]===s[2])continue;
+    const A=[0,1,2].map(()=>[0,1,2].map(()=>rint(-4,4)));
+    if(A.flat().filter(v=>v===0).length>1)continue;
+    const D=det3(A);
+    if(Math.abs(D)<2||Math.abs(D)>40)continue;
+    const b=A.map(r=>r[0]*s[0]+r[1]*s[1]+r[2]*s[2]);
+    if(b.some(v=>Math.abs(v)>30))continue;
+    const key=JSON.stringify([A,b]);
+    if(usados.has(key))continue;
+    usados.add(key);
+    const Ms=[0,1,2].map(k=>A.map((r,i)=>r.map((v,j)=>j===k?b[i]:v)));
+    const Ds=Ms.map(det3);
+    return {A,b,sol:s,D,Ms,Ds};
+  }
+  throw new Error('No se pudo generar un sistema');
+}
+
+/* ============ Regla de Sarrus y diagnóstico ============ */
+function sarrus(m){
+  const pos=[[m[0][0],m[1][1],m[2][2]],[m[0][1],m[1][2],m[2][0]],[m[0][2],m[1][0],m[2][1]]];
+  const neg=[[m[0][2],m[1][1],m[2][0]],[m[0][0],m[1][2],m[2][1]],[m[0][1],m[1][0],m[2][2]]];
+  const prod=t=>t[0]*t[1]*t[2];
+  const sp=pos.reduce((s,t)=>s+prod(t),0),sn=neg.reduce((s,t)=>s+prod(t),0);
+  return {pos,neg,prod,sp,sn,det:sp-sn};
+}
+const prodTxt=t=>t.map(par).join('·');
+const sumaTxt=arr=>arr.map((v,i)=>i===0?fmt(v):(v<0?' − '+fmt(-v):' + '+fmt(v))).join('');
+function textoSarrus(m,nombre){
+  const S=sarrus(m);
+  return `<div class="calc">
+    <div><span class="calc-et">Diagonales principales (suman):</span> ${S.pos.map(prodTxt).join(' + ')} = ${sumaTxt(S.pos.map(S.prod))} = ${fmt(S.sp)}</div>
+    <div><span class="calc-et">Diagonales secundarias (restan):</span> ${S.neg.map(prodTxt).join(' + ')} = ${sumaTxt(S.neg.map(S.prod))} = ${fmt(S.sn)}</div>
+    <div><b>${nombre} = ${fmt(S.sp)} − ${par(S.sn)} = ${fmt(S.det)}</b></div></div>`;
+}
+function diagDet(v,m,nombre){
+  const S=sarrus(m),D=S.det;
+  if(D!==0&&eq(v,-D))return `Has obtenido ${nombre} con el <b>signo cambiado</b>: los productos de las diagonales principales se suman y los de las secundarias se restan, no al revés.`;
+  if(eq(v,S.sp+S.sn)&&S.sn!==0)return `Has <b>sumado</b> los productos de las diagonales secundarias; en la regla de Sarrus esos tres productos se restan.`;
+  const todos=[...S.pos.map(t=>({t,s:1})),...S.neg.map(t=>({t,s:-1}))];
+  for(const {t,s} of todos){
+    const p=S.prod(t);if(p===0)continue;
+    if(eq(v,D-2*s*p))return `Casi: un producto tiene el <b>signo equivocado</b>. Revisa ${prodTxt(t)} = ${fmt(p)}${s<0?' (diagonal secundaria, se resta)':' (diagonal principal, se suma)'}: el signo de un producto depende de cuántos factores negativos tenga.`;
+    if(eq(v,D-s*p))return `Te <b>falta un producto</b>: ${prodTxt(t)} = ${fmt(p)}${s>0?' (diagonal principal)':' (diagonal secundaria)'}. La regla de Sarrus tiene seis productos: tres suman y tres restan.`;
+  }
+  return `Revisa los seis productos de la regla de Sarrus, sobre todo los signos al multiplicar números negativos.`;
+}
+
+/* ============ Renderizado ============ */
+/* Cada término en su celda y cada signo en su propia columna, para que todo quede alineado */
+function filaSistema(r,bi){
+  let primero=true,celdas='';
+  for(let j=0;j<3;j++){
+    const c=r[j];
+    if(c===0){celdas+=(j>0?'<td class="sg"></td>':'')+'<td></td>';continue;}
+    const coef=Math.abs(c)===1?'':Math.abs(c);
+    if(j>0)celdas+=`<td class="sg">${primero?'':(c<0?'−':'+')}</td>`;
+    celdas+=`<td>${primero&&c<0?'−':''}${coef}<i>${V[j]}</i></td>`;
+    primero=false;
+  }
+  return `<tr>${celdas}<td class="igual">=</td><td class="tb">${fmt(bi)}</td></tr>`;
+}
+/* Llave rellena con grosor variable: puntas finas, cuerpo y pico centrales más marcados */
+const LLAVE=`<svg class="llave" viewBox="0 0 24 120" preserveAspectRatio="none" aria-hidden="true"><path d="M21 1.2 C15 1.2 11.2 4.5 11.2 12 L11.2 47 C11.2 54.5 8.5 58.6 2.2 60 C8.5 61.4 11.2 65.5 11.2 73 L11.2 108 C11.2 115.5 15 118.8 21 118.8 L21 117.4 C16.8 117.4 14.6 114.2 14.6 107 L14.6 72 C14.6 65.2 12.4 61.6 8.2 60 C12.4 58.4 14.6 54.8 14.6 48 L14.6 13 C14.6 5.8 16.8 2.6 21 2.6 Z"/></svg>`;
+
+function inp(id,label,extra=''){return `<input class="c ${extra}" id="${id}" type="text" autocomplete="off" spellcheck="false" aria-label="${label}">`;}
+const fija=v=>`<span class="fija">${fmt(v)}</span>`;
+
+function gridAmp(){
+  let h=`<div class="mat parentesis" style="grid-template-columns:repeat(3,auto) 10px auto" role="group" aria-label="Matriz ampliada">`;
+  for(let i=0;i<3;i++){
+    for(let j=0;j<3;j++)h+=`<div style="grid-row:${i+1};grid-column:${j+1}">${inp(`amp_${i}_${j}`,`Fila ${i+1}, coeficiente de ${V[j]}`)}</div>`;
+    h+=`<div style="grid-row:${i+1};grid-column:5">${inp(`amp_${i}_3`,`Fila ${i+1}, término independiente`,'colb')}</div>`;
+  }
+  return h+`<div class="sep" style="grid-row:1/4;grid-column:4"></div></div>`;
+}
+function gridDet(){
+  let h=`<div class="mat barras" style="grid-template-columns:repeat(3,auto)" role="group" aria-label="Determinante de A">`;
+  for(let i=0;i<3;i++)for(let j=0;j<3;j++)h+=inp(`det_${i}_${j}`,`|A|: fila ${i+1}, columna ${j+1}`);
+  return h+'</div>';
+}
+function gridCramer(k){
+  let h=`<div class="mat barras" style="grid-template-columns:repeat(3,auto)" role="group" aria-label="Determinante Delta ${V[k]}">`;
+  for(let i=0;i<3;i++)for(let j=0;j<3;j++)h+=inp(`cr_${k}_${i}_${j}`,`Delta ${V[k]}: fila ${i+1}, columna ${j+1}`,j===k?'colb':'');
+  return h+'</div>';
+}
+function apartadoHTML(n,id,titulo,enun,cuerpo){
+  return `<div class="apartado" id="ap-${id}" data-ap="${id}">
+    <div class="ap-cab"><span class="ap-num">${n}</span><h3>${titulo}</h3><span class="ap-tag" id="tag-${id}"></span></div>
+    <p class="ap-enun">${enun}</p>
+    <div class="ap-cuerpo">${cuerpo}</div>
+    <div class="ap-acciones"><button class="btn-primario btn-comprobar" type="button" data-ap="${id}">Comprobar</button></div>
+    <div class="fb" id="fb-${id}" aria-live="polite"></div>
+  </div>`;
+}
+function renderSistema(){
+  const {A,b}=ex;
+  const cramer=[0,1,2].map(k=>`<div class="expr"><span class="lbl">Δ<sub>${V[k]}</sub> =</span>${gridCramer(k)}<span class="lbl">=</span>${inp(`crv_${k}`,`Valor de Delta ${V[k]}`,'ancho')}</div>`).join('');
+  const sol=[0,1,2].map(k=>`<div class="expr"><span class="lbl"><i>${V[k]}</i> =</span><span class="frac"><span>Δ<sub>${V[k]}</sub></span><span>|A|</span></span><span class="lbl">=</span>${inp(`sol_${k}`,`Valor de ${V[k]}`)}</div>`).join('');
+  $('zona-ejercicio').innerHTML=`<div class="ejercicio-card">
+    <div class="ej-cab"><h2>Sistema ${ex.n}</h2></div>
+    <p class="ej-enun">Resuelve el sistema por la regla de Cramer:</p>
+    <div class="sistema">${LLAVE}<table>${A.map((r,i)=>filaSistema(r,b[i])).join('')}</table></div>
+    ${apartadoHTML(1,'amp','Matriz ampliada (A|b)','Escribe la matriz ampliada del sistema. Tras la barra van los términos independientes.',gridAmp())}
+    ${apartadoHTML(2,'det','Determinante de la matriz de coeficientes','Escribe la matriz de coeficientes A en el determinante y calcula |A|. Si es distinto de 0, el sistema tiene solución única y se puede aplicar Cramer.',`<div class="expr"><span class="lbl">|A| =</span>${gridDet()}<span class="lbl">=</span>${inp('det_val','Valor del determinante de A','ancho')}</div>`)}
+    ${apartadoHTML(3,'cramer','Determinantes de Cramer','Escribe cada determinante: copia A y sustituye la columna de la incógnita (la resaltada) por los términos independientes. Después calcula su valor.',`<div class="cr-lista">${cramer}</div>`)}
+    ${apartadoHTML(4,'sol','Solución del sistema','Divide cada determinante entre |A|.',`<div class="sol-fila">${sol}</div>`)}
+    <div class="res-sistema" id="res-sistema" aria-live="polite"></div>
+  </div>`;
+}
+
+/* ============ Controles por apartado ============ */
+const inputsDe=id=>Array.from(document.querySelectorAll(`#ap-${id} input.c`));
+function marca(el,cls){el.classList.remove('ok','corregida','revelada','auto');if(cls)el.classList.add(cls);}
+function fb(id,cls,html){const el=$('fb-'+id);el.className='fb visible '+cls;el.innerHTML=html;}
+function rellenar(id){
+  const set=(i,v)=>{$(i).value=fmt(v);};
+  if(id==='amp'){for(let i=0;i<3;i++){for(let j=0;j<3;j++)set(`amp_${i}_${j}`,ex.A[i][j]);set(`amp_${i}_3`,ex.b[i]);}}
+  if(id==='det'){for(let i=0;i<3;i++)for(let j=0;j<3;j++)set(`det_${i}_${j}`,ex.A[i][j]);set('det_val',ex.D);}
+  if(id==='cramer'){for(let k=0;k<3;k++){for(let i=0;i<3;i++)for(let j=0;j<3;j++)set(`cr_${k}_${i}_${j}`,ex.Ms[k][i][j]);set(`crv_${k}`,ex.Ds[k]);}}
+  if(id==='sol'){for(let k=0;k<3;k++)set(`sol_${k}`,ex.sol[k]);}
+}
+function esPermutacion(a,b){
+  const x=[...a].sort((p,q)=>p-q),y=[...b].sort((p,q)=>p-q);
+  return x.every((v,i)=>eq(v,y[i]))&&!a.every((v,i)=>eq(v,b[i]));
+}
+
+/* ============ Validadores (devuelven explicación pedagógica) ============ */
+const VALIDA={
+  amp(){
+    const M=ex.A.map((r,i)=>[...r,ex.b[i]]);const errs=[];let inc=false;
+    for(let i=0;i<3;i++)for(let j=0;j<4;j++){
+      const id=`amp_${i}_${j}`,v=leer(val(id));
+      if(v===null)inc=true;else if(!eq(v,M[i][j]))errs.push({id,i,j,v,c:M[i][j]});
+    }
+    if(inc)return {incompleto:'Completa las doce casillas de la matriz ampliada con números (los negativos con el signo −).'};
+    const flat=ex.A.flat();
+    const expl=`Cada fila de (A|b) es una ecuación: en las tres primeras columnas, los coeficientes de <i>x</i>, <i>y</i>, <i>z</i>; tras la barra, el término independiente.`
+      +(flat.some(v=>Math.abs(v)===1)?` Una incógnita sin número delante tiene coeficiente 1 (o −1 si lleva signo menos).`:'')
+      +(flat.includes(0)?` Si una incógnita no aparece en una ecuación, su coeficiente es 0.`:'');
+    if(!errs.length)return {ok:true,html:expl};
+    const d=[];
+    if(errs.some(e=>e.c!==0&&eq(e.v,-e.c)))d.push('Hay casillas con el <b>signo cambiado</b>: el signo que precede a cada término forma parte de su coeficiente.');
+    if(errs.some(e=>e.c===0))d.push('Una incógnita que no aparece en la ecuación tiene coeficiente <b>0</b>: no se deja hueco ni se desplazan los demás números.');
+    if(errs.some(e=>e.j<3&&Math.abs(e.c)===1&&!eq(e.v,-e.c)))d.push('Cuando una incógnita aparece sin número delante, su coeficiente es <b>1</b> (o <b>−1</b>).');
+    if(errs.some(e=>e.j===3&&!eq(e.v,-e.c)))d.push('La última columna es la de los <b>términos independientes</b>: los números que quedan a la derecha del igual.');
+    if(!d.length)d.push('Revisa que cada coeficiente esté en la columna de su incógnita (<i>x</i>, <i>y</i>, <i>z</i>) y en la fila de su ecuación.');
+    const lista=errs.slice(0,6).map(e=>`<li>Fila ${e.i+1}, ${e.j<3?'coeficiente de <i>'+V[e.j]+'</i>':'término independiente'}: escribiste ${fmt(e.v)} y era ${fmt(e.c)}.</li>`).join('');
+    return {ok:false,malos:new Set(errs.map(e=>e.id)),
+      html:`<p>${d.join(' ')}</p><ul class="lista-err">${lista}</ul><p class="nota-corr">Se ha completado la matriz correcta (en rojo, las casillas corregidas) para que sigas con los datos buenos.</p>`};
+  },
+  det(){
+    const m=[0,1,2].map(i=>[0,1,2].map(j=>leer(val(`det_${i}_${j}`))));
+    const v=leer(val('det_val'));
+    if(m.flat().includes(null)||v===null)return {incompleto:'Completa las nueve casillas del determinante y su valor (los negativos con el signo −).'};
+    const malos=new Set(),partes=[];
+    const errs=[];
+    for(let i=0;i<3;i++)for(let j=0;j<3;j++)if(!eq(m[i][j],ex.A[i][j]))errs.push({i,j,v:m[i][j],c:ex.A[i][j]});
+    if(errs.length){
+      errs.forEach(e=>malos.add(`det_${e.i}_${e.j}`));
+      const lista=errs.slice(0,6).map(e=>`<li>Fila ${e.i+1}, columna ${e.j+1}: escribiste ${fmt(e.v)} y era ${fmt(e.c)}.</li>`).join('');
+      partes.push(`<p>La matriz de coeficientes A es la matriz ampliada <b>sin la columna de los términos independientes</b>: se copia tal cual, fila por fila.</p><ul class="lista-err">${lista}</ul>`);
+    }
+    const concl=`<p>Como |A| = ${fmt(ex.D)} ≠ 0, el sistema es <b>compatible determinado</b> (tiene solución única) y se puede resolver por Cramer.</p>`;
+    if(!eq(v,ex.D)){
+      malos.add('det_val');
+      partes.push(errs.length
+        ?`<p>Con la matriz correcta, |A| = ${fmt(ex.D)}.</p>`
+        :`<p>Escribiste ${fmt(v)}, pero |A| = ${fmt(ex.D)}. ${diagDet(v,ex.A,'|A|')}</p>`);
+    }
+    if(!malos.size)return {ok:true,html:textoSarrus(ex.A,'|A|')+concl};
+    return {ok:false,malos,html:partes.join('')+(malos.has('det_val')?textoSarrus(ex.A,'|A|'):'')+concl+`<p class="nota-corr">Se han completado los valores correctos (en rojo, los corregidos) para que sigas.</p>`};
+  },
+  cramer(){
+    const res=[];let inc=false;
+    for(let k=0;k<3;k++){
+      const m=[0,1,2].map(i=>[0,1,2].map(j=>leer(val(`cr_${k}_${i}_${j}`)))),d=leer(val(`crv_${k}`));
+      if(m.flat().includes(null)||d===null)inc=true;
+      res.push({m,col:m.map(f=>f[k]),d});
+    }
+    if(inc)return {incompleto:'Completa las nueve casillas de cada determinante y los valores de Δ<sub>x</sub>, Δ<sub>y</sub> y Δ<sub>z</sub>.'};
+    const malos=new Set(),partes=[];
+    res.forEach((r,k)=>{
+      const nom=`Δ<sub>${V[k]}</sub>`;
+      const igual=(a,b)=>a.every((f,i)=>f.every((v,j)=>eq(v,b[i][j])));
+      const matOk=igual(r.m,ex.Ms[k]),valOk=eq(r.d,ex.Ds[k]);
+      const colOk=r.col.every((v,i)=>eq(v,ex.b[i]));
+      for(let i=0;i<3;i++)for(let j=0;j<3;j++)if(!eq(r.m[i][j],ex.Ms[k][i][j]))malos.add(`cr_${k}_${i}_${j}`);
+      const otra=[0,1,2].find(j=>j!==k&&igual(r.m,ex.Ms[j]));
+      if(!matOk&&otra!==undefined){
+        partes.push(`<p>En ${nom} has sustituido la columna de <i>${V[otra]}</i> en lugar de la de <i>${V[k]}</i>. En Δ<sub>${V[k]}</sub> se cambia la columna de la incógnita que se calcula.</p>`);
+      }else if(!matOk&&colOk){
+        partes.push(`<p>En ${nom} la columna de los términos independientes está bien, pero hay errores al copiar las otras dos columnas: se copian de A sin cambios.</p>`);
+      }else if(!colOk){
+        const colA=ex.A.map(f=>f[k]);let t;
+        if(r.col.every((v,i)=>eq(v,colA[i])))t=`En ${nom} has dejado la columna original de los coeficientes de <i>${V[k]}</i>: precisamente esa es la que se sustituye por los términos independientes.`;
+        else if(r.col.every((v,i)=>eq(v,-ex.b[i])))t=`En ${nom} has puesto los términos independientes con el <b>signo cambiado</b>: se copian tal y como aparecen a la derecha del igual.`;
+        else if(esPermutacion(r.col,ex.b))t=`En ${nom} los términos independientes están <b>desordenados</b>: cada uno va en la fila de su ecuación.`;
+        else t=`En ${nom}, la columna de <i>${V[k]}</i> debe ser la de los términos independientes (${ex.b.map(fmt).join(', ')}), en el orden de las ecuaciones.`;
+        const restoOk=r.m.every((f,i)=>f.every((v,j)=>j===k||eq(v,ex.A[i][j])));
+        partes.push(`<p>${t}${restoOk?'':' Además, revisa las otras dos columnas: se copian de A sin cambios.'}</p>`);
+      }
+      if(!valOk){
+        malos.add(`crv_${k}`);
+        partes.push(matOk
+          ?`<p>Escribiste ${nom} = ${fmt(r.d)}, pero ${nom} = ${fmt(ex.Ds[k])}. ${diagDet(r.d,ex.Ms[k],nom)}</p>${textoSarrus(ex.Ms[k],nom)}`
+          :`<p>Con la matriz correcta, ${nom} = ${fmt(ex.Ds[k])}.</p>${textoSarrus(ex.Ms[k],nom)}`);
+      }
+    });
+    const regla=`En cada determinante se sustituye la columna de la incógnita por la de los términos independientes; las otras dos columnas se copian de A sin cambios.`;
+    const vals=`Δ<sub>x</sub> = ${fmt(ex.Ds[0])}, Δ<sub>y</sub> = ${fmt(ex.Ds[1])}, Δ<sub>z</sub> = ${fmt(ex.Ds[2])}.`;
+    if(!malos.size)return {ok:true,html:`${regla} ${vals}`};
+    return {ok:false,malos,html:partes.join('')+`<p>${regla}</p><p class="nota-corr">Se han completado los valores correctos (en rojo, los corregidos) para que sigas.</p>`};
+  },
+  sol(){
+    const vs=[0,1,2].map(k=>leer(val(`sol_${k}`)));
+    if(vs.includes(null))return {incompleto:'Escribe los valores de <i>x</i>, <i>y</i>, <i>z</i>.'};
+    const formula=k=>`<i>${V[k]}</i> = Δ<sub>${V[k]}</sub> / |A| = ${fmt(ex.Ds[k])} / ${par(ex.D)} = ${fmt(ex.sol[k])}`;
+    const malos=new Set(),partes=[];
+    vs.forEach((v,k)=>{
+      const s=ex.sol[k],Dk=ex.Ds[k];
+      if(eq(v,s))return;
+      malos.add(`sol_${k}`);
+      let t;
+      if(Dk!==0&&eq(v,ex.D/Dk))t=`Para <i>${V[k]}</i> has <b>invertido la fracción</b>: |A| va siempre en el denominador.`;
+      else if(s!==0&&eq(v,-s))t=`Para <i>${V[k]}</i> tienes el <b>signo cambiado</b>: revisa el signo del cociente.`;
+      else t=`Revisa <i>${V[k]}</i>: hay que dividir Δ<sub>${V[k]}</sub> entre |A|.`;
+      partes.push(`<p>${t} ${formula(k)}.</p>`);
+    });
+    const comp=`Comprobación en la 1.ª ecuación: ${ex.A[0].map((c,j)=>c===0?null:`${par(c)}·${par(ex.sol[j])}`).filter(Boolean).join(' + ')} = ${fmt(ex.b[0])} ✓`;
+    if(!malos.size)return {ok:true,html:`<p>${[0,1,2].map(formula).join('; ')}.</p><p>${comp}. Sustituir la solución en las ecuaciones es la mejor forma de detectar un error de cálculo.</p>`};
+    return {ok:false,malos,html:partes.join('')+`<p>${comp}.</p><p class="nota-corr">Se han completado los valores correctos (en rojo, los corregidos).</p>`};
+  }
+};
+
+/* ============ Flujo ============ */
+function parteActiva(){if(!ex)return null;const a=APARTADOS.find(a=>ex.partes[a.id]==='pendiente');return a?a.id:null;}
+
+function nombreOk(){
+  const el=$('nombre');
+  if(el.value.trim())return true;
+  el.classList.add('falta');$('aviso-nombre').classList.add('visible');el.focus();
+  return false;
+}
+
+function nuevoSistema(){
+  if(state.finalizada||todosSuperados())return;
+  const g=generar();
+  ex={n:state.sistemas.length+1,...g,partes:{},terminado:false,revelado:false,fallos:0};
+  APARTADOS.forEach(a=>ex.partes[a.id]=state.ap[a.id].superado?'auto':'pendiente');
+  state.sistemas.push({n:ex.n,resultado:'En curso'});
+  renderSistema();
+  APARTADOS.forEach(({id})=>{
+    if(ex.partes[id]!=='auto')return;
+    rellenar(id);inputsDe(id).forEach(el=>marca(el,'auto'));
+    fb(id,'auto','Apartado ya superado en un sistema anterior: se muestra resuelto para que sigas.');
+  });
+  avanzar(ex.n>1);
+  if(ex.n>1)$('zona-ejercicio').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function actualizarBloqueos(){
+  const act=parteActiva();
+  APARTADOS.forEach(({id})=>{
+    const el=$('ap-'+id),st=ex.partes[id],btn=el.querySelector('.btn-comprobar');
+    el.classList.remove('bloqueado','activo','st-ok','st-mal','st-auto','st-revelado');
+    if(st==='pendiente'){
+      const activo=id===act&&!state.finalizada;
+      el.classList.add(activo?'activo':'bloqueado');
+      btn.hidden=false;btn.disabled=!activo;
+      inputsDe(id).forEach(i=>i.disabled=!activo);
+    }else{
+      el.classList.add('st-'+st);btn.hidden=true;
+      inputsDe(id).forEach(i=>i.disabled=true);
+    }
+  });
+}
+
+function avanzar(enfocar=true){
+  actualizarBloqueos();actualizarUI();
+  const act=parteActiva();
+  if(!act){finSistema();return;}
+  if(enfocar){const p=inputsDe(act)[0];if(p){p.focus({preventScroll:true});$('ap-'+act).scrollIntoView({behavior:'smooth',block:'nearest'});}}
+}
+
+function comprobar(id){
+  if(state.finalizada||!ex||ex.terminado||parteActiva()!==id)return;
+  if(!nombreOk())return;
+  const r=VALIDA[id]();
+  if(r.incompleto){fb(id,'aviso',r.incompleto);return;}
+  ultimaComprobacion=Date.now();
+  const a=state.ap[id];
+  if(r.ok){
+    ex.partes[id]='ok';a.aciertos++;a.superado=true;
+    inputsDe(id).forEach(el=>marca(el,'ok'));
+    fb(id,'ok','<b>Correcto · +2,5.</b> '+r.html);
+  }else{
+    ex.partes[id]='mal';a.fallos++;state.fallosTotales++;ex.fallos++;
+    rellenar(id);
+    inputsDe(id).forEach(el=>marca(el,r.malos.has(el.id)?'corregida':'ok'));
+    fb(id,'mal','<b>Incorrecto · −0,5.</b> '+r.html);
+  }
+  avanzar();
+}
+
+function revelarSoluciones(){
+  if(state.finalizada||!ex||ex.terminado)return;
+  APARTADOS.forEach(({id})=>{
+    if(ex.partes[id]!=='pendiente')return;
+    rellenar(id);
+    const r=VALIDA[id]();
+    if(!r.ok)console.error('[BUG] El validador rechaza la solución del apartado',id,r);
+    ex.partes[id]='revelado';state.ap[id].vistas++;
+    inputsDe(id).forEach(el=>marca(el,'revelada'));
+    fb(id,'solucion','<b>Solución.</b> '+(r.html||''));
+  });
+  ex.revelado=true;
+  avanzar(false);
+}
+
+function finSistema(){
+  ex.terminado=true;
+  const resultado=ex.revelado?'Soluciones vistas':(ex.fallos?'Con errores':'Sin errores');
+  state.sistemas[ex.n-1].resultado=resultado;
+  const pend=APARTADOS.filter(a=>!state.ap[a.id].superado);
+  const el=$('res-sistema');let cls,html;
+  if(!pend.length){
+    cls='fin';
+    html=`<h3>¡Has superado los cuatro apartados!</h3><p>Ya dominas la regla de Cramer en todos sus pasos. Pulsa «Finalizar y calificar» para ver tu informe.</p>`;
+  }else{
+    const lista=pend.map(a=>'<b>'+a.nombre+'</b>').join(', ');
+    if(ex.revelado){cls='neutro';html=`<h3>Soluciones mostradas · sistema sin calificar</h3>`;}
+    else if(ex.fallos){cls='mal';html=`<h3>Sistema terminado</h3>`;}
+    else{cls='ok';html=`<h3>¡Sistema resuelto sin errores!</h3>`;}
+    html+=`<p>Te queda por superar: ${lista}. En el siguiente sistema solo puntúan esos apartados.</p><button class="btn-primario" type="button" id="btn-nuevo">Nuevo sistema →</button>`;
+  }
+  el.className='res-sistema visible '+cls;el.innerHTML=html;
+  const bn=$('btn-nuevo');if(bn){bn.addEventListener('click',nuevoSistema);if(state.finalizada)bn.disabled=true;}
+  el.scrollIntoView({behavior:'smooth',block:'nearest'});
+  actualizarUI();
+}
+
+function actualizarUI(){
+  $('marcador-nota').textContent=fmt(calcularNota());
+  $('marcador-sup').textContent=APARTADOS.filter(a=>state.ap[a.id].superado).length;
+  $('marcador-fallos').textContent=state.fallosTotales;
+  $('progreso').innerHTML=APARTADOS.map((a,i)=>{const s=state.ap[a.id].superado;return `<span class="chip${s?' sup':''}">${i+1}. ${a.nombre}${s?' ✓':''}</span>`;}).join('');
+  APARTADOS.forEach(a=>{const t=$('tag-'+a.id);if(!t)return;const s=state.ap[a.id].superado;t.textContent=s?'Superado ✓':'2,5 puntos';t.classList.toggle('sup',s);});
+  $('btn-soluciones').disabled=state.finalizada||!ex||ex.terminado;
+}
+
+/* ============ Modales ============ */
+function abrirModal(id,foco){const m=$(id);m.classList.add('abierto');m.setAttribute('aria-hidden','false');modalAbierto=id;setTimeout(()=>{const f=$(foco);if(f)f.focus();},30);}
+function cerrarModal(id){const m=$(id);m.classList.remove('abierto');m.setAttribute('aria-hidden','true');if(modalAbierto===id)modalAbierto=null;}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modalAbierto)cerrarModal(modalAbierto);});
+['modal-fin','modal-sol','modal-informe'].forEach(id=>$(id).addEventListener('click',e=>{if(e.target.id===id)cerrarModal(id);}));
+
+$('btn-soluciones').addEventListener('click',()=>{if(!$('btn-soluciones').disabled)abrirModal('modal-sol','sol-no');});
+$('sol-no').addEventListener('click',()=>cerrarModal('modal-sol'));
+$('sol-si').addEventListener('click',()=>{cerrarModal('modal-sol');revelarSoluciones();});
+
+$('btn-finalizar').addEventListener('click',()=>{
+  if(state.finalizada){mostrarInforme();return;}
+  if(!nombreOk())return;
+  $('fin-txt').innerHTML=`Se cerrará la ficha completa: ya no podrás seguir respondiendo y se calificará con la nota que llevas ahora (<b>${fmt(calcularNota())} / 10</b>).`;
+  abrirModal('modal-fin','fin-no');
+});
+$('fin-no').addEventListener('click',()=>cerrarModal('modal-fin'));
+$('fin-si').addEventListener('click',()=>{cerrarModal('modal-fin');finalizar();});
+
+function finalizar(){
+  state.finalizada=true;state.fin=Date.now();
+  if(ex&&!ex.terminado)state.sistemas[ex.n-1].resultado='Sin terminar';
+  document.querySelectorAll('#zona-ejercicio input, #zona-ejercicio button').forEach(el=>el.disabled=true);
+  $('nombre').readOnly=true;
+  $('btn-finalizar').textContent='Ver informe';
+  actualizarUI();
+  mostrarInforme();
+}
+
+function mostrarInforme(){
+  const nota=calcularNota(),fin=new Date(state.fin);
+  const fecha=fin.toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const hora=fin.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const min=Math.ceil((state.fin-state.inicio)/60000);
+  const tiempo=String(Math.floor(min/60)).padStart(2,'0')+':'+String(min%60).padStart(2,'0');
+  let bg,col;
+  if(nota>=10){bg='#1a7a1a';col='#fff';}else if(nota>=9){bg='#6dbf6d';col='#fff';}
+  else if(nota>=8){bg='#1a4f8a';col='#fff';}else if(nota>=7){bg='#5b9bd5';col='#fff';}
+  else if(nota>=6){bg='#c05c00';col='#fff';}else if(nota>=5){bg='#f5a623';col='#000';}else{bg='#c0392b';col='#fff';}
+  document.body.classList.toggle('success-mode',nota>=10);
+  const filas=APARTADOS.map(a=>{const s=state.ap[a.id];return `<tr><td>${a.nombre}</td><td>${s.superado?'Superado':'No superado'}</td><td>${s.aciertos+s.fallos}</td><td>${s.aciertos}</td><td>${s.fallos}</td><td>${s.vistas}</td></tr>`;}).join('');
+  const sist=state.sistemas.length?state.sistemas.map(s=>`Sistema ${s.n}: ${s.resultado}`).join(' · '):'Ningún sistema trabajado';
+  const box=$('informe');box.style.background=bg;box.style.color=col;
+  box.innerHTML=`<button class="modal-x" type="button" aria-label="Cerrar" id="inf-x">✕</button>
+    <div class="inf-ficha">${document.querySelector('.titulo-ficha').textContent}</div>
+    <div class="inf-sub">${document.querySelector('.subtitulo').textContent}</div>
+    <hr class="inf-hr">
+    <div class="inf-enc">Informe de la actividad</div>
+    <div class="inf-nombre" id="inf-nombre"></div>
+    <div class="inf-nota">${fmt(nota)} / 10</div>
+    <div class="inf-datos"><span><b>Fecha:</b> ${fecha}</span><span><b>Hora:</b> ${hora}</span><span><b>Tiempo:</b> ${tiempo}</span><span><b>Fallos:</b> ${state.fallosTotales}</span></div>
+    <div class="inf-tabla-wrap"><table class="inf-tabla"><thead><tr><th>Apartado</th><th>Estado</th><th><span class="largo">Intentos</span><span class="corto">Int.</span></th><th><span class="largo">Aciertos</span><span class="corto">Ac.</span></th><th><span class="largo">Fallos</span><span class="corto">Fa.</span></th><th><span class="largo">Soluciones vistas</span><span class="corto">Sol. vistas</span></th></tr></thead><tbody>${filas}</tbody></table></div>
+    <div class="inf-sistemas"><b>Sistemas:</b> ${sist}</div>
+    <button class="inf-cerrar" type="button" id="inf-cerrar">Cerrar</button>`;
+  $('inf-nombre').textContent=$('nombre').value.trim();
+  $('inf-x').addEventListener('click',()=>cerrarModal('modal-informe'));
+  $('inf-cerrar').addEventListener('click',()=>cerrarModal('modal-informe'));
+  abrirModal('modal-informe','inf-cerrar');
+}
+
+/* ============ Eventos ============ */
+$('zona-ejercicio').addEventListener('click',e=>{const b=e.target.closest('.btn-comprobar');if(b)comprobar(b.dataset.ap);});
+$('zona-ejercicio').addEventListener('keydown',e=>{
+  if(e.key!=='Enter'||!e.target.matches('input.c'))return;
+  e.preventDefault();
+  if(e.repeat||Date.now()-ultimaComprobacion<700)return;const ap=e.target.closest('.apartado');if(ap)comprobar(ap.dataset.ap);
+});
+$('nombre').addEventListener('input',()=>{if($('nombre').value.trim()){$('nombre').classList.remove('falta');$('aviso-nombre').classList.remove('visible');}});
+
+/* Acceso de solo lectura para pruebas automáticas */
+if(MODO_PRUEBA)window.__ficha={get state(){return state;},get ex(){return ex;},calcularNota};
+
+nuevoSistema();
+</script>
+</body>
+</html>
