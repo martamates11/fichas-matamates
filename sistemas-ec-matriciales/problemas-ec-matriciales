@@ -1,0 +1,1812 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Problemas de ecuaciones lineales</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+  chtml: { scale: 1.02 },
+  startup: { typeset: false }
+};
+</script>
+<script async id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+:root {
+  --color-fondo: #F5F0E8;
+  --color-fondo-card: #FDFAF3;
+  --color-texto: #2C1F0E;
+  --color-texto-suave: #6B4F35;
+  --color-acento: #A0522D;
+  --color-acento-hover: #7B3B1E;
+  --color-borde: #C9A96E;
+  --color-borde-suave: #E0CEAA;
+  --color-cabecera: #3B2510;
+  --color-cabecera-txt: #F5EDD8;
+  --color-barra-alumno: #EFE4CC;
+  --color-correcto: #2E6B3E;
+  --color-correcto-fondo: #EAF4EC;
+  --color-incorrecto: #8B1A1A;
+  --color-incorrecto-fondo: #F9EAEA;
+  --color-aviso: #8A6414;
+  --color-aviso-fondo: #FBF3DF;
+  --color-neutro: #E8DFC8;
+  --color-apagado: #A8998A;
+  --color-apagado-fondo: #F3EFE6;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: 'Lato', sans-serif; font-size: 16px; line-height: 1.55;
+  color: var(--color-texto); background-color: var(--color-fondo);
+}
+h1, h2, h3, h4, legend, .titulo-ficha { font-family: 'Libre Baskerville', serif; color: var(--color-texto); }
+
+.cabecera {
+  background-color: var(--color-cabecera); color: var(--color-cabecera-txt);
+  font-family: 'Libre Baskerville', serif; text-align: center; padding: 12px 20px;
+  border-bottom: 3px solid var(--color-borde); font-size: .78rem; letter-spacing: .04em;
+}
+.ficha-container {
+  max-width: 860px; margin: 28px auto; background: var(--color-fondo-card);
+  border: 2px solid var(--color-borde); border-radius: 6px;
+  box-shadow: 0 3px 12px rgba(44, 31, 14, .15); padding: 32px 36px;
+  transition: background-color .4s, border-color .4s;
+}
+.ficha-container.perfecta { background: #E4F2E4; border-color: #1a7a1a; }
+.titulo-ficha {
+  font-size: 1.6rem; text-align: center; border-bottom: 2px solid var(--color-borde);
+  padding-bottom: 10px; margin: 0 0 8px;
+}
+.titulo-ficha::after {
+  content: ''; display: block; width: 60px; height: 3px; background: var(--color-borde);
+  margin: 8px auto 0; border-radius: 2px;
+}
+.subtitulo {
+  text-align: center; font-family: 'Libre Baskerville', serif; font-style: italic;
+  color: var(--color-texto-suave); font-size: 1rem; margin: 0 0 18px;
+}
+
+/* Barra del alumno */
+.barra {
+  position: sticky; top: 0; z-index: 50; background: var(--color-barra-alumno);
+  border: 1.5px solid var(--color-borde); border-radius: 6px; margin: 0 0 22px;
+  box-shadow: 0 2px 6px rgba(44, 31, 14, .08); color: var(--color-texto);
+  padding: 9px 20px; display: flex; flex-wrap: wrap; gap: 8px 24px;
+  align-items: center; justify-content: center; font-size: .92rem;
+}
+.barra label { font-family: 'Libre Baskerville', serif; font-size: .85rem; color: var(--color-texto-suave); }
+.barra input#nombre {
+  background: var(--color-fondo-card); border: 1.5px solid var(--color-borde); border-radius: 4px;
+  padding: 6px 10px; font-family: 'Lato', sans-serif; font-size: .95rem; color: var(--color-texto);
+  width: 230px; max-width: 60vw; outline: none;
+}
+.barra input#nombre:focus { border-color: var(--color-acento); }
+.barra input#nombre.falta { border-color: var(--color-incorrecto); box-shadow: 0 0 0 3px rgba(139, 26, 26, .18); }
+.barra .dato { color: var(--color-texto-suave); white-space: nowrap; }
+.barra .dato b { color: var(--color-acento); font-family: 'Libre Baskerville', serif; }
+.aviso-nombre { color: var(--color-incorrecto); font-size: .82rem; font-weight: 700; display: none; width: 100%; text-align: center; }
+.aviso-nombre.visible { display: block; }
+
+/* Instrucciones */
+.instrucciones {
+  background: var(--color-fondo); border: 1.5px solid var(--color-borde-suave); border-radius: 6px;
+  padding: 4px 22px; margin-bottom: 22px; font-size: .92rem; color: var(--color-texto-suave);
+}
+.instrucciones summary {
+  cursor: pointer; font-family: 'Libre Baskerville', serif; color: var(--color-texto);
+  padding: 10px 0; font-size: .98rem; list-style: none;
+}
+.instrucciones summary::-webkit-details-marker { display: none; }
+.instrucciones summary::before { content: '▸ '; color: var(--color-acento); }
+.instrucciones[open] summary::before { content: '▾ '; }
+.instrucciones ol { margin: 4px 0 10px; padding-left: 22px; }
+.instrucciones li { margin: 3px 0; }
+.instrucciones h4 { font-size: .9rem; margin: 12px 0 4px; color: var(--color-texto); }
+.instrucciones p { margin: 4px 0 8px; }
+.ejemplos { display: flex; flex-wrap: wrap; gap: 6px 10px; margin: 6px 0 10px; }
+.ejemplos code {
+  font-family: 'Lato', sans-serif; background: var(--color-fondo-card); border: 1px solid var(--color-borde-suave);
+  border-radius: 4px; padding: 2px 8px; color: var(--color-texto); font-size: .9rem;
+}
+
+/* Tarjeta de problema */
+.ejercicio-card {
+  background: var(--color-fondo); border: 1.5px solid var(--color-borde-suave);
+  border-left: 4px solid var(--color-borde); border-radius: 4px; padding: 20px 24px; margin-bottom: 20px;
+}
+.prob-cabecera { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-bottom: 12px; }
+.prob-num { font-family: 'Libre Baskerville', serif; font-size: 1.15rem; font-weight: 700; }
+.chip {
+  font-size: .78rem; letter-spacing: .05em; text-transform: uppercase; color: var(--color-acento);
+  border: 1px solid var(--color-borde); border-radius: 20px; padding: 2px 12px; background: var(--color-fondo-card);
+}
+.prob-puntos { margin-left: auto; font-size: .85rem; color: var(--color-texto-suave); }
+.prob-puntos b { color: var(--color-acento); font-family: 'Libre Baskerville', serif; }
+.enunciado {
+  font-family: 'Libre Baskerville', serif; font-size: 1rem; line-height: 1.75;
+  background: var(--color-fondo-card); border: 1px solid var(--color-borde-suave); border-radius: 4px;
+  padding: 16px 20px; margin-bottom: 6px; text-align: justify; hyphens: auto;
+}
+
+fieldset.paso {
+  border: none; border-top: 1px dashed var(--color-borde); margin: 18px 0 0; padding: 14px 0 4px;
+  min-width: 0; transition: opacity .3s;
+}
+fieldset.paso:disabled { opacity: .45; }
+fieldset.paso legend {
+  font-size: 1rem; font-weight: 700; padding: 0 10px 0 0; display: flex; align-items: center; gap: 10px;
+}
+.num {
+  display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px;
+  border-radius: 50%; background: var(--color-cabecera); color: var(--color-cabecera-txt);
+  border: 2px solid var(--color-borde); font-size: .85rem;
+}
+fieldset.paso.hecho .num { background: var(--color-correcto); border-color: #8FC79B; }
+.ayuda { font-size: .88rem; color: var(--color-texto-suave); margin: 6px 0 12px; }
+
+.map-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
+.map-item { display: flex; align-items: center; gap: 8px; }
+.var { font-family: 'Libre Baskerville', serif; font-style: italic; font-size: 1.15rem; color: var(--color-acento); font-weight: 700; }
+.igual { color: var(--color-texto-suave); }
+
+input[type="text"], select {
+  background-color: var(--color-fondo-card); border: 1.5px solid var(--color-borde); border-radius: 4px;
+  padding: 8px 12px; font-family: 'Lato', sans-serif; font-size: 1rem; color: var(--color-texto);
+  outline: none; transition: border-color .2s, background-color .2s;
+}
+input[type="text"]:focus, select:focus { border-color: var(--color-acento); box-shadow: 0 0 0 3px rgba(160, 82, 45, .12); }
+input:disabled, select:disabled { background: var(--color-neutro); color: var(--color-texto); }
+input.bien, select.bien { border-color: var(--color-correcto); background: var(--color-correcto-fondo); }
+input.mal { border-color: var(--color-incorrecto); background: var(--color-incorrecto-fondo); }
+input.revelado { border-style: dashed; border-color: var(--color-apagado); background: var(--color-apagado-fondo); }
+.map-item select { flex: 1; min-width: 0; max-width: 520px; font-size: .92rem; padding: 7px 8px; }
+
+.eq-row { margin-bottom: 14px; }
+.eq-linea { display: flex; align-items: center; gap: 10px; }
+.eq-label { font-family: 'Libre Baskerville', serif; font-size: .86rem; color: var(--color-texto-suave); min-width: 92px; }
+.eq-input { flex: 1; min-width: 0; font-size: 1.05rem !important; letter-spacing: .02em; }
+.preview {
+  margin: 5px 0 0 102px; min-height: 1.6em; font-size: .95rem; color: var(--color-texto-suave);
+}
+.preview .err { color: var(--color-aviso); font-size: .85rem; }
+.preview .etq { font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: var(--color-apagado); margin-right: 8px; }
+
+.recordatorio {
+  background: var(--color-fondo-card); border: 1px solid var(--color-borde-suave); border-radius: 4px;
+  padding: 8px 16px; margin: 4px 0 14px; font-size: .95rem;
+}
+.recordatorio .etq { font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: var(--color-apagado); }
+.ord-cab, .ord-row { display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; }
+.ord-row { margin-bottom: 6px; }
+.ord-n { width: 22px; font-family: 'Libre Baskerville', serif; color: var(--color-texto-suave); }
+.coef { width: 5.2em; text-align: center; padding: 7px 6px !important; }
+.op { font-family: 'Libre Baskerville', serif; color: var(--color-texto); white-space: nowrap; }
+.op i { color: var(--color-acento); font-weight: 700; }
+.ord-row + .fb, .fb { margin-top: 6px; }
+.fb:empty { display: none; }
+
+.respuesta {
+  font-family: 'Libre Baskerville', serif; font-size: 1rem; line-height: 2.5;
+  background: var(--color-fondo-card); border: 1px solid var(--color-borde-suave); border-radius: 4px; padding: 8px 18px;
+}
+.ans { width: 6.5em; text-align: center; padding: 5px 6px !important; font-size: .98rem !important; }
+
+.acciones { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 12px; }
+.msg-paso { font-size: .88rem; color: var(--color-aviso); }
+
+/* Feedback */
+.feedback-correcto, .feedback-incorrecto, .feedback-aviso, .feedback-solucion {
+  border-radius: 4px; padding: 9px 14px; font-size: .92rem; line-height: 1.5;
+}
+.feedback-correcto { background: var(--color-correcto-fondo); border: 1.5px solid var(--color-correcto); color: var(--color-correcto); }
+.feedback-incorrecto { background: var(--color-incorrecto-fondo); border: 1.5px solid var(--color-incorrecto); color: var(--color-incorrecto); }
+.feedback-incorrecto .pista { display: block; margin-top: 4px; color: var(--color-texto); font-style: italic; }
+.feedback-aviso { background: var(--color-aviso-fondo); border: 1.5px dashed #D9B860; color: var(--color-aviso); }
+.feedback-solucion { background: var(--color-apagado-fondo); border: 1.5px dashed var(--color-apagado); color: var(--color-texto-suave); }
+
+.resultado {
+  margin-top: 18px; background: var(--color-fondo-card); border: 1.5px solid var(--color-borde);
+  border-radius: 6px; padding: 16px 20px; text-align: center;
+}
+.resultado h4 { margin: 0 0 8px; font-size: 1.05rem; }
+.resultado.neutro { border-style: dashed; border-color: var(--color-apagado); background: var(--color-apagado-fondo); }
+.resultado .linea { color: var(--color-texto-suave); font-size: .92rem; margin: 4px 0; }
+.resultado .linea b { color: var(--color-acento); font-family: 'Libre Baskerville', serif; }
+.resultado .sistema { margin: 10px 0; overflow-x: auto; }
+.banner-fin {
+  margin-top: 18px; padding: 16px 20px; border-radius: 6px; text-align: center;
+  background: var(--color-correcto-fondo); border: 2px solid var(--color-correcto); color: var(--color-correcto);
+  font-family: 'Libre Baskerville', serif;
+}
+
+/* Botones */
+.btn-primario {
+  background-color: var(--color-acento); color: #FDFAF3; border: none; border-radius: 4px;
+  padding: 10px 22px; font-family: 'Lato', sans-serif; font-size: .95rem; font-weight: 700;
+  cursor: pointer; letter-spacing: .03em; transition: background-color .2s ease;
+}
+.btn-primario:hover:not(:disabled) { background-color: var(--color-acento-hover); }
+.btn-primario:disabled { background: var(--color-neutro); color: var(--color-apagado); cursor: default; }
+.btn-secundario {
+  background-color: transparent; color: var(--color-acento); border: 2px solid var(--color-borde);
+  border-radius: 4px; padding: 9px 20px; font-family: 'Lato', sans-serif; font-size: .95rem; font-weight: 700;
+  cursor: pointer; transition: border-color .2s, color .2s;
+}
+.btn-secundario:hover { border-color: var(--color-acento); color: var(--color-acento-hover); }
+.btn-finalizar {
+  background-color: var(--color-cabecera); color: var(--color-cabecera-txt); border: 2px solid var(--color-borde);
+  border-radius: 4px; padding: 10px 24px; font-family: 'Libre Baskerville', serif; font-size: .95rem;
+  font-weight: 700; cursor: pointer; letter-spacing: .04em; transition: background-color .2s;
+}
+.btn-finalizar:hover { background-color: #2C1A0A; }
+.pie { display: flex; flex-direction: column; align-items: center; gap: 16px; margin-top: 26px; }
+.btn-soluciones {
+  background: transparent; color: var(--color-apagado); border: 1px solid #DDD0B6; border-radius: 4px;
+  padding: 5px 14px; font-family: 'Lato', sans-serif; font-size: .78rem; font-weight: 400;
+  cursor: pointer; transition: color .2s, border-color .2s;
+}
+.btn-soluciones:hover:not(:disabled) { color: var(--color-texto-suave); border-color: var(--color-borde); }
+.btn-soluciones:disabled { opacity: .4; cursor: default; }
+
+/* Modales */
+.overlay {
+  position: fixed; inset: 0; background: rgba(44, 31, 14, .55); display: none;
+  align-items: center; justify-content: center; z-index: 100; padding: 16px;
+}
+.overlay.visible { display: flex; }
+.modal-aviso {
+  background: var(--color-fondo-card); border: 3px solid var(--color-borde); border-radius: 8px;
+  box-shadow: 0 6px 24px rgba(44, 31, 14, .35); padding: 26px 30px; max-width: 470px; width: 100%;
+}
+.modal-aviso h3 { margin: 0 0 10px; font-size: 1.15rem; }
+.modal-aviso p { font-size: .93rem; color: var(--color-texto-suave); margin: 0 0 8px; }
+.modal-aviso .acciones { justify-content: flex-end; margin-top: 18px; }
+.modal-calificacion {
+  border: 3px solid var(--color-borde); border-radius: 8px; font-family: 'Libre Baskerville', serif;
+  box-shadow: 0 6px 24px rgba(44, 31, 14, .35); padding: 28px 32px; min-width: 320px; max-width: 720px;
+  width: 100%; text-align: center; max-height: 92vh; overflow-y: auto;
+}
+.modal-calificacion .m-titulo { font-size: 1.35rem; font-weight: 700; margin: 0; }
+.modal-calificacion .m-sub { font-style: italic; font-size: .92rem; margin: 4px 0 10px; opacity: .9; }
+.modal-calificacion hr { border: none; border-top: 1px solid currentColor; opacity: .45; margin: 10px 0 14px; }
+.modal-calificacion .m-enc { font-size: .8rem; letter-spacing: .14em; text-transform: uppercase; opacity: .9; }
+.modal-calificacion .m-nombre { font-size: 1.15rem; margin: 6px 0 2px; }
+.modal-calificacion .m-nota { font-size: 3rem; font-weight: 700; line-height: 1.1; margin: 4px 0; }
+.modal-calificacion .m-datos { font-family: 'Lato', sans-serif; font-size: .9rem; display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 18px; }
+.panel-informe {
+  background: var(--color-fondo-card); color: var(--color-texto); border-radius: 6px; margin-top: 16px;
+  padding: 12px 14px; font-family: 'Lato', sans-serif; text-align: left; overflow-x: auto;
+}
+.panel-informe h4 { font-size: .92rem; margin: 2px 0 8px; }
+.resumen-nota { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; margin-bottom: 10px; color: var(--color-texto-suave); }
+.resumen-nota b { color: var(--color-acento); }
+table.informe { width: 100%; border-collapse: collapse; font-size: .85rem; }
+table.informe th, table.informe td { border-bottom: 1px solid var(--color-borde-suave); padding: 6px 6px; text-align: center; }
+table.informe th { font-family: 'Libre Baskerville', serif; font-weight: 700; font-size: .78rem; color: var(--color-texto-suave); }
+table.informe td:nth-child(2) { text-align: left; }
+.estado-completo { color: var(--color-correcto); font-weight: 700; }
+.estado-soluciones { color: var(--color-apagado); font-weight: 700; }
+.estado-curso { color: var(--color-aviso); font-weight: 700; }
+.modal-calificacion .btn-cerrar { margin-top: 18px; }
+
+/* Teclas matemáticas (sobre el teclado del móvil) */
+.teclas {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 90; display: none;
+  background: var(--color-barra-alumno); border-top: 2px solid var(--color-borde);
+  box-shadow: 0 -3px 10px rgba(44, 31, 14, .15); padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+  justify-content: center; gap: 6px; flex-wrap: wrap;
+}
+.teclas.visible { display: flex; }
+.teclas button {
+  min-width: 44px; height: 40px; padding: 0 10px; border-radius: 6px;
+  border: 1.5px solid var(--color-borde); background: var(--color-fondo-card);
+  font-family: 'Libre Baskerville', serif; font-size: 1.1rem; color: var(--color-texto);
+  cursor: pointer; touch-action: manipulation; -webkit-user-select: none; user-select: none;
+}
+.teclas button:active { background: var(--color-neutro); }
+.teclas button.var-k { color: var(--color-acento); font-style: italic; font-weight: 700; }
+.teclas button.sep { margin-left: 8px; }
+.teclas .etq-t { width: 100%; text-align: center; font-size: .72rem; color: var(--color-texto-suave); font-family: 'Lato', sans-serif; }
+body.con-teclas { padding-bottom: 110px; }
+
+@media (max-width: 640px) {
+  .ficha-container { margin: 0; border-radius: 0; border-left: none; border-right: none; padding: 20px 16px; }
+  .ejercicio-card { padding: 16px 14px; }
+  .eq-linea { flex-direction: column; align-items: stretch; gap: 4px; }
+  .eq-input { width: 100%; }
+  .preview { margin-left: 0; }
+  .ord-row, .ord-cab { flex-wrap: wrap; }
+  .coef { width: 4.2em; }
+  .prob-puntos { margin-left: 0; width: 100%; }
+  .modal-calificacion { padding: 20px 14px; }
+}
+</style>
+</head>
+<body>
+<div class="cabecera">Material elaborado por Marta L Letona S. Basado en el trabajo de Javier Cayetano</div>
+
+<main class="ficha-container" id="ficha">
+  <h1 class="titulo-ficha">Problemas de ecuaciones lineales</h1>
+  <p class="subtitulo">Sistemas de ecuaciones lineales · Planteamiento y resolución de problemas</p>
+
+  <div class="barra" id="barra">
+    <label for="nombre">Alumno/a:</label>
+    <input type="text" id="nombre" placeholder="Nombre y apellidos" autocomplete="off">
+    <span class="dato">Nota: <b id="m-nota">0</b> / 10</span>
+    <span class="dato">Puntos: <b id="m-puntos">0</b> / 10</span>
+    <span class="dato">Problemas: <b id="m-problemas">0</b></span>
+    <span class="dato">Fallos: <b id="m-fallos">0</b></span>
+    <div class="aviso-nombre" id="aviso-nombre" aria-live="polite">Escribe tu nombre antes de continuar.</div>
+  </div>
+
+  <details class="instrucciones" open>
+    <summary>Cómo funciona la ficha</summary>
+    <ol>
+      <li><b>Elige las incógnitas:</b> decide qué representa cada letra (<i>x</i>, <i>y</i>, <i>z</i>).</li>
+      <li><b>Plantea el sistema:</b> traduce cada información del enunciado a una ecuación, escrita como tú la pienses (con paréntesis, fracciones o decimales). El orden de las ecuaciones no importa.</li>
+      <li><b>Ordénalo:</b> escribe el mismo sistema en la forma <i>ax</i> + <i>by</i> + <i>cz</i> = <i>d</i>.</li>
+      <li><b>Resuélvelo con la calculadora</b> y completa la respuesta del problema.</li>
+    </ol>
+    <h4>Puntuación</h4>
+    <p>Cada problema vale <b>2,5 puntos</b>. El planteamiento vale 2 puntos: <b>2/3 de punto por cada ecuación</b> que escribas bien a la primera, tanto en su forma libre como ordenada. El resultado vale <b>0,5 puntos</b> si lo aciertas a la primera. <b>Cada fallo resta 0,25 puntos.</b> Puedes corregir lo que falle, pero esa parte ya no puntúa. La ficha se completa al reunir 10 puntos, es decir, el equivalente a 4 problemas perfectos. Si usas «Mostrar soluciones», lo que te quede de ese problema no cuenta para la nota.</p>
+    <h4>Cómo escribir las ecuaciones</h4>
+    <div class="ejemplos">
+      <code>2x + 3y − z = 10</code><code>0,9(x + y) = 225</code><code>x/2 + 2z/3 = 14</code><code>x + 7 = y − 7</code><code>3·(y − 4) = x</code>
+    </div>
+    <p>Usa coma o punto para los decimales, pero <b>no pongas puntos de miles</b> (escribe 54900). Si una incógnita va multiplicada por una fracción, escribe la fracción (2z/3), no un decimal aproximado.</p>
+  </details>
+
+  <section id="zona-problema" aria-live="polite"></section>
+
+  <div class="pie">
+    <button type="button" class="btn-finalizar" id="btn-finalizar">Finalizar y Calificar</button>
+    <button type="button" class="btn-soluciones" id="btn-soluciones">Mostrar soluciones</button>
+  </div>
+</main>
+
+<!-- Aviso «Mostrar soluciones» -->
+<div class="overlay" id="ov-soluciones" role="dialog" aria-modal="true" aria-labelledby="t-sol">
+  <div class="modal-aviso">
+    <h3 id="t-sol">¿Mostrar las soluciones?</h3>
+    <p>Verás resuelto, con sus explicaciones, lo que te queda de este problema. <b>Esa parte no contará para la nota</b>; lo que ya hayas completado conserva sus puntos.</p>
+    <p>Los fallos que ya hayas cometido siguen restando. Después podrás seguir con un problema nuevo.</p>
+    <div class="acciones">
+      <button type="button" class="btn-secundario" id="btn-sol-si">Sí, mostrar soluciones</button>
+      <button type="button" class="btn-primario" id="btn-sol-no">Volver al ejercicio</button>
+    </div>
+  </div>
+</div>
+
+<!-- Informe final -->
+<div class="overlay" id="ov-informe" role="dialog" aria-modal="true" aria-labelledby="m-titulo">
+  <div class="modal-calificacion" id="modal-informe"></div>
+</div>
+
+<script>
+'use strict';
+/* =========================================================
+   Utilidades: azar con semilla opcional (?seed=123 solo para QA)
+   ========================================================= */
+const LET = ['x', 'y', 'z'];
+const qs = new URLSearchParams(location.search);
+const SEED = qs.has('seed') ? (parseInt(qs.get('seed'), 10) >>> 0) : null;
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+const rnd = SEED !== null ? mulberry32(SEED) : (() => {
+  let s = Date.now() >>> 0;
+  try { const b = new Uint32Array(1); crypto.getRandomValues(b); s = b[0]; } catch (e) { /* sin crypto */ }
+  return mulberry32(s);
+})();
+const ri = (a, b) => a + Math.floor(rnd() * (b - a + 1));
+const pick = arr => arr[Math.floor(rnd() * arr.length)];
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+const pickN = (arr, n) => shuffle(arr).slice(0, n);
+const isInt = x => Math.abs(x - Math.round(x)) < 1e-9;
+const dot = (a, b) => a.reduce((s, v, i) => s + v * b[i], 0);
+function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) [a, b] = [b, a % b]; return a; }
+const lcm = (a, b) => a / gcd(a, b) * b;
+function det3(m) {
+  return m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1])
+       - m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0])
+       + m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0]);
+}
+const maxAbs = v => v.reduce((m, x) => Math.max(m, Math.abs(x)), 0);
+/* Números en formato español, sin separador de miles */
+function fmt(n) { const r = Math.round(n * 10000) / 10000; return String(Object.is(r, -0) ? 0 : r).replace('.', ','); }
+function fmt2(n) { const r = Math.round(n * 100) / 100; return String(Object.is(r, -0) ? 0 : r).replace('.', ','); }
+function eur(n) { const r = Math.round(n * 100) / 100; return isInt(r) ? String(Math.round(r)) : r.toFixed(2).replace('.', ','); }
+const sgn = r => r > 0 ? ` + ${fmt(r)}` : r < 0 ? ` - ${fmt(-r)}` : '';
+const co = (a, ph) => a === 1 ? ph : a === -1 ? '-' + ph : fmt(a) + ph;
+const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+function lista(arr) { return arr.length <= 1 ? arr.join('') : arr.slice(0, -1).join(', ') + ' y ' + arr[arr.length - 1]; }
+const NOMBRES = ['Ana', 'Pablo', 'Lucía', 'Hugo', 'Carmen', 'Diego', 'Elena', 'Mario', 'Sara', 'Iván', 'Nerea', 'Álvaro', 'Irene', 'Jorge'];
+const MULT = { 2: 'doble', 3: 'triple', 4: 'cuádruple', 5: 'quíntuple' };
+
+/* =========================================================
+   Generadores de problemas
+   Cada uno devuelve: enunciado, mags (magnitudes), conds (una por
+   información del enunciado: v·m = k, en coordenadas de magnitud),
+   sol, resp. La forma natural (nat) usa $0, $1, $2 como magnitudes.
+   ========================================================= */
+const TPL = [];
+
+/* 1. Salarios de una empresa */
+TPL.push({ id: 'salarios', nombre: 'Salarios de una empresa', gen() {
+  const SAL = [800, 900, 1000, 1200, 1400, 1500, 1600, 1800, 2000, 2200, 2400, 2500, 3000];
+  for (let t = 0; t < 20000; t++) {
+    const s = pickN(SAL, 3).sort((a, b) => a - b);
+    const p = pickN([2, 3, 4, 5, 6, 7, 8, 9], 3);
+    const P = ri(Math.min(...p) + 1, Math.max(...p) - 1);
+    const a = ri(4, 30), b = ri(4, 30);
+    const den = (p[2] - P) * s[2];
+    if (den === 0) continue;
+    const c = -((p[0] - P) * s[0] * a + (p[1] - P) * s[1] * b) / den;
+    if (!isInt(c) || c < 2 || c > 30) continue;
+    const n = [a, b, c], N = a + b + c, T = dot(s, n), R = P * T / 100;
+    if (!isInt(R)) continue;
+    const v3 = s.map((x, i) => p[i] * x / 100);
+    if (Math.abs(det3([[1, 1, 1], s, v3])) < 1e-9) continue;
+    return {
+      enunciado: `El gasto mensual en salarios de una empresa de ${N} trabajadores es de ${T} €. Hay tres categorías de trabajadores: A, B y C. El salario mensual de un trabajador de la categoría A es de ${s[0]} €; el de uno de la B, de ${s[1]} €, y el de uno de la C, de ${s[2]} €. Sin despedir a nadie, la empresa quiere reducir el gasto salarial un ${P} %. Para ello, rebaja un ${p[0]} % el sueldo de la categoría A, un ${p[1]} % el de la B y un ${p[2]} % el de la C. ¿Cuántos trabajadores hay en cada categoría?`,
+      mags: [{ label: 'el número de trabajadores de la categoría A' }, { label: 'el número de trabajadores de la categoría B' }, { label: 'el número de trabajadores de la categoría C' }],
+      conds: [
+        { v: [1, 1, 1], k: N, desc: 'el número total de trabajadores', nat: `$0 + $1 + $2 = ${N}` },
+        { v: s.slice(), k: T, desc: 'el gasto total en salarios', nat: `${s[0]}$0 + ${s[1]}$1 + ${s[2]}$2 = ${T}`,
+          tip: 'El gasto de cada categoría es el salario de un trabajador por el número de trabajadores de esa categoría.' },
+        { v: v3, k: R, desc: 'la rebaja del gasto salarial', nat: `${fmt(p[0] / 100)}·${s[0]}$0 + ${fmt(p[1] / 100)}·${s[1]}$1 + ${fmt(p[2] / 100)}·${s[2]}$2 = ${fmt(P / 100)}·${T}`,
+          tip: `El p % de una cantidad es p/100 por esa cantidad: rebajar un ${p[0]} % un sueldo de ${s[0]} € supone ahorrar ${fmt(p[0] / 100)}·${s[0]} € por trabajador. También puedes plantear lo que se pagará después de la rebaja: el ${100 - P} % del gasto actual.`,
+          alts: [{ v: s.map((x, i) => (100 - p[i]) * x / 100), k: T - R }] }
+      ],
+      sol: n,
+      resp: { texto: 'Hay {0} trabajadores en la categoría A, {1} en la B y {2} en la C.', valores: n.slice() }
+    };
+  }
+  return null;
+} });
+
+/* 2. Tienda de ropa con descuento */
+TPL.push({ id: 'ropa', nombre: 'Compra de ropa', gen() {
+  const IT = [{ s: 'traje', p: 'trajes', u: 'un' }, { s: 'cazadora', p: 'cazadoras', u: 'una' }, { s: 'pantalón', p: 'pantalones', u: 'un' }];
+  const q = (n, it) => n === 1 ? `${it.u} ${it.s}` : `${n} ${it.p}`;
+  for (let t = 0; t < 5000; t++) {
+    const pr = [10 * ri(12, 30), 10 * ri(5, 15), 5 * ri(6, 16)];
+    const q1 = [ri(1, 3), ri(1, 3), ri(1, 3)], q2 = [ri(1, 4), ri(0, 3), ri(1, 4)];
+    const par = pickN([0, 1, 2], 2).sort();
+    const d = pick([10, 20, 25]);
+    const pagado = (100 - d) / 100 * (pr[par[0]] + pr[par[1]]);
+    if (!isInt(pagado)) continue;
+    const v3 = [0, 0, 0]; par.forEach(i => { v3[i] = (100 - d) / 100; });
+    if (Math.abs(det3([q1, q2, v3])) < 1e-9) continue;
+    if (q1.every((x, i) => x === q2[i])) continue;
+    const T1 = dot(q1, pr), T2 = dot(q2, pr);
+    const compra = qq => lista(qq.map((n, i) => n ? q(n, IT[i]) : null).filter(Boolean));
+    const natC = qq => qq.map((n, i) => n ? co(n, '$' + i) : null).filter(Boolean).join(' + ');
+    const [c1, c2] = pickN(NOMBRES, 2);
+    return {
+      enunciado: `En unos grandes almacenes, ${c1} compra ${compra(q1)}, y paga ${T1} €. En la misma caja, ${c2} paga ${T2} € por ${compra(q2)}. Al día siguiente hay una oferta con un ${d} % de descuento, y un chico paga ${pagado} € por ${IT[par[0]].u} ${IT[par[0]].s} y ${IT[par[1]].u} ${IT[par[1]].s}. ¿Cuánto cuesta cada artículo sin descuento?`,
+      mags: [{ label: 'el precio de un traje' }, { label: 'el precio de una cazadora' }, { label: 'el precio de un pantalón' }],
+      conds: [
+        { v: q1.slice(), k: T1, desc: `lo que paga ${c1}`, nat: `${natC(q1)} = ${T1}` },
+        { v: q2.slice(), k: T2, desc: `lo que paga ${c2}`, nat: `${natC(q2)} = ${T2}` },
+        { v: v3, k: pagado, desc: 'lo que paga el chico con el descuento', nat: `${fmt((100 - d) / 100)}·($${par[0]} + $${par[1]}) = ${pagado}`,
+          tip: `Con un ${d} % de descuento se paga el ${100 - d} % del precio, es decir, ${fmt((100 - d) / 100)} por el precio. No restes ${d} € del precio.` }
+      ],
+      sol: pr,
+      resp: { texto: 'Un traje cuesta {0} €, una cazadora {1} € y un pantalón {2} €.', valores: pr.slice() }
+    };
+  }
+  return null;
+} });
+
+/* 3. Tres números */
+TPL.push({ id: 'numeros', nombre: 'Tres números', gen() {
+  const ORD = ['primero', 'segundo', 'tercero'];
+  function cond(tp, n) {
+    if (tp === 'suma') { const S = n[0] + n[1] + n[2]; return { v: [1, 1, 1], k: S, txt: `la suma de los tres es ${S}`, nat: `$0 + $1 + $2 = ${S}` }; }
+    if (tp === 'igual') {
+      const [i, j, l] = shuffle([0, 1, 2]); const m = pick([2, 3]); const sg = pick([1, -1]);
+      const r = n[i] - (m * n[j] + sg * n[l]); if (Math.abs(r) > 20) return null;
+      const v = [0, 0, 0]; v[i] += 1; v[j] -= m; v[l] -= sg;
+      return { v, k: r, txt: `el ${ORD[i]} es igual al ${MULT[m]} del ${ORD[j]} ${sg > 0 ? 'más' : 'menos'} el ${ORD[l]}${r > 0 ? ` más ${r}` : r < 0 ? ` menos ${-r}` : ''}`,
+        nat: `$${i} = ${m}$${j} ${sg > 0 ? '+' : '-'} $${l}${sgn(r)}`,
+        tip: `«El ${MULT[m]} del ${ORD[j]}» es ${m} por el ${ORD[j]}.` };
+    }
+    if (tp === 'resta') {
+      const [i, j] = pickN([0, 1, 2], 2); const D = n[i] - n[j]; if (D <= 0) return null;
+      const v = [0, 0, 0]; v[i] = 1; v[j] = -1;
+      return { v, k: D, txt: `si al ${ORD[i]} le restamos el ${ORD[j]}, se obtiene ${D}`, nat: `$${i} - $${j} = ${D}`,
+        tip: `«Al ${ORD[i]} le restamos el ${ORD[j]}»: el ${ORD[i]} va delante y el ${ORD[j]} detrás del signo menos.` };
+    }
+    if (tp === 'sumaigual') {
+      const [i, j, l] = shuffle([0, 1, 2]); const D = n[i] + n[j] - n[l];
+      const v = [0, 0, 0]; v[i] = 1; v[j] = 1; v[l] = -1;
+      return { v, k: D, txt: `la suma del ${ORD[i]} y el ${ORD[j]} es igual al ${ORD[l]}${D > 0 ? ` más ${D}` : D < 0 ? ` menos ${-D}` : ''}`, nat: `$${i} + $${j} = $${l}${sgn(D)}` };
+    }
+    if (tp === 'multresta') {
+      const [i, j] = pickN([0, 1, 2], 2); const m = pick([2, 3, 4]); const k = m * n[i] - n[j]; if (k <= 0) return null;
+      const v = [0, 0, 0]; v[i] = m; v[j] = -1;
+      return { v, k, txt: `el ${MULT[m]} del ${ORD[i]} menos el ${ORD[j]} es ${k}`, nat: `${m}$${i} - $${j} = ${k}` };
+    }
+    return null;
+  }
+  for (let t = 0; t < 5000; t++) {
+    const n = [ri(1, 15), ri(1, 15), ri(1, 15)];
+    const cs = pickN(['suma', 'igual', 'resta', 'sumaigual', 'multresta'], 3).map(tp => cond(tp, n));
+    if (cs.some(c => !c)) continue;
+    if (Math.abs(det3(cs.map(c => c.v))) < 1e-9) continue;
+    cs.forEach(c => { c.desc = `que ${c.txt}`; });
+    return {
+      enunciado: `Halla tres números sabiendo que ${cs[0].txt}, que ${cs[1].txt} y que ${cs[2].txt}.`,
+      mags: [{ label: 'el primer número' }, { label: 'el segundo número' }, { label: 'el tercer número' }],
+      conds: cs.map(c => ({ v: c.v, k: c.k, desc: c.desc, nat: c.nat, tip: c.tip })),
+      sol: n,
+      resp: { texto: 'El primer número es {0}, el segundo es {1} y el tercero es {2}.', valores: n.slice() }
+    };
+  }
+  return null;
+} });
+
+/* 4. Alumnos con fracciones (comedor y excursión) */
+TPL.push({ id: 'fracciones', nombre: 'Alumnos de un curso', gen() {
+  const FR = [{ n: 1, d: 2, t: 'la mitad' }, { n: 1, d: 3, t: 'la tercera parte' }, { n: 2, d: 3, t: 'las dos terceras partes' },
+    { n: 1, d: 4, t: 'la cuarta parte' }, { n: 3, d: 4, t: 'las tres cuartas partes' }, { n: 2, d: 5, t: 'las dos quintas partes' },
+    { n: 3, d: 5, t: 'las tres quintas partes' }, { n: 4, d: 5, t: 'las cuatro quintas partes' }, { n: 1, d: 1, t: 'todos' }];
+  const G = ['A', 'B', 'C'];
+  const term = (f, i) => f.d === 1 ? `$${i}` : f.n === 1 ? `$${i}/${f.d}` : `${f.n}$${i}/${f.d}`;
+  const frase = (f, i) => f.d === 1 ? `todos los del ${i === 0 ? 'grupo ' : ''}${G[i]}` : `${f.t} de los del ${i === 0 ? 'grupo ' : ''}${G[i]}`;
+  for (let t = 0; t < 5000; t++) {
+    const fc = [pick(FR), pick(FR), pick(FR)], fe = [pick(FR), pick(FR), pick(FR)];
+    if (fc.filter(f => f.d === 1).length > 1 || fe.filter(f => f.d === 1).length > 1) continue;
+    const n = [0, 1, 2].map(i => { const L = lcm(fc[i].d, fe[i].d); const lo = Math.ceil(14 / L), hi = Math.floor(34 / L); return hi >= lo ? L * ri(lo, hi) : L; });
+    const vc = fc.map(f => f.n / f.d), ve = fe.map(f => f.n / f.d);
+    if (Math.abs(det3([[1, 1, 1], vc, ve])) < 1e-6) continue;
+    const N = n[0] + n[1] + n[2], M = Math.round(dot(vc, n)), E = Math.round(dot(ve, n));
+    if (M === E) continue;
+    const curso = pick(['2.º de Bachillerato', '1.º de Bachillerato', '4.º de ESO']);
+    return {
+      enunciado: `En ${curso} de un instituto hay matriculados ${N} alumnos, repartidos en tres grupos: A, B y C. Comen en el centro ${M} de ellos, que son ${frase(fc[0], 0)}, ${frase(fc[1], 1)} y ${frase(fc[2], 2)}. A una excursión acudieron ${frase(fe[0], 0)}, ${frase(fe[1], 1)} y ${frase(fe[2], 2)}, en total ${E} estudiantes. ¿Cuántos alumnos hay en cada grupo?`,
+      mags: [{ label: 'el número de alumnos del grupo A' }, { label: 'el número de alumnos del grupo B' }, { label: 'el número de alumnos del grupo C' }],
+      conds: [
+        { v: [1, 1, 1], k: N, desc: 'el total de alumnos', nat: `$0 + $1 + $2 = ${N}` },
+        { v: vc, k: M, desc: 'los alumnos que comen en el centro', nat: `${fc.map(term).join(' + ')} = ${M}`,
+          tip: 'Una fracción de un grupo se calcula multiplicando: las dos terceras partes de un grupo de z alumnos son 2z/3.' },
+        { v: ve, k: E, desc: 'los alumnos que fueron a la excursión', nat: `${fe.map(term).join(' + ')} = ${E}`,
+          tip: 'Una fracción de un grupo se calcula multiplicando: las tres cuartas partes de x alumnos son 3x/4.' }
+      ],
+      sol: n,
+      resp: { texto: 'En el grupo A hay {0} alumnos, en el B {1} y en el C {2}.', valores: n.slice() }
+    };
+  }
+  return null;
+} });
+
+/* 5. Alumnos que cambian de grupo */
+TPL.push({ id: 'traspasos', nombre: 'Cambios de grupo', gen() {
+  for (let t = 0; t < 2000; t++) {
+    const A = ri(10, 24), k1 = ri(2, 9), B = A + 2 * k1, r = pick([2, 3]), k2 = ri(2, 8);
+    const C = r * (A + k2) + k2, N = A + B + C;
+    if (N > 160) continue;
+    return {
+      enunciado: `Los ${N} alumnos de 1.º de Bachillerato de un instituto están divididos en tres grupos: A, B y C. Si se pasaran ${k1} alumnos del grupo B al A, ambos grupos tendrían el mismo número de alumnos; y si se pasaran ${k2} alumnos del grupo C al A, en el A habría ${r === 2 ? 'la mitad' : 'la tercera parte'} de alumnos que en el C. ¿Cuántos alumnos hay en cada grupo?`,
+      mags: [{ label: 'el número de alumnos del grupo A' }, { label: 'el número de alumnos del grupo B' }, { label: 'el número de alumnos del grupo C' }],
+      conds: [
+        { v: [1, 1, 1], k: N, desc: 'el total de alumnos', nat: `$0 + $1 + $2 = ${N}` },
+        { v: [1, -1, 0], k: -2 * k1, desc: `el paso de ${k1} alumnos del grupo B al A`, nat: `$0 + ${k1} = $1 - ${k1}`,
+          tip: `Al pasar ${k1} alumnos de B a A, el grupo A gana ${k1} y el B pierde ${k1}: las dos cantidades cambian.` },
+        { v: [r, 0, -1], k: -(r + 1) * k2, desc: `el paso de ${k2} alumnos del grupo C al A`, nat: `$0 + ${k2} = ($2 - ${k2})/${r}`,
+          tip: `Después del cambio, A tiene ${k2} alumnos más y C tiene ${k2} menos; A sería ${r === 2 ? 'la mitad' : 'la tercera parte'} de C, así que ${r} veces lo que queda en A es igual a lo que queda en C.` }
+      ],
+      sol: [A, B, C],
+      resp: { texto: 'En el grupo A hay {0} alumnos, en el B {1} y en el C {2}.', valores: [A, B, C] }
+    };
+  }
+  return null;
+} });
+
+/* 6. Número de tres cifras */
+TPL.push({ id: 'cifras', nombre: 'Número de tres cifras', gen() {
+  for (let t = 0; t < 5000; t++) {
+    const a = ri(1, 9), b = ri(0, 9), c = ri(1, 9);
+    if (a === c) continue;
+    const rels = [];
+    if ((a + c) % 2 === 0 && b === (a + c) / 2) rels.push({ v: [1, -2, 1], k: 0, txt: 'la cifra de las decenas es la media de las otras dos', nat: '$1 = ($0 + $2)/2', desc: 'que la cifra de las decenas es la media de las otras dos' });
+    if (b === a + c) rels.push({ v: [1, -1, 1], k: 0, txt: 'la cifra de las decenas es igual a la suma de las otras dos', nat: '$1 = $0 + $2', desc: 'que la cifra de las decenas es la suma de las otras dos' });
+    if (c === 2 * a) rels.push({ v: [-2, 0, 1], k: 0, txt: 'la cifra de las unidades es el doble de la de las centenas', nat: '$2 = 2$0', desc: 'que la cifra de las unidades es el doble de la de las centenas' });
+    if (a === 2 * c) rels.push({ v: [1, 0, -2], k: 0, txt: 'la cifra de las centenas es el doble de la de las unidades', nat: '$0 = 2$2', desc: 'que la cifra de las centenas es el doble de la de las unidades' });
+    if (!rels.length) continue;
+    const rel = pick(rels);
+    const S = a + b + c, D = 99 * (c - a), num = 100 * a + 10 * b + c;
+    const sube = D > 0;
+    return {
+      enunciado: `La suma de las tres cifras de un número es ${S}, y ${rel.txt}. Si se intercambian la cifra de las unidades y la de las centenas, el número ${sube ? 'aumenta' : 'disminuye'} en ${Math.abs(D)} unidades. ¿De qué número se trata?`,
+      mags: [{ label: 'la cifra de las centenas' }, { label: 'la cifra de las decenas' }, { label: 'la cifra de las unidades' }],
+      conds: [
+        { v: [1, 1, 1], k: S, desc: 'la suma de las cifras', nat: `$0 + $1 + $2 = ${S}` },
+        { v: rel.v, k: rel.k, desc: rel.desc, nat: rel.nat },
+        { v: [-99, 0, 99], k: D, desc: 'lo que ocurre al intercambiar las cifras', nat: `100$2 + 10$1 + $0 = 100$0 + 10$1 + $2 ${sube ? '+' : '-'} ${Math.abs(D)}`,
+          tip: 'Un número de tres cifras vale 100·(centenas) + 10·(decenas) + (unidades). Al intercambiar centenas y unidades, la de las unidades pasa a multiplicarse por 100 y la de las centenas por 1.' }
+      ],
+      sol: [a, b, c],
+      resp: { texto: 'El número buscado es {0}.', valores: [num], labels: ['número buscado'],
+        toSol: vals => { const N = vals[0]; if (!isInt(N) || N < 100 || N > 999) return null; const r = Math.round(N); return [Math.floor(r / 100), Math.floor(r / 10) % 10, r % 10]; } }
+    };
+  }
+  return null;
+} });
+
+/* 7. Hucha de monedas */
+TPL.push({ id: 'monedas', nombre: 'Monedas de una hucha', gen() {
+  for (let t = 0; t < 2000; t++) {
+    const tipo = pick(['veces', 'mas', 'cambio']);
+    let n1, n2, n3, rel;
+    n3 = ri(3, 15);
+    if (tipo === 'veces') { const m = pick([2, 3]); n2 = m * n3; n1 = ri(4, 30); rel = { v: [0, 1, -m], k: 0, txt: `hay el ${MULT[m]} de monedas de 1 € que de 2 €`, nat: `$1 = ${m}$2`, desc: `que hay el ${MULT[m]} de monedas de 1 € que de 2 €` }; }
+    else if (tipo === 'mas') { n2 = ri(3, 20); const k = ri(2, 10); n1 = n2 + k; rel = { v: [1, -1, 0], k, txt: `hay ${k} monedas de 50 céntimos más que de 1 €`, nat: `$0 = $1 + ${k}`, desc: `que hay ${k} monedas de 50 céntimos más que de 1 €` }; }
+    else { n1 = ri(4, 30); n2 = ri(3, 20); const M2 = 0.5 * n1 + n2 + n3; rel = { v: [0.5, 1, 1], k: M2, txt: `si las monedas de 2 € fueran de 1 €, en la hucha habría ${eur(M2)} €`, nat: `0,5$0 + $1 + $2 = ${fmt(M2)}`, desc: 'lo que habría si las monedas de 2 € fueran de 1 €', tip: 'Si las monedas de 2 € valieran 1 €, cada una de ellas contaría solo 1 €.' }; }
+    const N = n1 + n2 + n3, M = 0.5 * n1 + n2 + 2 * n3;
+    if (Math.abs(det3([[1, 1, 1], [0.5, 1, 2], rel.v])) < 1e-9) continue;
+    const quien = pick(NOMBRES);
+    return {
+      enunciado: `En la hucha de ${quien} hay ${N} monedas de 50 céntimos, de 1 € y de 2 €, que en total suman ${eur(M)} €. Además, ${rel.txt}. ¿Cuántas monedas hay de cada clase?`,
+      mags: [{ label: 'el número de monedas de 50 céntimos' }, { label: 'el número de monedas de 1 €' }, { label: 'el número de monedas de 2 €' }],
+      conds: [
+        { v: [1, 1, 1], k: N, desc: 'el número total de monedas', nat: `$0 + $1 + $2 = ${N}` },
+        { v: [0.5, 1, 2], k: M, desc: 'el dinero total', nat: `0,5$0 + $1 + 2$2 = ${fmt(M)}`,
+          tip: 'Una moneda de 50 céntimos vale 0,5 €: x monedas de 50 céntimos son 0,5x euros. No mezcles céntimos y euros en la misma ecuación.' },
+        { v: rel.v, k: rel.k, desc: rel.desc, nat: rel.nat, tip: rel.tip }
+      ],
+      sol: [n1, n2, n3],
+      resp: { texto: 'Hay {0} monedas de 50 céntimos, {1} de 1 € y {2} de 2 €.', valores: [n1, n2, n3] }
+    };
+  }
+  return null;
+} });
+
+/* 8. Edades */
+TPL.push({ id: 'edades', nombre: 'Edades de una familia', gen() {
+  for (let t = 0; t < 5000; t++) {
+    const H = ri(6, 15), j = ri(2, 10), M = 2 * (H + j) - j;
+    if (M < 26 || M > 48) continue;
+    const P = M + ri(-2, 7);
+    const ops = [];
+    [3, 4, 5].forEach(q => { const i = (q * H - P) / (q - 1); if (isInt(i) && i >= 1 && i < H) ops.push({ q, i: Math.round(i) }); });
+    if (!ops.length) continue;
+    const { q, i } = pick(ops);
+    const S = P + M + H;
+    return {
+      enunciado: `Entre un padre, una madre y su hijo suman ${S} años. Dentro de ${j} años, la edad de la madre será el doble de la que tenga entonces el hijo. Hace ${i} años, la edad del padre era el ${MULT[q]} de la que tenía entonces el hijo. ¿Qué edad tiene cada uno?`,
+      mags: [{ label: 'la edad del padre' }, { label: 'la edad de la madre' }, { label: 'la edad del hijo' }],
+      conds: [
+        { v: [1, 1, 1], k: S, desc: 'la suma de las edades', nat: `$0 + $1 + $2 = ${S}` },
+        { v: [0, 1, -2], k: j, desc: `las edades dentro de ${j} años`, nat: `$1 + ${j} = 2($2 + ${j})`,
+          tip: `Dentro de ${j} años, los dos tendrán ${j} años más: hay que sumar ${j} a las dos edades y poner paréntesis al multiplicar por 2.` },
+        { v: [1, 0, -q], k: P - q * H, desc: `las edades hace ${i} años`, nat: `$0 - ${i} = ${q}($2 - ${i})`,
+          tip: `Hace ${i} años, los dos tenían ${i} años menos: resta ${i} a las dos edades y usa paréntesis al multiplicar.` }
+      ],
+      sol: [P, M, H],
+      resp: { texto: 'El padre tiene {0} años, la madre {1} años y el hijo {2} años.', valores: [P, M, H] }
+    };
+  }
+  return null;
+} });
+
+/* 9. Inversiones */
+TPL.push({ id: 'inversiones', nombre: 'Inversión en fondos', gen() {
+  for (let t = 0; t < 3000; t++) {
+    const c = 1000 * ri(2, 12), b = 1000 * ri(2, 15);
+    let a, rel;
+    if (rnd() < .5) { const m = pick([2, 3]); a = m * c; rel = { v: [1, 0, -m], k: 0, txt: `en el fondo A invirtió el ${MULT[m]} que en el C`, nat: `$0 = ${m}$2`, desc: `que en el fondo A invirtió el ${MULT[m]} que en el C` }; }
+    else { a = 1000 * ri(2, 15); const D = a - c; if (D === 0) continue; rel = { v: [1, 0, -1], k: D, txt: `en el fondo A invirtió ${Math.abs(D)} € ${D > 0 ? 'más' : 'menos'} que en el C`, nat: `$0 = $2${sgn(D)}`, desc: `que en el fondo A invirtió ${Math.abs(D)} € ${D > 0 ? 'más' : 'menos'} que en el C` }; }
+    const r = pickN([2, 3, 4, 5, 6, 7], 3);
+    const T = a + b + c, B = (r[0] * a + r[1] * b + r[2] * c) / 100;
+    if (!isInt(B)) continue;
+    const v2 = r.map(x => x / 100);
+    if (Math.abs(det3([[1, 1, 1], v2, rel.v])) < 1e-9) continue;
+    const quien = pick(NOMBRES);
+    return {
+      enunciado: `${quien} invierte ${T} € en tres fondos: A, B y C. El fondo A le da una rentabilidad del ${r[0]} % anual; el B, del ${r[1]} %, y el C, del ${r[2]} %. Al cabo de un año ha obtenido un beneficio total de ${B} €. Además, ${rel.txt}. ¿Cuánto dinero invirtió en cada fondo?`,
+      mags: [{ label: 'el dinero invertido en el fondo A' }, { label: 'el dinero invertido en el fondo B' }, { label: 'el dinero invertido en el fondo C' }],
+      conds: [
+        { v: [1, 1, 1], k: T, desc: 'el dinero total invertido', nat: `$0 + $1 + $2 = ${T}` },
+        { v: v2, k: B, desc: 'el beneficio obtenido', nat: `${fmt(r[0] / 100)}$0 + ${fmt(r[1] / 100)}$1 + ${fmt(r[2] / 100)}$2 = ${B}`,
+          tip: `El beneficio de cada fondo es su porcentaje aplicado a lo invertido: el ${r[0]} % de x es ${fmt(r[0] / 100)}x.` },
+        { v: rel.v, k: rel.k, desc: rel.desc, nat: rel.nat }
+      ],
+      sol: [a, b, c],
+      resp: { texto: 'Invirtió {0} € en el fondo A, {1} € en el B y {2} € en el C.', valores: [a, b, c] }
+    };
+  }
+  return null;
+} });
+
+/* 10. Entradas de teatro */
+TPL.push({ id: 'teatro', nombre: 'Entradas de teatro', gen() {
+  for (let t = 0; t < 3000; t++) {
+    const pa = pick([10, 12, 14, 15, 16, 18]), pn = pick([5, 6, 7, 8]), pj = pick([6, 7, 8, 9]);
+    if (pn === pj || pj >= pa) continue;
+    const tipo = pick(['mas', 'veces', 'subida']);
+    let a = ri(40, 150), n = ri(20, 80), j = ri(15, 60), rel;
+    if (tipo === 'mas') { const k = a - n - j; if (k <= 0) continue; rel = { v: [1, -1, -1], k, txt: `se vendieron ${k} entradas de adulto más que de niño y de jubilado juntas`, nat: `$0 = $1 + $2 + ${k}`, desc: `que hubo ${k} entradas de adulto más que de niño y jubilado juntas` }; }
+    else if (tipo === 'veces') { const m = pick([2, 3]); j = ri(10, 30); n = m * j; rel = { v: [0, 1, -m], k: 0, txt: `las entradas de niño fueron el ${MULT[m]} que las de jubilado`, nat: `$1 = ${m}$2`, desc: `que las entradas de niño fueron el ${MULT[m]} que las de jubilado` }; }
+    const R = pa * a + pn * n + pj * j, N = a + n + j;
+    if (tipo === 'subida') { const s = pick([1, 2, 3]); const R2 = R + s * a; rel = { v: [pa + s, pn, pj], k: R2, txt: `si la entrada de adulto hubiera costado ${s} € más, se habrían recaudado ${R2} €`, nat: `${pa + s}$0 + ${pn}$1 + ${pj}$2 = ${R2}`, desc: `la recaudación con la entrada de adulto ${s} € más cara`, tip: `Con la subida, cada entrada de adulto costaría ${pa} + ${s} = ${pa + s} €; las demás no cambian.` }; }
+    if (Math.abs(det3([[1, 1, 1], [pa, pn, pj], rel.v])) < 1e-9) continue;
+    return {
+      enunciado: `Un teatro vende entradas de adulto a ${pa} €, de niño a ${pn} € y de jubilado a ${pj} €. En una función se venden ${N} entradas y se recaudan ${R} €. Además, ${rel.txt}. ¿Cuántas entradas de cada tipo se vendieron?`,
+      mags: [{ label: 'el número de entradas de adulto' }, { label: 'el número de entradas de niño' }, { label: 'el número de entradas de jubilado' }],
+      conds: [
+        { v: [1, 1, 1], k: N, desc: 'el total de entradas vendidas', nat: `$0 + $1 + $2 = ${N}` },
+        { v: [pa, pn, pj], k: R, desc: 'la recaudación', nat: `${pa}$0 + ${pn}$1 + ${pj}$2 = ${R}`, tip: 'La recaudación de cada tipo es su precio por el número de entradas vendidas de ese tipo.' },
+        { v: rel.v, k: rel.k, desc: rel.desc, nat: rel.nat, tip: rel.tip }
+      ],
+      sol: [a, n, j],
+      resp: { texto: 'Se vendieron {0} entradas de adulto, {1} de niño y {2} de jubilado.', valores: [a, n, j] }
+    };
+  }
+  return null;
+} });
+
+/* 11. Examen tipo test */
+TPL.push({ id: 'test', nombre: 'Examen tipo test', gen() {
+  for (let t = 0; t < 3000; t++) {
+    const ac = pick([1, 2]), fa = ac === 1 ? pick([0.25, 0.5]) : pick([0.5, 1]);
+    const tipo = ac === 2 ? pick(['veces', 'blanco', 'sinresta']) : pick(['veces', 'blanco']);
+    let A, F, Bl, rel;
+    if (tipo === 'veces') { F = ri(3, 10); const m = pick([2, 3, 4]); A = m * F; Bl = ri(2, 12); rel = { v: [1, -m, 0], k: 0, txt: `el número de preguntas acertadas es el ${MULT[m]} que el de falladas`, nat: `$0 = ${m}$1`, desc: `que las acertadas son el ${MULT[m]} que las falladas` }; }
+    else if (tipo === 'blanco') { F = ri(3, 10); A = ri(15, 35); const k = ri(1, 6); Bl = F + k; rel = { v: [0, -1, 1], k, txt: `dejó en blanco ${k} pregunta${k > 1 ? 's' : ''} más de las que falló`, nat: `$2 = $1 + ${k}`, desc: `que dejó en blanco ${k} pregunta${k > 1 ? 's' : ''} más de las que falló` }; }
+    else { F = ri(3, 10); A = ri(15, 35); Bl = ri(2, 12); rel = { v: [ac, 0, 0], k: ac * A, txt: `si las preguntas falladas no restaran, habría obtenido ${ac * A} puntos`, nat: `${ac}$0 = ${ac * A}`, desc: 'la puntuación que tendría si los fallos no restaran' }; }
+    const N = A + F + Bl, P = ac * A - fa * F;
+    if (P <= 0) continue;
+    if (Math.abs(det3([[1, 1, 1], [ac, -fa, 0], rel.v])) < 1e-9) continue;
+    const quien = pick(['Marina', 'Pablo', 'Lucía', 'Hugo', 'Irene', 'Diego']);
+    return {
+      enunciado: `Un examen tipo test tiene ${N} preguntas. Cada respuesta correcta suma ${ac} punto${ac > 1 ? 's' : ''}, cada respuesta incorrecta resta ${fmt(fa)} puntos y las preguntas en blanco no puntúan. ${quien} hace el examen y obtiene ${fmt(P)} puntos. Además, ${rel.txt}. ¿Cuántas preguntas acertó, cuántas falló y cuántas dejó en blanco?`,
+      mags: [{ label: 'el número de preguntas acertadas' }, { label: 'el número de preguntas falladas' }, { label: 'el número de preguntas en blanco' }],
+      conds: [
+        { v: [1, 1, 1], k: N, desc: 'el número total de preguntas', nat: `$0 + $1 + $2 = ${N}` },
+        { v: [ac, -fa, 0], k: P, desc: 'la puntuación obtenida', nat: `${co(ac, '$0')} - ${fmt(fa)}$1 = ${fmt(P)}`,
+          tip: 'Los fallos restan, así que su término lleva signo menos; las preguntas en blanco no aparecen en esta ecuación.' },
+        { v: rel.v, k: rel.k, desc: rel.desc, nat: rel.nat }
+      ],
+      sol: [A, F, Bl],
+      resp: { texto: 'Acertó {0} preguntas, falló {1} y dejó {2} en blanco.', valores: [A, F, Bl] }
+    };
+  }
+  return null;
+} });
+
+/* 12. Granja */
+TPL.push({ id: 'granja', nombre: 'Animales de una granja', gen() {
+  for (let t = 0; t < 3000; t++) {
+    const tipo = pick(['veces', 'mas', 'pienso']);
+    let v = ri(3, 20), g, p, rel;
+    if (tipo === 'veces') { p = ri(5, 20); const m = pick([2, 3]); g = m * p; rel = { v: [0, 1, -m], k: 0, txt: `hay el ${MULT[m]} de gallinas que de patos`, nat: `$1 = ${m}$2`, desc: `que hay el ${MULT[m]} de gallinas que de patos` }; }
+    else if (tipo === 'mas') { p = ri(4, 20); const k = ri(3, 15); g = v + p + k; rel = { v: [-1, 1, -1], k, txt: `hay ${k} gallinas más que vacas y patos juntos`, nat: `$1 = $0 + $2 + ${k}`, desc: `que hay ${k} gallinas más que vacas y patos juntos` }; }
+    else { p = ri(4, 25); g = ri(10, 40); const cv = pick([10, 12, 15]); const F = cv * v + 0.1 * g + 0.2 * p; rel = { v: [cv, 0.1, 0.2], k: F, txt: `cada día una vaca come ${cv} kg de pienso, una gallina 0,1 kg y un pato 0,2 kg, y entre todos se comen ${fmt(F)} kg`, nat: `${cv}$0 + 0,1$1 + 0,2$2 = ${fmt(F)}`, desc: 'el pienso que se comen al día', tip: 'Lo que comen las vacas es lo que come una vaca por el número de vacas; igual con gallinas y patos.' }; }
+    const H = v + g + p, L = 4 * v + 2 * g + 2 * p;
+    if (Math.abs(det3([[1, 1, 1], [4, 2, 2], rel.v])) < 1e-9) continue;
+    return {
+      enunciado: `En una granja hay vacas, gallinas y patos. En total se cuentan ${H} cabezas y ${L} patas. Además, ${rel.txt}. ¿Cuántos animales hay de cada tipo?`,
+      mags: [{ label: 'el número de vacas' }, { label: 'el número de gallinas' }, { label: 'el número de patos' }],
+      conds: [
+        { v: [1, 1, 1], k: H, desc: 'el número de cabezas', nat: `$0 + $1 + $2 = ${H}`, tip: 'Cada animal tiene una cabeza.' },
+        { v: [4, 2, 2], k: L, desc: 'el número de patas', nat: `4$0 + 2$1 + 2$2 = ${L}`, tip: 'Cada vaca tiene 4 patas y cada gallina o pato tiene 2: las patas de las vacas son 4 por el número de vacas.' },
+        { v: rel.v, k: rel.k, desc: rel.desc, nat: rel.nat, tip: rel.tip }
+      ],
+      sol: [v, g, p],
+      resp: { texto: 'En la granja hay {0} vacas, {1} gallinas y {2} patos.', valores: [v, g, p] }
+    };
+  }
+  return null;
+} });
+
+/* 13. Frutería (precios con decimales) */
+TPL.push({ id: 'fruteria', nombre: 'Compras en la frutería', gen() {
+  const FRU = ['manzanas', 'naranjas', 'peras'];
+  for (let t = 0; t < 5000; t++) {
+    const pc = [10 * ri(12, 30), 10 * ri(8, 20), 10 * ri(15, 35)];
+    if (new Set(pc).size < 3) continue;
+    const Q = [0, 1, 2].map(() => [ri(0, 4), ri(0, 4), ri(0, 4)]);
+    if (Q.some(q => q.filter(x => x > 0).length < 2)) continue;
+    if (Math.abs(det3(Q)) < 1e-9) continue;
+    const tot = Q.map(q => dot(q, pc) / 100);
+    const nom = pickN(NOMBRES, 3);
+    const compra = q => lista(q.map((n, i) => n ? `${n} kg de ${FRU[i]}` : null).filter(Boolean));
+    const natQ = q => q.map((n, i) => n ? co(n, '$' + i) : null).filter(Boolean).join(' + ');
+    const pr = pc.map(x => x / 100);
+    return {
+      enunciado: `En una frutería, ${nom[0]} compra ${compra(Q[0])}, y paga ${eur(tot[0])} €. ${nom[1]} compra ${compra(Q[1])}, y paga ${eur(tot[1])} €. Por último, ${nom[2]} compra ${compra(Q[2])}, y paga ${eur(tot[2])} €. ¿Cuál es el precio del kilo de cada fruta?`,
+      mags: [{ label: 'el precio del kilo de manzanas' }, { label: 'el precio del kilo de naranjas' }, { label: 'el precio del kilo de peras' }],
+      conds: Q.map((q, i) => ({ v: q.slice(), k: tot[i], desc: `la compra de ${nom[i]}`, nat: `${natQ(q)} = ${fmt(tot[i])}`, tip: 'Lo que se paga por cada fruta es su precio por kilo multiplicado por los kilos comprados.' })),
+      sol: pr,
+      resp: { texto: 'El kilo de manzanas cuesta {0} €, el de naranjas {1} € y el de peras {2} €.', valores: pr.slice() }
+    };
+  }
+  return null;
+} });
+
+/* 14. Ángulos de un triángulo */
+TPL.push({ id: 'triangulo', nombre: 'Ángulos de un triángulo', gen() {
+  for (let t = 0; t < 3000; t++) {
+    if (rnd() < .5) {
+      const A = ri(18, 45), m = pick([2, 3]), C = m * A, B = 180 - A - C;
+      if (B < 15 || B === A || B === C) continue;
+      const k = B - A;
+      return {
+        enunciado: `Calcula los ángulos de un triángulo ABC sabiendo que el ángulo B mide ${Math.abs(k)}° ${k > 0 ? 'más' : 'menos'} que el ángulo A y que el ángulo C mide el ${MULT[m]} que el ángulo A.`,
+        mags: [{ label: 'el ángulo A (en grados)' }, { label: 'el ángulo B (en grados)' }, { label: 'el ángulo C (en grados)' }],
+        conds: [
+          { v: [1, 1, 1], k: 180, desc: 'la suma de los ángulos de un triángulo', nat: '$0 + $1 + $2 = 180', tip: 'Este dato no aparece en el enunciado: recuerda que los tres ángulos de cualquier triángulo suman 180°.' },
+          { v: [-1, 1, 0], k, desc: 'la relación entre los ángulos A y B', nat: `$1 = $0${sgn(k)}` },
+          { v: [-m, 0, 1], k: 0, desc: 'la relación entre los ángulos A y C', nat: `$2 = ${m}$0` }
+        ],
+        sol: [A, B, C],
+        resp: { texto: 'Los ángulos miden: A = {0}°, B = {1}° y C = {2}°.', valores: [A, B, C] }
+      };
+    } else {
+      const C = 90, A = ri(20, 70), B = 90 - A, k = A - B;
+      if (k === 0) continue;
+      return {
+        enunciado: `En un triángulo ABC, el ángulo C mide lo mismo que los otros dos juntos, y el ángulo A mide ${Math.abs(k)}° ${k > 0 ? 'más' : 'menos'} que el ángulo B. Calcula los tres ángulos.`,
+        mags: [{ label: 'el ángulo A (en grados)' }, { label: 'el ángulo B (en grados)' }, { label: 'el ángulo C (en grados)' }],
+        conds: [
+          { v: [1, 1, 1], k: 180, desc: 'la suma de los ángulos de un triángulo', nat: '$0 + $1 + $2 = 180', tip: 'Este dato no aparece en el enunciado: recuerda que los tres ángulos de cualquier triángulo suman 180°.' },
+          { v: [-1, -1, 1], k: 0, desc: 'que el ángulo C mide lo mismo que los otros dos juntos', nat: '$2 = $0 + $1' },
+          { v: [1, -1, 0], k, desc: 'la relación entre los ángulos A y B', nat: `$0 = $1${sgn(k)}` }
+        ],
+        sol: [A, B, C],
+        resp: { texto: 'Los ángulos miden: A = {0}°, B = {1}° y C = {2}°.', valores: [A, B, C] }
+      };
+    }
+  }
+  return null;
+} });
+
+/* 15. Mezcla de cafés */
+TPL.push({ id: 'cafe', nombre: 'Mezcla de cafés', gen() {
+  for (let t = 0; t < 5000; t++) {
+    const p = [pick([10, 11, 12, 13]), pick([7, 8, 9]), pick([14, 15, 16, 18])];
+    const tipo = pick(['veces', 'mas']);
+    let c, b, e, rel;
+    e = ri(2, 12);
+    if (tipo === 'veces') { const m = pick([2, 3]); b = m * e; c = ri(3, 20); rel = { v: [0, 1, -m], k: 0, txt: `quiere que haya el ${MULT[m]} de café brasileño que de etíope`, nat: `$1 = ${m}$2`, desc: `que haya el ${MULT[m]} de brasileño que de etíope` }; }
+    else { b = ri(3, 20); const k = ri(2, 10); c = b + k; rel = { v: [1, -1, 0], k, txt: `quiere que haya ${k} kg más de café colombiano que de brasileño`, nat: `$0 = $1 + ${k}`, desc: `que haya ${k} kg más de colombiano que de brasileño` }; }
+    const T = c + b + e, coste = p[0] * c + p[1] * b + p[2] * e, P = coste / T;
+    if (!isInt(P * 100)) continue;
+    if (Math.abs(det3([[1, 1, 1], p, rel.v])) < 1e-9) continue;
+    return {
+      enunciado: `Un tostadero quiere obtener ${T} kg de una mezcla de café que salga a ${eur(P)} € el kilo. Para ello mezcla café colombiano, de ${p[0]} €/kg; brasileño, de ${p[1]} €/kg, y etíope, de ${p[2]} €/kg. Además, ${rel.txt}. ¿Cuántos kilos de cada tipo debe mezclar?`,
+      mags: [{ label: 'los kilos de café colombiano' }, { label: 'los kilos de café brasileño' }, { label: 'los kilos de café etíope' }],
+      conds: [
+        { v: [1, 1, 1], k: T, desc: 'los kilos totales de la mezcla', nat: `$0 + $1 + $2 = ${T}` },
+        { v: p.slice(), k: coste, desc: 'el precio de la mezcla', nat: `${p[0]}$0 + ${p[1]}$1 + ${p[2]}$2 = ${fmt(P)}·${T}`,
+          tip: 'Lo que cuestan los tres cafés juntos tiene que ser igual al precio de la mezcla por los kilos totales.',
+          alts: [{ v: p.map(x => x - P), k: 0 }] },
+        { v: rel.v, k: rel.k, desc: rel.desc, nat: rel.nat }
+      ],
+      sol: [c, b, e],
+      resp: { texto: 'Hay que mezclar {0} kg de café colombiano, {1} kg de brasileño y {2} kg de etíope.', valores: [c, b, e] }
+    };
+  }
+  return null;
+} });
+
+/* 16. Beneficios de una tienda (beneficio = ingresos − gastos)
+   La tercera condición admite dos formas equivalentes:
+   · beneficio: (precios de venta) − (precios de coste) = B
+   · ingresos:  precios de venta = C + B                          */
+TPL.push({ id: 'beneficios', nombre: 'Beneficios de una tienda', gen() {
+  const CTX = [
+    { tienda: 'una tienda de accesorios de telefonía móvil', p: ['baterías externas', 'carcasas', 'cargadores'], s: ['batería externa', 'carcasa', 'cargador'], c: [[12, 18], [5, 9], [8, 13]] },
+    { tienda: 'una tienda de material deportivo', p: ['balones', 'raquetas', 'gorras'], s: ['balón', 'raqueta', 'gorra'], c: [[14, 22], [25, 35], [5, 9]] },
+    { tienda: 'una papelería', p: ['mochilas', 'estuches', 'agendas'], s: ['mochila', 'estuche', 'agenda'], c: [[18, 28], [4, 8], [6, 11]] },
+    { tienda: 'una floristería', p: ['ramos de flores', 'plantas de interior', 'macetas'], s: ['ramo', 'planta', 'maceta'], c: [[15, 25], [8, 14], [3, 7]] },
+    { tienda: 'una tienda de informática', p: ['ratones', 'teclados', 'auriculares'], s: ['ratón', 'teclado', 'par de auriculares'], c: [[8, 14], [15, 25], [10, 18]] }
+  ];
+  for (let t = 0; t < 5000; t++) {
+    const ctx = pick(CTX);
+    const c = ctx.c.map(([a, b]) => ri(a, b));
+    const m = [ri(2, 10), ri(2, 10), ri(2, 10)];
+    const pv = c.map((x, i) => x + m[i]);
+    const n = [ri(10, 60), ri(10, 60), ri(10, 60)];
+    if (Math.abs(det3([[1, 1, 1], c, m])) < 1e-9) continue;
+    const N = n[0] + n[1] + n[2], C = dot(c, n), B = dot(m, n), I = C + B;
+    const P = ctx.p;
+    return {
+      enunciado: `${cap(ctx.tienda)} vende ${lista(P)} a ${pv[0]} €, ${pv[1]} € y ${pv[2]} € respectivamente. Los precios de coste de estos productos son de ${c[0]} € cada ${ctx.s[0]}, ${c[1]} € cada ${ctx.s[1]} y ${c[2]} € cada ${ctx.s[2]}. Cierta semana, en la que el total de los productos le costó ${C} €, obtuvo unos beneficios de ${B} €. ¿Cuántas unidades vendió de cada producto, si en total vendió ${N}, las mismas que compró?`,
+      mags: P.map(x => ({ label: `el número de ${x}` })),
+      conds: [
+        { v: [1, 1, 1], k: N, desc: 'el número total de unidades', nat: `$0 + $1 + $2 = ${N}` },
+        { v: c.slice(), k: C, desc: 'lo que costaron los productos (los gastos)', nat: `${c[0]}$0 + ${c[1]}$1 + ${c[2]}$2 = ${C}`,
+          tip: 'Lo que cuesta cada producto es su precio de coste por las unidades compradas. Aquí se usan los precios de coste, no los de venta.' },
+        { v: m.slice(), k: B, desc: 'el beneficio obtenido (beneficio = ingresos − gastos)',
+          nat: `(${pv[0]}$0 + ${pv[1]}$1 + ${pv[2]}$2) - (${c[0]}$0 + ${c[1]}$1 + ${c[2]}$2) = ${B}`,
+          tip: `Beneficio = ingresos − gastos. Los ingresos son lo que se cobra al vender (precio de venta por unidades) y los gastos, lo que costaron los productos (${C} €). También puedes igualar los ingresos a lo que costaron los productos más lo que se ganó.`,
+          alts: [{ v: pv.slice(), k: I }] }
+      ],
+      sol: n,
+      resp: { texto: `Vendió {0} ${P[0]}, {1} ${P[1]} y {2} ${P[2]}.`, valores: n.slice() }
+    };
+  }
+  return null;
+} });
+
+/* =========================================================
+   Analizador de ecuaciones lineales en x, y, z
+   ========================================================= */
+class PErr extends Error {}
+function tokenize(s) {
+  s = s.replace(/[−–—]/g, '-').replace(/[·×∙•⋅]/g, '*').replace(/÷|:/g, '/').replace(/[\[{]/g, '(').replace(/[\]}]/g, ')').replace(/[°º€]/g, ' ');
+  const toks = []; let i = 0;
+  while (i < s.length) {
+    const ch = s[i];
+    if (/\s/.test(ch)) { i++; continue; }
+    if (/[0-9]/.test(ch) || ((ch === '.' || ch === ',') && /[0-9]/.test(s[i + 1] || ''))) {
+      let j = i, sep = false;
+      while (j < s.length && (/[0-9]/.test(s[j]) || ((s[j] === '.' || s[j] === ',') && !sep && /[0-9]/.test(s[j + 1] || '')))) { if (s[j] === '.' || s[j] === ',') sep = true; j++; }
+      const raw = s.slice(i, j);
+      if (/^[1-9]\d{0,2}(\.\d{3})+$/.test(raw)) throw new PErr(`«${raw}» parece llevar un punto de miles: escribe el número sin separador (por ejemplo, 54900).`);
+      toks.push({ t: 'num', v: parseFloat(raw.replace(',', '.')), raw });
+      i = j; continue;
+    }
+    if (/[a-zA-ZáéíóúñÁÉÍÓÚÑ]/.test(ch)) {
+      const l = ch.toLowerCase();
+      if ('xyz'.includes(l)) { toks.push({ t: 'var', v: l }); i++; continue; }
+      throw new PErr(`La letra «${ch}» no es una incógnita: usa solo x, y, z.`);
+    }
+    if ('+-*/()=%'.includes(ch)) { toks.push({ t: ch }); i++; continue; }
+    if (ch === '^') throw new PErr('No se admiten potencias: las ecuaciones de un sistema lineal no las tienen.');
+    throw new PErr(`No reconozco el símbolo «${ch}».`);
+  }
+  return toks;
+}
+function parseEquation(str) {
+  const toks = tokenize(str);
+  if (!toks.length) throw new PErr('Escribe la ecuación.');
+  const nEq = toks.filter(t => t.t === '=').length;
+  if (nEq === 0) throw new PErr('Falta el signo =.');
+  if (nEq > 1) throw new PErr('Usa el signo = una sola vez en cada ecuación.');
+  let p = 0;
+  const peek = () => toks[p], next = () => toks[p++];
+  const startsFactor = t => t && (t.t === 'num' || t.t === 'var' || t.t === '(');
+  function expr() {
+    const terms = [[1, term()]];
+    while (peek() && (peek().t === '+' || peek().t === '-')) { const op = next().t; terms.push([op === '+' ? 1 : -1, term()]); }
+    return terms.length === 1 ? terms[0][1] : { k: 'add', terms };
+  }
+  function term() {
+    let node = factor();
+    for (;;) {
+      const t = peek(); if (!t) break;
+      if (t.t === '*') { next(); node = { k: 'mul', a: node, b: factor(), imp: false }; }
+      else if (t.t === '/') { next(); node = { k: 'div', a: node, b: factor() }; }
+      else if (startsFactor(t)) {
+        if (t.t === 'num' && endsWithNum(node)) throw new PErr('Hay dos números seguidos sin un signo entre ellos (¿has usado puntos de miles?).');
+        if (t.t === 'num') throw new PErr('Hay un número pegado detrás de una incógnita o de un paréntesis: falta un signo (+, − o ·) entre ellos.');
+        node = { k: 'mul', a: node, b: factor(), imp: true };
+      } else break;
+    }
+    return node;
+  }
+  function endsWithNum(n) { return n.k === 'num' || n.k === 'pct' || (n.k === 'mul' && endsWithNum(n.b)) || (n.k === 'div' && endsWithNum(n.b)); }
+  function factor() {
+    const t = peek();
+    if (!t) throw new PErr('La ecuación está incompleta.');
+    if (t.t === '+') { next(); return factor(); }
+    if (t.t === '-') { next(); return { k: 'neg', a: factor() }; }
+    let node = primary();
+    while (peek() && peek().t === '%') { next(); node = { k: 'pct', a: node }; }
+    return node;
+  }
+  function primary() {
+    const t = next();
+    if (!t) throw new PErr('La ecuación está incompleta.');
+    if (t.t === 'num') return { k: 'num', v: t.v, raw: t.raw };
+    if (t.t === 'var') return { k: 'var', v: t.v };
+    if (t.t === '(') {
+      if (peek() && peek().t === ')') throw new PErr('Hay un paréntesis vacío.');
+      const e = expr(); const c = next();
+      if (!c || c.t !== ')') throw new PErr('Falta cerrar un paréntesis.');
+      return { k: 'par', a: e };
+    }
+    if (t.t === ')') throw new PErr('Sobra un paréntesis de cierre.');
+    if (t.t === '=') throw new PErr('Falta algo a uno de los lados del signo =.');
+    throw new PErr(`El signo «${t.t}» está mal colocado.`);
+  }
+  const lhs = expr();
+  if (!peek() || peek().t !== '=') throw new PErr(peek() && peek().t === ')' ? 'Sobra un paréntesis de cierre.' : 'Hay algo mal colocado antes del signo =.');
+  next();
+  if (!peek()) throw new PErr('Falta el segundo miembro de la ecuación.');
+  const rhs = expr();
+  if (p < toks.length) throw new PErr(toks[p].t === ')' ? 'Sobra un paréntesis de cierre.' : 'Hay algo mal colocado al final de la ecuación.');
+  const L = lin(lhs), R = lin(rhs);
+  return { lhs, rhs, u: L.map((v, i) => v - R[i]) }; // u·(x,y,z,1) = 0
+}
+const isConst = a => Math.abs(a[0]) < 1e-12 && Math.abs(a[1]) < 1e-12 && Math.abs(a[2]) < 1e-12;
+function lin(n) {
+  switch (n.k) {
+    case 'num': return [0, 0, 0, n.v];
+    case 'var': return n.v === 'x' ? [1, 0, 0, 0] : n.v === 'y' ? [0, 1, 0, 0] : [0, 0, 1, 0];
+    case 'neg': return lin(n.a).map(v => -v);
+    case 'par': return lin(n.a);
+    case 'pct': return lin(n.a).map(v => v / 100);
+    case 'add': { const r = [0, 0, 0, 0]; for (const [s, t] of n.terms) { const l = lin(t); for (let i = 0; i < 4; i++) r[i] += s * l[i]; } return r; }
+    case 'mul': {
+      const a = lin(n.a), b = lin(n.b);
+      if (isConst(a)) return b.map(v => v * a[3]);
+      if (isConst(b)) return a.map(v => v * b[3]);
+      throw new PErr('Has multiplicado dos incógnitas entre sí: en un sistema lineal cada incógnita solo se multiplica por números.');
+    }
+    case 'div': {
+      const a = lin(n.a), b = lin(n.b);
+      if (!isConst(b)) throw new PErr('No se puede dividir entre una incógnita en una ecuación lineal.');
+      if (Math.abs(b[3]) < 1e-12) throw new PErr('Hay una división entre cero.');
+      return a.map(v => v / b[3]);
+    }
+  }
+  throw new PErr('No he podido interpretar la ecuación.');
+}
+/* LaTeX a partir del árbol */
+const texNum = raw => String(raw).replace(/\./g, ',').replace(/,/g, '{,}');
+function tex(n) {
+  switch (n.k) {
+    case 'num': return texNum(n.raw);
+    case 'var': return n.v;
+    case 'neg': return '-' + tex(n.a);
+    case 'par': return '\\left(' + tex(n.a) + '\\right)';
+    case 'pct': return tex(n.a) + '\\,\\%';
+    case 'add': return n.terms.map(([s, t], i) => (i === 0 ? (s < 0 ? '-' : '') : (s < 0 ? ' - ' : ' + ')) + tex(t)).join('');
+    case 'mul': {
+      const A = tex(n.a), B = tex(n.b);
+      const needDot = !n.imp || (n.b.k === 'num') || (n.b.k === 'neg');
+      return A + (needDot ? ' \\cdot ' : '\\,') + B;
+    }
+    case 'div': { const strip = x => x.k === 'par' ? x.a : x; return '\\dfrac{' + tex(strip(n.a)) + '}{' + tex(strip(n.b)) + '}'; }
+  }
+  return '';
+}
+function plain(n) {
+  switch (n.k) {
+    case 'num': return String(n.raw).replace('.', ',');
+    case 'var': return n.v;
+    case 'neg': return '−' + plain(n.a);
+    case 'par': return '(' + plain(n.a) + ')';
+    case 'pct': return plain(n.a) + ' %';
+    case 'add': return n.terms.map(([s, t], i) => (i === 0 ? (s < 0 ? '−' : '') : (s < 0 ? ' − ' : ' + ')) + plain(t)).join('');
+    case 'mul': return plain(n.a) + (n.imp && n.b.k !== 'num' ? '' : '·') + plain(n.b);
+    case 'div': return plain(n.a) + '/' + plain(n.b);
+  }
+  return '';
+}
+/* Ecuación lineal ordenada en LaTeX / texto */
+function linTex(c, k) {
+  let s = '';
+  c.forEach((a, i) => {
+    if (Math.abs(a) < 1e-12) return;
+    const abs = Math.abs(a), num = Math.abs(abs - 1) < 1e-12 ? '' : texNum(fmt(abs));
+    s += s === '' ? (a < 0 ? '-' : '') + num + LET[i] : (a < 0 ? ' - ' : ' + ') + num + LET[i];
+  });
+  return (s || '0') + ' = ' + texNum(fmt(k));
+}
+function linPlain(c, k) { return linTex(c, k).replace(/\{,\}/g, ',').replace(/ - /g, ' − ').replace(/^-/, '−'); }
+function mathSpan(texStr, plainStr) { return `<span class="m" data-plain="${esc(plainStr)}">\\(${texStr}\\)</span>`; }
+
+/* MathJax con alternativa en texto plano */
+let mjFallo = false;
+function typeset(el) {
+  if (window.MathJax && MathJax.typesetPromise) return MathJax.typesetPromise(el ? [el] : undefined).catch(() => {});
+  if (mjFallo) (el || document).querySelectorAll('.m').forEach(s => { s.textContent = s.dataset.plain; });
+  return Promise.resolve();
+}
+setTimeout(() => { if (!(window.MathJax && MathJax.typesetPromise)) { mjFallo = true; typeset(); } }, 7000);
+document.getElementById('MathJax-script').addEventListener('load', () => {
+  const w = () => (window.MathJax && MathJax.startup && MathJax.startup.promise) ? MathJax.startup.promise.then(() => typeset()) : setTimeout(w, 100);
+  w();
+});
+document.getElementById('MathJax-script').addEventListener('error', () => { mjFallo = true; typeset(); });
+
+/* =========================================================
+   Comparación de ecuaciones con las condiciones del problema
+   ========================================================= */
+function prop(u, w) {
+  if (maxAbs(u.slice(0, 3)) < 1e-12) return false;
+  let j = 0; for (let i = 1; i < 4; i++) if (Math.abs(w[i]) > Math.abs(w[j])) j = i;
+  if (Math.abs(w[j]) < 1e-12) return false;
+  const lam = u[j] / w[j];
+  if (Math.abs(lam) < 1e-12) return false;
+  const S = Math.max(maxAbs(u), Math.abs(lam) * maxAbs(w));
+  for (let i = 0; i < 4; i++) if (Math.abs(u[i] - lam * w[i]) > 1e-9 * S) return false;
+  return true;
+}
+function satisface(u, sol) {
+  const r = u[0] * sol[0] + u[1] * sol[1] + u[2] * sol[2] + u[3];
+  const S = Math.abs(u[0] * sol[0]) + Math.abs(u[1] * sol[1]) + Math.abs(u[2] * sol[2]) + Math.abs(u[3]);
+  return Math.abs(r) <= 1e-9 * S + 1e-12;
+}
+const toMag = (u, map) => { const m = [0, 0, 0, u[3]]; for (let L = 0; L < 3; L++) m[map[L]] += u[L]; return m; };
+const toLet = (v, map) => [0, 1, 2].map(L => v[map[L]]);
+const PERMS = [[0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]];
+function canonRow(cond) {
+  let v = cond.v.slice(), k = cond.k;
+  if (!v.every(isInt)) {
+    for (let m = 2; m <= 1000; m++) {
+      if ([...v, k].every(x => isInt(x * m))) {
+        v = v.map(x => Math.round(x * m)); k = Math.round(k * m);
+        const g = [...v, k].filter(x => x !== 0).reduce((a, b) => gcd(a, b));
+        v = v.map(x => x / g); k = k / g; break;
+      }
+    }
+  }
+  return { v: v.map(x => isInt(x) ? Math.round(x) : x), k };
+}
+function prepararDatos(d) {
+  d.conds.forEach(c => {
+    c.w = [...c.v, -c.k];
+    c.forms = [c.w, ...(c.alts || []).map(a => [...a.v, -a.k])];
+    c.canon = canonRow(c);
+  });
+  return d;
+}
+/* Clasifica una ecuación (u en letras) → {ok, c} o {ok:false, msg, pista} */
+function clasificar(u, map, d, tomadas, modo) {
+  const esFila = modo === 'fila';
+  const que = esFila ? 'Esta fila' : 'Esta ecuación';
+  if (maxAbs(u.slice(0, 3)) < 1e-12) return { ok: false, msg: `${que} no contiene ninguna incógnita (o se anulan entre sí).` };
+  const um = toMag(u, map);
+  for (let c = 0; c < 3; c++) {
+    if (d.conds[c].forms.some(w => prop(um, w))) {
+      if (tomadas.has(c)) return { ok: false, msg: `${que} expresa la misma información que ${tomadas.get(c)}. Cada ecuación del sistema debe traducir una información distinta del enunciado.` };
+      return { ok: true, c };
+    }
+  }
+  if (satisface(um, d.sol)) return { ok: false, msg: esFila
+    ? 'Esta fila es cierta, pero no es ninguna de tus ecuaciones: parece una combinación de varias. Escribe cada ecuación del planteamiento, ordenada, en una fila.'
+    : 'Esta ecuación es cierta, pero no traduce directamente una información del enunciado: parece que has combinado dos condiciones (sumando, restando o sustituyendo ecuaciones). Escribe cada condición por separado, tal y como la cuenta el enunciado.' };
+  for (const pm of PERMS) {
+    if (pm.every((v, i) => v === map[i])) continue;
+    const u2 = toMag(u, pm);
+    if (d.conds.some((cd, c) => !tomadas.has(c) && cd.forms.some(w => prop(u2, w)))) {
+      const leyenda = LET.map((L, i) => `${L} es ${d.mags[map[i]].label}`).join('; ');
+      return { ok: false, msg: esFila
+        ? `Has colocado coeficientes en una columna que no les corresponde. Recuerda: ${leyenda}.`
+        : `Has intercambiado las letras. Según tu elección, ${leyenda}. Escribe la ecuación respetando qué representa cada letra.` };
+    }
+  }
+  const nm = casiIgual(um, d, tomadas);
+  if (nm) {
+    const cd = d.conds[nm.c];
+    const letra = i => LET[map.indexOf(i)];
+    let det;
+    if (nm.mism.length === 1) {
+      const i = nm.mism[0], ui = um[i], wi = nm.lam * nm.w[i];
+      const tiny = x => Math.abs(x) < 1e-9 * Math.max(1, maxAbs(um));
+      if (!tiny(wi) && tiny(ui + wi)) det = i < 3 ? `revisa el signo del término en ${letra(i)}` : 'revisa el signo del número que no lleva incógnita';
+      else if (tiny(ui)) det = i < 3 ? `falta el término en ${letra(i)} (${d.mags[i].label})` : 'falta el número que no lleva incógnita';
+      else if (tiny(wi)) det = i < 3 ? `${letra(i)} (${d.mags[i].label}) no interviene en esa información` : 'en esa información no hay ningún número suelto: revisa de dónde sale el que has puesto';
+      else det = i < 3 ? `el coeficiente de ${letra(i)} no es correcto: revisa qué dato del enunciado acompaña a ${d.mags[i].label}` : 'el número que no lleva incógnita (término independiente) no es correcto: revisa los datos del enunciado';
+      if (esFila && !tiny(wi) && tiny(ui + wi)) det += '. Al pasar un término de un miembro al otro cambia de signo';
+    } else det = 'hay dos datos que no cuadran';
+    return { ok: false, msg: `${esFila ? 'Parece que esta fila corresponde a la ecuación que expresa' : 'Parece que quieres expresar'} ${cd.desc}, pero ${det}.`, pista: cd.tip };
+  }
+  return { ok: false, msg: esFila
+    ? 'Esta fila no corresponde a ninguna de las ecuaciones del sistema. Copia cada ecuación del planteamiento y pasa las incógnitas al primer miembro y los números al segundo.'
+    : 'Esta ecuación no corresponde a ninguna información del enunciado. Localiza las informaciones que relacionan las incógnitas y traduce cada una a una ecuación.' };
+}
+function casiIgual(um, d, tomadas) {
+  let best = null;
+  d.conds.forEach((cd, c) => {
+    if (tomadas.has(c)) return;
+    cd.forms.forEach(w => {
+      for (let i = 0; i < 4; i++) {
+        if (Math.abs(w[i]) < 1e-12 || Math.abs(um[i]) < 1e-12) continue;
+        const lam = um[i] / w[i];
+        const S = Math.max(maxAbs(um), Math.abs(lam) * maxAbs(w));
+        const mism = [];
+        for (let k = 0; k < 4; k++) if (Math.abs(um[k] - lam * w[k]) > 1e-9 * S) mism.push(k);
+        if (!best || mism.length < best.mism.length) best = { c, mism, lam, w };
+      }
+    });
+  });
+  return best && best.mism.length >= 1 && best.mism.length <= 2 ? best : null;
+}
+
+/* =========================================================
+   Estado y puntuación
+   Puntos en sextos: 2/3 de punto = 4 sextos; 0,5 = 3 sextos; 10 = 60.
+   nota = clamp(puntos − 0,25·fallos, 0, 10), suelo de 0 solo al final.
+   ========================================================= */
+const PENALIZACION = 0.25;
+const OBJETIVO = 60;
+const state = { hist: [], fallos: 0, inicio: Date.now(), superada: false };
+let prob = null;
+let bolsa = [], ultimo = null;
+/* Tipo obligatorio: sale siempre entre los cuatro primeros problemas.
+   Si el alumno lo cierra con «Mostrar soluciones» sin haber resuelto
+   antes ninguno, vuelve a salir en uno de los dos problemas siguientes. */
+const OBLIGATORIA = 'beneficios';
+let primeraBolsa = true, obligatoriaHecha = false;
+const sextos = () => state.hist.reduce((a, h) => a + h.plantS + h.resS, 0);
+function calcularNota() {
+  const bruta = sextos() / 6 - state.fallos * PENALIZACION;
+  return Math.round(Math.min(10, Math.max(0, bruta)) * 100) / 100;
+}
+function sumar(tipo, s) {
+  const add = Math.max(0, Math.min(s, OBJETIVO - sextos()));
+  prob.h[tipo] += add;
+  if (sextos() >= OBJETIVO) state.superada = true;
+  return add;
+}
+function registrarFallo() { prob.h.fallos++; state.fallos++; actualizarMarcador(); }
+function actualizarMarcador() {
+  document.getElementById('m-nota').textContent = fmt2(calcularNota());
+  document.getElementById('m-puntos').textContent = fmt2(sextos() / 6);
+  document.getElementById('m-problemas').textContent = state.hist.filter(h => h.estado === 'completo').length;
+  document.getElementById('m-fallos').textContent = state.fallos;
+  if (prob) {
+    const el = document.getElementById('prob-puntos');
+    if (el) el.innerHTML = `Este problema: <b>${fmt2((prob.h.plantS + prob.h.resS) / 6)}</b> / 2,5`;
+  }
+  document.getElementById('btn-soluciones').disabled = !prob || prob.terminado || state.superada;
+}
+function siguientePlantilla() {
+  if (!bolsa.length) {
+    bolsa = shuffle(TPL.map((_, i) => i));
+    if (primeraBolsa) {
+      const ib = TPL.findIndex(t => t.id === OBLIGATORIA);
+      bolsa.splice(bolsa.indexOf(ib), 1);
+      bolsa.splice(ri(0, 3), 0, ib);
+      primeraBolsa = false;
+    } else if (bolsa[0] === ultimo && bolsa.length > 1) bolsa.push(bolsa.shift());
+  }
+  ultimo = bolsa.shift();
+  return TPL[ultimo];
+}
+
+/* Nombre del alumno */
+const inNombre = document.getElementById('nombre');
+function exigirNombre() {
+  if (inNombre.value.trim()) { inNombre.classList.remove('falta'); document.getElementById('aviso-nombre').classList.remove('visible'); return true; }
+  inNombre.classList.add('falta'); document.getElementById('aviso-nombre').classList.add('visible'); inNombre.focus();
+  return false;
+}
+inNombre.addEventListener('input', () => { if (inNombre.value.trim()) { inNombre.classList.remove('falta'); document.getElementById('aviso-nombre').classList.remove('visible'); } });
+
+/* =========================================================
+   Pintado del problema
+   ========================================================= */
+const $ = id => document.getElementById(id);
+function fb(id, clase, html) { const el = $(id); el.className = 'fb ' + clase; el.innerHTML = html; typeset(el); }
+function nuevoProblema() {
+  const tpl = siguientePlantilla();
+  let data = null;
+  for (let k = 0; k < 5 && !data; k++) data = tpl.gen();
+  if (!data) { console.error('Generador sin resultado:', tpl.id); return nuevoProblema(); }
+  prepararDatos(data);
+  const h = { n: state.hist.length + 1, nombre: tpl.nombre, plantS: 0, resS: 0, fallos: 0, estado: 'en curso' };
+  state.hist.push(h);
+  const blank = () => ({ ok: false, first: null, match: null, lastWrong: null });
+  prob = { tpl, data, h, map: null, mapLocked: false, fields: [blank(), blank(), blank()], rows: [blank(), blank(), blank()],
+    plantOk: false, ordOk: false, resOk: false, resFirst: null, resLastWrong: null, revelado: false, terminado: false };
+  pintar();
+  actualizarMarcador();
+}
+function pintar() {
+  const d = prob.data;
+  const opts = d.mags.map((m, j) => `<option value="${j}">${esc(cap(m.label))}</option>`).join('');
+  const resp = d.resp.texto.replace(/\{(\d)\}/g, (_, i) => {
+    const lab = d.resp.labels ? d.resp.labels[+i] : d.mags[+i].label;
+    return `<input type="text" class="ans" id="ans-${i}" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="${esc(cap(lab))}">`;
+  });
+  $('zona-problema').innerHTML = `
+  <article class="ejercicio-card" id="problema">
+    <div class="prob-cabecera">
+      <span class="prob-num">Problema ${prob.h.n}</span>
+      <span class="chip">${esc(prob.tpl.nombre)}</span>
+      <span class="prob-puntos" id="prob-puntos"></span>
+    </div>
+    <div class="enunciado">${esc(d.enunciado)}</div>
+
+    <fieldset class="paso" id="paso1">
+      <legend><span class="num">1</span>Elige las incógnitas</legend>
+      <p class="ayuda">Decide qué representa cada letra. Al comprobar el planteamiento, esta elección queda fijada.</p>
+      <div class="map-grid">
+        ${LET.map((L, i) => `<label class="map-item" for="map-${i}"><span class="var">${L}</span><span class="igual">=</span><select id="map-${i}" class="map-sel"><option value="">— elige —</option>${opts}</select></label>`).join('')}
+      </div>
+    </fieldset>
+
+    <fieldset class="paso" id="paso2">
+      <legend><span class="num">2</span>Plantea el sistema</legend>
+      <p class="ayuda">Escribe una ecuación por cada información del enunciado, como tú la pienses. El orden no importa.</p>
+      ${[0, 1, 2].map(i => `
+      <div class="eq-row">
+        <div class="eq-linea">
+          <label class="eq-label" for="eq-${i}">Ecuación ${i + 1}</label>
+          <input type="text" id="eq-${i}" class="eq-input" autocomplete="off" autocorrect="off" spellcheck="false" autocapitalize="off" placeholder="Escribe la ecuación ${i + 1}">
+        </div>
+        <div class="preview" id="prev-${i}" aria-live="polite"></div>
+        <div class="fb" id="fb-eq-${i}" aria-live="polite"></div>
+      </div>`).join('')}
+      <div class="acciones"><button type="button" class="btn-primario" id="btn-plant">Comprobar planteamiento</button><span class="msg-paso" id="msg-plant" aria-live="polite"></span></div>
+    </fieldset>
+
+    <fieldset class="paso" id="paso3" disabled>
+      <legend><span class="num">3</span>Escribe el sistema ordenado</legend>
+      <p class="ayuda">Pasa cada ecuación a la forma <i>ax</i> + <i>by</i> + <i>cz</i> = <i>d</i>. Escribe un número en cada casilla: 1 si la incógnita va sola, 0 si no aparece y el signo menos si es negativo. Puedes usar decimales o fracciones (2/3).</p>
+      <div class="recordatorio" id="recordatorio"></div>
+      ${[0, 1, 2].map(i => `
+      <div class="ord-row">
+        <span class="ord-n">${i + 1}.</span>
+        <input type="text" class="coef" id="c-${i}-0" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="Fila ${i + 1}: coeficiente de x"><span class="op"><i>x</i> +</span>
+        <input type="text" class="coef" id="c-${i}-1" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="Fila ${i + 1}: coeficiente de y"><span class="op"><i>y</i> +</span>
+        <input type="text" class="coef" id="c-${i}-2" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="Fila ${i + 1}: coeficiente de z"><span class="op"><i>z</i> =</span>
+        <input type="text" class="coef" id="c-${i}-3" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="Fila ${i + 1}: término independiente">
+      </div>
+      <div class="fb" id="fb-row-${i}" aria-live="polite"></div>`).join('')}
+      <div class="acciones"><button type="button" class="btn-primario" id="btn-ord">Comprobar sistema ordenado</button><span class="msg-paso" id="msg-ord" aria-live="polite"></span></div>
+    </fieldset>
+
+    <fieldset class="paso" id="paso4" disabled>
+      <legend><span class="num">4</span>Resuelve y responde</legend>
+      <p class="ayuda">Resuelve el sistema con el modo de sistemas de ecuaciones de tu calculadora y completa la respuesta. Usa coma o punto para los decimales.</p>
+      <div class="respuesta">${resp}</div>
+      <div class="fb" id="fb-res" aria-live="polite"></div>
+      <div class="acciones"><button type="button" class="btn-primario" id="btn-res">Comprobar respuesta</button><span class="msg-paso" id="msg-res" aria-live="polite"></span></div>
+    </fieldset>
+
+    <div id="prob-resultado" aria-live="polite"></div>
+  </article>`;
+  $('btn-plant').addEventListener('click', comprobarPlanteamiento);
+  $('btn-ord').addEventListener('click', comprobarOrdenado);
+  $('btn-res').addEventListener('click', comprobarRespuesta);
+  for (let i = 0; i < 3; i++) $('eq-' + i).addEventListener('input', () => vistaPrevia(i));
+}
+
+/* Vista previa de cada ecuación */
+const temporizadores = {};
+function vistaPrevia(i) {
+  clearTimeout(temporizadores[i]);
+  temporizadores[i] = setTimeout(() => {
+    const el = $('prev-' + i); if (!el) return;
+    const txt = $('eq-' + i).value.trim();
+    if (!txt) { el.innerHTML = ''; return; }
+    try {
+      const r = parseEquation(txt);
+      el.innerHTML = `<span class="etq">Se lee</span>${mathSpan(tex(r.lhs) + ' = ' + tex(r.rhs), plain(r.lhs) + ' = ' + plain(r.rhs))}`;
+      typeset(el);
+    } catch (e) {
+      el.innerHTML = `<span class="err">${esc(e instanceof PErr ? e.message : 'No he podido interpretar la ecuación.')}</span>`;
+    }
+  }, 220);
+}
+
+/* Paso 2: planteamiento */
+function leerMapa() { return [0, 1, 2].map(i => { const v = $('map-' + i).value; return v === '' ? null : +v; }); }
+function comprobarPlanteamiento() {
+  if (!prob || prob.terminado || prob.plantOk) return;
+  if (!exigirNombre()) return;
+  const msg = $('msg-plant'); msg.textContent = '';
+  if (!prob.mapLocked) {
+    const map = leerMapa();
+    if (map.includes(null)) { msg.textContent = 'Primero elige qué representa cada letra (paso 1).'; return; }
+    if (new Set(map).size < 3) { msg.textContent = 'Cada letra debe representar una magnitud distinta (paso 1).'; return; }
+    prob.map = map; prob.mapLocked = true;
+    for (let i = 0; i < 3; i++) { $('map-' + i).disabled = true; $('map-' + i).classList.add('bien'); }
+    $('paso1').classList.add('hecho');
+  }
+  const d = prob.data;
+  const tomadas = new Map();
+  prob.fields.forEach((f, i) => { if (f.ok) tomadas.set(f.match, `la ecuación ${i + 1}`); });
+  let vacias = false;
+  prob.fields.forEach((f, i) => {
+    if (f.ok) return;
+    const inp = $('eq-' + i), txt = inp.value.trim();
+    if (!txt) { vacias = true; fb('fb-eq-' + i, 'feedback-aviso', 'Escribe aquí la ecuación.'); return; }
+    let r;
+    try { r = parseEquation(txt); }
+    catch (e) { fb('fb-eq-' + i, 'feedback-aviso', esc(e instanceof PErr ? e.message : 'No he podido interpretar la ecuación.') + ' <i>(No cuenta como fallo.)</i>'); return; }
+    const normTxt = txt.replace(/\s+/g, '').toLowerCase();
+    if (f.lastWrong !== null && normTxt === f.lastWrong) { fb('fb-eq-' + i, 'feedback-incorrecto', 'No has cambiado esta ecuación: sigue sin ser correcta.'); return; }
+    const res = clasificar(r.u, prob.map, d, tomadas, 'libre');
+    if (f.first === null) f.first = res.ok;
+    if (res.ok) {
+      f.ok = true; f.match = res.c; tomadas.set(res.c, `la ecuación ${i + 1}`);
+      inp.disabled = true; inp.classList.remove('mal'); inp.classList.add('bien');
+      fb('fb-eq-' + i, 'feedback-correcto', `<b>Correcto.</b> Esta ecuación expresa ${esc(d.conds[res.c].desc)}.${f.first ? '' : ' <span style="font-weight:400">(Corregida: ya no puntúa.)</span>'}`);
+    } else {
+      f.lastWrong = normTxt; inp.classList.add('mal');
+      registrarFallo();
+      fb('fb-eq-' + i, 'feedback-incorrecto', `<b>Incorrecto.</b> ${esc(res.msg)}${res.pista ? `<span class="pista">${esc(res.pista)}</span>` : ''}`);
+    }
+  });
+  if (vacias && !prob.fields.every(f => f.ok)) msg.textContent = 'Faltan ecuaciones por escribir.';
+  if (prob.fields.every(f => f.ok)) {
+    prob.plantOk = true;
+    $('paso2').classList.add('hecho');
+    pintarRecordatorio();
+    $('paso3').disabled = false;
+    $('c-0-0').focus();
+  }
+  actualizarMarcador();
+}
+function pintarRecordatorio() {
+  const items = [0, 1, 2].map(i => {
+    const r = parseEquation($('eq-' + i).value);
+    return mathSpan(tex(r.lhs) + ' = ' + tex(r.rhs), plain(r.lhs) + ' = ' + plain(r.rhs));
+  });
+  $('recordatorio').innerHTML = `<span class="etq">Tus ecuaciones</span><br>${items.join('<span style="margin:0 14px;color:var(--color-borde)">·</span>')}`;
+  typeset($('recordatorio'));
+}
+
+/* Paso 3: sistema ordenado */
+function leerNumero(txt) {
+  let s = String(txt).trim().replace(/[−–]/g, '-').replace(/\s+/g, '').replace(',', '.');
+  if (s === '') return null;
+  let m = s.match(/^([+-]?)(\d+(?:\.\d+)?)\/(\d+(?:\.\d+)?)$/);
+  if (m) { const den = parseFloat(m[3]); if (den === 0) throw new PErr('No se puede dividir entre cero.'); return (m[1] === '-' ? -1 : 1) * parseFloat(m[2]) / den; }
+  if (/^[+-]?[1-9]\d{0,2}(\.\d{3})+$/.test(s)) throw new PErr(`«${txt}» parece llevar un punto de miles: escribe el número sin separador (por ejemplo, 54900).`);
+  if (/^[+-]?(\d+(\.\d+)?|\.\d+)$/.test(s)) return parseFloat(s);
+  throw new PErr(`«${txt}» no es un número válido.`);
+}
+function comprobarOrdenado() {
+  if (!prob || prob.terminado || !prob.plantOk || prob.ordOk) return;
+  if (!exigirNombre()) return;
+  const d = prob.data;
+  const tomadas = new Map();
+  prob.rows.forEach((r, i) => { if (r.ok) tomadas.set(r.match, `la fila ${i + 1}`); });
+  prob.rows.forEach((rw, i) => {
+    if (rw.ok) return;
+    const ids = [0, 1, 2, 3].map(j => `c-${i}-${j}`);
+    const txts = ids.map(id => $(id).value.trim());
+    if (txts.some(t => t === '')) { fb('fb-row-' + i, 'feedback-aviso', 'Completa las cuatro casillas de la fila (escribe 0 si una incógnita no aparece).'); return; }
+    let vals;
+    try { vals = txts.map(leerNumero); }
+    catch (e) { fb('fb-row-' + i, 'feedback-aviso', esc(e.message) + ' <i>(No cuenta como fallo.)</i>'); return; }
+    const clave = vals.join('|');
+    if (rw.lastWrong !== null && clave === rw.lastWrong) { fb('fb-row-' + i, 'feedback-incorrecto', 'No has cambiado esta fila: sigue sin ser correcta.'); return; }
+    const u = [vals[0], vals[1], vals[2], -vals[3]];
+    const res = clasificar(u, prob.map, d, tomadas, 'fila');
+    if (rw.first === null) rw.first = res.ok;
+    if (res.ok) {
+      rw.ok = true; rw.match = res.c; tomadas.set(res.c, `la fila ${i + 1}`);
+      const fl = prob.fields.find(x => x.match === res.c);
+      if (rw.first && fl && fl.first) sumar('plantS', 4); // 2/3 de punto: ecuación libre y fila acertadas a la primera
+      ids.forEach(id => { $(id).disabled = true; $(id).classList.remove('mal'); $(id).classList.add('bien'); });
+      fb('fb-row-' + i, 'feedback-correcto', `<b>Correcto.</b> Es la ecuación que expresa ${esc(d.conds[res.c].desc)}, ordenada.${rw.first ? '' : ' <span style="font-weight:400">(Corregida: ya no puntúa.)</span>'}`);
+    } else {
+      rw.lastWrong = clave; ids.forEach(id => $(id).classList.add('mal'));
+      registrarFallo();
+      fb('fb-row-' + i, 'feedback-incorrecto', `<b>Incorrecto.</b> ${esc(res.msg)}${res.pista ? `<span class="pista">${esc(res.pista)}</span>` : ''}`);
+    }
+  });
+  if (state.superada) { cerrarProblema('completo'); return; }
+  if (prob.rows.every(r => r.ok)) {
+    prob.ordOk = true;
+    $('paso3').classList.add('hecho');
+    $('msg-ord').innerHTML = `<span style="color:var(--color-correcto)">Planteamiento terminado: ${fmt2(prob.h.plantS / 6)} de 2 puntos.</span>`;
+    $('paso4').disabled = false;
+    $('ans-0').focus();
+  }
+  actualizarMarcador();
+}
+
+/* Paso 4: respuesta */
+function comprobarRespuesta() {
+  if (!prob || prob.terminado || !prob.ordOk || prob.resOk) return;
+  if (!exigirNombre()) return;
+  const d = prob.data, R = d.resp;
+  const n = R.valores.length;
+  const txts = [...Array(n)].map((_, i) => $('ans-' + i).value.trim());
+  if (txts.some(t => t === '')) { fb('fb-res', 'feedback-aviso', 'Completa todos los huecos de la respuesta.'); return; }
+  let vals;
+  try { vals = txts.map(leerNumero); }
+  catch (e) { fb('fb-res', 'feedback-aviso', esc(e.message) + ' <i>(No cuenta como fallo.)</i>'); return; }
+  const clave = vals.join('|');
+  if (prob.resLastWrong !== null && clave === prob.resLastWrong) { fb('fb-res', 'feedback-incorrecto', 'No has cambiado la respuesta: sigue sin ser correcta.'); return; }
+  const tol = 0.005;
+  const bienCada = vals.map((v, i) => Math.abs(v - R.valores[i]) <= tol + 1e-9);
+  const ok = bienCada.every(Boolean);
+  if (prob.resFirst === null) prob.resFirst = ok;
+  if (ok) {
+    prob.resOk = true;
+    [...Array(n)].forEach((_, i) => { $('ans-' + i).disabled = true; $('ans-' + i).classList.remove('mal'); $('ans-' + i).classList.add('bien'); });
+    fb('fb-res', 'feedback-correcto', `<b>Correcto.</b> Estos valores cumplen las tres ecuaciones del sistema, así que son la solución.${prob.resFirst ? '' : ' <span style="font-weight:400">(Corregida: ya no puntúa.)</span>'}`);
+    if (prob.resFirst) sumar('resS', 3);
+    $('paso4').classList.add('hecho');
+    cerrarProblema('completo');
+    return;
+  }
+  prob.resLastWrong = clave;
+  [...Array(n)].forEach((_, i) => $('ans-' + i).classList.toggle('mal', !bienCada[i]));
+  registrarFallo();
+  fb('fb-res', 'feedback-incorrecto', `<b>Incorrecto.</b> ${diagnosticoRespuesta(vals, bienCada)}`);
+}
+function diagnosticoRespuesta(vals, bienCada) {
+  const d = prob.data, R = d.resp;
+  if (vals.length > 1) {
+    const a = vals.map(v => Math.round(v * 1000)).sort((p, q) => p - q), b = R.valores.map(v => Math.round(v * 1000)).sort((p, q) => p - q);
+    if (a.every((v, i) => v === b[i])) return 'Los valores son los de la solución, pero están cambiados de sitio. Fíjate en qué representa cada letra: ' + esc(LET.map((L, i) => `${L} es ${d.mags[prob.map[i]].label}`).join('; ')) + '.';
+  }
+  const solAl = R.toSol ? R.toSol(vals) : vals;
+  if (!solAl) return 'El número buscado tiene tres cifras. Construye el número a partir de las cifras que te da la calculadora.';
+  const fallan = [];
+  d.conds.forEach(cd => {
+    const lhs = dot(cd.canon.v, solAl);
+    if (Math.abs(lhs - cd.canon.k) > 1e-6 * Math.max(1, Math.abs(cd.canon.k))) {
+      const c = toLet(cd.canon.v, prob.map);
+      fallan.push(`en ${mathSpan(linTex(c, cd.canon.k), linPlain(c, cd.canon.k))} el primer miembro da ${fmt(lhs)} en lugar de ${fmt(cd.canon.k)}`);
+    }
+  });
+  const marcados = vals.length > 1 ? 'Los huecos marcados en rojo no son correctos. ' : '';
+  return `${marcados}Comprueba sustituyendo: ${fallan.length ? fallan.join('; ') : 'algún valor no cumple el sistema'}. Revisa cómo has introducido los coeficientes en la calculadora (signos, ceros y orden de las incógnitas) y en qué hueco va cada valor.`;
+}
+
+/* Cierre del problema */
+function cerrarProblema(estado) {
+  prob.terminado = true;
+  prob.h.estado = estado;
+  if (prob.tpl.id === OBLIGATORIA) {
+    if (estado === 'completo') obligatoriaHecha = true;
+    else if (!obligatoriaHecha && !state.superada) {
+      const ib = TPL.findIndex(t => t.id === OBLIGATORIA);
+      const pos = bolsa.indexOf(ib);
+      if (pos >= 0) bolsa.splice(pos, 1);
+      bolsa.splice(Math.min(ri(1, 2), bolsa.length), 0, ib);
+    }
+  }
+  ['paso1', 'paso2', 'paso3', 'paso4'].forEach(id => { $(id).disabled = true; });
+  const d = prob.data;
+  const map = prob.map || [0, 1, 2];
+  const filas = d.conds.map(cd => linTex(toLet(cd.canon.v, map), cd.canon.k));
+  const solTxt = d.resp.texto.replace(/\{(\d)\}/g, (_, i) => `<b>${fmt(d.resp.valores[+i])}</b>`);
+  const pl = fmt2(prob.h.plantS / 6), rs = fmt2(prob.h.resS / 6);
+  const neutro = estado === 'soluciones';
+  $('prob-resultado').innerHTML = `
+    <div class="resultado ${neutro ? 'neutro' : ''}">
+      <h4>${neutro ? 'Soluciones mostradas · lo que quedaba del problema no puntúa' : 'Problema terminado'}</h4>
+      <p class="linea">Planteamiento: <b>${pl}</b> / 2 · Resultado: <b>${rs}</b> / 0,5 · Fallos en este problema: <b>${prob.h.fallos}</b></p>
+      <div class="sistema">${mathSpan('\\begin{cases} ' + filas.join(' \\\\ ') + ' \\end{cases}', filas.map(f => f.replace(/\{,\}/g, ',')).join(' ; '))}</div>
+      <p class="linea">${solTxt}</p>
+      ${state.superada ? '' : '<div class="acciones" style="justify-content:center"><button type="button" class="btn-primario" id="btn-sig">Siguiente problema</button></div>'}
+    </div>
+    ${state.superada ? `<div class="banner-fin">Has reunido los 10 puntos de la ficha. Pulsa «Finalizar y Calificar» para ver tu informe.</div>` : ''}`;
+  typeset($('prob-resultado'));
+  const sig = $('btn-sig');
+  if (sig) { sig.addEventListener('click', () => { nuevoProblema(); $('problema').scrollIntoView({ behavior: 'smooth', block: 'start' }); }); sig.focus(); }
+  actualizarMarcador();
+}
+
+/* =========================================================
+   Mostrar soluciones
+   ========================================================= */
+const ovSol = $('ov-soluciones');
+function abrirAvisoSoluciones() {
+  if (!prob || prob.terminado || state.superada) return;
+  ovSol.classList.add('visible'); $('btn-sol-no').focus();
+}
+function cerrarAvisoSoluciones() { ovSol.classList.remove('visible'); }
+$('btn-soluciones').addEventListener('click', abrirAvisoSoluciones);
+$('btn-sol-no').addEventListener('click', cerrarAvisoSoluciones);
+ovSol.addEventListener('click', e => { if (e.target === ovSol) cerrarAvisoSoluciones(); });
+$('btn-sol-si').addEventListener('click', () => { cerrarAvisoSoluciones(); revelarSoluciones(); });
+function revelarSoluciones() {
+  if (!prob || prob.terminado || state.superada) return;
+  const d = prob.data;
+  if (!prob.mapLocked) {
+    let map = leerMapa();
+    if (map.includes(null) || new Set(map).size < 3) map = [0, 1, 2];
+    prob.map = map; prob.mapLocked = true;
+    map.forEach((v, i) => { $('map-' + i).value = String(v); $('map-' + i).disabled = true; $('map-' + i).classList.add('revelado'); });
+  }
+  const nat = c => d.conds[c].nat.replace(/\$(\d)/g, (_, i) => LET[prob.map.indexOf(+i)]);
+  // Planteamiento pendiente
+  if (!prob.plantOk) {
+    const tomadas = new Map();
+    prob.fields.forEach((f, i) => { if (f.ok) tomadas.set(f.match, `la ecuación ${i + 1}`); });
+    const libres = [0, 1, 2].filter(c => !tomadas.has(c));
+    prob.fields.forEach((f, i) => {
+      if (f.ok) return;
+      const c = libres.shift(), inp = $('eq-' + i);
+      inp.value = nat(c); vistaPrevia(i);
+      const res = clasificar(parseEquation(inp.value).u, prob.map, d, tomadas, 'libre');
+      inp.disabled = true; inp.classList.remove('mal'); inp.classList.add('revelado');
+      if (res.ok) { tomadas.set(res.c, `la ecuación ${i + 1}`); f.match = res.c; fb('fb-eq-' + i, 'feedback-solucion', `<b>Solución.</b> Esta ecuación expresa ${esc(d.conds[res.c].desc)}.`); }
+      else { console.error('Validador no acepta su solución', prob.tpl.id, inp.value); fb('fb-eq-' + i, 'feedback-incorrecto', '<b>Incorrecto.</b> ' + esc(res.msg)); }
+      f.revelado = true;
+    });
+    pintarRecordatorio();
+  }
+  // Sistema ordenado pendiente
+  if (!prob.ordOk) {
+    const tomadas = new Map();
+    prob.rows.forEach((r, i) => { if (r.ok) tomadas.set(r.match, `la fila ${i + 1}`); });
+    const libres = [0, 1, 2].filter(c => !tomadas.has(c));
+    prob.rows.forEach((rw, i) => {
+      if (rw.ok) return;
+      const c = libres.shift(), cn = d.conds[c].canon, cl = toLet(cn.v, prob.map);
+      const vals = [...cl, cn.k];
+      vals.forEach((v, j) => { const el = $(`c-${i}-${j}`); el.value = fmt(v); el.disabled = true; el.classList.remove('mal'); el.classList.add('revelado'); });
+      const res = clasificar([cl[0], cl[1], cl[2], -cn.k], prob.map, d, tomadas, 'fila');
+      if (res.ok) { tomadas.set(res.c, `la fila ${i + 1}`); fb('fb-row-' + i, 'feedback-solucion', `<b>Solución.</b> Es la ecuación que expresa ${esc(d.conds[res.c].desc)}, ordenada.`); }
+      else { console.error('Validador no acepta su fila', prob.tpl.id, vals); fb('fb-row-' + i, 'feedback-incorrecto', '<b>Incorrecto.</b> ' + esc(res.msg)); }
+    });
+  }
+  // Respuesta pendiente
+  if (!prob.resOk) {
+    d.resp.valores.forEach((v, i) => { const el = $('ans-' + i); el.value = fmt(v); el.disabled = true; el.classList.remove('mal'); el.classList.add('revelado'); });
+    fb('fb-res', 'feedback-solucion', '<b>Solución.</b> Estos valores cumplen las tres ecuaciones del sistema.');
+  }
+  prob.revelado = true;
+  cerrarProblema('soluciones');
+}
+
+/* =========================================================
+   Informe final
+   ========================================================= */
+const ovInf = $('ov-informe');
+function colorNota(n) {
+  if (n >= 10) return ['#1a7a1a', '#fff'];
+  if (n >= 9) return ['#6dbf6d', '#fff'];
+  if (n >= 8) return ['#1a4f8a', '#fff'];
+  if (n >= 7) return ['#5b9bd5', '#fff'];
+  if (n >= 6) return ['#c05c00', '#fff'];
+  if (n >= 5) return ['#f5a623', '#000'];
+  return ['#c0392b', '#fff'];
+}
+const dos = n => String(n).padStart(2, '0');
+function abrirInforme() {
+  if (!exigirNombre()) return;
+  const nota = calcularNota();
+  const [bg, fg] = colorNota(nota);
+  const ahora = new Date();
+  const mins = Math.ceil((Date.now() - state.inicio) / 60000);
+  const filas = state.hist.map(h => {
+    const est = h.estado === 'completo' ? '<span class="estado-completo">Completo</span>' : h.estado === 'soluciones' ? '<span class="estado-soluciones">Soluciones vistas</span>' : '<span class="estado-curso">En curso</span>';
+    return `<tr><td>${h.n}</td><td>${esc(h.nombre)}</td><td>${fmt2(h.plantS / 6)} / 2</td><td>${fmt2(h.resS / 6)} / 0,5</td><td>${h.fallos}</td><td>${est}</td></tr>`;
+  }).join('');
+  const vistos = state.hist.filter(h => h.estado === 'soluciones').length;
+  const m = $('modal-informe');
+  m.style.background = bg; m.style.color = fg;
+  m.innerHTML = `
+    <p class="m-titulo" id="m-titulo">${esc(document.querySelector('.titulo-ficha').textContent)}</p>
+    <p class="m-sub">${esc(document.querySelector('.subtitulo').textContent)}</p>
+    <hr>
+    <div class="m-enc">Informe de la actividad</div>
+    <p class="m-nombre">${esc(inNombre.value.trim())}</p>
+    <div class="m-nota">${fmt2(nota)}<span style="font-size:1.1rem;font-weight:400"> / 10</span></div>
+    <div class="m-datos">
+      <span>Fecha: ${dos(ahora.getDate())}/${dos(ahora.getMonth() + 1)}/${ahora.getFullYear()}</span>
+      <span>Hora: ${dos(ahora.getHours())}:${dos(ahora.getMinutes())}:${dos(ahora.getSeconds())}</span>
+      <span>Tiempo empleado: ${dos(Math.floor(mins / 60))}:${dos(mins % 60)}</span>
+    </div>
+    <div class="panel-informe">
+      <div class="resumen-nota">
+        <span>Puntos conseguidos: <b>${fmt2(sextos() / 6)}</b> / 10</span>
+        <span>Fallos: <b>${state.fallos}</b> (−${fmt2(state.fallos * PENALIZACION)})</span>
+        <span>Problemas completos: <b>${state.hist.filter(h => h.estado === 'completo').length}</b></span>
+        <span>Soluciones vistas: <b>${vistos}</b></span>
+      </div>
+      <h4>Desglose por problema</h4>
+      <table class="informe">
+        <thead><tr><th>N.º</th><th>Problema</th><th>Planteamiento</th><th>Resultado</th><th>Fallos</th><th>Estado</th></tr></thead>
+        <tbody>${filas || '<tr><td colspan="6">Sin problemas trabajados.</td></tr>'}</tbody>
+      </table>
+    </div>
+    <button type="button" class="btn-secundario btn-cerrar" id="btn-cerrar-inf" style="background:var(--color-fondo-card)">Cerrar y seguir practicando</button>`;
+  $('ficha').classList.toggle('perfecta', nota >= 10);
+  ovInf.classList.add('visible');
+  $('btn-cerrar-inf').addEventListener('click', () => ovInf.classList.remove('visible'));
+  $('btn-cerrar-inf').focus();
+}
+$('btn-finalizar').addEventListener('click', abrirInforme);
+ovInf.addEventListener('click', e => { if (e.target === ovInf) ovInf.classList.remove('visible'); });
+
+/* Teclado: Enter comprueba el paso; Escape cierra modales */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { cerrarAvisoSoluciones(); ovInf.classList.remove('visible'); return; }
+  if (e.key !== 'Enter') return;
+  const t = e.target;
+  if (!(t instanceof HTMLElement)) return;
+  if (t.classList.contains('eq-input') || t.classList.contains('map-sel')) { e.preventDefault(); comprobarPlanteamiento(); }
+  else if (t.classList.contains('coef')) { e.preventDefault(); comprobarOrdenado(); }
+  else if (t.classList.contains('ans')) { e.preventDefault(); comprobarRespuesta(); }
+});
+
+/* =========================================================
+   Autocomprobación para QA (no se usa en clase)
+   ========================================================= */
+window.__ficha = {
+  state, get prob() { return prob; }, get bolsa() { return bolsa; }, TPL, parseEquation, clasificar, prepararDatos, calcularNota,
+  selfTest(n = 200) {
+    const errores = [];
+    TPL.forEach(tp => {
+      for (let k = 0; k < n; k++) {
+        const d = tp.gen();
+        if (!d) { errores.push(`${tp.id}: generador sin resultado`); continue; }
+        prepararDatos(d);
+        const txt = d.enunciado + d.resp.texto;
+        if (/undefined|NaN|Infinity/.test(txt)) errores.push(`${tp.id}: texto con valores no válidos: ${d.enunciado}`);
+        if (d.sol.some(x => !isFinite(x) || x < 0)) errores.push(`${tp.id}: solución no válida ${d.sol}`);
+        if (Math.abs(det3(d.conds.map(c => c.v))) < 1e-9) errores.push(`${tp.id}: sistema sin solución única`);
+        d.conds.forEach((c, ci) => {
+          if (!c.forms.every(w => satisface(w, d.sol))) errores.push(`${tp.id}: condición ${ci} no se cumple con la solución`);
+          for (const pm of PERMS) {
+            const inv = [0, 1, 2].map(L => pm[L]);
+            const natL = c.nat.replace(/\$(\d)/g, (_, i) => LET[inv.indexOf(+i)]);
+            let r; try { r = parseEquation(natL); } catch (e) { errores.push(`${tp.id}: nat no se analiza: ${natL} (${e.message})`); break; }
+            const res = clasificar(r.u, inv, d, new Map(), 'libre');
+            if (!res.ok || res.c !== ci) errores.push(`${tp.id}: nat no reconocida: ${natL}`);
+            const cl = toLet(c.canon.v, inv);
+            const rr = clasificar([cl[0], cl[1], cl[2], -c.canon.k], inv, d, new Map(), 'fila');
+            if (!rr.ok || rr.c !== ci) errores.push(`${tp.id}: fila canónica no reconocida`);
+          }
+        });
+        if (d.resp.valores.length !== (d.resp.texto.match(/\{\d\}/g) || []).length) errores.push(`${tp.id}: huecos de respuesta incoherentes`);
+      }
+    });
+    return errores;
+  }
+};
+
+nuevoProblema();
+actualizarMarcador();
+</script>
+<div class="teclas" id="teclas" role="toolbar" aria-label="Teclas matemáticas">
+  <span class="etq-t">Teclas matemáticas</span>
+  <button type="button" data-k="-" aria-label="Signo menos">−</button>
+  <button type="button" data-k="/" aria-label="Raya de fracción">/</button>
+  <button type="button" data-k="," aria-label="Coma decimal">,</button>
+  <button type="button" data-k="+" class="solo-eq" aria-label="Más">+</button>
+  <button type="button" data-k="=" class="solo-eq" aria-label="Igual">=</button>
+  <button type="button" data-k="(" class="solo-eq" aria-label="Abrir paréntesis">(</button>
+  <button type="button" data-k=")" class="solo-eq" aria-label="Cerrar paréntesis">)</button>
+  <button type="button" data-k="x" class="solo-eq var-k sep">x</button>
+  <button type="button" data-k="y" class="solo-eq var-k">y</button>
+  <button type="button" data-k="z" class="solo-eq var-k">z</button>
+</div>
+<script>
+/* Teclas matemáticas: en móviles el teclado numérico no trae ni «−» ni «/».
+   La barra aparece al enfocar un campo matemático y escribe en la posición del cursor. */
+(function () {
+  const bar = document.getElementById('teclas');
+  const esCampo = el => el && el.matches && el.matches('.eq-input, .coef, .ans') && !el.disabled;
+  const tactil = window.matchMedia('(pointer: coarse)').matches || 'ontouchstart' in window;
+  let activo = null, ocultar = null;
+  document.addEventListener('focusin', e => {
+    if (!tactil || !esCampo(e.target)) return;
+    clearTimeout(ocultar);
+    activo = e.target;
+    const eq = activo.classList.contains('eq-input');
+    bar.querySelectorAll('.solo-eq').forEach(b => { b.style.display = eq ? '' : 'none'; });
+    bar.classList.add('visible'); document.body.classList.add('con-teclas');
+  });
+  document.addEventListener('focusout', () => {
+    ocultar = setTimeout(() => {
+      if (!esCampo(document.activeElement)) { bar.classList.remove('visible'); document.body.classList.remove('con-teclas'); activo = null; }
+    }, 150);
+  });
+  // pointerdown + preventDefault: el campo no pierde el foco ni se cierra el teclado
+  bar.addEventListener('pointerdown', e => { if (e.target.closest('button')) e.preventDefault(); });
+  bar.addEventListener('mousedown', e => e.preventDefault());
+  bar.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b || !activo || activo.disabled) return;
+    const k = b.dataset.k;
+    const ini = activo.selectionStart ?? activo.value.length, fin = activo.selectionEnd ?? ini;
+    activo.setRangeText(k, ini, fin, 'end');
+    activo.dispatchEvent(new Event('input', { bubbles: true }));
+    activo.focus();
+  });
+})();
+</script>
+</body>
+</html>
