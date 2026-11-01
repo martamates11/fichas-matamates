@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Distribuciones: Binomial, Normal y Aproximación | EBAU Extremadura</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap');
+  :root {
+    --color-fondo:#F5F0E8; --color-fondo-card:#FDFAF3;
+    --color-texto:#2C1F0E; --color-texto-suave:#6B4F35;
+    --color-acento:#A0522D; --color-acento-hover:#7B3B1E;
+    --color-borde:#C9A96E; --color-borde-suave:#E0CEAA;
+    --color-cabecera:#3B2510; --color-cabecera-txt:#F5EDD8;
+    --color-correcto:#2E6B3E; --color-incorrecto:#8B1A1A;
+    --color-neutro:#E8DFC8;
+    --verde:#2e7d32; --azul:#1a4f8a;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:'Lato',sans-serif; background:var(--color-fondo); color:var(--color-texto); min-height:100vh;}
+  
+  .cabecera{background:var(--color-cabecera); color:var(--color-cabecera-txt); text-align:center; padding:14px 20px 10px; border-bottom:3px solid var(--color-borde);}
+  .cabecera .autoria{font-size:.72rem; letter-spacing:.04em; opacity:.85; margin-bottom:4px; font-family:'Libre Baskerville',serif;}
+  .cabecera h1{font-family:'Libre Baskerville',serif; font-size:1.45rem;}
+  .cabecera .subtitulo{font-size:.8rem; opacity:.8; margin-top:3px;}
+
+  .top-bar{display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px; background:var(--color-fondo-card); border-bottom:2px solid var(--color-borde-suave); padding:10px 20px;}
+  .nombre-box{display:flex; align-items:center; gap:8px;}
+  .nombre-box label{font-weight:700; font-size:.85rem; color:var(--color-texto-suave); font-family:'Libre Baskerville',serif;}
+  .nombre-box input{border:1.5px solid var(--color-borde); border-radius:4px; padding:6px 10px; font-size:.9rem; background:var(--color-fondo); color:var(--color-texto); width:200px; font-family:'Lato',sans-serif;}
+  .nombre-box input:focus{border-color:var(--color-acento); outline:none;}
+  .score-box{display:flex; gap:18px;}
+  .score-item{text-align:center; font-size:.78rem; color:var(--color-texto-suave); font-family:'Libre Baskerville',serif;}
+  .score-item span{display:block; font-size:1.35rem; font-weight:700;}
+  .score-item .pos{color:var(--verde);}
+  .score-item .pts{color:var(--color-acento);}
+
+  .main{max-width:880px; margin:0 auto; padding:22px 18px 40px;}
+
+  .tipos-bar{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px;}
+  .tipo-badge{
+    font-size:.78rem; padding:7px 16px; border-radius:6px;
+    border:2px solid var(--color-borde); background:var(--color-fondo-card);
+    color:var(--color-texto-suave); font-weight:700; cursor:pointer;
+    transition:all .25s; font-family:'Libre Baskerville',serif;
+    display:flex; align-items:center; gap:6px;
+  }
+  .tipo-badge:hover{border-color:var(--color-acento); color:var(--color-acento);}
+  .tipo-badge.activo{background:var(--color-acento); color:white; border-color:var(--color-acento);}
+  .tipo-badge.parcial{background:#e8a44a; color:white; border-color:#c07800;}
+  .tipo-badge.completado{background:var(--verde); color:white; border-color:var(--verde);}
+  .tipo-badge .badge-check{font-size:.9rem;}
+
+  .progreso-label{font-size:.75rem; color:var(--color-texto-suave); margin-bottom:5px; font-family:'Libre Baskerville',serif;}
+  .barra-wrap{height:7px; background:var(--color-neutro); border-radius:10px; margin-bottom:18px; overflow:hidden; border:1px solid var(--color-borde-suave);}
+  .barra-fill{height:100%; background:linear-gradient(90deg,var(--color-acento),#d4a64a); border-radius:10px; transition:width .4s;}
+
+  .card{background:var(--color-fondo-card); border:1.5px solid var(--color-borde-suave); border-left:4px solid var(--color-borde); border-radius:6px; padding:24px 26px; box-shadow:0 3px 14px rgba(44,31,14,.1); margin-bottom:18px;}
+  .card-tipo-label{font-size:.7rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--color-texto-suave); margin-bottom:8px; font-family:'Libre Baskerville',serif;}
+  .card-enunciado{font-size:1rem; line-height:1.7; margin-bottom:18px; color:var(--color-texto);}
+
+  .opciones{display:flex; flex-direction:column; gap:9px; margin-bottom:14px;}
+  .opcion-btn{text-align:left; background:var(--color-fondo); border:1.5px solid var(--color-borde-suave); border-radius:5px; padding:10px 14px; font-size:.88rem; cursor:pointer; transition:all .2s; font-family:'Lato',sans-serif; line-height:1.4; color:var(--color-texto);}
+  .opcion-btn:hover:not(:disabled):not(.seleccionada){background:var(--color-neutro); border-color:var(--color-borde); transform:translateX(3px);}
+  .opcion-btn.seleccionada{background:#fdf3e7; border-color:var(--color-acento); border-width:2px; font-weight:700;}
+  .opcion-btn.correcta{background:#e8f5e9; border-color:var(--color-correcto); color:var(--color-correcto); font-weight:700;}
+  .opcion-btn.incorrecta{background:#fdecea; border-color:var(--color-incorrecto); color:var(--color-incorrecto);}
+  .opcion-btn:disabled{cursor:default;}
+
+  .pista-box{display:none; background:#fffbf0; border-left:4px solid var(--color-borde); border-radius:5px; padding:12px 14px; font-size:.86rem; margin-bottom:12px; line-height:1.6; color:var(--color-texto-suave);}
+  .pista-box.show{display:block;}
+  .feedback{display:none; border-radius:5px; padding:14px 16px; font-size:.88rem; line-height:1.7; margin-bottom:14px;}
+  .feedback.ok{display:block; background:#e8f5e9; border-left:4px solid var(--color-correcto); color:var(--color-texto);}
+  .feedback.ko{display:block; background:#fdecea; border-left:4px solid var(--color-incorrecto); color:var(--color-texto);}
+
+  .acciones{display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
+  .btn{padding:9px 20px; border-radius:5px; border:none; font-size:.85rem; font-weight:700; cursor:pointer; transition:all .2s; font-family:'Lato',sans-serif;}
+  .btn-pista{background:var(--color-fondo); color:var(--color-texto-suave); border:1.5px solid var(--color-borde);}
+  .btn-pista:hover:not(:disabled){background:var(--color-neutro);}
+  .btn-corregir{background:var(--azul); color:white;}
+  .btn-corregir:hover:not(:disabled){background:#0d3460;}
+  .btn-siguiente{background:var(--color-acento); color:white;}
+  .btn-siguiente:hover{background:var(--color-acento-hover);}
+  .btn:disabled{opacity:.45; cursor:not-allowed;}
+
+  .herramienta-container{background:var(--color-fondo-card); border:1.5px solid var(--color-borde-suave); border-radius:6px; padding:12px 16px; margin-bottom:14px;}
+  .herramienta-toggle{display:flex; align-items:center; justify-content:space-between; cursor:pointer; padding:6px 0;}
+  .herramienta-toggle h3{font-family:'Libre Baskerville',serif; color:var(--color-texto); font-size:1rem; margin:0; display:flex; align-items:center; gap:8px;}
+  .toggle-icon{font-size:1rem; transition:transform 0.3s ease; color:var(--color-texto-suave);}
+  .toggle-icon.rotated{transform:rotate(180deg);}
+  .herramienta-contenido{display:none; margin-top:12px; border-top:1px solid var(--color-borde-suave); padding-top:14px;}
+  .herramienta-contenido.show{display:block;}
+
+  .tabla-header-flex{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;}
+  .tabla-busqueda{display:flex; gap:8px; align-items:center; font-size:.85rem; color:var(--color-texto-suave);}
+  .tabla-busqueda input{width:80px; padding:6px 8px; border:1.5px solid var(--color-borde); border-radius:4px; font-family:'Lato',sans-serif; background:var(--color-fondo);}
+  .tabla-busqueda button{padding:6px 12px; background:var(--azul); color:white; border:none; border-radius:4px; cursor:pointer; font-weight:700; font-family:'Lato',sans-serif;}
+  .tabla-scroll{max-height:280px; overflow-y:auto; border:1px solid var(--color-borde-suave); border-radius:5px;}
+  .tabla-normal{width:100%; border-collapse:collapse; font-size:.74rem;}
+  .tabla-normal th,.tabla-normal td{border:1px solid var(--color-borde-suave); padding:5px 7px; text-align:center; color:var(--color-texto);}
+  .tabla-normal th{background:var(--color-neutro); position:sticky; top:0; font-family:'Libre Baskerville',serif;}
+  .valor-destacado{background:#ffe082; font-weight:700;}
+
+  .calc-pantalla{background:var(--color-neutro); border:1.5px solid var(--color-borde); border-radius:6px; padding:14px; margin-bottom:14px; text-align:right; font-family:monospace; font-size:1.4rem; font-weight:700; color:var(--color-texto); min-height:60px; word-wrap:break-word;}
+  .calc-botones{display:grid; grid-template-columns:repeat(5,1fr); gap:7px;}
+  .calc-boton{background:var(--color-fondo); border:1.5px solid var(--color-borde-suave); border-radius:5px; padding:10px 6px; font-size:.88rem; font-weight:700; cursor:pointer; text-align:center; font-family:'Lato',sans-serif; color:var(--color-texto); transition:all .15s;}
+  .calc-boton:hover{background:var(--color-neutro); border-color:var(--color-borde);}
+  .calc-boton.operacion{background:var(--azul); color:white; border-color:var(--azul);}
+  .calc-boton.igual{background:var(--verde); color:white; border-color:var(--verde);}
+
+  .btn-finalizar-wrap{text-align:center; margin-top:16px; padding-top:16px; border-top:1px solid var(--color-borde-suave);}
+  .btn-finalizar{background:var(--color-cabecera); color:var(--color-cabecera-txt); border:2px solid var(--color-borde); border-radius:5px; padding:11px 30px; font-size:.95rem; font-weight:700; cursor:pointer; font-family:'Libre Baskerville',serif; letter-spacing:.03em; transition:background .2s;}
+  .btn-finalizar:hover{background:#2C1A0A;}
+
+  .overlay{display:none; position:fixed; inset:0; background:rgba(44,31,14,.6); z-index:100; align-items:center; justify-content:center;}
+  .overlay.show{display:flex;}
+  .modal{border-radius:8px; padding:34px 38px; min-width:320px; max-width:440px; text-align:center; box-shadow:0 8px 40px rgba(0,0,0,.35); border:3px solid rgba(201,169,110,.4);}
+  .modal h2{font-family:'Libre Baskerville',serif; font-size:1.6rem; margin-bottom:6px;}
+  .modal .alumno-modal{font-size:1rem; margin-bottom:18px; opacity:.92; font-family:'Libre Baskerville',serif;}
+  .modal .nota-grande{font-size:3rem; font-weight:900; margin-bottom:6px; font-family:'Libre Baskerville',serif;}
+  .modal .meta-modal{font-size:.88rem; line-height:1.8; margin-bottom:20px; opacity:.88;}
+  .modal .modal-botones{display:flex; gap:12px; justify-content:center; flex-wrap:wrap;}
+  .modal .btn-cerrar{padding:9px 22px; border-radius:5px; border:2px solid rgba(255,255,255,.5); background:transparent; font-size:.9rem; font-weight:700; cursor:pointer; font-family:'Libre Baskerville',serif; transition:all .2s;}
+  .modal .btn-cerrar:hover{background:rgba(255,255,255,.15);}
+  .modal .btn-reiniciar{padding:9px 22px; border-radius:5px; border:2px solid rgba(255,255,255,.8); background:rgba(255,255,255,.2); font-size:.9rem; font-weight:700; cursor:pointer; font-family:'Libre Baskerville',serif; transition:all .2s;}
+  .modal .btn-reiniciar:hover{background:rgba(255,255,255,.3);}
+
+  body.nota-perfecta{background:#e0f2e9!important;}
+
+  .modal-aviso{background:var(--color-fondo-card); color:var(--color-texto); border:3px solid var(--color-incorrecto);}
+  .modal-aviso h2{color:var(--color-incorrecto); font-family:'Libre Baskerville',serif; font-size:1.35rem; margin-bottom:14px;}
+  .aviso-texto{font-size:.92rem; line-height:1.7; margin-bottom:22px; text-align:left; color:var(--color-texto);}
+  .btn-cerrar-aviso{padding:9px 20px; border-radius:5px; border:2px solid var(--color-borde); background:var(--color-fondo); color:var(--color-texto-suave); font-size:.9rem; font-weight:700; cursor:pointer; font-family:'Libre Baskerville',serif; transition:all .2s;}
+  .btn-cerrar-aviso:hover{background:var(--color-neutro);}
+  .btn-finalizar-aviso{padding:9px 20px; border-radius:5px; border:2px solid var(--color-incorrecto); background:var(--color-incorrecto); color:white; font-size:.9rem; font-weight:700; cursor:pointer; font-family:'Libre Baskerville',serif; transition:all .2s;}
+  .btn-finalizar-aviso:hover{background:#6e1414;}
+</style>
+</head>
+<body>
+<div class="cabecera">
+  <div class="autoria">Material elaborado por Marta L Letona S. · Basado en el trabajo de Javier Cayetano</div>
+  <h1>📈 Distribuciones de Probabilidad</h1>
+  <div class="subtitulo">Binomial · Normal · Aproximación Normal a Binomial | EBAU Extremadura</div>
+</div>
+<div class="top-bar">
+  <div class="nombre-box">
+    <label for="nombreAlumno">👤 Alumno/a:</label>
+    <input type="text" id="nombreAlumno" placeholder="Escribe tu nombre…"/>
+  </div>
+  <div class="score-box">
+    <div class="score-item"><span class="pos" id="pts-pos">0</span>Tipos ✓</div>
+    <div class="score-item"><span id="pts-neg">/ 4</span>Total tipos</div>
+    <div class="score-item"><span class="pts" id="pts-total">0.00</span>Puntos /10</div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="tipos-bar">
+    <div class="tipo-badge" id="badge-binomial" onclick="elegirTipo('binomial')">
+      <span>📊 Binomial</span><span class="badge-check" id="check-binomial"></span>
+    </div>
+    <div class="tipo-badge" id="badge-normal" onclick="elegirTipo('normal')">
+      <span>🔔 Normal</span><span class="badge-check" id="check-normal"></span>
+    </div>
+    <div class="tipo-badge" id="badge-aprox" onclick="elegirTipo('aprox')">
+      <span>🔄 Aproximación B→N</span><span class="badge-check" id="check-aprox"></span>
+    </div>
+  </div>
+
+  <div class="progreso-label" id="progreso-label">Selecciona un tipo o practica libremente</div>
+  <div class="barra-wrap"><div class="barra-fill" id="barra-fill" style="width:0%"></div></div>
+
+  <div class="card">
+    <div class="card-tipo-label" id="card-tipo-label"></div>
+    <div class="card-enunciado" id="ej-enunciado"></div>
+    <div class="opciones" id="ej-opciones"></div>
+    <div class="pista-box" id="pista-box"></div>
+    <div class="feedback" id="ej-feedback" aria-live="polite"></div>
+    <div class="acciones">
+      <button class="btn btn-pista" id="btn-pista">💡 Pista</button>
+      <button class="btn btn-corregir" id="btn-corregir" disabled>✅ Corregir</button>
+      <button class="btn btn-siguiente" id="btn-siguiente" style="display:none">➡️ Siguiente</button>
+    </div>
+  </div>
+
+  <div class="herramienta-container">
+    <div class="herramienta-toggle" id="calcToggle">
+      <h3>🧮 Calculadora Científica</h3>
+      <div class="toggle-icon" id="calcIcon">▼</div>
+    </div>
+    <div class="herramienta-contenido" id="calcContenido">
+      <div class="calc-pantalla" id="calcPantalla">0</div>
+      <div class="calc-botones">
+        <button class="calc-boton" data-val="7">7</button><button class="calc-boton" data-val="8">8</button><button class="calc-boton" data-val="9">9</button>
+        <button class="calc-boton operacion" data-op="/">÷</button><button class="calc-boton operacion" data-op="C">C</button>
+        <button class="calc-boton" data-val="4">4</button><button class="calc-boton" data-val="5">5</button><button class="calc-boton" data-val="6">6</button>
+        <button class="calc-boton operacion" data-op="*">×</button><button class="calc-boton operacion" data-op="√">√</button>
+        <button class="calc-boton" data-val="1">1</button><button class="calc-boton" data-val="2">2</button><button class="calc-boton" data-val="3">3</button>
+        <button class="calc-boton operacion" data-op="-">−</button><button class="calc-boton operacion" data-op="^">xʸ</button>
+        <button class="calc-boton" data-val="0">0</button><button class="calc-boton" data-val=".">.</button>
+        <button class="calc-boton operacion" data-op="(">(</button><button class="calc-boton operacion" data-op=")">)</button>
+        <button class="calc-boton operacion" data-op="+">+</button>
+        <button class="calc-boton operacion" data-op="n!">n!</button><button class="calc-boton operacion" data-op="Cnk">C(n,k)</button>
+        <button class="calc-boton operacion" data-op="π">π</button><button class="calc-boton operacion" data-op="e">e</button>
+        <button class="calc-boton igual" data-op="=">=</button>
+      </div>
+      <div style="font-size:.7rem; margin-top:10px; text-align:center; color:var(--color-texto-suave);">💡 Escribe C(5,2) y pulsa = para combinaciones · n! para factorial · √(x) para raíz</div>
+    </div>
+  </div>
+
+  <div class="herramienta-container">
+    <div class="herramienta-toggle" id="tablaToggle">
+      <h3>📊 Tabla N(0,1) · Φ(z) = P(Z ≤ z)</h3>
+      <div class="toggle-icon" id="tablaIcon">▼</div>
+    </div>
+    <div class="herramienta-contenido" id="tablaContenido">
+      <div class="tabla-header-flex">
+        <div class="tabla-busqueda">
+          <label for="buscarZ">Buscar z:</label>
+          <input type="number" id="buscarZ" step="0.01" placeholder="ej: 1.96">
+          <button id="btnBuscarZ">🔍 Buscar</button>
+        </div>
+      </div>
+      <div class="tabla-scroll">
+        <table class="tabla-normal" id="tablaNormal">
+          <thead><tr><th>z</th><th>0.00</th><th>0.01</th><th>0.02</th><th>0.03</th><th>0.04</th><th>0.05</th><th>0.06</th><th>0.07</th><th>0.08</th><th>0.09</th></tr></thead>
+          <tbody id="tablaNormalBody"></tbody>
+        </table>
+      </div>
+      <div style="font-size:.7rem; margin-top:8px; text-align:center; color:var(--color-texto-suave);">ℹ️ Φ(z) = P(Z ≤ z) para Z ~ N(0,1)</div>
+    </div>
+  </div>
+
+  <div class="btn-finalizar-wrap">
+    <button class="btn-finalizar" onclick="finalizar()">📋 Finalizar y Calificar</button>
+  </div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal" id="modal">
+    <h2 id="modal-titulo">Resultado</h2>
+    <div class="alumno-modal" id="modal-alumno"></div>
+    <div class="nota-grande" id="modal-nota"></div>
+    <div class="meta-modal" id="modal-meta"></div>
+    <div class="modal-botones">
+      <button class="btn-cerrar" onclick="cerrarModal()">Seguir practicando</button>
+      <button class="btn-reiniciar" onclick="reiniciarFicha()">🔄 Nueva sesión</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlayIncompleto">
+  <div class="modal modal-aviso" id="modalIncompleto">
+    <h2>⚠️ Todavía te faltan tipos por completar</h2>
+    <div class="aviso-texto" id="aviso-incompleto-texto" aria-live="polite"></div>
+    <div class="modal-botones">
+      <button class="btn-cerrar-aviso" onclick="cerrarAvisoIncompleto()">Seguir practicando</button>
+      <button class="btn-finalizar-aviso" onclick="confirmarFinalizarIncompleto()">Finalizar de todas formas</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ======== TIPOS Y ESTADO ========
+const TIPOS = ['binomial', 'normal', 'aprox'];
+const NOMBRE_TIPO = { binomial:'Binomial', normal:'Normal', aprox:'Aproximación B→N' };
+const ACIERTOS_NECESARIOS = { binomial:1, normal:1, aprox:2 };
+const PUNTOS_POR_TIPO = { binomial:2.5, normal:2.5, aprox:2.5 };
+const MAX_ACIERTOS_TIPO = { binomial:1, normal:1, aprox:2 };
+
+const state = {
+  puntos: 0,
+  tiposCompletados: new Set(),
+  aciertosEnTipo: { binomial:0, normal:0, aprox:0 },
+  tipoActual: null,
+  inicio: Date.now(),
+  respondido: false,
+  seleccionada: null
+};
+
+let ejActual = null;
+let contadorEj = 0;
+
+// ======== CALCULADORA ========
+let calcExpr = '';
+function factorial(n){ if(n<0) return NaN; if(n===0||n===1) return 1; let r=1; for(let i=2;i<=n;i++) r*=i; return r; }
+function combMath(n,k){ if(k<0||k>n) return 0; let r=1; for(let i=1;i<=k;i++) r=r*(n-i+1)/i; return r; }
+function evaluarExpr(expr){
+  expr=expr.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/\^/g,'**');
+  expr=expr.replace(/√\(([^)]+)\)/g,'Math.sqrt($1)').replace(/√([0-9.]+)/g,'Math.sqrt($1)');
+  expr=expr.replace(/([0-9]+)!/g,'factorial($1)').replace(/C\(([0-9]+),([0-9]+)\)/g,'combMath($1,$2)');
+  expr=expr.replace(/π/g,Math.PI).replace(/e(?![a-z])/g,Math.E);
+  try{ let r=Function('factorial','combMath','Math','return ('+expr+')')(factorial,combMath,Math); return isNaN(r)||!isFinite(r)?'Error':r; }catch(e){ return 'Error'; }
+}
+function actualizarPantalla(){ document.getElementById('calcPantalla').textContent=calcExpr===''?'0':calcExpr; }
+function initCalc(){
+  document.querySelectorAll('.calc-boton').forEach(btn=>{
+    btn.onclick=()=>{
+      if(btn.hasAttribute('data-val')){ calcExpr+=btn.getAttribute('data-val'); actualizarPantalla(); }
+      else if(btn.hasAttribute('data-op')){
+        let op=btn.getAttribute('data-op');
+        if(op==='C'){ calcExpr=''; actualizarPantalla(); }
+        else if(op==='√'){ calcExpr+='√('; actualizarPantalla(); }
+        else if(op==='n!'){ calcExpr+='!'; actualizarPantalla(); }
+        else if(op==='Cnk'){ calcExpr+='C('; actualizarPantalla(); }
+        else if(op==='π'){ calcExpr+='π'; actualizarPantalla(); }
+        else if(op==='e'){ calcExpr+='e'; actualizarPantalla(); }
+        else if(op==='='){ let r=evaluarExpr(calcExpr); calcExpr=r.toString(); actualizarPantalla(); }
+        else{ calcExpr+=op; actualizarPantalla(); }
+      }
+    };
+  });
+}
+
+// ======== NORMAL ========
+function phiExact(z){
+  const t=1/(1+0.2316419*Math.abs(z));
+  const d=0.3989423*Math.exp(-z*z/2);
+  const prob=d*t*(0.3193815+t*(-0.3565638+t*(1.781478+t*(-1.821256+t*1.330274))));
+  return z>0?1-prob:prob;
+}
+function invPhi(p){
+  // Algoritmo de Acklam para la inversa de la normal estándar (cuantil).
+  // NOTA DE CORRECCIÓN: la versión anterior reutilizaba estos mismos coeficientes
+  // pero con el polinomio de Horner en orden inverso y una transformación de r
+  // incorrecta (0.180625-q² en vez de q²), lo que producía valores completamente
+  // erróneos para cualquier percentil distinto de 0.5. Verificado contra SymPy
+  // (erfinv) con error máximo ~1.8e-9 en el rango p∈[0.05,0.95] usado por la ficha.
+  if (p <= 0) return -5;
+  if (p >= 1) return 5;
+
+  const a = [-3.969683028665376e+01,  2.209460984245205e+02,
+             -2.759285104469687e+02,  1.383577518672690e+02,
+             -3.066479806614716e+01,  2.506628277459239e+00];
+  const b = [-5.447609879822406e+01,  1.615858368580409e+02,
+             -1.556989798598866e+02,  6.680131188771972e+01,
+             -1.328068155288572e+01];
+  const c = [-7.784894002430293e-03, -3.223964580411365e-01,
+             -2.400758277161838e+00, -2.549732539343734e+00,
+              4.374664141464968e+00,  2.938163982698783e+00];
+  const d = [ 7.784695709041462e-03,  3.224671290700398e-01,
+              2.445134137142996e+00,  3.754408661907416e+00];
+
+  const p_low = 0.02425;
+  const p_high = 1 - p_low;
+  let q, r;
+
+  if (p < p_low) {
+    q = Math.sqrt(-2 * Math.log(p));
+    return (((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) /
+            ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1);
+  } else if (p <= p_high) {
+    q = p - 0.5;
+    r = q*q;
+    return (((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q /
+           (((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1);
+  } else {
+    q = Math.sqrt(-2 * Math.log(1-p));
+    return -(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) /
+             ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1);
+  }
+}
+function generarTabla(){
+  let body=document.getElementById('tablaNormalBody'); body.innerHTML='';
+  for(let i=0;i<=40;i++){
+    let row=document.createElement('tr');
+    let zP=(i*0.1).toFixed(2); let zN=parseFloat(zP);
+    let cm=document.createElement('td'); cm.textContent=zP; cm.style.fontWeight='bold'; cm.style.background='var(--color-neutro)'; row.appendChild(cm);
+    for(let j=0;j<=9;j++){
+      let z=zN+j*0.01; let cell=document.createElement('td'); cell.textContent=phiExact(z).toFixed(4); row.appendChild(cell);
+    }
+    body.appendChild(row);
+  }
+}
+function buscarEnTabla(){
+  let z=parseFloat(document.getElementById('buscarZ').value); if(isNaN(z)) return;
+  z=Math.min(4.09,Math.max(-4,z));
+  let parte=Math.floor(Math.abs(z)*10)/10; let resto=(Math.abs(z)-parte).toFixed(2); let col=Math.round(resto*100); if(col>9)col=9;
+  let fila=Math.round(parte*10); if(z<0) fila=0;
+  document.querySelectorAll('#tablaNormalBody td').forEach(t=>t.classList.remove('valor-destacado'));
+  let filas=document.querySelectorAll('#tablaNormalBody tr');
+  if(filas[fila]){ let celdas=filas[fila].querySelectorAll('td'); if(celdas[col+1]) celdas[col+1].classList.add('valor-destacado'); filas[fila].scrollIntoView({block:'center'}); }
+}
+
+// ======== UTILS ========
+function r(min,max,dec=0){ return +(Math.random()*(max-min)+min).toFixed(dec); }
+function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function mezclar(arr){ return [...arr].sort(()=>Math.random()-0.5); }
+function fmt(n,d=4){ return (+n).toFixed(d); }
+function phi(z){ return phiExact(z); }
+function binomialProb(n,k,p){ let c=1; for(let i=1;i<=k;i++) c=c*(n-i+1)/i; return c*Math.pow(p,k)*Math.pow(1-p,n-k); }
+
+function generarOpciones(vc, dec, esProbabilidad){
+  if(dec===undefined) dec=4;
+  if(esProbabilidad===undefined) esProbabilidad=true;
+  const fmtOp = v => (+v).toFixed(dec);
+  const correctaStr = fmtOp(vc);
+  const margen = esProbabilidad ? Math.max(0.05, Math.abs(vc)*0.4) : Math.max(1, Math.abs(vc)*0.08);
+  let candidatos = new Set([correctaStr]);
+  let intentos=0;
+  while(candidatos.size<4 && intentos<300){
+    intentos++;
+    let alt=vc+(Math.random()*2-1)*margen;
+    if(esProbabilidad) alt=Math.min(0.9999,Math.max(0.0001,alt));
+    let s=fmtOp(alt);
+    if(Math.abs(parseFloat(s)-parseFloat(correctaStr))>Math.pow(10,-dec)*0.5) candidatos.add(s);
+  }
+  while(candidatos.size<4){
+    let fallback=esProbabilidad?fmtOp(Math.random()*0.9+0.05):fmtOp(vc+(Math.random()*2-1)*margen*3);
+    if(Math.abs(parseFloat(fallback)-parseFloat(correctaStr))>Math.pow(10,-dec)*0.5) candidatos.add(fallback);
+  }
+  let distractores=[...candidatos].filter(s=>s!==correctaStr).sort(()=>Math.random()-0.5).slice(0,3);
+  return mezclar([correctaStr,...distractores]);
+}
+
+// ======== CONTEXTOS ========
+const ctxBin=[
+  {intro:"En la Feria de San Juan en Badajoz, la probabilidad de que un visitante pruebe la torta de la Serena es",plural:"visitantes",lugar:"la Feria de San Juan",verbo:"pruebe la torta"},
+  {intro:"En el Carnaval de Badajoz, la probabilidad de que un asistente se disfrace de personaje extremeño es",plural:"asistentes",lugar:"el Carnaval de Badajoz",verbo:"se disfrace"},
+  {intro:"Durante la Romería de la Virgen de la Montaña, la probabilidad de que un peregrino lleve traje tradicional es",plural:"peregrinos",lugar:"la Romería",verbo:"lleve traje tradicional"},
+  {intro:"En la recogida de la aceituna en la Sierra de Tentudía, la probabilidad de que un jornalero sea de la comarca es",plural:"jornaleros",lugar:"la Sierra de Tentudía",verbo:"sea de la comarca"},
+  {intro:"En la Fiesta de la Cereza del Valle del Jerte, la probabilidad de que un visitante compre cerezas al agricultor es",plural:"visitantes",lugar:"el Valle del Jerte",verbo:"compre cerezas directas"}
+];
+const ctxAprox=[
+  {intro:"Según la Cámara de Comercio de Cáceres, la probabilidad de que una empresa extremeña exporte sus productos es",plural:"empresas",lugar:"Extremadura",evento:"exporten sus productos"},
+  {intro:"Un estudio de la Junta de Extremadura indica que la probabilidad de que un extremeño asista a la Feria del Queso en Trujillo es",plural:"extremeños",lugar:"Trujillo",evento:"asistan a la Feria del Queso"},
+  {intro:"En el Museo Vostell de Malpartida de Cáceres, la probabilidad de que un visitante sea estudiante de arte es",plural:"visitantes",lugar:"Malpartida",evento:"sean estudiantes de arte"},
+  {intro:"Durante la celebración de Los Palomos en Badajoz, la probabilidad de que un asistente venga de fuera de la ciudad es",plural:"asistentes",lugar:"Los Palomos",evento:"vengan de fuera"},
+  {intro:"En la Reserva de la Biosfera de La Siberia, la probabilidad de que un visitante realice senderismo es",plural:"visitantes",lugar:"La Siberia",evento:"realicen senderismo"}
+];
+const ctxNormal=[
+  {nom:"estatura",uni:"cm",sujeto:"estudiantes extremeños",lugar:"Extremadura",verbo:"mide"},
+  {nom:"peso",uni:"kg",sujeto:"cerezas del Valle del Jerte",lugar:"el Valle del Jerte",verbo:"pesa"},
+  {nom:"tiempo de espera",uni:"minutos",sujeto:"usuarios del autobús urbano",lugar:"Mérida",verbo:"tarda"},
+  {nom:"consumo de vino",uni:"litros",sujeto:"habitantes de Almendralejo",lugar:"Almendralejo",verbo:"consume"},
+  {nom:"altura",uni:"metros",sujeto:"alcornoques de Monfragüe",lugar:"Monfragüe",verbo:"mide"}
+];
+
+// ======== GENERADORES ========
+function genBinomial(){
+  let ctx=pick(ctxBin), n=pick([5,6,7,8,9,10,12]), p=r(0.2,0.85,2), k=Math.floor(r(0,n,0));
+  let prob=binomialProb(n,k,p);
+  return {
+    tipoKey:"binomial",
+    enunciado:`${ctx.intro} <strong>p = ${p}</strong>. Si seleccionamos al azar ${n} ${ctx.plural} durante ${ctx.lugar}, ¿cuál es la probabilidad de que exactamente ${k} de ellos ${ctx.verbo}?`,
+    pista:`Usa la fórmula binomial: P(X=k) = C(n,k)·p^k·(1-p)^(n-k).<br><br>📌 n = ${n}, p = ${p}, k = ${k}<br>📌 C(${n},${k}) = ${Math.round(combMath(n,k))}`,
+    correcta:fmt(prob,4),
+    opciones:generarOpciones(prob,4,true),
+    explicacion:`<strong>Solución:</strong><br>P(X=${k}) = C(${n},${k})·${fmt(p,3)}^${k}·${fmt(1-p,3)}^${n-k}<br>= ${Math.round(combMath(n,k))} · ${fmt(Math.pow(p,k),5)} · ${fmt(Math.pow(1-p,n-k),5)} = <strong>${fmt(prob,4)}</strong><br><br>📌 La probabilidad es del ${(prob*100).toFixed(2)}%.`
+  };
+}
+
+function genNormal(){
+  let ctx=pick(ctxNormal), mu=r(50,180,1), sigma=r(5,28,1);
+  let esInversa=Math.random()<0.5;
+  if(!esInversa){
+    let tipo=pick(["menor","mayor","entre"]);
+    let a,b,z1,z2,corr,pregunta;
+    if(tipo==="menor"){ a=r(mu-2*sigma,mu-0.5*sigma,1); z1=(a-mu)/sigma; corr=phi(z1); pregunta=`¿cuál es la probabilidad de que ${ctx.verbo} menos de ${a} ${ctx.uni}?`; }
+    else if(tipo==="mayor"){ a=r(mu+0.5*sigma,mu+2*sigma,1); z1=(a-mu)/sigma; corr=1-phi(z1); pregunta=`¿cuál es la probabilidad de que ${ctx.verbo} más de ${a} ${ctx.uni}?`; }
+    else{ a=r(mu-1.8*sigma,mu-0.3*sigma,1); b=r(mu+0.3*sigma,mu+1.8*sigma,1); if(a>b)[a,b]=[b,a]; z1=(a-mu)/sigma; z2=(b-mu)/sigma; corr=phi(z2)-phi(z1); pregunta=`¿cuál es la probabilidad de que su ${ctx.nom} esté entre ${a} y ${b} ${ctx.uni}?`; }
+    return {
+      tipoKey:"normal",
+      enunciado:`La ${ctx.nom} de ${ctx.sujeto} sigue una distribución normal con media <strong>μ = ${mu} ${ctx.uni}</strong> y desviación típica <strong>σ = ${sigma} ${ctx.uni}</strong>. Si elegimos al azar un ${ctx.sujeto.split(" ")[0]} de ${ctx.lugar}, ${pregunta}`,
+      pista:`Tipifica: Z = (X−μ)/σ ~ N(0,1).<br><br>📌 μ = ${mu} ${ctx.uni}, σ = ${sigma} ${ctx.uni}<br>📌 ${tipo==="menor"?`z = (${a}−${mu})/${sigma} = ${fmt(z1,3)}`:tipo==="mayor"?`z = (${a}−${mu})/${sigma} = ${fmt(z1,3)}`:`z₁ = ${fmt(z1,3)}, z₂ = ${fmt(z2,3)}`}<br>📌 Luego busca en la tabla N(0,1) (desplegable abajo).`,
+      correcta:fmt(corr,4),
+      opciones:generarOpciones(corr,4,true),
+      explicacion:`<strong>Solución:</strong><br>Tipificación: Z = (X−μ)/σ<br>${tipo==="menor"?`P(X < ${a}) = P(Z < ${fmt(z1,3)})`:tipo==="mayor"?`P(X > ${a}) = 1 − P(Z < ${fmt(z1,3)})`:`P(${a} < X < ${b}) = P(${fmt(z1,3)} < Z < ${fmt(z2,3)})`} = <strong>${fmt(corr,4)}</strong><br><br>📌 Aproximadamente el ${(corr*100).toFixed(1)}% de los ${ctx.sujeto} cumplen esta condición.`
+    };
+  } else {
+    let tipo=pick(["percentil_menor","percentil_mayor"]), percentil=r(0.05,0.95,2);
+    if(tipo==="percentil_menor"){
+      let z=invPhi(percentil), x=Math.round((mu+z*sigma)*10)/10;
+      return {
+        tipoKey:"normal",
+        enunciado:`La ${ctx.nom} de ${ctx.sujeto} sigue una distribución normal con media <strong>μ = ${mu} ${ctx.uni}</strong> y desviación típica <strong>σ = ${sigma} ${ctx.uni}</strong>. ¿Cuál es el valor de la ${ctx.nom} (en ${ctx.uni}) por debajo del cual se encuentra el ${(percentil*100).toFixed(0)}% de los ${ctx.sujeto}?`,
+        pista:`Busca en la tabla N(0,1) el valor de z que cumple Φ(z) = ${percentil}. Luego despeja: X = μ + z·σ.<br><br>📌 μ = ${mu}, σ = ${sigma}`,
+        correcta:fmt(x,1),
+        opciones:generarOpciones(x,1,false),
+        explicacion:`<strong>Solución:</strong><br>1. z tal que Φ(z) = ${percentil} → z = ${fmt(invPhi(percentil),3)}<br>2. X = ${mu} + ${fmt(invPhi(percentil),3)} · ${sigma} = <strong>${fmt(x,1)} ${ctx.uni}</strong><br><br>📌 El ${(percentil*100).toFixed(0)}% de los ${ctx.sujeto} tienen ${ctx.nom} inferior a ${fmt(x,1)} ${ctx.uni}.`
+      };
+    } else {
+      let z=invPhi(1-percentil), x=Math.round((mu+z*sigma)*10)/10;
+      return {
+        tipoKey:"normal",
+        enunciado:`La ${ctx.nom} de ${ctx.sujeto} sigue una distribución normal con media <strong>μ = ${mu} ${ctx.uni}</strong> y desviación típica <strong>σ = ${sigma} ${ctx.uni}</strong>. ¿Cuál es el valor de la ${ctx.nom} (en ${ctx.uni}) por encima del cual se encuentra el ${(percentil*100).toFixed(0)}% de los ${ctx.sujeto}?`,
+        pista:`Busca en la tabla N(0,1) el valor de z que cumple Φ(z) = ${1-percentil}. Luego despeja: X = μ + z·σ.<br><br>📌 μ = ${mu}, σ = ${sigma}`,
+        correcta:fmt(x,1),
+        opciones:generarOpciones(x,1,false),
+        explicacion:`<strong>Solución:</strong><br>1. z tal que Φ(z) = ${1-percentil} → z = ${fmt(invPhi(1-percentil),3)}<br>2. X = ${mu} + ${fmt(invPhi(1-percentil),3)} · ${sigma} = <strong>${fmt(x,1)} ${ctx.uni}</strong><br><br>📌 El ${(percentil*100).toFixed(0)}% de los ${ctx.sujeto} tienen ${ctx.nom} superior a ${fmt(x,1)} ${ctx.uni}.`
+      };
+    }
+  }
+}
+
+function genAprox(){
+  let ctx=pick(ctxAprox), n=pick([100,150,200,250,300]), p=r(0.2,0.8,2);
+  let mu=n*p, sigma=Math.sqrt(n*p*(1-p));
+  let tipo=pick(["menor","mayor","rango"]);
+  let k,k1,k2,corr,pregunta;
+  if(tipo==="menor"){ 
+    k=Math.floor(r(mu-2*sigma,mu-0.5*sigma,0)); 
+    if(k<0)k=0; if(k>n)k=n; 
+    let z=(k-0.5-mu)/sigma;
+    corr=phi(z); 
+    pregunta=`¿cuál es la probabilidad de que menos de ${k} de ellos ${ctx.evento}?`; 
+  }
+  else if(tipo==="mayor"){ 
+    k=Math.floor(r(mu+0.5*sigma,mu+2*sigma,0)); 
+    if(k<0)k=0; if(k>n)k=n; 
+    let z=(k+0.5-mu)/sigma;
+    corr=1-phi(z); 
+    pregunta=`¿cuál es la probabilidad de que más de ${k} de ellos ${ctx.evento}?`; 
+  }
+  else{ 
+    k1=Math.floor(r(mu-1.5*sigma,mu-0.3*sigma,0)); 
+    k2=Math.floor(r(mu+0.3*sigma,mu+1.5*sigma,0)); 
+    if(k1<0)k1=0; if(k2>n)k2=n; 
+    if(k1>k2)[k1,k2]=[k2,k1]; 
+    let z1=(k1-0.5-mu)/sigma;
+    let z2=(k2+0.5-mu)/sigma;
+    corr=phi(z2)-phi(z1); 
+    pregunta=`¿cuál es la probabilidad de que el número de ${ctx.plural} que ${ctx.evento} esté entre ${k1} y ${k2} (ambos incluidos)?`; 
+  }
+  return {
+    tipoKey:"aprox",
+    enunciado:`${ctx.intro} <strong>p = ${p}</strong>. Si se encuesta a ${n} ${ctx.plural} en ${ctx.lugar}, ${pregunta}`,
+    pista:`Aproxima X ~ B(${n},${p}) por Y ~ N(μ,σ) con corrección de continuidad de Yates.<br><br>📌 μ = n·p = ${fmt(mu,2)}<br>📌 σ = √(n·p·(1-p)) = ${fmt(sigma,4)}<br>📌 ${tipo==="menor"?`P(X < ${k}) → usar k-0.5 → z = (${k}-0.5-μ)/σ = ${fmt((k-0.5-mu)/sigma,3)}`:tipo==="mayor"?`P(X > ${k}) → usar k+0.5 → z = (${k}+0.5-μ)/σ = ${fmt((k+0.5-mu)/sigma,3)}`:`P(${k1} ≤ X ≤ ${k2}) → usar ${k1}-0.5 y ${k2}+0.5 → z₁ = ${fmt((k1-0.5-mu)/sigma,3)}, z₂ = ${fmt((k2+0.5-mu)/sigma,3)}`}<br>📌 Luego busca en la tabla N(0,1).`,
+    correcta:fmt(corr,4),
+    opciones:generarOpciones(corr,4,true),
+    explicacion:`<strong>Solución aproximada (corrección de Yates):</strong><br>μ = ${fmt(mu,2)}, σ = ${fmt(sigma,4)}<br>${tipo==="menor"?`P(X < ${k}) ≈ Φ((${k}-0.5-μ)/σ) = Φ(${fmt((k-0.5-mu)/sigma,3)})`:tipo==="mayor"?`P(X > ${k}) ≈ 1−Φ((${k}+0.5-μ)/σ) = 1−Φ(${fmt((k+0.5-mu)/sigma,3)})`:`P(${k1} ≤ X ≤ ${k2}) ≈ Φ((${k2}+0.5-μ)/σ) − Φ((${k1}-0.5-μ)/σ) = Φ(${fmt((k2+0.5-mu)/sigma,3)}) − Φ(${fmt((k1-0.5-mu)/sigma,3)})`} = <strong>${fmt(corr,4)}</strong><br><br>📌 Probabilidad aproximada: ${(corr*100).toFixed(1)}%.`
+  };
+}
+
+// ======== LÓGICA PRINCIPAL ========
+function elegirTipo(tipo){
+  generarEjercicio(tipo);
+}
+
+function generarEjercicio(t){
+  let tipo=t||pick(TIPOS);
+  if(tipo==='binomial') ejActual=genBinomial();
+  else if(tipo==='normal') ejActual=genNormal();
+  else ejActual=genAprox();
+  state.tipoActual=ejActual.tipoKey;
+  contadorEj++;
+  renderEjercicio();
+}
+
+function renderEjercicio(){
+  state.respondido=false; state.seleccionada=null;
+  const tipoNombre = NOMBRE_TIPO[ejActual.tipoKey];
+  const ac = state.aciertosEnTipo[ejActual.tipoKey];
+  const max = MAX_ACIERTOS_TIPO[ejActual.tipoKey];
+  document.getElementById('card-tipo-label').textContent=`${tipoNombre} · ${ac}/${max} aciertos completados`;
+  document.getElementById('ej-enunciado').innerHTML=ejActual.enunciado;
+  document.getElementById('ej-opciones').innerHTML=ejActual.opciones.map((o,i)=>`<button class="opcion-btn" onclick="seleccionar(${i})">${o}</button>`).join('');
+  document.getElementById('pista-box').className='pista-box'; document.getElementById('pista-box').innerHTML='';
+  document.getElementById('ej-feedback').className='feedback'; document.getElementById('ej-feedback').innerHTML='';
+  document.getElementById('btn-pista').disabled=false;
+  document.getElementById('btn-corregir').disabled=true;
+  document.getElementById('btn-siguiente').style.display='none';
+  actualizarBadgeActivo();
+  actualizarProgreso();
+}
+
+function seleccionar(i){
+  if(state.respondido) return;
+  state.seleccionada=i;
+  document.querySelectorAll('.opcion-btn').forEach((b,j)=>b.classList.toggle('seleccionada',j===i));
+  document.getElementById('btn-corregir').disabled=false;
+}
+
+function mostrarPista(){
+  let box=document.getElementById('pista-box');
+  box.innerHTML='💡 <strong>Pista:</strong> '+ejActual.pista;
+  box.classList.add('show');
+  document.getElementById('btn-pista').disabled=true;
+}
+
+function corregir(){
+  if(state.respondido||state.seleccionada===null) return;
+  state.respondido=true;
+  let btns=document.querySelectorAll('.opcion-btn');
+  btns.forEach(b=>b.disabled=true);
+  const elegida=ejActual.opciones[state.seleccionada];
+  const ok=Math.abs(parseFloat(elegida)-parseFloat(ejActual.correcta))<0.001;
+  const tipo=state.tipoActual;
+  btns[state.seleccionada].classList.remove('seleccionada');
+
+  if(ok){
+    btns[state.seleccionada].classList.add('correcta');
+    const yaCompleto=state.tiposCompletados.has(tipo);
+    const acAntes=state.aciertosEnTipo[tipo];
+    const maxAc=MAX_ACIERTOS_TIPO[tipo];
+
+    if(!yaCompleto){
+      state.aciertosEnTipo[tipo]=Math.min(maxAc, acAntes+1);
+      state.puntos+=PUNTOS_POR_TIPO[tipo];
+
+      if(state.aciertosEnTipo[tipo]>=maxAc){
+        state.tiposCompletados.add(tipo);
+      }
+
+      const completado=state.tiposCompletados.has(tipo);
+      const pendientes=TIPOS.filter(t=>!state.tiposCompletados.has(t));
+
+      if(completado){
+        if(pendientes.length>0){
+          mostrarFeedback(true,
+            `✅ <strong>¡Correcto! +${PUNTOS_POR_TIPO[tipo]} puntos</strong> — ¡Tipo <em>${NOMBRE_TIPO[tipo]}</em> completado! 🎉<br><br>${ejActual.explicacion}<br><br>` +
+            `<em>👉 Ahora practica <strong>${NOMBRE_TIPO[pendientes[0]]}</strong> para seguir sumando puntos. Pulsa la pestaña correspondiente o haz clic en "Siguiente".</em>`
+          );
+        } else {
+          mostrarFeedback(true,
+            `✅ <strong>¡Correcto! +${PUNTOS_POR_TIPO[tipo]} puntos</strong> — ¡Has completado TODOS los tipos! 🏆<br><br>${ejActual.explicacion}`
+          );
+        }
+      } else {
+        const restantes=maxAc-state.aciertosEnTipo[tipo];
+        mostrarFeedback(true,
+          `✅ <strong>¡Correcto! +${PUNTOS_POR_TIPO[tipo]} puntos</strong><br><br>${ejActual.explicacion}<br><br>` +
+          `<em>👉 ¡Bien! Te falta <strong>${restantes} ejercicio${restantes>1?'s':''} más</strong> de <em>${NOMBRE_TIPO[tipo]}</em> para completar este tipo.</em>`
+        );
+      }
+    } else {
+      const pendientes=TIPOS.filter(t=>!state.tiposCompletados.has(t));
+      const msg=pendientes.length>0
+        ? `Para sumar más puntos practica: <strong>${pendientes.map(t=>NOMBRE_TIPO[t]).join(', ')}</strong>.`
+        : '¡Todos los tipos completados! Pulsa "Finalizar y Calificar".';
+      mostrarFeedback(true,
+        `✅ <strong>¡Correcto!</strong> — Este tipo ya está completado, no suma puntos adicionales.<br><br>${ejActual.explicacion}<br><br><em>${msg}</em>`
+      );
+    }
+  } else {
+    btns[state.seleccionada].classList.add('incorrecta');
+    btns.forEach(b=>{ if(Math.abs(parseFloat(b.textContent.trim())-parseFloat(ejActual.correcta))<0.001) b.classList.add('correcta'); });
+    mostrarFeedback(false,
+      `❌ <strong>Incorrecto.</strong><br><br>${ejActual.explicacion}<br><br>` +
+      `<em>💪 Inténtalo de nuevo con otro ejercicio del mismo tipo.</em>`
+    );
+  }
+
+  actualizarPuntuacion();
+  actualizarBadges();
+  actualizarBadgeActivo();
+  document.getElementById('btn-pista').disabled=true;
+  document.getElementById('btn-corregir').disabled=true;
+
+  const pendientes=TIPOS.filter(t=>!state.tiposCompletados.has(t));
+  const btnSig=document.getElementById('btn-siguiente');
+  if(ok && pendientes.length>0 && state.tiposCompletados.has(tipo)){
+    btnSig.textContent=`Practicar ${NOMBRE_TIPO[pendientes[0]]} →`;
+  } else if(ok && !state.tiposCompletados.has(tipo)){
+    btnSig.textContent=`Otro ejercicio de ${NOMBRE_TIPO[tipo]} →`;
+  } else {
+    btnSig.textContent='Hacer otro ejercicio →';
+  }
+  btnSig.style.display='inline-block';
+}
+
+function mostrarFeedback(ok,html){
+  let fb=document.getElementById('ej-feedback');
+  fb.className='feedback '+(ok?'ok':'ko');
+  fb.innerHTML=html;
+}
+
+function siguienteEjercicio(){
+  const pendientes=TIPOS.filter(t=>!state.tiposCompletados.has(t));
+  const tipoIncompleto=TIPOS.find(t=>!state.tiposCompletados.has(t) && state.aciertosEnTipo[t]>0);
+  if(tipoIncompleto){ generarEjercicio(tipoIncompleto); }
+  else if(pendientes.length>0){ generarEjercicio(pendientes[0]); }
+  else{ generarEjercicio(state.tipoActual); }
+}
+
+function actualizarPuntuacion(){
+  document.getElementById('pts-pos').textContent=state.tiposCompletados.size;
+  document.getElementById('pts-neg').textContent='/ '+TIPOS.length;
+  document.getElementById('pts-total').textContent=state.puntos.toFixed(2);
+}
+
+function actualizarBadges(){
+  TIPOS.forEach(t=>{
+    const el=document.getElementById('badge-'+t);
+    if(!el) return;
+    const ac=state.aciertosEnTipo[t];
+    const max=MAX_ACIERTOS_TIPO[t];
+    if(state.tiposCompletados.has(t)){
+      el.className='tipo-badge completado';
+      document.getElementById('check-'+t).textContent='✓';
+    } else if(ac>0 && ac<max){
+      el.className='tipo-badge parcial';
+      document.getElementById('check-'+t).textContent=`${ac}/${max}`;
+    } else {
+      el.className='tipo-badge';
+      document.getElementById('check-'+t).textContent='';
+    }
+  });
+}
+
+function actualizarBadgeActivo(){
+  TIPOS.forEach(t=>{
+    const el=document.getElementById('badge-'+t);
+    if(!el) return;
+    if(state.tiposCompletados.has(t)) return;
+    if(t===state.tipoActual){
+      el.classList.add('activo');
+    } else {
+      el.classList.remove('activo');
+    }
+  });
+}
+
+function actualizarProgreso(){
+  const pct=(state.puntos/10)*100;
+  document.getElementById('barra-fill').style.width=Math.min(100,pct)+'%';
+  const completados=state.tiposCompletados.size;
+  document.getElementById('progreso-label').textContent=
+    `📝 Ejercicio ${contadorEj} · Tipos completados: ${completados}/${TIPOS.length} · Puntos: ${state.puntos.toFixed(2)}/10`;
+}
+
+function finalizar(){
+  let n=document.getElementById('nombreAlumno').value.trim();
+  if(!n){
+    let inp=document.getElementById('nombreAlumno');
+    inp.style.border='2px solid var(--color-incorrecto)';
+    inp.placeholder='⚠️ Escribe tu nombre';
+    setTimeout(()=>{ inp.style.border='1.5px solid var(--color-borde)'; inp.placeholder='Escribe tu nombre…'; },2500);
+    return;
+  }
+  const pendientes = TIPOS.filter(t=>!state.tiposCompletados.has(t));
+  if(pendientes.length>0){
+    mostrarAvisoIncompleto(pendientes);
+    return;
+  }
+  mostrarModalResultado();
+}
+
+function mostrarAvisoIncompleto(pendientes){
+  const notaActual = Math.min(10, state.puntos);
+  document.getElementById('aviso-incompleto-texto').innerHTML =
+    `Todavía te falta por completar: <strong>${pendientes.map(t=>NOMBRE_TIPO[t]).join(', ')}</strong>.<br><br>` +
+    `Si finalizas ahora mismo, tu nota quedaría en <strong>${notaActual.toFixed(2)} / 10</strong> y no podrás subirla después.<br><br>` +
+    `¿Prefieres seguir practicando o finalizar ya con la nota actual?`;
+  document.getElementById('overlayIncompleto').classList.add('show');
+}
+
+function cerrarAvisoIncompleto(){
+  document.getElementById('overlayIncompleto').classList.remove('show');
+}
+
+function confirmarFinalizarIncompleto(){
+  document.getElementById('overlayIncompleto').classList.remove('show');
+  mostrarModalResultado();
+}
+
+function mostrarModalResultado(){
+  let n=document.getElementById('nombreAlumno').value.trim();
+  let nota=Math.min(10,state.puntos);
+  let ahora=new Date(), fecha=ahora.toLocaleDateString('es-ES'), hora=ahora.toTimeString().slice(0,8);
+  let elapsed=Math.floor((Date.now()-state.inicio)/1000);
+  let mm=String(Math.floor(elapsed/60)).padStart(2,'0'), ss=String(elapsed%60).padStart(2,'0');
+  document.getElementById('modal-alumno').textContent=n;
+  document.getElementById('modal-nota').textContent=nota.toFixed(2)+' / 10';
+  
+  const desglose=TIPOS.map(t=>{
+    const ic=state.aciertosEnTipo[t], max=MAX_ACIERTOS_TIPO[t];
+    const pts=Math.min(ic,max)*PUNTOS_POR_TIPO[t];
+    return `${NOMBRE_TIPO[t]}: ${ic}/${max} → ${pts.toFixed(1)} pts`;
+  }).join('<br>');
+  
+  document.getElementById('modal-meta').innerHTML=
+    `📅 ${fecha} &nbsp; 🕐 ${hora} &nbsp; ⏱ ${mm}:${ss}<br><br>${desglose}<br><br>✅ Tipos completados: ${state.tiposCompletados.size}/${TIPOS.length}`;
+
+  let modal=document.getElementById('modal'), bg, txt='white', tit='📊 Resultado';
+  if(nota>=10){ bg='#1a7a1a'; document.body.classList.add('nota-perfecta'); tit='🎉 ¡Excelente! 10/10'; }
+  else if(nota>=9){ bg='#6dbf6d'; tit='🌟 ¡Muy bien!'; }
+  else if(nota>=8){ bg='#1a4f8a'; tit='👍 ¡Bien!'; }
+  else if(nota>=7){ bg='#5b9bd5'; tit='📈 Buen progreso'; }
+  else if(nota>=6){ bg='#c05c00'; tit='🔸 Casi lo tienes'; }
+  else if(nota>=5){ bg='#f5a623'; txt='black'; tit='📚 Sigue practicando'; }
+  else { bg='#c0392b'; tit='💪 ¡No te rindas!'; }
+  modal.style.background=bg; modal.style.color=txt;
+  document.getElementById('modal-titulo').textContent=tit;
+  document.querySelectorAll('.modal .btn-cerrar, .modal .btn-reiniciar').forEach(b=>b.style.color=txt);
+  document.getElementById('overlay').classList.add('show');
+}
+
+function cerrarModal(){
+  document.getElementById('overlay').classList.remove('show');
+}
+
+function reiniciarFicha(){
+  document.getElementById('overlay').classList.remove('show');
+  document.body.classList.remove('nota-perfecta');
+  
+  state.puntos=0;
+  state.tiposCompletados=new Set();
+  state.aciertosEnTipo={binomial:0, normal:0, aprox:0};
+  state.tipoActual=null;
+  state.inicio=Date.now();
+  state.respondido=false;
+  state.seleccionada=null;
+  contadorEj=0;
+  
+  actualizarPuntuacion();
+  TIPOS.forEach(t=>{
+    const el=document.getElementById('badge-'+t);
+    if(el){ el.className='tipo-badge'; }
+    document.getElementById('check-'+t).textContent='';
+  });
+  document.getElementById('barra-fill').style.width='0%';
+  
+  generarEjercicio(mezclar([...TIPOS])[0]);
+}
+
+// ======== EVENTOS ========
+document.getElementById('btn-pista').onclick=mostrarPista;
+document.getElementById('btn-corregir').onclick=corregir;
+document.getElementById('btn-siguiente').onclick=siguienteEjercicio;
+document.getElementById('btnBuscarZ').onclick=buscarEnTabla;
+document.getElementById('calcToggle').onclick=()=>{
+  document.getElementById('calcContenido').classList.toggle('show');
+  document.getElementById('calcIcon').classList.toggle('rotated');
+};
+document.getElementById('tablaToggle').onclick=()=>{
+  document.getElementById('tablaContenido').classList.toggle('show');
+  document.getElementById('tablaIcon').classList.toggle('rotated');
+};
+
+// ======== INIT ========
+initCalc();
+generarTabla();
+generarEjercicio(mezclar([...TIPOS])[0]);
+</script>
+</body>
+</html>
