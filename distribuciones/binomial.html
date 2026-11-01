@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Distribución Binomial</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #f0f6ff;
+  --card:    #ffffff;
+  --pri:     #1a6fc4;
+  --pri-lt:  #dbeafe;
+  --acc:     #0ea5e9;
+  --ok:      #16a34a;
+  --ok-lt:   #dcfce7;
+  --err:     #dc2626;
+  --err-lt:  #fee2e2;
+  --warn:    #d97706;
+  --warn-lt: #fef3c7;
+  --text:    #0f172a;
+  --muted:   #64748b;
+  --border:  #cbd5e1;
+  --shadow:  0 6px 32px rgba(26,111,196,.11);
+  --r:       18px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Nunito',sans-serif;
+  background:var(--bg);
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;
+  padding:28px 14px 60px;
+  color:var(--text);
+  transition: background 0.3s ease;
+}
+
+/* HEADER - con sombreado azul */
+.header{width:100%;max-width:760px;text-align:center;margin-bottom:20px}
+.header h1{display:inline-block;font-size:clamp(24px,6vw,38px);font-weight:900;color:var(--pri);line-height:1.2;margin-bottom:8px;background:var(--pri-lt);padding:8px 24px;border-radius:50px;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
+
+/* BARRA SUPERIOR - UNA SOLA LÍNEA */
+.top-bar{width:100%;max-width:760px;background:var(--card);border-radius:60px;padding:6px 20px;margin-bottom:20px;box-shadow:var(--shadow);border:1px solid var(--border);display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;gap:20px;overflow-x:auto}
+.alumno-section{display:flex;align-items:center;gap:8px;background:var(--pri-lt);padding:4px 16px;border-radius:40px;flex-shrink:0}
+.alumno-label{font-size:13px;font-weight:800;color:var(--pri);letter-spacing:0.5px}
+.alumno-input{font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;padding:5px 10px;border-radius:30px;border:1px solid var(--border);background:white;outline:none;width:130px;text-align:center;color:var(--text)}
+.alumno-input:focus{border-color:var(--pri);background:var(--pri-lt)}
+.stats-row{display:flex;flex-wrap:nowrap;align-items:center;gap:12px;flex-shrink:0}
+.stat-item{display:flex;align-items:center;gap:5px;background:var(--bg);padding:4px 14px;border-radius:30px;font-size:13px;font-weight:800}
+.stat-dot{width:8px;height:8px;border-radius:50%}
+.stat-dot.tot{background:var(--pri)}
+.stat-dot.ok{background:var(--ok)}
+.stat-dot.err{background:var(--err)}
+.stat-dot.puntos{background:var(--acc)}
+.stat-value{color:var(--text);margin-left:3px}
+
+/* FÓRMULAS - centradas */
+.formula-strip{width:100%;max-width:760px;background:var(--pri-lt);border-radius:14px;padding:12px 20px;margin-bottom:20px;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px 20px;font-size:13px;font-weight:700;color:var(--pri)}
+.ftag{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;width:100%;text-align:center;opacity:.65;margin-bottom:4px}
+.f{font-family:'Space Mono',monospace;font-size:12px;background:#fff;padding:3px 8px;border-radius:8px}
+
+/* BANNER MAX */
+.banner-max{width:100%;max-width:760px;background:var(--ok-lt);border:2px solid var(--ok);border-radius:16px;padding:10px 20px;text-align:center;margin-bottom:18px;display:none}
+.banner-max.vis{display:block;animation:pulse-ok .5s ease}
+.banner-max p{font-size:16px;font-weight:900;color:var(--ok)}
+.banner-max small{font-size:12px;font-weight:600;color:var(--ok);opacity:.8}
+@keyframes pulse-ok{0%{transform:scale(1)}40%{transform:scale(1.02)}100%{transform:scale(1)}}
+
+/* CARD */
+.card{width:100%;max-width:760px;background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:28px 26px 24px;margin-bottom:20px;border:1.5px solid var(--border);transition: background 0.3s ease}
+
+/* ENUNCIADO */
+.enunciado{background:var(--bg);border:2px solid var(--border);border-radius:14px;padding:18px 22px;margin-bottom:20px;font-size:15px;font-weight:700;line-height:1.7;color:var(--text)}
+.enunciado .dato{color:var(--pri);font-weight:900}
+
+/* INPUT RESPUESTA */
+.resp-row{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+.resp-label{font-size:14px;font-weight:800;color:var(--muted)}
+.resp-input{font-family:'Space Mono',monospace;font-size:24px;font-weight:700;width:150px;text-align:center;padding:8px 8px;border:3px solid var(--border);border-radius:12px;outline:none;color:var(--text);background:#fff;transition:border-color .2s,background .2s,transform .15s}
+.resp-input:focus{border-color:var(--pri);background:var(--pri-lt);transform:scale(1.02)}
+.resp-input.correcto{border-color:var(--ok);background:var(--ok-lt)}
+.resp-input.incorrecto{border-color:var(--err);background:var(--err-lt);animation:shake .3s}
+.resp-input:disabled{opacity:.7;cursor:not-allowed}
+.resp-hint{font-size:12px;font-weight:700;color:var(--muted);text-align:center;margin-bottom:10px}
+
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+/* FEEDBACK */
+.feedback{min-height:36px;text-align:center;font-size:15px;font-weight:800;padding:8px 16px;border-radius:10px;margin-bottom:10px;opacity:0;transform:translateY(4px);transition:all .25s}
+.feedback.vis{opacity:1;transform:translateY(0)}
+.feedback.ok{background:var(--ok-lt);color:var(--ok)}
+.feedback.mal{background:var(--err-lt);color:var(--err)}
+
+/* RESOLUCIÓN */
+.resolucion{background:var(--warn-lt);border-left:4px solid var(--warn);border-radius:12px;padding:18px 20px;font-size:14px;color:var(--text);margin-top:10px;display:none;line-height:1.6}
+.resolucion.vis{display:block}
+.res-titulo{font-weight:900;color:var(--warn);font-size:15px;margin-bottom:12px}
+.step{margin-bottom:10px;display:flex;align-items:flex-start;gap:10px}
+.step-num{display:inline-flex;align-items:center;justify-content:center;background:var(--warn);color:#fff;border-radius:50%;min-width:22px;height:22px;font-size:11px;font-weight:900;margin-top:2px;flex-shrink:0}
+.step-body{flex:1}
+.formula-box{background:#fff;border:1.5px solid var(--warn);border-radius:8px;padding:6px 12px;font-family:'Space Mono',monospace;font-size:12px;margin:6px 0;display:inline-block;color:var(--text);font-weight:600}
+.res-final{margin-top:12px;background:var(--ok-lt);border-radius:10px;padding:10px 16px;font-weight:900;color:var(--ok);font-size:15px;text-align:center}
+
+/* BOTONES */
+.btns{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:18px}
+.btn{font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;border:none;border-radius:12px;padding:10px 22px;cursor:pointer;transition:transform .12s,box-shadow .12s}
+.btn:active{transform:scale(.96)}
+.btn-check{background:var(--pri);color:#fff;box-shadow:0 4px 16px rgba(26,111,196,.28)}
+.btn-check:hover{background:#155fa8}
+.btn-next{background:var(--ok);color:#fff;box-shadow:0 4px 16px rgba(22,163,74,.25);display:none}
+.btn-next:hover{background:#15803d}
+.btn-nuevo{background:#fff;color:var(--pri);border:2px solid var(--pri)}
+.btn-nuevo:hover{background:var(--pri-lt)}
+.btn-finalizar{background:#4a4e69;color:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.2); border: none;}
+.btn-finalizar:hover{background:#22223b;}
+
+/* MODAL */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0.2s, opacity 0.2s;
+}
+.modal-overlay.active {
+  visibility: visible;
+  opacity: 1;
+}
+.modal-container {
+  max-width: 440px;
+  width: 90%;
+  background: white;
+  border-radius: 28px;
+  box-shadow: 0 25px 40px rgba(0,0,0,0.3);
+  padding: 24px 22px 28px;
+  text-align: center;
+  font-family: 'Nunito', sans-serif;
+  transition: background 0.2s, color 0.2s;
+}
+.modal-container h3 {
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 18px;
+}
+.modal-info {
+  text-align: left;
+  background: rgba(0,0,0,0.05);
+  padding: 14px;
+  border-radius: 18px;
+  margin: 18px 0;
+  font-weight: 600;
+  line-height: 1.6;
+  font-size: 14px;
+}
+.modal-info p {
+  margin: 5px 0;
+}
+.modal-reminder {
+  background: #fff3cd;
+  color: #856404;
+  padding: 10px;
+  border-radius: 12px;
+  font-weight: 700;
+  margin: 14px 0;
+  font-size: 13px;
+}
+.close-modal-btn {
+  background: #2c3e66;
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 36px;
+  font-weight: 800;
+  font-size: 14px;
+  cursor: pointer;
+  margin-top: 6px;
+}
+.close-modal-btn:active { transform: scale(0.96); }
+
+/* HISTORIAL */
+.historial{width:100%;max-width:760px;margin-top:6px}
+.hist-tit{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;text-align:center}
+.hist-grid{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.hitem{background:var(--card);border-radius:10px;padding:5px 12px;font-size:11px;font-weight:700;border:2px solid;display:flex;align-items:center;gap:6px}
+.hitem.ok{border-color:var(--ok);color:var(--ok)}
+.hitem.mal{border-color:var(--err);color:var(--err)}
+
+@media(max-width:650px){
+  .card{padding:20px 14px 18px}
+  .resp-input{width:120px;font-size:20px}
+  .enunciado{font-size:13px;padding:14px}
+  .top-bar{gap:10px;padding:12px 14px;flex-direction:column;border-radius:20px;overflow-x:visible}
+  .stats-row{flex-wrap:wrap;justify-content:center;width:100%}
+  .stat-item{padding:3px 10px;font-size:12px}
+  .alumno-section{padding:3px 12px}
+  .alumno-input{width:110px;font-size:12px}
+}
+</style>
+</head>
+<body>
+
+<div style="width:100%;max-width:760px;text-align:center;margin-bottom:4px">
+  <span style="font-size:10px;font-weight:700;color:var(--pri);opacity:.7">Material elaborado por Marta L Letona S. | Basado en ejercicios de Javier Cayetano</span>
+</div>
+
+<div class="header">
+  <h1>Distribución Binomial</h1>
+</div>
+
+<!-- UNA SOLA LÍNEA: Alumno + Estadísticas -->
+<div class="top-bar">
+  <div class="alumno-section">
+    <label for="nombreAlumnoInput" class="alumno-label" aria-hidden="true">👤</label>
+    <input type="text" id="nombreAlumnoInput" class="alumno-input" placeholder="Nombre" value="" aria-label="Nombre del alumno">
+  </div>
+  <div class="stats-row">
+    <div class="stat-item"><span class="stat-dot tot"></span>Ejercicios: <span id="tot" class="stat-value">0</span></div>
+    <div class="stat-item"><span class="stat-dot ok"></span>Correctos: <span id="cor" class="stat-value">0</span></div>
+    <div class="stat-item"><span class="stat-dot err"></span>Errores: <span id="err" class="stat-value">0</span></div>
+    <div class="stat-item"><span class="stat-dot puntos"></span>Puntos: <span id="puntos-valor-header" class="stat-value">0</span>/<span id="puntos-max-header">10</span></div>
+  </div>
+</div>
+
+<!-- Fórmulas centradas -->
+<div class="formula-strip">
+  <div class="ftag">Fórmulas clave</div>
+  <span class="f">P(X=k) = C(n,k)·pᵏ·(1−p)ⁿ⁻ᵏ</span>
+  <span class="f">P(X≥k) = 1 − P(X≤k−1)</span>
+  <span class="f">P(X≤k) = Σ P(X=i)</span>
+  <span class="f">P(A|B) = P(A∩B)/P(B)</span>
+</div>
+
+<!-- Banner máximo -->
+<div class="banner-max" id="banner-max">
+  <p>🏆 ¡Puntuación máxima alcanzada!</p>
+  <small>Has conseguido 10 puntos. ¡Excelente trabajo!</small>
+</div>
+
+<!-- Tarjeta ejercicio -->
+<div class="card" id="mainCard">
+  <div class="ej-label" style="font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;text-align:center">
+    Ejercicio <span id="num-ej">1</span>
+  </div>
+
+  <div class="enunciado" id="enunciado">…</div>
+
+  <div class="resp-row">
+    <label class="resp-label" for="resp">Resultado =</label>
+    <input class="resp-input" id="resp" type="text" inputmode="decimal" placeholder="0.0000" autocomplete="off">
+  </div>
+  <div class="resp-hint">Introduce el valor redondeado a 4 decimales</div>
+
+  <div class="feedback" id="fb" aria-live="polite"></div>
+  <div class="resolucion" id="res"></div>
+
+  <div class="btns">
+    <button class="btn btn-check" id="btn-check" onclick="comprobar()">✔ Comprobar</button>
+    <button class="btn btn-next"  id="btn-next"  onclick="siguiente()">Siguiente →</button>
+    <button class="btn btn-nuevo" onclick="nuevoEjercicio()">↺ Nuevo ejercicio</button>
+    <button class="btn btn-finalizar" id="finalizarBtn">🏁 Finalizar y Calificar</button>
+  </div>
+</div>
+
+<!-- Historial -->
+<div class="historial">
+  <div class="hist-tit">Historial</div>
+  <div class="hist-grid" id="hist"></div>
+</div>
+
+<!-- MODAL CONFIRMACIÓN FINALIZAR -->
+<div id="confirmOverlay" class="modal-overlay">
+  <div class="modal-container">
+    <h3>⚠️ Confirmar finalización</h3>
+    <p style="font-weight:600;line-height:1.6;margin-bottom:6px">Vas a finalizar con <b id="confirmPuntos">0</b>/10 puntos.</p>
+    <p style="font-weight:600;line-height:1.6">Podrás seguir practicando después, pero esta calificación quedará registrada en el informe. ¿Deseas continuar?</p>
+    <div style="display:flex;gap:12px;justify-content:center;margin-top:18px">
+      <button class="close-modal-btn" id="cancelarFinalizarBtn" style="background:#94a3b8">Cancelar</button>
+      <button class="close-modal-btn" id="confirmarFinalizarBtn">Sí, finalizar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div id="modalOverlay" class="modal-overlay">
+  <div id="modalCard" class="modal-container">
+    <h3>📋 Informe final</h3>
+    <div id="modalInfo" class="modal-info"></div>
+    <div class="modal-reminder">
+      📸 Haz una captura de pantalla y entrégala en Google Classroom.
+    </div>
+    <button class="close-modal-btn" id="closeModalBtn">Cerrar y seguir practicando</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// UTILIDADES MATEMÁTICAS
+// ═══════════════════════════════════════════
+function comb(n,k){
+  if(k<0||k>n) return 0;
+  if(k===0||k===n) return 1;
+  k=Math.min(k,n-k);
+  let r=1;
+  for(let i=0;i<k;i++) r=r*(n-i)/(i+1);
+  return Math.round(r);
+}
+function binomPMF(n,k,p){
+  return comb(n,k)*Math.pow(p,k)*Math.pow(1-p,n-k);
+}
+function binomCDF(n,k,p){
+  let s=0; for(let i=0;i<=k;i++) s+=binomPMF(n,i,p); return s;
+}
+function r4(x){ return Math.round(x*10000)/10000; }
+function r4str(x){ return r4(x).toFixed(4); }
+
+// ═══════════════════════════════════════════
+// ESTADO GLOBAL
+// ═══════════════════════════════════════════
+let nCor=0, nErr=0, nTot=0, puntos=0;
+const PMAX=10;
+let ej=null, respondido=false;
+let startTime = new Date();
+
+const nombreInput = document.getElementById('nombreAlumnoInput');
+
+const config = { nMin:5, nMax:14, ps:[0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,0.7] };
+function rnd(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+// Contextos - Redactados correctamente sin redundancias
+const contextos=[
+  { tema:'fabricación', exitoPlural:'productos', verboPasivo:'sean defectuosos',
+    enun:(n,p)=>`En un proceso de fabricación la probabilidad de que un producto sea defectuoso es <span class="dato">${p}</span>. Se seleccionan al azar <span class="dato">${n}</span> productos.` },
+  { tema:'medicina', exitoPlural:'pacientes', verboPasivo:'mejoren',
+    enun:(n,p)=>`Un tratamiento médico tiene una probabilidad de éxito de <span class="dato">${p}</span>. Se aplica a <span class="dato">${n}</span> pacientes independientes.` },
+  { tema:'examen', exitoPlural:'alumnos', verboPasivo:'aprueben',
+    enun:(n,p)=>`La probabilidad de que un alumno apruebe un test al azar es <span class="dato">${p}</span>. Se escogen <span class="dato">${n}</span> alumnos.` },
+  { tema:'semillas', exitoPlural:'semillas', verboPasivo:'germinen',
+    enun:(n,p)=>`La probabilidad de germinación de una semilla es <span class="dato">${p}</span>. Se plantan <span class="dato">${n}</span> semillas de forma independiente.` },
+  { tema:'tiros libres', exitoPlural:'tiros', verboPasivo:'sean encestados',
+    enun:(n,p)=>`Un jugador de baloncesto encesta un tiro libre con probabilidad <span class="dato">${p}</span>. Lanza <span class="dato">${n}</span> tiros libres consecutivos.` },
+  { tema:'control de calidad', exitoPlural:'piezas', verboPasivo:'estén fuera de tolerancia',
+    enun:(n,p)=>`En un lote industrial la probabilidad de que una pieza esté fuera de tolerancia es <span class="dato">${p}</span>. Se inspeccionan <span class="dato">${n}</span> piezas.` },
+  { tema:'encuesta', exitoPlural:'personas', verboPasivo:'estén a favor',
+    enun:(n,p)=>`En una encuesta el <span class="dato">${Math.round(p*100)} %</span> de los ciudadanos apoya una medida. Se pregunta a <span class="dato">${n}</span> personas.` },
+];
+
+const tipos=['exacta','almenos','asumo','entre','condic'];
+
+function generarPregunta(n,p,tipo,ctx){
+  let pregunta, respuesta, k, k1, k2;
+  
+  if(tipo==='exacta'){
+    k=rnd(0,Math.min(n,5));
+    respuesta=r4(binomPMF(n,k,p));
+    if(k===1){
+      pregunta = `Calcula la probabilidad de que <b>exactamente 1</b> de los ${ctx.exitoPlural} ${ctx.verboPasivo}.`;
+    } else {
+      pregunta = `Calcula la probabilidad de que <b>exactamente ${k}</b> de los ${ctx.exitoPlural} ${ctx.verboPasivo}.`;
+    }
+    return {tipo,pregunta,respuesta,k,n,p,ctx};
+  }
+  if(tipo==='almenos'){
+    k=rnd(1,Math.min(n,4));
+    respuesta=r4(1-binomCDF(n,k-1,p));
+    pregunta = `Calcula la probabilidad de que <b>al menos ${k}</b> de los ${ctx.exitoPlural} ${ctx.verboPasivo}.`;
+    return {tipo,pregunta,respuesta,k,n,p,ctx};
+  }
+  if(tipo==='asumo'){
+    k=rnd(1,Math.min(n-1,5));
+    respuesta=r4(binomCDF(n,k,p));
+    pregunta = `Calcula la probabilidad de que <b>a lo sumo ${k}</b> de los ${ctx.exitoPlural} ${ctx.verboPasivo}.`;
+    return {tipo,pregunta,respuesta,k,n,p,ctx};
+  }
+  if(tipo==='entre'){
+    k1=rnd(1,Math.floor(n/2));
+    k2=rnd(k1+1,Math.min(n,k1+4));
+    respuesta=r4(binomCDF(n,k2,p)-binomCDF(n,k1-1,p));
+    pregunta = `Calcula la probabilidad de que haya <b>entre ${k1} y ${k2}</b> de los ${ctx.exitoPlural} ${ctx.verboPasivo} (ambos inclusive).`;
+    return {tipo,pregunta,respuesta,k1,k2,n,p,ctx};
+  }
+  if(tipo==='condic'){
+    k1=rnd(1,Math.min(n-1,3));
+    k2=rnd(k1+1,Math.min(n,k1+3));
+    const pB = r4(1-binomCDF(n,k1-1,p));
+    // Si k2===n, "entre k1 y n" es exactamente el mismo suceso que "al menos k1":
+    // reutilizamos pB para evitar que dos caminos de cálculo con redondeos
+    // independientes den un cociente >1 por ruido de coma flotante.
+    const pAyB = (k2===n) ? pB : r4(binomCDF(n,k2,p)-binomCDF(n,k1-1,p));
+    respuesta  = r4(pAyB/pB);
+    pregunta = `Calcula la probabilidad de que haya <b>entre ${k1} y ${k2}</b> de los ${ctx.exitoPlural} ${ctx.verboPasivo}, <b>sabiendo que hay al menos ${k1}</b>.`;
+    return {tipo,pregunta,respuesta,k1,k2,pAyB,pB,n,p,ctx};
+  }
+}
+
+function generar(){
+  const n  =rnd(config.nMin,config.nMax);
+  const p  =pick(config.ps);
+  const ctx=pick(contextos);
+  const tipo=pick(tipos);
+  ej={n,p,ctx,...generarPregunta(n,p,tipo,ctx)};
+  return ej;
+}
+
+function renderEjercicio(){
+  const {n,p,ctx,pregunta}=ej;
+  document.getElementById('num-ej').textContent=nTot+1;
+  document.getElementById('enunciado').innerHTML= ctx.enun(n,p)+'<br><br>'+pregunta;
+  const inp=document.getElementById('resp');
+  inp.value=''; inp.className='resp-input'; inp.disabled=false;
+  document.getElementById('fb').className='feedback';
+  document.getElementById('fb').textContent='';
+  document.getElementById('res').className='resolucion';
+  document.getElementById('btn-check').style.display='';
+  document.getElementById('btn-next').style.display='none';
+  respondido=false;
+  inp.focus();
+}
+
+function explicarPaso(){
+  const {tipo,n,p,k,k1,k2,respuesta,pAyB,pB,ctx}=ej;
+  const q=r4(1-p);
+  if(tipo==='exacta') return explicarExacta(n,p,q,k,respuesta);
+  if(tipo==='almenos') return explicarAlMenos(n,p,q,k,respuesta);
+  if(tipo==='asumo') return explicarAsumo(n,p,q,k,respuesta);
+  if(tipo==='entre') return explicarEntre(n,p,q,k1,k2,respuesta);
+  if(tipo==='condic') return explicarCondicional(n,p,q,k1,k2,pAyB,pB,respuesta);
+  return `<div class="res-titulo">📐 Resolución</div><div>No se pudo generar la explicación.</div>`;
+}
+
+function fbox(html){ return `<div class="formula-box">${html}</div>`; }
+
+function explicarExacta(n,p,q,k,res){
+  const combVal = comb(n,k);
+  const pk = r4str(Math.pow(p,k));
+  const qnk = r4str(Math.pow(q,n-k));
+  const pmf = r4str(binomPMF(n,k,p));
+  return `<div class="res-titulo">📐 Resolución paso a paso</div>
+<div class="step"><span class="step-num">1</span><div class="step-body"><b>Identificar:</b> X ~ B(${n}, ${p}) → P(X = ${k})</div></div>
+<div class="step"><span class="step-num">2</span><div class="step-body"><b>Fórmula:</b> ${fbox(`P(X=${k}) = C(${n},${k})·p^${k}·(1-p)^{${n-k}}`)}</div></div>
+<div class="step"><span class="step-num">3</span><div class="step-body"><b>Combinatorio:</b> ${fbox(`C(${n},${k}) = ${combVal}`)}</div></div>
+<div class="step"><span class="step-num">4</span><div class="step-body"><b>Potencia:</b> ${fbox(`p^${k}=${pk} · (1-p)^{${n-k}}=${qnk}`)}</div></div>
+<div class="step"><span class="step-num">5</span><div class="step-body"><b>Multiplicar:</b> ${fbox(`${combVal} · ${pk} · ${qnk} = ${pmf}`)}</div></div>
+<div class="res-final">✅ P(X = ${k}) = <b>${pmf}</b></div>`;
+}
+
+function explicarAlMenos(n,p,q,k,res){
+  const acumulado = r4str(binomCDF(n,k-1,p));
+  let terminos = "";
+  for(let i=0; i<k; i++){
+    terminos += `<div>P(X=${i}) = ${r4str(binomPMF(n,i,p))}</div>`;
+  }
+  return `<div class="res-titulo">📐 Resolución paso a paso</div>
+<div class="step"><span class="step-num">1</span><div class="step-body"><b>Complementario:</b> ${fbox(`P(X ≥ ${k}) = 1 − P(X ≤ ${k-1})`)}</div></div>
+<div class="step"><span class="step-num">2</span><div class="step-body"><b>Suma P(X ≤ ${k-1}):</b> ${terminos}<br>${fbox(`P(X ≤ ${k-1}) = ${acumulado}`)}</div></div>
+<div class="step"><span class="step-num">3</span><div class="step-body"><b>Aplicar:</b> ${fbox(`P(X ≥ ${k}) = 1 − ${acumulado} = ${r4str(res)}`)}</div></div>
+<div class="res-final">✅ P(X ≥ ${k}) = <b>${r4str(res)}</b></div>`;
+}
+
+function explicarAsumo(n,p,q,k,res){
+  let terminos = "";
+  for(let i=0; i<=k; i++){
+    terminos += `<div>P(X=${i}) = ${r4str(binomPMF(n,i,p))}</div>`;
+  }
+  return `<div class="res-titulo">📐 Resolución paso a paso</div>
+<div class="step"><span class="step-num">1</span><div class="step-body"><b>Sumar desde 0 hasta ${k}:</b> ${fbox(`P(X ≤ ${k}) = Σ P(X=i)`)}</div></div>
+<div class="step"><span class="step-num">2</span><div class="step-body"><b>Términos:</b> ${terminos}</div></div>
+<div class="step"><span class="step-num">3</span><div class="step-body"><b>Suma:</b> ${fbox(`P(X ≤ ${k}) = ${r4str(res)}`)}</div></div>
+<div class="res-final">✅ P(X ≤ ${k}) = <b>${r4str(res)}</b></div>`;
+}
+
+function explicarEntre(n,p,q,k1,k2,res){
+  let terminos = "";
+  for(let i=k1; i<=k2; i++){
+    terminos += `<div>P(X=${i}) = ${r4str(binomPMF(n,i,p))}</div>`;
+  }
+  return `<div class="res-titulo">📐 Resolución paso a paso</div>
+<div class="step"><span class="step-num">1</span><div class="step-body"><b>Sumar desde ${k1} hasta ${k2}:</b> ${fbox(`P(${k1} ≤ X ≤ ${k2}) = Σ P(X=i)`)}</div></div>
+<div class="step"><span class="step-num">2</span><div class="step-body"><b>Términos:</b> ${terminos}</div></div>
+<div class="step"><span class="step-num">3</span><div class="step-body"><b>Suma:</b> ${fbox(`P(${k1} ≤ X ≤ ${k2}) = ${r4str(res)}`)}</div></div>
+<div class="res-final">✅ P(${k1} ≤ X ≤ ${k2}) = <b>${r4str(res)}</b></div>`;
+}
+
+function explicarCondicional(n,p,q,k1,k2,pAyB,pB,res){
+  const pB_str = r4str(pB);
+  const pAyB_str = r4str(pAyB);
+  const res_str = r4str(res);
+  const pB_menos = r4str(binomCDF(n,k1-1,p));
+  let terminos = "";
+  for(let i=k1; i<=k2; i++){
+    terminos += `<div>P(X=${i}) = ${r4str(binomPMF(n,i,p))}</div>`;
+  }
+  return `<div class="res-titulo">📐 Resolución paso a paso (Condicionada)</div>
+<div class="step"><span class="step-num">1</span><div class="step-body"><b>Sucesos:</b> A = "entre ${k1} y ${k2}", B = "al menos ${k1}" → ${fbox(`P(A|B)=P(A∩B)/P(B)`)}</div></div>
+<div class="step"><span class="step-num">2</span><div class="step-body"><b>P(B) = P(X ≥ ${k1}):</b> ${fbox(`P(X ≥ ${k1}) = 1 − P(X ≤ ${k1-1}) = 1 − ${pB_menos} = ${pB_str}`)}</div></div>
+<div class="step"><span class="step-num">3</span><div class="step-body"><b>P(A∩B) = P(${k1} ≤ X ≤ ${k2}):</b> ${terminos}<br>${fbox(`Suma = ${pAyB_str}`)}</div></div>
+<div class="step"><span class="step-num">4</span><div class="step-body"><b>Condicionada:</b> ${fbox(`P(A|B) = ${pAyB_str} / ${pB_str} = ${res_str}`)}</div></div>
+<div class="res-final">✅ P(A|B) = <b>${res_str}</b></div>`;
+}
+
+function comprobar(){
+  if(respondido) return;
+  const rawVal=document.getElementById('resp').value.trim();
+  if(rawVal===''){
+    const fb=document.getElementById('fb');
+    fb.textContent='Escribe un valor antes de comprobar.';
+    fb.className='feedback vis mal';
+    document.getElementById('resp').focus();
+    return;
+  }
+  const val=rawVal.replace(',', '.');
+  const dado=parseFloat(val);
+  if(isNaN(dado)){
+    const fb=document.getElementById('fb');
+    fb.textContent='Ese valor no es un número válido.';
+    fb.className='feedback vis mal';
+    return;
+  }
+  respondido=true;
+  nTot++;
+  document.getElementById('tot').textContent=nTot;
+  const ok=Math.abs(dado-ej.respuesta)<=0.00015;
+  const fb=document.getElementById('fb');
+  const inp=document.getElementById('resp');
+  if(ok){
+    nCor++;
+    inp.className='resp-input correcto';
+    fb.textContent='¡Correcto! 🎉';
+    fb.className='feedback vis ok';
+    puntos=Math.min(PMAX,puntos+2);
+  } else {
+    nErr++;
+    inp.className='resp-input incorrecto';
+    fb.textContent=`Incorrecto. Respuesta: ${r4str(ej.respuesta)}.`;
+    fb.className='feedback vis mal';
+    document.getElementById('res').innerHTML=explicarPaso();
+    document.getElementById('res').className='resolucion vis';
+    puntos=Math.max(0,puntos-1);
+  }
+  document.getElementById('cor').textContent=nCor;
+  document.getElementById('err').textContent=nErr;
+  actualizarPuntosHeader();
+  inp.disabled=true;
+  addHist(ok);
+  document.getElementById('btn-check').style.display='none';
+  document.getElementById('btn-next').style.display='inline-block';
+  document.getElementById('btn-next').focus();
+}
+
+function actualizarPuntosHeader(){
+  document.getElementById('puntos-valor-header').textContent = puntos;
+  const banner = document.getElementById('banner-max');
+  if(puntos >= PMAX) banner.classList.add('vis');
+  else banner.classList.remove('vis');
+}
+
+const tipoShort={exacta:'P(X=k)',almenos:'P(X≥k)',asumo:'P(X≤k)',entre:'P(k₁≤X≤k₂)',condic:'P(A|B)'};
+function addHist(ok){
+  const {tipo,n,p,respuesta}=ej;
+  const label=`B(${n},${p}) · ${tipoShort[tipo]} = ${r4str(respuesta)}`;
+  const el=document.createElement('div');
+  el.className=`hitem ${ok?'ok':'mal'}`;
+  el.innerHTML=`<span>${ok?'✓':'✗'}</span>${label}`;
+  document.getElementById('hist').prepend(el);
+  while(document.getElementById('hist').children.length>18)
+    document.getElementById('hist').removeChild(document.getElementById('hist').lastChild);
+}
+
+function siguiente(){ generar(); renderEjercicio(); }
+function nuevoEjercicio(){ generar(); renderEjercicio(); }
+
+// MODAL
+function formatTimeDiff(start){
+  const now = new Date();
+  const diffSec = Math.max(0, Math.floor((now - start) / 1000));
+  const totalMinutos = Math.ceil(diffSec / 60);
+  const hours = Math.floor(totalMinutos / 60);
+  const minutes = totalMinutos % 60;
+  return `${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}`;
+}
+
+function getNotaSobre10(){
+  return Math.min(10, Math.max(0, (puntos / PMAX) * 10));
+}
+
+function aplicarColorNota(nota, modalElement, cardElement){
+  let bgModal, textColor, bgCard;
+  if(nota >= 10) { bgModal = "#1a7a1a"; textColor = "white"; bgCard = "#dcfce7"; }
+  else if(nota >= 9) { bgModal = "#6dbf6d"; textColor = "white"; bgCard = "#e8f5e9"; }
+  else if(nota >= 8) { bgModal = "#1a4f8a"; textColor = "white"; bgCard = "#e3f2fd"; }
+  else if(nota >= 7) { bgModal = "#5b9bd5"; textColor = "white"; bgCard = "#e1f0fa"; }
+  else if(nota >= 6) { bgModal = "#c05c00"; textColor = "white"; bgCard = "#fff0e0"; }
+  else if(nota >= 5) { bgModal = "#f5a623"; textColor = "black"; bgCard = "#fff8e7"; }
+  else { bgModal = "#c0392b"; textColor = "white"; bgCard = "#ffe6e5"; }
+  modalElement.style.backgroundColor = bgModal;
+  modalElement.style.color = textColor;
+  cardElement.style.backgroundColor = bgCard;
+}
+
+function mostrarModalFinal(){
+  let nombreActual = nombreInput.value.trim();
+  if(nombreActual === "") nombreActual = "Anónimo";
+  const nota = getNotaSobre10();
+  const fecha = new Date();
+  const fechaStr = fecha.toLocaleDateString('es-ES');
+  const horaStr = fecha.toLocaleTimeString('es-ES');
+  const tiempoTranscurrido = formatTimeDiff(startTime);
+  const infoHTML = `
+    <p><strong>👤 Alumno:</strong> ${nombreActual}</p>
+    <p><strong>📘 Ficha:</strong> Distribución Binomial</p>
+    <p><strong>⭐ Nota:</strong> ${nota.toFixed(2)} / 10</p>
+    <p><strong>📅 Fecha:</strong> ${fechaStr}</p>
+    <p><strong>⏰ Hora:</strong> ${horaStr}</p>
+    <p><strong>⌛ Tiempo:</strong> ${tiempoTranscurrido} h:min</p>
+    <p><strong>📊 Puntos:</strong> ${puntos} / ${PMAX}</p>
+  `;
+  document.getElementById('modalInfo').innerHTML = infoHTML;
+  aplicarColorNota(nota, document.getElementById('modalCard'), document.getElementById('mainCard'));
+  document.getElementById('modalOverlay').classList.add('active');
+}
+
+document.getElementById('finalizarBtn').addEventListener('click', () => {
+  document.getElementById('confirmPuntos').textContent = puntos;
+  document.getElementById('confirmOverlay').classList.add('active');
+});
+document.getElementById('cancelarFinalizarBtn').addEventListener('click', () => {
+  document.getElementById('confirmOverlay').classList.remove('active');
+});
+document.getElementById('confirmarFinalizarBtn').addEventListener('click', () => {
+  document.getElementById('confirmOverlay').classList.remove('active');
+  mostrarModalFinal();
+});
+document.getElementById('closeModalBtn').addEventListener('click', () => {
+  document.getElementById('modalOverlay').classList.remove('active');
+});
+document.getElementById('resp').addEventListener('keydown', e=>{
+  if(e.key==='Enter' && !respondido) comprobar();
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter' && respondido && e.target.id !== 'nombreAlumnoInput'){
+    if(document.getElementById('btn-next').style.display !== 'none') siguiente();
+  }
+});
+
+generar();
+renderEjercicio();
+actualizarPuntosHeader();
+</script>
+</body>
+</html>
