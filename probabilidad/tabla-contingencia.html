@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tabla de Contingencia · Ejercicios interactivos</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f0e8; --surface:#fffdf7; --ink:#1a1008; --soft:#5c4a30;
+  --accent:#c8401a; --gold:#c8941a; --border:#d4c4a0;
+  --ok:#2a6b4f; --err:#c8401a; --blue:#1a3a6b;
+  --inp-bg:#fef9f0; --inp-b:#c8b48a;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);transition:background .3s;}
+.autoria{background:var(--ink);text-align:center;padding:5px;font-size:10px;color:rgba(245,240,232,.7);}
+.hdr{background:var(--ink);color:var(--bg);padding:22px 40px 20px;}
+.hdr-in{max-width:950px;margin:0 auto;}
+.htag{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--gold);border:1px solid rgba(200,148,26,.4);padding:3px 10px;display:inline-block;}
+.hdr h1{font-family:'Playfair Display',serif;font-size:clamp(28px,5vw,48px);font-weight:900;margin-top:8px;}
+.hdr h1 span{color:var(--gold);}
+.pts-info{background:rgba(255,255,255,.05);margin-top:12px;padding:10px 0;display:flex;gap:20px;flex-wrap:wrap;}
+.pts-badge{font-family:'DM Mono',monospace;font-size:10px;padding:3px 9px;border:1px solid;}
+.pts-badge.tab{border-color:rgba(42,107,79,.5);color:#7ec9a5;}
+.pts-badge.preg{border-color:rgba(26,58,107,.5);color:#9ab3d4;}
+.pts-badge.err{border-color:rgba(200,64,26,.4);color:#f09070;}
+.nbar{background:var(--surface);border-bottom:2px solid var(--border);padding:13px 40px;}
+.nbar-in{max-width:950px;margin:0 auto;display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+.nlabel{font-size:11px;font-weight:600;letter-spacing:2px;color:var(--soft);}
+.ninp{flex:1;max-width:300px;border:none;border-bottom:2px solid var(--border);background:transparent;font-size:16px;padding:3px 8px;outline:none;}
+.ninp:focus{border-color:var(--accent);}
+.name-msg{font-size:11.5px;color:var(--err);display:none;}
+.name-msg.show{display:block;}
+.sbar{background:var(--surface);border-bottom:1px solid var(--border);padding:9px 40px;}
+.sbar-in{max-width:950px;margin:0 auto;display:flex;gap:20px;flex-wrap:wrap;}
+.chip{font-family:'DM Mono',monospace;font-size:12px;padding:3px 11px;border-radius:20px;border:1.5px solid;}
+.chip.pts{border-color:var(--blue);color:var(--blue);font-weight:700;}
+.chip.ok{border-color:var(--ok);color:var(--ok);}
+.chip.err{border-color:var(--err);color:var(--err);}
+main{max-width:950px;margin:0 auto;padding:28px 18px 60px;}
+.stitle{display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap;}
+.snum{width:38px;height:38px;border-radius:50%;background:#2a6b4f;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;}
+.sinfo h2{font-family:'Playfair Display',serif;font-size:20px;}
+.sinfo p{font-size:12px;color:var(--soft);}
+.pts-pill{margin-left:auto;border:1.5px solid var(--ok);color:var(--ok);padding:4px 12px;border-radius:20px;font-size:11px;white-space:nowrap;}
+.card{background:var(--surface);border:1.5px solid var(--border);border-radius:6px;padding:24px 28px;margin-bottom:20px;position:relative;}
+.card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:#2a6b4f;border-radius:6px 0 0 6px;}
+.card.cor{border-color:var(--ok);background:rgba(42,107,79,.04);}
+.card.wrong{border-color:var(--err);background:rgba(200,64,26,.04);}
+.ctag{background:rgba(42,107,79,.12);color:#2a6b4f;padding:2px 8px;font-size:9px;display:inline-block;margin-bottom:12px;border-radius:2px;}
+.qtext{font-size:14.5px;line-height:1.65;margin-bottom:18px;}
+.qtext strong{color:var(--blue);}
+.tlabel{font-family:'DM Mono',monospace;font-size:9.5px;color:var(--soft);margin-bottom:10px;letter-spacing:1px;}
+.tbl-wrap{overflow-x:auto;margin-bottom:16px;border-radius:4px;}
+.ctbl{width:100%;border-collapse:collapse;font-size:13px;min-width:450px;}
+.ctbl th,.ctbl td{border:1.5px solid var(--border);padding:8px 10px;text-align:center;vertical-align:middle;}
+.ctbl th{background:var(--bg);font-family:'DM Mono',monospace;font-size:11px;font-weight:600;color:var(--soft);}
+.ctbl td.rh{background:var(--bg);font-weight:600;text-align:left;white-space:nowrap;}
+.ctbl td.fix-inp{background:rgba(200,148,26,.1);border-color:var(--gold);}
+.cinp,.tinp{border:1.5px solid var(--inp-b);border-radius:4px;background:var(--inp-bg);text-align:center;font-family:'DM Mono',monospace;font-size:13px;padding:6px 8px;width:85px;outline:none;transition:all .15s;}
+.cinp:focus,.tinp:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(26,58,107,.1);}
+.cinp.vok,.tinp.vok{border-color:var(--ok)!important;background:rgba(42,107,79,.08);}
+.cinp.ver,.tinp.ver{border-color:var(--err)!important;background:rgba(200,64,26,.08);}
+.btn-v{background:transparent;border:1.5px solid var(--ink);padding:7px 18px;border-radius:4px;font-weight:600;cursor:pointer;margin-bottom:16px;font-size:13px;transition:all .2s;}
+.btn-v:hover{background:var(--ink);color:var(--bg);}
+.hint{display:none;padding:10px 14px;border-radius:4px;font-size:13px;border:1.5px solid;margin-bottom:16px;}
+.hint.show{display:block;}
+.hint.ok{border-color:var(--ok);background:rgba(42,107,79,.07);color:var(--ok);}
+.hint.er{border-color:var(--err);background:rgba(200,64,26,.07);color:var(--err);}
+.hint .why{margin-top:6px;font-size:11.5px;}
+.fq{border-top:1.5px dashed var(--border);padding-top:18px;margin-top:8px;}
+.fq:first-of-type{border-top:none;padding-top:0;margin-top:0;}
+.fq+.fq{margin-top:18px;}
+.fqlabel{font-family:'DM Mono',monospace;font-size:9.5px;color:var(--soft);margin-bottom:10px;letter-spacing:1.5px;}
+.ans-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px;}
+.ans-label{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;}
+.ans-inp{border:1.5px solid var(--inp-b);border-radius:4px;background:var(--inp-bg);padding:8px 12px;width:320px;font-family:'DM Mono',monospace;font-size:13px;outline:none;}
+.ans-inp:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(26,58,107,.1);}
+.ans-inp.vok{border-color:var(--ok)!important;background:rgba(42,107,79,.08);}
+.ans-inp.ver{border-color:var(--err)!important;background:rgba(200,64,26,.08);}
+.fmt-hint{font-size:11px;color:var(--soft);font-style:italic;margin-bottom:10px;background:rgba(200,148,26,.1);padding:6px 10px;border-radius:4px;}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;}
+.btn-chk{background:var(--ink);color:var(--bg);border:none;padding:8px 22px;border-radius:4px;font-weight:600;cursor:pointer;font-size:13px;}
+.btn-chk:hover{background:var(--accent);}
+.btn-chk:disabled{opacity:0.5;cursor:default;}
+.fb{display:none;margin-top:12px;padding:10px 15px;border-radius:4px;font-size:13px;border:1.5px solid;}
+.fb.show{display:block;}
+.fb.ok{border-color:var(--ok);background:rgba(42,107,79,.08);color:var(--ok);}
+.fb.er{border-color:var(--err);background:rgba(200,64,26,.08);color:var(--err);}
+.fb .why{margin-top:6px;font-size:11.5px;font-family:'DM Mono',monospace;}
+.q-sep{height:1px;background:var(--border);margin:16px 0;}
+.submit-area{margin-top:30px;text-align:center;}
+.btn-sub{background:var(--accent);color:#fff;border:none;padding:14px 48px;font-family:'Playfair Display',serif;font-size:17px;font-weight:700;border-radius:4px;cursor:pointer;box-shadow:4px 4px 0 var(--ink);transition:all .15s;margin-right:15px;}
+.btn-sub:hover{background:#a83212;transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--ink);}
+.btn-nuevo-ejercicio{background:var(--blue);color:#fff;border:none;padding:14px 48px;font-family:'Playfair Display',serif;font-size:17px;font-weight:700;border-radius:4px;cursor:pointer;box-shadow:4px 4px 0 var(--ink);transition:all .15s;}
+.btn-nuevo-ejercicio:hover{background:#0f2650;transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--ink);}
+.overlay-name,.overlay,.overlay-confirm{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);align-items:center;justify-content:center;z-index:200;}
+.overlay-name.show,.overlay.show,.overlay-confirm.show{display:flex;}
+.modal-name,.modal,.modal-confirm{background:var(--surface);border-radius:12px;padding:32px;max-width:420px;width:90%;text-align:center;}
+.modal{border:2px solid var(--ink);}
+.modal-name{border:2px solid var(--err);}
+.modal-name h3{color:var(--err);font-family:'Playfair Display',serif;margin-bottom:8px;}
+.modal-name p{font-size:13px;margin-bottom:16px;}
+.modal-name-inp{width:100%;border:1.5px solid var(--inp-b);border-radius:6px;padding:10px;margin:16px 0;font-size:15px;}
+.btn-name-ok{background:var(--accent);color:#fff;border:none;padding:10px;width:100%;border-radius:6px;cursor:pointer;font-weight:600;}
+.modal-close{float:right;background:none;border:none;font-size:22px;cursor:pointer;line-height:1;}
+.rgrade{font-size:68px;font-weight:900;margin:8px 0;font-family:'Playfair Display',serif;}
+.rlabel{font-size:14px;margin-bottom:16px;}
+.sbox{border:1.5px solid var(--border);border-radius:6px;padding:10px;margin-bottom:8px;font-family:'DM Mono',monospace;font-size:12px;}
+.rfooter{font-size:10px;margin-top:16px;color:var(--soft);}
+.modal.n10{background:#1a7a1a;color:#fff;}
+.modal.n9{background:#6dbf6d;color:#fff;}
+.modal.n8{background:#1a4f8a;color:#fff;}
+.modal.n7{background:#5b9bd5;color:#fff;}
+.modal.n6{background:#c05c00;color:#fff;}
+.modal.n5{background:#f5a623;color:#1a1008;}
+.modal.n4,.modal.n3,.modal.n2,.modal.n1,.modal.n0{background:#c0392b;color:#fff;}
+.modal .sbox{border-color:rgba(255,255,255,.3);}
+body.all-green{background:#eaf7ea;}
+.modal-confirm{border:2px solid var(--gold);}
+.modal-confirm h3{font-family:'Playfair Display',serif;color:var(--accent);margin-bottom:12px;font-size:19px;}
+.modal-confirm p{font-size:13.5px;line-height:1.6;margin-bottom:20px;color:var(--ink);}
+.confirm-actions{display:flex;gap:12px;}
+.btn-confirm-cancel,.btn-confirm-accept{flex:1;border:none;padding:11px;border-radius:6px;cursor:pointer;font-weight:600;font-size:13.5px;}
+.btn-confirm-cancel{background:var(--bg);border:1.5px solid var(--border);color:var(--ink);}
+.btn-confirm-cancel:hover{background:var(--border);}
+.btn-confirm-accept{background:var(--accent);color:#fff;}
+.btn-confirm-accept:hover{background:#a83212;}
+@media(max-width:650px){
+  .hdr,.nbar,.sbar{padding-left:16px;padding-right:16px;}
+  .card{padding:16px;}
+  .cinp,.tinp{width:65px;padding:4px;}
+  .ans-inp{width:250px;}
+  .ctbl th,.ctbl td{padding:5px;}
+  .btn-sub,.btn-nuevo-ejercicio{padding:10px 25px;font-size:14px;margin-bottom:10px;}
+  .confirm-actions{flex-direction:column;}
+}
+</style>
+</head>
+<body>
+<div class="autoria">Material elaborado por Marta L Letona S. Basado en trabajo de J. Cayetano</div>
+<header class="hdr"><div class="hdr-in"><span class="htag">Tabla de contingencia</span><h1>Tabla de <span>Contingencia</span></h1><div class="pts-info"><span class="pts-badge tab">Tabla completa → hasta 2,5 pts (−0,75 por celda fallada)</span><span class="pts-badge preg">Cada pregunta → 1,5 pts</span><span class="pts-badge err">Pregunta fallada → bloqueada (0 pts, sin reintento)</span></div></div></header>
+<div class="nbar"><div class="nbar-in"><label class="nlabel" for="sName">Alumno/a</label><input class="ninp" id="sName" type="text" placeholder="Escribe tu nombre…"><span class="name-msg" id="nameMsg">⚠ Introduce tu nombre antes de entregar</span></div></div>
+<div class="sbar"><div class="sbar-in"><span class="chip pts" id="cPts">Puntuación: 0 / 10</span><span class="chip ok" id="cOk">✓ 0 correctas</span><span class="chip err" id="cErr">✗ 0 bloqueadas (0 pts)</span></div></div>
+<main>
+<div class="stitle"><div class="snum">1</div><div class="sinfo"><h2>Ejercicio de tabla de contingencia</h2><p>Completa la tabla (celda dorada = total general) y responde 5 preguntas</p></div><span class="pts-pill">10 puntos</span></div>
+<div class="card" id="cardTabla"></div>
+<div class="submit-area">
+  <button class="btn-sub" id="btnFinalizar">Finalizar y Calificar</button>
+  <button class="btn-nuevo-ejercicio" id="btnNuevoEjercicio">⟳ Nuevo ejercicio</button>
+</div>
+</main>
+<div class="overlay-name" id="overlayName"><div class="modal-name"><h3>✏️ Falta tu nombre</h3><p>Para calificar necesitas identificarte.</p><input class="modal-name-inp" id="modalNameInp" type="text" placeholder="Nombre completo" aria-label="Nombre completo del alumno"><button class="btn-name-ok" id="btnConfirmarNombre">Continuar →</button></div></div>
+<div class="overlay" id="overlay"><div class="modal" id="modal"><button class="modal-close" id="modalClose">✕</button><div class="rname" id="rName"></div><div class="rgrade" id="rGrade"></div><div class="rlabel" id="rLabel"></div><div class="rstats"></div><div class="rfooter">Material elaborado por Marta L Letona S. Basado en trabajo de J. Cayetano</div></div></div>
+<div class="overlay-confirm" id="overlayConfirm"><div class="modal-confirm"><h3 id="confirmTitle">¿Confirmas la acción?</h3><p id="confirmMsg"></p><div class="confirm-actions"><button class="btn-confirm-cancel" id="btnConfirmCancel">Cancelar</button><button class="btn-confirm-accept" id="btnConfirmAccept">Confirmar</button></div></div></div>
+
+<script>
+// ======================= 15 EJERCICIOS COMPLETOS =======================
+const EJERCICIOS = [
+  {id:"E01", titulo:"Estudio de rendimiento académico", 
+   texto:`En un instituto se ha realizado un estudio sobre la relación entre la práctica deportiva y el rendimiento en Matemáticas. Se sabe que <strong>300 alumnos practican deporte</strong>, de los cuales <strong>210 aprueban Matemáticas</strong>. En total, <strong>380 alumnos aprueban</strong> la asignatura y <strong>220 la suspenden</strong>.`,
+   filas:["Practica deporte","No practica deporte","Total"], cols:["Aprueba","Suspende","Total"], vals:[[210,90,300],[170,130,300],[380,220,600]],
+   preg:[
+     {t:"Si elegimos un alumno al azar, ¿cuál es la probabilidad de que NO practique deporte?", r:300/600, e:"300 alumnos no practican deporte / 600 total = 0.5"},
+     {t:"¿Cuál es la probabilidad de que un alumno elegido al azar apruebe Matemáticas?", r:380/600, e:"380 aprueban / 600 total ≈ 0.6333"},
+     {t:"De los alumnos que practican deporte, ¿qué proporción APRUEBA Matemáticas?", r:210/300, e:"210 aprueban entre los 300 que hacen deporte = 0.7"},
+     {t:"¿Cuál es la probabilidad de que un alumno practique deporte o apruebe Matemáticas (o ambas)?", r:(300+380-210)/600, e:"P(D∪A)=300/600+380/600-210/600=470/600≈0.7833"},
+     {t:"¿Son independientes los sucesos 'practicar deporte' y 'aprobar Matemáticas'? Responde SI o NO", r:"NO", e:"P(D)·P(A)=0.5×0.6333=0.3167 ≠ 0.35 → dependientes"}
+   ]},
+  {id:"E02", titulo:"Formación en una empresa", 
+   texto:`En una empresa con 500 empleados, hay <strong>200 trabajadores técnicos</strong> y el resto son administrativos. <strong>280 empleados tienen formación universitaria</strong>. De los técnicos, <strong>140 tienen formación universitaria</strong>.`,
+   filas:["Técnicos","Administrativos","Total"], cols:["Formación","Sin formación","Total"], vals:[[140,60,200],[140,160,300],[280,220,500]],
+   preg:[
+     {t:"Seleccionamos un empleado al azar. ¿Cuál es la probabilidad de que NO tenga formación universitaria?", r:220/500, e:"220 sin formación / 500 = 0.44"},
+     {t:"Si sabemos que un empleado es administrativo, ¿cuál es la probabilidad de que tenga formación?", r:140/300, e:"140 administrativos con formación / 300 administrativos ≈ 0.4667"},
+     {t:"¿Cuál es la probabilidad de que un empleado sea técnico?", r:200/500, e:"200 técnicos / 500 = 0.4"},
+     {t:"¿Cuál es la probabilidad de que un empleado sea técnico y tenga formación?", r:140/500, e:"140 técnicos con formación / 500 = 0.28"},
+     {t:"¿Son independientes los sucesos 'ser técnico' y 'tener formación'? Responde SI o NO", r:"NO", e:"P(T)·P(F)=0.4×0.56=0.224 ≠ 0.28 → dependientes"}
+   ]},
+  {id:"E03", titulo:"Movilidad urbana", 
+   texto:`En una ciudad se estudió la relación entre el medio de transporte y la puntualidad. <strong>500 personas usan transporte público</strong>, de las cuales <strong>420 llegan puntuales</strong>. En total, <strong>630 personas son puntuales</strong> y <strong>170 no lo son</strong>.`,
+   filas:["Transporte público","Vehículo propio","Total"], cols:["Puntual","No puntual","Total"], vals:[[420,80,500],[210,90,300],[630,170,800]],
+   preg:[
+     {t:"Elegida una persona al azar, ¿cuál es la probabilidad de que NO sea puntual?", r:170/800, e:"170 no puntuales / 800 = 0.2125"},
+     {t:"¿Cuál es la probabilidad de que una persona use vehículo propio?", r:300/800, e:"300 usan vehículo propio / 800 = 0.375"},
+     {t:"De las personas que NO son puntuales, ¿qué fracción usa transporte público?", r:80/170, e:"80 no puntuales con TP / 170 no puntuales ≈ 0.4706"},
+     {t:"¿Cuál es la probabilidad de que una persona sea puntual y use transporte público?", r:420/800, e:"420 / 800 = 0.525"},
+     {t:"¿Son independientes 'usar transporte público' y 'ser puntual'? Responde SI o NO", r:"NO", e:"P(TP)·P(P)=0.625×0.7875=0.492 ≠ 0.525 → dependientes"}
+   ]},
+  {id:"E04", titulo:"Salud cardiovascular", 
+   texto:`En una clínica se analizó a 400 pacientes. <strong>180 pacientes fuman</strong>, de los cuales <strong>120 tienen hipertensión</strong>. Entre los no fumadores, <strong>80 tienen hipertensión</strong> y <strong>140 no la tienen</strong>.`,
+   filas:["Fuma","No fuma","Total"], cols:["Hipertensión","Sin hipertensión","Total"], vals:[[120,60,180],[80,140,220],[200,200,400]],
+   preg:[
+     {t:"Si elegimos un paciente al azar, ¿cuál es la probabilidad de que NO fume?", r:220/400, e:"220 no fumadores / 400 = 0.55"},
+     {t:"¿Qué probabilidad hay de que un paciente tenga hipertensión?", r:200/400, e:"200 hipertensos / 400 = 0.5"},
+     {t:"Entre los pacientes que tienen hipertensión, ¿qué proporción son fumadores?", r:120/200, e:"120 fumadores con hipertensión / 200 hipertensos = 0.6"},
+     {t:"¿Cuál es la probabilidad de que un paciente fume o tenga hipertensión?", r:(180+200-120)/400, e:"P(F∪H)=180/400+200/400-120/400=260/400=0.65"},
+     {t:"¿Son independientes los sucesos 'fumar' y 'tener hipertensión'? Responde SI o NO", r:"NO", e:"P(F)·P(H)=0.45×0.5=0.225 ≠ 0.3 → dependientes"}
+   ]},
+  {id:"E05", titulo:"Satisfacción ciudadana", 
+   texto:`En un municipio se encuestó a 500 ciudadanos sobre su participación electoral y satisfacción con los servicios. <strong>350 personas votaron</strong> en las últimas elecciones, de las cuales <strong>280 están satisfechas</strong>. Entre los que no votaron, <strong>60 están satisfechos</strong> y <strong>90 no lo están</strong>.`,
+   filas:["Votó","No votó","Total"], cols:["Satisfecho","No satisfecho","Total"], vals:[[280,70,350],[60,90,150],[340,160,500]],
+   preg:[
+     {t:"Elegido un ciudadano al azar, ¿cuál es la probabilidad de que NO esté satisfecho?", r:160/500, e:"160 no satisfechos / 500 = 0.32"},
+     {t:"¿Cuál es la probabilidad de que una persona haya votado?", r:350/500, e:"350 votaron / 500 = 0.7"},
+     {t:"Si una persona está satisfecha, ¿cuál es la probabilidad de que haya votado?", r:280/340, e:"280 votantes satisfechos / 340 satisfechos ≈ 0.8235"},
+     {t:"¿Cuál es la probabilidad de que una persona no haya votado y no esté satisfecha?", r:90/500, e:"90 / 500 = 0.18"},
+     {t:"¿Son independientes 'votar' y 'estar satisfecho'? Responde SI o NO", r:"NO", e:"P(V)·P(S)=0.7×0.68=0.476 ≠ 0.56 → dependientes"}
+   ]},
+  {id:"E06", titulo:"Redes sociales", 
+   texto:`Una encuesta sobre 800 jóvenes revela que <strong>400 usan Instagram</strong>, de los cuales <strong>280 también usan Facebook</strong>. En total, <strong>500 jóvenes usan Facebook</strong>.`,
+   filas:["Usan Instagram","No usan Instagram","Total"], cols:["Usan Facebook","No usan Facebook","Total"], vals:[[280,120,400],[220,180,400],[500,300,800]],
+   preg:[
+     {t:"Si elegimos un joven al azar, ¿cuál es la probabilidad de que NO use Instagram?", r:400/800, e:"400 no usan Instagram / 800 = 0.5"},
+     {t:"¿Qué probabilidad hay de que un joven use Facebook?", r:500/800, e:"500/800 = 0.625"},
+     {t:"Entre los que usan Facebook, ¿cuál es la probabilidad de que también usen Instagram?", r:280/500, e:"280/500 = 0.56"},
+     {t:"¿Cuál es la probabilidad de que un joven use Instagram o Facebook (o ambas)?", r:(400+500-280)/800, e:"P(I∪F)=400/800+500/800-280/800=620/800=0.775"},
+     {t:"¿Son independientes los sucesos 'usar Instagram' y 'usar Facebook'? Responde SI o NO", r:"NO", e:"P(I)·P(F)=0.5×0.625=0.3125 ≠ 0.35 → dependientes"}
+   ]},
+  {id:"E07", titulo:"Hábitos de lectura", 
+   texto:`En una biblioteca se encuestó a 300 personas. <strong>180 leen ficción</strong>, de los cuales <strong>120 también leen no ficción</strong>. En total, <strong>200 personas leen no ficción</strong>.`,
+   filas:["Lee ficción","No lee ficción","Total"], cols:["Lee no ficción","No lee no ficción","Total"], vals:[[120,60,180],[80,40,120],[200,100,300]],
+   preg:[
+     {t:"Probabilidad de que una persona NO lea ficción", r:120/300, e:"120/300 = 0.4"},
+     {t:"Probabilidad de que lea no ficción", r:200/300, e:"200/300 ≈ 0.6667"},
+     {t:"Si lee no ficción, ¿probabilidad de que también lea ficción?", r:120/200, e:"120/200 = 0.6"},
+     {t:"Probabilidad de que lea ficción o no ficción", r:(180+200-120)/300, e:"260/300 ≈ 0.8667"},
+     {t:"¿Son independientes? Responde SI o NO", r:"SI", e:"P(F)·P(NF)=0.6×0.6667=0.4 = P(F∩NF)=0.4 → son independientes"}
+   ]},
+  {id:"E08", titulo:"Preferencias musicales", 
+   texto:`En un concierto de 1000 asistentes, <strong>600 prefieren rock</strong>, <strong>400 prefieren pop</strong>. De los que prefieren rock, <strong>250 también prefieren pop</strong>.`,
+   filas:["Rock","No rock","Total"], cols:["Pop","No pop","Total"], vals:[[250,350,600],[150,250,400],[400,600,1000]],
+   preg:[
+     {t:"Probabilidad de preferir pop", r:400/1000, e:"400 prefieren pop / 1000 total = 0.4"},
+     {t:"Probabilidad de NO preferir rock", r:400/1000, e:"400 no prefieren rock (1000-600) / 1000 total = 0.4"},
+     {t:"Si prefiere pop, ¿probabilidad de rock?", r:250/400, e:"250 prefieren ambos / 400 que prefieren pop = 0.625"},
+     {t:"Probabilidad de rock o pop", r:(600+400-250)/1000, e:"P(R∪P)=600/1000+400/1000-250/1000=750/1000=0.75"},
+     {t:"¿Independientes? Responde SI o NO", r:"NO", e:"P(R)·P(P)=0.6×0.4=0.24 ≠ 0.25"}
+   ]},
+  {id:"E09", titulo:"Deportes en la escuela", 
+   texto:`En un colegio de 450 estudiantes, <strong>250 juegan fútbol</strong>, <strong>180 juegan baloncesto</strong>. <strong>100 juegan ambos deportes</strong>.`,
+   filas:["Fútbol","No fútbol","Total"], cols:["Baloncesto","No baloncesto","Total"], vals:[[100,150,250],[80,120,200],[180,270,450]],
+   preg:[
+     {t:"Probabilidad de jugar fútbol", r:250/450, e:"250 juegan fútbol / 450 total ≈0.5556"},
+     {t:"Probabilidad de NO jugar baloncesto", r:270/450, e:"270 no juegan baloncesto (450-180) / 450 total = 0.6"},
+     {t:"Si juega fútbol, ¿probabilidad de baloncesto?", r:100/250, e:"100 juegan ambos / 250 que juegan fútbol = 0.4"},
+     {t:"Probabilidad de jugar al menos un deporte", r:(250+180-100)/450, e:"P(F∪B)=250/450+180/450-100/450=330/450≈0.7333"},
+     {t:"¿Independientes? Responde SI o NO", r:"SI", e:"P(F)·P(B)=0.5556×0.4=0.2222 = P(F∩B)=0.2222 → son independientes"}
+   ]},
+  {id:"E10", titulo:"Tecnología y edad", 
+   texto:`Estudio sobre 600 personas: <strong>400 usan smartphone</strong>, <strong>350 son jóvenes</strong>. De los jóvenes, <strong>300 usan smartphone</strong>.`,
+   filas:["Usa smartphone","No usa smartphone","Total"], cols:["Joven","Adulto","Total"], vals:[[300,100,400],[50,150,200],[350,250,600]],
+   preg:[
+     {t:"Probabilidad de ser adulto", r:250/600, e:"250 adultos (600-350 jóvenes) / 600 total ≈0.4167"},
+     {t:"Probabilidad de NO usar smartphone", r:200/600, e:"200 no usan smartphone (600-400) / 600 total ≈0.3333"},
+     {t:"Si es adulto, ¿probabilidad de usar smartphone?", r:100/250, e:"100 adultos con smartphone / 250 adultos = 0.4"},
+     {t:"Probabilidad de ser joven o usar smartphone", r:(350+400-300)/600, e:"P(J∪S)=350/600+400/600-300/600=450/600=0.75"},
+     {t:"¿Independientes? Responde SI o NO", r:"NO", e:"P(J)·P(S)=0.5833×0.6667=0.3889 ≠ 0.5"}
+   ]},
+  {id:"E11", titulo:"Consumo de café", 
+   texto:`Encuesta a 250 personas: <strong>150 toman café</strong>, <strong>100 toman té</strong>. <strong>50 toman ambas bebidas</strong>.`, 
+   filas:["Café","No café","Total"], cols:["Té","No té","Total"], vals:[[50,100,150],[50,50,100],[100,150,250]], 
+   preg:[
+     {t:"Probabilidad de tomar café", r:150/250, e:"150 toman café / 250 total = 0.6"},
+     {t:"Probabilidad de NO tomar té", r:150/250, e:"150 no toman té (250-100) / 250 total = 0.6"},
+     {t:"Si toma café, ¿probabilidad de té?", r:50/150, e:"50 toman café y té / 150 que toman café ≈0.3333"},
+     {t:"Probabilidad de café o té", r:(150+100-50)/250, e:"P(C∪T)=150/250+100/250-50/250=200/250=0.8"},
+     {t:"¿Independientes?", r:"NO", e:"P(C)·P(T)=0.6×0.4=0.24 ≠ 0.2"}
+   ]},
+  {id:"E12", titulo:"Viajes al extranjero", 
+   texto:`600 personas: <strong>240 han viajado a Europa</strong>, <strong>180 a América</strong>. <strong>60 han viajado a ambos</strong>.`, 
+   filas:["Europa","No Europa","Total"], cols:["América","No América","Total"], vals:[[60,180,240],[120,240,360],[180,420,600]], 
+   preg:[
+     {t:"Probabilidad de viajar a América", r:180/600, e:"180 viajaron a América / 600 total = 0.3"},
+     {t:"Probabilidad de NO viajar a Europa", r:360/600, e:"360 no viajaron a Europa (600-240) / 600 total = 0.6"},
+     {t:"Si viajó a América, ¿probabilidad de Europa?", r:60/180, e:"60 viajaron a ambos / 180 que viajaron a América ≈0.3333"},
+     {t:"Probabilidad de Europa o América", r:(240+180-60)/600, e:"P(E∪A)=240/600+180/600-60/600=360/600=0.6"},
+     {t:"¿Independientes?", r:"NO", e:"P(E)·P(A)=0.4×0.3=0.12 ≠ 0.1"}
+   ]},
+  {id:"E13", titulo:"Mascotas en el hogar", 
+   texto:`500 hogares: <strong>300 tienen perro</strong>, <strong>200 tienen gato</strong>. <strong>100 tienen ambas mascotas</strong>.`, 
+   filas:["Perro","No perro","Total"], cols:["Gato","No gato","Total"], vals:[[100,200,300],[100,100,200],[200,300,500]], 
+   preg:[
+     {t:"Probabilidad de tener gato", r:200/500, e:"200 tienen gato / 500 total = 0.4"},
+     {t:"Probabilidad de NO tener perro", r:200/500, e:"200 no tienen perro (500-300) / 500 total = 0.4"},
+     {t:"Si tiene gato, ¿probabilidad de perro?", r:100/200, e:"100 tienen ambas mascotas / 200 que tienen gato = 0.5"},
+     {t:"Probabilidad de perro o gato", r:(300+200-100)/500, e:"P(P∪G)=300/500+200/500-100/500=400/500=0.8"},
+     {t:"¿Independientes?", r:"NO", e:"P(P)·P(G)=0.6×0.4=0.24 ≠ 0.2"}
+   ]},
+  {id:"E14", titulo:"Trabajo remoto", 
+   texto:`800 empleados: <strong>500 trabajan remoto</strong>, <strong>300 están satisfechos</strong>. De los remotos, <strong>200 están satisfechos</strong>.`, 
+   filas:["Remoto","No remoto","Total"], cols:["Satisfecho","No satisfecho","Total"], vals:[[200,300,500],[100,200,300],[300,500,800]], 
+   preg:[
+     {t:"Probabilidad de estar satisfecho", r:300/800, e:"300 satisfechos / 800 total = 0.375"},
+     {t:"Probabilidad de NO trabajar remoto", r:300/800, e:"300 no trabajan remoto (800-500) / 800 total = 0.375"},
+     {t:"Si está satisfecho, ¿probabilidad de remoto?", r:200/300, e:"200 remotos y satisfechos / 300 satisfechos ≈0.6667"},
+     {t:"Probabilidad de remoto o satisfecho", r:(500+300-200)/800, e:"P(R∪S)=500/800+300/800-200/800=600/800=0.75"},
+     {t:"¿Independientes?", r:"NO", e:"P(R)·P(S)=0.625×0.375=0.2344 ≠ 0.25"}
+   ]},
+  {id:"E15", titulo:"Estudios universitarios", 
+   texto:`1000 personas: <strong>600 tienen título</strong>, <strong>450 tienen empleo</strong>. <strong>300 tienen título y empleo</strong>.`, 
+   filas:["Título","Sin título","Total"], cols:["Empleo","Sin empleo","Total"], vals:[[300,300,600],[150,250,400],[450,550,1000]], 
+   preg:[
+     {t:"Probabilidad de tener empleo", r:450/1000, e:"450 tienen empleo / 1000 total = 0.45"},
+     {t:"Probabilidad de NO tener título", r:400/1000, e:"400 sin título (1000-600) / 1000 total = 0.4"},
+     {t:"Si tiene empleo, ¿probabilidad de título?", r:300/450, e:"300 tienen título y empleo / 450 que tienen empleo ≈0.6667"},
+     {t:"Probabilidad de título o empleo", r:(600+450-300)/1000, e:"P(T∪E)=600/1000+450/1000-300/1000=750/1000=0.75"},
+     {t:"¿Independientes?", r:"NO", e:"P(T)·P(E)=0.6×0.45=0.27 ≠ 0.3"}
+   ]}
+];
+
+// ======================= RECUPERAR NOMBRE GUARDADO =======================
+const NOMBRE_GUARDADO = localStorage.getItem('nombreAlumno');
+if (NOMBRE_GUARDADO) {
+  setTimeout(() => {
+    const nameInput = document.getElementById('sName');
+    if (nameInput) nameInput.value = NOMBRE_GUARDADO;
+    localStorage.removeItem('nombreAlumno');
+  }, 10);
+}
+
+let actual = null;
+let tablaCorrecta = false;
+let respondidas = {};
+let resultadosMap = {};
+let celdasFalladas = new Set(); // celdas de la tabla que han fallado alguna vez (no se penalizan dos veces)
+
+const PTS_TABLA = 2.5;
+const PTS_PREGUNTA = 1.5;
+const DEDUCCION_TABLA = 0.75; // por cada celda distinta que falle en la tabla (con reintento libre)
+const MAX = 10;
+let startTime = Date.now();
+
+function aleatorio() { return EJERCICIOS[Math.floor(Math.random() * EJERCICIOS.length)]; }
+
+function normalizarSiNo(s) {
+  if (s === null || s === undefined) return null;
+  let str = String(s).trim().toUpperCase();
+  str = str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  if (str === "SI" || str === "SÍ" || str === "S" || str === "YES" || str === "Y" || str === "1") return "SI";
+  if (str === "NO" || str === "N" || str === "NOT" || str === "NOPE" || str === "0") return "NO";
+  return null;
+}
+
+function parseNum(v) {
+  if (v === null || v === undefined || v === "") return NaN;
+  let s = String(v).trim().replace(/\s+/g, '');
+  if (s === "") return NaN;
+
+  let siNo = normalizarSiNo(s);
+  if (siNo !== null) return siNo;
+
+  if (s.includes('%')) {
+    let num = parseFloat(s.replace('%', ''));
+    if (!isNaN(num)) return num / 100;
+  }
+
+  if (s.includes('/')) {
+    let parts = s.split('/');
+    if (parts.length === 2) {
+      let numerator = parseFloat(parts[0]);
+      let denominator = parseFloat(parts[1]);
+      if (!isNaN(numerator) && !isNaN(denominator) && denominator !== 0) {
+        return numerator / denominator;
+      }
+    }
+    // fracción malformada (más de una barra): no se interpreta, se trata como no numérico
+    return NaN;
+  }
+
+  let eq = s.split('=');
+  let ultimo = eq[eq.length-1].trim();
+  let num = parseFloat(ultimo.replace(',', '.'));
+  return isNaN(num) ? NaN : num;
+}
+
+function approx(a, b, t = 0.001) {
+  if (isNaN(a) || isNaN(b)) return false;
+
+  if (typeof a === 'string' && typeof b === 'string') {
+    let aNorm = normalizarSiNo(a);
+    let bNorm = normalizarSiNo(b);
+    if (aNorm !== null && bNorm !== null) return aNorm === bNorm;
+    return a.toUpperCase().trim() === b.toUpperCase().trim();
+  }
+  if (typeof a === 'number' && typeof b === 'number') return Math.abs(a - b) < t;
+  if (typeof a === 'number' && typeof b === 'string') {
+    let bNum = parseFloat(b);
+    if (!isNaN(bNum)) return Math.abs(a - bNum) < t;
+  }
+  if (typeof a === 'string' && typeof b === 'number') {
+    let aNum = parseFloat(a);
+    if (!isNaN(aNum)) return Math.abs(aNum - b) < t;
+  }
+  return false;
+}
+
+// Puntuación de la tabla: techo de 2.5, reducido 0.75 por cada celda que haya fallado alguna vez,
+// nunca por debajo de 0. Solo se concede cuando la tabla queda completa (tablaCorrecta === true).
+function notaTablaPotencial() {
+  return Math.max(0, PTS_TABLA - DEDUCCION_TABLA * celdasFalladas.size);
+}
+
+function calcularNota() {
+  let suma = 0;
+  if (tablaCorrecta) suma += notaTablaPotencial();
+  for (let key in resultadosMap) {
+    if (resultadosMap[key].ok) suma += PTS_PREGUNTA;
+    // fallo en pregunta: 0 puntos (el apartado queda bloqueado, no resta)
+  }
+  return Math.max(0, Math.min(MAX, suma));
+}
+
+function actualizarUI() {
+  let correctas = Object.values(resultadosMap).filter(r => r && r.ok).length;
+  let bloqueadas = Object.values(resultadosMap).filter(r => r && !r.ok).length;
+  let nota = calcularNota();
+  document.getElementById('cPts').textContent = `Puntuación: ${nota.toFixed(1)} / 10`;
+  document.getElementById('cOk').textContent = `✓ ${correctas} correctas`;
+  document.getElementById('cErr').textContent = `✗ ${bloqueadas} bloqueada${bloqueadas === 1 ? '' : 's'} (0 pts)`;
+}
+
+function actualizarUIParcial() {
+  if (!actual || !actual.preg) return;
+
+  let todasPreguntas = true;
+  for (let i = 1; i <= actual.preg.length; i++) {
+    if (!respondidas[`${actual.id}_q${i}`]) { todasPreguntas = false; break; }
+  }
+  if (!todasPreguntas || !tablaCorrecta) return;
+
+  let todasBien = tablaCorrecta;
+  for (let i = 1; i <= actual.preg.length; i++) {
+    if (!resultadosMap[`${actual.id}_q${i}`]?.ok) { todasBien = false; break; }
+  }
+
+  const card = document.querySelector('.card');
+  if (card) {
+    card.classList.remove('cor', 'wrong');
+    card.classList.add(todasBien ? 'cor' : 'wrong');
+  }
+}
+
+function verificarTabla(id) {
+  let ex = EJERCICIOS.find(e => e.id === id);
+  if (!ex) return;
+
+  let todoOk = true;
+  for (let i = 0; i < 3; i++) {
+    for (let j = 0; j < 3; j++) {
+      let inp = document.getElementById(`${id}_c${i}_${j}`);
+      if (inp) {
+        let parsedValue = parseNum(inp.value);
+        let expectedValue = ex.vals[i][j];
+        let ok = approx(parsedValue, expectedValue);
+        inp.classList.remove('vok', 'ver');
+        inp.classList.add(ok ? 'vok' : 'ver');
+        if (!ok) {
+          todoOk = false;
+          celdasFalladas.add(`${i}_${j}`); // una celda solo cuenta una vez, aunque se falle varias veces
+        }
+      }
+    }
+  }
+
+  tablaCorrecta = todoOk;
+  let hint = document.getElementById('hint_' + id);
+  if (hint) {
+    hint.className = 'hint show ' + (todoOk ? 'ok' : 'er');
+    if (todoOk) {
+      let pts = notaTablaPotencial();
+      let extra = celdasFalladas.size > 0
+        ? ` (descontadas ${celdasFalladas.size} celda${celdasFalladas.size > 1 ? 's' : ''} × 0,75 pts por haber fallado antes de acertar)`
+        : '';
+      hint.innerHTML = `<strong>✓ Tabla completa. Has ganado ${pts.toFixed(2)} de 2,5 puntos posibles${extra}.</strong> Ahora responde las 5 preguntas (1,5 pts cada una).`;
+      actualizarUIParcial();
+    } else {
+      let restante = notaTablaPotencial();
+      hint.innerHTML = `<strong>✗ Revisa las celdas en rojo. Puedes seguir intentándolo.</strong><div class="why">Cada celda que falle por primera vez resta 0,75 pts (no se repite si vuelve a fallar la misma celda). Potencial que aún puedes conseguir en la tabla: ${restante.toFixed(2)} / 2,5 pts.</div>`;
+    }
+  }
+  actualizarUI();
+}
+
+function checkRespuesta(id, num) {
+  let clave = `${id}_q${num}`;
+  if (respondidas[clave]) return;
+
+  let ex = EJERCICIOS.find(e => e.id === id);
+  if (!ex) return;
+
+  let inp = document.getElementById(`ans_${id}_${num}`);
+  let fb = document.getElementById(`fb_${id}_${num}`);
+
+  if (!inp || !inp.value.trim()) {
+    if (fb) {
+      fb.className = 'fb show er';
+      fb.innerHTML = '<strong>✏️ Escribe una respuesta antes de comprobar.</strong>';
+    }
+    return; // no cuenta como intento: no se marca respondida, el alumno puede volver a intentarlo
+  }
+
+  let correcta = ex.preg[num - 1].r;
+  let explicacion = ex.preg[num - 1].e;
+  let valorUsuario = inp.value.trim();
+  let esSiNo = (typeof correcta === 'string' && (correcta === "SI" || correcta === "NO"));
+
+  let ok = false;
+  if (esSiNo) {
+    ok = (normalizarSiNo(valorUsuario) === correcta);
+  } else {
+    ok = approx(parseNum(valorUsuario), correcta);
+  }
+
+  respondidas[clave] = true;
+  resultadosMap[clave] = { ok: ok };
+  inp.classList.add(ok ? 'vok' : 'ver');
+  inp.disabled = true;
+
+  let btn = document.getElementById(`chk_${id}_${num}`);
+  if (btn) btn.disabled = true;
+
+  if (fb) {
+    fb.className = `fb show ${ok ? 'ok' : 'er'}`;
+    let letra = String.fromCharCode(64 + num);
+    let respuestaMostrar = typeof correcta === 'number' ? correcta.toFixed(4) : correcta;
+    fb.innerHTML = ok
+      ? `<strong>✓ Pregunta ${letra} correcta (+1,5 pts)</strong><div class="why">📘 ${explicacion}</div>`
+      : `<strong>✗ Pregunta ${letra} incorrecta — apartado bloqueado (0 pts, sin reintento porque ya se ha revelado el resultado)</strong><div class="why">Resultado correcto: ${respuestaMostrar}<br>📘 Procedimiento: ${explicacion}</div>`;
+  }
+
+  let todas = true;
+  for (let i = 1; i <= ex.preg.length; i++) {
+    if (!respondidas[`${id}_q${i}`]) { todas = false; break; }
+  }
+  if (todas) actualizarUIParcial();
+  actualizarUI();
+}
+
+function construirHTML(e) {
+  let filas = '';
+  for (let i = 0; i < 3; i++) {
+    filas += `<tr><td class="rh">${e.filas[i]}</td>`;
+    for (let j = 0; j < 3; j++) {
+      let idCelda = `${e.id}_c${i}_${j}`;
+      if (i === 2 && j === 2) {
+        filas += `<td class="fix-inp"><input class="tinp" id="${idCelda}" placeholder="Total general" aria-label="Total general de la tabla"></td>`;
+      } else {
+        filas += `<td><input class="cinp" id="${idCelda}" placeholder="?" aria-label="${e.filas[i]}, ${e.cols[j]}"></td>`;
+      }
+    }
+    filas += `<\/tr>`;
+  }
+
+  let pregHTML = '';
+  for (let i = 0; i < e.preg.length; i++) {
+    let p = e.preg[i];
+    let num = i + 1;
+    let letra = String.fromCharCode(64 + num);
+    pregHTML += `<div class="fq">
+      <p class="fqlabel">Pregunta ${letra}</p>
+      <p class="qtext">${p.t}</p>
+      <p class="fmt-hint">📐 Escribe fracción (ej: 210/600), decimal (ej: 0,35 o 0.35), porcentaje (ej: 35%), o SI/NO.<br>🎯 Redondea a 4 decimales si es necesario (ej: 0.6667).<br>💡 Para preguntas de independencia: escribe "SI" o "NO" (en minúsculas o mayúsculas, con o sin tilde).</p>
+      <div class="ans-row"><span class="ans-label">Respuesta:</span><input class="ans-inp" id="ans_${e.id}_${num}" placeholder="Escribe tu respuesta aquí..." aria-label="Respuesta de la pregunta ${letra}"></div>
+      <div class="actions"><button class="btn-chk" id="chk_${e.id}_${num}" onclick="checkRespuesta('${e.id}', ${num})">Comprobar (1.5 pts)</button></div>
+      <div class="fb" id="fb_${e.id}_${num}" aria-live="polite"></div>
+    </div>`;
+    if (num < e.preg.length) pregHTML += '<div class="q-sep"></div>';
+  }
+
+  return `<span class="ctag">${e.titulo}</span>
+  <p class="qtext">${e.texto}</p>
+  <p class="tlabel">✎ Completa TODAS las celdas (celda dorada = total general) → hasta 2,5 puntos</p>
+  <div class="tbl-wrap"><table class="ctbl"><thead><tr><th></th><th>${e.cols[0]}</th><th>${e.cols[1]}</th><th>${e.cols[2]}</th></tr></thead><tbody>${filas}</tbody></table></div>
+  <button class="btn-v" onclick="verificarTabla('${e.id}')">✓ Comprobar tabla</button>
+  <div class="hint" id="hint_${e.id}" aria-live="polite"></div>
+  ${pregHTML}`;
+}
+
+// ======================= MODAL DE CONFIRMACIÓN PROPIO (sustituye a confirm() nativo) =======================
+let confirmCallback = null;
+
+function mostrarConfirmacion(mensaje, callback, titulo = "¿Confirmas la acción?") {
+  document.getElementById('confirmTitle').textContent = titulo;
+  document.getElementById('confirmMsg').textContent = mensaje;
+  confirmCallback = callback;
+  document.getElementById('overlayConfirm').classList.add('show');
+}
+
+function cerrarConfirmacion() {
+  document.getElementById('overlayConfirm').classList.remove('show');
+  confirmCallback = null;
+}
+
+// ======================= CAMBIO DE EJERCICIO =======================
+function cambiarEjercicio() {
+  const hayProgreso = Object.keys(respondidas).length > 0 || tablaCorrecta || celdasFalladas.size > 0;
+
+  const ejecutar = () => {
+    const nombreActual = document.getElementById('sName').value.trim();
+    if (nombreActual) localStorage.setItem('nombreAlumno', nombreActual);
+    location.reload();
+  };
+
+  if (hayProgreso) {
+    mostrarConfirmacion(
+      "Perderás la tabla completada, las respuestas ya dadas y la puntuación obtenida hasta ahora en este ejercicio.",
+      ejecutar,
+      "¿Generar un nuevo ejercicio?"
+    );
+  } else {
+    ejecutar();
+  }
+}
+
+function mostrarResultado(nombre) {
+  if (!actual) { console.error("No hay ejercicio activo"); return; }
+
+  let correctasPreg = Object.values(resultadosMap).filter(r => r && r.ok).length;
+  let bloqueadasPreg = Object.values(resultadosMap).filter(r => r && !r.ok).length;
+  let nota = calcularNota();
+
+  // Cronómetro: redondeo hacia arriba (Math.ceil), formato HH:MM
+  let segTotales = Math.ceil((Date.now() - startTime) / 1000);
+  let minTotales = Math.ceil(segTotales / 60);
+  let hh = Math.floor(minTotales / 60).toString().padStart(2, '0');
+  let mm = (minTotales % 60).toString().padStart(2, '0');
+
+  let fecha = new Date().toLocaleDateString('es-ES');
+  let hora = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+  let modal = document.getElementById('modal');
+  modal.className = 'modal';
+  let cls = nota >= 10 ? 'n10' : nota >= 9 ? 'n9' : nota >= 8 ? 'n8' : nota >= 7 ? 'n7' : nota >= 6 ? 'n6' : nota >= 5 ? 'n5' : nota >= 4 ? 'n4' : nota >= 3 ? 'n3' : nota >= 2 ? 'n2' : nota >= 1 ? 'n1' : 'n0';
+  modal.classList.add(cls);
+
+  if (nota >= 10) document.body.classList.add('all-green');
+  else document.body.classList.remove('all-green');
+
+  document.getElementById('rName').textContent = nombre.toUpperCase();
+  document.getElementById('rGrade').textContent = nota.toFixed(1) + ' / 10';
+
+  let mensaje = nota >= 9 ? "¡Excelente! Dominas la tabla de contingencia." : nota >= 7 ? "Muy bien, revisa los pequeños errores." : nota >= 5 ? "Aprobado, sigue practicando." : "Repasa los conceptos fundamentales.";
+  document.getElementById('rLabel').textContent = mensaje;
+
+  let tablaMsg = tablaCorrecta
+    ? `✓ Tabla completa (+${notaTablaPotencial().toFixed(2)} pts)`
+    : "✗ Tabla incompleta o incorrecta (0 pts)";
+  let totalRespondidas = Object.keys(respondidas).length;
+  let totalPreguntas = actual ? actual.preg.length : 5;
+
+  let statsContainer = document.querySelector('.rstats');
+  if (statsContainer) {
+    statsContainer.innerHTML = `
+      <div class="sbox">📅 ${fecha}  🕐 ${hora}</div>
+      <div class="sbox">⏱ Tiempo: ${hh}:${mm}</div>
+      <div class="sbox">${tablaMsg}</div>
+      <div class="sbox">Preguntas: ✓ ${correctasPreg} correctas · ✗ ${bloqueadasPreg} bloqueadas</div>
+      <div class="sbox">Respondidas: ${totalRespondidas} / ${totalPreguntas}</div>
+    `;
+  }
+
+  document.getElementById('overlay').classList.add('show');
+}
+
+function finalizarYCerrar() {
+  const nom = document.getElementById('sName').value.trim();
+  if (!nom) {
+    document.getElementById('overlayName').classList.add('show');
+    return;
+  }
+
+  if (actual && actual.preg) {
+    let preguntasRespondidas = 0;
+    for (let i = 1; i <= actual.preg.length; i++) {
+      if (respondidas[`${actual.id}_q${i}`]) preguntasRespondidas++;
+    }
+    const faltantes = actual.preg.length - preguntasRespondidas;
+
+    if (faltantes > 0 || !tablaCorrecta) {
+      let mensaje = "";
+      if (!tablaCorrecta && faltantes > 0) mensaje = `La tabla no está completa y te faltan ${faltantes} pregunta(s) por responder. `;
+      else if (!tablaCorrecta) mensaje = `La tabla no está completa. `;
+      else if (faltantes > 0) mensaje = `Te faltan ${faltantes} pregunta(s) por responder. `;
+      mensaje += `Se calificará con lo que tienes hasta ahora: ${calcularNota().toFixed(1)} / 10. Puedes cancelar para seguir trabajando sin perder nada.`;
+
+      mostrarConfirmacion(mensaje, () => mostrarResultado(nom), "¿Finalizar con progreso incompleto?");
+      return;
+    }
+  }
+
+  mostrarResultado(nom);
+}
+
+function cerrarModal() {
+  document.getElementById('overlay').classList.remove('show');
+}
+
+function confirmarNombre() {
+  const v = document.getElementById('modalNameInp').value.trim();
+  if (v) {
+    document.getElementById('sName').value = v;
+    document.getElementById('overlayName').classList.remove('show');
+    mostrarResultado(v);
+  }
+}
+
+// ======================= INICIALIZACIÓN =======================
+actual = aleatorio();
+const cardContainer = document.getElementById('cardTabla');
+if (cardContainer) cardContainer.innerHTML = construirHTML(actual);
+actualizarUI();
+
+// ======================= EXPONER FUNCIONES GLOBALMENTE =======================
+window.verificarTabla = verificarTabla;
+window.checkRespuesta = checkRespuesta;
+
+// ======================= EVENT LISTENERS =======================
+document.getElementById('btnFinalizar').addEventListener('click', finalizarYCerrar);
+document.getElementById('btnNuevoEjercicio').addEventListener('click', cambiarEjercicio);
+document.getElementById('modalClose').addEventListener('click', cerrarModal);
+document.getElementById('btnConfirmarNombre').addEventListener('click', confirmarNombre);
+document.getElementById('btnConfirmAccept').addEventListener('click', () => {
+  const cb = confirmCallback;
+  cerrarConfirmacion();
+  if (cb) cb();
+});
+document.getElementById('btnConfirmCancel').addEventListener('click', cerrarConfirmacion);
+
+document.getElementById('overlay').addEventListener('click', function(e) {
+  if (e.target === document.getElementById('overlay')) cerrarModal();
+});
+document.getElementById('overlayConfirm').addEventListener('click', function(e) {
+  if (e.target === document.getElementById('overlayConfirm')) cerrarConfirmacion();
+});
+
+document.getElementById('modalNameInp').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') confirmarNombre();
+});
+
+// Soporte de tecla Enter por delegación, para inputs generados dinámicamente
+document.addEventListener('keydown', function(e) {
+  if (e.key !== 'Enter') return;
+  const t = e.target;
+  if (t.classList.contains('ans-inp')) {
+    e.preventDefault();
+    const m = t.id.match(/^ans_(.+)_(\d+)$/);
+    if (m) checkRespuesta(m[1], parseInt(m[2], 10));
+  } else if (t.classList.contains('cinp') || t.classList.contains('tinp')) {
+    e.preventDefault();
+    const m = t.id.match(/^(.+)_c\d+_\d+$/);
+    if (m) verificarTabla(m[1]);
+  }
+});
+</script>
+</body>
+</html>
