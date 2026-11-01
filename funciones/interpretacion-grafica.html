@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ficha interactiva · Gráficas distancia-tiempo</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap');
+
+:root {
+  --color-fondo: #F5F0E8;
+  --color-fondo-card: #FDFAF3;
+  --color-texto: #2C1F0E;
+  --color-texto-suave: #6B4F35;
+  --color-acento: #A0522D;
+  --color-acento-hover: #7B3B1E;
+  --color-borde: #C9A96E;
+  --color-borde-suave: #E0CEAA;
+  --color-cabecera: #3B2510;
+  --color-cabecera-txt: #F5EDD8;
+  --color-correcto: #2E6B3E;
+  --color-incorrecto: #8B1A1A;
+  --color-neutro: #E8DFC8;
+}
+
+* { box-sizing: border-box; }
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+body {
+  margin: 0;
+  font-family: 'Lato', sans-serif;
+  font-size: 16px;
+  color: var(--color-texto);
+  background-color: var(--color-fondo);
+}
+
+.cabecera {
+  background-color: var(--color-cabecera);
+  color: var(--color-cabecera-txt);
+  font-family: 'Libre Baskerville', serif;
+  text-align: center;
+  padding: 12px 20px;
+  border-bottom: 3px solid var(--color-borde);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+}
+
+.ficha-container {
+  max-width: 820px;
+  margin: 28px auto;
+  background: var(--color-fondo-card);
+  border: 2px solid var(--color-borde);
+  border-radius: 6px;
+  box-shadow: 0 3px 12px rgba(44, 31, 14, 0.15);
+  padding: 32px 36px;
+}
+
+.titulo-ficha {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 1.6rem;
+  color: var(--color-texto);
+  text-align: center;
+  border-bottom: 2px solid var(--color-borde);
+  padding-bottom: 10px;
+  margin-bottom: 24px;
+}
+.titulo-ficha::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 3px;
+  background: var(--color-borde);
+  margin: 8px auto 0;
+  border-radius: 2px;
+}
+
+.fila-alumno {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+.fila-alumno label {
+  font-family: 'Libre Baskerville', serif;
+  color: var(--color-texto-suave);
+}
+
+input[type="text"], input[type="number"], select {
+  background-color: var(--color-fondo);
+  border: 1.5px solid var(--color-borde);
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-family: 'Lato', sans-serif;
+  font-size: 1rem;
+  color: var(--color-texto);
+  outline: none;
+  transition: border-color 0.2s;
+}
+input:focus, select:focus { border-color: var(--color-acento); }
+#nombreAlumno { flex: 1; min-width: 200px; }
+
+.marcador {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 1rem;
+  color: var(--color-texto-suave);
+  text-align: right;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--color-borde-suave);
+  padding-bottom: 8px;
+}
+.marcador span { color: var(--color-acento); font-weight: 700; }
+
+.enunciado {
+  background: var(--color-fondo);
+  border: 1.5px solid var(--color-borde-suave);
+  border-left: 4px solid var(--color-borde);
+  border-radius: 4px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  color: var(--color-texto-suave);
+  line-height: 1.5;
+}
+.enunciado strong { color: var(--color-texto); }
+
+.zona-grafica {
+  text-align: center;
+  margin-bottom: 24px;
+}
+svg { max-width: 100%; height: auto; }
+
+.ejercicio-card {
+  background: var(--color-fondo);
+  border: 1.5px solid var(--color-borde-suave);
+  border-left: 4px solid var(--color-borde);
+  border-radius: 4px;
+  padding: 18px 22px;
+  margin-bottom: 16px;
+}
+.ejercicio-card .pregunta {
+  font-weight: 700;
+  margin-bottom: 12px;
+  display: block;
+}
+.ejercicio-card .respuesta-fila {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.ejercicio-card .unidad { color: var(--color-texto-suave); font-size: 0.9rem; }
+.ejercicio-card input[type="number"] { width: 130px; }
+
+.feedback {
+  margin-top: 12px;
+  border-radius: 4px;
+  padding: 10px 16px;
+  display: none;
+}
+.feedback.show { display: block; }
+.feedback-correcto {
+  background-color: #EAF4EC;
+  border: 1.5px solid var(--color-correcto);
+  color: var(--color-correcto);
+  font-weight: 700;
+}
+.feedback-incorrecto {
+  background-color: #F9EAEA;
+  border: 1.5px solid var(--color-incorrecto);
+  color: var(--color-incorrecto);
+}
+.feedback-incorrecto .solucion {
+  margin-top: 6px;
+  color: var(--color-texto);
+  font-style: italic;
+  font-weight: 400;
+}
+
+.btn-primario {
+  background-color: var(--color-acento);
+  color: #FDFAF3;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 22px;
+  font-family: 'Lato', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.03em;
+  transition: background-color 0.2s ease;
+}
+.btn-primario:hover { background-color: var(--color-acento-hover); }
+.btn-primario:disabled { background-color: var(--color-neutro); color: var(--color-texto-suave); cursor: default; }
+
+.btn-secundario {
+  background-color: transparent;
+  color: var(--color-acento);
+  border: 2px solid var(--color-borde);
+  border-radius: 4px;
+  padding: 9px 20px;
+  font-family: 'Lato', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+.btn-secundario:hover { border-color: var(--color-acento); color: var(--color-acento-hover); }
+
+.btn-finalizar {
+  background-color: var(--color-cabecera);
+  color: var(--color-cabecera-txt);
+  border: 2px solid var(--color-borde);
+  border-radius: 4px;
+  padding: 10px 24px;
+  font-family: 'Libre Baskerville', serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  transition: background-color 0.2s;
+}
+.btn-finalizar:hover { background-color: #2C1A0A; }
+
+.barra-botones {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.separador {
+  border: none;
+  border-top: 1px solid var(--color-borde-suave);
+  margin: 24px 0;
+}
+
+/* Modal */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(44, 31, 14, 0.55);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+.overlay.show { display: flex; }
+.modal-calificacion {
+  border: 3px solid var(--color-borde);
+  border-radius: 8px;
+  font-family: 'Libre Baskerville', serif;
+  box-shadow: 0 6px 24px rgba(44, 31, 14, 0.35);
+  padding: 32px 36px;
+  min-width: 320px;
+  text-align: center;
+  background: var(--color-fondo-card);
+  color: var(--color-texto);
+}
+.modal-calificacion h2 { margin: 0 0 18px; font-size: 1.4rem; }
+.modal-calificacion .nota-grande { font-size: 3rem; font-weight: 700; margin: 8px 0; }
+.modal-calificacion .dato { margin: 4px 0; font-size: 0.95rem; }
+.modal-calificacion .cerrar { margin-top: 20px; }
+
+body.aprobado-10 { background-color: #1a7a1a; }
+body.aprobado-10 .ficha-container { background: #eafaea; }
+</style>
+</head>
+<body>
+
+<div class="cabecera">
+  Material elaborado por Marta L Letona S. Basado en el trabajo de Javier Cayetano
+</div>
+
+<div class="ficha-container">
+  <h1 class="titulo-ficha">Interpretación de gráficas: distancia – tiempo</h1>
+
+  <div class="fila-alumno">
+    <label for="nombreAlumno">Nombre del alumno:</label>
+    <input type="text" id="nombreAlumno" placeholder="Escribe tu nombre y apellidos">
+  </div>
+
+  <div class="marcador">
+    Aciertos: <span id="aciertos">0</span> &nbsp;·&nbsp;
+    Fallos: <span id="fallos">0</span> &nbsp;·&nbsp;
+    Nota: <span id="notaActual">—</span>/10
+  </div>
+
+  <div class="enunciado" id="enunciado"></div>
+
+  <div class="zona-grafica" id="zonaGrafica"></div>
+
+  <div id="preguntas"></div>
+
+  <div class="barra-botones">
+    <button class="btn-secundario" id="btnNuevo">Hacer otro ejercicio</button>
+    <button class="btn-finalizar" id="btnFinalizar">Finalizar y Calificar</button>
+  </div>
+</div>
+
+<div class="overlay" id="overlayConfirmar">
+  <div class="modal-calificacion" id="modalConfirmar" role="alertdialog" aria-labelledby="tituloConfirmar" aria-describedby="textoConfirmar">
+    <h2 id="tituloConfirmar">¿Empezar otro ejercicio?</h2>
+    <div class="dato" id="textoConfirmar">Perderás los aciertos y fallos conseguidos en este ejercicio (nota actual: <strong id="notaEnRiesgo"></strong>/10). Esta acción no se puede deshacer.</div>
+    <div class="barra-botones" style="margin-top:20px;">
+      <button class="btn-secundario" id="btnCancelarNuevo">Cancelar</button>
+      <button class="btn-finalizar" id="btnConfirmarNuevo">Sí, empezar otro</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal-calificacion" id="modal">
+    <h2>Resultado de la actividad</h2>
+    <div class="dato"><strong id="mNombre"></strong></div>
+    <div class="nota-grande" id="mNota"></div>
+    <div class="dato">Fecha: <span id="mFecha"></span></div>
+    <div class="dato">Hora: <span id="mHora"></span></div>
+    <div class="dato">Tiempo empleado: <span id="mTiempo"></span></div>
+    <div class="cerrar">
+      <button class="btn-secundario" id="btnCerrar">Seguir practicando</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ====== Estado global ======
+let aciertos = 0;
+let fallos = 0;
+let puntosTotales = 0;                // suma de puntos obtenidos con el nuevo sistema de puntuación
+const inicioActividad = Date.now();
+let estadosPreguntas = []; // {estado: 'pendiente'|'acertado'|'agotado', fallosPregunta: 0}, paralelo a las preguntas del ejercicio actual
+
+// ====== Utilidades ======
+const rndInt = (min, max, paso=1) => {
+  const n = Math.floor((max - min) / paso) + 1;
+  return min + paso * Math.floor(Math.random() * n);
+};
+const elegir = arr => arr[Math.floor(Math.random() * arr.length)];
+
+const NOMBRES = ["Sete", "Lucía", "Mateo", "Noa", "Hugo", "Vega", "Leo", "Carmen"];
+
+// ====== Geometría de la gráfica ======
+const PAD_L = 70, PAD_R = 30, PAD_T = 30, PAD_B = 55;
+const W = 700, H = 420;
+let escala = {};  // funciones de conversión datos -> px
+
+// Genera un recorrido complejo como lista de puntos {t (min), d (m)}.
+// Incluye varios tramos (alejarse, acercarse parcialmente, dos paradas a
+// distinta altura, picos diferentes) y vuelta final a casa.
+function generarRecorridoBase() {
+  const pasoT = 20;
+  const maxD = 800;            // distancia máxima posible en metros (gráfica hasta 800)
+  let puntos = [{t: 0, d: 0}];
+  let t = 0;
+  let d = 0;
+  let paradas = [];            // duraciones de cada tramo horizontal
+
+  const subir = (saltosT, saltosD) => {
+    t += pasoT * saltosT;
+    d = Math.min(maxD, d + 100 * saltosD);
+    puntos.push({t, d});
+  };
+  const bajar = (saltosT, saltosD) => {
+    t += pasoT * saltosT;
+    d = Math.max(0, d - 100 * saltosD);
+    puntos.push({t, d});
+  };
+  const parar = (saltosT) => {
+    const dur = pasoT * saltosT;
+    t += dur;
+    paradas.push(dur);
+    puntos.push({t, d});
+  };
+
+  // Tramo 1: se aleja
+  subir(rndInt(1, 2), rndInt(2, 3));        // sube a 200-300 m
+  // Tramo 2: primera parada (garantizada)
+  parar(rndInt(1, 2));                        // 20-40 min parado
+  // Tramo 3: sigue alejándose hasta un primer pico
+  subir(rndInt(1, 2), rndInt(1, 2));
+  // Tramo 4: se acerca parcialmente (no llega a casa)
+  bajar(1, rndInt(1, 2));
+  if (d <= 0) { d = 100; puntos[puntos.length-1].d = 100; }
+  // Tramo 5: segunda parada a distinta altura (garantizada)
+  parar(rndInt(1, 2));                        // 20-40 min parado
+  // Tramo 6: vuelve a alejarse hasta un segundo pico (puede ser el máximo)
+  subir(rndInt(1, 2), rndInt(1, 3));
+  // Tramo 7: regreso a casa
+  while (d > 0) { bajar(1, rndInt(1, 2)); }
+  // asegurar que el último punto es exactamente d=0
+  if (puntos[puntos.length-1].d !== 0) puntos.push({t, d: 0});
+
+  return {puntos, paradas, tMax: t, dMaxGrafica: maxD};
+}
+
+// Un recorrido de más de ~3,5 horas fuera de casa resulta poco creíble como historia;
+// se regenera hasta encontrar uno más razonable (con un límite de intentos de seguridad).
+const TMAX_LIMITE = 220;
+function generarRecorrido() {
+  let intentosGen = 0;
+  let resultado;
+  do {
+    resultado = generarRecorridoBase();
+    intentosGen++;
+  } while (resultado.tMax > TMAX_LIMITE && intentosGen < 50);
+  return resultado;
+}
+
+function construirEscala(tMax, dMaxGrafica) {
+  const ejeTmax = Math.ceil(tMax / 20) * 20;
+  const ejeDmax = 800;
+  escala.tMax = ejeTmax;
+  escala.dMax = ejeDmax;
+  escala.x = t => PAD_L + (t / ejeTmax) * (W - PAD_L - PAD_R);
+  escala.y = d => H - PAD_B - (d / ejeDmax) * (H - PAD_T - PAD_B);
+}
+
+function dibujarGrafica(rec) {
+  construirEscala(rec.tMax, rec.dMaxGrafica);
+  let svg = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Gráfica distancia-tiempo">`;
+  // Fondo
+  svg += `<rect x="0" y="0" width="${W}" height="${H}" fill="#FDFAF3"/>`;
+
+  // Rejilla vertical (cada 20 min) y etiquetas eje X
+  for (let t = 0; t <= escala.tMax; t += 20) {
+    const x = escala.x(t);
+    svg += `<line x1="${x}" y1="${PAD_T}" x2="${x}" y2="${H-PAD_B}" stroke="#E0CEAA" stroke-width="1"/>`;
+    svg += `<text x="${x}" y="${H-PAD_B+20}" font-size="12" fill="#6B4F35" text-anchor="middle" font-family="Lato">${t}</text>`;
+  }
+  // Rejilla horizontal (cada 100 m) y etiquetas eje Y
+  for (let d = 0; d <= escala.dMax; d += 100) {
+    const y = escala.y(d);
+    svg += `<line x1="${PAD_L}" y1="${y}" x2="${W-PAD_R}" y2="${y}" stroke="#E0CEAA" stroke-width="1"/>`;
+    svg += `<text x="${PAD_L-10}" y="${y+4}" font-size="12" fill="#6B4F35" text-anchor="end" font-family="Lato">${d}</text>`;
+  }
+
+  // Ejes
+  svg += `<line x1="${PAD_L}" y1="${PAD_T}" x2="${PAD_L}" y2="${H-PAD_B}" stroke="#3B2510" stroke-width="2"/>`;
+  svg += `<line x1="${PAD_L}" y1="${H-PAD_B}" x2="${W-PAD_R}" y2="${H-PAD_B}" stroke="#3B2510" stroke-width="2"/>`;
+
+  // Títulos de ejes
+  svg += `<text x="${(W+PAD_L-PAD_R)/2}" y="${H-12}" font-size="13" fill="#2C1F0E" text-anchor="middle" font-family="Libre Baskerville">Tiempo (minutos)</text>`;
+  svg += `<text x="18" y="${(H-PAD_B+PAD_T)/2}" font-size="13" fill="#2C1F0E" text-anchor="middle" font-family="Libre Baskerville" transform="rotate(-90 18 ${(H-PAD_B+PAD_T)/2})">Distancia (metros)</text>`;
+
+  // Recorrido
+  let pts = rec.puntos.map(p => `${escala.x(p.t)},${escala.y(p.d)}`).join(' ');
+  svg += `<polyline points="${pts}" fill="none" stroke="#A0522D" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>`;
+  rec.puntos.forEach(p => {
+    svg += `<circle cx="${escala.x(p.t)}" cy="${escala.y(p.d)}" r="4" fill="#7B3B1E"/>`;
+  });
+
+  svg += `</svg>`;
+  return svg;
+}
+
+// ====== Generación de preguntas a partir del recorrido ======
+// Devuelve la distancia en un instante t leyendo la poligonal (interpolación lineal)
+function distanciaEn(puntos, t) {
+  for (let i = 0; i < puntos.length - 1; i++) {
+    const a = puntos[i], b = puntos[i+1];
+    if (t >= a.t && t <= b.t) {
+      if (b.t === a.t) return a.d;
+      return a.d + (b.d - a.d) * (t - a.t) / (b.t - a.t);
+    }
+  }
+  return puntos[puntos.length - 1].d;
+}
+
+// Única fuente de verdad para los tipos de pregunta que existen en la ficha.
+// Si se añade o quita un tipo, actualizar solo esta lista basta para mantener
+// sincronizado el tope de nota en calcularNota().
+const TIPOS_PREGUNTA = ["distancia_instante", "distancia_maxima", "momento_maximo",
+                         "tiempo_parado", "numero_paradas", "tiempo_total"];
+
+// Sistema de puntuación: cada pregunta bien hecha aporta una parte proporcional de 10.
+// Cada fallo en esa misma pregunta resta una cantidad fija; cuando los fallos consumen
+// todo lo que esa pregunta podía aportar, la pregunta se cierra con 0 puntos y ya no
+// se puede volver a puntuar (aunque después se conteste bien).
+const PUNTOS_MAXIMOS = 10;
+const PUNTOS_POR_PREGUNTA = PUNTOS_MAXIMOS / TIPOS_PREGUNTA.length; // 10/6 ≈ 1,67
+const DEDUCCION_POR_FALLO = 0.75;
+
+function construirPreguntas(rec) {
+  const p = rec.puntos;
+  const preguntas = [];
+
+  // Tipo 1: distancia tras X minutos (instante aleatorio múltiplo de 20, dentro del recorrido)
+  const instantes = [];
+  for (let tt = 20; tt < rec.tMax; tt += 20) instantes.push(tt);
+  let tConsulta = elegir(instantes);
+  preguntas.push({
+    tipo: TIPOS_PREGUNTA[0],
+    texto: `Al cabo de <strong>${tConsulta} minutos</strong> de haber salido de casa, ¿a qué distancia se encontraba de su casa?`,
+    respuesta: Math.round(distanciaEn(p, tConsulta)),
+    unidad: "metros",
+    tol: 0,
+    pista: `Busca ${tConsulta} min en el eje horizontal, sube hasta la línea del recorrido y lee el valor correspondiente en el eje vertical.`,
+    solucion: `Subiendo desde ${tConsulta} min en el eje horizontal hasta la línea y leyendo en el eje vertical se obtiene ${Math.round(distanciaEn(p, tConsulta))} m.`
+  });
+
+  // Tipo 2: distancia máxima
+  const dMaxRec = Math.max(...p.map(x => x.d));
+  preguntas.push({
+    tipo: TIPOS_PREGUNTA[1],
+    texto: `¿Cuál fue la <strong>distancia máxima</strong> a la que llegó a estar de su casa?`,
+    respuesta: dMaxRec,
+    unidad: "metros",
+    tol: 0,
+    pista: `Busca el punto más alto de toda la gráfica y lee su valor en el eje vertical.`,
+    solucion: `El punto más alto de la gráfica está en ${dMaxRec} m; esa es la mayor distancia alcanzada.`
+  });
+
+  // Tipo 3: momento del máximo (primer instante en que se alcanza el máximo)
+  const tMaxRec = p.find(x => x.d === dMaxRec).t;
+  preguntas.push({
+    tipo: TIPOS_PREGUNTA[2],
+    texto: `¿En qué <strong>momento</strong> (minuto) alcanzó por primera vez esa distancia máxima?`,
+    respuesta: tMaxRec,
+    unidad: "minutos",
+    tol: 0,
+    pista: `Localiza el punto más alto de la gráfica y lee el valor correspondiente en el eje horizontal.`,
+    solucion: `La gráfica llega a su punto más alto a los ${tMaxRec} min.`
+  });
+
+  // Tipo 4: tiempo total parado (suma de todos los tramos horizontales)
+  const totalParado = rec.paradas.reduce((a, b) => a + b, 0);
+  preguntas.push({
+    tipo: TIPOS_PREGUNTA[3],
+    texto: `¿<strong>Cuánto tiempo estuvo parado en total</strong>?`,
+    respuesta: totalParado,
+    unidad: "minutos",
+    tol: 0,
+    pista: `Busca los tramos horizontales (donde la distancia no cambia) y suma su duración.`,
+    solucion: `Los tramos horizontales indican que no se mueve. Sumando todas las paradas se obtienen ${totalParado} min en total.`
+  });
+
+  // Tipo 5: número de paradas
+  preguntas.push({
+    tipo: TIPOS_PREGUNTA[4],
+    texto: `¿<strong>Cuántas veces se detuvo</strong> durante el recorrido?`,
+    respuesta: rec.paradas.length,
+    unidad: "paradas",
+    tol: 0,
+    pista: `Cuenta cuántos tramos horizontales (sin cambio de distancia) aparecen en la gráfica.`,
+    solucion: `Cada tramo horizontal de la gráfica es una parada. En este recorrido hay ${rec.paradas.length}.`
+  });
+
+  // Tipo 6: tiempo total fuera de casa (vuelve a d=0 al final)
+  const tFin = p[p.length - 1].t;
+  preguntas.push({
+    tipo: TIPOS_PREGUNTA[5],
+    texto: `¿<strong>Cuánto tiempo</strong> en total estuvo fuera de casa, desde que salió hasta que regresó?`,
+    respuesta: tFin,
+    unidad: "minutos",
+    tol: 0,
+    pista: `Fíjate en qué minuto la distancia vuelve a valer 0 tras la salida de casa.`,
+    solucion: `Sale en el minuto 0 y vuelve a estar a 0 m (en casa) en el minuto ${tFin}, así que estuvo fuera ${tFin} min.`
+  });
+
+  return preguntas;
+}
+
+// ====== Render del ejercicio ======
+function nuevoEjercicio() {
+  const rec = generarRecorrido();
+  const nombre = elegir(NOMBRES);
+
+  // La nota se calcula solo sobre las 6 preguntas del ejercicio actual, así que
+  // "Hacer otro ejercicio" empieza una puntuación completamente nueva.
+  aciertos = 0;
+  fallos = 0;
+  puntosTotales = 0;
+
+  document.getElementById('enunciado').innerHTML =
+    `A continuación tienes una gráfica que representa la <strong>distancia</strong> (en metros) frente al <strong>tiempo</strong> (en minutos). ` +
+    `Tomando como referencia la casa de <strong>${nombre}</strong>, observa la gráfica y responde a las preguntas. ` +
+    `El eje horizontal está dividido de 20 en 20 minutos y el vertical de 100 en 100 metros.`;
+
+  document.getElementById('zonaGrafica').innerHTML = dibujarGrafica(rec);
+
+  const preguntas = construirPreguntas(rec);
+  estadosPreguntas = preguntas.map(() => ({ estado: 'pendiente', fallosPregunta: 0 }));
+  actualizarMarcador(); // refleja de inmediato el reinicio de aciertos/fallos/nota en el marcador visible
+
+  const cont = document.getElementById('preguntas');
+  cont.innerHTML = '';
+  preguntas.forEach((q, i) => {
+    const card = document.createElement('div');
+    card.className = 'ejercicio-card';
+    card.innerHTML = `
+      <span class="pregunta">${i+1}. ${q.texto}</span>
+      <div class="respuesta-fila">
+        <label class="sr-only" for="resp${i}">Respuesta a la pregunta ${i+1}: ${q.texto.replace(/<[^>]+>/g, '')}</label>
+        <input type="number" id="resp${i}" placeholder="Respuesta">
+        <span class="unidad">${q.unidad}</span>
+        <button class="btn-primario" id="btn${i}">Comprobar</button>
+      </div>
+      <div class="feedback" id="fb${i}" aria-live="polite"></div>
+    `;
+    cont.appendChild(card);
+
+    document.getElementById('btn'+i).addEventListener('click', () => comprobar(i, q));
+    document.getElementById('resp'+i).addEventListener('keydown', e => {
+      if (e.key === 'Enter') comprobar(i, q);
+    });
+  });
+}
+
+function comprobar(i, q) {
+  const input = document.getElementById('resp'+i);
+  const btn = document.getElementById('btn'+i);
+  const fb = document.getElementById('fb'+i);
+  const estado = estadosPreguntas[i];
+  // Una pregunta ya cerrada (acertada o agotada tras 3 fallos) queda bloqueada:
+  // ni un reenvío ni un clic forzado deben cambiar la puntuación.
+  if (estado.estado !== 'pendiente') return;
+
+  const val = parseFloat(input.value);
+  if (isNaN(val)) {
+    fb.className = 'feedback feedback-incorrecto show';
+    fb.innerHTML = `Escribe un número antes de comprobar.`;
+    return;
+  }
+
+  const correcto = Math.abs(val - q.respuesta) <= q.tol;
+
+  if (correcto) {
+    const puntosPregunta = Math.max(0, PUNTOS_POR_PREGUNTA - estado.fallosPregunta * DEDUCCION_POR_FALLO);
+    puntosTotales += puntosPregunta;
+    aciertos++;
+    estado.estado = 'acertado';
+    input.disabled = true;
+    btn.disabled = true;
+    fb.className = 'feedback feedback-correcto show';
+    fb.innerHTML = `¡Correcto! La respuesta es ${q.respuesta} ${q.unidad}. Puntos obtenidos: ${puntosPregunta.toFixed(2)} / ${PUNTOS_POR_PREGUNTA.toFixed(2)}.`;
+  } else {
+    fallos++;
+    estado.fallosPregunta++;
+    const puntosRestantes = Math.max(0, PUNTOS_POR_PREGUNTA - estado.fallosPregunta * DEDUCCION_POR_FALLO);
+    if (puntosRestantes <= 1e-9) {
+      // Los fallos ya han consumido todo lo que esta pregunta podía aportar: se cierra con 0 puntos.
+      estado.estado = 'agotado';
+      input.disabled = true;
+      btn.disabled = true;
+      fb.className = 'feedback feedback-incorrecto show';
+      fb.innerHTML = `Respuesta incorrecta. Esta pregunta se cierra sin más intentos (0 puntos).
+        <div class="solucion">La respuesta correcta era <strong>${q.respuesta} ${q.unidad}</strong>. ${q.solucion}</div>`;
+    } else {
+      fb.className = 'feedback feedback-incorrecto show';
+      fb.innerHTML = `Respuesta incorrecta (−${DEDUCCION_POR_FALLO.toFixed(2)} pts). Puedes corregir tu respuesta y volver a comprobar.
+        <div class="solucion">${q.pista}</div>`;
+      input.focus();
+      input.select();
+    }
+  }
+  actualizarMarcador();
+}
+
+// ====== Puntuación ======
+function calcularNota() {
+  return Math.round(puntosTotales * 10) / 10; // redondeo a 1 decimal
+}
+
+function actualizarMarcador() {
+  document.getElementById('aciertos').textContent = aciertos;
+  document.getElementById('fallos').textContent = fallos;
+  document.getElementById('notaActual').textContent = (aciertos+fallos) ? calcularNota() : '—';
+}
+
+// ====== Modal Finalizar y Calificar ======
+const coloresNota = {
+  10: ['#1a7a1a', '#fff'], 9: ['#6dbf6d', '#fff'], 8: ['#1a4f8a', '#fff'],
+  7: ['#5b9bd5', '#fff'], 6: ['#c05c00', '#fff'], 5: ['#f5a623', '#000']
+};
+
+function finalizar() {
+  const inputNombre = document.getElementById('nombreAlumno');
+  const nombre = inputNombre.value.trim();
+  if (!nombre) {
+    inputNombre.focus();
+    inputNombre.style.borderColor = 'var(--color-incorrecto)';
+    let aviso = document.getElementById('avisoNombre');
+    if (!aviso) {
+      aviso = document.createElement('div');
+      aviso.id = 'avisoNombre';
+      aviso.className = 'feedback feedback-incorrecto show';
+      aviso.setAttribute('aria-live', 'polite');
+      aviso.style.marginTop = '8px';
+      aviso.textContent = 'Antes de calificar debes escribir tu nombre en la ficha.';
+      inputNombre.parentNode.appendChild(aviso);
+    }
+    return;
+  }
+  const nota = calcularNota();
+  const ahora = new Date();
+  const dd = String(ahora.getDate()).padStart(2,'0');
+  const mm = String(ahora.getMonth()+1).padStart(2,'0');
+  const aaaa = ahora.getFullYear();
+  const hh = String(ahora.getHours()).padStart(2,'0');
+  const min = String(ahora.getMinutes()).padStart(2,'0');
+  const ss = String(ahora.getSeconds()).padStart(2,'0');
+
+  const totalSeg = Math.floor((Date.now() - inicioActividad)/1000);
+  const totalMinRedondeado = Math.ceil(totalSeg/60); // redondeo hacia arriba, no truncamiento
+  const th = String(Math.floor(totalMinRedondeado/60)).padStart(2,'0');
+  const tm = String(totalMinRedondeado%60).padStart(2,'0');
+
+  document.getElementById('mNombre').textContent = nombre;
+  document.getElementById('mNota').textContent = nota + '/10';
+  document.getElementById('mFecha').textContent = `${dd}/${mm}/${aaaa}`;
+  document.getElementById('mHora').textContent = `${hh}:${min}:${ss}`;
+  document.getElementById('mTiempo').textContent = `${th}:${tm}`;
+
+  let bg, fg;
+  const banda = Math.floor(Math.min(10, Math.max(0, nota)));
+  if (banda >= 5) { [bg, fg] = coloresNota[banda]; }
+  else { bg = '#c0392b'; fg = '#fff'; }
+  const modal = document.getElementById('modal');
+  modal.style.backgroundColor = bg;
+  modal.style.color = fg;
+  modal.querySelectorAll('.dato, h2, .nota-grande').forEach(el => el.style.color = fg);
+
+  document.body.classList.toggle('aprobado-10', nota === 10);
+  document.getElementById('overlay').classList.add('show');
+}
+
+// ====== Eventos ======
+function solicitarNuevoEjercicio() {
+  // Si aún no se ha respondido nada, no hay nada que perder: se genera directamente.
+  if (aciertos === 0 && fallos === 0) {
+    nuevoEjercicio();
+    return;
+  }
+  document.getElementById('notaEnRiesgo').textContent = calcularNota();
+  document.getElementById('overlayConfirmar').classList.add('show');
+}
+
+document.getElementById('btnNuevo').addEventListener('click', solicitarNuevoEjercicio);
+document.getElementById('btnConfirmarNuevo').addEventListener('click', () => {
+  document.getElementById('overlayConfirmar').classList.remove('show');
+  nuevoEjercicio();
+});
+document.getElementById('btnCancelarNuevo').addEventListener('click', () => {
+  document.getElementById('overlayConfirmar').classList.remove('show');
+});
+document.getElementById('btnFinalizar').addEventListener('click', finalizar);
+document.getElementById('nombreAlumno').addEventListener('input', e => {
+  if (e.target.value.trim()) {
+    e.target.style.borderColor = '';
+    const aviso = document.getElementById('avisoNombre');
+    if (aviso) aviso.remove();
+  }
+});
+document.getElementById('btnCerrar').addEventListener('click', () => {
+  document.getElementById('overlay').classList.remove('show');
+});
+
+// ====== Inicio ======
+nuevoEjercicio();
+actualizarMarcador();
+</script>
+</body>
+</html>
