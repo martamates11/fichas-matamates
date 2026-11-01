@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Logaritmos</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap');
+
+:root {
+  --color-fondo: #F5F0E8;
+  --color-fondo-card: #FDFAF3;
+  --color-texto: #2C1F0E;
+  --color-texto-suave: #6B4F35;
+  --color-acento: #A0522D;
+  --color-acento-hover: #7B3B1E;
+  --color-borde: #C9A96E;
+  --color-borde-suave: #E0CEAA;
+  --color-cabecera: #3B2510;
+  --color-cabecera-txt: #F5EDD8;
+  --color-correcto: #2E6B3E;
+  --color-incorrecto: #8B1A1A;
+  --color-neutro: #E8DFC8;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Lato',sans-serif;font-size:15px;color:var(--color-texto);background:var(--color-fondo);padding:0 0 2rem;}
+
+.cabecera-top{background:var(--color-cabecera);color:var(--color-cabecera-txt);font-family:'Libre Baskerville',serif;text-align:center;padding:10px 20px;border-bottom:3px solid var(--color-borde);font-size:0.75rem;letter-spacing:0.05em;}
+
+.wrap{max-width:760px;margin:20px auto;transition:background 0.5s;}
+.wrap.verde-total{background:#d4edda!important;border-radius:10px;padding:12px;}
+
+.cabecera{background:var(--color-fondo-card);border:2px solid var(--color-borde);border-radius:6px;padding:18px 22px;margin-bottom:14px;box-shadow:0 2px 8px rgba(44,31,14,0.10);}
+.cab-title{font-family:'Libre Baskerville',serif;font-size:1.35rem;color:var(--color-texto);text-align:center;margin-bottom:4px;}
+.cab-title::after{content:'';display:block;width:50px;height:3px;background:var(--color-borde);margin:6px auto 0;border-radius:2px;}
+.campo-nombre{display:flex;align-items:center;gap:10px;margin-top:14px;}
+.campo-nombre label{font-size:0.78rem;color:var(--color-texto-suave);text-transform:uppercase;letter-spacing:0.05em;white-space:nowrap;}
+.campo-nombre input{flex:1;min-width:0;border:none;border-bottom:1.5px solid var(--color-borde);background:transparent;font-family:'Lato',sans-serif;font-size:0.95rem;color:var(--color-texto);padding:4px 2px;outline:none;transition:border-bottom 0.2s;}
+.campo-nombre input.error-nombre{border-bottom:2px solid var(--color-incorrecto);}
+
+.progreso-wrap{background:var(--color-fondo-card);border:1.5px solid var(--color-borde-suave);border-radius:6px;padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;gap:12px;}
+.progreso-texto{font-size:0.78rem;color:var(--color-texto-suave);white-space:nowrap;font-weight:700;letter-spacing:0.03em;}
+.progreso-barra{flex:1;height:8px;background:var(--color-neutro);border-radius:4px;overflow:hidden;}
+.progreso-relleno{height:100%;background:var(--color-acento);border-radius:4px;transition:width 0.3s;}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+.stat{background:var(--color-fondo-card);border:1.5px solid var(--color-borde-suave);border-radius:6px;padding:8px;text-align:center;}
+.stat-label{font-size:0.68rem;color:var(--color-texto-suave);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:2px;}
+.stat-val{font-family:'Libre Baskerville',serif;font-size:1.35rem;color:var(--color-acento);}
+
+.ficha{background:var(--color-fondo-card);border:2px solid var(--color-borde);border-radius:6px;padding:20px 24px;margin-bottom:14px;box-shadow:0 2px 8px rgba(44,31,14,0.08);}
+.ficha-hdr{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding-bottom:10px;border-bottom:1.5px solid var(--color-borde-suave);}
+.ficha-num{background:var(--color-acento);color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700;flex-shrink:0;}
+.ficha-title{font-family:'Libre Baskerville',serif;font-size:1rem;color:var(--color-texto);}
+.tag{background:var(--color-neutro);color:var(--color-acento);border-radius:4px;font-size:0.7rem;font-family:'Lato',sans-serif;padding:2px 8px;margin-left:8px;font-weight:700;letter-spacing:0.03em;}
+
+.enunciado{background:var(--color-fondo);border-left:4px solid var(--color-borde);border-radius:0 6px 6px 0;padding:12px 16px;font-size:0.9rem;color:var(--color-texto-suave);line-height:1.7;margin-bottom:18px;}
+.enunciado strong{color:var(--color-texto);font-weight:700;}
+
+.plabel{font-size:0.7rem;font-weight:700;color:var(--color-texto-suave);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;}
+
+.paso-bloque{border-left:4px solid var(--color-borde-suave);border-radius:0 6px 6px 0;padding:12px 14px;margin-bottom:12px;background:var(--color-fondo);transition:border-color 0.3s,background 0.3s;}
+.paso-bloque.paso-ok{border-color:var(--color-correcto);background:#EAF4EC;}
+.paso-bloque.paso-fail{border-color:var(--color-incorrecto);background:#F9EAEA;}
+
+.paso-hdr{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.pnum{background:var(--color-neutro);color:var(--color-acento);border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;flex-shrink:0;transition:background 0.3s,color 0.3s;}
+.pnum.done{background:var(--color-correcto);color:#fff;}
+.plbl{font-size:0.82rem;color:var(--color-texto-suave);font-style:italic;}
+
+input[type=text],input[type=number],select{background:var(--color-fondo);border:1.5px solid var(--color-borde);border-radius:4px;padding:6px 10px;font-family:'Lato',sans-serif;font-size:0.9rem;color:var(--color-texto);outline:none;transition:border-color 0.2s;}
+input[type=text]:focus,input[type=number]:focus,select:focus{border-color:var(--color-acento);}
+input[type=text].ok,input[type=number].ok{border-color:var(--color-correcto);background:#EAF4EC;}
+input[type=text].fail,input[type=number].fail{border-color:var(--color-incorrecto);background:#F9EAEA;}
+
+.aviso-vacio{color:var(--color-incorrecto);font-size:0.8rem;margin-top:6px;display:none;font-weight:700;}
+.aviso-vacio.show{display:block;}
+
+.btn-paso{background:var(--color-acento);color:#FDFAF3;border:none;border-radius:4px;padding:5px 14px;font-family:'Lato',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;margin-top:10px;transition:background 0.2s;}
+.btn-paso:hover{background:var(--color-acento-hover);}
+
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
+.btn-otro{background:transparent;color:var(--color-acento);border:1.5px solid var(--color-borde);border-radius:4px;padding:7px 16px;font-family:'Lato',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;display:none;transition:border-color 0.2s;}
+.btn-otro:hover{border-color:var(--color-acento);}
+
+.fb-paso{margin-top:8px;font-size:0.82rem;border-radius:4px;padding:7px 12px;display:none;line-height:1.55;}
+.fb-paso.show{display:block;}
+.fb-paso.ok{background:#EAF4EC;color:var(--color-correcto);border:1px solid var(--color-correcto);font-weight:700;}
+.fb-paso.fail{background:#F9EAEA;color:var(--color-incorrecto);border:1px solid var(--color-incorrecto);}
+
+.btn-final{background:var(--color-cabecera);color:var(--color-cabecera-txt);border:2px solid var(--color-borde);border-radius:4px;padding:11px 24px;font-family:'Libre Baskerville',serif;font-size:0.95rem;font-weight:700;cursor:pointer;width:100%;margin-top:4px;letter-spacing:0.03em;transition:background 0.2s;}
+.btn-final:hover{background:#2C1A0A;}
+
+.modal-bg{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(44,31,14,0.55);display:none;align-items:center;justify-content:center;z-index:9999;padding:16px;}
+.modal-bg.show{display:flex;}
+.modal{border:3px solid var(--color-borde);border-radius:8px;padding:32px 36px;max-width:360px;width:90%;text-align:center;font-family:'Libre Baskerville',serif;box-shadow:0 6px 24px rgba(44,31,14,0.35);transition:background 0.2s, color 0.2s;background:var(--color-fondo-card);color:var(--color-texto);}
+.modal h2{font-size:1.2rem;font-weight:700;margin-bottom:4px;word-break:break-word;}
+.modal .nota-big{font-size:3.2rem;font-weight:700;line-height:1.1;margin:8px 0;}
+.modal .meta{font-size:0.82rem;opacity:0.9;line-height:1.9;margin-bottom:12px;font-family:'Lato',sans-serif;}
+.modal .captura{font-size:0.85rem;border-radius:6px;padding:8px 12px;background:rgba(255,255,255,0.2);margin-bottom:12px;font-family:'Lato',sans-serif;}
+.modal .btn-cerrar{background:rgba(255,255,255,0.25);border:1.5px solid rgba(255,255,255,0.55);border-radius:4px;padding:8px 20px;font-size:0.85rem;cursor:pointer;font-family:'Lato',sans-serif;}
+
+.modal-secundario p{font-family:'Lato',sans-serif;font-size:0.9rem;color:var(--color-texto);line-height:1.6;margin-bottom:18px;}
+.modal-secundario input[type=text]{width:100%;margin-bottom:14px;}
+.modal-secundario .modal-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.modal-secundario .btn-modal-primario{background:var(--color-acento);color:#fff;border:none;border-radius:4px;padding:9px 18px;font-family:'Lato',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;}
+.modal-secundario .btn-modal-primario:hover{background:var(--color-acento-hover);}
+.modal-secundario .btn-modal-secundario{background:transparent;color:var(--color-texto-suave);border:1.5px solid var(--color-borde);border-radius:4px;padding:8px 18px;font-family:'Lato',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;}
+</style>
+<!-- MathJax para mostrar fórmulas matemáticas correctamente -->
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+<div class="cabecera-top">Material elaborado por Marta L Letona S. Basado en el trabajo de Javier Cayetano</div>
+
+<div class="wrap" id="wrap">
+
+  <div class="cabecera">
+    <div class="cab-title">Logaritmos</div>
+    <div class="campo-nombre">
+      <label for="nombre">Nombre del alumno</label>
+      <input type="text" id="nombre" placeholder="Escribe tu nombre completo..." autocomplete="off">
+    </div>
+  </div>
+
+  <div class="progreso-wrap">
+    <div class="progreso-texto" id="progreso-texto">Ejercicio 1 / 10</div>
+    <div class="progreso-barra"><div class="progreso-relleno" id="progreso-relleno" style="width:0%"></div></div>
+  </div>
+
+  <div class="stats" id="stats-section">
+    <div class="stat"><div class="stat-label">Realizados</div><div class="stat-val" id="s-real">0/10</div></div>
+    <div class="stat"><div class="stat-label">Aciertos</div><div class="stat-val" id="s-ac" style="color:var(--color-correcto)">0</div></div>
+    <div class="stat"><div class="stat-label">Fallos</div><div class="stat-val" id="s-fail" style="color:var(--color-incorrecto)">0</div></div>
+    <div class="stat"><div class="stat-label">Puntuación</div><div class="stat-val" id="s-pts">0/10</div></div>
+  </div>
+
+  <div class="ficha" id="exercise-section">
+    <div class="ficha-hdr">
+      <div class="ficha-num" id="ficha-num">1</div>
+      <div class="ficha-title" id="ficha-title">Ejercicio <span class="tag">—</span></div>
+    </div>
+    <div class="enunciado" id="enunciado">
+      Resuelve el siguiente ejercicio matemático.
+    </div>
+
+    <div class="plabel">Resuelve</div>
+
+    <div class="paso-bloque" id="bloque1">
+      <div class="paso-hdr">
+        <div class="pnum" id="pnum1">1</div>
+        <div class="plbl">Aplica la propiedad y calcula el resultado</div>
+      </div>
+
+      <div id="exercise-container" style="font-size: 1.3rem; margin: 20px 0; text-align: center;">
+          <!-- El ejercicio se inyecta por JavaScript -->
+      </div>
+
+      <button class="btn-paso" id="checkBtn" onclick="checkAnswer()">Comprobar respuesta</button>
+      <div class="aviso-vacio" id="aviso-vacio">Rellena la respuesta antes de comprobar.</div>
+      <div class="fb-paso" id="fb-container" aria-live="polite"></div>
+    </div>
+
+    <div class="btns">
+      <button class="btn-otro" id="btn-otro" onclick="siguienteEjercicio()">Siguiente ejercicio →</button>
+    </div>
+  </div>
+
+  <button class="btn-final" id="finishBtn" onclick="finalizar()">Finalizar y Calificar</button>
+</div>
+
+<!-- Modal de calificación -->
+<div class="modal-bg" id="modal-bg">
+  <div class="modal" id="modal">
+    <h2 id="m-nombre">—</h2>
+    <div class="nota-big" id="m-nota">—</div>
+    <div class="meta" id="m-meta"></div>
+    <div class="captura">📸 Haz una captura de pantalla y entrégala en Google Classroom.</div>
+    <button class="btn-cerrar" onclick="cerrarModal()">Cerrar y seguir practicando</button>
+  </div>
+</div>
+
+<!-- Modal: pedir nombre -->
+<div class="modal-bg" id="modal-nombre-bg">
+  <div class="modal modal-secundario" id="modal-nombre">
+    <h2 style="color:var(--color-texto)">Falta tu nombre</h2>
+    <p>Escribe tu nombre completo antes de finalizar la ficha, para que aparezca en el modal de calificación.</p>
+    <input type="text" id="modal-nombre-input" placeholder="Nombre completo...">
+    <div class="modal-btns">
+      <button class="btn-modal-primario" onclick="confirmarNombreDesdeModal()">Continuar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: aviso de finalización incompleta -->
+<div class="modal-bg" id="modal-incompleto-bg">
+  <div class="modal modal-secundario" id="modal-incompleto">
+    <h2 style="color:var(--color-texto)">Ficha incompleta</h2>
+    <p id="modal-incompleto-texto"></p>
+    <div class="modal-btns">
+      <button class="btn-modal-secundario" onclick="cancelarFinalizacion()">Seguir practicando</button>
+      <button class="btn-modal-primario" onclick="confirmarFinalizacionIncompleta()">Finalizar igualmente</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =====================================================================
+   Sesión fija de 10 ejercicios: exactamente 1 de cada uno de los 10
+   tipos (definición, propiedades, raíz, ln, expansión, reducción,
+   ecuación), en orden aleatorio. Puntuación: 10/10 = 1 punto por
+   ejercicio, fijado en el único intento de cada uno. El feedback de
+   fallo revela la solución completa, así que el ejercicio queda
+   cerrado en 0 puntos de forma permanente para ese intento.
+======================================================================= */
+const TOTAL_EJERCICIOS = 10;
+const PUNTOS_POR_EJERCICIO = 10 / TOTAL_EJERCICIOS;
+
+const TIPOS_FIJOS = [
+    'def_calculo', 'def_base', 'def_argumento',
+    'ley_producto', 'ley_cociente', 'log_raiz',
+    'ln_basico', 'expansion', 'reduccion', 'ecuacion_suma'
+];
+
+const NOMBRES_TIPO = {
+    def_calculo: 'Cálculo por Definición',
+    def_base: 'Hallar la base (x)',
+    def_argumento: 'Hallar el argumento (x)',
+    ley_producto: 'Ley del Producto',
+    ley_cociente: 'Ley del Cociente',
+    log_raiz: 'Logaritmo de una Raíz',
+    ln_basico: 'Logaritmo Neperiano',
+    expansion: 'Expansión de Expresiones',
+    reduccion: 'Reducción a un Logaritmo',
+    ecuacion_suma: 'Ecuación Logarítmica'
+};
+
+let studentName = '';
+let startTime = null;
+let stats = { correct: 0, incorrect: 0, score: 0 };
+let mazo = [];
+let currentIndex = 0;
+
+const nombreInput = document.getElementById('nombre');
+
+function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+
+function gcd(a, b) {
+    return b === 0 ? a : gcd(b, a % b);
+}
+
+function getDivisors(n) {
+    let divisors = [];
+    for (let i = 1; i <= n; i++) {
+        if (n % i === 0) divisors.push(i);
+    }
+    return divisors;
+}
+
+// Genera un ejercicio del tipo indicado
+function generarEjercicio(type) {
+    const bases = [2, 3, 5, 10];
+    const base = bases[Math.floor(Math.random() * bases.length)];
+
+    let html = '';
+    let answer = '';
+    let explanation = '';
+    const typeName = NOMBRES_TIPO[type];
+
+    if (type === 'def_calculo') {
+        const p1 = Math.floor(Math.random() * 4) + 1;
+        const val1 = Math.pow(base, p1);
+        answer = p1.toString();
+        html = `\\( \\log_{${base}}(${val1}) \\) = <input type="number" id="ans" style="width: 80px; text-align: center;" autocomplete="off" aria-label="Resultado">`;
+        explanation = `<strong>Definición de logaritmo:</strong> Buscamos el exponente al que elevar la base (${base}) para que dé ${val1}.<br><br>
+        \\( ${base}^{${p1}} = ${val1} \\), por lo tanto el resultado es \\( ${p1} \\).`;
+
+    } else if (type === 'def_base') {
+        const p1 = Math.floor(Math.random() * 3) + 2;
+        const val1 = Math.pow(base, p1);
+        answer = base.toString();
+        html = `\\( \\log_{x}(${val1}) = ${p1} \\)<br><br> \\( x \\) = <input type="number" id="ans" style="width: 80px; text-align: center;" autocomplete="off" aria-label="Valor de x">`;
+        explanation = `<strong>Hallar la base:</strong> Aplicando la definición, \\( x^{${p1}} = ${val1} \\).<br><br>
+        Dado que \\( ${base}^{${p1}} = ${val1} \\), el valor de \\( x \\) es \\( ${base} \\).`;
+
+    } else if (type === 'def_argumento') {
+        const p1 = Math.floor(Math.random() * 4) + 1;
+        const val1 = Math.pow(base, p1);
+        answer = val1.toString();
+        html = `\\( \\log_{${base}}(x) = ${p1} \\)<br><br> \\( x \\) = <input type="number" id="ans" style="width: 80px; text-align: center;" autocomplete="off" aria-label="Valor de x">`;
+        explanation = `<strong>Hallar el argumento:</strong> La base elevada al resultado da el argumento.<br><br>
+        \\( ${base}^{${p1}} = x \\)<br>
+        \\( x = ${val1} \\).`;
+
+    } else if (type === 'ley_producto') {
+        const p1 = Math.floor(Math.random() * 3) + 2;
+        const val1 = Math.pow(base, p1);
+        const divisors = getDivisors(val1);
+        const idx = Math.floor(Math.random() * (divisors.length - 2)) + 1;
+        const A = divisors[idx];
+        const B = val1 / A;
+        answer = p1.toString();
+        html = `\\( \\log_{${base}}(${A}) + \\log_{${base}}(${B}) \\) = <input type="number" id="ans" style="width: 80px; text-align: center;" autocomplete="off" aria-label="Resultado">`;
+        explanation = `<strong>Ley del producto:</strong> Al sumar logaritmos de la misma base, multiplicamos sus argumentos.<br><br>
+        \\( \\log_{${base}}(${A} \\cdot ${B}) = \\log_{${base}}(${val1}) \\).<br>
+        Y sabemos que \\( \\log_{${base}}(${val1}) = ${p1} \\).`;
+
+    } else if (type === 'ley_cociente') {
+        const p1 = Math.floor(Math.random() * 3) + 1;
+        const val1 = Math.pow(base, p1);
+        const B = Math.floor(Math.random() * 5) + 2;
+        const A = val1 * B;
+        answer = p1.toString();
+        html = `\\( \\log_{${base}}(${A}) - \\log_{${base}}(${B}) \\) = <input type="number" id="ans" style="width: 80px; text-align: center;" autocomplete="off" aria-label="Resultado">`;
+        explanation = `<strong>Ley del cociente:</strong> La resta de logaritmos se convierte en el logaritmo de un cociente.<br><br>
+        \\( \\log_{${base}}\\left(\\frac{${A}}{${B}}\\right) = \\log_{${base}}(${val1}) \\).<br>
+        Y sabemos que \\( \\log_{${base}}(${val1}) = ${p1} \\).`;
+
+    } else if (type === 'log_raiz') {
+        const p1 = Math.floor(Math.random() * 5) + 1;
+        const val1 = Math.pow(base, p1);
+        const root = Math.floor(Math.random() * 3) + 2;
+        const g = gcd(p1, root);
+        const num = p1 / g;
+        const den = root / g;
+        answer = (den === 1) ? num.toString() : (num + '/' + den);
+        const rootTex = root === 2 ? `\\sqrt{${val1}}` : `\\sqrt[${root}]{${val1}}`;
+        html = `\\( \\log_{${base}} ${rootTex} \\) = <input type="text" id="ans" style="width: 80px; text-align: center;" autocomplete="off" placeholder="ej: 3/4" aria-label="Resultado, en fracción si procede">`;
+        explanation = `<strong>Logaritmo de una raíz:</strong> Primero expresamos la raíz como potencia.<br><br>
+        \\( ${rootTex} = ${val1}^{1/${root}} = (${base}^{${p1}})^{1/${root}} = ${base}^{${p1}/${root}} \\).<br>
+        Simplificando la fracción obtenemos \\( ${answer} \\).`;
+
+    } else if (type === 'ln_basico') {
+        const p1 = Math.floor(Math.random() * 5) + 1;
+        answer = p1.toString();
+        const argTex = p1 === 1 ? 'e' : `e^{${p1}}`;
+        html = `\\( \\ln(${argTex}) \\) = <input type="number" id="ans" style="width: 80px; text-align: center;" autocomplete="off" aria-label="Resultado">`;
+        explanation = `<strong>Logaritmo neperiano:</strong> La base del logaritmo neperiano (ln) es el número e.<br><br>
+        \\( \\log_e(e^{${p1}}) = ${p1} \\).`;
+
+    } else if (type === 'expansion') {
+        const p1 = Math.floor(Math.random() * 3) + 1;
+        const val1 = Math.pow(base, p1);
+        const px = Math.floor(Math.random() * 4) + 2;
+        const py = Math.floor(Math.random() * 4) + 2;
+        answer = [p1.toString(), px.toString(), py.toString()];
+        html = `Expande la expresión:<br><br>\\( \\log_{${base}}(${val1}x^{${px}}y^{${py}}) \\)<br><br>
+        <div style="display:flex; justify-content:center; align-items:center; gap: 8px; flex-wrap:wrap;">
+            <input type="number" id="ans_0" style="width: 50px; text-align: center;" autocomplete="off" aria-label="Término constante"> \\( + \\)
+            <input type="number" id="ans_1" style="width: 50px; text-align: center;" autocomplete="off" aria-label="Coeficiente de log de x"> \\( \\log_{${base}}(x) + \\)
+            <input type="number" id="ans_2" style="width: 50px; text-align: center;" autocomplete="off" aria-label="Coeficiente de log de y"> \\( \\log_{${base}}(y) \\)
+        </div>`;
+        explanation = `<strong>Expansión usando propiedades de producto y potencia:</strong><br><br>
+        1. Separamos el producto: \\( \\log_{${base}}(${val1}) + \\log_{${base}}(x^{${px}}) + \\log_{${base}}(y^{${py}}) \\)<br>
+        2. Simplificamos \\( \\log_{${base}}(${val1}) = ${p1} \\)<br>
+        3. Bajamos los exponentes: \\( ${px}\\log_{${base}}(x) \\) y \\( ${py}\\log_{${base}}(y) \\).<br><br>
+        Queda: \\( ${p1} + ${px}\\log_{${base}}(x) + ${py}\\log_{${base}}(y) \\).`;
+
+    } else if (type === 'reduccion') {
+        // Plantilla 5 corregida: se fija targetBase=3 para que el resultado
+        // (log_3(81)=4) sea coherente con la base mostrada. Antes daba
+        // ans=0 para cualquier base, lo cual era matemáticamente falso.
+        const templates = [
+            { A: 5, a: 2, B: 40, b: 1, C: 10, c: 3, target: 1, ans: 0 },
+            { A: 2, a: 3, B: 25, b: 1, C: 200, c: 1, target: 1, ans: 0 },
+            { A: 6, a: 2, B: 25, b: 1, C: 30, c: 2, target: 1, ans: 0 },
+            { A: 50, a: 1, B: 2, b: 2, C: 20, c: 1, target: 10, targetBase: 10, ans: 1 },
+            { A: 72, a: 1, B: 3, b: 2, C: 2, c: 3, target: 81, targetBase: 3, ans: 4 }
+        ];
+        const t = templates[Math.floor(Math.random() * templates.length)];
+        const b = t.targetBase ? t.targetBase : bases[Math.floor(Math.random() * bases.length)];
+        answer = t.ans.toString();
+        html = `Simplifica la expresión:<br><br>\\( ${t.a === 1 ? '' : t.a}\\log_{${b}}(${t.A}) + ${t.b === 1 ? '' : t.b}\\log_{${b}}(${t.B}) - ${t.c === 1 ? '' : t.c}\\log_{${b}}(${t.C}) \\) = <input type="number" id="ans" style="width: 80px; text-align: center;" autocomplete="off" aria-label="Resultado">`;
+        explanation = `<strong>Reducción usando propiedades:</strong><br><br>
+        1. Subimos los coeficientes como exponentes: \\( \\log_{${b}}(${t.A}^{${t.a}}) + \\log_{${b}}(${t.B}^{${t.b}}) - \\log_{${b}}(${t.C}^{${t.c}}) \\)<br>
+        2. Agrupamos sumas y restas: \\( \\log_{${b}}\\left( \\frac{${Math.pow(t.A, t.a)} \\cdot ${Math.pow(t.B, t.b)}}{${Math.pow(t.C, t.c)}} \\right) \\)<br>
+        3. Operamos la fracción: \\( \\log_{${b}}(${t.target}) \\) que resulta en \\( ${t.ans} \\).`;
+
+    } else if (type === 'ecuacion_suma') {
+        const b = 10;
+        const p1 = Math.floor(Math.random() * 2) + 2;
+        const val1 = Math.pow(b, p1);
+        const divisors = getDivisors(val1);
+        const A = divisors[Math.floor(Math.random() * (divisors.length - 2)) + 1];
+        const x = val1 / A;
+        answer = x.toString();
+        html = `Resuelve la ecuación:<br><br> \\( \\log(x) + \\log(${A}) = ${p1} \\)<br><br> \\( x \\) = <input type="number" id="ans" style="width: 80px; text-align: center;" autocomplete="off" aria-label="Valor de x">`;
+        explanation = `<strong>Ecuación logarítmica:</strong><br><br>
+        1. Expresamos el resultado como logaritmo: \\( ${p1} = \\log(10^{${p1}}) = \\log(${val1}) \\).<br>
+        2. Aplicamos la propiedad del producto en la izquierda: \\( \\log(${A}x) = \\log(${val1}) \\).<br>
+        3. Igualamos los argumentos: \\( ${A}x = ${val1} \\) obteniendo \\( x = ${x} \\).`;
+    }
+
+    return { type, typeName, answer, html, explanation, evaluado: false, acertado: null };
+}
+
+function construirMazo() {
+    const tipos = shuffle([...TIPOS_FIJOS]);
+    return tipos.map(t => generarEjercicio(t));
+}
+
+// Compara la respuesta del alumno con la solución, por equivalencia real
+// (numérica o de fracción), no por igualdad estricta de cadenas.
+function parseNumeroOFraccion(str) {
+    str = String(str).trim();
+    if (str === '') return null;
+    if (str.includes('/')) {
+        const partes = str.split('/');
+        if (partes.length !== 2) return null;
+        const num = Number(partes[0].trim());
+        const den = Number(partes[1].trim());
+        if (isNaN(num) || isNaN(den) || den === 0) return null;
+        return num / den;
+    }
+    const n = Number(str);
+    return isNaN(n) ? null : n;
+}
+
+function respuestaCorrecta(ejercicio, valoresUsuario) {
+    if (ejercicio.type === 'expansion') {
+        for (let i = 0; i < 3; i++) {
+            const a = Number(valoresUsuario[i]);
+            const b = Number(ejercicio.answer[i]);
+            if (isNaN(a) || a !== b) return false;
+        }
+        return true;
+    }
+    const a = parseNumeroOFraccion(valoresUsuario);
+    const b = parseNumeroOFraccion(ejercicio.answer);
+    if (a === null || b === null) return false;
+    return Math.abs(a - b) < 1e-9;
+}
+
+function pintarEjercicio(index) {
+    const ejercicio = mazo[index];
+
+    document.getElementById('ficha-num').textContent = (index + 1).toString();
+    document.getElementById('ficha-title').innerHTML = `Ejercicio <span class="tag">${ejercicio.typeName}</span>`;
+    document.getElementById('enunciado').innerHTML = 'Resuelve el siguiente ejercicio matemático.';
+    document.getElementById('exercise-container').innerHTML = ejercicio.html;
+    document.getElementById('progreso-texto').textContent = `Ejercicio ${index + 1} / ${TOTAL_EJERCICIOS}`;
+    document.getElementById('progreso-relleno').style.width = (index / TOTAL_EJERCICIOS * 100) + '%';
+
+    const bloque = document.getElementById('bloque1');
+    bloque.classList.remove('paso-ok', 'paso-fail');
+    document.getElementById('pnum1').classList.remove('done');
+    const fb = document.getElementById('fb-container');
+    fb.className = 'fb-paso';
+    fb.innerHTML = '';
+    document.getElementById('aviso-vacio').classList.remove('show');
+
+    document.getElementById('checkBtn').style.display = 'inline-block';
+    document.getElementById('btn-otro').style.display = 'none';
+
+    setTimeout(() => {
+        if (ejercicio.type === 'expansion') {
+            [0, 1, 2].forEach(i => {
+                const inp = document.getElementById('ans_' + i);
+                if (inp) {
+                    inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') checkAnswer(); });
+                }
+            });
+            const first = document.getElementById('ans_0');
+            if (first) first.focus();
+        } else {
+            const input = document.getElementById('ans');
+            if (input) {
+                input.addEventListener('keydown', (e) => { if (e.key === 'Enter') checkAnswer(); });
+                input.focus();
+            }
+        }
+    }, 80);
+
+    if (window.MathJax && MathJax.typesetPromise) {
+        MathJax.typesetPromise([document.getElementById('exercise-container'), document.getElementById('ficha-title')]).catch(() => {});
+    }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    mazo = construirMazo();
+    currentIndex = 0;
+    startTime = new Date();
+    pintarEjercicio(0);
+    updateStatsUI();
+});
+
+function elapsed() {
+    if (!startTime) return '00:00';
+    const s = Math.floor((Date.now() - startTime) / 1000);
+    return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+}
+
+function updateStatsUI() {
+    const evaluados = mazo.filter(e => e.evaluado).length;
+    document.getElementById('s-real').innerText = evaluados + '/' + TOTAL_EJERCICIOS;
+    document.getElementById('s-ac').innerText = stats.correct;
+    document.getElementById('s-fail').innerText = stats.incorrect;
+    document.getElementById('s-pts').innerText = stats.score.toFixed(1).replace(/\.0$/, '') + '/10';
+}
+
+function checkAnswer() {
+    const ejercicio = mazo[currentIndex];
+    if (!ejercicio || ejercicio.evaluado) return; // guarda de estado
+
+    const isExpansion = ejercicio.type === 'expansion';
+    let valores;
+
+    if (isExpansion) {
+        const a0 = document.getElementById('ans_0').value.trim();
+        const a1 = document.getElementById('ans_1').value.trim();
+        const a2 = document.getElementById('ans_2').value.trim();
+        if (a0 === '' || a1 === '' || a2 === '') {
+            document.getElementById('aviso-vacio').classList.add('show');
+            return;
+        }
+        valores = [a0, a1, a2];
+    } else {
+        const ansInput = document.getElementById('ans');
+        if (!ansInput) return;
+        const val = ansInput.value.trim();
+        if (val === '') {
+            document.getElementById('aviso-vacio').classList.add('show');
+            return;
+        }
+        valores = val;
+    }
+    document.getElementById('aviso-vacio').classList.remove('show');
+
+    const fb = document.getElementById('fb-container');
+    const bloque = document.getElementById('bloque1');
+    const pnum = document.getElementById('pnum1');
+
+    const esCorrecta = respuestaCorrecta(ejercicio, valores);
+    ejercicio.evaluado = true;
+    ejercicio.acertado = esCorrecta;
+
+    const inputs = isExpansion
+        ? [document.getElementById('ans_0'), document.getElementById('ans_1'), document.getElementById('ans_2')]
+        : [document.getElementById('ans')];
+
+    if (esCorrecta) {
+        stats.correct++;
+        stats.score += PUNTOS_POR_EJERCICIO;
+        fb.className = 'fb-paso show ok';
+        fb.innerHTML = '✓ ¡Correcto! Muy bien resuelto.';
+        bloque.classList.add('paso-ok');
+        pnum.classList.add('done');
+        inputs.forEach(i => i.className = 'ok');
+    } else {
+        stats.incorrect++;
+        fb.className = 'fb-paso show fail';
+        fb.innerHTML = `<strong>Incorrecto.</strong> Solución paso a paso:<br><br>${ejercicio.explanation}`;
+        bloque.classList.add('paso-fail');
+        inputs.forEach(i => i.className = 'fail');
+        if (window.MathJax && MathJax.typesetPromise) {
+            MathJax.typesetPromise([fb]).catch(() => {});
+        }
+    }
+
+    updateStatsUI();
+
+    document.getElementById('checkBtn').style.display = 'none';
+    inputs.forEach(i => i.disabled = true);
+
+    if (currentIndex < TOTAL_EJERCICIOS - 1) {
+        document.getElementById('btn-otro').style.display = 'inline-block';
+    } else {
+        document.getElementById('progreso-relleno').style.width = '100%';
+    }
+}
+
+function siguienteEjercicio() {
+    if (currentIndex < TOTAL_EJERCICIOS - 1) {
+        currentIndex++;
+        pintarEjercicio(currentIndex);
+    }
+}
+
+function finalizar() {
+    const nombreActual = nombreInput.value.trim();
+    if (!nombreActual) {
+        document.getElementById('modal-nombre-input').value = '';
+        document.getElementById('modal-nombre-bg').classList.add('show');
+        return;
+    }
+    studentName = nombreActual;
+    procederAFinalizar();
+}
+
+function confirmarNombreDesdeModal() {
+    const val = document.getElementById('modal-nombre-input').value.trim();
+    if (!val) {
+        document.getElementById('modal-nombre-input').focus();
+        return;
+    }
+    nombreInput.value = val;
+    studentName = val;
+    document.getElementById('modal-nombre-bg').classList.remove('show');
+    procederAFinalizar();
+}
+
+function procederAFinalizar() {
+    const evaluados = mazo.filter(e => e.evaluado).length;
+    if (evaluados < TOTAL_EJERCICIOS) {
+        const faltan = TOTAL_EJERCICIOS - evaluados;
+        document.getElementById('modal-incompleto-texto').innerHTML =
+            `Todavía te quedan <strong>${faltan}</strong> ejercicio${faltan === 1 ? '' : 's'} por hacer. ` +
+            `Si finalizas ahora, tu nota quedaría en <strong>${stats.score.toFixed(1).replace(/\.0$/, '')}/10</strong>. ` +
+            `Puedes seguir practicando sin perder nada de lo ya conseguido.`;
+        document.getElementById('modal-incompleto-bg').classList.add('show');
+        return;
+    }
+    mostrarModalCalificacion();
+}
+
+function cancelarFinalizacion() {
+    document.getElementById('modal-incompleto-bg').classList.remove('show');
+}
+
+function confirmarFinalizacionIncompleta() {
+    document.getElementById('modal-incompleto-bg').classList.remove('show');
+    mostrarModalCalificacion();
+}
+
+function mostrarModalCalificacion() {
+    const score = stats.score;
+    const now = new Date();
+    const fecha = String(now.getDate()).padStart(2, '0') + '/' + String(now.getMonth() + 1).padStart(2, '0') + '/' + now.getFullYear();
+    const hora = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0');
+
+    const cols = {
+        10: { bg: '#1a7a1a', txt: '#fff', v: true },
+        9: { bg: '#6dbf6d', txt: '#fff' },
+        8: { bg: '#1a4f8a', txt: '#fff' },
+        7: { bg: '#5b9bd5', txt: '#fff' },
+        6: { bg: '#c05c00', txt: '#fff' },
+        5: { bg: '#f5a623', txt: '#000' }
+    };
+
+    const k = score >= 10 ? 10 : score >= 9 ? 9 : score >= 8 ? 8 : score >= 7 ? 7 : score >= 6 ? 6 : score >= 5 ? 5 : -1;
+    const col = cols[k] || { bg: '#8B1A1A', txt: '#fff' };
+
+    const modal = document.getElementById('modal');
+    modal.style.background = col.bg;
+    modal.style.color = col.txt;
+    modal.style.borderColor = col.bg;
+    const btnCerrar = modal.querySelector('.btn-cerrar');
+    if (btnCerrar) btnCerrar.style.color = col.txt;
+
+    document.getElementById('m-nombre').textContent = studentName;
+    document.getElementById('m-nota').textContent = score.toFixed(1).replace(/\.0$/, '') + ' / 10';
+    document.getElementById('m-meta').innerHTML = `Fecha: ${fecha}<br>Hora: ${hora}<br>Tiempo: ${elapsed()}<br>Aciertos: ${stats.correct} · Fallos: ${stats.incorrect} (de ${TOTAL_EJERCICIOS})`;
+
+    document.getElementById('modal-bg').classList.add('show');
+    if (col.v) document.getElementById('wrap').classList.add('verde-total');
+}
+
+function cerrarModal() {
+    document.getElementById('modal-bg').classList.remove('show');
+    document.getElementById('wrap').classList.remove('verde-total');
+}
+</script>
+</body>
+</html>
