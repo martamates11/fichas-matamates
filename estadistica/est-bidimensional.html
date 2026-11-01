@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ficha — Estadística Bidimensional</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap');
+:root{
+  --cf:#F5F0E8;--cc:#FDFAF3;--ct:#2C1F0E;--cs:#6B4F35;
+  --ca:#A0522D;--cah:#7B3B1E;--cb:#C9A96E;--cbs:#E0CEAA;
+  --ch:#3B2510;--cht:#F5EDD8;--cok:#2E6B3E;--cko:#8B1A1A;--cn:#E8DFC8;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Lato',sans-serif;font-size:15px;color:var(--ct);background:var(--cf);padding:0 0 2rem;}
+.top-bar{background:var(--ch);color:var(--cht);font-family:'Libre Baskerville',serif;text-align:center;padding:10px 20px;border-bottom:3px solid var(--cb);font-size:0.75rem;letter-spacing:0.05em;}
+.wrap{max-width:860px;margin:20px auto;padding:0 12px;}
+.cabecera{background:var(--cc);border:2px solid var(--cb);border-radius:6px;padding:18px 22px;margin-bottom:14px;box-shadow:0 2px 8px rgba(44,31,14,.10);}
+.cab-title{font-family:'Libre Baskerville',serif;font-size:1.35rem;color:var(--ct);text-align:center;margin-bottom:4px;}
+.cab-title::after{content:'';display:block;width:50px;height:3px;background:var(--cb);margin:6px auto 0;border-radius:2px;}
+.cab-sub{font-size:0.82rem;color:var(--cs);text-align:center;margin:10px 0 14px;}
+.campo-nombre{display:flex;align-items:center;gap:10px;}
+.campo-nombre label{font-size:0.78rem;color:var(--cs);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;}
+.campo-nombre input{flex:1;border:none;border-bottom:1.5px solid var(--cb);background:transparent;font-family:'Lato',sans-serif;font-size:.95rem;color:var(--ct);padding:4px 2px;outline:none;}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+.stat{background:var(--cc);border:1.5px solid var(--cbs);border-radius:6px;padding:8px;text-align:center;}
+.stat-label{font-size:.68rem;color:var(--cs);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;}
+.stat-val{font-family:'Libre Baskerville',serif;font-size:1.35rem;color:var(--ca);}
+.ficha{background:var(--cc);border:2px solid var(--cb);border-radius:6px;padding:20px 24px;margin-bottom:14px;box-shadow:0 2px 8px rgba(44,31,14,.08);}
+.ficha-hdr{font-family:'Libre Baskerville',serif;font-size:1rem;color:var(--ct);border-bottom:1.5px solid var(--cbs);padding-bottom:10px;margin-bottom:16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.tag{background:var(--cn);color:var(--ca);border-radius:4px;font-size:.7rem;font-family:'Lato',sans-serif;padding:2px 8px;font-weight:700;}
+.sec-titulo{font-size:.7rem;font-weight:700;color:var(--cs);text-transform:uppercase;letter-spacing:.06em;margin:14px 0 10px;padding-bottom:4px;border-bottom:1px solid var(--cbs);}
+/* EJ1 — Emparejar */
+.match-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.match-graphs{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.match-card{background:var(--cf);border:1.5px solid var(--cbs);border-radius:6px;padding:10px;text-align:center;}
+.match-card canvas{width:100%;height:130px;display:block;}
+.graph-label{font-family:'Libre Baskerville',serif;font-size:.8rem;color:var(--cs);margin-top:6px;}
+.match-rs{display:flex;flex-direction:column;gap:10px;justify-content:center;}
+.r-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.r-badge{background:var(--ch);color:var(--cht);border-radius:4px;font-family:'Libre Baskerville',serif;font-size:.88rem;padding:5px 10px;white-space:nowrap;min-width:80px;text-align:center;}
+.r-select{border:1.5px solid var(--cb);background:var(--cc);border-radius:4px;padding:5px 8px;font-family:'Lato',sans-serif;font-size:.85rem;color:var(--ct);outline:none;cursor:pointer;}
+.r-select.ok{border-color:var(--cok);background:#EAF4EC;}
+.r-select.fail{border-color:var(--cko);background:#F9EAEA;}
+/* EJ2 */
+.ej2-wrap{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;}
+.ej2-canvas-wrap{background:var(--cf);border:1.5px solid var(--cbs);border-radius:6px;padding:10px;}
+.ej2-canvas-wrap canvas{width:100%;display:block;}
+.ej2-pregs{display:flex;flex-direction:column;gap:10px;}
+/* EJ3 */
+.ej3-info{background:var(--cf);border:1.5px solid var(--cbs);border-radius:6px;padding:12px 16px;margin-bottom:12px;font-family:'Libre Baskerville',serif;font-size:.92rem;color:var(--ct);line-height:1.8;}
+/* Inputs genéricos */
+.pregunta-item{background:var(--cf);border:1.5px solid var(--cbs);border-radius:6px;padding:9px 14px;display:flex;flex-direction:row;align-items:center;flex-wrap:wrap;gap:6px 8px;min-height:44px;}
+.pregunta-item.p-ok{border-color:var(--cok);background:#EAF4EC;}
+.pregunta-item.p-fail{border-color:var(--cko);background:#F9EAEA;}
+.p-lbl{font-family:'Libre Baskerville',serif;font-size:.88rem;color:var(--ct);}
+.p-eq{font-family:'Libre Baskerville',serif;font-size:.95rem;color:var(--cs);}
+.p-inp{width:110px;background:var(--cc);border:1.5px solid var(--cb);border-radius:4px;padding:5px 8px;font-family:'Lato',sans-serif;font-size:.9rem;color:var(--ct);outline:none;}
+.p-inp:focus{border-color:var(--ca);}
+.p-inp.ok{border-color:var(--cok);background:#EAF4EC;}
+.p-inp.fail{border-color:var(--cko);background:#F9EAEA;}
+.fb{font-size:.78rem;border-radius:4px;padding:5px 8px;display:none;line-height:1.4;width:100%;flex-basis:100%;}
+.fb.show{display:block;}
+.fb.ok{background:#EAF4EC;color:var(--cok);font-weight:700;}
+.fb.fail{background:#F9EAEA;color:var(--cko);}
+.p-unit{font-size:.75rem;color:var(--cs);}
+/* Botones */
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}
+.btn-check{background:var(--ch);color:var(--cht);border:2px solid var(--cb);border-radius:4px;padding:8px 20px;font-family:'Libre Baskerville',serif;font-size:.88rem;font-weight:700;cursor:pointer;letter-spacing:.03em;transition:background .2s;}
+.btn-check:hover{background:#2C1A0A;}
+.fb-global{margin-top:10px;font-size:.85rem;border-radius:4px;padding:10px 14px;display:none;line-height:1.65;}
+.fb-global.show{display:block;}
+.fb-global.ok{background:#EAF4EC;color:var(--cok);border:1.5px solid var(--cok);font-weight:700;}
+.fb-global.fail{background:#F9EAEA;color:var(--cko);border:1.5px solid var(--cko);}
+.btn-final{background:var(--ch);color:var(--cht);border:2px solid var(--cb);border-radius:4px;padding:11px 24px;font-family:'Libre Baskerville',serif;font-size:.95rem;font-weight:700;cursor:pointer;width:100%;margin-top:4px;letter-spacing:.03em;transition:background .2s;}
+.btn-final:hover{background:#2C1A0A;}
+/* Modal */
+.modal-bg{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(44,31,14,.55);display:none;align-items:center;justify-content:center;z-index:9999;}
+.modal-bg.show{display:flex;}
+.modal{border:3px solid var(--cb);border-radius:8px;padding:32px 36px;max-width:380px;width:90%;text-align:center;font-family:'Libre Baskerville',serif;box-shadow:0 6px 24px rgba(44,31,14,.35);}
+.modal h2{font-size:1.2rem;font-weight:700;margin-bottom:4px;}
+.modal .nota-big{font-size:3.2rem;font-weight:700;line-height:1.1;margin:8px 0;}
+.modal .meta{font-size:.82rem;opacity:.9;line-height:1.9;margin-bottom:12px;font-family:'Lato',sans-serif;}
+.modal .captura{font-size:.85rem;border-radius:6px;padding:8px 12px;background:rgba(255,255,255,.2);margin-bottom:12px;font-family:'Lato',sans-serif;}
+.modal .btn-cerrar{background:rgba(255,255,255,.25);border:1.5px solid rgba(255,255,255,.55);border-radius:4px;padding:8px 20px;font-size:.85rem;cursor:pointer;font-family:'Lato',sans-serif;color:inherit;}
+@media(max-width:600px){
+  .match-grid,.ej2-wrap{grid-template-columns:1fr;}
+  .match-graphs{grid-template-columns:1fr 1fr;}
+  .stats{grid-template-columns:repeat(2,1fr);}
+}
+</style>
+</head>
+<body>
+<div class="top-bar">Material elaborado por Marta L. Letona S. · Basado en el trabajo de J.Cayetano</div>
+<div class="wrap" id="wrap">
+
+  <div class="cabecera">
+    <div class="cab-title">Estadística Bidimensional</div>
+    <div class="cab-sub">Correlación · Recta de regresión · Estimación</div>
+    <div class="campo-nombre">
+      <label for="nombre">Nombre del alumno</label>
+      <input type="text" id="nombre" placeholder="Escribe tu nombre completo..." oninput="startTimer()">
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-label">Apartados</div><div class="stat-val" id="s-real">0/8</div></div>
+    <div class="stat"><div class="stat-label">Con puntos</div><div class="stat-val" id="s-ac" style="color:#2E6B3E">0</div></div>
+    <div class="stat"><div class="stat-label">Cerrados en 0</div><div class="stat-val" id="s-fail" style="color:#8B1A1A">0</div></div>
+    <div class="stat"><div class="stat-label">Puntuación</div><div class="stat-val" id="s-pts">0,00/10</div></div>
+  </div>
+
+  <!-- EJ 1 -->
+  <div class="ficha" id="ej1-ficha">
+    <div class="ficha-hdr">Ejercicio 1 <span class="tag">Empareja r con su diagrama · 4 apartados</span></div>
+    <div class="sec-titulo">Relaciona cada coeficiente de correlación con su nube de puntos</div>
+    <div class="match-grid">
+      <div class="match-graphs" id="match-graphs"></div>
+      <div class="match-rs" id="match-rs"></div>
+    </div>
+    <div class="btns">
+      <button class="btn-check" onclick="check1()">✓ Comprobar</button>
+    </div>
+    <div class="fb-global" id="fb1-global" aria-live="polite"></div>
+  </div>
+
+  <!-- EJ 2 -->
+  <div class="ficha" id="ej2-ficha">
+    <div class="ficha-hdr">Ejercicio 2 <span class="tag" id="ej2-tag">Estimación gráfica · 1 apartado</span></div>
+    <div class="sec-titulo" id="ej2-sec">Observa la nube de puntos y la recta de regresión</div>
+    <div class="ej2-wrap">
+      <div class="ej2-canvas-wrap"><canvas id="ej2-canvas" height="230"></canvas></div>
+      <div class="ej2-pregs" id="ej2-pregs"></div>
+    </div>
+    <div class="btns">
+      <button class="btn-check" onclick="check2()">✓ Comprobar</button>
+    </div>
+    <div class="fb-global" id="fb2-global" aria-live="polite"></div>
+  </div>
+
+  <!-- EJ 3 -->
+  <div class="ficha" id="ej3-ficha">
+    <div class="ficha-hdr">Ejercicio 3 <span class="tag">Ecuación de la recta · 3 apartados</span></div>
+    <div class="sec-titulo">Halla la ecuación de la recta de regresión y realiza una estimación</div>
+    <div class="ej3-info" id="ej3-info"></div>
+    <div id="ej3-pregs"></div>
+    <div class="btns">
+      <button class="btn-check" onclick="check3()">✓ Comprobar</button>
+    </div>
+    <div class="fb-global" id="fb3-global" aria-live="polite"></div>
+  </div>
+
+  <button class="btn-final" onclick="finalizar()">Finalizar y Calificar</button>
+</div>
+
+<div class="modal-bg" id="modal-bg">
+  <div class="modal" id="modal">
+    <h2 id="m-nombre">—</h2>
+    <div class="nota-big" id="m-nota">—</div>
+    <div class="meta" id="m-meta"></div>
+    <div class="captura">Haz una captura de pantalla y entrégala en Google Classroom.</div>
+    <button class="btn-cerrar" onclick="cerrarModal()">Cerrar y seguir practicando</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════
+//  CONSTANTES DE PUNTUACIÓN
+// ═══════════════════════════════
+const PUNTOS_MAX = 10;
+const N_APARTADOS = 8; // 4 (ej1: emparejamientos) + 1 (ej2: estimación) + 3 (ej3: pendiente/ordenada/estimación)
+const PUNTOS_POR_APARTADO = PUNTOS_MAX / N_APARTADOS; // 1.25
+
+// ═══════════════════════════════
+//  ESTADO GLOBAL
+// ═══════════════════════════════
+let timerStart=null;
+let apartadosGanados=0;   // apartados acertados que SÍ puntúan
+let apartadosCerrados=0;  // apartados fallados y ya revelados: cerrados en 0 para siempre
+let ej1Data={}, ej2Data={}, ej3Data={};
+
+function startTimer(){if(!timerStart)timerStart=Date.now();}
+function elapsed(){
+  if(!timerStart)return'00:00';
+  const s=Math.floor((Date.now()-timerStart)/1000);
+  return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+}
+function calcNota(){
+  return Math.max(0,Math.min(PUNTOS_MAX,parseFloat((apartadosGanados*PUNTOS_POR_APARTADO).toFixed(2))));
+}
+function updateStats(){
+  const resueltos=apartadosGanados+apartadosCerrados;
+  document.getElementById('s-real').textContent=resueltos+'/'+N_APARTADOS;
+  document.getElementById('s-ac').textContent=apartadosGanados;
+  document.getElementById('s-fail').textContent=apartadosCerrados;
+  document.getElementById('s-pts').textContent=calcNota().toFixed(2).replace('.',',')+'/10';
+}
+function sumarPuntos(n){ apartadosGanados+=n; updateStats(); }
+function contarFallo(){ apartadosCerrados+=1; updateStats(); }
+
+// Resumen de estado (won/closed/pending) de un array de apartados de un ejercicio
+function resumenEstado(stateArr){
+  const total=stateArr.length;
+  const ganados=stateArr.filter(s=>s==='won').length;
+  const cerrados=stateArr.filter(s=>s==='closed').length;
+  const pendientes=total-ganados-cerrados;
+  return {total,ganados,cerrados,pendientes};
+}
+function actualizarGlobalEj(fgId, stateArr){
+  const {total,ganados,cerrados,pendientes}=resumenEstado(stateArr);
+  const fg=document.getElementById(fgId);
+  if(pendientes>0){
+    fg.className='fb-global show';
+    fg.style.background='var(--cn)'; fg.style.color='var(--ct)'; fg.style.border='1.5px solid var(--cbs)';
+    fg.innerHTML='Quedan '+pendientes+' apartado(s) por responder. Pulsa «Comprobar» de nuevo cuando los completes.';
+  } else if(ganados===total){
+    fg.style.background=''; fg.style.color=''; fg.style.border='';
+    fg.className='fb-global show ok';
+    fg.innerHTML='¡Perfecto! Los '+total+' apartados correctos ('+(ganados*PUNTOS_POR_APARTADO).toFixed(2)+' pts).';
+  } else {
+    fg.style.background=''; fg.style.color=''; fg.style.border='';
+    fg.className='fb-global show fail';
+    fg.innerHTML=ganados+' de '+total+' apartados con puntuación ('+(ganados*PUNTOS_POR_APARTADO).toFixed(2)+' pts). '+cerrados+' cerrado(s) en 0 tras revelarse la respuesta.';
+  }
+}
+
+// Evalúa un apartado de tipo "input numérico" (usado en ej2 y ej3).
+// Nunca vuelve a puntuar un apartado ya ganado; si ya está cerrado (fallo revelado),
+// permite ver el estado corregido pero SIN otorgar puntos.
+function evaluarApartado(inputEl, fbEl, stateArr, idx, isOkFn, correctDisplay, unidad, piEl){
+  const state=stateArr[idx];
+  if(state==='won') return;
+  const raw=inputEl.value.trim();
+  if(raw==='') return; // aún sin responder: no evaluar
+  const v=parseFloat(raw.replace(',','.'));
+  const isOk=!isNaN(v) && isOkFn(v);
+  const unidadTxt = unidad?(' '+unidad):'';
+  if(isOk){
+    if(state==='closed'){
+      inputEl.className='p-inp ok';
+      if(piEl) piEl.className='pregunta-item p-ok';
+      fbEl.className='fb show ok';
+      fbEl.textContent='✓ Ahora es correcto, pero este apartado ya se cerró en 0 tras el primer fallo.';
+    } else {
+      stateArr[idx]='won';
+      inputEl.className='p-inp ok';
+      if(piEl) piEl.className='pregunta-item p-ok';
+      fbEl.className='fb show ok';
+      fbEl.textContent='✓ Correcto (+'+PUNTOS_POR_APARTADO.toFixed(2)+' pts)';
+      sumarPuntos(1);
+    }
+  } else {
+    if(state!=='closed'){
+      stateArr[idx]='closed';
+      contarFallo();
+    }
+    inputEl.className='p-inp fail';
+    if(piEl) piEl.className='pregunta-item p-fail';
+    fbEl.className='fb show fail';
+    fbEl.textContent='Valor correcto: '+correctDisplay+unidadTxt+(state==='closed'?' (sin puntos: apartado ya cerrado)':' (0 pts para este apartado)');
+  }
+}
+
+// ═══════════════════════════════
+//  UTILIDADES CANVAS
+// ═══════════════════════════════
+const PC={bg:'#FDFAF3',grid:'#E0CEAA',axis:'#3B2510',dot:'#A0522D',reg:'#2E6B3E',txt:'#6B4F35'};
+
+function niceStep(range,maxTicks){
+  const raw=range/maxTicks;
+  const mag=Math.pow(10,Math.floor(Math.log10(raw)));
+  const norm=raw/mag;
+  const nice=norm<1.5?1:norm<3?2:norm<7?5:10;
+  return nice*mag;
+}
+
+function drawScatter(canvas,data,regLine,xLabel,yLabel,showLine){
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width, H=canvas.height;
+  const ml=52,mr=14,mt=14,mb=42;
+  const pw=W-ml-mr, ph=H-mt-mb;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle=PC.bg; ctx.fillRect(0,0,W,H);
+
+  const xs=data.map(d=>d[0]), ys=data.map(d=>d[1]);
+  const xpad=(Math.max(...xs)-Math.min(...xs))*0.12||1;
+  const ypad=(Math.max(...ys)-Math.min(...ys))*0.12||1;
+  let xmin=Math.min(...xs)-xpad, xmax=Math.max(...xs)+xpad;
+  let ymin=Math.min(...ys)-ypad, ymax=Math.max(...ys)+ypad;
+
+  const toX=x=>ml+(x-xmin)/(xmax-xmin)*pw;
+  const toY=y=>mt+ph-(y-ymin)/(ymax-ymin)*ph;
+
+  const xStep=niceStep(xmax-xmin,6);
+  const yStep=niceStep(ymax-ymin,6);
+  const xStart=Math.ceil(xmin/xStep)*xStep;
+  const yStart=Math.ceil(ymin/yStep)*yStep;
+
+  ctx.strokeStyle=PC.grid; ctx.lineWidth=0.7;
+  for(let x=xStart;x<=xmax+0.001;x+=xStep){
+    ctx.beginPath();ctx.moveTo(toX(x),mt);ctx.lineTo(toX(x),mt+ph);ctx.stroke();
+  }
+  for(let y=yStart;y<=ymax+0.001;y+=yStep){
+    ctx.beginPath();ctx.moveTo(ml,toY(y));ctx.lineTo(ml+pw,toY(y));ctx.stroke();
+  }
+
+  ctx.strokeStyle=PC.axis; ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(ml,mt);ctx.lineTo(ml,mt+ph);ctx.lineTo(ml+pw,mt+ph);ctx.stroke();
+
+  ctx.fillStyle=PC.txt; ctx.font='10px Lato,sans-serif'; ctx.textAlign='center';
+  for(let x=xStart;x<=xmax+0.001;x+=xStep){
+    const lbl=Number.isInteger(xStep)?Math.round(x).toString():x.toFixed(1);
+    ctx.fillText(lbl,toX(x),mt+ph+13);
+  }
+  ctx.textAlign='right';
+  for(let y=yStart;y<=ymax+0.001;y+=yStep){
+    const lbl=Number.isInteger(yStep)?Math.round(y).toString():y.toFixed(1);
+    ctx.fillText(lbl,ml-5,toY(y)+4);
+  }
+
+  ctx.fillStyle=PC.txt; ctx.font='11px Lato,sans-serif'; ctx.textAlign='center';
+  if(xLabel) ctx.fillText(xLabel,ml+pw/2,H-4);
+  if(yLabel){ctx.save();ctx.translate(13,mt+ph/2);ctx.rotate(-Math.PI/2);ctx.fillText(yLabel,0,0);ctx.restore();}
+
+  if(showLine && regLine){
+    const {a,b}=regLine;
+    ctx.strokeStyle=PC.reg; ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(toX(xmin),toY(a*xmin+b));ctx.lineTo(toX(xmax),toY(a*xmax+b));ctx.stroke();
+  }
+  ctx.fillStyle=PC.dot;
+  data.forEach(([x,y])=>{
+    ctx.beginPath();ctx.arc(toX(x),toY(y),4,0,Math.PI*2);ctx.fill();
+  });
+}
+
+// Escala FIJA (-4..4) igual para todas las gráficas del ejercicio 1, para que sean comparables entre sí.
+function drawSmallScatter(canvas,data){
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width, H=canvas.height;
+  const m=18;
+  const xmin=-4, xmax=4, ymin=-4, ymax=4;
+  const toX=x=>m+(x-xmin)/(xmax-xmin)*(W-2*m);
+  const toY=y=>m+(H-2*m)-(y-ymin)/(ymax-ymin)*(H-2*m);
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle=PC.bg; ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle=PC.grid; ctx.lineWidth=0.7;
+  for(let i=0;i<=4;i++){
+    const xp=m+i*(W-2*m)/4, yp=m+i*(H-2*m)/4;
+    ctx.beginPath();ctx.moveTo(xp,m);ctx.lineTo(xp,H-m);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(m,yp);ctx.lineTo(W-m,yp);ctx.stroke();
+  }
+  ctx.strokeStyle=PC.axis; ctx.lineWidth=1.2;
+  ctx.beginPath();ctx.moveTo(m,m);ctx.lineTo(m,H-m);ctx.lineTo(W-m,H-m);ctx.stroke();
+  ctx.fillStyle=PC.dot;
+  data.forEach(([x,y])=>{
+    if(x<xmin||x>xmax||y<ymin||y>ymax) return;
+    ctx.beginPath();ctx.arc(toX(x),toY(y),3.5,0,Math.PI*2);ctx.fill();
+  });
+}
+
+function randn(){
+  let u=0,v=0;
+  while(!u)u=Math.random();
+  while(!v)v=Math.random();
+  return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
+}
+
+function generateCloud(r, n, cx, cy, sx, sy){
+  const pts=[];
+  for(let i=0;i<n;i++){
+    let u=randn(), v=randn();
+    const x=cx+sx*u;
+    const y=cy+sy*(r*u+Math.sqrt(1-r*r)*v);
+    pts.push([parseFloat(x.toFixed(2)),parseFloat(y.toFixed(2))]);
+  }
+  return pts;
+}
+
+// ═══════════════════════════════
+//  EJERCICIO 1
+// ═══════════════════════════════
+// NOTA: los rangos ya NO se solapan entre categorías (antes low_neg y near_zero
+// compartían el valor -0.10, lo que podía generar dos badges "r = -0,10" para
+// dos gráficas distintas — imposible de acertar con certeza).
+const R_POOLS = {
+  high_pos: [0.97,0.95,0.93,0.92,0.90],
+  mid_pos:  [0.78,0.72,0.68,0.62,0.58],
+  mid_neg:  [-0.58,-0.62,-0.68,-0.72,-0.78],
+  low_neg:  [-0.38,-0.34,-0.30,-0.26,-0.22],
+  high_neg: [-0.92,-0.93,-0.95,-0.97],
+  near_zero:[0.04,-0.04,0.08,-0.08,0.12,-0.12]
+};
+
+function pickR(){
+  const hp=pick(R_POOLS.high_pos);
+  const hn=pick(R_POOLS.high_neg);
+  let pool2=[...R_POOLS.mid_pos,...R_POOLS.mid_neg,...R_POOLS.low_neg,...R_POOLS.near_zero];
+  // Deduplicar por valor y excluir coincidencias con hp/hn: garantiza 4 valores de r
+  // siempre distintos entre sí, evitando el bug de badges idénticos.
+  pool2=[...new Map(pool2.map(v=>[v.toFixed(4),v])).values()].filter(v=>v.toFixed(4)!==hp.toFixed(4)&&v.toFixed(4)!==hn.toFixed(4));
+  shuffle(pool2);
+  const m1=pool2[0], m2=pool2[1];
+  const rs=[hp,hn,m1,m2];
+  shuffle(rs);
+  return rs;
+}
+function pick(arr){return arr[Math.floor(Math.random()*arr.length)];}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}}
+
+function buildEj1(){
+  const rs=pickR();
+  const labels=['A','B','C','D'];
+  const clouds=rs.map(r=>generateCloud(r,28,0,0,1,1));
+  ej1Data={rs,clouds,labels,itemState:labels.map(()=>'pending')};
+
+  const graphsDiv=document.getElementById('match-graphs');
+  graphsDiv.innerHTML='';
+  clouds.forEach((pts,i)=>{
+    const card=document.createElement('div');
+    card.className='match-card';
+    const cv=document.createElement('canvas');
+    cv.width=160; cv.height=130;
+    card.appendChild(cv);
+    const lbl=document.createElement('div');
+    lbl.className='graph-label';
+    lbl.textContent='Gráfica '+labels[i];
+    card.appendChild(lbl);
+    graphsDiv.appendChild(card);
+    setTimeout(()=>drawSmallScatter(cv,pts),0);
+  });
+
+  const rsShuffled=[...rs]; shuffle(rsShuffled);
+  const rsDiv=document.getElementById('match-rs');
+  rsDiv.innerHTML='';
+  rsShuffled.forEach((r,i)=>{
+    const row=document.createElement('div');
+    row.className='r-row';
+    const badge=document.createElement('div');
+    badge.className='r-badge';
+    const rTxt=r.toFixed(2).replace('.',',');
+    badge.textContent='r = '+rTxt;
+    const sel=document.createElement('select');
+    sel.className='r-select';
+    sel.id='rsel-'+i;
+    sel.dataset.r=r;
+    sel.setAttribute('aria-label','Selecciona la gráfica que corresponde a r = '+rTxt);
+    sel.innerHTML='<option value="">— elige gráfica —</option>'+labels.map(l=>`<option value="${l}">${l}</option>`).join('');
+    sel.addEventListener('change',startTimer);
+    row.appendChild(badge);
+    row.appendChild(sel);
+    const fb=document.createElement('div');
+    fb.className='fb';
+    fb.id='rfb-'+i;
+    fb.setAttribute('aria-live','polite');
+    row.appendChild(fb);
+    rsDiv.appendChild(row);
+  });
+  document.getElementById('fb1-global').className='fb-global';
+}
+
+function check1(){
+  startTimer();
+  const correct={};
+  ej1Data.rs.forEach((r,i)=>correct[r.toFixed(4)]=ej1Data.labels[i]);
+  const sels=document.querySelectorAll('.r-select');
+  sels.forEach((sel,i)=>{
+    const state=ej1Data.itemState[i];
+    if(state==='won') return;
+    const chosen=sel.value;
+    if(chosen==='') return; // aún sin responder: no evaluar
+    const r=parseFloat(sel.dataset.r);
+    const correctLabel=correct[r.toFixed(4)];
+    const isOk=chosen===correctLabel;
+    const fb=document.getElementById('rfb-'+i);
+    if(isOk){
+      if(state==='closed'){
+        sel.className='r-select ok';
+        fb.className='fb show ok';
+        fb.textContent='✓ Ahora es correcto, pero este apartado ya se cerró en 0 tras el primer fallo.';
+      } else {
+        ej1Data.itemState[i]='won';
+        sel.className='r-select ok';
+        fb.className='fb show ok';
+        fb.textContent='✓ Correcto (+'+PUNTOS_POR_APARTADO.toFixed(2)+' pts)';
+        sumarPuntos(1);
+      }
+    } else {
+      if(state!=='closed'){
+        ej1Data.itemState[i]='closed';
+        contarFallo();
+      }
+      sel.className='r-select fail';
+      fb.className='fb show fail';
+      fb.textContent='Respuesta correcta: Gráfica '+correctLabel+(state==='closed'?' (sin puntos: apartado ya cerrado)':' (0 pts para este apartado)');
+    }
+  });
+  actualizarGlobalEj('fb1-global', ej1Data.itemState);
+}
+
+// ═══════════════════════════════
+//  EJERCICIO 2
+// ═══════════════════════════════
+const EJ2_CONTEXTS=[
+  {xL:'Altura (cm)',yL:'Peso (kg)',xRange:[155,190],yRange:[50,95],m:0.8,b:-75,xQ:175,desc:'Para una persona de {xQ} cm de altura, estima su peso (kg):'},
+  {xL:'Horas estudio',yL:'Nota (sobre 10)',xRange:[1,10],yRange:[2,10],m:0.7,b:1.5,xQ:7,desc:'Para un alumno que estudia {xQ} horas, estima su nota:'},
+  {xL:'Temp. (°C)',yL:'Ventas helado',xRange:[18,38],yRange:[30,130],m:4.5,b:-50,xQ:30,desc:'Con una temperatura de {xQ} °C, estima las ventas de helados:'},
+  {xL:'Publicidad (miles €)',yL:'Ventas (miles €)',xRange:[1,10],yRange:[10,80],m:6,b:8,xQ:6,desc:'Con {xQ} miles € en publicidad, estima las ventas (miles €):'},
+  {xL:'Edad (años)',yL:'Presión sistólica',xRange:[25,70],yRange:[100,160],m:1.1,b:78,xQ:50,desc:'Para una persona de {xQ} años, estima la presión sistólica:'},
+];
+
+function buildEj2(){
+  const ctx=EJ2_CONTEXTS[Math.floor(Math.random()*EJ2_CONTEXTS.length)];
+  const {xRange,yRange,m,b,xQ,desc,xL,yL}=ctx;
+  const n=18;
+  const pts=[];
+  for(let i=0;i<n;i++){
+    const x=xRange[0]+Math.random()*(xRange[1]-xRange[0]);
+    const noise=(Math.random()-0.5)*(yRange[1]-yRange[0])*0.18;
+    const y=m*x+b+noise;
+    pts.push([parseFloat(x.toFixed(1)),parseFloat(Math.max(yRange[0],Math.min(yRange[1],y)).toFixed(1))]);
+  }
+  const yQ=parseFloat((m*xQ+b).toFixed(1));
+  const tol=Math.round((yRange[1]-yRange[0])*0.08)+1;
+  const unidad=yL.includes('€')?'miles €':(yL.split('(')[1]?.replace(')','') ?? '');
+
+  ej2Data={pts,m,b,xQ,yQ,tol,desc,xL,yL,xRange,yRange,unidad,itemState:['pending']};
+
+  const cv=document.getElementById('ej2-canvas');
+  cv.width=cv.parentElement.clientWidth||280;
+  setTimeout(()=>drawScatter(cv,pts,{a:m,b},xL,yL,true),0);
+
+  document.getElementById('ej2-tag').textContent='Estimación: '+xL+' / '+yL+' · 1 apartado';
+  document.getElementById('ej2-sec').textContent='Observa la nube de puntos con la recta de regresión';
+
+  const pregsDiv=document.getElementById('ej2-pregs');
+  pregsDiv.innerHTML='';
+  const descTxt=desc.replace('{xQ}',xQ);
+  const p=document.createElement('div');
+  p.innerHTML=`<div style="font-family:'Libre Baskerville',serif;font-size:.88rem;color:var(--cs);margin-bottom:8px;">${descTxt}</div>`;
+  pregsDiv.appendChild(p);
+
+  const item=document.createElement('div');
+  item.className='pregunta-item';
+  item.id='pi-ej2';
+  item.innerHTML=`
+    <label class="p-lbl" for="ej2-inp">Valor estimado</label>
+    <span class="p-eq">=</span>
+    <input type="text" inputmode="decimal" class="p-inp" id="ej2-inp" placeholder="?" oninput="startTimer()" aria-label="Valor estimado">
+    <span class="p-unit">${unidad}</span>
+    <div class="fb" id="ej2-fb" aria-live="polite"></div>`;
+  pregsDiv.appendChild(item);
+
+  document.getElementById('fb2-global').className='fb-global';
+}
+
+function check2(){
+  startTimer();
+  const {yQ,tol,unidad}=ej2Data;
+  evaluarApartado(
+    document.getElementById('ej2-inp'),
+    document.getElementById('ej2-fb'),
+    ej2Data.itemState, 0,
+    v=>Math.abs(v-yQ)<=tol,
+    yQ.toFixed(1), unidad,
+    document.getElementById('pi-ej2')
+  );
+  actualizarGlobalEj('fb2-global', ej2Data.itemState);
+}
+
+// ═══════════════════════════════
+//  EJERCICIO 3
+// ═══════════════════════════════
+const EJ3_CONTEXTS=[
+  {xL:'x (horas)',yL:'y (€ vendidos)',xQ:8,desc:'Un vendedor trabaja {xQ} horas. ¿Cuánto vende aproximadamente?'},
+  {xL:'x (temp. °C)',yL:'y (consumo kWh)',xQ:35,desc:'Con {xQ} °C de temperatura, estima el consumo eléctrico (kWh):'},
+  {xL:'x (publicidad €)',yL:'y (clientes)',xQ:500,desc:'Con {xQ} € en publicidad, ¿cuántos clientes se esperan?'},
+  {xL:'x (años exp.)',yL:'y (salario €/mes)',xQ:7,desc:'Un empleado con {xQ} años de experiencia. ¿Cuál es su salario estimado?'},
+];
+
+function buildEj3(){
+  const ctx=EJ3_CONTEXTS[Math.floor(Math.random()*EJ3_CONTEXTS.length)];
+  const aOpts=[2,3,4,5,6,8,10,1.5,2.5];
+  const bOpts=[10,15,20,25,30,50,100,200,5];
+  const a=pick(aOpts), b=pick(bOpts);
+  const x1raw=[1,2,3,4,5,10,20,50,100,200];
+  let x1=pick(x1raw);
+  const y1=parseFloat((a*x1+b).toFixed(1));
+  let x2=x1+pick([2,3,4,5,10]);
+  const y2=parseFloat((a*x2+b).toFixed(1));
+  const xQ=ctx.xQ;
+  const yQ=parseFloat((a*xQ+b).toFixed(1));
+  ej3Data={a,b,x1,y1,x2,y2,xQ,yQ,xL:ctx.xL,yL:ctx.yL,desc:ctx.desc,itemState:['pending','pending','pending']};
+
+  document.getElementById('ej3-info').innerHTML=
+    `La recta de regresión de <em>${ctx.yL}</em> sobre <em>${ctx.xL}</em> pasa por los puntos:<br>
+    <strong>P₁ = (${x1}, ${y1})</strong> &nbsp;&nbsp; y &nbsp;&nbsp; <strong>P₂ = (${x2}, ${y2})</strong>`;
+
+  const pregsDiv=document.getElementById('ej3-pregs');
+  pregsDiv.innerHTML='';
+  const p1=mkPregunta('ej3-pend','Pendiente de la recta: m =');
+  const p2=mkPregunta('ej3-ord','Ordenada en el origen: n =');
+  const p3=mkPregunta('ej3-est',ctx.desc.replace('{xQ}',xQ));
+  pregsDiv.appendChild(p1);
+  pregsDiv.appendChild(p2);
+  pregsDiv.appendChild(p3);
+  document.getElementById('fb3-global').className='fb-global';
+}
+
+function mkPregunta(id,lbl){
+  const d=document.createElement('div');
+  d.className='pregunta-item';
+  d.id='pi-'+id;
+  d.style.marginBottom='8px';
+  d.innerHTML=`
+    <label class="p-lbl" for="inp-${id}">${lbl}</label>
+    <input type="text" inputmode="decimal" class="p-inp" id="inp-${id}" placeholder="?" oninput="startTimer()" aria-label="${lbl.replace(/"/g,'')}">
+    <div class="fb" id="fb-${id}" aria-live="polite"></div>`;
+  return d;
+}
+
+function check3(){
+  startTimer();
+  const {a,b,yQ}=ej3Data;
+  const tol_m=Math.abs(a)*0.05+0.1;
+  const tol_b=Math.abs(b)*0.05+0.5;
+  const tol_y=Math.abs(yQ)*0.06+1;
+  evaluarApartado(document.getElementById('inp-ej3-pend'),document.getElementById('fb-ej3-pend'),ej3Data.itemState,0,
+    v=>Math.abs(v-a)<=tol_m, a.toFixed(2), '', document.getElementById('pi-ej3-pend'));
+  evaluarApartado(document.getElementById('inp-ej3-ord'),document.getElementById('fb-ej3-ord'),ej3Data.itemState,1,
+    v=>Math.abs(v-b)<=tol_b, b.toFixed(2), '', document.getElementById('pi-ej3-ord'));
+  evaluarApartado(document.getElementById('inp-ej3-est'),document.getElementById('fb-ej3-est'),ej3Data.itemState,2,
+    v=>Math.abs(v-yQ)<=tol_y, yQ.toFixed(1), '', document.getElementById('pi-ej3-est'));
+  actualizarGlobalEj('fb3-global', ej3Data.itemState);
+}
+
+// ═══════════════════════════════
+//  ENTER PARA ENVIAR (delegación de eventos, funciona con inputs generados dinámicamente)
+// ═══════════════════════════════
+document.addEventListener('keydown', e=>{
+  if(e.key!=='Enter') return;
+  const tag=e.target.tagName;
+  if(tag!=='INPUT' && tag!=='SELECT') return;
+  const ficha=e.target.closest('.ficha');
+  if(!ficha) return;
+  e.preventDefault();
+  if(ficha.id==='ej1-ficha') check1();
+  else if(ficha.id==='ej2-ficha') check2();
+  else if(ficha.id==='ej3-ficha') check3();
+});
+
+// ═══════════════════════════════
+//  REINICIAR
+// ═══════════════════════════════
+function reiniciar(){
+  apartadosGanados=0; apartadosCerrados=0; timerStart=null;
+  updateStats();
+  buildEj1();
+  buildEj2();
+  buildEj3();
+  ['fb1-global','fb2-global','fb3-global'].forEach(id=>document.getElementById(id).className='fb-global');
+}
+
+// ═══════════════════════════════
+//  FINALIZAR
+// ═══════════════════════════════
+function finalizar(){
+  const nomEl=document.getElementById('nombre');
+  if(!nomEl.value.trim()){
+    nomEl.style.borderBottom='2px solid #8B1A1A';
+    nomEl.placeholder='⚠ Escribe tu nombre antes de finalizar';
+    nomEl.focus(); return;
+  }
+  const nombre=nomEl.value.trim();
+  const nota=calcNota();
+  const now=new Date();
+  const fecha=String(now.getDate()).padStart(2,'0')+'/'+String(now.getMonth()+1).padStart(2,'0')+'/'+now.getFullYear();
+  const hora=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')+':'+String(now.getSeconds()).padStart(2,'0');
+  const cols={10:{bg:'#1a7a1a',txt:'#fff'},9:{bg:'#6dbf6d',txt:'#fff'},8:{bg:'#1a4f8a',txt:'#fff'},
+    7:{bg:'#5b9bd5',txt:'#fff'},6:{bg:'#c05c00',txt:'#fff'},5:{bg:'#f5a623',txt:'#000'}};
+  const k=nota>=10?10:nota>=9?9:nota>=8?8:nota>=7?7:nota>=6?6:nota>=5?5:-1;
+  const col=cols[k]||{bg:'#8B1A1A',txt:'#fff'};
+  const modal=document.getElementById('modal');
+  modal.style.background=col.bg; modal.style.color=col.txt;
+  modal.querySelector('.btn-cerrar').style.color=col.txt;
+  document.getElementById('m-nombre').textContent=nombre;
+  document.getElementById('m-nota').textContent=nota.toFixed(2).replace('.',',')+' / 10';
+  document.getElementById('m-meta').innerHTML=
+    'Fecha: '+fecha+'<br>Hora: '+hora+'<br>Tiempo: '+elapsed()+'<br>'+
+    'Apartados con puntuación: '+apartadosGanados+' de '+N_APARTADOS+' · Apartados cerrados en 0: '+apartadosCerrados;
+  document.getElementById('modal-bg').classList.add('show');
+}
+
+function cerrarModal(){
+  document.getElementById('modal-bg').classList.remove('show');
+  reiniciar();
+}
+
+// ═══════════════════════════════
+//  INICIO
+// ═══════════════════════════════
+window.addEventListener('load',()=>{
+  buildEj1();
+  buildEj2();
+  buildEj3();
+});
+window.addEventListener('resize',()=>{
+  const cv=document.getElementById('ej2-canvas');
+  if(cv&&ej2Data.pts){
+    cv.width=cv.parentElement.clientWidth||280;
+    drawScatter(cv,ej2Data.pts,{a:ej2Data.m,b:ej2Data.b},ej2Data.xL,ej2Data.yL,true);
+  }
+});
+</script>
+</body>
+</html>
