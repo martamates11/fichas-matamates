@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Estadística Bidimensional</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(', '\\)']] },
+  startup: { typeset: false }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script" async></script>
+<style>
+:root {
+  --color-fondo:#F5F0E8; --color-fondo-card:#FDFAF3; --color-texto:#2C1F0E;
+  --color-texto-suave:#6B4F35; --color-acento:#A0522D; --color-acento-hover:#7B3B1E;
+  --color-borde:#C9A96E; --color-borde-suave:#E0CEAA; --color-cabecera:#3B2510;
+  --color-cabecera-txt:#F5EDD8; --color-correcto:#2E6B3E; --color-incorrecto:#8B1A1A;
+  --color-neutro:#E8DFC8;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Lato',sans-serif;font-size:16px;color:var(--color-texto);background:var(--color-fondo);min-height:100vh;transition:background-color .5s;}
+.cabecera{background:var(--color-cabecera);color:var(--color-cabecera-txt);font-family:'Libre Baskerville',serif;text-align:center;padding:12px 20px;border-bottom:3px solid var(--color-borde);font-size:.78rem;letter-spacing:.04em;}
+.ficha-container{max-width:900px;margin:24px auto 80px;background:var(--color-fondo-card);border:2px solid var(--color-borde);border-radius:6px;box-shadow:0 3px 12px rgba(44,31,14,.15);padding:28px 32px;}
+.titulo-ficha{font-family:'Libre Baskerville',serif;font-size:1.5rem;color:var(--color-texto);text-align:center;border-bottom:2px solid var(--color-borde);padding-bottom:10px;margin-bottom:18px;}
+.titulo-ficha::after{content:'';display:block;width:60px;height:3px;background:var(--color-borde);margin:8px auto 0;border-radius:2px;}
+.nombre-row{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap;}
+.nombre-row label{font-family:'Libre Baskerville',serif;font-size:.95rem;color:var(--color-texto-suave);white-space:nowrap;}
+input[type="text"]{background:var(--color-fondo);border:1.5px solid var(--color-borde);border-radius:4px;padding:7px 11px;font-family:'Lato',sans-serif;font-size:1rem;color:var(--color-texto);outline:none;transition:border-color .2s;}
+input[type="text"]:focus{border-color:var(--color-acento);}
+#nombre{flex:1;min-width:180px;}
+.marcador{font-family:'Libre Baskerville',serif;font-size:.95rem;color:var(--color-texto-suave);text-align:right;margin-bottom:14px;border-bottom:1px solid var(--color-borde-suave);padding-bottom:8px;}
+.marcador span{color:var(--color-acento);font-weight:700;}
+.tipo-selector{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;}
+.tipo-btn{background:var(--color-neutro);border:2px solid var(--color-borde-suave);border-radius:4px;padding:7px 14px;font-family:'Lato',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;color:var(--color-texto-suave);transition:all .2s;}
+.tipo-btn.activo{background:var(--color-acento);color:#FDFAF3;border-color:var(--color-acento);}
+.tipo-btn.completado{border-color:var(--color-correcto);color:var(--color-correcto);}
+.tipo-btn.completado.activo{background:var(--color-correcto);color:#fff;border-color:var(--color-correcto);}
+.tipo-btn.agotado{border-color:var(--color-incorrecto);color:var(--color-incorrecto);}
+.tipo-btn.agotado.activo{background:var(--color-incorrecto);color:#fff;border-color:var(--color-incorrecto);}
+.tabla-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:12px;}
+.ejercicio-card{background:var(--color-fondo);border:1.5px solid var(--color-borde-suave);border-left:4px solid var(--color-borde);border-radius:4px;padding:18px 22px;margin-bottom:16px;}
+.ejercicio-card h3{font-family:'Libre Baskerville',serif;font-size:1rem;color:var(--color-acento);margin-bottom:10px;}
+.enunciado{font-size:.95rem;color:var(--color-texto);margin-bottom:10px;line-height:1.5;}
+.hint{font-size:.83rem;color:var(--color-texto-suave);font-style:italic;margin-bottom:10px;}
+table{border-collapse:collapse;width:100%;margin-bottom:0;font-size:.86rem;}
+table th{background:var(--color-acento);color:#FDFAF3;padding:5px 8px;font-family:'Libre Baskerville',serif;border:1px solid var(--color-borde);text-align:center;white-space:nowrap;}
+table td{padding:4px 8px;border:1px solid var(--color-borde-suave);text-align:center;background:var(--color-fondo-card);white-space:nowrap;}
+table tr:hover td{background:var(--color-neutro);}
+tr.total-row td{font-weight:700;background:var(--color-neutro) !important;}
+td.ic{padding:2px 3px !important;background:var(--color-fondo) !important;}
+td.ic input{width:70px;padding:3px 5px;font-size:.84rem;text-align:center;border:1.5px solid var(--color-borde);border-radius:3px;background:#fffbf2;color:var(--color-texto);font-family:'Lato',sans-serif;outline:none;}
+td.ic input.ok{border-color:var(--color-correcto);background:#eaf4ec;}
+td.ic input.err{border-color:var(--color-incorrecto);background:#f9eaea;}
+.pregunta{font-size:.97rem;font-weight:700;color:var(--color-texto);margin:10px 0 5px;}
+.formula{font-size:.82rem;color:var(--color-texto-suave);margin-bottom:8px;}
+.datos-aux{font-size:.88rem;color:var(--color-texto-suave);margin-bottom:8px;background:var(--color-neutro);border-radius:4px;padding:7px 12px;line-height:1.9;}
+.input-respuesta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px;}
+.input-respuesta label{font-size:.9rem;color:var(--color-texto-suave);min-width:140px;}
+.campo-num{background:var(--color-fondo);border:1.5px solid var(--color-borde);border-radius:4px;padding:7px 11px;font-family:'Lato',sans-serif;font-size:1rem;color:var(--color-texto);outline:none;transition:border-color .2s;}
+.campo-num:focus{border-color:var(--color-acento);}
+.campo{width:120px;}
+.campo-sm{width:90px;}
+.radio-group{display:flex;gap:14px;flex-wrap:wrap;margin:6px 0 10px;}
+.radio-group label{display:flex;align-items:center;gap:6px;font-size:.91rem;cursor:pointer;color:var(--color-texto);}
+.radio-group input[type="radio"]{accent-color:var(--color-acento);width:16px;height:16px;cursor:pointer;}
+.btn-primario{background:var(--color-acento);color:#FDFAF3;border:none;border-radius:4px;padding:9px 20px;font-family:'Lato',sans-serif;font-size:.92rem;font-weight:700;cursor:pointer;transition:background-color .2s;}
+.btn-primario:hover{background:var(--color-acento-hover);}
+.btn-secundario{background:transparent;color:var(--color-acento);border:2px solid var(--color-borde);border-radius:4px;padding:8px 18px;font-family:'Lato',sans-serif;font-size:.92rem;font-weight:700;cursor:pointer;transition:all .2s;}
+.btn-secundario:hover{border-color:var(--color-acento);color:var(--color-acento-hover);}
+.btn-finalizar{background:var(--color-cabecera);color:var(--color-cabecera-txt);border:2px solid var(--color-borde);border-radius:4px;padding:10px 24px;font-family:'Libre Baskerville',serif;font-size:.95rem;font-weight:700;cursor:pointer;letter-spacing:.04em;transition:background-color .2s;}
+.btn-finalizar:hover{background:#2C1A0A;}
+.btns-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:10px;}
+.feedback{border-radius:4px;padding:10px 14px;margin-top:10px;font-size:.92rem;display:none;}
+.feedback.show{display:block;}
+.feedback-correcto{background:#EAF4EC;border:1.5px solid var(--color-correcto);color:var(--color-correcto);font-weight:700;}
+.feedback-incorrecto{background:#F9EAEA;border:1.5px solid var(--color-incorrecto);color:var(--color-incorrecto);}
+.feedback-incorrecto .solucion{margin-top:6px;color:var(--color-texto);font-style:italic;line-height:1.7;}
+.feedback-neutro{background:var(--color-neutro);border:1.5px solid var(--color-borde);color:var(--color-texto-suave);}
+.sep{border:none;border-top:1px dashed var(--color-borde-suave);margin:12px 0;}
+.pie-fija{position:fixed;bottom:0;left:0;width:100%;background:var(--color-fondo-card);border-top:2px solid var(--color-borde);padding:10px 32px;display:flex;justify-content:flex-end;z-index:100;}
+.overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(44,31,14,.55);z-index:1000;justify-content:center;align-items:center;}
+.overlay.show{display:flex;}
+.modal-calificacion{border:3px solid rgba(255,255,255,.35);border-radius:12px;font-family:'Libre Baskerville',serif;box-shadow:0 8px 32px rgba(0,0,0,.45);padding:36px 44px;min-width:340px;max-width:480px;text-align:center;transition:background .3s,color .3s;}
+.modal-calificacion h2{font-size:1.4rem;margin-bottom:18px;}
+.modal-calificacion .nota-grande{font-size:3.5rem;font-weight:700;margin:10px 0 6px;text-shadow:0 2px 8px rgba(0,0,0,.25);}
+.modal-calificacion p{font-size:.95rem;margin:5px 0;font-family:'Lato',sans-serif;}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.78rem;font-weight:700;margin:2px;}
+.badge-ok{background:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.5);}
+.badge-pend{background:rgba(0,0,0,.2);border:1px solid rgba(0,0,0,.3);}
+.leyenda-aux{font-size:.78rem;color:var(--color-texto-suave);font-style:italic;margin-bottom:8px;}
+.captura-aviso{margin-top:18px;padding:12px 16px;background:rgba(255,255,255,.18);border:2px dashed rgba(255,255,255,.55);border-radius:8px;font-family:'Lato',sans-serif;font-size:.97rem;font-weight:700;letter-spacing:.01em;}
+.btn-cerrar-modal{margin-top:20px;background:rgba(255,255,255,.18);color:inherit;border:2px solid rgba(255,255,255,.5);border-radius:6px;padding:10px 22px;font-family:'Lato',sans-serif;font-size:.92rem;font-weight:700;cursor:pointer;transition:background .2s;letter-spacing:.02em;}
+.btn-cerrar-modal:hover{background:rgba(255,255,255,.32);}
+.divider-modal{border:none;border-top:1px solid rgba(255,255,255,.25);margin:14px 0;}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+</style>
+</head>
+<body>
+<div class="cabecera">Material elaborado por Marta L Letona S. Basado en el trabajo de Javier Cayetano</div>
+<div class="ficha-container">
+  <h1 class="titulo-ficha">Estadística Bidimensional</h1>
+  <div class="nombre-row">
+    <label for="nombre">Nombre del alumno:</label>
+    <input type="text" id="nombre" placeholder="Escribe tu nombre...">
+  </div>
+  <div class="marcador">
+    Puntuación: <span id="puntos">0</span> / 10
+    &nbsp;|&nbsp; Aciertos: <span id="aciertos">0</span>
+    &nbsp;|&nbsp; Fallos: <span id="fallos">0</span>
+  </div>
+  <div class="tipo-selector" role="tablist" aria-label="Tipo de ejercicio">
+    <button class="tipo-btn activo" onclick="cambiarTipo('marginales')" id="btn-marginales">📊 Distribuciones marginales</button>
+    <button class="tipo-btn"        onclick="cambiarTipo('media-var')"  id="btn-media-var">📐 Media y varianza marginal</button>
+    <button class="tipo-btn"        onclick="cambiarTipo('covarianza')" id="btn-covarianza">🔗 Covarianza</button>
+    <button class="tipo-btn"        onclick="cambiarTipo('regresion')"  id="btn-regresion">📈 Regresión y correlación</button>
+  </div>
+  <div id="zona-ejercicio"></div>
+  <div class="btns-row" style="margin-top:14px;">
+    <button class="btn-primario" onclick="nuevoEjercicio()">Nuevo ejercicio</button>
+  </div>
+</div>
+<div class="pie-fija">
+  <button class="btn-finalizar" onclick="abrirModal()">📋 Finalizar y Calificar</button>
+</div>
+
+<!-- MODAL -->
+<div class="overlay" id="overlay">
+  <div class="modal-calificacion" id="modal" role="dialog" aria-modal="true" aria-labelledby="m-titulo">
+    <h2 id="m-titulo">📋 Calificación Final</h2>
+    <p id="m-nombre" style="font-size:1.05rem;font-weight:700;margin-bottom:4px;"></p>
+    <div class="nota-grande" id="m-nota"></div>
+    <hr class="divider-modal">
+    <p id="m-fecha"></p>
+    <p id="m-hora"></p>
+    <p id="m-tiempo"></p>
+    <hr class="divider-modal">
+    <p id="m-tipos" style="margin-top:6px;font-size:.85rem;line-height:2.2;"></p>
+    <div class="captura-aviso">📸 Haz una captura de pantalla y entrégala en Google Classroom.</div>
+    <button class="btn-cerrar-modal" onclick="cerrarModal()">✖ Seguir practicando</button>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// CONSTANTES DEL MODELO DE PUNTUACIÓN
+// ============================================================
+const N_TIPOS = 4;
+const PUNTOS_POR_TIPO = 10 / N_TIPOS;      // 2.5 puntos por tipo de ejercicio
+const DEDUCCION_POR_FALLO = 0.75;          // puntos que resta cada fallo "fresco" dentro de un mismo tipo
+
+// ============================================================
+// ESTADO GLOBAL
+// ============================================================
+let tipoActual = 'marginales';
+let aciertosN = 0, fallosN = 0; // contadores informativos (solo intentos "frescos", no repeticiones)
+let tiposEstado = {
+  marginales:  {fallos:0, completado:false, agotado:false, puntos:0},
+  'media-var': {fallos:0, completado:false, agotado:false, puntos:0},
+  covarianza:  {fallos:0, completado:false, agotado:false, puntos:0},
+  regresion:   {fallos:0, completado:false, agotado:false, puntos:0}
+};
+let inicioTiempo = Date.now();
+let ejercicioActual = null;
+let ultimoMarginales = null;
+
+const rand = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
+const rnd  = (v,d=2) => Math.round(v*10**d)/10**d;
+const suma = arr => arr.reduce((a,b)=>a+b,0);
+function gen2D(nf,nc){return Array.from({length:nf},()=>Array.from({length:nc},()=>rand(5,40)));}
+
+// ============================================================
+// UTILIDADES DE ENTRADA (acepta coma decimal española)
+// ============================================================
+function numFromInput(id){
+  const el = document.getElementById(id);
+  if(!el) return NaN;
+  const raw = el.value.trim().replace(',', '.');
+  if(raw === '') return NaN;
+  return parseFloat(raw);
+}
+function intFromInput(id){
+  const el = document.getElementById(id);
+  if(!el) return NaN;
+  const raw = el.value.trim().replace(',', '.');
+  if(raw === '') return NaN;
+  const f = parseFloat(raw);
+  return Number.isInteger(f) ? f : NaN;
+}
+
+// ============================================================
+// MATHJAX — helper de tipografiado con guarda y fallback
+// ============================================================
+function typeset(){
+  if(window.MathJax && typeof MathJax.typesetPromise === 'function'){
+    MathJax.typesetPromise().catch(()=>{});
+  }
+  // Si MathJax no está disponible, el LaTeX en crudo queda visible como texto plano
+  // (nunca se vacía el contenedor), cumpliendo el fallback exigido.
+}
+
+// ============================================================
+// CAMBIO DE TIPO
+// ============================================================
+function cambiarTipo(tipo){
+  tipoActual = tipo;
+  document.querySelectorAll('.tipo-btn').forEach(b=>b.classList.remove('activo'));
+  document.getElementById('btn-'+tipo).classList.add('activo');
+  nuevoEjercicio();
+}
+
+// ============================================================
+// TIPO 1 — DISTRIBUCIONES MARGINALES
+// ============================================================
+function genMarginales(){
+  const edades = ['16-35','36-55','56-75'];
+  const punts  = ['0-175','176-225','226-275','276-325','326-500'];
+  const datos  = gen2D(edades.length, punts.length);
+  const margX  = edades.map((_,i)=>suma(datos[i]));
+  const margY  = punts.map((_,j)=>suma(datos.map(f=>f[j])));
+  const N      = suma(margX);
+  const ejeX   = Math.random()<0.5;
+  const idx    = ejeX ? rand(0,edades.length-1) : rand(0,punts.length-1);
+  const correcta  = ejeX ? margX[idx] : margY[idx];
+  const etiqueta  = ejeX ? edades[idx] : punts[idx];
+  const eje       = ejeX ? 'edad' : 'puntuación';
+  return {datos,edades,punts,margX,margY,N,idx,correcta,etiqueta,eje,_acertada:false,_revelada:false};
+}
+
+function renderMarginales(e){
+  let html=`<div class="ejercicio-card">
+    <h3>📊 Distribuciones Marginales</h3>
+    <p class="enunciado">La tabla muestra la distribución conjunta de <strong>edad (X)</strong> y <strong>puntuación en un test (Y)</strong>. Completa las frecuencias marginales en las celdas en blanco y responde la pregunta.</p>
+    <p class="hint">💡 La frecuencia marginal de una fila o columna es la suma de todos sus valores.</p>
+    <div class="tabla-scroll"><table><thead><tr><th>X \\ Y</th>`;
+  e.punts.forEach(p=>html+=`<th>${p}</th>`);
+  html+=`<th>Marginal X</th></tr></thead><tbody>`;
+  e.edades.forEach((ed,i)=>{
+    html+=`<tr><td><b>${ed}</b></td>`;
+    e.datos[i].forEach(v=>html+=`<td>${v}</td>`);
+    html+=`<td class="ic"><input type="text" inputmode="decimal" id="mx${i}" placeholder="?" aria-label="Frecuencia marginal de la fila ${ed}"></td></tr>`;
+  });
+  html+=`<tr><td><b>Marginal Y</b></td>`;
+  e.punts.forEach((p,j)=>html+=`<td class="ic"><input type="text" inputmode="decimal" id="my${j}" placeholder="?" aria-label="Frecuencia marginal de la columna ${p}"></td>`);
+  html+=`<td><b>${e.N}</b></td></tr></tbody></table></div>
+    <p class="pregunta">¿Cuál es la frecuencia marginal correspondiente a la ${e.eje} <strong>${e.etiqueta}</strong>?</p>
+    <div class="input-respuesta">
+      <label for="resp">Respuesta:</label>
+      <input type="text" inputmode="decimal" class="campo-num campo" id="resp">
+      <button class="btn-primario" onclick="comprobar()">Comprobar</button>
+    </div>
+    <div class="feedback" id="feedback" aria-live="polite"></div>
+  </div>`;
+  return html;
+}
+
+// ============================================================
+// TIPO 2 — MEDIA Y VARIANZA MARGINAL
+// ============================================================
+function genMediaVar(){
+  const base = ultimoMarginales || genMarginales();
+  const mcX = [25.5, 45.5, 65.5];
+  const mcY = [87.5, 200.5, 250.5, 300.5, 413];
+  const nX  = base.margX;
+  const nY  = base.margY;
+  const N   = base.N;
+
+  // Columnas auxiliares mostradas al alumno (opcionales, redondeadas solo para visualización)
+  const xni  = mcX.map((x,i)=>rnd(x*nX[i]));
+  const x2ni = mcX.map((x,i)=>rnd(x**2*nX[i]));
+  const ynj  = mcY.map((y,j)=>rnd(y*nY[j]));
+  const y2nj = mcY.map((y,j)=>rnd(y**2*nY[j]));
+
+  // Respuesta OFICIAL: calculada SIN redondeos intermedios (corrige el bug de elevar
+  // al cuadrado la media ya redondeada, que podía desviarse hasta ~3 puntos del valor exacto).
+  const mxExact  = suma(mcX.map((x,i)=>x*nX[i])) / N;
+  const vxExact  = suma(mcX.map((x,i)=>x**2*nX[i])) / N - mxExact**2;
+  const myExact  = suma(mcY.map((y,j)=>y*nY[j])) / N;
+  const vyExact  = suma(mcY.map((y,j)=>y**2*nY[j])) / N - myExact**2;
+
+  const mx = rnd(mxExact);
+  const vx = rnd(vxExact);
+  const my = rnd(myExact);
+  const vy = rnd(vyExact);
+
+  const varXY = Math.random()<0.5 ? 'X' : 'Y';
+  const pide  = Math.random()<0.5 ? 'media' : 'varianza';
+  const correcta = varXY==='X' ? (pide==='media'?mx:vx) : (pide==='media'?my:vy);
+  return {base, mcX, mcY, nX, nY, N,
+          xni, x2ni, ynj, y2nj,
+          mx, vx, my, vy, varXY, pide, correcta,
+          _acertada:false, _revelada:false};
+}
+
+function renderMediaVar(e){
+  const b   = e.base;
+  const thAux = 'style="background:#b8722a;font-style:italic;font-size:.82rem;"';
+  const tdAux = 'style="background:#fdf6e3 !important;border-style:dashed;"';
+
+  let html=`<div class="ejercicio-card">
+    <h3>📐 Media y Varianza Marginal</h3>
+    <p class="enunciado">La tabla de distribución conjunta muestra las frecuencias y sus marginales. Las <em>filas y columnas en cursiva con fondo claro son auxiliares opcionales</em>: úsalas para organizar los cálculos de media y varianza. No se corrigen.</p>
+    <p class="leyenda-aux">🖊 Marcas de clase X (edad): 25,5 — 45,5 — 65,5 &nbsp;|&nbsp; Marcas de clase Y (punt.): 87,5 — 200,5 — 250,5 — 300,5 — 413</p>
+    <div class="tabla-scroll"><table><thead><tr><th>X \\ Y</th>`;
+  e.mcY.forEach((y,j)=>html+=`<th>${b.punts[j]}<br><small style="font-weight:400;">(mc=${y})</small></th>`);
+  html+=`<th>Marginal X</th>`;
+  html+=`<th ${thAux}>\\(x_i n_{i\\cdot}\\)<br><small>(opt.)</small></th>`;
+  html+=`<th ${thAux}>\\(x_i^2 n_{i\\cdot}\\)<br><small>(opt.)</small></th>`;
+  html+=`</tr></thead><tbody>`;
+
+  b.edades.forEach((ed,i)=>{
+    html+=`<tr>
+      <td><b>${ed}</b><br><small style="color:var(--color-texto-suave);">mc=${e.mcX[i]}</small></td>`;
+    b.datos[i].forEach(v=>html+=`<td>${v}</td>`);
+    html+=`<td><b>${e.nX[i]}</b></td>`;
+    html+=`<td class="ic" ${tdAux}><input type="text" inputmode="decimal" id="xni${i}" placeholder="?" aria-label="Auxiliar opcional: x por n, fila ${ed}"></td>`;
+    html+=`<td class="ic" ${tdAux}><input type="text" inputmode="decimal" id="x2ni${i}" placeholder="?" aria-label="Auxiliar opcional: x al cuadrado por n, fila ${ed}"></td>`;
+    html+=`</tr>`;
+  });
+
+  html+=`<tr><td><b>Marginal Y</b></td>`;
+  e.nY.forEach(v=>html+=`<td><b>${v}</b></td>`);
+  html+=`<td><b>${e.N}</b></td>`;
+  html+=`<td class="ic" ${tdAux}><input type="text" inputmode="decimal" id="sumxni" placeholder="∑" aria-label="Suma auxiliar opcional de x por n"></td>`;
+  html+=`<td class="ic" ${tdAux}><input type="text" inputmode="decimal" id="sumx2ni" placeholder="∑" aria-label="Suma auxiliar opcional de x al cuadrado por n"></td>`;
+  html+=`</tr>`;
+
+  html+=`<tr style="background:#fdf6e3;">
+    <td style="font-style:italic;font-size:.83rem;color:var(--color-texto-suave);">\\(y_j n_{\\cdot j}\\)<br><small>(opt.)</small></td>`;
+  e.mcY.forEach((_,j)=>html+=`<td class="ic" ${tdAux}><input type="text" inputmode="decimal" id="ynj${j}" placeholder="?" aria-label="Auxiliar opcional: y por n, columna ${j+1}"></td>`);
+  html+=`<td class="ic" ${tdAux}><input type="text" inputmode="decimal" id="sumynj" placeholder="∑" aria-label="Suma auxiliar opcional de y por n"></td>`;
+  html+=`<td ${tdAux}></td><td ${tdAux}></td></tr>`;
+
+  html+=`<tr style="background:#fdf6e3;">
+    <td style="font-style:italic;font-size:.83rem;color:var(--color-texto-suave);">\\(y_j^2 n_{\\cdot j}\\)<br><small>(opt.)</small></td>`;
+  e.mcY.forEach((_,j)=>html+=`<td class="ic" ${tdAux}><input type="text" inputmode="decimal" id="y2nj${j}" placeholder="?" aria-label="Auxiliar opcional: y al cuadrado por n, columna ${j+1}"></td>`);
+  html+=`<td class="ic" ${tdAux}><input type="text" inputmode="decimal" id="sumy2nj" placeholder="∑" aria-label="Suma auxiliar opcional de y al cuadrado por n"></td>`;
+  html+=`<td ${tdAux}></td><td ${tdAux}></td></tr>`;
+
+  html+=`</tbody></table></div>`;
+
+  const formulas = {
+    media:'\\(\\bar{x} = \\dfrac{\\sum x_i n_{i\\cdot}}{N}\\)',
+    varianza:'\\(S^2 = \\dfrac{\\sum x_i^2 n_{i\\cdot}}{N} - \\bar{x}^2\\)'
+  };
+  html+=`<p class="pregunta" style="margin-top:14px;">Calcula la <strong>${e.pide}</strong> de la variable <strong>${e.varXY}</strong>. (2 decimales)</p>
+    <p class="formula">Fórmula: ${formulas[e.pide]}</p>
+    <div class="input-respuesta">
+      <label for="resp">Respuesta:</label>
+      <input type="text" inputmode="decimal" class="campo-num campo" id="resp">
+      <button class="btn-primario" onclick="comprobar()">Comprobar</button>
+    </div>
+    <div class="feedback" id="feedback" aria-live="polite"></div>
+  </div>`;
+  return html;
+}
+
+// ============================================================
+// TIPO 3 — COVARIANZA
+// ============================================================
+function genCovarianza(){
+  const n     = rand(4,6);
+  const xs    = Array.from({length:n},(_,i)=>rand(1,5)+i);
+  const ys    = Array.from({length:n},(_,i)=>rand(10,24)+i*3);
+  const freqs = Array.from({length:n},()=>rand(3,18));
+  const N     = suma(freqs);
+  const mx    = rnd(xs.reduce((s,x,i)=>s+x*freqs[i],0)/N);
+  const my    = rnd(ys.reduce((s,y,i)=>s+y*freqs[i],0)/N);
+  const xiyiArr   = xs.map((x,i)=>rnd(x*ys[i]));
+  const xiyifiArr = xs.map((x,i)=>rnd(x*ys[i]*freqs[i]));
+  const sumXYF    = rnd(suma(xiyifiArr));
+  const sxy       = rnd(sumXYF/N - mx*my);
+  return {xs,ys,freqs,N,mx,my,xiyiArr,xiyifiArr,sumXYF,sxy,_acertada:false,_revelada:false};
+}
+
+function renderCovarianza(e){
+  let html=`<div class="ejercicio-card">
+    <h3>🔗 Covarianza</h3>
+    <p class="enunciado">Completa las dos columnas en blanco de la tabla y calcula la <strong>covarianza \\(S_{xy}\\)</strong>.</p>
+    <p class="hint">💡 Multiplica cada fila, luego suma la última columna para obtener \\(\\sum x_i y_i f_i\\).</p>
+    <div class="tabla-scroll"><table><thead><tr>
+      <th>\\(x_i\\)</th><th>\\(y_i\\)</th><th>\\(f_i\\)</th>
+      <th>\\(x_i y_i\\)</th><th>\\(x_i y_i f_i\\)</th>
+    </tr></thead><tbody>`;
+  e.xs.forEach((x,i)=>{
+    html+=`<tr>
+      <td>${x}</td><td>${e.ys[i]}</td><td>${e.freqs[i]}</td>
+      <td class="ic"><input type="text" inputmode="decimal" id="xiyi${i}" placeholder="?" aria-label="x por y, fila ${i+1}"></td>
+      <td class="ic"><input type="text" inputmode="decimal" id="xiyifi${i}" placeholder="?" aria-label="x por y por f, fila ${i+1}"></td>
+    </tr>`;
+  });
+  html+=`<tr class="total-row">
+    <td colspan="2">Total</td><td>${e.N}</td><td>—</td>
+    <td class="ic" style="background:var(--color-neutro) !important;">
+      <input type="text" inputmode="decimal" id="sumXYF" placeholder="∑?" style="background:#f0e8d0;width:76px;" aria-label="Suma total de x por y por f">
+    </td>
+  </tr></tbody></table></div>
+    <div class="datos-aux">
+      Datos: <b>\\(\\bar{x}\\) = ${e.mx}</b> &nbsp;|&nbsp; <b>\\(\\bar{y}\\) = ${e.my}</b> &nbsp;|&nbsp; <b>N = ${e.N}</b>
+    </div>
+    <p class="formula">\\(S_{xy} = \\dfrac{\\sum x_i y_i f_i}{N} - \\bar{x}\\,\\bar{y}\\)</p>
+    <p class="pregunta">¿Cuál es la covarianza \\(S_{xy}\\)? (2 decimales)</p>
+    <div class="input-respuesta">
+      <label for="resp">Respuesta:</label>
+      <input type="text" inputmode="decimal" class="campo-num campo" id="resp">
+      <button class="btn-primario" onclick="comprobar()">Comprobar</button>
+    </div>
+    <div class="feedback" id="feedback" aria-live="polite"></div>
+  </div>`;
+  return html;
+}
+
+// ============================================================
+// TIPO 4 — RECTA DE REGRESIÓN + COEFICIENTE DE CORRELACIÓN
+// ============================================================
+function genRegresion(){
+  for(let intento = 0; intento < 50; intento++){
+    const np  = rand(5,8);
+    const m0  = rnd(rand(1,5)*0.4+0.2);
+    const n0  = rnd(rand(-3,3)*0.5);
+    const xs=[], ys=[];
+    for(let i=0;i<np;i++){
+      const x = rnd(rand(1,8)+i*0.5);
+      const y = rnd(m0*x + n0 + (Math.random()-0.5)*1.0);
+      xs.push(x); ys.push(y);
+    }
+    const mxExact  = xs.reduce((s,x)=>s+x,0)/np;
+    const myExact  = ys.reduce((s,y)=>s+y,0)/np;
+    const sxxExact = xs.reduce((s,x)=>s+(x-mxExact)**2,0)/np;
+    const syyExact = ys.reduce((s,y)=>s+(y-myExact)**2,0)/np;
+    const sxyExact = xs.reduce((s,x,i)=>s+(x-mxExact)*(ys[i]-myExact),0)/np;
+    if(sxxExact<=0 || syyExact<=0) continue;
+    const denom = Math.sqrt(sxxExact*syyExact);
+    if(denom===0) continue;
+    const rExact = sxyExact / denom;
+    const mx  = rnd(mxExact);
+    const my  = rnd(myExact);
+    const sxx = rnd(sxxExact);
+    const syy = rnd(syyExact);
+    const sxy = rnd(sxyExact);
+    const sx  = rnd(Math.sqrt(sxxExact));
+    const sy  = rnd(Math.sqrt(syyExact));
+    const mVal = rnd(sxyExact/sxxExact);
+    const nVal = rnd(myExact - (sxyExact/sxxExact)*mxExact);
+    const r = rnd(Math.max(-1, Math.min(1, rExact)), 4);
+    const absR = Math.abs(r);
+    let interpretacion;
+    if(absR >= 0.85)     interpretacion = 'si';
+    else if(absR >= 0.5) interpretacion = 'con-reservas';
+    else                 interpretacion = 'no';
+    return {xs, ys, np, mx, my, sxx, syy, sxy, sx, sy,
+            m: mVal, n: nVal, r, interpretacion,
+            _acertada:false, _revelada:false};
+  }
+  return {
+    xs:[1,2,3,4,5], ys:[2.1,4.0,5.9,8.2,10.1], np:5,
+    mx:3, my:6.06, sxx:2, syy:8.41, sxy:4.08, sx:1.41, sy:2.90,
+    m:2.04, n:-0.06, r:0.9960, interpretacion:'si',
+    _acertada:false, _revelada:false
+  };
+}
+
+function renderRegresion(e){
+  const sigN = e.n>=0 ? `+ ${e.n}` : `− ${Math.abs(e.n)}`;
+  let html=`<div class="ejercicio-card">
+    <h3>📈 Recta de Regresión Y sobre X y Coeficiente de Correlación</h3>
+    <p class="enunciado">Muestra de ${e.np} observaciones:</p>
+    <div class="tabla-scroll"><table><thead><tr><th>\\(x_i\\)</th>`;
+  e.xs.forEach(x=>html+=`<th>${x}</th>`);
+  html+=`</tr></thead><tbody><tr><td><b>\\(y_i\\)</b></td>`;
+  e.ys.forEach(y=>html+=`<td>${y}</td>`);
+  html+=`</tr></tbody></table></div>
+    <div class="datos-aux">
+      <b>\\(\\bar{x}\\)</b> = ${e.mx} &nbsp;|&nbsp; <b>\\(\\bar{y}\\)</b> = ${e.my}<br>
+      <b>\\(S_{xx}\\)</b> = ${e.sxx} &nbsp;|&nbsp;
+      <b>\\(S_{yy}\\)</b> = ${e.syy} &nbsp;|&nbsp;
+      <b>\\(S_{xy}\\)</b> = ${e.sxy}<br>
+      <b>\\(S_x\\)</b> = ${e.sx} &nbsp;|&nbsp;
+      <b>\\(S_y\\)</b> = ${e.sy}
+    </div>
+    <p class="pregunta">① Ecuación explícita de la recta de regresión de Y sobre X &nbsp;<span style="font-weight:400;font-size:.88rem;">(\\(\\hat{y} = m x + n\\))</span></p>
+    <div class="input-respuesta">
+      <label for="resp-m">Pendiente <b>m</b> =</label>
+      <input type="text" inputmode="decimal" class="campo-num campo-sm" id="resp-m">
+    </div>
+    <div class="input-respuesta">
+      <label for="resp-n">Término ind. <b>n</b> =</label>
+      <input type="text" inputmode="decimal" class="campo-num campo-sm" id="resp-n">
+    </div>
+    <hr class="sep">
+    <p class="pregunta">② Coeficiente de correlación lineal <b>r</b> &nbsp;<span style="font-weight:400;font-size:.88rem;">(4 decimales)</span></p>
+    <div class="input-respuesta">
+      <label for="resp-r">r =</label>
+      <input type="text" inputmode="decimal" class="campo-num campo-sm" id="resp-r">
+    </div>
+    <hr class="sep">
+    <p class="pregunta">③ En función del valor obtenido, ¿podemos usar esta recta de regresión para hacer estimaciones?</p>
+    <div class="radio-group">
+      <label><input type="radio" name="interp" value="si"> Sí, la correlación es suficientemente fuerte</label>
+      <label><input type="radio" name="interp" value="con-reservas"> Con reservas, la correlación es moderada</label>
+      <label><input type="radio" name="interp" value="no"> No, la correlación es demasiado débil</label>
+    </div>
+    <button class="btn-primario" onclick="comprobar()">Comprobar todo</button>
+    <div class="feedback" id="feedback" aria-live="polite"></div>
+  </div>`;
+  return html;
+}
+
+// ============================================================
+// NUEVO EJERCICIO
+// ============================================================
+function nuevoEjercicio(){
+  const zona = document.getElementById('zona-ejercicio');
+  switch(tipoActual){
+    case 'marginales':
+      ejercicioActual = genMarginales();
+      ultimoMarginales = ejercicioActual;
+      zona.innerHTML = renderMarginales(ejercicioActual);
+      break;
+    case 'media-var':
+      ejercicioActual = genMediaVar();
+      zona.innerHTML = renderMediaVar(ejercicioActual);
+      break;
+    case 'covarianza':
+      ejercicioActual = genCovarianza();
+      zona.innerHTML = renderCovarianza(ejercicioActual);
+      break;
+    case 'regresion':
+      ejercicioActual = genRegresion();
+      zona.innerHTML = renderRegresion(ejercicioActual);
+      break;
+  }
+  typeset();
+}
+
+// ============================================================
+// MOTOR DE PUNTUACIÓN — común a los 4 tipos
+// Aplica: bloqueo tras revelar resultado, guard de "ya superado",
+// deducción fija por fallo fresco y agotamiento por tipo.
+// ============================================================
+function registrarResultado(correcto){
+  const t = tiposEstado[tipoActual];
+
+  if(ejercicioActual._acertada){
+    return {estado:'ya-acertada'};
+  }
+  if(ejercicioActual._revelada){
+    return {estado:'ya-revelada'};
+  }
+
+  // Primer intento real sobre esta instancia del ejercicio
+  if(correcto){
+    ejercicioActual._acertada = true;
+    aciertosN++;
+    if(!t.completado && !t.agotado){
+      const potencial = Math.max(0, PUNTOS_POR_TIPO - t.fallos*DEDUCCION_POR_FALLO);
+      t.puntos = rnd(potencial,2);
+      t.completado = true;
+      document.getElementById('btn-'+tipoActual).classList.add('completado');
+    }
+    actualizarMarcador();
+    return {estado:'nuevo-acierto', puntosGanados: t.puntos};
+  } else {
+    ejercicioActual._revelada = true;
+    fallosN++;
+    let agotadoAhora = false;
+    if(!t.completado && !t.agotado){
+      t.fallos++;
+      const potencialRestante = PUNTOS_POR_TIPO - t.fallos*DEDUCCION_POR_FALLO;
+      if(potencialRestante <= 0){
+        t.agotado = true;
+        agotadoAhora = true;
+        document.getElementById('btn-'+tipoActual).classList.add('agotado');
+      }
+    }
+    actualizarMarcador();
+    return {estado:'nuevo-fallo', agotado: t.agotado, agotadoAhora};
+  }
+}
+
+function actualizarMarcador(){
+  const total = Object.values(tiposEstado).reduce((s,t)=>s+t.puntos,0);
+  document.getElementById('puntos').textContent = rnd(total,2);
+  document.getElementById('aciertos').textContent = aciertosN;
+  document.getElementById('fallos').textContent = fallosN;
+}
+
+function botonPracticarOtro(){
+  return `<button class="btn-secundario" style="margin-top:8px;" onclick="nuevoEjercicio()">Practicar otro ejercicio de este tipo</button>`;
+}
+
+// ============================================================
+// COMPROBAR
+// ============================================================
+function comprobar(){
+  const fb = document.getElementById('feedback');
+  if(!fb) return;
+
+  if(tipoActual==='marginales'){
+    const e = ejercicioActual;
+    const resp = intFromInput('resp');
+    if(isNaN(resp)){fb.className='feedback feedback-incorrecto show';fb.innerHTML='⚠️ Escribe un valor numérico.';return;}
+    let errMarg=false;
+    e.edades.forEach((_,i)=>{
+      const val = intFromInput('mx'+i);
+      const inp = document.getElementById('mx'+i); if(!inp) return;
+      const ok = val===e.margX[i];
+      inp.classList.toggle('ok',ok); inp.classList.toggle('err',!ok);
+      if(!ok) errMarg=true;
+    });
+    e.punts.forEach((_,j)=>{
+      const val = intFromInput('my'+j);
+      const inp = document.getElementById('my'+j); if(!inp) return;
+      const ok = val===e.margY[j];
+      inp.classList.toggle('ok',ok); inp.classList.toggle('err',!ok);
+      if(!ok) errMarg=true;
+    });
+    const correcto=(resp===e.correcta)&&!errMarg;
+    const r = registrarResultado(correcto);
+
+    if(r.estado==='ya-acertada'){
+      fb.className='feedback feedback-neutro show';
+      fb.innerHTML='Este ejercicio ya estaba superado; no se conceden puntos adicionales por repetirlo. '+botonPracticarOtro();
+    } else if(r.estado==='ya-revelada'){
+      fb.className = correcto ? 'feedback feedback-neutro show' : 'feedback feedback-incorrecto show';
+      fb.innerHTML = (correcto
+        ? '✅ Correcto — pero ya se había mostrado la solución antes, así que no se conceden puntos por esta instancia.'
+        : '❌ Sigue sin ser correcto. La solución de este ejercicio ya se mostró antes, así que tampoco se restan más puntos.') + ' ' + botonPracticarOtro();
+    } else if(r.estado==='nuevo-acierto'){
+      ultimoMarginales=e;
+      fb.className='feedback feedback-correcto show';
+      fb.innerHTML='✅ ¡Correcto! Todas las frecuencias marginales son correctas. '+botonPracticarOtro();
+    } else {
+      const msgAgotado = r.agotadoAhora ? '<br><b>Se ha agotado el margen de puntos de este tipo de ejercicio.</b> Puedes seguir practicando, pero ya no sumará puntos.' : '';
+      fb.className='feedback feedback-incorrecto show';
+      fb.innerHTML=`❌ Hay algún error.
+        <div class="solucion">La frecuencia marginal de la ${e.eje} <b>${e.etiqueta}</b> es <b>${e.correcta}</b>. Las celdas en rojo tienen errores.${msgAgotado}</div>
+        ${botonPracticarOtro()}`;
+    }
+    typeset();
+    return;
+  }
+
+  if(tipoActual==='media-var'){
+    const e = ejercicioActual;
+    const resp = numFromInput('resp');
+    if(isNaN(resp)){fb.className='feedback feedback-incorrecto show';fb.innerHTML='⚠️ Escribe un valor numérico.';return;}
+    const correcto=Math.abs(resp-e.correcta)<=0.07;
+    const r = registrarResultado(correcto);
+
+    if(r.estado==='ya-acertada'){
+      fb.className='feedback feedback-neutro show';
+      fb.innerHTML='Este ejercicio ya estaba superado; no se conceden puntos adicionales por repetirlo. '+botonPracticarOtro();
+    } else if(r.estado==='ya-revelada'){
+      fb.className = correcto ? 'feedback feedback-neutro show' : 'feedback feedback-incorrecto show';
+      fb.innerHTML = (correcto
+        ? '✅ Correcto — pero ya se había mostrado la solución antes, así que no se conceden puntos por esta instancia.'
+        : '❌ Sigue sin ser correcto. La solución ya se mostró antes, así que tampoco se restan más puntos.') + ' ' + botonPracticarOtro();
+    } else if(r.estado==='nuevo-acierto'){
+      fb.className='feedback feedback-correcto show';
+      fb.innerHTML='✅ ¡Correcto! Muy bien. '+botonPracticarOtro();
+    } else {
+      const med=e.varXY==='X'?e.mx:e.my;
+      const expl=e.pide==='media'
+        ?`La media de <b>${e.varXY}</b> = \\(\\sum x_i n_{i\\cdot}/N\\) = <b>${e.correcta}</b>.`
+        :`La varianza de <b>${e.varXY}</b> = \\(\\sum x_i^2 n_{i\\cdot}/N - \\bar{x}^2\\) = <b>${e.correcta}</b> (con \\(\\bar{x}\\)=${med}).`;
+      const msgAgotado = r.agotadoAhora ? '<br><b>Se ha agotado el margen de puntos de este tipo de ejercicio.</b> Puedes seguir practicando, pero ya no sumará puntos.' : '';
+      fb.className='feedback feedback-incorrecto show';
+      fb.innerHTML=`❌ Incorrecto. <div class="solucion">${expl}${msgAgotado}</div>${botonPracticarOtro()}`;
+    }
+    typeset();
+    return;
+  }
+
+  if(tipoActual==='covarianza'){
+    const e = ejercicioActual;
+    let errTabla=false;
+    e.xs.forEach((_,i)=>{
+      const iXY=document.getElementById('xiyi'+i);
+      const iXYF=document.getElementById('xiyifi'+i);
+      if(iXY){
+        const val = numFromInput('xiyi'+i);
+        const ok=Math.abs(val-e.xiyiArr[i])<=0.06;
+        iXY.classList.toggle('ok',ok); iXY.classList.toggle('err',!ok);
+        if(!ok) errTabla=true;
+      }
+      if(iXYF){
+        const val = numFromInput('xiyifi'+i);
+        const ok=Math.abs(val-e.xiyifiArr[i])<=0.06;
+        iXYF.classList.toggle('ok',ok); iXYF.classList.toggle('err',!ok);
+        if(!ok) errTabla=true;
+      }
+    });
+    const iSum=document.getElementById('sumXYF');
+    if(iSum){
+      const val = numFromInput('sumXYF');
+      const ok=Math.abs(val-e.sumXYF)<=0.1;
+      iSum.classList.toggle('ok',ok); iSum.classList.toggle('err',!ok);
+      if(!ok) errTabla=true;
+    }
+    const resp = numFromInput('resp');
+    if(isNaN(resp)){fb.className='feedback feedback-incorrecto show';fb.innerHTML='⚠️ Escribe la covarianza en el campo de respuesta.';return;}
+    const correcto=Math.abs(resp-e.sxy)<=0.06&&!errTabla;
+    const r = registrarResultado(correcto);
+
+    if(r.estado==='ya-acertada'){
+      fb.className='feedback feedback-neutro show';
+      fb.innerHTML='Este ejercicio ya estaba superado; no se conceden puntos adicionales por repetirlo. '+botonPracticarOtro();
+    } else if(r.estado==='ya-revelada'){
+      fb.className = correcto ? 'feedback feedback-neutro show' : 'feedback feedback-incorrecto show';
+      fb.innerHTML = (correcto
+        ? '✅ Correcto — pero ya se había mostrado la solución antes, así que no se conceden puntos por esta instancia.'
+        : '❌ Sigue sin ser correcto. La solución ya se mostró antes, así que tampoco se restan más puntos.') + ' ' + botonPracticarOtro();
+    } else if(r.estado==='nuevo-acierto'){
+      fb.className='feedback feedback-correcto show';
+      fb.innerHTML='✅ ¡Correcto! Tabla y covarianza son correctas. '+botonPracticarOtro();
+    } else {
+      const msgAgotado = r.agotadoAhora ? '<br><b>Se ha agotado el margen de puntos de este tipo de ejercicio.</b> Puedes seguir practicando, pero ya no sumará puntos.' : '';
+      fb.className='feedback feedback-incorrecto show';
+      fb.innerHTML=`❌ Hay algún error.
+        <div class="solucion">
+          \\(x_i y_i\\): [${e.xiyiArr.join(', ')}]<br>
+          \\(x_i y_i f_i\\): [${e.xiyifiArr.join(', ')}]<br>
+          \\(\\sum x_i y_i f_i\\) = ${e.sumXYF}<br>
+          \\(S_{xy}\\) = ${e.sumXYF}/${e.N} − ${e.mx}×${e.my} = <b>${e.sxy}</b>${msgAgotado}
+        </div>
+        ${botonPracticarOtro()}`;
+    }
+    typeset();
+    return;
+  }
+
+  if(tipoActual==='regresion'){
+    const e = ejercicioActual;
+    const respM = numFromInput('resp-m');
+    const respN = numFromInput('resp-n');
+    const respR = numFromInput('resp-r');
+    const radios = document.querySelectorAll('input[name="interp"]');
+    const seleccionado = [...radios].find(r=>r.checked);
+
+    if(isNaN(respM)||isNaN(respN)||isNaN(respR)||!seleccionado){
+      fb.className='feedback feedback-incorrecto show';
+      fb.innerHTML='⚠️ Rellena los tres campos numéricos y selecciona una opción de interpretación.';
+      return;
+    }
+
+    const okM = Math.abs(respM - e.m) <= 0.06;
+    const okN = Math.abs(respN - e.n) <= 0.06;
+    const okR = Math.abs(respR - e.r) <= 0.005;
+    const okInterp = seleccionado.value === e.interpretacion;
+    const correcto = okM && okN && okR && okInterp;
+
+    document.getElementById('resp-m').style.borderColor = okM?'var(--color-correcto)':'var(--color-incorrecto)';
+    document.getElementById('resp-n').style.borderColor = okN?'var(--color-correcto)':'var(--color-incorrecto)';
+    document.getElementById('resp-r').style.borderColor = okR?'var(--color-correcto)':'var(--color-incorrecto)';
+
+    const r = registrarResultado(correcto);
+    const sigN = e.n>=0?`+ ${e.n}`:`− ${Math.abs(e.n)}`;
+
+    if(r.estado==='ya-acertada'){
+      fb.className='feedback feedback-neutro show';
+      fb.innerHTML='Este ejercicio ya estaba superado; no se conceden puntos adicionales por repetirlo. '+botonPracticarOtro();
+    } else if(r.estado==='ya-revelada'){
+      fb.className = correcto ? 'feedback feedback-neutro show' : 'feedback feedback-incorrecto show';
+      fb.innerHTML = (correcto
+        ? '✅ Correcto — pero ya se había mostrado la solución antes, así que no se conceden puntos por esta instancia.'
+        : '❌ Sigue sin ser correcto. La solución ya se mostró antes, así que tampoco se restan más puntos.') + ' ' + botonPracticarOtro();
+    } else if(r.estado==='nuevo-acierto'){
+      fb.className='feedback feedback-correcto show';
+      fb.innerHTML=`✅ ¡Correcto! Recta: <b>\\(\\hat{y}\\) = ${e.m}x ${sigN}</b> &nbsp;|&nbsp; r = <b>${e.r}</b>. La interpretación también es correcta. ${botonPracticarOtro()}`;
+    } else {
+      const absR = Math.abs(e.r);
+      const interpTexto = e.interpretacion==='si'
+        ? `|r| = ${absR} ≥ 0.85 → correlación fuerte: <b>sí se puede usar</b>.`
+        : e.interpretacion==='con-reservas'
+          ? `|r| = ${absR} entre 0.50 y 0.85 → correlación moderada: <b>con reservas</b>.`
+          : `|r| = ${absR} < 0.50 → correlación débil: <b>no es fiable para estimaciones</b>.`;
+      const msgAgotado = r.agotadoAhora ? '<br><b>Se ha agotado el margen de puntos de este tipo de ejercicio.</b> Puedes seguir practicando, pero ya no sumará puntos.' : '';
+      fb.className='feedback feedback-incorrecto show';
+      fb.innerHTML=`❌ Algún valor es incorrecto.
+        <div class="solucion">
+          ${!okM?`• <b>m</b> = \\(S_{xy}/S_{xx}\\) = ${e.sxy}/${e.sxx} = <b>${e.m}</b><br>`:''}
+          ${!okN?`• <b>n</b> = \\(\\bar{y} - m\\bar{x}\\) = ${e.my} − ${e.m}·${e.mx} = <b>${e.n}</b><br>`:''}
+          ${(!okM||!okN)?`→ Recta: \\(\\hat{y}\\) = ${e.m}x ${sigN}<br>`:''}
+          ${!okR?`• <b>r</b> = \\(S_{xy}/(S_x S_y)\\) = ${e.sxy} / (${e.sx}·${e.sy}) = <b>${e.r}</b><br>`:''}
+          ${!okInterp?`• Interpretación: ${interpTexto}`:''}
+          ${msgAgotado}
+        </div>
+        ${botonPracticarOtro()}`;
+    }
+    typeset();
+    return;
+  }
+}
+
+// ============================================================
+// MODAL — CALIFICACIÓN FINAL
+// ============================================================
+function calcularNota(){
+  const total = Object.values(tiposEstado).reduce((s,t)=>s+t.puntos,0);
+  return Math.round(total*10)/10;
+}
+
+function colorModal(n){
+  if(n>=10) return {bg:'#1a7a1a', txt:'white',  verde:true};
+  if(n>=9)  return {bg:'#6dbf6d', txt:'white',  verde:false};
+  if(n>=8)  return {bg:'#1a4f8a', txt:'white',  verde:false};
+  if(n>=7)  return {bg:'#5b9bd5', txt:'white',  verde:false};
+  if(n>=6)  return {bg:'#c05c00', txt:'white',  verde:false};
+  if(n>=5)  return {bg:'#f5a623', txt:'black',  verde:false};
+  return              {bg:'#c0392b', txt:'white',  verde:false};
+}
+
+function abrirModal(){
+  const nombreInput=document.getElementById('nombre');
+  const nombre=nombreInput.value.trim();
+  if(!nombre){
+    nombreInput.style.borderColor='var(--color-incorrecto)';
+    nombreInput.style.background='#f9eaea';
+    nombreInput.placeholder='⚠️ Escribe tu nombre antes de finalizar';
+    nombreInput.focus();
+    return;
+  }
+  nombreInput.style.borderColor='';
+  nombreInput.style.background='';
+
+  const nota=calcularNota();
+  const {bg, txt, verde}=colorModal(nota);
+
+  document.body.style.backgroundColor = verde ? '#1a7a1a' : '';
+
+  const ahora=new Date();
+  const elapsedMs = Date.now()-inicioTiempo;
+  const elapsed = Math.ceil(elapsedMs/1000); // redondeo SIEMPRE hacia arriba
+  const hh=String(Math.floor(elapsed/3600)).padStart(2,'0');
+  const mm=String(Math.floor((elapsed%3600)/60)).padStart(2,'0');
+  const ss=String(elapsed%60).padStart(2,'0');
+
+  const tipos=['marginales','media-var','covarianza','regresion'];
+  const labels={marginales:'Marginales','media-var':'Media/Var',covarianza:'Covarianza',regresion:'Regresión+r'};
+  const tiposHtml=tipos.map(t=>{
+    const est = tiposEstado[t];
+    const marca = est.completado ? '✓' : (est.agotado ? '✗ (agotado)' : '✗');
+    const clase = est.completado ? 'badge-ok' : 'badge-pend';
+    return `<span class="badge ${clase}">${labels[t]} ${marca} (${est.puntos}/${PUNTOS_POR_TIPO})</span>`;
+  }).join(' ');
+
+  const modal=document.getElementById('modal');
+  modal.style.background=bg;
+  modal.style.color=txt;
+  document.querySelector('.btn-cerrar-modal').style.color=txt;
+
+  document.getElementById('m-nombre').textContent='👤 '+nombre;
+  document.getElementById('m-nota').textContent=nota+' / 10';
+  document.getElementById('m-fecha').textContent='📅 '+ahora.toLocaleDateString('es-ES');
+  document.getElementById('m-hora').textContent='🕐 '+ahora.toLocaleTimeString('es-ES');
+  document.getElementById('m-tiempo').textContent='⏱ Tiempo: '+hh+':'+mm+':'+ss;
+  document.getElementById('m-tipos').innerHTML=tiposHtml;
+
+  document.getElementById('overlay').classList.add('show');
+}
+
+function cerrarModal(){
+  document.getElementById('overlay').classList.remove('show');
+  document.body.style.backgroundColor='';
+}
+
+// ============================================================
+// ENTER PARA ENVIAR (delegación de eventos; funciona con inputs generados dinámicamente)
+// ============================================================
+document.addEventListener('keydown', function(ev){
+  if(ev.key === 'Enter'){
+    const t = ev.target;
+    if(t.tagName === 'INPUT' && t.closest('#zona-ejercicio')){
+      ev.preventDefault();
+      comprobar();
+    }
+  }
+});
+
+nuevoEjercicio();
+</script>
+</body>
+</html>
