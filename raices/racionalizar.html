@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Racionalización de Denominadores</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<script>
+  MathJax = {
+    tex: { inlineMath: [['$','$'], ['\\(','\\)']], displayMath: [['$$','$$'], ['\\[','\\]']] },
+    svg: { fontCache: 'global' }
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+<style>
+:root {
+  --color-fondo: #F5F0E8;
+  --color-fondo-card: #FDFAF3;
+  --color-texto: #2C1F0E;
+  --color-texto-suave: #6B4F35;
+  --color-acento: #A0522D;
+  --color-acento-hover: #7B3B1E;
+  --color-borde: #C9A96E;
+  --color-borde-suave: #E0CEAA;
+  --color-cabecera: #3B2510;
+  --color-cabecera-txt: #F5EDD8;
+  --color-correcto: #2E6B3E;
+  --color-incorrecto: #8B1A1A;
+  --color-neutro: #E8DFC8;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: 'Lato', sans-serif;
+  font-size: 16px;
+  color: var(--color-texto);
+  background-color: var(--color-fondo);
+  margin: 0;
+  padding: 0;
+  transition: background-color 0.5s;
+}
+
+body.nota-perfecta {
+  background-color: #1a7a1a;
+}
+
+.cabecera {
+  background-color: var(--color-cabecera);
+  color: var(--color-cabecera-txt);
+  font-family: 'Libre Baskerville', serif;
+  text-align: center;
+  padding: 12px 20px;
+  border-bottom: 3px solid var(--color-borde);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+}
+
+.ficha-container {
+  max-width: 880px;
+  margin: 28px auto;
+  background: var(--color-fondo-card);
+  border: 2px solid var(--color-borde);
+  border-radius: 6px;
+  box-shadow: 0 3px 12px rgba(44, 31, 14, 0.15);
+  padding: 28px 36px 32px;
+}
+
+.titulo-ficha {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 1.6rem;
+  color: var(--color-texto);
+  text-align: center;
+  border-bottom: 2px solid var(--color-borde);
+  padding-bottom: 10px;
+  margin: 0 0 24px;
+}
+.titulo-ficha::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 3px;
+  background: var(--color-borde);
+  margin: 8px auto 0;
+  border-radius: 2px;
+}
+
+.intro {
+  font-size: 0.95rem;
+  color: var(--color-texto-suave);
+  margin-bottom: 18px;
+  text-align: center;
+  font-style: italic;
+}
+
+.bloque-alumno {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+  padding: 12px 16px;
+  background: var(--color-fondo);
+  border: 1px solid var(--color-borde-suave);
+  border-radius: 4px;
+}
+.bloque-alumno label {
+  font-weight: 700;
+  color: var(--color-texto-suave);
+  font-family: 'Libre Baskerville', serif;
+}
+
+input[type="text"] {
+  background-color: #fff;
+  border: 1.5px solid var(--color-borde);
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-family: 'Lato', sans-serif;
+  font-size: 1rem;
+  color: var(--color-texto);
+  outline: none;
+  transition: border-color 0.2s;
+  flex: 1;
+  min-width: 180px;
+}
+input[type="text"]:focus { border-color: var(--color-acento); }
+
+.tipos-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.tipo-badge {
+  flex: 1;
+  min-width: 200px;
+  cursor: pointer;
+  padding: 10px 12px;
+  background: var(--color-fondo);
+  border: 1.5px solid var(--color-borde-suave);
+  border-left: 4px solid var(--color-borde);
+  border-radius: 4px;
+  text-align: center;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--color-texto-suave);
+  transition: all 0.2s;
+  font-family: 'Libre Baskerville', serif;
+}
+.tipo-badge:hover { border-color: var(--color-acento); }
+.tipo-badge.activo {
+  background: var(--color-acento);
+  color: white;
+  border-color: var(--color-acento-hover);
+}
+.tipo-badge.completado {
+  background: var(--color-correcto);
+  color: white;
+  border-color: var(--color-correcto);
+}
+.badge-contador {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 0.8rem;
+  font-family: 'Lato', sans-serif;
+  font-weight: 400;
+  opacity: 0.85;
+}
+.tipo-badge.activo .badge-contador,
+.tipo-badge.completado .badge-contador { opacity: 1; }
+
+.marcador {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-family: 'Libre Baskerville', serif;
+  font-size: 0.95rem;
+  color: var(--color-texto-suave);
+  border-bottom: 1px solid var(--color-borde-suave);
+  padding-bottom: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.score-box { display: flex; gap: 16px; flex-wrap: wrap; }
+.score-item { display: flex; flex-direction: column; align-items: center; font-size: 0.78rem; }
+.score-item span {
+  font-size: 1.3rem;
+  color: var(--color-acento);
+  font-weight: 700;
+  font-family: 'Libre Baskerville', serif;
+}
+.score-item .pos { color: var(--color-correcto); }
+.tiempo-box { font-size: 0.9rem; }
+.tiempo-box span { color: var(--color-acento); font-weight: 700; }
+
+.barra-progreso {
+  height: 10px;
+  background: var(--color-neutro);
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+.barra-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-acento), var(--color-borde));
+  transition: width 0.4s;
+  width: 0%;
+}
+.progreso-label {
+  font-size: 0.8rem;
+  color: var(--color-texto-suave);
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+.ejercicio-card {
+  background: var(--color-fondo);
+  border: 1.5px solid var(--color-borde-suave);
+  border-left: 4px solid var(--color-acento);
+  border-radius: 4px;
+  padding: 22px 26px;
+  margin-bottom: 18px;
+}
+
+.enunciado {
+  font-size: 1.05rem;
+  margin-bottom: 8px;
+}
+.enunciado-formula {
+  font-size: 1.4rem;
+  text-align: center;
+  margin: 14px 0 20px;
+  padding: 14px;
+  background: var(--color-fondo-card);
+  border-radius: 4px;
+  border: 1px dashed var(--color-borde-suave);
+}
+
+.tipo-actual-label {
+  display: inline-block;
+  background: var(--color-acento);
+  color: white;
+  padding: 3px 12px;
+  border-radius: 12px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  margin-bottom: 10px;
+  font-family: 'Lato', sans-serif;
+  text-transform: uppercase;
+}
+
+.opciones {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 8px;
+}
+@media (max-width: 600px) {
+  .opciones { grid-template-columns: 1fr; }
+}
+
+.opcion-btn {
+  background: white;
+  border: 1.5px solid var(--color-borde-suave);
+  border-radius: 4px;
+  padding: 12px 14px;
+  font-size: 1.05rem;
+  cursor: pointer;
+  text-align: center;
+  color: var(--color-texto);
+  font-family: 'Lato', sans-serif;
+  transition: all 0.15s;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.opcion-btn:hover:not(:disabled) {
+  border-color: var(--color-acento);
+  background: var(--color-fondo-card);
+}
+.opcion-btn.seleccionada {
+  border-color: var(--color-acento);
+  background: #f8e8d8;
+  border-width: 2.5px;
+}
+.opcion-btn.correcta {
+  background: #EAF4EC;
+  border-color: var(--color-correcto);
+  border-width: 2.5px;
+  color: var(--color-correcto);
+  font-weight: 700;
+}
+.opcion-btn.incorrecta {
+  background: #F9EAEA;
+  border-color: var(--color-incorrecto);
+  border-width: 2.5px;
+  color: var(--color-incorrecto);
+}
+.opcion-btn:disabled { cursor: default; }
+
+.acciones {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.btn-primario {
+  background-color: var(--color-acento);
+  color: #FDFAF3;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 22px;
+  font-family: 'Lato', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.03em;
+  transition: background-color 0.2s;
+}
+.btn-primario:hover:not(:disabled) { background-color: var(--color-acento-hover); }
+.btn-primario:disabled {
+  background: var(--color-neutro);
+  color: var(--color-texto-suave);
+  cursor: not-allowed;
+}
+
+.btn-secundario {
+  background-color: transparent;
+  color: var(--color-acento);
+  border: 2px solid var(--color-borde);
+  border-radius: 4px;
+  padding: 9px 20px;
+  font-family: 'Lato', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+.btn-secundario:hover:not(:disabled) {
+  border-color: var(--color-acento);
+  color: var(--color-acento-hover);
+}
+.btn-secundario:disabled {
+  color: var(--color-texto-suave);
+  border-color: var(--color-borde-suave);
+  cursor: not-allowed;
+}
+
+.btn-finalizar {
+  background-color: var(--color-cabecera);
+  color: var(--color-cabecera-txt);
+  border: 2px solid var(--color-borde);
+  border-radius: 4px;
+  padding: 10px 24px;
+  font-family: 'Libre Baskerville', serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  transition: background-color 0.2s;
+}
+.btn-finalizar:hover { background-color: #2C1A0A; }
+
+.feedback {
+  margin-top: 14px;
+  padding: 12px 16px;
+  border-radius: 4px;
+  font-size: 0.98rem;
+  line-height: 1.5;
+}
+.feedback-correcto {
+  background-color: #EAF4EC;
+  border: 1.5px solid var(--color-correcto);
+  color: var(--color-correcto);
+}
+.feedback-incorrecto {
+  background-color: #F9EAEA;
+  border: 1.5px solid var(--color-incorrecto);
+  color: var(--color-texto);
+}
+.feedback strong { font-weight: 700; }
+.feedback em { font-style: italic; color: var(--color-texto-suave); }
+
+.pista-box {
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: #FFF8E0;
+  border: 1px dashed var(--color-borde);
+  border-radius: 4px;
+  font-size: 0.92rem;
+  color: var(--color-texto-suave);
+  font-style: italic;
+}
+
+.footer-acciones {
+  display: flex;
+  justify-content: center;
+  margin-top: 22px;
+}
+
+/* Modal */
+.overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(44, 31, 14, 0.55);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+.overlay.show { display: flex; }
+.modal-calificacion {
+  background: white;
+  border: 3px solid var(--color-borde);
+  border-radius: 8px;
+  font-family: 'Libre Baskerville', serif;
+  box-shadow: 0 6px 24px rgba(44, 31, 14, 0.35);
+  padding: 28px 32px;
+  min-width: 320px;
+  max-width: 460px;
+  max-height: 90vh;
+  overflow-y: auto;
+  text-align: center;
+}
+.modal-calificacion h2 {
+  margin: 0 0 18px;
+  font-family: 'Libre Baskerville', serif;
+  font-size: 1.4rem;
+}
+.modal-calificacion .nota-grande {
+  font-size: 4rem;
+  font-weight: 700;
+  margin: 14px 0;
+  line-height: 1;
+}
+.modal-calificacion .info-linea {
+  font-size: 0.98rem;
+  margin: 6px 0;
+}
+.modal-calificacion .info-linea strong { font-weight: 700; }
+.modal-calificacion .meta-info {
+  margin-top: 14px;
+  font-size: 0.88rem;
+  font-style: italic;
+  opacity: 0.9;
+}
+.modal-calificacion .aviso-captura {
+  margin-top: 18px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1.5px dashed currentColor;
+  border-radius: 6px;
+  font-family: 'Lato', sans-serif;
+  font-size: 0.92rem;
+  line-height: 1.4;
+  font-style: normal;
+}
+/* Cuando el texto del modal es negro (nota 5, naranja claro), el fondo blanco translúcido
+   queda invisible. Usamos un negro translúcido para mantener contraste. */
+.modal-calificacion.fondo-claro .aviso-captura {
+  background: rgba(0, 0, 0, 0.10);
+}
+.modal-calificacion .cerrar-modal {
+  margin-top: 22px;
+  padding: 8px 22px;
+  background: transparent;
+  color: inherit;
+  border: 2px solid currentColor;
+  border-radius: 4px;
+  font-family: 'Libre Baskerville', serif;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 0.92rem;
+  opacity: 0.95;
+  transition: background-color 0.15s, opacity 0.15s;
+}
+.modal-calificacion .cerrar-modal:hover { background: rgba(255,255,255,0.18); opacity: 1; }
+
+.modal-aviso {
+  background: var(--color-fondo-card);
+  border: 3px solid var(--color-acento);
+  border-radius: 8px;
+  font-family: 'Lato', sans-serif;
+  box-shadow: 0 6px 24px rgba(44, 31, 14, 0.35);
+  padding: 26px 30px;
+  min-width: 300px;
+  max-width: 440px;
+  text-align: center;
+  color: var(--color-texto);
+}
+.modal-aviso h3 {
+  font-family: 'Libre Baskerville', serif;
+  margin: 0 0 12px;
+  color: var(--color-acento);
+}
+.modal-aviso ul {
+  text-align: left;
+  margin: 10px 0 16px;
+  padding-left: 22px;
+}
+.modal-aviso .botones-aviso {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 18px;
+  flex-wrap: wrap;
+}
+</style>
+</head>
+<body>
+
+<div class="cabecera">
+  Material elaborado por Marta L Letona S. Basado en el trabajo de Javier Cayetano
+</div>
+
+<div class="ficha-container">
+  <h1 class="titulo-ficha">Racionalización de Denominadores</h1>
+  <p class="intro">Elimina las raíces del denominador. Practica los tres tipos para conseguir la máxima puntuación.</p>
+
+  <div class="bloque-alumno">
+    <label for="nombre-alumno">Alumno/a:</label>
+    <input type="text" id="nombre-alumno" placeholder="Escribe tu nombre y apellidos" autocomplete="off">
+  </div>
+
+  <div class="tipos-bar">
+    <div class="tipo-badge" id="badge-cuadrada" onclick="elegirTipo('cuadrada')">
+      Tipo 1 · Raíz cuadrada<br><span class="badge-contador" id="cont-cuadrada">0/2</span>
+    </div>
+    <div class="tipo-badge" id="badge-indice" onclick="elegirTipo('indice')">
+      Tipo 2 · Raíz de índice superior<br><span class="badge-contador" id="cont-indice">0/2</span>
+    </div>
+    <div class="tipo-badge" id="badge-binomio" onclick="elegirTipo('binomio')">
+      Tipo 3 · Suma o resta de raíces<br><span class="badge-contador" id="cont-binomio">0/2</span>
+    </div>
+  </div>
+
+  <div class="marcador">
+    <div class="score-box">
+      <div class="score-item">
+        <span class="pos" id="pts-pos">0</span>Aciertos
+      </div>
+      <div class="score-item">
+        <span id="pts-neg">/ 6</span>Necesarios
+      </div>
+      <div class="score-item">
+        <span id="pts-total">0.00</span>Puntos / 10
+      </div>
+    </div>
+    <div class="tiempo-box">⏱ Tiempo: <span id="tiempo">00:00</span></div>
+  </div>
+
+  <div class="barra-progreso"><div class="barra-fill" id="barra-fill"></div></div>
+  <div class="progreso-label" id="progreso-label">Aciertos: 0/6 · Puntos: 0.00/10</div>
+
+  <div class="ejercicio-card">
+    <div class="tipo-actual-label" id="tipo-actual-label">Cargando…</div>
+    <div class="enunciado">Racionaliza el denominador de la siguiente expresión:</div>
+    <div class="enunciado-formula" id="enunciado-formula">$\dfrac{1}{\sqrt{2}}$</div>
+
+    <div class="opciones" id="opciones"></div>
+
+    <div class="acciones">
+      <button class="btn-secundario" id="btn-pista" onclick="mostrarPista()">💡 Ver pista</button>
+      <button class="btn-primario" id="btn-corregir" onclick="corregir()" disabled>Corregir</button>
+      <button class="btn-primario" id="btn-siguiente" onclick="siguienteEjercicio()" style="display:none;">Hacer otro ejercicio →</button>
+    </div>
+
+    <div id="pista-container"></div>
+    <div id="feedback-container" aria-live="polite"></div>
+  </div>
+
+  <div class="footer-acciones">
+    <button class="btn-finalizar" onclick="finalizar()">Finalizar y Calificar</button>
+  </div>
+</div>
+
+<div class="overlay" id="overlay-aviso">
+  <div class="modal-aviso">
+    <h3>⚠️ Todavía te faltan tipos por completar</h3>
+    <p>Si finalizas ahora, tu nota se calculará solo con los aciertos que llevas hasta el momento:</p>
+    <ul id="lista-pendientes-aviso"></ul>
+    <div class="botones-aviso">
+      <button class="btn-secundario" onclick="cerrarAvisoIncompleto()">Seguir practicando</button>
+      <button class="btn-primario" onclick="finalizarConfirmado()">Finalizar de todas formas</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal-calificacion" id="modal-calificacion">
+    <h2>Resultado de la actividad</h2>
+    <div class="info-linea"><strong>Alumno/a:</strong> <span id="modal-nombre">—</span></div>
+    <div class="nota-grande" id="modal-nota">—</div>
+    <div class="info-linea"><strong>Fecha:</strong> <span id="modal-fecha"></span></div>
+    <div class="info-linea"><strong>Hora:</strong> <span id="modal-hora"></span></div>
+    <div class="info-linea"><strong>Tiempo empleado:</strong> <span id="modal-tiempo"></span></div>
+    <div class="meta-info" id="modal-meta"></div>
+    <div class="aviso-captura">
+      📸 <strong>Haz una captura de pantalla</strong> de este resultado y <strong>súbela a Classroom</strong> para entregar la actividad.
+    </div>
+    <button class="cerrar-modal" onclick="cerrarModal()">Continuar practicando</button>
+  </div>
+</div>
+
+<script>
+// ============================================================
+//  CONFIGURACIÓN DE TIPOS
+// ============================================================
+const TIPOS = ['cuadrada', 'indice', 'binomio'];
+const NOMBRE_TIPO = {
+  cuadrada: 'Raíz cuadrada en el denominador',
+  indice:   'Raíz de índice superior',
+  binomio:  'Suma o resta de raíces'
+};
+const ACIERTOS_POR_TIPO = 2;                            // ← se necesitan 2 aciertos de cada tipo
+const TOTAL_ACIERTOS    = TIPOS.length * ACIERTOS_POR_TIPO; // = 6
+const PUNTO_POR_ACIERTO = 10 / TOTAL_ACIERTOS;          // = 1.666...
+const DEDUCCION_POR_FALLO = 0.75;                       // ← puntos que resta cada fallo (nueva instancia cada vez)
+
+// ============================================================
+//  BIBLIOTECA DE EJERCICIOS (20 por tipo)
+//  Cada ejercicio: { enunciado, correcta, opciones, explicacion, pista }
+// ============================================================
+
+const BIBLIOTECA = {
+  // ---------- TIPO 1: a / √b   →   a√b / b ----------
+  cuadrada: [
+    { enunciado:'\\dfrac{1}{\\sqrt{2}}', correcta:'\\dfrac{\\sqrt{2}}{2}',
+      opciones:['\\dfrac{\\sqrt{2}}{2}', '\\dfrac{1}{2}', '2\\sqrt{2}', '\\sqrt{2}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt{2}}{\\sqrt{2}}$.',
+      explicacion:'Multiplicamos por $\\dfrac{\\sqrt{2}}{\\sqrt{2}}$: $\\dfrac{1\\cdot\\sqrt{2}}{\\sqrt{2}\\cdot\\sqrt{2}}=\\dfrac{\\sqrt{2}}{2}$.' },
+
+    { enunciado:'\\dfrac{3}{\\sqrt{5}}', correcta:'\\dfrac{3\\sqrt{5}}{5}',
+      opciones:['\\dfrac{3\\sqrt{5}}{5}', '\\dfrac{\\sqrt{5}}{5}', '\\dfrac{3}{5}', '\\dfrac{15}{\\sqrt{5}}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt{5}}{\\sqrt{5}}$.',
+      explicacion:'$\\dfrac{3}{\\sqrt{5}}\\cdot\\dfrac{\\sqrt{5}}{\\sqrt{5}}=\\dfrac{3\\sqrt{5}}{5}$.' },
+
+    { enunciado:'\\dfrac{4}{\\sqrt{3}}', correcta:'\\dfrac{4\\sqrt{3}}{3}',
+      opciones:['\\dfrac{4\\sqrt{3}}{3}', '\\dfrac{4}{3}', '\\dfrac{2\\sqrt{3}}{6}', '\\dfrac{2\\sqrt{3}}{3}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt{3}}{\\sqrt{3}}$.',
+      explicacion:'$\\dfrac{4}{\\sqrt{3}}\\cdot\\dfrac{\\sqrt{3}}{\\sqrt{3}}=\\dfrac{4\\sqrt{3}}{3}$.' },
+
+    { enunciado:'\\dfrac{2}{\\sqrt{7}}', correcta:'\\dfrac{2\\sqrt{7}}{7}',
+      opciones:['\\dfrac{2\\sqrt{7}}{7}', '\\dfrac{2}{7}', '\\dfrac{\\sqrt{14}}{7}', '\\dfrac{2\\sqrt{7}}{\\sqrt{7}}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt{7}}{\\sqrt{7}}$.',
+      explicacion:'$\\dfrac{2\\cdot\\sqrt{7}}{\\sqrt{7}\\cdot\\sqrt{7}}=\\dfrac{2\\sqrt{7}}{7}$.' },
+
+    { enunciado:'\\dfrac{5}{\\sqrt{2}}', correcta:'\\dfrac{5\\sqrt{2}}{2}',
+      opciones:['\\dfrac{5\\sqrt{2}}{2}', '\\dfrac{5}{2}', '\\dfrac{\\sqrt{10}}{2}', '\\dfrac{5}{2\\sqrt{2}}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt{2}}{\\sqrt{2}}$.',
+      explicacion:'$\\dfrac{5}{\\sqrt{2}}\\cdot\\dfrac{\\sqrt{2}}{\\sqrt{2}}=\\dfrac{5\\sqrt{2}}{2}$.' },
+
+    { enunciado:'\\dfrac{6}{\\sqrt{6}}', correcta:'\\sqrt{6}',
+      opciones:['\\sqrt{6}', '\\dfrac{\\sqrt{6}}{6}', '\\dfrac{\\sqrt{6}}{3}', '6\\sqrt{6}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt{6}}{\\sqrt{6}}$.',
+      explicacion:'$\\dfrac{6}{\\sqrt{6}}\\cdot\\dfrac{\\sqrt{6}}{\\sqrt{6}}=\\dfrac{6\\sqrt{6}}{6}=\\sqrt{6}$.' },
+
+    { enunciado:'\\dfrac{1}{2\\sqrt{3}}', correcta:'\\dfrac{\\sqrt{3}}{6}',
+      opciones:['\\dfrac{\\sqrt{3}}{6}', '\\dfrac{\\sqrt{3}}{2}', '\\dfrac{1}{6}', '\\dfrac{2\\sqrt{3}}{6}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt{3}}{\\sqrt{3}}$.',
+      explicacion:'$\\dfrac{1}{2\\sqrt{3}}\\cdot\\dfrac{\\sqrt{3}}{\\sqrt{3}}=\\dfrac{\\sqrt{3}}{2\\cdot 3}=\\dfrac{\\sqrt{3}}{6}$.' },
+
+    { enunciado:'\\dfrac{7}{\\sqrt{14}}', correcta:'\\dfrac{\\sqrt{14}}{2}',
+      opciones:['\\dfrac{\\sqrt{14}}{2}', '\\dfrac{7\\sqrt{2}}{2}', '\\dfrac{\\sqrt{14}}{14}', '\\sqrt{2}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt{14}}{\\sqrt{14}}$.',
+      explicacion:'$\\dfrac{7\\sqrt{14}}{14}=\\dfrac{\\sqrt{14}}{2}$. Tanto $\\dfrac{7\\sqrt{14}}{14}$ como $\\dfrac{\\sqrt{14}}{2}$ son válidas, pero conviene simplificar.' },
+
+    { enunciado:'\\dfrac{10}{\\sqrt{5}}', correcta:'2\\sqrt{5}',
+      opciones:['2\\sqrt{5}', '\\sqrt{5}', '\\sqrt{50}', '\\dfrac{2\\sqrt{5}}{5}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt{5}}{\\sqrt{5}}$.',
+      explicacion:'$\\dfrac{10}{\\sqrt{5}}\\cdot\\dfrac{\\sqrt{5}}{\\sqrt{5}}=\\dfrac{10\\sqrt{5}}{5}=2\\sqrt{5}$.' },
+
+    { enunciado:'\\dfrac{8}{\\sqrt{2}}', correcta:'4\\sqrt{2}',
+      opciones:['4\\sqrt{2}', '\\sqrt{16}', '\\dfrac{4\\sqrt{2}}{4}', '\\dfrac{4}{\\sqrt{2}}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt{2}}{\\sqrt{2}}$.',
+      explicacion:'$\\dfrac{8}{\\sqrt{2}}\\cdot\\dfrac{\\sqrt{2}}{\\sqrt{2}}=\\dfrac{8\\sqrt{2}}{2}=4\\sqrt{2}$.' },
+
+    { enunciado:'\\dfrac{9}{\\sqrt{11}}', correcta:'\\dfrac{9\\sqrt{11}}{11}',
+      opciones:['\\dfrac{9\\sqrt{11}}{11}', '\\dfrac{9}{11}', '\\dfrac{\\sqrt{99}}{11}', '\\dfrac{9\\sqrt{11}}{\\sqrt{11}}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt{11}}{\\sqrt{11}}$.',
+      explicacion:'$\\dfrac{9}{\\sqrt{11}}\\cdot\\dfrac{\\sqrt{11}}{\\sqrt{11}}=\\dfrac{9\\sqrt{11}}{11}$.' },
+
+    { enunciado:'\\dfrac{12}{\\sqrt{6}}', correcta:'2\\sqrt{6}',
+      opciones:['2\\sqrt{6}', '4\\sqrt{6}', '\\dfrac{\\sqrt{24}}{6}', '\\dfrac{6}{\\sqrt{6}}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt{6}}{\\sqrt{6}}$.',
+      explicacion:'$\\dfrac{12\\sqrt{6}}{6}=2\\sqrt{6}$.' },
+
+    { enunciado:'\\dfrac{2}{3\\sqrt{2}}', correcta:'\\dfrac{\\sqrt{2}}{3}',
+      opciones:['\\dfrac{\\sqrt{2}}{3}', '\\dfrac{2\\sqrt{2}}{3}', '\\dfrac{2}{6}', '\\dfrac{\\sqrt{2}}{6}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt{2}}{\\sqrt{2}}$.',
+      explicacion:'$\\dfrac{2}{3\\sqrt{2}}\\cdot\\dfrac{\\sqrt{2}}{\\sqrt{2}}=\\dfrac{2\\sqrt{2}}{6}=\\dfrac{\\sqrt{2}}{3}$.' },
+
+    { enunciado:'\\dfrac{5}{\\sqrt{10}}', correcta:'\\dfrac{\\sqrt{10}}{2}',
+      opciones:['\\dfrac{\\sqrt{10}}{2}', '\\dfrac{5\\sqrt{2}}{2}', '\\dfrac{1}{2}', '\\dfrac{\\sqrt{10}}{10}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt{10}}{\\sqrt{10}}$.',
+      explicacion:'$\\dfrac{5\\sqrt{10}}{10}=\\dfrac{\\sqrt{10}}{2}$.' },
+
+    { enunciado:'\\dfrac{3}{\\sqrt{8}}', correcta:'\\dfrac{3\\sqrt{2}}{4}',
+      opciones:['\\dfrac{3\\sqrt{2}}{4}', '\\dfrac{3\\sqrt{8}}{4}', '\\dfrac{\\sqrt{8}}{4}', '\\dfrac{3}{4\\sqrt{2}}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt{2}}{\\sqrt{2}}$ (recuerda que $\\sqrt{8}=2\\sqrt{2}$).',
+      explicacion:'$\\dfrac{3}{\\sqrt{8}}=\\dfrac{3}{2\\sqrt{2}}\\cdot\\dfrac{\\sqrt{2}}{\\sqrt{2}}=\\dfrac{3\\sqrt{2}}{4}$.' },
+
+    { enunciado:'\\dfrac{6}{\\sqrt{12}}', correcta:'\\sqrt{3}',
+      opciones:['\\sqrt{3}', '4\\sqrt{3}', '\\dfrac{\\sqrt{12}}{6}', '3\\sqrt{3}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt{3}}{\\sqrt{3}}$ (recuerda que $\\sqrt{12}=2\\sqrt{3}$).',
+      explicacion:'$\\dfrac{6}{\\sqrt{12}}=\\dfrac{6}{2\\sqrt{3}}=\\dfrac{3}{\\sqrt{3}}=\\dfrac{3\\sqrt{3}}{3}=\\sqrt{3}$.' },
+
+    { enunciado:'\\dfrac{a}{\\sqrt{b}}', correcta:'\\dfrac{a\\sqrt{b}}{b}',
+      opciones:['\\dfrac{a\\sqrt{b}}{b}', '\\dfrac{a}{b}', '\\dfrac{\\sqrt{ab}}{b}', '\\dfrac{a\\sqrt{b}}{\\sqrt{b}}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt{b}}{\\sqrt{b}}$ (con $b>0$).',
+      explicacion:'$\\dfrac{a}{\\sqrt{b}}\\cdot\\dfrac{\\sqrt{b}}{\\sqrt{b}}=\\dfrac{a\\sqrt{b}}{b}$.' },
+
+    { enunciado:'\\dfrac{1}{\\sqrt{x}}', correcta:'\\dfrac{\\sqrt{x}}{x}',
+      opciones:['\\dfrac{\\sqrt{x}}{x}', '\\dfrac{1}{x}', '\\dfrac{x}{\\sqrt{x}}', '\\sqrt{x}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt{x}}{\\sqrt{x}}$ (con $x>0$).',
+      explicacion:'$\\dfrac{1}{\\sqrt{x}}\\cdot\\dfrac{\\sqrt{x}}{\\sqrt{x}}=\\dfrac{\\sqrt{x}}{x}$.' },
+
+    { enunciado:'\\dfrac{5}{2\\sqrt{5}}', correcta:'\\dfrac{\\sqrt{5}}{2}',
+      opciones:['\\dfrac{\\sqrt{5}}{2}', '\\dfrac{5\\sqrt{2}}{2}', '\\dfrac{5}{10}', '\\dfrac{\\sqrt{5}}{10}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt{5}}{\\sqrt{5}}$.',
+      explicacion:'$\\dfrac{5}{2\\sqrt{5}}\\cdot\\dfrac{\\sqrt{5}}{\\sqrt{5}}=\\dfrac{5\\sqrt{5}}{10}=\\dfrac{\\sqrt{5}}{2}$.' },
+
+    { enunciado:'\\dfrac{14}{\\sqrt{7}}', correcta:'2\\sqrt{7}',
+      opciones:['2\\sqrt{7}', '4\\sqrt{7}', '\\dfrac{2\\sqrt{28}}{7}', '\\dfrac{7\\sqrt{7}}{7}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt{7}}{\\sqrt{7}}$.',
+      explicacion:'$\\dfrac{14}{\\sqrt{7}}\\cdot\\dfrac{\\sqrt{7}}{\\sqrt{7}}=\\dfrac{14\\sqrt{7}}{7}=2\\sqrt{7}$.' }
+  ],
+
+  // ---------- TIPO 2: a / ⁿ√(b^k)   →   multiplicar por ⁿ√(b^(n-k)) ----------
+  indice: [
+    { enunciado:'\\dfrac{1}{\\sqrt[3]{2}}', correcta:'\\dfrac{\\sqrt[3]{4}}{2}',
+      opciones:['\\dfrac{\\sqrt[3]{4}}{2}', '\\dfrac{\\sqrt[3]{2}}{2}', '\\dfrac{1}{2}', '\\dfrac{\\sqrt[3]{2}}{4}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt[3]{2^2}}{\\sqrt[3]{2^2}}$.',
+      explicacion:'$\\dfrac{1}{\\sqrt[3]{2}}\\cdot\\dfrac{\\sqrt[3]{4}}{\\sqrt[3]{4}}=\\dfrac{\\sqrt[3]{4}}{\\sqrt[3]{8}}=\\dfrac{\\sqrt[3]{4}}{2}$.' },
+
+    { enunciado:'\\dfrac{1}{\\sqrt[3]{3}}', correcta:'\\dfrac{\\sqrt[3]{9}}{3}',
+      opciones:['\\dfrac{\\sqrt[3]{9}}{3}', '\\dfrac{\\sqrt[3]{3}}{3}', '\\dfrac{1}{3}', '\\dfrac{\\sqrt[3]{3}}{9}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt[3]{3^2}}{\\sqrt[3]{3^2}}$.',
+      explicacion:'$\\dfrac{1}{\\sqrt[3]{3}}\\cdot\\dfrac{\\sqrt[3]{9}}{\\sqrt[3]{9}}=\\dfrac{\\sqrt[3]{9}}{\\sqrt[3]{27}}=\\dfrac{\\sqrt[3]{9}}{3}$.' },
+
+    { enunciado:'\\dfrac{2}{\\sqrt[3]{5}}', correcta:'\\dfrac{2\\sqrt[3]{25}}{5}',
+      opciones:['\\dfrac{2\\sqrt[3]{25}}{5}', '\\dfrac{2\\sqrt[3]{5}}{5}', '\\dfrac{\\sqrt[3]{10}}{5}', '\\dfrac{2}{5}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt[3]{5^2}}{\\sqrt[3]{5^2}}$.',
+      explicacion:'$\\dfrac{2}{\\sqrt[3]{5}}\\cdot\\dfrac{\\sqrt[3]{25}}{\\sqrt[3]{25}}=\\dfrac{2\\sqrt[3]{25}}{5}$.' },
+
+    { enunciado:'\\dfrac{1}{\\sqrt[4]{2}}', correcta:'\\dfrac{\\sqrt[4]{8}}{2}',
+      opciones:['\\dfrac{\\sqrt[4]{8}}{2}', '\\dfrac{\\sqrt[4]{2}}{2}', '\\dfrac{\\sqrt[4]{4}}{2}', '\\dfrac{1}{2}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt[4]{2^3}}{\\sqrt[4]{2^3}}$.',
+      explicacion:'$\\dfrac{1}{\\sqrt[4]{2}}\\cdot\\dfrac{\\sqrt[4]{8}}{\\sqrt[4]{8}}=\\dfrac{\\sqrt[4]{8}}{\\sqrt[4]{16}}=\\dfrac{\\sqrt[4]{8}}{2}$.' },
+
+    { enunciado:'\\dfrac{3}{\\sqrt[3]{2}}', correcta:'\\dfrac{3\\sqrt[3]{4}}{2}',
+      opciones:['\\dfrac{3\\sqrt[3]{4}}{2}', '\\dfrac{3\\sqrt[3]{2}}{2}', '\\dfrac{\\sqrt[3]{12}}{2}', '\\dfrac{3}{2}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt[3]{2^2}}{\\sqrt[3]{2^2}}$.',
+      explicacion:'$\\dfrac{3}{\\sqrt[3]{2}}\\cdot\\dfrac{\\sqrt[3]{4}}{\\sqrt[3]{4}}=\\dfrac{3\\sqrt[3]{4}}{2}$.' },
+
+    { enunciado:'\\dfrac{1}{\\sqrt[5]{2}}', correcta:'\\dfrac{\\sqrt[5]{16}}{2}',
+      opciones:['\\dfrac{\\sqrt[5]{16}}{2}', '\\dfrac{\\sqrt[5]{8}}{2}', '\\dfrac{\\sqrt[5]{2}}{2}', '\\dfrac{1}{2}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt[5]{2^4}}{\\sqrt[5]{2^4}}$.',
+      explicacion:'$\\dfrac{1}{\\sqrt[5]{2}}\\cdot\\dfrac{\\sqrt[5]{16}}{\\sqrt[5]{16}}=\\dfrac{\\sqrt[5]{16}}{\\sqrt[5]{32}}=\\dfrac{\\sqrt[5]{16}}{2}$.' },
+
+    { enunciado:'\\dfrac{1}{\\sqrt[3]{4}}', correcta:'\\dfrac{\\sqrt[3]{2}}{2}',
+      opciones:['\\dfrac{\\sqrt[3]{2}}{2}', '\\dfrac{\\sqrt[3]{4}}{4}', '\\sqrt[3]{2}', '\\dfrac{\\sqrt[3]{2}}{4}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt[3]{2}}{\\sqrt[3]{2}}$ (porque $\\sqrt[3]{4}=\\sqrt[3]{2^2}$).',
+      explicacion:'$\\dfrac{1}{\\sqrt[3]{4}}\\cdot\\dfrac{\\sqrt[3]{2}}{\\sqrt[3]{2}}=\\dfrac{\\sqrt[3]{2}}{\\sqrt[3]{8}}=\\dfrac{\\sqrt[3]{2}}{2}$.' },
+
+    { enunciado:'\\dfrac{5}{\\sqrt[3]{7}}', correcta:'\\dfrac{5\\sqrt[3]{49}}{7}',
+      opciones:['\\dfrac{5\\sqrt[3]{49}}{7}', '\\dfrac{5\\sqrt[3]{7}}{7}', '\\dfrac{\\sqrt[3]{35}}{7}', '\\dfrac{5}{7}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt[3]{7^2}}{\\sqrt[3]{7^2}}$.',
+      explicacion:'$\\dfrac{5}{\\sqrt[3]{7}}\\cdot\\dfrac{\\sqrt[3]{49}}{\\sqrt[3]{49}}=\\dfrac{5\\sqrt[3]{49}}{7}$.' },
+
+    { enunciado:'\\dfrac{1}{\\sqrt[3]{9}}', correcta:'\\dfrac{\\sqrt[3]{3}}{3}',
+      opciones:['\\dfrac{\\sqrt[3]{3}}{3}', '\\dfrac{\\sqrt[3]{9}}{9}', '\\sqrt[3]{81}', '\\dfrac{\\sqrt[3]{3}}{9}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt[3]{3}}{\\sqrt[3]{3}}$ (porque $\\sqrt[3]{9}=\\sqrt[3]{3^2}$).',
+      explicacion:'$\\dfrac{1}{\\sqrt[3]{9}}\\cdot\\dfrac{\\sqrt[3]{3}}{\\sqrt[3]{3}}=\\dfrac{\\sqrt[3]{3}}{\\sqrt[3]{27}}=\\dfrac{\\sqrt[3]{3}}{3}$.' },
+
+    { enunciado:'\\dfrac{2}{\\sqrt[4]{3}}', correcta:'\\dfrac{2\\sqrt[4]{27}}{3}',
+      opciones:['\\dfrac{2\\sqrt[4]{27}}{3}', '\\dfrac{2\\sqrt[4]{3}}{3}', '\\dfrac{2\\sqrt[4]{9}}{3}', '\\dfrac{\\sqrt[4]{6}}{3}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt[4]{3^3}}{\\sqrt[4]{3^3}}$.',
+      explicacion:'$\\dfrac{2}{\\sqrt[4]{3}}\\cdot\\dfrac{\\sqrt[4]{27}}{\\sqrt[4]{27}}=\\dfrac{2\\sqrt[4]{27}}{\\sqrt[4]{81}}=\\dfrac{2\\sqrt[4]{27}}{3}$.' },
+
+    { enunciado:'\\dfrac{1}{\\sqrt[4]{8}}', correcta:'\\dfrac{\\sqrt[4]{2}}{2}',
+      opciones:['\\dfrac{\\sqrt[4]{2}}{2}', '\\dfrac{\\sqrt[4]{8}}{8}', '\\dfrac{\\sqrt[4]{2}}{8}', '\\dfrac{1}{2}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt[4]{2}}{\\sqrt[4]{2}}$ (porque $\\sqrt[4]{8}=\\sqrt[4]{2^3}$).',
+      explicacion:'$\\dfrac{1}{\\sqrt[4]{8}}\\cdot\\dfrac{\\sqrt[4]{2}}{\\sqrt[4]{2}}=\\dfrac{\\sqrt[4]{2}}{\\sqrt[4]{16}}=\\dfrac{\\sqrt[4]{2}}{2}$.' },
+
+    { enunciado:'\\dfrac{4}{\\sqrt[3]{2}}', correcta:'2\\sqrt[3]{4}',
+      opciones:['2\\sqrt[3]{4}', '\\sqrt[3]{4}', '\\dfrac{4\\sqrt[3]{2}}{2}', '\\dfrac{2\\sqrt[3]{2}}{2}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt[3]{2^2}}{\\sqrt[3]{2^2}}$.',
+      explicacion:'$\\dfrac{4}{\\sqrt[3]{2}}\\cdot\\dfrac{\\sqrt[3]{4}}{\\sqrt[3]{4}}=\\dfrac{4\\sqrt[3]{4}}{2}=2\\sqrt[3]{4}$.' },
+
+    { enunciado:'\\dfrac{1}{\\sqrt[3]{x}}', correcta:'\\dfrac{\\sqrt[3]{x^2}}{x}',
+      opciones:['\\dfrac{\\sqrt[3]{x^2}}{x}', '\\dfrac{\\sqrt[3]{x}}{x}', '\\dfrac{1}{x}', '\\dfrac{x^2}{\\sqrt[3]{x}}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt[3]{x^2}}{\\sqrt[3]{x^2}}$ (con $x>0$).',
+      explicacion:'$\\dfrac{1}{\\sqrt[3]{x}}\\cdot\\dfrac{\\sqrt[3]{x^2}}{\\sqrt[3]{x^2}}=\\dfrac{\\sqrt[3]{x^2}}{x}$.' },
+
+    { enunciado:'\\dfrac{1}{\\sqrt[5]{3}}', correcta:'\\dfrac{\\sqrt[5]{81}}{3}',
+      opciones:['\\dfrac{\\sqrt[5]{81}}{3}', '\\dfrac{\\sqrt[5]{27}}{3}', '\\dfrac{\\sqrt[5]{3}}{3}', '\\dfrac{1}{3}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt[5]{3^4}}{\\sqrt[5]{3^4}}$.',
+      explicacion:'$\\dfrac{1}{\\sqrt[5]{3}}\\cdot\\dfrac{\\sqrt[5]{81}}{\\sqrt[5]{81}}=\\dfrac{\\sqrt[5]{81}}{\\sqrt[5]{243}}=\\dfrac{\\sqrt[5]{81}}{3}$.' },
+
+    { enunciado:'\\dfrac{6}{\\sqrt[3]{6}}', correcta:'\\sqrt[3]{36}',
+      opciones:['\\sqrt[3]{36}', '2\\sqrt[3]{36}', '\\dfrac{\\sqrt[3]{36}}{6}', '\\sqrt[3]{6}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt[3]{6^2}}{\\sqrt[3]{6^2}}$.',
+      explicacion:'$\\dfrac{6}{\\sqrt[3]{6}}\\cdot\\dfrac{\\sqrt[3]{36}}{\\sqrt[3]{36}}=\\dfrac{6\\sqrt[3]{36}}{6}=\\sqrt[3]{36}$.' },
+
+    { enunciado:'\\dfrac{1}{\\sqrt[3]{2^2}}', correcta:'\\dfrac{\\sqrt[3]{2}}{2}',
+      opciones:['\\dfrac{\\sqrt[3]{2}}{2}', '\\dfrac{\\sqrt[3]{4}}{4}', '\\dfrac{\\sqrt[3]{4}}{2}', '\\dfrac{1}{2}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt[3]{2}}{\\sqrt[3]{2}}$.',
+      explicacion:'$\\dfrac{1}{\\sqrt[3]{2^2}}\\cdot\\dfrac{\\sqrt[3]{2}}{\\sqrt[3]{2}}=\\dfrac{\\sqrt[3]{2}}{\\sqrt[3]{2^3}}=\\dfrac{\\sqrt[3]{2}}{2}$.' },
+
+    { enunciado:'\\dfrac{2}{\\sqrt[3]{16}}', correcta:'\\dfrac{\\sqrt[3]{4}}{2}',
+      opciones:['\\dfrac{\\sqrt[3]{4}}{2}', '\\dfrac{\\sqrt[3]{4}}{4}', '\\dfrac{2\\sqrt[3]{2}}{4}', '\\sqrt[3]{4}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt[3]{2^2}}{\\sqrt[3]{2^2}}$ (recuerda que $\\sqrt[3]{16}=2\\sqrt[3]{2}$).',
+      explicacion:'$\\dfrac{2}{\\sqrt[3]{16}}=\\dfrac{2}{2\\sqrt[3]{2}}=\\dfrac{1}{\\sqrt[3]{2}}\\cdot\\dfrac{\\sqrt[3]{4}}{\\sqrt[3]{4}}=\\dfrac{\\sqrt[3]{4}}{2}$.' },
+
+    { enunciado:'\\dfrac{a}{\\sqrt[n]{b}}', correcta:'\\dfrac{a\\,\\sqrt[n]{b^{n-1}}}{b}',
+      opciones:['\\dfrac{a\\,\\sqrt[n]{b^{n-1}}}{b}', '\\dfrac{a\\sqrt[n]{b}}{b}', '\\dfrac{a}{b}', '\\dfrac{a\\,\\sqrt[n]{b^{n}}}{b}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt[n]{b^{\\,n-1}}}{\\sqrt[n]{b^{\\,n-1}}}$.',
+      explicacion:'$\\dfrac{a}{\\sqrt[n]{b}}\\cdot\\dfrac{\\sqrt[n]{b^{n-1}}}{\\sqrt[n]{b^{n-1}}}=\\dfrac{a\\,\\sqrt[n]{b^{n-1}}}{\\sqrt[n]{b^n}}=\\dfrac{a\\,\\sqrt[n]{b^{n-1}}}{b}$.' },
+
+    { enunciado:'\\dfrac{1}{\\sqrt[6]{2}}', correcta:'\\dfrac{\\sqrt[6]{32}}{2}',
+      opciones:['\\dfrac{\\sqrt[6]{32}}{2}', '\\dfrac{\\sqrt[6]{2}}{2}', '\\dfrac{\\sqrt[6]{16}}{2}', '\\dfrac{1}{2}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt[6]{2^5}}{\\sqrt[6]{2^5}}$.',
+      explicacion:'$\\dfrac{1}{\\sqrt[6]{2}}\\cdot\\dfrac{\\sqrt[6]{32}}{\\sqrt[6]{32}}=\\dfrac{\\sqrt[6]{32}}{\\sqrt[6]{64}}=\\dfrac{\\sqrt[6]{32}}{2}$.' },
+
+    { enunciado:'\\dfrac{10}{\\sqrt[3]{5}}', correcta:'2\\sqrt[3]{25}',
+      opciones:['2\\sqrt[3]{25}', '\\dfrac{2\\sqrt[3]{25}}{5}', '\\dfrac{10\\sqrt[3]{5}}{5}', '\\sqrt[3]{5}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt[3]{5^2}}{\\sqrt[3]{5^2}}$.',
+      explicacion:'$\\dfrac{10}{\\sqrt[3]{5}}\\cdot\\dfrac{\\sqrt[3]{25}}{\\sqrt[3]{25}}=\\dfrac{10\\sqrt[3]{25}}{5}=2\\sqrt[3]{25}$.' }
+  ],
+
+  // ---------- TIPO 3: a / (√b ± √c)   →   multiplicar por el conjugado ----------
+  binomio: [
+    { enunciado:'\\dfrac{1}{\\sqrt{2}+1}', correcta:'\\sqrt{2}-1',
+      opciones:['\\sqrt{2}-1', '\\sqrt{2}+1', '\\dfrac{\\sqrt{2}-1}{3}', '\\dfrac{\\sqrt{2}+1}{2}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt{2}-1}{\\sqrt{2}-1}$ (el conjugado del denominador).',
+      explicacion:'$\\dfrac{1}{\\sqrt{2}+1}\\cdot\\dfrac{\\sqrt{2}-1}{\\sqrt{2}-1}=\\dfrac{\\sqrt{2}-1}{2-1}=\\sqrt{2}-1$.' },
+
+    { enunciado:'\\dfrac{1}{\\sqrt{3}-1}', correcta:'\\dfrac{\\sqrt{3}+1}{2}',
+      opciones:['\\dfrac{\\sqrt{3}+1}{2}', '\\dfrac{\\sqrt{3}-1}{2}', '\\sqrt{3}+1', '\\dfrac{\\sqrt{3}+1}{4}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt{3}+1}{\\sqrt{3}+1}$ (el conjugado del denominador).',
+      explicacion:'$\\dfrac{1}{\\sqrt{3}-1}\\cdot\\dfrac{\\sqrt{3}+1}{\\sqrt{3}+1}=\\dfrac{\\sqrt{3}+1}{3-1}=\\dfrac{\\sqrt{3}+1}{2}$.' },
+
+    { enunciado:'\\dfrac{2}{\\sqrt{5}+\\sqrt{3}}', correcta:'\\sqrt{5}-\\sqrt{3}',
+      opciones:['\\sqrt{5}-\\sqrt{3}', '\\dfrac{\\sqrt{5}-\\sqrt{3}}{2}', '\\sqrt{5}+\\sqrt{3}', '\\dfrac{2(\\sqrt{5}-\\sqrt{3})}{8}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt{5}-\\sqrt{3}}{\\sqrt{5}-\\sqrt{3}}$ (el conjugado del denominador).',
+      explicacion:'$\\dfrac{2}{\\sqrt{5}+\\sqrt{3}}\\cdot\\dfrac{\\sqrt{5}-\\sqrt{3}}{\\sqrt{5}-\\sqrt{3}}=\\dfrac{2(\\sqrt{5}-\\sqrt{3})}{5-3}=\\sqrt{5}-\\sqrt{3}$.' },
+
+    { enunciado:'\\dfrac{3}{\\sqrt{7}-\\sqrt{2}}', correcta:'\\dfrac{3(\\sqrt{7}+\\sqrt{2})}{5}',
+      opciones:['\\dfrac{3(\\sqrt{7}+\\sqrt{2})}{5}', '\\dfrac{3(\\sqrt{7}-\\sqrt{2})}{5}', '3(\\sqrt{7}+\\sqrt{2})', '\\dfrac{\\sqrt{7}+\\sqrt{2}}{5}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt{7}+\\sqrt{2}}{\\sqrt{7}+\\sqrt{2}}$ (el conjugado del denominador).',
+      explicacion:'$\\dfrac{3}{\\sqrt{7}-\\sqrt{2}}\\cdot\\dfrac{\\sqrt{7}+\\sqrt{2}}{\\sqrt{7}+\\sqrt{2}}=\\dfrac{3(\\sqrt{7}+\\sqrt{2})}{5}$.' },
+
+    { enunciado:'\\dfrac{1}{\\sqrt{5}+2}', correcta:'\\sqrt{5}-2',
+      opciones:['\\sqrt{5}-2', '\\sqrt{5}+2', '\\dfrac{\\sqrt{5}-2}{9}', '2-\\sqrt{5}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt{5}-2}{\\sqrt{5}-2}$ (el conjugado del denominador).',
+      explicacion:'$\\dfrac{1}{\\sqrt{5}+2}\\cdot\\dfrac{\\sqrt{5}-2}{\\sqrt{5}-2}=\\dfrac{\\sqrt{5}-2}{5-4}=\\sqrt{5}-2$.' },
+
+    { enunciado:'\\dfrac{4}{\\sqrt{6}+\\sqrt{2}}', correcta:'\\sqrt{6}-\\sqrt{2}',
+      opciones:['\\sqrt{6}-\\sqrt{2}', '\\dfrac{4(\\sqrt{6}-\\sqrt{2})}{8}', '\\sqrt{6}+\\sqrt{2}', '\\dfrac{\\sqrt{6}-\\sqrt{2}}{4}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt{6}-\\sqrt{2}}{\\sqrt{6}-\\sqrt{2}}$ (el conjugado del denominador).',
+      explicacion:'$\\dfrac{4}{\\sqrt{6}+\\sqrt{2}}\\cdot\\dfrac{\\sqrt{6}-\\sqrt{2}}{\\sqrt{6}-\\sqrt{2}}=\\dfrac{4(\\sqrt{6}-\\sqrt{2})}{4}=\\sqrt{6}-\\sqrt{2}$.' },
+
+    { enunciado:'\\dfrac{1}{2-\\sqrt{3}}', correcta:'2+\\sqrt{3}',
+      opciones:['2+\\sqrt{3}', '2-\\sqrt{3}', '\\dfrac{2+\\sqrt{3}}{7}', '\\sqrt{3}-2'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{2+\\sqrt{3}}{2+\\sqrt{3}}$ (el conjugado del denominador).',
+      explicacion:'$\\dfrac{1}{2-\\sqrt{3}}\\cdot\\dfrac{2+\\sqrt{3}}{2+\\sqrt{3}}=\\dfrac{2+\\sqrt{3}}{4-3}=2+\\sqrt{3}$.' },
+
+    { enunciado:'\\dfrac{5}{\\sqrt{6}-1}', correcta:'\\sqrt{6}+1',
+      opciones:['\\sqrt{6}+1', '\\dfrac{5(\\sqrt{6}+1)}{7}', '\\sqrt{6}-1', '\\dfrac{\\sqrt{6}+1}{5}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt{6}+1}{\\sqrt{6}+1}$ (el conjugado del denominador).',
+      explicacion:'$\\dfrac{5}{\\sqrt{6}-1}\\cdot\\dfrac{\\sqrt{6}+1}{\\sqrt{6}+1}=\\dfrac{5(\\sqrt{6}+1)}{5}=\\sqrt{6}+1$.' },
+
+    { enunciado:'\\dfrac{\\sqrt{2}}{\\sqrt{3}+1}', correcta:'\\dfrac{\\sqrt{6}-\\sqrt{2}}{2}',
+      opciones:['\\dfrac{\\sqrt{6}-\\sqrt{2}}{2}', '\\dfrac{\\sqrt{6}+\\sqrt{2}}{2}', '\\dfrac{\\sqrt{2}(\\sqrt{3}-1)}{4}', '\\sqrt{6}-\\sqrt{2}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt{3}-1}{\\sqrt{3}-1}$ (el conjugado del denominador).',
+      explicacion:'$\\dfrac{\\sqrt{2}}{\\sqrt{3}+1}\\cdot\\dfrac{\\sqrt{3}-1}{\\sqrt{3}-1}=\\dfrac{\\sqrt{6}-\\sqrt{2}}{3-1}=\\dfrac{\\sqrt{6}-\\sqrt{2}}{2}$.' },
+
+    { enunciado:'\\dfrac{6}{\\sqrt{5}+\\sqrt{2}}', correcta:'2(\\sqrt{5}-\\sqrt{2})',
+      opciones:['2(\\sqrt{5}-\\sqrt{2})', '\\sqrt{5}-\\sqrt{2}', '\\dfrac{\\sqrt{5}-\\sqrt{2}}{3}', '6(\\sqrt{5}-\\sqrt{2})'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt{5}-\\sqrt{2}}{\\sqrt{5}-\\sqrt{2}}$ (el conjugado del denominador).',
+      explicacion:'$\\dfrac{6}{\\sqrt{5}+\\sqrt{2}}\\cdot\\dfrac{\\sqrt{5}-\\sqrt{2}}{\\sqrt{5}-\\sqrt{2}}=\\dfrac{6(\\sqrt{5}-\\sqrt{2})}{3}=2(\\sqrt{5}-\\sqrt{2})$.' },
+
+    { enunciado:'\\dfrac{1}{3+\\sqrt{5}}', correcta:'\\dfrac{3-\\sqrt{5}}{4}',
+      opciones:['\\dfrac{3-\\sqrt{5}}{4}', '\\dfrac{3+\\sqrt{5}}{4}', '3-\\sqrt{5}', '\\dfrac{3-\\sqrt{5}}{14}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{3-\\sqrt{5}}{3-\\sqrt{5}}$ (el conjugado del denominador).',
+      explicacion:'$\\dfrac{1}{3+\\sqrt{5}}\\cdot\\dfrac{3-\\sqrt{5}}{3-\\sqrt{5}}=\\dfrac{3-\\sqrt{5}}{9-5}=\\dfrac{3-\\sqrt{5}}{4}$.' },
+
+    { enunciado:'\\dfrac{\\sqrt{3}}{\\sqrt{5}-\\sqrt{2}}', correcta:'\\dfrac{\\sqrt{15}+\\sqrt{6}}{3}',
+      opciones:['\\dfrac{\\sqrt{15}+\\sqrt{6}}{3}', '\\dfrac{\\sqrt{15}-\\sqrt{6}}{3}', '\\dfrac{\\sqrt{3}(\\sqrt{5}+\\sqrt{2})}{7}', '\\sqrt{15}+\\sqrt{6}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt{5}+\\sqrt{2}}{\\sqrt{5}+\\sqrt{2}}$ (el conjugado del denominador).',
+      explicacion:'$\\dfrac{\\sqrt{3}}{\\sqrt{5}-\\sqrt{2}}\\cdot\\dfrac{\\sqrt{5}+\\sqrt{2}}{\\sqrt{5}+\\sqrt{2}}=\\dfrac{\\sqrt{15}+\\sqrt{6}}{5-2}=\\dfrac{\\sqrt{15}+\\sqrt{6}}{3}$.' },
+
+    { enunciado:'\\dfrac{2}{1+\\sqrt{2}}', correcta:'2(\\sqrt{2}-1)',
+      opciones:['2(\\sqrt{2}-1)', '2(\\sqrt{2}+1)', '2(1-\\sqrt{2})', '\\sqrt{2}-1'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt{2}-1}{\\sqrt{2}-1}$ (el conjugado del denominador).',
+      explicacion:'$\\dfrac{2}{1+\\sqrt{2}}\\cdot\\dfrac{\\sqrt{2}-1}{\\sqrt{2}-1}=\\dfrac{2(\\sqrt{2}-1)}{2-1}=2(\\sqrt{2}-1)$.' },
+
+    { enunciado:'\\dfrac{1}{\\sqrt{a}+\\sqrt{b}}', correcta:'\\dfrac{\\sqrt{a}-\\sqrt{b}}{a-b}',
+      opciones:['\\dfrac{\\sqrt{a}-\\sqrt{b}}{a-b}', '\\dfrac{\\sqrt{a}+\\sqrt{b}}{a-b}', '\\dfrac{\\sqrt{a}-\\sqrt{b}}{a+b}', '\\sqrt{a}-\\sqrt{b}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt{a}-\\sqrt{b}}{\\sqrt{a}-\\sqrt{b}}$ (el conjugado del denominador).',
+      explicacion:'$\\dfrac{1}{\\sqrt{a}+\\sqrt{b}}\\cdot\\dfrac{\\sqrt{a}-\\sqrt{b}}{\\sqrt{a}-\\sqrt{b}}=\\dfrac{\\sqrt{a}-\\sqrt{b}}{a-b}$.' },
+
+    { enunciado:'\\dfrac{7}{\\sqrt{8}+1}', correcta:'\\sqrt{8}-1',
+      opciones:['\\sqrt{8}-1', '\\dfrac{7(\\sqrt{8}-1)}{9}', '\\sqrt{8}+1', '\\dfrac{\\sqrt{8}-1}{7}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt{8}-1}{\\sqrt{8}-1}$ (el conjugado del denominador).',
+      explicacion:'$\\dfrac{7}{\\sqrt{8}+1}\\cdot\\dfrac{\\sqrt{8}-1}{\\sqrt{8}-1}=\\dfrac{7(\\sqrt{8}-1)}{7}=\\sqrt{8}-1$.' },
+
+    { enunciado:'\\dfrac{\\sqrt{5}}{\\sqrt{5}-1}', correcta:'\\dfrac{5+\\sqrt{5}}{4}',
+      opciones:['\\dfrac{5+\\sqrt{5}}{4}', '\\dfrac{5-\\sqrt{5}}{4}', '\\dfrac{\\sqrt{5}+1}{4}', '\\dfrac{5+\\sqrt{5}}{6}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt{5}+1}{\\sqrt{5}+1}$ (el conjugado del denominador).',
+      explicacion:'$\\dfrac{\\sqrt{5}}{\\sqrt{5}-1}\\cdot\\dfrac{\\sqrt{5}+1}{\\sqrt{5}+1}=\\dfrac{5+\\sqrt{5}}{5-1}=\\dfrac{5+\\sqrt{5}}{4}$.' },
+
+    { enunciado:'\\dfrac{1}{\\sqrt{11}-\\sqrt{7}}', correcta:'\\dfrac{\\sqrt{11}+\\sqrt{7}}{4}',
+      opciones:['\\dfrac{\\sqrt{11}+\\sqrt{7}}{4}', '\\dfrac{\\sqrt{11}-\\sqrt{7}}{4}', '\\sqrt{11}+\\sqrt{7}', '\\dfrac{\\sqrt{11}+\\sqrt{7}}{18}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt{11}+\\sqrt{7}}{\\sqrt{11}+\\sqrt{7}}$ (el conjugado del denominador).',
+      explicacion:'$\\dfrac{1}{\\sqrt{11}-\\sqrt{7}}\\cdot\\dfrac{\\sqrt{11}+\\sqrt{7}}{\\sqrt{11}+\\sqrt{7}}=\\dfrac{\\sqrt{11}+\\sqrt{7}}{4}$.' },
+
+    { enunciado:'\\dfrac{3}{2\\sqrt{2}-1}', correcta:'\\dfrac{3(2\\sqrt{2}+1)}{7}',
+      opciones:['\\dfrac{3(2\\sqrt{2}+1)}{7}', '\\dfrac{3(2\\sqrt{2}-1)}{7}', '2\\sqrt{2}-1', '2\\sqrt{2}+1'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{2\\sqrt{2}+1}{2\\sqrt{2}+1}$ (el conjugado del denominador).',
+      explicacion:'$\\dfrac{3}{2\\sqrt{2}-1}\\cdot\\dfrac{2\\sqrt{2}+1}{2\\sqrt{2}+1}=\\dfrac{3(2\\sqrt{2}+1)}{8-1}=\\dfrac{3(2\\sqrt{2}+1)}{7}$.' },
+
+    { enunciado:'\\dfrac{1}{\\sqrt{10}+\\sqrt{6}}', correcta:'\\dfrac{\\sqrt{10}-\\sqrt{6}}{4}',
+      opciones:['\\dfrac{\\sqrt{10}-\\sqrt{6}}{4}', '\\dfrac{\\sqrt{10}+\\sqrt{6}}{4}', '\\dfrac{\\sqrt{10}-\\sqrt{6}}{16}', '\\sqrt{10}-\\sqrt{6}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{\\sqrt{10}-\\sqrt{6}}{\\sqrt{10}-\\sqrt{6}}$ (el conjugado del denominador).',
+      explicacion:'$\\dfrac{1}{\\sqrt{10}+\\sqrt{6}}\\cdot\\dfrac{\\sqrt{10}-\\sqrt{6}}{\\sqrt{10}-\\sqrt{6}}=\\dfrac{\\sqrt{10}-\\sqrt{6}}{4}$.' },
+
+    { enunciado:'\\dfrac{4}{3-\\sqrt{5}}', correcta:'3+\\sqrt{5}',
+      opciones:['3+\\sqrt{5}', '\\dfrac{4(3+\\sqrt{5})}{14}', '3-\\sqrt{5}', '\\dfrac{3+\\sqrt{5}}{4}'],
+      pista:'Multiplica numerador y denominador por $\\dfrac{3+\\sqrt{5}}{3+\\sqrt{5}}$ (el conjugado del denominador).',
+      explicacion:'$\\dfrac{4}{3-\\sqrt{5}}\\cdot\\dfrac{3+\\sqrt{5}}{3+\\sqrt{5}}=\\dfrac{4(3+\\sqrt{5})}{9-5}=\\dfrac{4(3+\\sqrt{5})}{4}=3+\\sqrt{5}$.' }
+  ]
+};
+
+// ============================================================
+//  ESTADO
+// ============================================================
+const state = {
+  puntos: 0,
+  aciertosPorTipo: { cuadrada: 0, indice: 0, binomio: 0 }, // ← contador de aciertos por tipo
+  tipoActual: null,
+  inicio: Date.now(),
+  respondido: false,
+  seleccionada: null,
+  ejActual: null,
+  indicePorTipo: { cuadrada: [], indice: [], binomio: [] }
+};
+
+// ============================================================
+//  UTILIDADES
+// ============================================================
+function mezclar(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+function getEjercicioAleatorio(tipo) {
+  // Mantenemos un "mazo" por tipo para no repetir hasta agotar
+  if (state.indicePorTipo[tipo].length === 0) {
+    state.indicePorTipo[tipo] = mezclar(BIBLIOTECA[tipo].map((_, i) => i));
+  }
+  const idx = state.indicePorTipo[tipo].pop();
+  return BIBLIOTECA[tipo][idx];
+}
+
+// ============================================================
+//  RENDERIZADO DE EJERCICIO
+// ============================================================
+function generarEjercicio(tipoForzado) {
+  let tipo = tipoForzado;
+  if (!tipo) {
+    const pendientes = TIPOS.filter(t => state.aciertosPorTipo[t] < ACIERTOS_POR_TIPO);
+    tipo = pendientes.length > 0 ? pendientes[0] : pick(TIPOS);
+  }
+
+  state.tipoActual = tipo;
+  state.respondido = false;
+  state.seleccionada = null;
+
+  const ej = getEjercicioAleatorio(tipo);
+  state.ejActual = ej;
+
+  // Etiqueta de tipo
+  document.getElementById('tipo-actual-label').textContent = NOMBRE_TIPO[tipo];
+
+  // Enunciado formula
+  document.getElementById('enunciado-formula').innerHTML = '$$' + ej.enunciado + '$$';
+
+  // Opciones (mezcladas)
+  const opcionesMezcladas = mezclar(ej.opciones);
+  const opcionesDiv = document.getElementById('opciones');
+  opcionesDiv.innerHTML = '';
+  opcionesMezcladas.forEach((opc, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opcion-btn';
+    btn.innerHTML = '$' + opc + '$';
+    btn.dataset.valor = opc;
+    btn.dataset.indice = i;
+    btn.onclick = () => seleccionarOpcion(i, btn);
+    opcionesDiv.appendChild(btn);
+  });
+
+  // Limpiar feedback y pista
+  document.getElementById('feedback-container').innerHTML = '';
+  document.getElementById('pista-container').innerHTML = '';
+
+  // Restaurar botones
+  document.getElementById('btn-pista').disabled = false;
+  document.getElementById('btn-corregir').disabled = true;
+  document.getElementById('btn-siguiente').style.display = 'none';
+  document.getElementById('btn-siguiente').textContent = 'Hacer otro ejercicio →';
+
+  actualizarBadgeActivo();
+
+  // Re-render MathJax
+  if (window.MathJax && MathJax.typesetPromise) {
+    MathJax.typesetPromise([
+      document.getElementById('enunciado-formula'),
+      opcionesDiv
+    ]);
+  }
+}
+
+function seleccionarOpcion(indice, btn) {
+  if (state.respondido) return;
+  document.querySelectorAll('.opcion-btn').forEach(b => b.classList.remove('seleccionada'));
+  btn.classList.add('seleccionada');
+  state.seleccionada = btn.dataset.valor;
+  document.getElementById('btn-corregir').disabled = false;
+}
+
+function mostrarPista() {
+  if (state.respondido || !state.ejActual) return;
+  const cont = document.getElementById('pista-container');
+  cont.innerHTML = '<div class="pista-box">💡 ' + state.ejActual.pista + '</div>';
+  if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([cont]);
+  document.getElementById('btn-pista').disabled = true;
+}
+
+function elegirTipo(tipo) {
+  generarEjercicio(tipo);
+}
+
+// ============================================================
+//  CORREGIR
+// ============================================================
+function corregir() {
+  if (state.respondido || state.seleccionada === null) return;
+  state.respondido = true;
+
+  const btns = document.querySelectorAll('.opcion-btn');
+  btns.forEach(b => b.disabled = true);
+
+  const elegida = state.seleccionada;
+  const ok = elegida === state.ejActual.correcta;
+  const tipo = state.tipoActual;
+
+  // Marcar visualmente la elegida
+  btns.forEach(b => {
+    if (b.dataset.valor === elegida) {
+      b.classList.remove('seleccionada');
+      b.classList.add(ok ? 'correcta' : 'incorrecta');
+    }
+    // Mostrar también la correcta si falló
+    if (!ok && b.dataset.valor === state.ejActual.correcta) {
+      b.classList.add('correcta');
+    }
+  });
+
+  const fbCont = document.getElementById('feedback-container');
+
+  if (ok) {
+    const aciertosActuales = state.aciertosPorTipo[tipo];
+
+    if (aciertosActuales < ACIERTOS_POR_TIPO) {
+      // ── Aún suma puntos en este tipo ──
+      state.aciertosPorTipo[tipo] = aciertosActuales + 1;
+      state.puntos += PUNTO_POR_ACIERTO;
+
+      const nuevosAciertos = state.aciertosPorTipo[tipo];
+      const tipoRecienCompletado = (nuevosAciertos === ACIERTOS_POR_TIPO);
+
+      const pendientes = TIPOS.filter(t => state.aciertosPorTipo[t] < ACIERTOS_POR_TIPO);
+
+      let msg;
+      if (tipoRecienCompletado && pendientes.length === 0) {
+        msg = `✅ ¡Correcto! <strong>+${PUNTO_POR_ACIERTO.toFixed(2)} puntos</strong> — ¡Has completado los 2 ejercicios de cada tipo! 🏆<br><br>` +
+              state.ejActual.explicacion;
+      } else if (tipoRecienCompletado) {
+        msg = `✅ ¡Correcto! <strong>+${PUNTO_POR_ACIERTO.toFixed(2)} puntos</strong> — Tipo <strong>${NOMBRE_TIPO[tipo]}</strong> completado (${nuevosAciertos}/${ACIERTOS_POR_TIPO}) 🎉<br><br>` +
+              state.ejActual.explicacion +
+              `<br><br><em>Siguiente: practica <strong>${NOMBRE_TIPO[pendientes[0]]}</strong> para seguir sumando puntos.</em>`;
+      } else {
+        const faltan = ACIERTOS_POR_TIPO - nuevosAciertos;
+        msg = `✅ ¡Correcto! <strong>+${PUNTO_POR_ACIERTO.toFixed(2)} puntos</strong> — Llevas ${nuevosAciertos}/${ACIERTOS_POR_TIPO} en <strong>${NOMBRE_TIPO[tipo]}</strong>. ` +
+              `Te falta${faltan === 1 ? '' : 'n'} ${faltan} acierto${faltan === 1 ? '' : 's'} de este tipo.<br><br>` +
+              state.ejActual.explicacion;
+      }
+      fbCont.innerHTML = '<div class="feedback feedback-correcto">' + msg + '</div>';
+    } else {
+      // ── Tipo ya completado (ya tenía 2 aciertos): no suma ──
+      const pendientes = TIPOS.filter(t => state.aciertosPorTipo[t] < ACIERTOS_POR_TIPO);
+      const pendientesMsg = pendientes.length > 0
+        ? `Para sumar más puntos practica: <strong>${pendientes.map(t => NOMBRE_TIPO[t]).join(', ')}</strong>.`
+        : '¡Ya has completado todos los tipos!';
+      fbCont.innerHTML = '<div class="feedback feedback-correcto">' +
+        `✅ ¡Correcto! — Este tipo ya estaba completado (${ACIERTOS_POR_TIPO}/${ACIERTOS_POR_TIPO}), <strong>no suma puntos adicionales</strong>.<br><br>` +
+        state.ejActual.explicacion +
+        `<br><br><em>${pendientesMsg}</em></div>`;
+    }
+  } else {
+    state.puntos = Math.max(0, state.puntos - DEDUCCION_POR_FALLO);
+    fbCont.innerHTML = '<div class="feedback feedback-incorrecto">' +
+      `❌ <strong>Incorrecto.</strong> <strong>−${DEDUCCION_POR_FALLO.toFixed(2)} puntos</strong>. La respuesta correcta es $${state.ejActual.correcta}$.<br><br>` +
+      state.ejActual.explicacion + '</div>';
+  }
+
+  actualizarPuntuacion();
+  actualizarBadges();
+
+  document.getElementById('btn-pista').disabled = true;
+  document.getElementById('btn-corregir').disabled = true;
+
+  // Texto dinámico del botón siguiente
+  const pendientes = TIPOS.filter(t => state.aciertosPorTipo[t] < ACIERTOS_POR_TIPO);
+  const btnSig = document.getElementById('btn-siguiente');
+  if (ok && pendientes.length > 0) {
+    // Prioridad: si el tipo actual aún no está completado, seguir con él; si no, ir al siguiente pendiente
+    if (state.aciertosPorTipo[tipo] < ACIERTOS_POR_TIPO) {
+      btnSig.textContent = `Otro de ${NOMBRE_TIPO[tipo]} →`;
+    } else {
+      btnSig.textContent = `Practicar ${NOMBRE_TIPO[pendientes[0]]} →`;
+    }
+  } else {
+    btnSig.textContent = 'Hacer otro ejercicio →';
+  }
+  btnSig.style.display = 'inline-block';
+
+  if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([fbCont]);
+}
+
+function siguienteEjercicio() {
+  const tipoActual = state.tipoActual;
+  const pendientes = TIPOS.filter(t => state.aciertosPorTipo[t] < ACIERTOS_POR_TIPO);
+
+  if (pendientes.length === 0) {
+    // Todo completado: mismo tipo
+    generarEjercicio(tipoActual);
+    return;
+  }
+
+  // Si el tipo actual aún tiene aciertos pendientes, seguir con él
+  if (state.aciertosPorTipo[tipoActual] < ACIERTOS_POR_TIPO) {
+    generarEjercicio(tipoActual);
+  } else {
+    // Si ya está completo, pasar al siguiente pendiente (aleatorio entre los que faltan)
+    generarEjercicio(pick(pendientes));
+  }
+}
+
+// ============================================================
+//  UI HELPERS
+// ============================================================
+function actualizarPuntuacion() {
+  // Contadores en los badges
+  TIPOS.forEach(t => {
+    const cont = document.getElementById('cont-' + t);
+    if (cont) cont.textContent = state.aciertosPorTipo[t] + '/' + ACIERTOS_POR_TIPO;
+  });
+  // Total de aciertos
+  const totalAciertos = TIPOS.reduce((s, t) => s + state.aciertosPorTipo[t], 0);
+  document.getElementById('pts-pos').textContent = totalAciertos;
+  document.getElementById('pts-neg').textContent = '/ ' + TOTAL_ACIERTOS;
+  document.getElementById('pts-total').textContent = state.puntos.toFixed(2);
+  actualizarProgreso();
+}
+
+function actualizarBadges() {
+  TIPOS.forEach(t => {
+    const el = document.getElementById('badge-' + t);
+    if (!el) return;
+    if (state.aciertosPorTipo[t] >= ACIERTOS_POR_TIPO) {
+      el.classList.add('completado');
+      el.classList.remove('activo');
+    }
+  });
+}
+
+function actualizarBadgeActivo() {
+  TIPOS.forEach(t => {
+    const el = document.getElementById('badge-' + t);
+    if (!el) return;
+    if (state.aciertosPorTipo[t] >= ACIERTOS_POR_TIPO) {
+      el.classList.add('completado');
+      el.classList.remove('activo');
+    } else {
+      el.classList.toggle('activo', t === state.tipoActual);
+    }
+  });
+}
+
+function actualizarProgreso() {
+  const pct = (state.puntos / 10) * 100;
+  document.getElementById('barra-fill').style.width = Math.min(100, pct) + '%';
+  const totalAciertos = TIPOS.reduce((s, t) => s + state.aciertosPorTipo[t], 0);
+  document.getElementById('progreso-label').textContent =
+    `Aciertos: ${totalAciertos}/${TOTAL_ACIERTOS} · Puntos: ${state.puntos.toFixed(2)}/10`;
+}
+
+// ============================================================
+//  TIEMPO
+// ============================================================
+function actualizarTiempo() {
+  const ms = Date.now() - state.inicio;
+  const totalSeg = Math.floor(ms / 1000);
+  const m = Math.floor(totalSeg / 60);
+  const s = totalSeg % 60;
+  document.getElementById('tiempo').textContent =
+    String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+}
+setInterval(actualizarTiempo, 1000);
+
+// ============================================================
+//  MODAL DE CALIFICACIÓN
+// ============================================================
+function finalizar() {
+  const pendientes = TIPOS.filter(t => state.aciertosPorTipo[t] < ACIERTOS_POR_TIPO);
+
+  if (pendientes.length === 0) {
+    finalizarConfirmado();
+    return;
+  }
+
+  // Progreso incompleto: mostramos un aviso propio (nunca confirm() nativo) antes de calificar
+  const lista = document.getElementById('lista-pendientes-aviso');
+  lista.innerHTML = pendientes.map(t => {
+    const faltan = ACIERTOS_POR_TIPO - state.aciertosPorTipo[t];
+    return `<li><strong>${NOMBRE_TIPO[t]}</strong>: te falta${faltan === 1 ? '' : 'n'} ${faltan} acierto${faltan === 1 ? '' : 's'}</li>`;
+  }).join('');
+  document.getElementById('overlay-aviso').classList.add('show');
+}
+
+function cerrarAvisoIncompleto() {
+  document.getElementById('overlay-aviso').classList.remove('show');
+}
+
+function finalizarConfirmado() {
+  document.getElementById('overlay-aviso').classList.remove('show');
+
+  const nombre = document.getElementById('nombre-alumno').value.trim() || '(sin nombre)';
+  const nota = Math.min(10, state.puntos);
+
+  // Fecha y hora
+  const ahora = new Date();
+  const dd = String(ahora.getDate()).padStart(2, '0');
+  const mm = String(ahora.getMonth() + 1).padStart(2, '0');
+  const yyyy = ahora.getFullYear();
+  const hh = String(ahora.getHours()).padStart(2, '0');
+  const min = String(ahora.getMinutes()).padStart(2, '0');
+  const ss = String(ahora.getSeconds()).padStart(2, '0');
+
+  // Tiempo transcurrido (redondeado siempre hacia arriba, según estándar del proyecto)
+  const ms = Date.now() - state.inicio;
+  const totalSeg = Math.ceil(ms / 1000);
+  const horas = Math.floor(totalSeg / 3600);
+  const mins = Math.ceil((totalSeg % 3600) / 60);
+
+  document.getElementById('modal-nombre').textContent = nombre;
+  document.getElementById('modal-nota').textContent = nota.toFixed(2);
+  document.getElementById('modal-fecha').textContent = `${dd}/${mm}/${yyyy}`;
+  document.getElementById('modal-hora').textContent = `${hh}:${min}:${ss}`;
+  document.getElementById('modal-tiempo').textContent =
+    String(horas).padStart(2, '0') + ':' + String(mins).padStart(2, '0');
+  const totalAciertosFin = TIPOS.reduce((s, t) => s + state.aciertosPorTipo[t], 0);
+  const desglose = TIPOS.map(t => `${NOMBRE_TIPO[t]}: ${state.aciertosPorTipo[t]}/${ACIERTOS_POR_TIPO}`).join(' · ');
+  document.getElementById('modal-meta').innerHTML =
+    `✅ Aciertos totales: ${totalAciertosFin}/${TOTAL_ACIERTOS}<br><span style="font-size:0.82rem;">${desglose}</span>`;
+
+  // Colores según nota
+  const modal = document.getElementById('modal-calificacion');
+  let bg = '#c0392b', color = '#fff';
+  const notaRedondeada = Math.round(nota);
+  if (notaRedondeada === 10)      { bg = '#1a7a1a'; color = '#fff'; document.body.classList.add('nota-perfecta'); }
+  else if (notaRedondeada === 9)  { bg = '#6dbf6d'; color = '#fff'; }
+  else if (notaRedondeada === 8)  { bg = '#1a4f8a'; color = '#fff'; }
+  else if (notaRedondeada === 7)  { bg = '#5b9bd5'; color = '#fff'; }
+  else if (notaRedondeada === 6)  { bg = '#c05c00'; color = '#fff'; }
+  else if (notaRedondeada === 5)  { bg = '#f5a623'; color = '#000'; }
+  else                            { bg = '#c0392b'; color = '#fff'; }
+  modal.style.backgroundColor = bg;
+  modal.style.color = color;
+  // Marcador para que los elementos translúcidos (aviso) usen un fondo oscuro
+  // cuando el texto es negro (nota 5, naranja claro)
+  modal.classList.toggle('fondo-claro', color === '#000');
+  // El botón cerrar hereda automáticamente el color del modal (inherit + currentColor)
+
+  document.getElementById('overlay').classList.add('show');
+}
+
+function cerrarModal() {
+  document.getElementById('overlay').classList.remove('show');
+  document.body.classList.remove('nota-perfecta');
+}
+
+// ============================================================
+//  INICIO
+// ============================================================
+window.addEventListener('DOMContentLoaded', () => {
+  state.inicio = Date.now();
+  const ordenInicial = mezclar([...TIPOS]);
+  generarEjercicio(ordenInicial[0]);
+  actualizarPuntuacion();
+});
+</script>
+</body>
+</html>
