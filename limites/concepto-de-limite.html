@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ficha — Concepto de Límite</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap');
+
+:root {
+  --color-fondo: #F5F0E8;
+  --color-fondo-card: #FDFAF3;
+  --color-texto: #2C1F0E;
+  --color-texto-suave: #6B4F35;
+  --color-acento: #A0522D;
+  --color-borde: #C9A96E;
+  --color-borde-suave: #E0CEAA;
+  --color-cabecera: #3B2510;
+  --color-cabecera-txt: #F5EDD8;
+  --color-correcto: #2E6B3E;
+  --color-incorrecto: #8B1A1A;
+  --color-neutro: #E8DFC8;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Lato',sans-serif;font-size:15px;color:var(--color-texto);background:var(--color-fondo);padding:0 0 2rem;}
+
+.cabecera-top{background:var(--color-cabecera);color:var(--color-cabecera-txt);font-family:'Libre Baskerville',serif;text-align:center;padding:10px 20px;border-bottom:3px solid var(--color-borde);font-size:0.75rem;letter-spacing:0.05em;}
+
+.wrap{max-width:820px;margin:20px auto;transition:background 0.5s;}
+.wrap.verde-total{background:#d4edda!important;border-radius:10px;padding:12px;}
+
+.cabecera{background:var(--color-fondo-card);border:2px solid var(--color-borde);border-radius:6px;padding:18px 22px;margin-bottom:14px;box-shadow:0 2px 8px rgba(44,31,14,0.10);}
+.cab-title{font-family:'Libre Baskerville',serif;font-size:1.35rem;color:var(--color-texto);text-align:center;margin-bottom:4px;}
+.cab-title::after{content:'';display:block;width:50px;height:3px;background:var(--color-borde);margin:6px auto 0;border-radius:2px;}
+.cab-sub{font-size:0.82rem;color:var(--color-texto-suave);text-align:center;margin:10px 0 14px;}
+.campo-nombre{display:flex;align-items:center;gap:10px;}
+.campo-nombre label{font-size:0.78rem;color:var(--color-texto-suave);text-transform:uppercase;letter-spacing:0.05em;white-space:nowrap;}
+.campo-nombre input{flex:1;border:none;border-bottom:1.5px solid var(--color-borde);background:transparent;font-family:'Lato',sans-serif;font-size:0.95rem;color:var(--color-texto);padding:4px 2px;outline:none;}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+.stat{background:var(--color-fondo-card);border:1.5px solid var(--color-borde-suave);border-radius:6px;padding:8px;text-align:center;}
+.stat-label{font-size:0.68rem;color:var(--color-texto-suave);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:2px;}
+.stat-val{font-family:'Libre Baskerville',serif;font-size:1.35rem;color:var(--color-acento);}
+
+.graph-wrap{background:var(--color-fondo-card);border:2px solid var(--color-borde);border-radius:6px;padding:16px 20px;margin-bottom:14px;box-shadow:0 2px 8px rgba(44,31,14,0.08);}
+.graph-title{font-family:'Libre Baskerville',serif;font-size:0.95rem;color:var(--color-texto-suave);text-align:center;margin-bottom:10px;}
+.graph-container{display:flex;justify-content:center;}
+
+.ficha{background:var(--color-fondo-card);border:2px solid var(--color-borde);border-radius:6px;padding:20px 24px;margin-bottom:14px;box-shadow:0 2px 8px rgba(44,31,14,0.08);}
+.ficha-hdr{font-family:'Libre Baskerville',serif;font-size:1rem;color:var(--color-texto);border-bottom:1.5px solid var(--color-borde-suave);padding-bottom:10px;margin-bottom:16px;}
+.ficha-hdr span.tag{background:var(--color-neutro);color:var(--color-acento);border-radius:4px;font-size:0.7rem;font-family:'Lato',sans-serif;padding:2px 8px;margin-left:8px;font-weight:700;}
+
+.pregunta-grid{display:grid;grid-template-columns:1fr;gap:8px;}
+.pregunta-item{background:var(--color-fondo);border:1.5px solid var(--color-borde-suave);border-radius:6px;padding:9px 14px;display:flex;flex-direction:row;align-items:center;flex-wrap:wrap;gap:6px 8px;min-height:44px;}
+.pregunta-item.p-ok{border-color:var(--color-correcto);background:#EAF4EC;}
+.pregunta-item.p-fail{border-color:var(--color-incorrecto);background:#F9EAEA;}
+
+.pregunta-lbl{font-family:'Libre Baskerville',serif;font-size:0.9rem;color:var(--color-texto);white-space:nowrap;}
+.lim-notation{display:inline-flex;flex-direction:column;align-items:center;gap:1px;flex-shrink:0;}
+.lim-top{font-family:'Libre Baskerville',serif;font-size:0.88rem;color:var(--color-texto);font-style:italic;line-height:1.1;}
+.lim-sub{font-family:'Lato',sans-serif;font-size:0.66rem;color:var(--color-texto-suave);white-space:nowrap;line-height:1.1;}
+.pregunta-sub{font-size:0.7rem;color:var(--color-texto-suave);font-style:italic;flex:1;min-width:0;}
+.pregunta-igual{font-family:'Libre Baskerville',serif;font-size:1rem;color:var(--color-texto-suave);flex-shrink:0;}
+.pregunta-irow{display:flex;align-items:center;gap:4px;flex-shrink:0;}
+.pregunta-irow input{width:82px;background:var(--color-fondo-card);border:1.5px solid var(--color-borde);border-radius:4px;padding:5px 8px;font-family:'Lato',sans-serif;font-size:0.9rem;color:var(--color-texto);outline:none;transition:border-color 0.2s;}
+.pregunta-irow input:focus{border-color:var(--color-acento);}
+.pregunta-irow input.ok{border-color:var(--color-correcto);background:#EAF4EC;}
+.pregunta-irow input.fail{border-color:var(--color-incorrecto);background:#F9EAEA;}
+
+.fb-item{font-size:0.78rem;border-radius:4px;padding:5px 8px;display:none;line-height:1.4;width:100%;flex-basis:100%;}
+.fb-item.show{display:block;}
+.fb-item.ok{background:#EAF4EC;color:var(--color-correcto);font-weight:700;}
+.fb-item.fail{background:#F9EAEA;color:var(--color-incorrecto);}
+
+.seccion-titulo{font-size:0.7rem;font-weight:700;color:var(--color-texto-suave);text-transform:uppercase;letter-spacing:0.06em;margin:14px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--color-borde-suave);}
+
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
+.btn-check{background:var(--color-cabecera);color:var(--color-cabecera-txt);border:2px solid var(--color-borde);border-radius:4px;padding:8px 20px;font-family:'Libre Baskerville',serif;font-size:0.88rem;font-weight:700;cursor:pointer;letter-spacing:0.03em;transition:background 0.2s;}
+.btn-check:hover{background:#2C1A0A;}
+.btn-check:disabled{opacity:0.45;cursor:not-allowed;background:var(--color-cabecera);}
+
+.tipos-bar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
+.tipo-badge{background:var(--color-fondo-card);border:1.5px solid var(--color-borde-suave);border-radius:20px;padding:5px 12px;font-size:0.7rem;font-weight:700;color:var(--color-texto-suave);cursor:pointer;transition:background 0.15s,border-color 0.15s,color 0.15s;}
+.tipo-badge:hover{border-color:var(--color-acento);color:var(--color-acento);}
+.tipo-badge.activo{background:var(--color-acento);color:#fff;border-color:var(--color-acento);}
+.tipo-badge.completado{background:var(--color-correcto);color:#fff;border-color:var(--color-correcto);}
+.tipo-badge.completado::before{content:'✓ ';}
+.btn-otro{background:transparent;color:var(--color-acento);border:1.5px solid var(--color-borde);border-radius:4px;padding:7px 16px;font-family:'Lato',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;transition:border-color 0.2s;}
+.btn-otro:hover{border-color:var(--color-acento);}
+
+.fb-global{margin-top:10px;font-size:0.85rem;border-radius:4px;padding:10px 14px;display:none;line-height:1.65;}
+.fb-global.show{display:block;}
+.fb-global.ok{background:#EAF4EC;color:var(--color-correcto);border:1.5px solid var(--color-correcto);font-weight:700;}
+.fb-global.fail{background:#F9EAEA;color:var(--color-incorrecto);border:1.5px solid var(--color-incorrecto);}
+
+.botones-especiales{background:var(--color-fondo-card);border:1.5px solid var(--color-borde-suave);border-radius:6px;padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.botones-especiales .be-label{font-size:0.72rem;font-weight:700;color:var(--color-texto-suave);text-transform:uppercase;letter-spacing:0.05em;white-space:nowrap;}
+.btn-especial{background:var(--color-fondo);border:1.5px solid var(--color-borde);border-radius:4px;padding:5px 14px;font-family:'Libre Baskerville',serif;font-size:0.95rem;color:var(--color-texto);cursor:pointer;transition:background 0.15s,border-color 0.15s;line-height:1;}
+.btn-especial:hover{background:var(--color-neutro);border-color:var(--color-acento);color:var(--color-acento);}
+.btn-especial:active{background:var(--color-acento);color:#fff;border-color:var(--color-acento);}
+.be-sep{width:1px;height:22px;background:var(--color-borde-suave);}
+
+.btn-final{background:var(--color-cabecera);color:var(--color-cabecera-txt);border:2px solid var(--color-borde);border-radius:4px;padding:11px 24px;font-family:'Libre Baskerville',serif;font-size:0.95rem;font-weight:700;cursor:pointer;width:100%;margin-top:4px;letter-spacing:0.03em;transition:background 0.2s;}
+.btn-final:hover{background:#2C1A0A;}
+
+.modal-bg{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(44,31,14,0.55);display:none;align-items:center;justify-content:center;z-index:9999;}
+.modal-bg.show{display:flex;}
+.modal{border:3px solid var(--color-borde);border-radius:8px;padding:32px 36px;max-width:360px;width:90%;text-align:center;font-family:'Libre Baskerville',serif;box-shadow:0 6px 24px rgba(44,31,14,0.35);}
+.modal h2{font-size:1.2rem;font-weight:700;margin-bottom:4px;}
+.modal .nota-big{font-size:3.2rem;font-weight:700;line-height:1.1;margin:8px 0;}
+.modal .meta{font-size:0.82rem;opacity:0.9;line-height:1.9;margin-bottom:12px;font-family:'Lato',sans-serif;}
+.modal .captura{font-size:0.85rem;border-radius:6px;padding:8px 12px;background:rgba(255,255,255,0.2);margin-bottom:12px;font-family:'Lato',sans-serif;}
+.modal .btn-cerrar{background:rgba(255,255,255,0.25);border:1.5px solid rgba(255,255,255,0.55);border-radius:4px;padding:8px 20px;font-size:0.85rem;cursor:pointer;font-family:'Lato',sans-serif;}
+</style>
+</head>
+<body>
+
+<div class="cabecera-top">Material elaborado por Marta L Letona S. Basado en el trabajo de Javier Cayetano</div>
+
+<div class="wrap" id="wrap">
+
+  <div class="cabecera">
+    <div class="cab-title">Concepto de Límite</div>
+    <div class="cab-sub">Límites laterales · Límite en el punto · Valor de la función · Continuidad</div>
+    <div class="campo-nombre">
+      <label for="nombre">Nombre del alumno</label>
+      <input type="text" id="nombre" placeholder="Escribe tu nombre completo...">
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-label">Hechos</div><div class="stat-val" id="s-real">0</div></div>
+    <div class="stat"><div class="stat-label">Tipos</div><div class="stat-val" id="s-ac" style="color:#2E6B3E">0/10</div></div>
+    <div class="stat"><div class="stat-label">Errores</div><div class="stat-val" id="s-fail" style="color:#8B1A1A">0</div></div>
+    <div class="stat"><div class="stat-label">Puntuación</div><div class="stat-val" id="s-pts">0/10</div></div>
+  </div>
+
+  <div class="tipos-bar" id="tipos-bar"></div>
+
+  <div class="graph-wrap">
+    <div class="graph-title" id="graph-title">f(x) — Gráfica interactiva</div>
+    <div class="graph-container">
+      <canvas id="grafica" width="560" height="360" style="max-width:100%;border-radius:4px;"></canvas>
+    </div>
+  </div>
+
+  <div class="botones-especiales">
+    <span class="be-label">Insertar valor especial:</span>
+    <button class="btn-especial" onclick="insertarEspecial('+∞')" title="Más infinito">+∞</button>
+    <button class="btn-especial" onclick="insertarEspecial('-∞')" title="Menos infinito">−∞</button>
+    <div class="be-sep"></div>
+    <button class="btn-especial" onclick="insertarEspecial('∄')" title="No existe / No definida" style="font-size:0.82rem;font-family:'Lato',sans-serif;">∄ no existe</button>
+    <span style="font-size:0.68rem;color:var(--color-texto-suave);margin-left:6px;">Haz clic en el campo y luego en el botón</span>
+  </div>
+
+  <div class="ficha" id="ficha-preguntas">
+    <div class="ficha-hdr">Analiza la función en el punto <span id="punto-nombre" style="font-family:'Libre Baskerville',serif;font-size:1rem;color:var(--color-acento);"></span> <span class="tag" id="tipo-tag">—</span></div>
+
+    <div id="sec-valor"><div class="seccion-titulo">Valor de la función</div>
+    <div class="pregunta-grid" id="grid-valor"></div></div>
+
+    <div id="sec-laterales"><div class="seccion-titulo">Límites laterales</div>
+    <div class="pregunta-grid" id="grid-laterales"></div></div>
+
+    <div id="sec-lim"><div class="seccion-titulo" id="tit-lim">Límite en el punto</div>
+    <div class="pregunta-grid" id="grid-limite"></div></div>
+
+    <div id="sec-infinito" style="display:none"><div class="seccion-titulo">Límites en el infinito</div>
+    <div class="pregunta-grid" id="grid-infinito"></div></div>
+
+    <div class="btns">
+      <button class="btn-check" id="btn-check" onclick="checkTodo()">✓ Comprobar</button>
+      <button class="btn-otro" id="btn-otro" onclick="nuevoEj()">Otro ejercicio →</button>
+    </div>
+    <div class="fb-global" id="fb-global" aria-live="polite"></div>
+  </div>
+
+  <button class="btn-final" onclick="finalizar()">Finalizar y Calificar</button>
+</div>
+
+<div class="modal-bg" id="modal-bg">
+  <div class="modal" id="modal">
+    <h2 id="m-nombre">—</h2>
+    <div class="nota-big" id="m-nota">—</div>
+    <div class="meta" id="m-meta"></div>
+    <div class="captura">📸 Haz una captura de pantalla y entrégala en Google Classroom.</div>
+    <button class="btn-cerrar" onclick="cerrarModal()">Cerrar y seguir practicando</button>
+  </div>
+</div>
+
+<script>
+const C = {
+  fondo: '#F5F0E8', card: '#FDFAF3', texto: '#2C1F0E', suave: '#6B4F35',
+  acento: '#A0522D', borde: '#C9A96E', grid: '#E0CEAA', axis: '#3B2510',
+  correcto: '#2E6B3E', malo: '#8B1A1A', curva: '#A0522D', asint: '#8B1A1A'
+};
+
+let currentEj = null, currentCategoria = null, ejerciciosTot = 0, fallosTotal = 0, timerStart = null, comprobado = false;
+let ultimoGen = null; // último generador usado, para evitar repetirlo si la categoría tiene varias variantes
+
+// El temporizador empieza al cargar la página (no al escribir el nombre)
+timerStart = Date.now();
+
+// Redondeo hacia arriba: cualquier fracción de minuto cuenta como el minuto completo siguiente
+function elapsed(){
+  if(!timerStart) return '00:00';
+  const totalSeconds = Math.ceil((Date.now()-timerStart)/1000);
+  const totalMinutes = Math.ceil(totalSeconds/60);
+  const h = Math.floor(totalMinutes/60), m = totalMinutes%60;
+  return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
+}
+
+let categoriasCompletadas = new Set();
+
+function calcNota(){ return Math.min(10, categoriasCompletadas.size * PUNTO_POR_CATEGORIA); }
+
+function updateStats(){
+  document.getElementById('s-real').textContent = ejerciciosTot;
+  document.getElementById('s-ac').textContent = categoriasCompletadas.size + '/' + CATEGORIAS.length;
+  document.getElementById('s-fail').textContent = fallosTotal;
+  document.getElementById('s-pts').textContent = calcNota().toFixed(1)+'/10';
+}
+
+// Función aleatoria mejorada
+function randInt(min, max){ return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+const MARGIN = { top:30, right:30, bottom:30, left:35 };
+const XMIN=-4.5, XMAX=4.5, YMIN=-5.5, YMAX=5.5;
+function getCanvas(){ return document.getElementById('grafica'); }
+function getCoordFns(canvas){
+  const W = canvas.width, H = canvas.height;
+  const pw = W - MARGIN.left - MARGIN.right, ph = H - MARGIN.top - MARGIN.bottom;
+  return { toX: x => MARGIN.left + (x - XMIN) / (XMAX - XMIN) * pw, toY: y => MARGIN.top + (YMAX - y) / (YMAX - YMIN) * ph };
+}
+
+function drawGrid(ctx, toX, toY){
+  ctx.save(); ctx.strokeStyle = C.grid; ctx.lineWidth = 0.7;
+  for(let x=Math.ceil(XMIN);x<=Math.floor(XMAX);x++){ ctx.beginPath(); ctx.moveTo(toX(x),toY(YMIN)); ctx.lineTo(toX(x),toY(YMAX)); ctx.stroke(); }
+  for(let y=Math.ceil(YMIN);y<=Math.floor(YMAX);y++){ ctx.beginPath(); ctx.moveTo(toX(XMIN),toY(y)); ctx.lineTo(toX(XMAX),toY(y)); ctx.stroke(); }
+  ctx.restore();
+}
+
+function drawAxes(ctx, toX, toY){
+  ctx.save(); ctx.strokeStyle = C.axis; ctx.lineWidth = 1.8;
+  ctx.beginPath(); ctx.moveTo(toX(XMIN),toY(0)); ctx.lineTo(toX(XMAX),toY(0)); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(toX(0),toY(YMIN)); ctx.lineTo(toX(0),toY(YMAX)); ctx.stroke();
+  ctx.fillStyle = C.axis;
+  const ax=toX(XMAX), ay=toY(0); ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(ax-8,ay-4); ctx.lineTo(ax-8,ay+4); ctx.fill();
+  const bx=toX(0), by=toY(YMAX); ctx.beginPath(); ctx.moveTo(bx,by); ctx.lineTo(bx-4,by+8); ctx.lineTo(bx+4,by+8); ctx.fill();
+  ctx.fillStyle = C.suave; ctx.font = '11px Lato, sans-serif'; ctx.textAlign = 'center';
+  for(let x=Math.ceil(XMIN)+1;x<Math.floor(XMAX);x++){ if(x===0) continue; ctx.fillText(x, toX(x), toY(0)+14); }
+  ctx.textAlign = 'right';
+  for(let y=Math.ceil(YMIN)+1;y<Math.floor(YMAX);y++){ if(y===0) continue; ctx.fillText(y, toX(0)-4, toY(y)+4); }
+  ctx.textAlign='center'; ctx.fillText('x', toX(XMAX)+10, toY(0)+4); ctx.fillText('y', toX(0), toY(YMAX)-8);
+  ctx.restore();
+}
+
+function drawCurveSegments(ctx, segs, toX, toY){
+  const STEPS = 300; ctx.save(); ctx.strokeStyle = C.curva; ctx.lineWidth = 2.2; ctx.lineJoin = 'round';
+  segs.forEach(seg=>{ ctx.beginPath(); let first=true;
+    for(let i=0;i<=STEPS;i++){ const x = seg.from + (seg.to-seg.from)*i/STEPS; const y = seg.fn(x);
+      if(!isFinite(y)||y<YMIN-0.5||y>YMAX+0.5){ first=true; continue; }
+      if(first){ ctx.moveTo(toX(x),toY(y)); first=false; } else ctx.lineTo(toX(x),toY(y));
+    } ctx.stroke();
+  }); ctx.restore();
+}
+
+function filled(ctx, px, py){ ctx.save(); ctx.beginPath(); ctx.arc(px, py, 5, 0, Math.PI*2); ctx.fillStyle = C.acento; ctx.fill(); ctx.strokeStyle = C.card; ctx.lineWidth = 1.5; ctx.stroke(); ctx.restore(); }
+function hollow(ctx, px, py){ ctx.save(); ctx.beginPath(); ctx.arc(px, py, 5, 0, Math.PI*2); ctx.fillStyle = C.card; ctx.fill(); ctx.strokeStyle = C.acento; ctx.lineWidth = 2; ctx.stroke(); ctx.restore(); }
+function dashedVLine(ctx, px){ ctx.save(); ctx.strokeStyle = C.asint; ctx.lineWidth = 1.5; ctx.setLineDash([5,4]); ctx.beginPath(); ctx.moveTo(px, 0); ctx.lineTo(px, getCanvas().height); ctx.stroke(); ctx.setLineDash([]); ctx.restore(); }
+function dashedHLine(ctx, py){ ctx.save(); ctx.strokeStyle = C.asint; ctx.lineWidth = 1.5; ctx.setLineDash([5,4]); ctx.beginPath(); ctx.moveTo(0, py); ctx.lineTo(getCanvas().width, py); ctx.stroke(); ctx.setLineDash([]); ctx.restore(); }
+
+function drawGraph(ej){
+  const canvas = getCanvas(), ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle = C.card; ctx.fillRect(0,0,canvas.width,canvas.height);
+  const {toX,toY} = getCoordFns(canvas); drawGrid(ctx,toX,toY); drawAxes(ctx,toX,toY); ej.draw(ctx, toX, toY);
+  ctx.fillStyle = C.acento; ctx.font = 'italic bold 13px Libre Baskerville, serif'; ctx.textAlign = 'left'; ctx.fillText('y = f(x)', toX(XMAX)-55, toY(YMAX)+20);
+}
+
+// ==================== TIPOS DE FUNCIÓN ====================
+
+function tipo1(){
+  const ops = [
+    { a:1, limL:2, limR:2, lim:2, fa:4, draw: (cv,toX,toY)=>{ drawCurveSegments(cv,[{fn:x=>x+1,from:-4,to:0.98},{fn:x=>x+1,from:1.02,to:4}],toX,toY); hollow(cv,toX(1),toY(2)); filled(cv,toX(1),toY(4)); } },
+    { a:2, limL:3, limR:3, lim:3, fa:5, draw: (cv,toX,toY)=>{ drawCurveSegments(cv,[{fn:x=>x+1,from:-4,to:1.98},{fn:x=>x+1,from:2.02,to:4}],toX,toY); hollow(cv,toX(2),toY(3)); filled(cv,toX(2),toY(5)); } },
+    { a:-1, limL:0, limR:0, lim:0, fa:2, draw: (cv,toX,toY)=>{ drawCurveSegments(cv,[{fn:x=>x+1,from:-4,to:-1.02},{fn:x=>x+1,from:-0.98,to:4}],toX,toY); hollow(cv,toX(-1),toY(0)); filled(cv,toX(-1),toY(2)); } }
+  ]; const o = ops[randInt(0,ops.length-1)]; return { tipo:'tipo1', tag:'Discontinuidad evitable', a:o.a, limL:o.limL, limR:o.limR, lim:o.lim, fa:o.fa, draw:o.draw };
+}
+function tipo2(){
+  const ops = [
+    { a:1, limL:3, limR:3, lim:3, fa:3, draw: (cv,toX,toY)=>{ drawCurveSegments(cv,[{fn:x=>2*x+1,from:-4,to:4}],toX,toY); filled(cv,toX(1),toY(3)); } },
+    { a:0, limL:1, limR:1, lim:1, fa:1, draw: (cv,toX,toY)=>{ drawCurveSegments(cv,[{fn:x=>x*x+1,from:-3,to:3}],toX,toY); filled(cv,toX(0),toY(1)); } },
+    { a:2, limL:5, limR:5, lim:5, fa:5, draw: (cv,toX,toY)=>{ drawCurveSegments(cv,[{fn:x=>x+3,from:-4,to:4}],toX,toY); filled(cv,toX(2),toY(5)); } }
+  ]; const o = ops[randInt(0,ops.length-1)]; return { tipo:'tipo2', tag:'Función continua', ...o };
+}
+function tipo3(){
+  const ops = [
+    { a:0, limL:-1, limR:2, lim:null, fa:2, draw: (cv,toX,toY)=>{ drawCurveSegments(cv,[{fn:x=>-1,from:-4,to:-0.02},{fn:x=>2,from:0.02,to:4}],toX,toY); hollow(cv,toX(0),toY(-1)); filled(cv,toX(0),toY(2)); } },
+    { a:1, limL:0, limR:3, lim:null, fa:0, draw: (cv,toX,toY)=>{ drawCurveSegments(cv,[{fn:x=>x-1,from:-3,to:0.98},{fn:x=>x+2,from:1.02,to:4}],toX,toY); hollow(cv,toX(1),toY(3)); filled(cv,toX(1),toY(0)); } },
+    { a:-1, limL:1, limR:-2, lim:null, fa:-2, draw: (cv,toX,toY)=>{ drawCurveSegments(cv,[{fn:x=>-x,from:-4,to:-1.02},{fn:x=>-x-3,from:-0.98,to:4}],toX,toY); hollow(cv,toX(-1),toY(1)); filled(cv,toX(-1),toY(-2)); } }
+  ]; const o = ops[randInt(0,ops.length-1)]; return { tipo:'tipo3', tag:'Salto finito', ...o };
+}
+function tipo4(){
+  const ops = [
+    { a:1, limL:'-∞', limR:'+∞', lim:'∄', fa:null, draw: (cv,toX,toY)=>{ drawCurveSegments(cv,[{fn:x=>1/(x-1),from:-4,to:0.85},{fn:x=>1/(x-1),from:1.15,to:4}],toX,toY); dashedVLine(cv,toX(1)); } },
+    { a:0, limL:'-∞', limR:'+∞', lim:'∄', fa:null, draw: (cv,toX,toY)=>{ drawCurveSegments(cv,[{fn:x=>1/x,from:-4,to:-0.15},{fn:x=>1/x,from:0.15,to:4}],toX,toY); dashedVLine(cv,toX(0)); } },
+    { a:2, limL:'+∞', limR:'-∞', lim:'∄', fa:null, draw: (cv,toX,toY)=>{ drawCurveSegments(cv,[{fn:x=>-1/(x-2),from:-4,to:1.85},{fn:x=>-1/(x-2),from:2.15,to:4}],toX,toY); dashedVLine(cv,toX(2)); } }
+  ]; const o = ops[randInt(0,ops.length-1)]; return { tipo:'tipo4', tag:'Asíntota vertical', ...o };
+}
+function tipo5(){
+  const ops = [
+    { a:2, limL:3, limR:'+∞', lim:'∄', fa:null, draw: (cv,toX,toY)=>{ drawCurveSegments(cv,[{fn:x=>x+1,from:-4,to:1.98},{fn:x=>1/(x-2)+5,from:2.08,to:4}],toX,toY); hollow(cv,toX(2),toY(3)); dashedVLine(cv,toX(2)); } },
+    { a:0, limL:'+∞', limR:2, lim:'∄', fa:null, draw: (cv,toX,toY)=>{ drawCurveSegments(cv,[{fn:x=>-1/x-2,from:-4,to:-0.12},{fn:x=>x+2,from:0.02,to:4}],toX,toY); hollow(cv,toX(0),toY(2)); dashedVLine(cv,toX(0)); } }
+  ]; const o = ops[randInt(0,ops.length-1)]; return { tipo:'tipo5', tag:'Límite mixto', ...o };
+}
+function tipo6(){
+  const ops = [
+    { a:1, limL:2, limR:2, lim:2, fa:4, draw: (cv,toX,toY)=>{ drawCurveSegments(cv,[{fn:x=>x+1,from:-4,to:0.98},{fn:x=>x+1,from:1.02,to:4}],toX,toY); hollow(cv,toX(1),toY(2)); filled(cv,toX(1),toY(4)); } },
+    { a:2, limL:1, limR:1, lim:1, fa:3, draw: (cv,toX,toY)=>{ drawCurveSegments(cv,[{fn:x=>-x+3,from:-4,to:1.98},{fn:x=>-x+3,from:2.02,to:4}],toX,toY); hollow(cv,toX(2),toY(1)); filled(cv,toX(2),toY(3)); } }
+  ]; const o = ops[randInt(0,ops.length-1)]; return { tipo:'tipo6', tag:'Discontinuidad evitable', ...o };
+}
+function tipo7(){
+  const ops = [
+    { a:0, limL:0, limR:0, lim:0, fa:0, draw: (cv,toX,toY)=>{ drawCurveSegments(cv,[{fn:x=>x*x,from:-4,to:4}],toX,toY); filled(cv,toX(0),toY(0)); } },
+    { a:1, limL:1, limR:1, lim:1, fa:1, draw: (cv,toX,toY)=>{ drawCurveSegments(cv,[{fn:x=>x*x,from:-4,to:4}],toX,toY); filled(cv,toX(1),toY(1)); } }
+  ]; const o = ops[randInt(0,ops.length-1)]; return { tipo:'tipo7', tag:'Función cuadrática', ...o };
+}
+function tipo8(){
+  const ops = [
+    { a:0, limL:1, limR:1, lim:1, fa:null, draw: (cv,toX,toY)=>{ drawCurveSegments(cv,[{fn:x=>-x+1,from:-4,to:-0.02},{fn:x=>x+1,from:0.02,to:4}],toX,toY); hollow(cv,toX(0),toY(1)); } },
+    { a:1, limL:2, limR:2, lim:2, fa:null, draw: (cv,toX,toY)=>{ drawCurveSegments(cv,[{fn:x=>x+1,from:-4,to:0.98},{fn:x=>x+1,from:1.02,to:4}],toX,toY); hollow(cv,toX(1),toY(2)); } },
+    { a:2, limL:4, limR:4, lim:4, fa:null, draw: (cv,toX,toY)=>{ drawCurveSegments(cv,[{fn:x=>2*x,from:-4,to:1.98},{fn:x=>2*x,from:2.02,to:4}],toX,toY); hollow(cv,toX(2),toY(4)); } }
+  ]; const o = ops[randInt(0,ops.length-1)]; return { tipo:'tipo8', tag:'Hueco sin valor', ...o };
+}
+function tipo9(){
+  const ops = [
+    { limPinf:1, limMinf:1, draw: (cv,toX,toY)=>{ drawCurveSegments(cv,[{fn:x=>2/x+1,from:-4.4,to:-0.18},{fn:x=>2/x+1,from:0.18,to:4.4}],toX,toY); dashedHLine(cv,toY(1)); dashedVLine(cv,toX(0)); } },
+    { limPinf:2, limMinf:2, draw: (cv,toX,toY)=>{ drawCurveSegments(cv,[{fn:x=>2/(x*x)+2,from:-4.4,to:-0.18},{fn:x=>2/(x*x)+2,from:0.18,to:4.4}],toX,toY); dashedHLine(cv,toY(2)); dashedVLine(cv,toX(0)); } },
+    { limPinf:0, limMinf:0, draw: (cv,toX,toY)=>{ drawCurveSegments(cv,[{fn:x=>3/x,from:-4.4,to:-0.2},{fn:x=>3/x,from:0.2,to:4.4}],toX,toY); dashedHLine(cv,toY(0)); dashedVLine(cv,toX(0)); } },
+    { limPinf:-1, limMinf:-1, draw: (cv,toX,toY)=>{ drawCurveSegments(cv,[{fn:x=>2/x-1,from:-4.4,to:-0.18},{fn:x=>2/x-1,from:0.18,to:4.4}],toX,toY); dashedHLine(cv,toY(-1)); dashedVLine(cv,toX(0)); } }
+  ]; const o = ops[randInt(0,ops.length-1)]; return { tipo:'tipo9', tag:'Límites en ±∞', modo:'infinito', limPinf:o.limPinf, limMinf:o.limMinf, draw:o.draw };
+}
+function tipo10(){
+  const ops = [
+    { limPinf:'+∞', limMinf:'-∞', draw: (cv,toX,toY)=>{ drawCurveSegments(cv,[{fn:x=>x,from:-4.4,to:4.4}],toX,toY); } },
+    { limPinf:'+∞', limMinf:'+∞', draw: (cv,toX,toY)=>{ drawCurveSegments(cv,[{fn:x=>x*x,from:-3,to:3}],toX,toY); } },
+    { limPinf:'-∞', limMinf:'+∞', draw: (cv,toX,toY)=>{ drawCurveSegments(cv,[{fn:x=>-x,from:-4.4,to:4.4}],toX,toY); } },
+    { limPinf:'-∞', limMinf:'-∞', draw: (cv,toX,toY)=>{ drawCurveSegments(cv,[{fn:x=>-x*x,from:-3,to:3}],toX,toY); } }
+  ]; const o = ops[randInt(0,ops.length-1)]; return { tipo:'tipo10', tag:'Límites en ±∞', modo:'infinito', limPinf:o.limPinf, limMinf:o.limMinf, draw:o.draw };
+}
+function tipo11(){
+  const ops = [
+    { limPinf:2, limMinf:-2, draw: (cv,toX,toY)=>{ drawCurveSegments(cv,[{fn:x=>2*x/Math.sqrt(1+x*x),from:-4.4,to:4.4}],toX,toY); dashedHLine(cv,toY(2)); dashedHLine(cv,toY(-2)); } },
+    { limPinf:3, limMinf:0, draw: (cv,toX,toY)=>{ drawCurveSegments(cv,[{fn:x=>3*Math.exp(x)/(1+Math.exp(x)),from:-4.4,to:4.4}],toX,toY); dashedHLine(cv,toY(3)); dashedHLine(cv,toY(0)); } }
+  ]; const o = ops[randInt(0,ops.length-1)]; return { tipo:'tipo11', tag:'Asíntotas distintas', modo:'infinito', limPinf:o.limPinf, limMinf:o.limMinf, draw:o.draw };
+}
+function tipo12(){
+  const ops = [
+    { limPinf:1, limMinf:1, a:0, limL:'-∞', limR:'+∞', lim:'∄', fa:null, draw: (cv,toX,toY)=>{ drawCurveSegments(cv,[{fn:x=>1/x+1,from:-4.4,to:-0.18},{fn:x=>1/x+1,from:0.18,to:4.4}],toX,toY); dashedHLine(cv,toY(1)); dashedVLine(cv,toX(0)); } }
+  ]; const o = ops[0]; return { tipo:'tipo12', tag:'Punto + Infinito', modo:'mixto', ...o };
+}
+
+// Array con todos los tipos de función (cada tipo puede generar múltiples variantes)
+const TIPOS_FUNCION = [tipo1, tipo2, tipo3, tipo4, tipo5, tipo6, tipo7, tipo8, tipo9, tipo10, tipo11, tipo12];
+
+// ==================== CATEGORÍAS (ejercicios por tipos) ====================
+// Se agrupan los 12 generadores en 10 categorías según la etiqueta conceptual
+// que ya usaba cada uno. El alumno debe superar las 10 al menos una vez para
+// llegar al 10; cada categoría vale 10/10 = 1 punto exacto.
+const CATEGORIAS = [
+  { id:'discontinuidad', nombre:'Discontinuidad evitable', generadores:[tipo1, tipo6] },
+  { id:'continua',       nombre:'Función continua',        generadores:[tipo2] },
+  { id:'saltofinito',    nombre:'Salto finito',             generadores:[tipo3] },
+  { id:'asintotavert',   nombre:'Asíntota vertical',        generadores:[tipo4] },
+  { id:'mixto',          nombre:'Límite mixto',             generadores:[tipo5] },
+  { id:'cuadratica',     nombre:'Función cuadrática',       generadores:[tipo7] },
+  { id:'huecosinvalor',  nombre:'Hueco sin valor',          generadores:[tipo8] },
+  { id:'infinito',       nombre:'Límites en ±∞',            generadores:[tipo9, tipo10] },
+  { id:'asintotasdist',  nombre:'Asíntotas distintas',      generadores:[tipo11] },
+  { id:'puntoinfinito',  nombre:'Punto + Infinito',         generadores:[tipo12] }
+];
+const PUNTO_POR_CATEGORIA = 10 / CATEGORIAS.length; // 1 punto por categoría superada
+
+function parseAlum(raw){
+  if(!raw) return null;
+  const s = raw.trim().toLowerCase().replace(/[∞]/g,'inf').replace(/\+inf/g,'inf').replace(/−/g,'-');
+  const FORMAS_NO_EXISTE = ['no existe','no ex.','∄','nexiste','nexists','no definida','nd','undef','no definido'];
+  if(FORMAS_NO_EXISTE.includes(s)) return 'NO_EXISTE';
+  if(s==='inf'||s==='+inf'||s==='+∞'||s==='∞'||s==='+infinito'||s==='mas infinito') return '+∞';
+  if(s==='-inf'||s==='-∞'||s==='-infinito'||s==='menos infinito') return '-∞';
+  const n = parseFloat(s.replace(',','.')); if(!isNaN(n)) return n;
+  return s;
+}
+function correcto(alumnoRaw, correcto){
+  // Un campo vacío (o solo espacios) NUNCA es una respuesta válida, ni siquiera
+  // cuando lo correcto es "no existe"/"no definida" — el alumno debe escribirlo
+  // explícitamente (∄, "no existe", "nd"...), dejarlo en blanco siempre cuenta como fallo.
+  if(!alumnoRaw || alumnoRaw.trim()==='') return false;
+  const alum = parseAlum(alumnoRaw);
+  const alumEsNulo = alum === 'NO_EXISTE';
+  if(correcto === null || correcto === '∄') return alumEsNulo;
+  if(correcto === '+∞') return alum === '+∞';
+  if(correcto === '-∞') return alum === '-∞';
+  if(typeof correcto === 'number'){ if(typeof alum === 'number') return Math.abs(alum-correcto)<0.05; return false; }
+  return String(alum).toLowerCase() === String(correcto).toLowerCase();
+}
+function dispVal(v){ if(v===null||v===undefined) return '∄ (no definida)'; if(v==='∄') return '∄ (no existe)'; return String(v); }
+
+let currentPreguntas = [];
+function buildPreguntas(ej){
+  if(ej.modo === 'infinito') return [
+    { id:'limPinf', label:'lím f(x)', sublabel:'x → +∞', answer: ej.limPinf, grupo:'lim' },
+    { id:'limMinf', label:'lím f(x)', sublabel:'x → −∞', answer: ej.limMinf, grupo:'lim' }
+  ];
+  if(ej.modo === 'mixto') return [
+    { id:'fa', label:`f(${ej.a})`, sublabel:null, answer: ej.fa, grupo:'valor' },
+    { id:'limL', label:'lím f(x)', sublabel:`x → ${ej.a}⁻`, answer: ej.limL, grupo:'lat' },
+    { id:'limR', label:'lím f(x)', sublabel:`x → ${ej.a}⁺`, answer: ej.limR, grupo:'lat' },
+    { id:'lim', label:'lím f(x)', sublabel:`x → ${ej.a}`, answer: ej.lim, grupo:'lim' },
+    { id:'limPinf', label:'lím f(x)', sublabel:'x → +∞', answer: ej.limPinf, grupo:'inf' },
+    { id:'limMinf', label:'lím f(x)', sublabel:'x → −∞', answer: ej.limMinf, grupo:'inf' }
+  ];
+  return [
+    { id:'fa', label:`f(${ej.a})`, sublabel:null, answer: ej.fa, grupo:'valor' },
+    { id:'limL', label:'lím f(x)', sublabel:`x → ${ej.a}⁻`, answer: ej.limL, grupo:'lat' },
+    { id:'limR', label:'lím f(x)', sublabel:`x → ${ej.a}⁺`, answer: ej.limR, grupo:'lat' },
+    { id:'lim', label:'lím f(x)', sublabel:`x → ${ej.a}`, answer: ej.lim, grupo:'lim' }
+  ];
+}
+function renderPreguntas(preg){
+  const gVal=document.getElementById('grid-valor'), gLat=document.getElementById('grid-laterales'), gLim=document.getElementById('grid-limite'), gInf=document.getElementById('grid-infinito');
+  gVal.innerHTML=''; gLat.innerHTML=''; gLim.innerHTML=''; gInf.innerHTML='';
+  const modo = currentEj ? currentEj.modo : null;
+  document.getElementById('sec-valor').style.display = (modo==='infinito')?'none':'';
+  document.getElementById('sec-laterales').style.display = (modo==='infinito')?'none':'';
+  document.getElementById('sec-lim').style.display = (modo==='infinito')?'':'';
+  document.getElementById('sec-infinito').style.display = (modo==='infinito'||modo==='mixto')?'':'none';
+  document.getElementById('tit-lim').textContent = (modo==='infinito')?'Límites en el infinito':'Límite en el punto';
+  preg.forEach(p=>{
+    const div = document.createElement('div'); div.className='pregunta-item'; div.id='pi-'+p.id;
+    const lblHtml = p.sublabel ? `<span class="lim-notation"><span class="lim-top">${p.label}</span><span class="lim-sub">${p.sublabel}</span></span>` : `<span class="pregunta-lbl">${p.label}</span>`;
+    const ariaLabel = (p.sublabel ? `${p.label} ${p.sublabel}` : p.label).replace(/"/g,'');
+    div.innerHTML = `${lblHtml}<span class="pregunta-igual">=</span><div class="pregunta-irow"><input type="text" id="inp-${p.id}" placeholder="?" aria-label="${ariaLabel}" onfocus="lastFocused=this"></div><div class="fb-item" id="fb-${p.id}" aria-live="polite"></div>`;
+    if(p.grupo==='valor') gVal.appendChild(div); else if(p.grupo==='lat') gLat.appendChild(div); else if(p.grupo==='inf') gInf.appendChild(div); else gLim.appendChild(div);
+  });
+}
+
+// Soporte de tecla Enter para comprobar sin necesidad de pulsar el botón
+document.getElementById('ficha-preguntas').addEventListener('keydown', e => {
+  if(e.key === 'Enter' && e.target.tagName === 'INPUT'){ e.preventDefault(); checkTodo(); }
+});
+
+// ==================== BADGES DE CATEGORÍA ====================
+function renderBadges(){
+  const bar = document.getElementById('tipos-bar');
+  bar.innerHTML = CATEGORIAS.map(c => `<button type="button" class="tipo-badge" id="badge-${c.id}" onclick="elegirCategoria('${c.id}')">${c.nombre}</button>`).join('');
+  actualizarBadges();
+}
+function actualizarBadges(){
+  CATEGORIAS.forEach(c=>{
+    const el = document.getElementById('badge-'+c.id);
+    if(!el) return;
+    el.classList.toggle('completado', categoriasCompletadas.has(c.id));
+    el.classList.toggle('activo', !categoriasCompletadas.has(c.id) && currentCategoria===c.id);
+  });
+}
+function elegirCategoria(catId){ nuevoEj(catId); }
+
+let lastFocused = null;
+document.addEventListener('focusin', e => { if(e.target.tagName === 'INPUT' && e.target.closest('#ficha-preguntas')) lastFocused = e.target; });
+function insertarEspecial(val){
+  if(!lastFocused){ const inputs = document.querySelectorAll('#ficha-preguntas input[type=text]'); for(const inp of inputs){ if(!inp.value){ lastFocused=inp; break; } } if(!lastFocused && inputs.length) lastFocused = inputs[0]; }
+  if(!lastFocused) return;
+  lastFocused.value = val; lastFocused.dispatchEvent(new Event('input')); lastFocused.classList.remove('ok','fail');
+  lastFocused.style.borderColor = 'var(--color-acento)'; setTimeout(()=>{ if(lastFocused) lastFocused.style.borderColor=''; }, 600); lastFocused.focus();
+}
+function checkTodo(){
+  // Un solo intento por ejercicio: una vez comprobado, queda cerrado
+  // (aunque se manipule el DOM, esto depende de la variable `comprobado`, no de `disabled`)
+  if(comprobado) return; comprobado = true;
+  document.getElementById('btn-check').disabled = true;
+
+  let ok=0, tot=0;
+  currentPreguntas.forEach(p=>{
+    const inp = document.getElementById('inp-'+p.id), fb = document.getElementById('fb-'+p.id), pi = document.getElementById('pi-'+p.id);
+    if(!inp) return; tot++;
+    const isOk = correcto(inp.value, p.answer);
+    inp.classList.remove('ok','fail'); inp.classList.add(isOk?'ok':'fail');
+    pi.classList.remove('p-ok','p-fail'); pi.classList.add(isOk?'p-ok':'p-fail');
+    fb.className='fb-item show '+(isOk?'ok':'fail'); fb.innerHTML = isOk ? '✓ Correcto' : 'Respuesta: <strong>'+dispVal(p.answer)+'</strong>';
+    if(!isOk) fallosTotal++; else ok++;
+  });
+  ejerciciosTot++;
+  const fbg = document.getElementById('fb-global');
+  const nombreCategoria = CATEGORIAS.find(c=>c.id===currentCategoria).nombre;
+
+  if(ok===tot){
+    const yaCompletada = categoriasCompletadas.has(currentCategoria);
+    if(!yaCompletada){
+      categoriasCompletadas.add(currentCategoria);
+      const pendientes = CATEGORIAS.filter(c=>!categoriasCompletadas.has(c.id));
+      const siguiente = pendientes.length>0
+        ? `Puedes seguir con <strong>${pendientes[0].nombre}</strong> u otro tipo pendiente.`
+        : '¡Has completado los 10 tipos! 🏆';
+      fbg.className='fb-global show ok';
+      fbg.innerHTML = `✓ ¡Perfecto! +${PUNTO_POR_CATEGORIA.toFixed(1)} puntos — tipo "<strong>${nombreCategoria}</strong>" completado. ${siguiente} Puntuación total: <strong>${calcNota().toFixed(1)}/10</strong>`;
+    } else {
+      fbg.className='fb-global show ok';
+      fbg.innerHTML = `✓ Correcto — el tipo "<strong>${nombreCategoria}</strong>" ya estaba completado, no suma puntos adicionales. Puntuación total: <strong>${calcNota().toFixed(1)}/10</strong>`;
+    }
+  } else {
+    fbg.className='fb-global show fail';
+    fbg.innerHTML = `⚠️ ${ok} de ${tot} correctos — este intento no puntúa para "<strong>${nombreCategoria}</strong>". Pulsa "Otro ejercicio" para intentarlo de nuevo con datos distintos.`;
+  }
+  updateStats(); actualizarBadges();
+}
+function nuevoEj(catIdForzado){
+  comprobado = false; lastFocused = null;
+  document.getElementById('btn-check').disabled = false;
+
+  // Si se pide una categoría concreta (clic en badge), se usa esa.
+  // Si no, se prioriza una categoría pendiente; si ya están todas completas, se elige libremente.
+  let categoria;
+  if(catIdForzado){
+    categoria = CATEGORIAS.find(c=>c.id===catIdForzado);
+  } else {
+    const pendientes = CATEGORIAS.filter(c=>!categoriasCompletadas.has(c.id));
+    const pool = pendientes.length>0 ? pendientes : CATEGORIAS;
+    categoria = pool[randInt(0,pool.length-1)];
+  }
+  currentCategoria = categoria.id;
+
+  // Dentro de la categoría, evitar repetir el mismo generador si hay más de uno
+  const gens = categoria.generadores;
+  let gen;
+  do { gen = gens[randInt(0,gens.length-1)]; } while (gens.length>1 && gen.name === ultimoGen);
+  ultimoGen = gen.name;
+  currentEj = gen();
+
+  document.getElementById('graph-title').textContent = currentEj.modo==='infinito' ? 'y = f(x) — Analiza el comportamiento en ±∞' : (currentEj.modo==='mixto' ? 'y = f(x) — Analiza x = '+currentEj.a+' y el comportamiento en ±∞' : 'y = f(x) — Analiza la gráfica en x = '+currentEj.a);
+  drawGraph(currentEj);
+  document.getElementById('punto-nombre').textContent = currentEj.modo==='infinito' ? '±∞' : (currentEj.a !== undefined ? 'x = '+currentEj.a : '');
+  document.getElementById('tipo-tag').textContent = currentEj.tag;
+  currentPreguntas = buildPreguntas(currentEj); renderPreguntas(currentPreguntas);
+  document.getElementById('fb-global').className='fb-global';
+  actualizarBadges();
+}
+function finalizar(){
+  const nombreEl=document.getElementById('nombre');
+  if(!nombreEl.value.trim()){ nombreEl.style.borderBottom='2px solid #8B1A1A'; nombreEl.placeholder='⚠ Escribe tu nombre antes de finalizar'; nombreEl.focus(); return; }
+  const nombre=nombreEl.value.trim(), nota=calcNota(), now=new Date();
+  const fecha=String(now.getDate()).padStart(2,'0')+'/'+String(now.getMonth()+1).padStart(2,'0')+'/'+now.getFullYear();
+  const hora=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')+':'+String(now.getSeconds()).padStart(2,'0');
+  const cols={10:{bg:'#1a7a1a',txt:'#fff',v:true},9:{bg:'#6dbf6d',txt:'#fff'},8:{bg:'#1a4f8a',txt:'#fff'},7:{bg:'#5b9bd5',txt:'#fff'},6:{bg:'#c05c00',txt:'#fff'},5:{bg:'#f5a623',txt:'#000'}};
+  const k=nota>=10?10:nota>=9?9:nota>=8?8:nota>=7?7:nota>=6?6:nota>=5?5:-1, col=cols[k]||{bg:'#c0392b',txt:'#fff'};
+  const modal=document.getElementById('modal'); modal.style.background=col.bg; modal.style.color=col.txt; modal.querySelector('.btn-cerrar').style.color=col.txt;
+  document.getElementById('m-nombre').textContent=nombre; document.getElementById('m-nota').textContent=nota.toFixed(1)+' / 10';
+  document.getElementById('m-meta').innerHTML='Fecha: '+fecha+'<br>Hora: '+hora+'<br>Tiempo: '+elapsed()+'<br>Tipos completados: '+categoriasCompletadas.size+' de '+CATEGORIAS.length+' · Ejercicios hechos: '+ejerciciosTot+' · Errores: '+fallosTotal;
+  document.getElementById('modal-bg').classList.add('show'); if(col.v) document.getElementById('wrap').classList.add('verde-total');
+}
+function cerrarModal(){
+  document.getElementById('modal-bg').classList.remove('show'); document.getElementById('wrap').classList.remove('verde-total');
+  ejerciciosTot=0; fallosTotal=0; categoriasCompletadas = new Set(); currentCategoria = null;
+  // El temporizador NO se reinicia al cerrar el modal (sigue desde la carga original)
+  ultimoGen = null;
+  document.getElementById('nombre').value=''; document.getElementById('nombre').style.borderBottom=''; document.getElementById('nombre').placeholder='Escribe tu nombre completo...';
+  updateStats(); actualizarBadges(); nuevoEj();
+}
+window.addEventListener('load', ()=>{ renderBadges(); nuevoEj(); });
+</script>
+</body>
+</html>
