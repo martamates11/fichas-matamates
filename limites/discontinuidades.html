@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ficha — Discontinuidades: evitable, salto finito, salto infinito</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap');
+
+:root {
+  --color-fondo: #F5F0E8;
+  --color-fondo-card: #FDFAF3;
+  --color-texto: #2C1F0E;
+  --color-texto-suave: #6B4F35;
+  --color-acento: #A0522D;
+  --color-borde: #C9A96E;
+  --color-borde-suave: #E0CEAA;
+  --color-cabecera: #3B2510;
+  --color-cabecera-txt: #F5EDD8;
+  --color-correcto: #2E6B3E;
+  --color-incorrecto: #8B1A1A;
+  --color-completado: #2e7d32;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Lato',sans-serif;font-size:15px;color:var(--color-texto);background:var(--color-fondo);padding:0 0 2rem;}
+
+.cabecera-top{background:var(--color-cabecera);color:var(--color-cabecera-txt);font-family:'Libre Baskerville',serif;text-align:center;padding:10px 20px;border-bottom:3px solid var(--color-borde);font-size:0.75rem;}
+
+.wrap{max-width:950px;margin:20px auto;}
+
+.cabecera{background:var(--color-fondo-card);border:2px solid var(--color-borde);border-radius:6px;padding:18px 22px;margin-bottom:14px;}
+.cab-title{font-family:'Libre Baskerville',serif;font-size:1.35rem;color:var(--color-texto);text-align:center;}
+.cab-title::after{content:'';display:block;width:50px;height:3px;background:var(--color-borde);margin:6px auto 0;}
+.cab-sub{font-size:0.82rem;color:var(--color-texto-suave);text-align:center;margin:10px 0 14px;}
+.campo-nombre{display:flex;align-items:center;gap:10px;}
+.campo-nombre label{font-size:0.78rem;color:var(--color-texto-suave);text-transform:uppercase;}
+.campo-nombre input{flex:1;border:none;border-bottom:1.5px solid var(--color-borde);background:transparent;font-size:0.95rem;padding:4px 2px;outline:none;}
+
+.tipos-bar{display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap;justify-content:center;}
+.tipo-badge{background:var(--color-fondo-card);border:2px solid var(--color-borde);border-radius:30px;padding:8px 25px;font-family:'Libre Baskerville',serif;font-size:0.9rem;font-weight:700;color:var(--color-texto);cursor:pointer;transition:all 0.2s;text-align:center;}
+.tipo-badge:hover{border-color:var(--color-acento);background:#E8DFC8;}
+.tipo-badge.activo{background:var(--color-acento);color:white;border-color:var(--color-acento);}
+.tipo-badge.completado{background:var(--color-completado);color:white;border-color:var(--color-completado);}
+
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
+.stat{background:var(--color-fondo-card);border:1.5px solid var(--color-borde-suave);border-radius:6px;padding:8px;text-align:center;}
+.stat-label{font-size:0.68rem;color:var(--color-texto-suave);text-transform:uppercase;}
+.stat-val{font-family:'Libre Baskerville',serif;font-size:1.35rem;color:var(--color-acento);}
+.stat-val-small{font-size:0.9rem;}
+
+.graph-wrap{background:var(--color-fondo-card);border:2px solid var(--color-borde);border-radius:6px;padding:16px;margin-bottom:14px;text-align:center;}
+.graph-title{font-family:'Libre Baskerville',serif;font-size:0.95rem;color:var(--color-texto-suave);margin-bottom:10px;}
+canvas{background:#FDFAF3;border-radius:4px;box-shadow:0 2px 4px rgba(0,0,0,0.1);display:block;margin:0 auto;}
+
+.ficha{background:var(--color-fondo-card);border:2px solid var(--color-borde);border-radius:6px;padding:20px 24px;margin-bottom:14px;}
+.ficha-hdr{font-family:'Libre Baskerville',serif;font-size:1rem;border-bottom:1.5px solid var(--color-borde-suave);padding-bottom:10px;margin-bottom:16px;}
+.ficha-hdr span.tag{background:#E8DFC8;color:var(--color-acento);border-radius:4px;font-size:0.7rem;padding:2px 8px;margin-left:8px;}
+
+.pregunta-grid{display:grid;gap:8px;margin-bottom:12px;}
+.pregunta-item{background:var(--color-fondo);border:1.5px solid var(--color-borde-suave);border-radius:6px;padding:9px 14px;display:flex;align-items:center;flex-wrap:wrap;gap:8px;}
+.pregunta-item.p-ok{border-color:var(--color-correcto);background:#EAF4EC;}
+.pregunta-item.p-fail{border-color:var(--color-incorrecto);background:#F9EAEA;}
+
+.lim-notation{display:inline-flex;flex-direction:column;align-items:center;}
+.lim-top{font-family:'Libre Baskerville',serif;font-size:0.88rem;font-style:italic;}
+.lim-sub{font-size:0.66rem;color:var(--color-texto-suave);}
+.pregunta-lbl{font-family:'Libre Baskerville',serif;white-space:nowrap;}
+.pregunta-igual{font-family:'Libre Baskerville',serif;color:var(--color-texto-suave);}
+.pregunta-irow input, .pregunta-irow select{width:160px;background:white;border:1.5px solid var(--color-borde);border-radius:4px;padding:6px 8px;font-size:0.9rem;outline:none;color:#000;}
+.pregunta-irow select{width:230px;cursor:pointer;color:#000;}
+.pregunta-irow input:focus, .pregunta-irow select:focus{border-color:var(--color-acento);}
+.pregunta-irow input.ok, .pregunta-irow select.ok{border-color:var(--color-correcto);background:#EAF4EC;}
+.pregunta-irow input.fail, .pregunta-irow select.fail{border-color:var(--color-incorrecto);background:#F9EAEA;}
+.pregunta-irow input::placeholder{color:#999;}
+
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+.fb-item{font-size:0.78rem;padding:5px 8px;display:none;}
+.fb-item.show{display:block;}
+.fb-item.ok{background:#EAF4EC;color:var(--color-correcto);}
+.fb-item.fail{background:#F9EAEA;color:var(--color-incorrecto);}
+
+.seccion-titulo{font-size:0.7rem;font-weight:700;color:var(--color-texto-suave);text-transform:uppercase;margin:14px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--color-borde-suave);}
+
+.btns{display:flex;gap:8px;margin-top:14px;}
+.btn-check{background:var(--color-cabecera);color:white;border:2px solid var(--color-borde);border-radius:4px;padding:8px 20px;font-family:'Libre Baskerville',serif;font-weight:700;cursor:pointer;}
+.btn-check:hover{background:#2C1A0A;}
+.btn-siguiente{background:transparent;color:var(--color-acento);border:1.5px solid var(--color-borde);border-radius:4px;padding:7px 16px;cursor:pointer;display:none;}
+.btn-siguiente:hover{border-color:var(--color-acento);}
+
+.fb-global{margin-top:10px;padding:10px 14px;border-radius:4px;display:none;}
+.fb-global.show{display:block;}
+.fb-global.ok{background:#EAF4EC;color:var(--color-correcto);border:1.5px solid var(--color-correcto);}
+.fb-global.fail{background:#F9EAEA;color:var(--color-incorrecto);border:1.5px solid var(--color-incorrecto);}
+
+.botones-especiales{background:var(--color-fondo-card);border:1.5px solid var(--color-borde-suave);border-radius:6px;padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.botones-especiales .be-label{font-size:0.72rem;font-weight:700;color:var(--color-texto-suave);text-transform:uppercase;white-space:nowrap;}
+.btn-especial{background:var(--color-fondo);border:1.5px solid var(--color-borde);border-radius:4px;padding:5px 14px;cursor:pointer;font-family:'Libre Baskerville',serif;font-size:0.9rem;color:#000;font-weight:500;}
+.btn-especial:hover{background:#E8DFC8;}
+
+.btn-final{background:var(--color-cabecera);color:white;border:2px solid var(--color-borde);border-radius:4px;padding:11px 24px;cursor:pointer;width:100%;margin-top:4px;font-weight:700;}
+
+.modal-bg{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(44,31,14,0.55);display:none;align-items:center;justify-content:center;z-index:9999;}
+.modal-bg.show{display:flex;}
+.modal{border-radius:8px;padding:32px 36px;max-width:400px;width:90%;text-align:center;transition:all 0.3s;}
+.modal .nota-big{font-size:3.5rem;font-weight:700;margin:8px 0;font-family:'Libre Baskerville',serif;}
+.modal .meta{font-size:0.85rem;opacity:0.9;line-height:1.8;margin-bottom:15px;font-family:'Lato',sans-serif;}
+.modal .captura{font-size:0.8rem;border-radius:6px;padding:8px 12px;background:rgba(0,0,0,0.15);margin-bottom:15px;}
+.modal .btn-cerrar{border:none;border-radius:4px;padding:8px 20px;cursor:pointer;font-family:'Lato',sans-serif;font-weight:700;margin-top:5px;}
+</style>
+</head>
+<body>
+
+<div class="cabecera-top">Material realizado por Marta L. Letona S. · Basado en ejercicios de J. Cayetano</div>
+
+<div class="wrap" id="wrap">
+  <div class="cabecera">
+    <div class="cab-title">Análisis de discontinuidades</div>
+    <div class="cab-sub">Límites laterales · Valor de la función · Clasificación</div>
+    <div class="campo-nombre">
+      <label for="nombre">Nombre del alumno</label>
+      <input type="text" id="nombre" placeholder="Escribe tu nombre completo...">
+    </div>
+  </div>
+
+  <div class="tipos-bar">
+    <div class="tipo-badge" id="badge-evitable" onclick="elegirTipo('evitable')">Ejercicio 1</div>
+    <div class="tipo-badge" id="badge-salto" onclick="elegirTipo('salto')">Ejercicio 2</div>
+    <div class="tipo-badge" id="badge-infinito" onclick="elegirTipo('infinito')">Ejercicio 3</div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-label">Ejercicios hechos</div><div class="stat-val" id="pts-pos">0</div></div>
+    <div class="stat"><div class="stat-label">Total</div><div class="stat-val stat-val-small" id="pts-neg">/ 3</div></div>
+    <div class="stat"><div class="stat-label">Puntuación</div><div class="stat-val" id="pts-total">0</div></div>
+  </div>
+
+  <div class="graph-wrap">
+    <div class="graph-title" id="graph-title">📈 f(x) — Selecciona un ejercicio</div>
+    <canvas id="grafica" width="650" height="400" style="width:100%; height:auto; max-width:650px; border:1px solid #E0CEAA;"></canvas>
+  </div>
+
+  <div class="botones-especiales">
+    <span class="be-label">Insertar valor especial:</span>
+    <button class="btn-especial" onclick="insertarEspecial('+∞')">+∞</button>
+    <button class="btn-especial" onclick="insertarEspecial('-∞')">−∞</button>
+    <button class="btn-especial" onclick="insertarEspecial('∄')">∄ no existe</button>
+    <span style="font-size:0.68rem;color:#000;margin-left:6px;">💡 Haz clic en el campo y luego en el botón</span>
+  </div>
+
+  <div class="ficha">
+    <div class="ficha-hdr">Analiza la función en el punto <span id="punto-nombre" style="color:var(--color-acento);"></span> <span class="tag" id="tipo-tag">—</span></div>
+
+    <div><div class="seccion-titulo">📌 Valor de la función</div>
+    <div class="pregunta-grid" id="grid-valor"></div></div>
+
+    <div><div class="seccion-titulo">⬅️ ➡️ Límites laterales</div>
+    <div class="pregunta-grid" id="grid-laterales"></div></div>
+
+    <div><div class="seccion-titulo">🏷️ Clasificación de la discontinuidad</div>
+    <div class="pregunta-grid" id="grid-tipo"></div></div>
+
+    <div class="btns">
+      <button class="btn-check" onclick="checkTodo()">✓ Comprobar</button>
+      <button class="btn-siguiente" id="btn-siguiente" onclick="siguienteEjercicio()">→ Siguiente ejercicio</button>
+    </div>
+    <div class="fb-global" id="fb-global" aria-live="polite"></div>
+  </div>
+
+  <button class="btn-final" onclick="finalizar()">📋 Finalizar y Calificar</button>
+</div>
+
+<div class="modal-bg" id="modal-bg">
+  <div class="modal" id="modal">
+    <h2 id="m-nombre">—</h2>
+    <div class="nota-big" id="m-nota">—</div>
+    <div class="meta" id="m-meta"></div>
+    <div class="captura">📸 Haz captura de pantalla y entrégala en Google Classroom</div>
+    <button class="btn-cerrar" id="btn-cerrar-modal" onclick="cerrarModal()">Cerrar</button>
+  </div>
+</div>
+
+<script>
+// ==================== TIPOS Y CONFIGURACIÓN ====================
+const TIPOS = ['evitable', 'salto', 'infinito'];
+const APARTADOS_IDS = ['limL', 'limR', 'fa', 'tipo']; // los 4 apartados de cada ejercicio
+const NOMBRE_TIPO = {
+  evitable: 'Ejercicio 1',
+  salto: 'Ejercicio 2',
+  infinito: 'Ejercicio 3'
+};
+const PUNTOS_APARTADO = 10 / (TIPOS.length * APARTADOS_IDS.length); // 10 / 12 = 0,8333... por apartado acertado
+function keyApartado(tipo, id) { return tipo + ':' + id; }
+function tipoCompletado(tipo) {
+  return APARTADOS_IDS.every(id => state.apartadosGanados.has(keyApartado(tipo, id)));
+}
+
+const state = {
+  puntos: 0,
+  apartadosGanados: new Set(),   // claves "tipo:apartado" que ya han sumado puntos (para no volver a sumarlas)
+  apartadosRevelados: new Set(),// claves "tipo:apartado" cuya respuesta correcta ya se mostró en esta instancia (no puntúan aunque se acierte después)
+  tipoActual: null,
+  inicio: Date.now()
+};
+
+let ejercicioActual = null;
+let lastFocused = null;
+let preguntasActuales = [];
+
+// ==================== TEMPORIZADOR ====================
+function obtenerTiempoTranscurrido() {
+  const segundosTotales = Math.ceil((Date.now() - state.inicio) / 1000); // redondeado hacia arriba
+  const minutos = Math.floor(segundosTotales / 60);
+  const segs = segundosTotales % 60;
+  return `${minutos.toString().padStart(2, '0')}:${segs.toString().padStart(2, '0')}`;
+}
+
+// ==================== EJERCICIOS ====================
+const ejerciciosPorTipo = {
+  evitable: [
+    { a: 2, limL: 4, limR: 4, fa: 5, fn: x => x + 2, valorEsperado: 4, puntoAislado: 5 },
+    { a: 1, limL: 3, limR: 3, fa: 1, fn: x => 2*x + 1, valorEsperado: 3, puntoAislado: 1 },
+    { a: -1, limL: 0, limR: 0, fa: 2, fn: x => x + 1, valorEsperado: 0, puntoAislado: 2 }
+  ],
+  salto: [
+    { a: 0, limL: -2, limR: 2, fa: 2, fnIzq: x => -2, fnDer: x => 2, valorIzq: -2, valorDer: 2, valorFn: 2 },
+    { a: 1, limL: 0, limR: 3, fa: 0, fnIzq: x => x-1, fnDer: x => x+2, valorIzq: 0, valorDer: 3, valorFn: 0 },
+    { a: -2, limL: -4, limR: 1, fa: -4, fnIzq: x => -4, fnDer: x => x+3, valorIzq: -4, valorDer: 1, valorFn: -4 }
+  ],
+  infinito: [
+    { a: 2, limL: "-∞", limR: "+∞", fa: null, fn: x => 3/(x-2) + 2 },
+    { a: 0, limL: "-∞", limR: "+∞", fa: null, fn: x => 3/x + 1 },
+    { a: -1, limL: "+∞", limR: "-∞", fa: null, fn: x => -3/(x+1) + 2 }
+  ]
+};
+
+function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+// ==================== FUNCIONES DE DIBUJO ====================
+function dibujarGrafica(ej) {
+  const canvas = document.getElementById('grafica');
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width;
+  const h = canvas.height;
+  
+  ctx.fillStyle = "#FDFAF3";
+  ctx.fillRect(0, 0, w, h);
+  
+  const margin = { top: 30, right: 30, bottom: 35, left: 45 };
+  const xMin = -4, xMax = 5, yMin = -5, yMax = 6;
+  const px = (x, w) => margin.left + (x - xMin) / (xMax - xMin) * (w - margin.left - margin.right);
+  const py = (y, h) => margin.top + (yMax - y) / (yMax - yMin) * (h - margin.top - margin.bottom);
+  
+  ctx.save();
+  ctx.strokeStyle = "#E0CEAA";
+  ctx.lineWidth = 0.5;
+  for(let x = -3; x <= 4; x++) {
+    ctx.beginPath();
+    ctx.moveTo(px(x, w), py(yMin, h));
+    ctx.lineTo(px(x, w), py(yMax, h));
+    ctx.stroke();
+  }
+  for(let y = -4; y <= 5; y++) {
+    ctx.beginPath();
+    ctx.moveTo(px(xMin, w), py(y, h));
+    ctx.lineTo(px(xMax, w), py(y, h));
+    ctx.stroke();
+  }
+  
+  ctx.strokeStyle = "#3B2510";
+  ctx.lineWidth = 1.8;
+  ctx.beginPath();
+  ctx.moveTo(px(xMin, w), py(0, h));
+  ctx.lineTo(px(xMax, w), py(0, h));
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(px(0, w), py(yMin, h));
+  ctx.lineTo(px(0, w), py(yMax, h));
+  ctx.stroke();
+  
+  ctx.fillStyle = "#6B4F35";
+  ctx.font = "10px Lato";
+  ctx.textAlign = "center";
+  for(let x = -3; x <= 4; x++) if(x !== 0) ctx.fillText(x, px(x, w), py(0, h) + 14);
+  ctx.textAlign = "right";
+  for(let y = -4; y <= 5; y++) if(y !== 0) ctx.fillText(y, px(0, w) - 6, py(y, h) + 4);
+  ctx.fillStyle = "#A0522D";
+  ctx.font = "italic 12px 'Libre Baskerville'";
+  ctx.fillText("y = f(x)", px(4.5, w), py(5.5, h));
+  
+  ctx.strokeStyle = "#A0522D";
+  ctx.lineWidth = 2.5;
+  
+  if (ej.tipo === 'evitable') {
+    ctx.beginPath();
+    let primero = true;
+    for(let i = 0; i <= 400; i++) {
+      let x = -4 + (9 * i / 400);
+      if (Math.abs(x - ej.a) < 0.08) continue;
+      let y = ej.fn(x);
+      if (y < -5 || y > 7) { primero = true; continue; }
+      let xp = px(x, w), yp = py(y, h);
+      if (primero) { ctx.moveTo(xp, yp); primero = false; }
+      else ctx.lineTo(xp, yp);
+    }
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(px(ej.a, w), py(ej.valorEsperado, h), 5, 0, 2*Math.PI);
+    ctx.fillStyle = "#FDFAF3";
+    ctx.fill();
+    ctx.strokeStyle = "#A0522D";
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(px(ej.a, w), py(ej.puntoAislado, h), 5, 0, 2*Math.PI);
+    ctx.fillStyle = "#A0522D";
+    ctx.fill();
+    ctx.strokeStyle = "#FDFAF3";
+    ctx.stroke();
+  } 
+  else if (ej.tipo === 'salto') {
+    ctx.beginPath();
+    let primero = true;
+    for(let i = 0; i <= 200; i++) {
+      let x = -4 + ((ej.a + 0.05) + 4) * i / 200;
+      let y = typeof ej.fnIzq === 'function' ? ej.fnIzq(x) : ej.fnIzq;
+      if (y < -5 || y > 7) { primero = true; continue; }
+      let xp = px(x, w), yp = py(y, h);
+      if (primero) { ctx.moveTo(xp, yp); primero = false; }
+      else ctx.lineTo(xp, yp);
+    }
+    ctx.stroke();
+    ctx.beginPath();
+    primero = true;
+    for(let i = 0; i <= 200; i++) {
+      let x = ej.a + 0.05 + (5 - (ej.a + 0.05)) * i / 200;
+      let y = typeof ej.fnDer === 'function' ? ej.fnDer(x) : ej.fnDer;
+      if (y < -5 || y > 7) { primero = true; continue; }
+      let xp = px(x, w), yp = py(y, h);
+      if (primero) { ctx.moveTo(xp, yp); primero = false; }
+      else ctx.lineTo(xp, yp);
+    }
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(px(ej.a, w), py(ej.valorIzq, h), 5, 0, 2*Math.PI);
+    ctx.fillStyle = "#FDFAF3";
+    ctx.fill();
+    ctx.strokeStyle = "#A0522D";
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(px(ej.a, w), py(ej.valorFn, h), 5, 0, 2*Math.PI);
+    ctx.fillStyle = "#A0522D";
+    ctx.fill();
+    ctx.strokeStyle = "#FDFAF3";
+    ctx.stroke();
+  } 
+  else if (ej.tipo === 'infinito') {
+    ctx.beginPath();
+    let primero = true;
+    for(let i = 0; i <= 300; i++) {
+      let x = -4 + ((ej.a - 0.15) + 4) * i / 300;
+      let y = ej.fn(x);
+      if (Math.abs(y) > 8) { primero = true; continue; }
+      let xp = px(x, w), yp = py(y, h);
+      if (primero) { ctx.moveTo(xp, yp); primero = false; }
+      else ctx.lineTo(xp, yp);
+    }
+    ctx.stroke();
+    ctx.beginPath();
+    primero = true;
+    for(let i = 0; i <= 300; i++) {
+      let x = ej.a + 0.15 + (5 - (ej.a + 0.15)) * i / 300;
+      let y = ej.fn(x);
+      if (Math.abs(y) > 8) { primero = true; continue; }
+      let xp = px(x, w), yp = py(y, h);
+      if (primero) { ctx.moveTo(xp, yp); primero = false; }
+      else ctx.lineTo(xp, yp);
+    }
+    ctx.stroke();
+  }
+  
+  // ✅ Línea punteada roja corregida
+  ctx.beginPath();
+  ctx.setLineDash([6, 5]);
+  ctx.strokeStyle = "#8B1A1A";
+  ctx.moveTo(px(ej.a, w), py(yMin, h));
+  ctx.lineTo(px(ej.a, w), py(yMax, h));
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.strokeStyle = "#A0522D";
+  
+  ctx.fillStyle = "#e74c3c";
+  ctx.font = "bold 12px Lato";
+  ctx.fillText(`x = ${ej.a}`, px(ej.a, w) - 18, py(5, h) - 5);
+  
+  ctx.restore();
+}
+
+function generarEjercicio(tipo) {
+  state.tipoActual = tipo;
+  APARTADOS_IDS.forEach(id => state.apartadosRevelados.delete(keyApartado(tipo, id))); // nueva instancia = nueva oportunidad de ver la respuesta
+  
+  const ejercicios = ejerciciosPorTipo[tipo];
+  const idx = randInt(0, ejercicios.length - 1);
+  ejercicioActual = { ...ejercicios[idx], tipo: tipo };
+  
+  document.getElementById('graph-title').innerHTML = `📈 f(x) — ${NOMBRE_TIPO[tipo]}`;
+  dibujarGrafica(ejercicioActual);
+  document.getElementById('punto-nombre').innerHTML = `x = ${ejercicioActual.a}`;
+  document.getElementById('tipo-tag').textContent = NOMBRE_TIPO[tipo];
+  
+  preguntasActuales = [
+    { id: 'limL', label: 'lím f(x)', sublabel: `x → ${ejercicioActual.a}⁻`, answer: ejercicioActual.limL },
+    { id: 'limR', label: 'lím f(x)', sublabel: `x → ${ejercicioActual.a}⁺`, answer: ejercicioActual.limR },
+    { id: 'fa', label: `f(${ejercicioActual.a})`, sublabel: null, answer: ejercicioActual.fa },
+    { id: 'tipo', label: 'Tipo de discontinuidad', sublabel: null, answer: tipo, esSelect: true }
+  ];
+  
+  renderizarPreguntas(preguntasActuales);
+  document.getElementById('fb-global').className = 'fb-global';
+  document.getElementById('btn-siguiente').style.display = 'none';
+  
+  actualizarBadgeActivo();
+}
+
+function renderizarPreguntas(pregs) {
+  document.getElementById('grid-valor').innerHTML = '';
+  document.getElementById('grid-laterales').innerHTML = '';
+  document.getElementById('grid-tipo').innerHTML = '';
+  
+  pregs.forEach(p => {
+    const div = document.createElement('div');
+    div.className = 'pregunta-item';
+    div.id = 'pi-' + p.id;
+    
+    const textoLabel = p.sublabel ? `${p.label}, ${p.sublabel}` : p.label;
+    let inputHtml;
+    if(p.esSelect) {
+      inputHtml = `<label for="inp-${p.id}" class="sr-only">${textoLabel}</label><select id="inp-${p.id}" style="color:#000;">
+        <option value="">-- Selecciona --</option>
+        <option value="evitable">Discontinuidad evitable</option>
+        <option value="salto">Discontinuidad de salto finito</option>
+        <option value="infinito">Discontinuidad de salto infinito</option>
+      </select>`;
+    } else {
+      inputHtml = `<label for="inp-${p.id}" class="sr-only">${textoLabel}</label><input type="text" id="inp-${p.id}" placeholder="?" style="color:#000;" onfocus="lastFocused=this">`;
+    }
+    
+    const lblHtml = p.sublabel 
+      ? `<span class="lim-notation" aria-hidden="true"><span class="lim-top">${p.label}</span><span class="lim-sub">${p.sublabel}</span></span>`
+      : `<span class="pregunta-lbl" aria-hidden="true">${p.label}</span>`;
+    
+    div.innerHTML = `${lblHtml}<span class="pregunta-igual" aria-hidden="true">=</span><div class="pregunta-irow">${inputHtml}</div><div class="fb-item" id="fb-${p.id}" aria-live="polite"></div>`;
+    
+    if(p.id === 'fa') document.getElementById('grid-valor').appendChild(div);
+    else if(p.id === 'limL' || p.id === 'limR') document.getElementById('grid-laterales').appendChild(div);
+    else document.getElementById('grid-tipo').appendChild(div);
+  });
+}
+
+function normalizar(v) {
+  if(v === null || v === undefined) return null;
+  let s = String(v).trim().toLowerCase().replace(/[∞]/g, 'inf');
+  if(s === 'no_existe' || s === '∄' || s === 'nexiste' || s === 'no existe') return '∄';
+  if(s === '+inf' || s === 'inf' || s === '+∞' || s === '+infinito') return '+∞';
+  if(s === '-inf' || s === '-∞' || s === '-infinito') return '-∞';
+  let n = parseFloat(s.replace(',', '.'));
+  if(!isNaN(n)) return n;
+  return s;
+}
+
+function comparar(alumno, correcto) {
+  let a = normalizar(alumno);
+  if(correcto === null || correcto === '∄') return a === '∄' || a === null;
+  if(correcto === '+∞') return a === '+∞';
+  if(correcto === '-∞') return a === '-∞';
+  if(typeof correcto === 'number' && typeof a === 'number') return Math.abs(a - correcto) < 0.05;
+  return a === correcto;
+}
+
+function formatear(v) {
+  if(v === null || v === undefined) return '∄';
+  return String(v);
+}
+
+function actualizarPuntuacion() {
+  document.getElementById('pts-pos').textContent = TIPOS.filter(tipoCompletado).length;
+  document.getElementById('pts-total').textContent = state.puntos.toFixed(2);
+}
+
+function actualizarBadgeActivo() {
+  TIPOS.forEach(t => {
+    const el = document.getElementById('badge-' + t);
+    if (!el) return;
+    el.classList.remove('activo', 'completado');
+    if (tipoCompletado(t)) {
+      el.classList.add('completado');
+    }
+    if (t === state.tipoActual && !tipoCompletado(t)) {
+      el.classList.add('activo');
+    }
+  });
+}
+
+function elegirTipo(tipo) {
+  generarEjercicio(tipo);
+}
+
+function checkTodo() {
+  const tipo = state.tipoActual;
+  let aciertosVisibles = 0;
+  let puntosNuevos = 0;
+  const total = preguntasActuales.length;
+
+  preguntasActuales.forEach(p => {
+    const inp = document.getElementById('inp-' + p.id);
+    const fb = document.getElementById('fb-' + p.id);
+    const pi = document.getElementById('pi-' + p.id);
+    if(!inp) return;
+
+    const key = keyApartado(tipo, p.id);
+
+    // Si este apartado ya sumó sus puntos antes (en este intento o en uno anterior), se muestra fijo como correcto.
+    if (state.apartadosGanados.has(key)) {
+      inp.classList.remove('fail'); inp.classList.add('ok');
+      pi.classList.remove('p-fail'); pi.classList.add('p-ok');
+      fb.className = 'fb-item show ok';
+      fb.innerHTML = `✓ Correcto (ya puntuado)`;
+      aciertosVisibles++;
+      return;
+    }
+
+    const ok = comparar(inp.value, p.answer);
+    inp.classList.remove('ok', 'fail');
+    inp.classList.add(ok ? 'ok' : 'fail');
+    pi.classList.remove('p-ok', 'p-fail');
+    pi.classList.add(ok ? 'p-ok' : 'p-fail');
+
+    if (ok) {
+      aciertosVisibles++;
+      if (state.apartadosRevelados.has(key)) {
+        // Ya se vio la respuesta correcta tras un fallo previo en esta misma instancia: no puntúa aunque ahora acierte.
+        fb.className = 'fb-item show ok';
+        fb.innerHTML = `✓ Correcto — pero sin puntos: ya viste esta respuesta tras un fallo anterior en este mismo ejercicio.`;
+      } else {
+        state.apartadosGanados.add(key);
+        puntosNuevos += PUNTOS_APARTADO;
+        fb.className = 'fb-item show ok';
+        fb.innerHTML = `✓ Correcto (+${PUNTOS_APARTADO.toFixed(2)} pts)`;
+      }
+    } else {
+      state.apartadosRevelados.add(key);
+      fb.className = 'fb-item show fail';
+      fb.innerHTML = `✗ Respuesta: ${formatear(p.answer)} — este apartado se queda en 0 puntos para este ejercicio (los fallos no restan, pero tampoco se puede puntuar tras ver la respuesta). Genera otro ejercicio de este tipo para tener una nueva oportunidad.`;
+    }
+  });
+
+  if (puntosNuevos > 0) state.puntos += puntosNuevos;
+
+  actualizarPuntuacion();
+  actualizarBadgeActivo();
+
+  const fbGlobal = document.getElementById('fb-global');
+  if (aciertosVisibles === total) {
+    fbGlobal.className = 'fb-global show ok';
+    const pendientes = TIPOS.filter(t => !tipoCompletado(t));
+    const extra = pendientes.length > 0
+      ? `<br><br><em>Siguiente: haz clic en <strong>${NOMBRE_TIPO[pendientes[0]]}</strong> para seguir sumando puntos.</em>`
+      : `<br><br><em>¡Has completado los 3 ejercicios! 🏆</em>`;
+    fbGlobal.innerHTML = puntosNuevos > 0
+      ? `✅ ¡Los 4 apartados correctos! <strong>+${puntosNuevos.toFixed(2)} puntos nuevos</strong> — Ejercicio completado 🎉${extra}`
+      : `✅ Los 4 apartados de este ejercicio ya estaban puntuados. No queda nada más que ganar aquí.${extra}`;
+  } else {
+    fbGlobal.className = 'fb-global show fail';
+    fbGlobal.innerHTML = `Tienes ${aciertosVisibles} de ${total} apartados correctos ahora mismo${puntosNuevos > 0 ? ` (+${puntosNuevos.toFixed(2)} puntos nuevos)` : ''}. Los fallos no restan puntos, pero cada apartado fallado se queda en 0 para este ejercicio: corrige lo que quieras o genera un ejercicio nuevo de este tipo para tener otra oportunidad en esos apartados.`;
+  }
+
+  document.getElementById('btn-siguiente').style.display = 'inline-block';
+}
+
+function siguienteEjercicio() {
+  const pendientes = TIPOS.filter(t => !tipoCompletado(t));
+  if (pendientes.length > 0) {
+    elegirTipo(pendientes[0]);
+    return;
+  }
+  // No quedan tipos pendientes: se ofrece repaso libre.
+  const aleatorio = TIPOS[randInt(0, TIPOS.length - 1)];
+  elegirTipo(aleatorio);
+}
+
+function insertarEspecial(val) {
+  if(!lastFocused || lastFocused.disabled) {
+    const inputs = document.querySelectorAll('.ficha .pregunta-irow input[type=text]');
+    lastFocused = null;
+    for(const inp of inputs) { if(!inp.disabled && !inp.value) { lastFocused = inp; break; } }
+    if(!lastFocused) { for(const inp of inputs) { if(!inp.disabled) { lastFocused = inp; break; } } }
+  }
+  if(!lastFocused) return;
+  lastFocused.value = val;
+  lastFocused.classList.remove('ok', 'fail');
+  lastFocused.focus();
+}
+
+function getColorPorNota(nota) {
+  // Paleta fija de referencia del proyecto
+  if (nota >= 10) return { bg: '#1a7a1a', text: 'white', border: '#0f4f0f' };
+  if (nota >= 9)  return { bg: '#6dbf6d', text: 'white', border: '#4a9c4a' };
+  if (nota >= 8)  return { bg: '#1a4f8a', text: 'white', border: '#0f3560' };
+  if (nota >= 7)  return { bg: '#5b9bd5', text: 'white', border: '#3a7cb8' };
+  if (nota >= 6)  return { bg: '#c05c00', text: 'white', border: '#8f4300' };
+  if (nota >= 5)  return { bg: '#f5a623', text: 'black', border: '#c98614' };
+  return { bg: '#c0392b', text: 'white', border: '#8e291f' };
+}
+
+function finalizar() {
+  const nombre = document.getElementById('nombre').value.trim();
+  if(!nombre) {
+    document.getElementById('nombre').style.borderBottom = '2px solid #8B1A1A';
+    document.getElementById('nombre').focus();
+    return;
+  }
+  
+  const nota = Math.min(10, Math.max(0, state.puntos));
+  const ahora = new Date();
+  const tiempo = obtenerTiempoTranscurrido();
+  const colores = getColorPorNota(nota);
+  const modal = document.getElementById('modal');
+  const modalBg = document.getElementById('modal-bg');
+  
+  modal.style.backgroundColor = colores.bg;
+  modal.style.color = colores.text;
+  modal.style.border = `3px solid ${colores.border}`;
+  
+  document.getElementById('m-nombre').textContent = nombre;
+  document.getElementById('m-nota').textContent = nota.toFixed(2) + ' / 10';
+  document.getElementById('m-meta').innerHTML = `📅 Fecha: ${ahora.toLocaleDateString()}<br>⏰ Hora: ${ahora.toLocaleTimeString()}<br>⏱️ Tiempo: ${tiempo}<br>✅ Ejercicios completados: ${TIPOS.filter(tipoCompletado).length}/${TIPOS.length}<br>📌 Apartados conseguidos: ${state.apartadosGanados.size}/${TIPOS.length * APARTADOS_IDS.length}<br>⭐ Puntuación: ${state.puntos.toFixed(2)}/10`;
+  
+  const btnCerrar = document.getElementById('btn-cerrar-modal');
+  btnCerrar.style.backgroundColor = `rgba(255,255,255,0.25)`;
+  btnCerrar.style.color = colores.text;
+  btnCerrar.style.border = `1px solid rgba(255,255,255,0.5)`;
+  
+  modalBg.classList.add('show');
+}
+
+function cerrarModal() {
+  document.getElementById('modal-bg').classList.remove('show');
+  document.getElementById('wrap').classList.remove('verde-total');
+  state.puntos = 0;
+  state.apartadosGanados.clear();
+  state.apartadosRevelados.clear();
+  state.tipoActual = null;
+  state.inicio = Date.now();
+  
+  actualizarPuntuacion();
+  
+  TIPOS.forEach(t => {
+    const el = document.getElementById('badge-' + t);
+    if (el) { el.classList.remove('completado', 'activo'); }
+  });
+  
+  const ordenInicial = [...TIPOS];
+  for (let i = ordenInicial.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [ordenInicial[i], ordenInicial[j]] = [ordenInicial[j], ordenInicial[i]];
+  }
+  generarEjercicio(ordenInicial[0]);
+  document.getElementById('nombre').value = '';
+  document.getElementById('nombre').style.borderBottom = '';
+}
+
+document.addEventListener('focusin', e => {
+  if(e.target.tagName === 'INPUT' && e.target.closest('.ficha')) lastFocused = e.target;
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  const dentroDeFicha = e.target.closest && e.target.closest('.ficha');
+  if (!dentroDeFicha) return;
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') {
+    e.preventDefault();
+    checkTodo();
+  }
+});
+
+const ordenInicial = [...TIPOS];
+for (let i = ordenInicial.length - 1; i > 0; i--) {
+  const j = Math.floor(Math.random() * (i + 1));
+  [ordenInicial[i], ordenInicial[j]] = [ordenInicial[j], ordenInicial[i]];
+}
+window.addEventListener('load', () => { generarEjercicio(ordenInicial[0]); });
+</script>
+</body>
+</html>
