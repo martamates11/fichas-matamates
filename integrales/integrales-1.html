@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Integrales Inmediatas · Ficha Interactiva</title>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script" async></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Lato:wght@300;400;700&display=swap');
+  :root{--crema:#fdf6e3;--crema2:#f5e6c8;--crema3:#ede0c4;--marron:#5c3d1e;--marron2:#8b5e3c;--acento:#2e7d32;--acento2:#4caf50;--exito:#1b5e20;--linea-acento:#A0522D;--error:#c0392b;--azul:#1a4f8a;--texto:#3b2a1a;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Lato',sans-serif;background:var(--crema);color:var(--texto);}
+  .cabecera{background:linear-gradient(135deg,var(--marron),var(--marron2));color:var(--crema);text-align:center;padding:14px 20px 10px;border-bottom:4px solid var(--linea-acento);}
+  .autoria{font-size:.72rem;opacity:.85;margin-bottom:4px;}
+  .cabecera h1{font-family:'Playfair Display',serif;font-size:1.4rem;}
+  .subtitulo{font-size:.8rem;opacity:.8;margin-top:3px;}
+  .top-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;background:var(--crema2);border-bottom:2px solid var(--crema3);padding:10px 20px;}
+  .nombre-box{display:flex;align-items:center;gap:8px;}
+  .nombre-box label{font-weight:700;font-size:.85rem;color:var(--marron);}
+  .nombre-box input{border:1.5px solid var(--crema3);border-radius:6px;padding:5px 10px;font-size:.9rem;background:var(--crema);color:var(--texto);font-family:'Lato',sans-serif;width:180px;}
+  .score-box{display:flex;gap:14px;}
+  .score-item{text-align:center;font-size:.8rem;color:var(--marron);}
+  .score-item span{display:block;font-size:1.3rem;font-weight:700;}
+  .main{max-width:1000px;margin:0 auto;padding:20px 16px 40px;}
+  .progreso-label{font-size:.75rem;color:var(--marron2);margin-bottom:4px;}
+  .barra-wrap{height:6px;background:var(--crema3);border-radius:10px;margin-bottom:18px;overflow:hidden;}
+  .barra-fill{height:100%;background:linear-gradient(90deg,var(--acento2),var(--acento));border-radius:10px;transition:width .4s;}
+  .card{background:white;border:1.5px solid var(--crema3);border-radius:14px;padding:22px 24px;box-shadow:0 3px 14px rgba(92,61,30,.08);margin-bottom:18px;}
+  .card-tipo{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--acento2);margin-bottom:6px;}
+  .enunciado-global{font-size:.92rem;line-height:1.6;margin-bottom:20px;background:var(--crema);padding:12px 18px;border-radius:12px;border-left:5px solid var(--linea-acento);}
+  .pasos{display:flex;flex-direction:column;gap:16px;margin-bottom:20px;}
+  .paso{background:var(--crema);border-radius:12px;padding:16px;border-left:5px solid var(--crema3);transition:.2s;}
+  .paso.ok{border-left-color:var(--exito);background:#f0f7f0;}
+  .paso.fail{border-left-color:var(--error);background:#fef5f3;}
+  .paso-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
+  .paso-titulo{font-weight:700;font-size:.95rem;color:var(--marron);display:flex;align-items:center;flex-wrap:wrap;gap:8px;}
+  .btn-check{background:transparent;border:1px solid var(--azul);border-radius:20px;padding:4px 14px;font-size:.7rem;font-weight:700;color:var(--azul);cursor:pointer;transition:all .2s;}
+  .btn-check:hover{background:var(--azul);color:white;}
+  .limite-visual{background:#f5ede0;padding:20px 18px;border-radius:12px;margin-bottom:14px;text-align:center;border:1px solid var(--crema3);min-height:85px;display:flex;align-items:center;justify-content:center;}
+  .limite-math{font-size:1.25rem;}
+  .mjx-chtml{font-size:1.2rem !important;}
+  .respuesta-area{width:100%;margin-top:8px;}
+  .input-group{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+  .input-group input{flex:1;padding:10px 14px;border-radius:10px;border:1.5px solid var(--crema3);background:white;font-size:.9rem;font-family:'Lato',monospace;min-width:180px;}
+  .input-group input:focus{outline:2px solid var(--acento2);border-color:transparent;}
+  .fb{font-size:.8rem;margin-top:10px;padding:8px 12px;border-radius:8px;line-height:1.5;display:none;}
+  .fb.ok{background:#e8f5e9;color:var(--exito);display:block;}
+  .fb.fail{background:#fdecea;color:#c62828;display:block;}
+  .acciones{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;margin-top:14px;}
+  .btn{padding:9px 18px;border-radius:8px;border:none;font-size:.85rem;font-weight:700;cursor:pointer;font-family:'Lato',sans-serif;transition:all .2s;}
+  .btn-primary{background:var(--acento);color:white;}
+  .btn-primary:hover{background:var(--acento2);}
+  .btn-secondary{background:var(--crema2);color:var(--marron);border:1.5px solid var(--crema3);}
+  .btn-secondary:hover{background:var(--crema3);}
+  .btn-fin{background:var(--marron);color:var(--crema);padding:10px 22px;}
+  .btn-fin:hover{background:var(--acento);}
+  .global-fb{margin-top:12px;padding:10px;border-radius:10px;background:var(--crema2);text-align:center;font-size:.85rem;}
+  .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;align-items:center;justify-content:center;}
+  .overlay.show{display:flex;}
+  .modal{border-radius:16px;padding:30px 34px;min-width:290px;max-width:400px;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,.3);}
+  .modal h2{font-family:'Playfair Display',serif;font-size:1.5rem;margin-bottom:6px;}
+  .modal-alumno{font-size:1rem;margin-bottom:16px;opacity:.9;}
+  .nota-grande{font-size:3rem;font-weight:900;margin-bottom:6px;}
+  .meta-modal{font-size:.83rem;opacity:.85;margin-bottom:18px;line-height:1.8;}
+  .modal .btn-cerrar{padding:8px 20px;border-radius:8px;border:2px solid rgba(255,255,255,.5);background:transparent;font-size:.88rem;font-weight:700;cursor:pointer;font-family:'Lato',sans-serif;}
+  .modal .btn-cerrar:hover{background:rgba(255,255,255,.15);}
+  .puntaje-info{font-size:.7rem;color:var(--marron2);margin-left:10px;}
+  .puntaje-info.ganado{color:var(--exito);font-weight:bold;}
+  .puntaje-info.perdido{color:#c62828;}
+  .tipo-badge{display:inline-block;font-size:.65rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:10px;background:var(--crema3);color:var(--marron2);margin-left:6px;}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+</style>
+</head>
+<body>
+
+<div class="cabecera">
+  <div class="autoria">Material elaborado por Marta L de Letona S. · Basado en ejercicios de J.Cayetano</div>
+  <h1>📦 Integrales Inmediatas · Cálculo de Primitivas</h1>
+  <div class="subtitulo">Tipos: polinomios · exponenciales · logaritmos · seno · coseno · raíces</div>
+</div>
+
+<div class="top-bar">
+  <div class="nombre-box">
+    <label for="nomAlumno">👤 Alumno/a:</label>
+    <input type="text" id="nomAlumno" placeholder="Escribe tu nombre…" autocomplete="off">
+  </div>
+  <div class="score-box">
+    <div class="score-item"><span id="s-pts">0.00</span>Puntos</div>
+    <div class="score-item"><span id="s-max">10</span>Máx. 10</div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="progreso-label" id="prog-label">Completa las 5 integrales (2 puntos por ejercicio, con -0,75 pts por cada fallo distinto)</div>
+  <div class="barra-wrap"><div class="barra-fill" id="barra" style="width:0%"></div></div>
+
+  <div class="card">
+    <div class="card-tipo">🧮 5 EJERCICIOS · 2 PUNTOS CADA UNO · -0,75 PTS POR CADA FALLO DISTINTO</div>
+    <div class="enunciado-global">
+      📐 <strong>Instrucciones:</strong> Calcula la integral indefinida (primitiva) de cada función. <strong>No olvides la constante +C</strong>.<br><br>
+      • <strong>Polinomios / Potencias:</strong> \(\int x^n dx = \frac{x^{n+1}}{n+1}+C\) (para \(n \neq -1\)).<br>
+      • <strong>Raíces:</strong> \(\sqrt{x}=x^{1/2}\) ⇒ \(\int x^{1/2} dx = \frac{x^{3/2}}{3/2}+C = \frac{2}{3}x^{3/2}+C\).<br>
+      • <strong>Exponencial:</strong> \(\int e^x dx = e^x + C\) , \(\int a^x dx = \frac{a^x}{\ln a}+C\).<br>
+      • <strong>Logaritmo:</strong> \(\int \frac{1}{x} dx = \ln|x| + C\).<br>
+      • <strong>Seno y Coseno:</strong> \(\int \sin x\,dx = -\cos x + C\) , \(\int \cos x\,dx = \sin x + C\).<br>
+      • <strong>Constante por función:</strong> \(\int k\cdot f(x) dx = k\cdot \int f(x)dx\).
+    </div>
+
+    <div class="pasos" id="pasosContainer"></div>
+
+    <div class="acciones">
+      <button class="btn btn-secondary" id="newExerciseBtn">🔄 Nueva tanda de integrales</button>
+      <button class="btn btn-fin" id="finalizarBtn">📋 Finalizar y Calificar</button>
+    </div>
+    <div class="global-fb" id="gfb"></div>
+  </div>
+</div>
+
+<div class="overlay" id="overlayConfirm">
+  <div class="modal" style="background:var(--crema);color:var(--texto);">
+    <h2 style="font-family:'Playfair Display',serif;color:var(--marron);margin-bottom:10px;">⚠️ ¿Seguro?</h2>
+    <p style="font-size:.88rem;margin-bottom:18px;line-height:1.5;">Vas a generar una nueva tanda de integrales. Se perderá la puntuación actual (<strong id="confirmPtsActual">0.00</strong> pts) y las respuestas ya escritas. Esta acción no se puede deshacer.</p>
+    <div style="display:flex;gap:10px;justify-content:center;">
+      <button class="btn btn-secondary" id="cancelResetBtn">Cancelar</button>
+      <button class="btn btn-fin" id="confirmResetBtn">Sí, continuar</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal" id="modal">
+    <h2 id="m-titulo"></h2>
+    <div class="modal-alumno" id="m-alumno"></div>
+    <div class="nota-grande" id="m-nota"></div>
+    <div class="meta-modal" id="m-meta"></div>
+    <div style="font-size:.74rem;margin-bottom:14px;">📸 Captura y entrega en Google Classroom.</div>
+    <button class="btn-cerrar" id="closeModalBtn">Cerrar y seguir practicando</button>
+  </div>
+</div>
+
+<script>
+// ======================== BANCO DE INTEGRALES INMEDIATAS ========================
+
+const BANCO = [
+  // ===== POLINOMIOS / POTENCIAS =====
+  { latex:"\\int (x^5 - 3x^4 + 2x^2 - 7) \\, dx", sol:"x^6/6-3x^5/5+2x^3/3-7x+C", solMostrar:"x⁶/6 − (3x⁵)/5 + (2x³)/3 − 7x + C", categoria:"polinomio" },
+  { latex:"\\int (4x^3 - 2x^2 + 5x - 1) \\, dx", sol:"x^4-2x^3/3+5x^2/2-x+C", solMostrar:"x⁴ − (2x³)/3 + (5x²)/2 − x + C", categoria:"polinomio" },
+  { latex:"\\int (2x^6 + 3x^4 - x^2 + 8) \\, dx", sol:"2x^7/7+3x^5/5-x^3/3+8x+C", solMostrar:"(2x⁷)/7 + (3x⁵)/5 − x³/3 + 8x + C", categoria:"polinomio" },
+  { latex:"\\int (x^4 - 5x^2 + 3x - 2) \\, dx", sol:"x^5/5-5x^3/3+3x^2/2-2x+C", solMostrar:"x⁵/5 − (5x³)/3 + (3x²)/2 − 2x + C", categoria:"polinomio" },
+  { latex:"\\int (3x^5 - 2x^3 + 4x) \\, dx", sol:"x^6/2-x^4/2+2x^2+C", solMostrar:"x⁶/2 − x⁴/2 + 2x² + C", categoria:"polinomio" },
+  { latex:"\\int (x^3 - 2x^2 + 4x - 5) \\, dx", sol:"x^4/4-2x^3/3+2x^2-5x+C", solMostrar:"x⁴/4 − (2x³)/3 + 2x² − 5x + C", categoria:"polinomio" },
+  { latex:"\\int (6x^2 - 8x + 3) \\, dx", sol:"2x^3-4x^2+3x+C", solMostrar:"2x³ − 4x² + 3x + C", categoria:"polinomio" },
+  { latex:"\\int (x^7 - 3x^5 + x^3 - 2x) \\, dx", sol:"x^8/8-x^6/2+x^4/4-x^2+C", solMostrar:"x⁸/8 − x⁶/2 + x⁴/4 − x² + C", categoria:"polinomio" },
+  { latex:"\\int (5x^4 + 2x^3 - x + 10) \\, dx", sol:"x^5+x^4/2-x^2/2+10x+C", solMostrar:"x⁵ + x⁴/2 − x²/2 + 10x + C", categoria:"polinomio" },
+  { latex:"\\int (2x^5 - 7x^3 + 4x^2 - 3) \\, dx", sol:"x^6/3-7x^4/4+4x^3/3-3x+C", solMostrar:"x⁶/3 − (7x⁴)/4 + (4x³)/3 − 3x + C", categoria:"polinomio" },
+
+  // ===== RAÍCES =====
+  { latex:"\\int \\sqrt{x} \\, dx", sol:"(2/3)x^(3/2)+C", solMostrar:"(2/3)·x^(3/2) + C", categoria:"raiz" },
+  { latex:"\\int \\sqrt[3]{x} \\, dx", sol:"(3/4)x^(4/3)+C", solMostrar:"(3/4)·x^(4/3) + C", categoria:"raiz" },
+  { latex:"\\int 2\\sqrt{x} \\, dx", sol:"(4/3)x^(3/2)+C", solMostrar:"(4/3)·x^(3/2) + C", categoria:"raiz" },
+  { latex:"\\int \\frac{1}{\\sqrt{x}} \\, dx", sol:"2sqrt(x)+C", solMostrar:"2√x + C", categoria:"raiz" },
+  { latex:"\\int x^{3/2} \\, dx", sol:"(2/5)x^(5/2)+C", solMostrar:"(2/5)·x^(5/2) + C", categoria:"raiz" },
+  { latex:"\\int 3\\sqrt[4]{x} \\, dx", sol:"(12/5)x^(5/4)+C", solMostrar:"(12/5)·x^(5/4) + C", categoria:"raiz" },
+  { latex:"\\int (\\sqrt{x} + \\frac{1}{\\sqrt{x}}) \\, dx", sol:"(2/3)x^(3/2)+2sqrt(x)+C", solMostrar:"(2/3)·x^(3/2) + 2√x + C", categoria:"raiz" },
+
+  // ===== EXPONENCIALES =====
+  { latex:"\\int e^x \\, dx", sol:"e^x+C", solMostrar:"eˣ + C", categoria:"exponencial" },
+  { latex:"\\int 3e^x \\, dx", sol:"3e^x+C", solMostrar:"3eˣ + C", categoria:"exponencial" },
+  { latex:"\\int (e^x + x^2) \\, dx", sol:"e^x+x^3/3+C", solMostrar:"eˣ + x³/3 + C", categoria:"exponencial" },
+  { latex:"\\int 2^x \\, dx", sol:"2^x/ln(2)+C", solMostrar:"2ˣ/ln 2 + C", categoria:"exponencial" },
+  { latex:"\\int 5^x \\, dx", sol:"5^x/ln(5)+C", solMostrar:"5ˣ/ln 5 + C", categoria:"exponencial" },
+  { latex:"\\int (e^x - 4) \\, dx", sol:"e^x-4x+C", solMostrar:"eˣ − 4x + C", categoria:"exponencial" },
+  { latex:"\\int 4e^x \\, dx", sol:"4e^x+C", solMostrar:"4eˣ + C", categoria:"exponencial" },
+  { latex:"\\int (3e^x + 2^x) \\, dx", sol:"3e^x+2^x/ln(2)+C", solMostrar:"3eˣ + 2ˣ/ln 2 + C", categoria:"exponencial" },
+
+  // ===== LOGARITMOS =====
+  { latex:"\\int \\frac{1}{x} \\, dx", sol:"ln|x|+C", solMostrar:"ln|x| + C", categoria:"logaritmo" },
+  { latex:"\\int \\frac{3}{x} \\, dx", sol:"3ln|x|+C", solMostrar:"3·ln|x| + C", categoria:"logaritmo" },
+  { latex:"\\int \\left(\\frac{1}{x} + 2x\\right) \\, dx", sol:"ln|x|+x^2+C", solMostrar:"ln|x| + x² + C", categoria:"logaritmo" },
+  { latex:"\\int \\frac{5}{x} \\, dx", sol:"5ln|x|+C", solMostrar:"5·ln|x| + C", categoria:"logaritmo" },
+  { latex:"\\int \\left(\\frac{2}{x} - e^x\\right) \\, dx", sol:"2ln|x|-e^x+C", solMostrar:"2·ln|x| − eˣ + C", categoria:"logaritmo" },
+  { latex:"\\int \\left(\\frac{4}{x} + 3x^2\\right) \\, dx", sol:"4ln|x|+x^3+C", solMostrar:"4·ln|x| + x³ + C", categoria:"logaritmo" },
+
+  // ===== SENO Y COSENO =====
+  { latex:"\\int \\sin x \\, dx", sol:"-cos(x)+C", solMostrar:"−cos x + C", categoria:"sencos" },
+  { latex:"\\int \\cos x \\, dx", sol:"sin(x)+C", solMostrar:"sin x + C", categoria:"sencos" },
+  { latex:"\\int 3\\sin x \\, dx", sol:"-3cos(x)+C", solMostrar:"−3·cos x + C", categoria:"sencos" },
+  { latex:"\\int 5\\cos x \\, dx", sol:"5sin(x)+C", solMostrar:"5·sin x + C", categoria:"sencos" },
+  { latex:"\\int (\\sin x + \\cos x) \\, dx", sol:"-cos(x)+sin(x)+C", solMostrar:"−cos x + sin x + C", categoria:"sencos" },
+  { latex:"\\int (2\\sin x - 3\\cos x) \\, dx", sol:"-2cos(x)-3sin(x)+C", solMostrar:"−2·cos x − 3·sin x + C", categoria:"sencos" },
+  { latex:"\\int (\\cos x - \\sin x) \\, dx", sol:"sin(x)+cos(x)+C", solMostrar:"sin x + cos x + C", categoria:"sencos" },
+  { latex:"\\int (\\sin x + e^x) \\, dx", sol:"-cos(x)+e^x+C", solMostrar:"−cos x + eˣ + C", categoria:"sencos" },
+  { latex:"\\int (4\\cos x - 2\\sin x) \\, dx", sol:"4sin(x)+2cos(x)+C", solMostrar:"4·sin x + 2·cos x + C", categoria:"sencos" }
+];
+
+const LABELS = {
+  polinomio:   "Polinomio / Potencia",
+  raiz:        "Raíz",
+  exponencial: "Exponencial",
+  logaritmo:   "Logaritmo (1/x)",
+  sencos:      "Seno / Coseno"
+};
+
+function generarTanda() {
+  const bloques = [
+    BANCO.filter(l=>l.categoria==="polinomio"),
+    BANCO.filter(l=>l.categoria==="raiz"),
+    BANCO.filter(l=>l.categoria==="exponencial"),
+    BANCO.filter(l=>l.categoria==="logaritmo"),
+    BANCO.filter(l=>l.categoria==="sencos")
+  ];
+  let tanda = bloques.map(b => b[Math.floor(Math.random()*b.length)]);
+  for(let i=tanda.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[tanda[i],tanda[j]]=[tanda[j],tanda[i]];}
+  return tanda;
+}
+
+// ========== NORMALIZACIÓN MEJORADA ==========
+function normalizarExpresion(s) {
+  let limpio = s.trim().toLowerCase()
+    .replace(/\s+/g, '')
+    .replace(/·/g, '*')
+    .replace(/×/g, '*')
+    .replace(/−/g, '-')
+    .replace(/sen/g, 'sin')
+    .replace(/cosx/g, 'cos(x)')
+    .replace(/sinx/g, 'sin(x)')
+    .replace(/\\?cdot/g, '*')
+    .replace(/\\/g, '')
+    .replace(/\|/g, '')
+    .replace(/ln\(x\)/g, 'lnx')
+    .replace(/ln\|x\|/g, 'lnx')
+    .replace(/lnx/g, 'ln|x|');
+  
+  limpio = limpio.replace(/\^\{([^}]+)\}/g, '^($1)');
+  limpio = limpio.replace(/\^\(([^)]+)\)/g, '^($1)');
+  limpio = limpio.replace(/\((\d+)\/(\d+)\)([a-z\(])/g, '($1/$2)*$3');
+  limpio = limpio.replace(/(\d+)\/(\d+)([a-z\(])/g, '($1/$2)*$3');
+  // Fracción "colgando" al final de un término (p.ej. "3x^(4/3)/4" == "(3/4)x^(4/3)")
+  limpio = limpio.replace(/(^|[+\-])(\d+)?([a-z](?:\^\([^)]+\))?)\/(\d+)(?=[+\-]|$)/g,
+    (m, sign, coeff, varexp, denom) => `${sign}(${coeff||'1'}/${denom})*${varexp}`);
+  limpio = limpio.replace(/ln\(x\)/g, 'ln|x|');
+  
+  return limpio;
+}
+
+function extraerTerminos(expr) {
+  let sinC = expr.replace(/\+c$/, '').replace(/\+C$/, '');
+  const terminos = [];
+  let actual = '';
+  let signo = '+';
+  
+  for(let i = 0; i < sinC.length; i++) {
+    const c = sinC[i];
+    if((c === '+' || c === '-') && i > 0) {
+      if(actual) terminos.push(signo + actual);
+      actual = '';
+      signo = c;
+    } else {
+      actual += c;
+    }
+  }
+  if(actual) terminos.push(signo + actual);
+  
+  return terminos.map(t => {
+    let term = t.replace(/^\+/, '');
+    term = term.replace(/(\d+)\*([a-z\(])/g, '$1$2');
+    term = term.replace(/\((\d+\/\d+)\)\*/g, '$1');
+    return term;
+  }).sort();
+}
+
+function sonEquivalentes(respuesta, solucion) {
+  const respNorm = normalizarExpresion(respuesta);
+  const solNorm = normalizarExpresion(solucion);
+  
+  if(respNorm === solNorm) return true;
+  
+  const respTerminos = extraerTerminos(respNorm);
+  const solTerminos = extraerTerminos(solNorm);
+  
+  if(respTerminos.length === solTerminos.length) {
+    const respSorted = respTerminos.join('§');
+    const solSorted = solTerminos.join('§');
+    if(respSorted === solSorted) return true;
+  }
+  
+  if(respNorm.includes('/ln') && solNorm.includes('/ln')) {
+    const respSinParent = respNorm.replace(/ln\((\d+)\)/g, 'ln$1');
+    const solSinParent = solNorm.replace(/ln\((\d+)\)/g, 'ln$1');
+    if(respSinParent === solSinParent) return true;
+  }
+  
+  if(respNorm.replace(/ln\|x\|/g, 'lnx') === solNorm.replace(/ln\|x\|/g, 'lnx')) return true;
+  
+  return false;
+}
+
+let currentInts=[], stepState={}, totalPoints=0, startTime=Date.now();
+const STEP_POINTS=2;
+const DEDUCCION_POR_FALLO=0.75;
+
+// Función para formatear tiempo en HH:MM (redondeado siempre hacia arriba)
+function formatearTiempoHHMM(segundos) {
+  const totalMinutos = Math.ceil(segundos / 60);
+  const horas = Math.floor(totalMinutos / 60);
+  const minutos = totalMinutos % 60;
+  return `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}`;
+}
+
+function renderMath(){ if(window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise().catch(()=>{}); }
+
+// Potencial máximo que todavía puede obtener este ejercicio si se acierta ahora mismo
+function potencialRestante(st){
+  return Math.max(0, +(STEP_POINTS - st.failCount*DEDUCCION_POR_FALLO).toFixed(2));
+}
+
+function updateStepInfo(i){
+  const el=document.getElementById(`info_${i}`);
+  if(!el)return;
+  const st=stepState[i];
+  if(st.closed && st.earned>0){el.innerHTML=`(${st.earned.toFixed(2)} pts ✓)`;el.className='puntaje-info ganado';}
+  else if(st.closed){el.innerHTML='(0 pts - agotado)';el.className='puntaje-info perdido';}
+  else{el.innerHTML=`(${potencialRestante(st).toFixed(2)} pts disponibles)`;el.className='puntaje-info';}
+}
+
+function updateTotalPoints(){
+  totalPoints=0;
+  for(let i=0;i<currentInts.length;i++) if(stepState[i]&&stepState[i].closed) totalPoints+=stepState[i].earned;
+  totalPoints=+totalPoints.toFixed(2);
+  document.getElementById('s-pts').innerText=totalPoints.toFixed(2);
+  const ok=Object.values(stepState).filter(s=>s.closed && s.earned>0).length;
+  document.getElementById('barra').style.width=`${(ok/currentInts.length)*100}%`;
+  document.getElementById('prog-label').innerHTML=`Integrales superadas: ${ok}/${currentInts.length} | Puntos: ${totalPoints.toFixed(2)}/10`;
+}
+
+function checkStep(idx){
+  const d=currentInts[idx];
+  const st=stepState[idx];
+  const fb=document.getElementById(`fb_${idx}`);
+  const paso=document.getElementById(`paso_${idx}`);
+
+  if(st.closed){
+    if(st.earned>0){
+      fb.innerHTML=`🔒 Este ejercicio ya está superado (+${st.earned.toFixed(2)} pts). No admite más intentos.`;
+      fb.className='fb ok';
+    }else{
+      fb.innerHTML=`🔒 Este ejercicio está cerrado: agotaste los ${STEP_POINTS} pts disponibles tras varios fallos distintos.`;
+      fb.className='fb fail';
+    }
+    return;
+  }
+
+  const raw=document.getElementById(`resp_${idx}`).value;
+  if(!raw.trim()){
+    fb.innerHTML='❌ Introduce una respuesta (recuerda +C).';fb.className='fb fail';return;
+  }
+
+  const ok = sonEquivalentes(raw, d.sol);
+
+  if(ok){
+    st.earned=potencialRestante(st);
+    st.closed=true;
+    fb.innerHTML=`✅ ¡Correcto! (+${st.earned.toFixed(2)} pts) La integral es <strong>${d.solMostrar}</strong>.`;
+    fb.className='fb ok';paso.classList.add('ok');paso.classList.remove('fail');
+  }else{
+    const norm=normalizarExpresion(raw);
+    const yaProbada=st.wrongSet.has(norm);
+    if(!yaProbada){ st.wrongSet.add(norm); st.failCount++; }
+    const restante=potencialRestante(st);
+    if(restante<=0){
+      st.closed=true; st.earned=0;
+      fb.innerHTML=`❌ Incorrecto. Has agotado los ${STEP_POINTS} pts de este ejercicio (-${DEDUCCION_POR_FALLO} pts por cada fallo distinto). La integral correcta era <strong>${d.solMostrar}</strong>.`;
+    }else{
+      const nota = yaProbada ? ' (ya habías probado esta misma respuesta antes; no se descuenta de nuevo)' : '';
+      fb.innerHTML=`❌ Incorrecto. Tu respuesta: "${raw}".${nota} Te quedan <strong>${restante.toFixed(2)} pts</strong> disponibles en este ejercicio si aciertas ahora.`;
+    }
+    fb.className='fb fail';paso.classList.add('fail');paso.classList.remove('ok');
+  }
+  updateStepInfo(idx);updateTotalPoints();
+}
+
+function renderizarIntegrales(){
+  const container=document.getElementById('pasosContainer');
+  container.innerHTML='';stepState={};
+  currentInts.forEach((d,idx)=>{
+    stepState[idx]={failCount:0,wrongSet:new Set(),closed:false,earned:0};
+    const div=document.createElement('div');
+    div.className='paso';div.id=`paso_${idx}`;
+    div.innerHTML=`
+      <div class="paso-head">
+        <div class="paso-titulo">
+          📌 Integral ${idx+1}
+          <span class="tipo-badge">${LABELS[d.categoria]||d.categoria}</span>
+          <span class="puntaje-info" id="info_${idx}">(${STEP_POINTS.toFixed(2)} pts disponibles)</span>
+        </div>
+        <button class="btn-check" data-idx="${idx}">✓ Comprobar</button>
+      </div>
+      <div class="limite-visual">
+        <div class="limite-math" id="math_${idx}">\\(${d.latex}\\)</div>
+      </div>
+      <div class="respuesta-area">
+        <label for="resp_${idx}" class="sr-only">Respuesta a la integral ${idx+1}</label>
+        <div class="input-group">
+          <input type="text" id="resp_${idx}" placeholder="Escribe la primitiva (ej: x⁴/4 + C, sin x + C…)" autocomplete="off">
+        </div>
+      </div>
+      <div class="fb" id="fb_${idx}" aria-live="polite"></div>
+    `;
+    container.appendChild(div);
+  });
+  renderMath();
+  document.querySelectorAll('.btn-check').forEach(btn=>{
+    btn.addEventListener('click',()=>checkStep(parseInt(btn.getAttribute('data-idx'))));
+  });
+  for(let i=0;i<5;i++){
+    const inp=document.getElementById(`resp_${i}`);
+    if(inp){
+      inp.value='';
+      inp.addEventListener('keydown',(e)=>{ if(e.key==='Enter'){ e.preventDefault(); checkStep(i); } });
+    }
+  }
+  updateTotalPoints();
+}
+
+function resetAndNew(){
+  startTime=Date.now();
+  currentInts=generarTanda();
+  renderizarIntegrales();
+  document.getElementById('gfb').innerHTML='';
+  totalPoints=0;updateTotalPoints();
+}
+
+function hayProgresoSinGuardar(){
+  return Object.values(stepState).some(st=>st.failCount>0 || st.closed);
+}
+
+function pedirNuevaTanda(){
+  if(!hayProgresoSinGuardar()){ resetAndNew(); return; }
+  document.getElementById('confirmPtsActual').innerText=totalPoints.toFixed(2);
+  document.getElementById('overlayConfirm').classList.add('show');
+}
+
+function finalizar(){
+  const nombre=document.getElementById('nomAlumno').value.trim();
+  if(!nombre){
+    const inp=document.getElementById('nomAlumno');
+    inp.style.border='2px solid #c62828';inp.placeholder='⚠️ Introduce tu nombre';inp.focus();
+    setTimeout(()=>{inp.style.border='1.5px solid var(--crema3)';inp.placeholder='Escribe tu nombre…';},2000);
+    return;
+  }
+  const now=new Date();
+  const elapsed=Math.floor((Date.now()-startTime)/1000);
+  const tiempoFormateado = formatearTiempoHHMM(elapsed);
+  const ok=Object.values(stepState).filter(s=>s.closed && s.earned>0).length;
+  
+  document.getElementById('m-alumno').innerHTML=nombre;
+  document.getElementById('m-nota').innerHTML=`${totalPoints.toFixed(2)} / 10`;
+  document.getElementById('m-meta').innerHTML=
+    `📅 ${now.toLocaleDateString('es-ES')} &nbsp;🕐 ${now.toTimeString().slice(0,8)}<br>`+
+    `⏱ Tiempo empleado: <strong>${tiempoFormateado}</strong> horas:min<br>`+
+    `✅ Integrales superadas: ${ok}/${currentInts.length}<br>`+
+    `🎯 Puntos obtenidos: ${totalPoints.toFixed(2)}/10`;
+  
+  const nota=totalPoints;
+  let bg,textColor='white',titulo;
+  if(nota>=10){bg='#1a7a1a';titulo='🏆 ¡Excelente!';}
+  else if(nota>=9){bg='#6dbf6d';titulo='🌟 Muy bien';}
+  else if(nota>=8){bg='#1a4f8a';titulo='Notable';}
+  else if(nota>=7){bg='#5b9bd5';titulo='Bien';}
+  else if(nota>=6){bg='#c05c00';titulo='Suficiente';}
+  else if(nota>=5){bg='#f5a623';textColor='black';titulo='Mejorable';}
+  else{bg='#c0392b';titulo='Sigue practicando';}
+  
+  const m=document.getElementById('modal');
+  m.style.backgroundColor=bg;m.style.color=textColor;
+  document.getElementById('m-titulo').innerText=titulo;
+  document.querySelector('.btn-cerrar').style.color=textColor;
+  document.getElementById('overlay').classList.add('show');
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  currentInts=generarTanda();
+  renderizarIntegrales();
+  document.getElementById('newExerciseBtn').addEventListener('click',pedirNuevaTanda);
+  document.getElementById('finalizarBtn').addEventListener('click',finalizar);
+  document.getElementById('closeModalBtn').addEventListener('click',()=>document.getElementById('overlay').classList.remove('show'));
+  document.getElementById('cancelResetBtn').addEventListener('click',()=>document.getElementById('overlayConfirm').classList.remove('show'));
+  document.getElementById('confirmResetBtn').addEventListener('click',()=>{
+    document.getElementById('overlayConfirm').classList.remove('show');
+    resetAndNew();
+  });
+});
+</script>
+</body>
+</html>
