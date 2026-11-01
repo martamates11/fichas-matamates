@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ecuaciones de tercer grado: método de Ruffini</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap');
+
+:root {
+  --color-fondo: #F5F0E8;
+  --color-fondo-card: #FDFAF3;
+  --color-texto: #2C1F0E;
+  --color-texto-suave: #6B4F35;
+  --color-acento: #A0522D;
+  --color-acento-hover: #7B3B1E;
+  --color-borde: #C9A96E;
+  --color-borde-suave: #E0CEAA;
+  --color-cabecera: #3B2510;
+  --color-cabecera-txt: #F5EDD8;
+  --color-correcto: #2E6B3E;
+  --color-incorrecto: #8B1A1A;
+  --color-neutro: #E8DFC8;
+  --color-dorado: #C9A96E;
+  --color-dorado-texto: #3B2510;
+  --color-raiz: #2C6E8E;
+  --color-barra-alumno: #EFE6CE;
+}
+
+* { box-sizing: border-box; }
+
+body, .ficha {
+  font-family: 'Lato', sans-serif;
+  font-size: 16px;
+  color: var(--color-texto);
+  background-color: var(--color-fondo);
+  margin: 0;
+}
+
+h1, h2, h3, .titulo-ficha { font-family: 'Libre Baskerville', serif; color: var(--color-texto); }
+
+.cabecera {
+  background-color: var(--color-cabecera);
+  color: var(--color-cabecera-txt);
+  font-family: 'Libre Baskerville', serif;
+  text-align: center;
+  padding: 12px 20px;
+  border-bottom: 3px solid var(--color-borde);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+}
+
+.ficha-container {
+  max-width: 760px;
+  margin: 28px auto;
+  background: var(--color-fondo-card);
+  border: 2px solid var(--color-borde);
+  border-radius: 6px;
+  box-shadow: 0 3px 12px rgba(44, 31, 14, 0.15);
+  padding: 32px 36px 40px;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+.ficha-container.nota-maxima {
+  background: #EFF8F0;
+  border-color: var(--color-correcto);
+}
+
+.header-ficha {
+  border-bottom: 2px solid var(--color-borde);
+  padding-bottom: 16px;
+  margin-bottom: 20px;
+}
+.titulo-ficha {
+  font-size: 1.5rem;
+  text-align: center;
+  margin: 0 0 6px;
+}
+.titulo-ficha::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 3px;
+  background: var(--color-borde);
+  margin: 8px auto 0;
+  border-radius: 2px;
+}
+.subtitulo { text-align: center; color: var(--color-texto-suave); font-size: 0.9rem; margin-bottom: 10px; }
+.instrucciones-modelo {
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--color-texto-suave);
+  margin: 0 0 16px;
+  line-height: 1.5;
+}
+
+.barra-alumno {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--color-barra-alumno);
+  border: 1.5px solid var(--color-borde);
+  border-radius: 6px;
+  padding: 10px 16px;
+  margin-bottom: 6px;
+}
+.fila-header-datos {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.bloque-nombre { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.bloque-nombre label { font-size: 0.9rem; color: var(--color-texto-suave); white-space: nowrap; }
+.bloque-nombre input { width: 150px; min-width: 0; }
+
+.marcador {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 0.95rem;
+  color: var(--color-texto-suave);
+  text-align: right;
+  white-space: nowrap;
+}
+.marcador span { color: var(--color-acento); font-weight: 700; }
+
+.aviso-nombre-ausente {
+  display: none;
+  font-size: 0.82rem;
+  color: var(--color-incorrecto);
+  margin-top: 6px;
+}
+.aviso-nombre-ausente.mostrar { display: block; }
+
+.fila-acciones-ronda {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 14px;
+}
+
+.aviso-ficha-completada {
+  background: #EAF4EC;
+  border: 1.5px solid var(--color-correcto);
+  border-radius: 6px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  text-align: center;
+  color: var(--color-correcto);
+  font-size: 0.9rem;
+}
+
+.ejercicio-card {
+  background: var(--color-fondo);
+  border: 1.5px solid var(--color-borde-suave);
+  border-left: 4px solid var(--color-borde);
+  border-radius: 4px;
+  padding: 20px 24px;
+  margin-bottom: 18px;
+}
+.ejercicio-card.resuelto { border-left-color: var(--color-correcto); }
+.ejercicio-card.con-error { border-left-color: var(--color-incorrecto); }
+.ejercicio-card.superado { border: 1.5px solid var(--color-correcto); border-left: 4px solid var(--color-correcto); background: #F3FAF4; }
+
+.etiqueta-superado {
+  display: inline-block;
+  background: var(--color-correcto);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  padding: 2px 9px;
+  border-radius: 10px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+.paso-titulo { font-family: 'Libre Baskerville', serif; font-size: 1.02rem; margin: 0 0 12px; }
+.paso-numero {
+  display: inline-block; background: var(--color-acento); color: #FDFAF3;
+  width: 22px; height: 22px; border-radius: 50%; text-align: center; line-height: 22px;
+  font-size: 0.85rem; margin-right: 8px;
+}
+.ejercicio-card.superado .paso-numero { background: var(--color-correcto); }
+
+.polinomio { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 14px 0; font-size: 1.25rem; font-family: 'Libre Baskerville', serif; flex-wrap: wrap; }
+
+.feedback { border-radius: 4px; padding: 9px 14px; margin-top: 10px; font-size: 0.9rem; display: none; }
+.feedback.mostrar { display: block; }
+.feedback-correcto { background-color: #EAF4EC; border: 1.5px solid var(--color-correcto); color: var(--color-correcto); font-weight: 700; }
+.feedback-incorrecto { background-color: #F9EAEA; border: 1.5px solid var(--color-incorrecto); color: var(--color-incorrecto); }
+.feedback-formato { background-color: var(--color-neutro); border: 1.5px solid var(--color-borde); color: var(--color-texto-suave); }
+
+.fila-input { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 10px; }
+label.etiqueta-campo { font-size: 0.9rem; color: var(--color-texto-suave); }
+input[type="text"], input[type="number"] {
+  background-color: var(--color-fondo-card); border: 1.5px solid var(--color-borde); border-radius: 4px;
+  padding: 8px 12px; font-family: 'Lato', sans-serif; font-size: 1rem; color: var(--color-texto); outline: none;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+input[type="text"]:focus, input[type="number"]:focus { border-color: var(--color-acento); }
+input[type="number"] { width: 90px; }
+input[type="text"] { width: 190px; }
+input.correcta { background-color: #EAF4EC; border-color: var(--color-correcto); }
+input.incorrecta { background-color: #F9EAEA; border-color: var(--color-incorrecto); }
+input:disabled { opacity: 1; }
+
+.btn-primario, .btn-secundario, .btn-finalizar {
+  border-radius: 4px; font-family: 'Lato', sans-serif; font-size: 0.95rem; font-weight: 700; cursor: pointer;
+  letter-spacing: 0.03em; padding: 10px 22px; transition: background-color 0.2s ease, border-color 0.2s, color 0.2s;
+}
+.btn-primario { background-color: var(--color-acento); color: #FDFAF3; border: none; }
+.btn-primario:hover { background-color: var(--color-acento-hover); }
+.btn-primario:disabled { background-color: var(--color-neutro); color: var(--color-texto-suave); cursor: not-allowed; }
+.btn-secundario { background-color: transparent; color: var(--color-acento); border: 2px solid var(--color-borde); padding: 9px 20px; }
+.btn-secundario:hover { border-color: var(--color-acento); color: var(--color-acento-hover); }
+.btn-finalizar {
+  background-color: var(--color-cabecera); color: var(--color-cabecera-txt); border: 2px solid var(--color-borde);
+  font-family: 'Libre Baskerville', serif; padding: 10px 24px; letter-spacing: 0.04em; display: block; margin: 26px auto 0;
+}
+.btn-finalizar:hover { background-color: #2C1A0A; }
+
+.btn-simbolo {
+  background-color: var(--color-fondo-card);
+  color: var(--color-acento);
+  border: 1.5px solid var(--color-borde);
+  border-radius: 4px;
+  font-family: 'Libre Baskerville', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 8px 12px;
+  min-width: 42px;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+.btn-simbolo:hover {
+  background-color: var(--color-neutro);
+  border-color: var(--color-acento);
+  color: var(--color-acento-hover);
+}
+
+.tabla-ruffini-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.tabla-ruffini {
+  margin: 24px auto;
+  border-collapse: collapse;
+  font-family: 'Libre Baskerville', serif;
+  font-size: 1.05rem;
+}
+.tabla-ruffini td {
+  padding: 6px 12px;
+  text-align: center;
+  min-width: 52px;
+  height: 46px;
+  vertical-align: middle;
+}
+.tabla-ruffini td.col-raiz-abajo {
+  border-right: 3px solid var(--color-acento);
+  padding-right: 18px;
+  vertical-align: middle;
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background-color: var(--color-fondo);
+  box-shadow: 2px 0 4px rgba(44, 31, 14, 0.08);
+}
+.ejercicio-card.superado .tabla-ruffini td.col-raiz-abajo {
+  background-color: #F3FAF4;
+}
+.tabla-ruffini tr.fila-productos td {
+  border-bottom: 2.5px solid var(--color-acento);
+  padding-bottom: 10px;
+}
+.tabla-ruffini input {
+  width: 56px; text-align: center; font-family: 'Libre Baskerville', serif;
+  font-size: 1rem; padding: 6px 6px; border: 1.5px solid var(--color-borde);
+  border-radius: 3px; background: var(--color-fondo-card); color: var(--color-texto);
+}
+.tabla-ruffini input.correcta { background-color: #EAF4EC; border-color: var(--color-correcto); }
+.tabla-ruffini input.incorrecta { background-color: #F9EAEA; border-color: var(--color-incorrecto); }
+.tabla-ruffini input.input-raiz {
+  width: 72px;
+  border-color: var(--color-acento);
+  color: var(--color-raiz);
+  font-weight: 700;
+}
+.tabla-ruffini .etiqueta-peq {
+  font-size: 0.72rem;
+  color: var(--color-texto-suave);
+  font-family: 'Lato', sans-serif;
+  display: block;
+  margin-top: 2px;
+}
+.tabla-ruffini .celda-vacia-prod {
+  background: transparent;
+}
+
+.pregunta-final {
+  background: var(--color-fondo-card);
+  border: 1.5px solid var(--color-borde);
+  border-radius: 4px;
+  padding: 14px 18px;
+  margin-top: 18px;
+  text-align: center;
+}
+.pregunta-final .texto-pregunta {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 1.02rem;
+  margin-bottom: 10px;
+}
+.pregunta-final .botones-respuesta {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.aviso-puntuacion {
+  background: #FDF5E0;
+  border: 2px solid var(--color-acento);
+  border-radius: 6px;
+  padding: 22px 26px;
+  margin-top: 24px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(44, 31, 14, 0.12);
+}
+.aviso-puntuacion .titulo-aviso {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 1.15rem;
+  color: var(--color-acento);
+  margin: 0 0 10px;
+}
+.aviso-puntuacion .raices-reveladas {
+  font-size: 1.15rem;
+  text-align: center;
+  font-family: 'Libre Baskerville', serif;
+  color: var(--color-acento);
+  margin: 6px 0 14px;
+}
+.aviso-puntuacion .detalle-aviso {
+  font-size: 0.9rem;
+  color: var(--color-texto-suave);
+  margin-bottom: 16px;
+}
+.aviso-puntuacion .botones-aviso {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.overlay { position: fixed; inset: 0; background: rgba(44, 31, 14, 0.55); display: flex; align-items: center; justify-content: center; z-index: 50; padding: 16px; }
+.overlay.oculto { display: none; }
+.modal-calificacion {
+  border: 3px solid var(--color-borde); border-radius: 8px; font-family: 'Libre Baskerville', serif;
+  box-shadow: 0 6px 24px rgba(44, 31, 14, 0.35); padding: 32px 36px; min-width: 320px; max-width: 90vw;
+  text-align: center; background: var(--color-fondo-card); color: var(--color-texto);
+}
+.modal-calificacion .titulo-ficha-modal { font-size: 1.15rem; margin: 0 0 2px; color: inherit; }
+.modal-calificacion .subtitulo-modal { font-size: 0.85rem; font-family: 'Lato', sans-serif; opacity: 0.85; margin: 0 0 14px; color: inherit; }
+.modal-calificacion .separador-modal { border: none; border-top: 1.5px solid currentColor; opacity: 0.35; margin: 0 0 14px; }
+.modal-calificacion .encabezado-informe { font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.85; margin: 0 0 6px; color: inherit; }
+.modal-calificacion #modalAlumno { color: inherit; margin: 0 0 4px; }
+.modal-calificacion .nota-grande { font-size: 2.6rem; font-weight: 700; margin: 10px 0; color: inherit; }
+.modal-calificacion table { width: 100%; margin-top: 16px; border-collapse: collapse; font-family: 'Lato', sans-serif; font-size: 0.85rem; color: inherit; }
+.modal-calificacion th, .modal-calificacion td { border-bottom: 1px solid rgba(255,255,255,0.3); padding: 5px 6px; text-align: left; color: inherit; }
+.modal-calificacion .meta { font-family: 'Lato', sans-serif; font-size: 0.85rem; margin-top: 6px; color: inherit; }
+.modal-calificacion .cerrar-modal {
+  margin-top: 20px;
+  background-color: rgba(255,255,255,0.92);
+  color: #2C1F0E;
+  border: 2px solid rgba(255,255,255,0.6);
+}
+.modal-calificacion .cerrar-modal:hover { background-color: #fff; border-color: #fff; color: #000; }
+
+.modal-confirmacion {
+  border: 2px solid var(--color-borde); border-radius: 8px; background: var(--color-fondo-card);
+  padding: 26px 30px; max-width: 380px; text-align: center; box-shadow: 0 6px 24px rgba(44, 31, 14, 0.35);
+}
+.modal-confirmacion p { margin: 0 0 18px; font-size: 0.95rem; color: var(--color-texto); }
+.modal-confirmacion .botones-confirmacion { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+@media (max-width: 480px) {
+  .ficha-container { padding: 20px 16px; margin: 12px; }
+  .polinomio { font-size: 1.05rem; gap: 6px; }
+  .fila-header-datos { gap: 6px; }
+  .bloque-nombre input { width: 90px; padding: 6px 8px; }
+  .bloque-nombre label { font-size: 0.78rem; }
+  .marcador { font-size: 0.78rem; }
+  .tabla-ruffini td { padding: 4px 6px; min-width: 40px; height: 40px; }
+  .tabla-ruffini input { width: 44px; }
+  .tabla-ruffini input.input-raiz { width: 56px; }
+}
+</style>
+</head>
+<body>
+
+<div class="cabecera">Material elaborado por Marta L Letona S. Basado en el trabajo de Javier Cayetano</div>
+
+<div class="ficha-container" id="fichaContainer">
+
+  <div class="header-ficha">
+    <h1 class="titulo-ficha">Ecuaciones de tercer grado: método de Ruffini</h1>
+    <p class="subtitulo">Nivel inicial · Ecuaciones de tercer grado</p>
+    <p class="instrucciones-modelo">
+      Cada ecuación tiene 4 apartados: candidatas, tabla de Ruffini, cociente y raíces del cociente.
+      Un apartado se supera con 2 aciertos de los últimos 3 intentos; al superarse, vale 2,5 puntos y se cierra.
+      Cada fallo en un apartado todavía abierto resta 0,5 puntos. Puedes practicar con tantas ecuaciones como quieras.
+    </p>
+
+    <div class="barra-alumno">
+      <div class="fila-header-datos">
+        <div class="bloque-nombre">
+          <label for="inputNombre">Nombre:</label>
+          <input type="text" id="inputNombre" autocomplete="off">
+        </div>
+        <div class="marcador" aria-live="polite">
+          Nota: <span id="marcadorNota">0</span>/10 &nbsp;·&nbsp;
+          Apartados superados: <span id="marcadorSuperados">0</span>/4
+        </div>
+      </div>
+      <p class="aviso-nombre-ausente" id="avisoNombreAusente">Escribe tu nombre antes de corregir el primer ejercicio.</p>
+    </div>
+  </div>
+
+  <div class="fila-acciones-ronda">
+    <button class="btn-secundario" id="btnCambiarEcuacion" type="button">Cambiar de ecuación</button>
+  </div>
+
+  <div id="avisoFichaCompletada" class="aviso-ficha-completada" style="display:none;"></div>
+
+  <div id="contenedorPasos"></div>
+
+  <button class="btn-finalizar" id="btnFinalizar">Finalizar y calificar</button>
+</div>
+
+<div class="overlay oculto" id="overlayConfirmacion">
+  <div class="modal-confirmacion">
+    <p>Ya has registrado algún intento con esta ecuación. Si cambias, ese progreso de esta ronda concreta se pierde (los apartados ya superados no se ven afectados). ¿Quieres continuar?</p>
+    <div class="botones-confirmacion">
+      <button class="btn-primario" id="btnConfirmarCambio">Sí, cambiar</button>
+      <button class="btn-secundario" id="btnCancelarCambio">No, seguir aquí</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay oculto" id="overlayCalificacion">
+  <div class="modal-calificacion" id="modalCalificacion">
+    <p class="titulo-ficha-modal" id="modalTituloFicha"></p>
+    <p class="subtitulo-modal" id="modalSubtituloFicha"></p>
+    <hr class="separador-modal">
+    <p class="encabezado-informe">Informe de la actividad</p>
+    <h2 id="modalAlumno"></h2>
+    <div class="nota-grande" id="modalNota"></div>
+    <div class="meta" id="modalMeta"></div>
+    <table>
+      <thead><tr><th>Apartado</th><th>Superado</th><th>Intentos</th><th>Aciertos</th><th>Fallos</th></tr></thead>
+      <tbody id="modalDesglose"></tbody>
+    </table>
+    <button class="btn-secundario cerrar-modal" id="btnCerrarModal">Seguir practicando</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ================= Utilidades =================
+
+  function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+  function polinomioTexto(a, b, c, d) {
+    const partes = [];
+    const push = (coef, grado) => {
+      if (coef === 0) return;
+      const abs = Math.abs(coef);
+      let cuerpo = "";
+      if (grado === 0) cuerpo = String(abs);
+      else {
+        cuerpo = (abs === 1 ? "" : String(abs)) + "x";
+        if (grado === 2) cuerpo += "²";
+        if (grado === 3) cuerpo += "³";
+      }
+      partes.push({ coef, cuerpo });
+    };
+    push(a, 3); push(b, 2); push(c, 1); push(d, 0);
+    if (partes.length === 0) return "0";
+    let out = "";
+    partes.forEach((p, i) => {
+      if (i === 0) out += (p.coef < 0 ? "-" : "") + p.cuerpo;
+      else out += (p.coef < 0 ? " - " : " + ") + p.cuerpo;
+    });
+    return out;
+  }
+
+  function divisores(n) {
+    n = Math.abs(n);
+    if (n === 0) return [];
+    const divs = [];
+    for (let i = 1; i <= Math.sqrt(n); i++) {
+      if (n % i === 0) {
+        divs.push(i);
+        if (i !== n / i) divs.push(n / i);
+      }
+    }
+    return divs.sort((a, b) => a - b);
+  }
+
+  function esDivisor(d, n) { return n !== 0 && d % n === 0; }
+
+  function insertarEnInput(input, texto) {
+    const inicio = input.selectionStart !== null ? input.selectionStart : input.value.length;
+    const fin = input.selectionEnd !== null ? input.selectionEnd : input.value.length;
+    const antes = input.value.slice(0, inicio);
+    const despues = input.value.slice(fin);
+    input.value = antes + texto + despues;
+    const nuevaPos = inicio + texto.length;
+    input.setSelectionRange(nuevaPos, nuevaPos);
+    input.focus();
+  }
+
+  function mismosValores(listaA, listaB) {
+    const a = [...new Set(listaA.map(Number))].filter(Number.isFinite).sort((x, y) => x - y);
+    const b = [...new Set(listaB.map(Number))].filter(Number.isFinite).sort((x, y) => x - y);
+    if (a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i++) {
+      if (Math.abs(a[i] - b[i]) > 1e-9) return false;
+    }
+    return true;
+  }
+
+  function formatearNumero(n) {
+    const r = Math.round(n * 10) / 10;
+    const txt = Number.isInteger(r) ? String(r) : r.toFixed(1);
+    return txt.replace(".", ",");
+  }
+
+  // ================= Parser de candidatas (paso 1) =================
+  // Acepta enteros separados por comas/espacios, "±n" (se expande a n y -n)
+  // y "- n" con espacio entre el signo y la cifra.
+  function parsearCandidatas(raw) {
+    let t = raw.trim();
+    if (t === "") return { estado: "vacio" };
+    t = t.replace(/±\s*(\d+)/g, "$1,-$1");
+    t = t.replace(/([+\-])\s+/g, "$1");
+    const tokens = t.split(/[,;\s]+/).filter(s => s !== "");
+    if (tokens.length === 0) return { estado: "vacio" };
+    const nums = [];
+    let huboInvalido = false;
+    tokens.forEach(tok => {
+      if (/^[+\-]?\d+$/.test(tok)) nums.push(parseInt(tok, 10));
+      else huboInvalido = true;
+    });
+    if (huboInvalido) return { estado: "invalido" };
+    if (nums.length === 0) return { estado: "vacio" };
+    return { estado: "ok", valores: [...new Set(nums)] };
+  }
+
+  // ================= Parser robusto del polinomio de grado 2 (paso 3) =================
+  // Acepta x², x^2 y x2 como término cuadrático; términos omitidos valen 0.
+  function parsearCuadratico(texto) {
+    if (typeof texto !== "string") return null;
+
+    let t = texto.toLowerCase()
+      .replace(/\s+/g, "")
+      .replace(/²/g, "^2")
+      .replace(/³/g, "^3")
+      .replace(/\*/g, "");
+
+    if (t === "") return null;
+
+    t = t.replace(/x\^2/g, "X");
+    t = t.replace(/x2(?!\d)/g, "X");
+    t = t.replace(/xx/g, "X");
+
+    if (!/^[Xx0-9+\-.,]+$/.test(t)) return null;
+
+    if (!/^[+\-]/.test(t)) t = "+" + t;
+
+    const regex = /([+\-])(\d+(?:[.,]\d+)?)?(X|x)?/g;
+    let match;
+    let a = 0, b = 0, c = 0;
+    let reconocidos = 0;
+    let pos = 0;
+
+    while ((match = regex.exec(t)) !== null) {
+      if (match.index !== pos) return null;
+      pos = regex.lastIndex;
+
+      const signo = match[1] === "-" ? -1 : 1;
+      const numTxt = match[2];
+      const tipo = match[3];
+
+      let coef;
+      if (numTxt === undefined || numTxt === "") {
+        coef = 1;
+      } else {
+        coef = parseFloat(numTxt.replace(",", "."));
+        if (!Number.isFinite(coef)) return null;
+      }
+      coef *= signo;
+
+      if (tipo === "X") {
+        a += coef;
+      } else if (tipo === "x") {
+        b += coef;
+      } else {
+        if (numTxt === undefined || numTxt === "") {
+          return null;
+        }
+        c += coef;
+      }
+      reconocidos++;
+    }
+
+    if (reconocidos === 0 || pos !== t.length) return null;
+
+    return [a, b, c];
+  }
+
+  // ================= Generación de la ecuación =================
+  // NOTA: ya no se guarda "raizUsada" ni "otras" en la ecuación: la raíz
+  // que se usa para dividir se decide en cada ronda (paso 2), y las raíces
+  // restantes del paso 4 se calculan a partir de ella (ver raicesRestantes).
+
+  const LIMITE_D = 40;
+
+  function generarEcuacion() {
+    let r1, r2, r3, k, A, B, C, D;
+    let intentos = 0;
+    do {
+      intentos++;
+      do { r1 = randInt(-5, 5); } while (r1 === 0);
+      do { r2 = randInt(-5, 5); } while (r2 === 0);
+      do { r3 = randInt(-5, 5); } while (r3 === 0);
+
+      const r = Math.random();
+      k = r < 0.6 ? 1 : (r < 0.85 ? 2 : 3);
+
+      const s2 = r2 + r3, p2 = r2 * r3;
+      A = k;
+      B = k * (-(s2 + r1));
+      C = k * (p2 + s2 * r1);
+      D = k * (-p2 * r1);
+    } while (
+      intentos < 500 &&
+      (r1 === r2 || r1 === r3 || r2 === r3 || D === 0 || Math.abs(D) >= LIMITE_D)
+    );
+
+    if (Math.abs(D) >= LIMITE_D || D === 0) {
+      return generarEcuacionConRangoMenor();
+    }
+
+    const raices = [r1, r2, r3].sort((x, y) => x - y);
+    return { A, B, C, D, raices };
+  }
+
+  function generarEcuacionConRangoMenor() {
+    let r1, r2, r3, k, A, B, C, D;
+    do {
+      do { r1 = randInt(-3, 3); } while (r1 === 0);
+      do { r2 = randInt(-3, 3); } while (r2 === 0);
+      do { r3 = randInt(-3, 3); } while (r3 === 0);
+      k = Math.random() < 0.7 ? 1 : 2;
+      const s2 = r2 + r3, p2 = r2 * r3;
+      A = k;
+      B = k * (-(s2 + r1));
+      C = k * (p2 + s2 * r1);
+      D = k * (-p2 * r1);
+    } while (r1 === r2 || r1 === r3 || r2 === r3 || D === 0 || Math.abs(D) >= LIMITE_D);
+
+    const raices = [r1, r2, r3].sort((x, y) => x - y);
+    return { A, B, C, D, raices };
+  }
+
+  // FIX del bug crítico: las raíces del cociente son TODAS las de la
+  // ecuación menos la que se usó para dividir (antes se asumía, mal, que
+  // siempre era la menor).
+  function raicesRestantes(ec, raizUsada) {
+    const restantes = ec.raices.slice();
+    const idx = restantes.indexOf(raizUsada);
+    if (idx !== -1) restantes.splice(idx, 1);
+    return restantes;
+  }
+
+  function calcularRuffini(A, B, C, D, raiz) {
+    const s = [A, 0, 0, 0];
+    s[1] = s[0] * raiz + B;
+    s[2] = s[1] * raiz + C;
+    s[3] = s[2] * raiz + D;
+    const prod = [null, s[0] * raiz, s[1] * raiz, s[2] * raiz];
+    return { productos: prod, resultados: s, resto: s[3] };
+  }
+
+  // ================= Modelo de puntuación: ventana móvil 2 de 3 =================
+
+  const TIPOS = ["candidatas", "ruffini", "cociente", "raices2"];
+  const NOMBRE_APARTADO = {
+    candidatas: "Candidatas (divisores)",
+    ruffini: "Ruffini (coeficientes)",
+    cociente: "Cociente",
+    raices2: "Raíces del cociente"
+  };
+  const PUNTO_POR_TIPO = 10 / TIPOS.length;
+  const PENALIZACION_FALLO = 0.5;
+
+  function crearTipo() { return { intentos: [], superado: false, cerrado: false, aciertos: 0, fallos: 0 }; }
+
+  function redondear(n) { return Math.round(n * 100) / 100; }
+
+  const state = {
+    alumno: "",
+    inicio: Date.now(),
+    puntosGlobal: 0,
+    tipos: {
+      candidatas: crearTipo(),
+      ruffini: crearTipo(),
+      cociente: crearTipo(),
+      raices2: crearTipo()
+    },
+    rondaActual: null
+  };
+
+  function registrarIntento(tipo, correcto) {
+    const t = state.tipos[tipo];
+    if (t.cerrado) return;
+    state.rondaActual.huboIntento = true;
+    t.intentos.push(correcto);
+    if (t.intentos.length > 3) t.intentos.shift();
+    if (correcto) {
+      t.aciertos++;
+    } else {
+      t.fallos++;
+      state.puntosGlobal = Math.max(0, redondear(state.puntosGlobal - PENALIZACION_FALLO));
+    }
+    const aciertosVentana = t.intentos.filter(Boolean).length;
+    if (!t.superado && aciertosVentana >= 2) {
+      t.superado = true;
+      t.cerrado = true;
+      state.puntosGlobal = Math.min(10, redondear(state.puntosGlobal + PUNTO_POR_TIPO));
+    }
+    actualizarMarcador();
+  }
+
+  function todosCerrados() { return TIPOS.every(t => state.tipos[t].cerrado); }
+  function contarSuperados() { return TIPOS.filter(t => state.tipos[t].superado).length; }
+
+  function actualizarMarcador() {
+    document.getElementById("marcadorNota").textContent = formatearNumero(state.puntosGlobal);
+    document.getElementById("marcadorSuperados").textContent = contarSuperados();
+    document.getElementById("fichaContainer").classList.toggle("nota-maxima", state.puntosGlobal >= 10);
+  }
+
+  function mostrarFeedback(el, tipo, html) {
+    el.classList.remove("feedback-correcto", "feedback-incorrecto", "feedback-formato");
+    const clase = tipo === "ok" ? "feedback-correcto" : (tipo === "formato" ? "feedback-formato" : "feedback-incorrecto");
+    el.classList.add("mostrar", clase);
+    el.innerHTML = html;
+  }
+
+  const contenedor = document.getElementById("contenedorPasos");
+
+  // ================= Nombre del alumno =================
+
+  function nombreEstablecido() {
+    const nombre = document.getElementById("inputNombre").value.trim();
+    return nombre !== "";
+  }
+
+  function exigirNombre() {
+    if (nombreEstablecido()) {
+      document.getElementById("avisoNombreAusente").classList.remove("mostrar");
+      return true;
+    }
+    document.getElementById("avisoNombreAusente").classList.add("mostrar");
+    document.getElementById("inputNombre").focus();
+    return false;
+  }
+
+  document.getElementById("inputNombre").addEventListener("input", function () {
+    if (nombreEstablecido()) document.getElementById("avisoNombreAusente").classList.remove("mostrar");
+  });
+
+  // ================= Ronda =================
+
+  function iniciarRonda() {
+    const ec = generarEcuacion();
+    state.rondaActual = {
+      ec,
+      huboIntento: false,
+      raizUsada: null,
+      b0: null, b1: null, b2: null,
+      resueltoCandidatas: false,
+      resueltoRuffini: false,
+      resueltoCociente: false,
+      paso4Creado: false
+    };
+    contenedor.innerHTML = "";
+
+    actualizarAvisoFichaCompletada();
+
+    construirPasoCandidatas(ec);
+    construirPasoRuffini(ec);
+    construirPasoCociente(ec);
+  }
+
+  function actualizarAvisoFichaCompletada() {
+    const aviso = document.getElementById("avisoFichaCompletada");
+    if (todosCerrados()) {
+      aviso.style.display = "block";
+      aviso.textContent = "Has superado los 4 apartados. Nota final: " + formatearNumero(state.puntosGlobal) + "/10. Puedes seguir practicando, pero la nota ya no cambiará.";
+    } else {
+      aviso.style.display = "none";
+    }
+  }
+
+  function nuevoBloque(id, extraClass) {
+    const div = document.createElement("div");
+    div.className = "ejercicio-card" + (extraClass ? " " + extraClass : "");
+    div.id = id;
+    contenedor.appendChild(div);
+    return div;
+  }
+
+  function comprobarSiMostrarPaso4() {
+    if (state.rondaActual.resueltoCandidatas &&
+        state.rondaActual.resueltoRuffini &&
+        state.rondaActual.resueltoCociente &&
+        !state.rondaActual.paso4Creado) {
+      state.rondaActual.paso4Creado = true;
+      construirPasoRaices2(state.rondaActual.ec, state.rondaActual.b0, state.rondaActual.b1, state.rondaActual.b2, state.rondaActual.raizUsada);
+    }
+  }
+
+  // ---------- Paso 1: candidatas ----------
+
+  function construirPasoCandidatas(ec) {
+    const divsD = divisores(ec.D);
+    const candidatasCorrectas = [];
+    divsD.forEach(d => { candidatasCorrectas.push(d); candidatasCorrectas.push(-d); });
+
+    if (state.tipos.candidatas.cerrado) {
+      const bloque = nuevoBloque("bloqueCandidatas", "superado");
+      bloque.innerHTML = `
+        <p class="paso-titulo"><span class="paso-numero">1</span>Posibles raíces enteras<span class="etiqueta-superado">Superado</span></p>
+        <div class="polinomio" style="justify-content:center;"><span>${polinomioTexto(ec.A, ec.B, ec.C, ec.D)} = 0</span></div>
+        <p style="text-align:center; font-size:0.92rem;">Divisores de ${ec.D} y sus opuestos: <strong>${candidatasCorrectas.slice().sort((a,b)=>a-b).join(", ")}</strong></p>
+      `;
+      state.rondaActual.resueltoCandidatas = true;
+      comprobarSiMostrarPaso4();
+      return;
+    }
+
+    const bloque = nuevoBloque("bloqueCandidatas");
+    bloque.innerHTML = `
+      <p class="paso-titulo"><span class="paso-numero">1</span>Escribe las posibles raíces enteras (divisores del término independiente)</p>
+      <div class="polinomio" style="justify-content:center;">
+        <span>${polinomioTexto(ec.A, ec.B, ec.C, ec.D)} = 0</span>
+      </div>
+      <p style="font-size:0.88rem; color:var(--color-texto-suave); text-align:center;">
+        Las posibles raíces enteras son los divisores de ${ec.D} y sus opuestos. Escríbelas separadas por comas (también se admite «±», por ejemplo «±2»).
+      </p>
+      <div class="fila-input" style="justify-content:center;">
+        <input type="text" id="inputCandidatas" autocomplete="off" style="width:320px" placeholder="Ej: 1, -1, 2, -2, ..." aria-label="Posibles raíces enteras">
+        <button class="btn-primario" id="btnComprobarCandidatas">Comprobar</button>
+      </div>
+      <div class="feedback feedback-incorrecto" id="feedbackCandidatas" aria-live="polite"></div>
+    `;
+    const input = bloque.querySelector("#inputCandidatas");
+    const comprobar = () => comprobarCandidatas(ec, input, candidatasCorrectas);
+    bloque.querySelector("#btnComprobarCandidatas").addEventListener("click", comprobar);
+    input.addEventListener("keydown", e => { if (e.key === "Enter") comprobar(); });
+  }
+
+  function comprobarCandidatas(ec, input, correctas) {
+    if (!exigirNombre()) return;
+    const feedback = document.getElementById("feedbackCandidatas");
+    const parsed = parsearCandidatas(input.value);
+
+    if (parsed.estado === "vacio") {
+      mostrarFeedback(feedback, "formato", "Escribe al menos un número antes de comprobar.");
+      return;
+    }
+    if (parsed.estado === "invalido") {
+      mostrarFeedback(feedback, "formato", "No he entendido alguno de los valores escritos. Usa números enteros separados por comas (también se admite «±», como «±2»).");
+      return;
+    }
+
+    const conjuntoCorrecto = new Set(correctas);
+    const alumnoSet = new Set(parsed.valores);
+    const contieneTodas = correctas.every(c => alumnoSet.has(c));
+    const noSobra = parsed.valores.every(n => conjuntoCorrecto.has(n));
+    const esCorrecta = contieneTodas && noSobra;
+
+    registrarIntento("candidatas", esCorrecta);
+
+    if (esCorrecta) {
+      input.disabled = true; input.classList.add("correcta");
+      document.getElementById("bloqueCandidatas").classList.add("resuelto");
+      document.getElementById("btnComprobarCandidatas").disabled = true;
+      mostrarFeedback(feedback, "ok", "Correcto. Esas son todas las posibles raíces enteras.");
+      state.rondaActual.resueltoCandidatas = true;
+      comprobarSiMostrarPaso4();
+    } else if (!contieneTodas && noSobra) {
+      mostrarFeedback(feedback, "error",
+        `Te faltan algunas. Recuerda incluir todos los divisores de ${ec.D} y también sus opuestos (positivos y negativos).`);
+    } else if (contieneTodas && !noSobra) {
+      mostrarFeedback(feedback, "error",
+        `Has incluido números que no son divisores de ${ec.D}. Deben ser solo divisores del término independiente y sus opuestos.`);
+    } else {
+      mostrarFeedback(feedback, "error",
+        `Revisa la lista: deben aparecer todos los divisores de ${ec.D} y sus opuestos, sin repetir.`);
+    }
+  }
+
+  // ---------- Paso 2: Ruffini ----------
+
+  function construirPasoRuffini(ec) {
+    if (state.tipos.ruffini.cerrado) {
+      const raiz = ec.raices[randInt(0, ec.raices.length - 1)];
+      const tabla = calcularRuffini(ec.A, ec.B, ec.C, ec.D, raiz);
+      state.rondaActual.raizUsada = raiz;
+      state.rondaActual.b0 = tabla.resultados[0];
+      state.rondaActual.b1 = tabla.resultados[1];
+      state.rondaActual.b2 = tabla.resultados[2];
+
+      const bloque = nuevoBloque("bloqueRuffini", "superado");
+      bloque.innerHTML = `
+        <p class="paso-titulo"><span class="paso-numero">2</span>Tabla de Ruffini<span class="etiqueta-superado">Superado</span></p>
+        <p style="font-size:0.88rem; color:var(--color-texto-suave); text-align:center;">Polinomio: <strong>${polinomioTexto(ec.A, ec.B, ec.C, ec.D)} = 0</strong> · raíz probada: <strong>${raiz}</strong></p>
+        <div class="tabla-ruffini-wrap">
+        <table class="tabla-ruffini">
+          <tr class="fila-coef">
+            <td class="col-raiz-abajo"></td>
+            <td>${ec.A}</td><td>${ec.B}</td><td>${ec.C}</td><td>${ec.D}</td>
+          </tr>
+          <tr class="fila-productos">
+            <td class="col-raiz-abajo">${raiz}<span class="etiqueta-peq">raíz</span></td>
+            <td class="celda-vacia-prod"></td><td>${tabla.productos[1]}</td><td>${tabla.productos[2]}</td><td>${tabla.productos[3]}</td>
+          </tr>
+          <tr class="fila-resultado">
+            <td class="col-raiz-abajo"></td>
+            <td>${tabla.resultados[0]}</td><td>${tabla.resultados[1]}</td><td>${tabla.resultados[2]}</td><td>${tabla.resultados[3]}</td>
+          </tr>
+        </table>
+        </div>
+        <p style="text-align:center; font-size:0.9rem;">Resto = ${tabla.resto} ⇒ x = ${raiz} es raíz.</p>
+      `;
+      state.rondaActual.resueltoRuffini = true;
+      actualizarCocienteConRaizConocida();
+      comprobarSiMostrarPaso4();
+      return;
+    }
+
+    const bloque = nuevoBloque("bloqueRuffini");
+
+    bloque.innerHTML = `
+      <p class="paso-titulo"><span class="paso-numero">2</span>Completa la tabla de Ruffini</p>
+      <p style="font-size:0.88rem; color:var(--color-texto-suave); text-align:center;">
+        Polinomio: <strong>${polinomioTexto(ec.A, ec.B, ec.C, ec.D)} = 0</strong>
+      </p>
+      <p style="font-size:0.88rem; color:var(--color-texto-suave); text-align:center;">
+        Escribe arriba los coeficientes del polinomio (de mayor a menor grado), la raíz que quieres probar
+        en el recuadro de la izquierda, y ve completando las operaciones.
+      </p>
+      <div class="tabla-ruffini-wrap">
+      <table class="tabla-ruffini" id="tablaRuffini">
+        <tr class="fila-coef">
+          <td class="col-raiz-abajo"></td>
+          <td><input type="number" step="any" data-fila="coef" data-col="0" aria-label="Coeficiente de x³"></td>
+          <td><input type="number" step="any" data-fila="coef" data-col="1" aria-label="Coeficiente de x²"></td>
+          <td><input type="number" step="any" data-fila="coef" data-col="2" aria-label="Coeficiente de x"></td>
+          <td><input type="number" step="any" data-fila="coef" data-col="3" aria-label="Término independiente"></td>
+        </tr>
+        <tr class="fila-productos">
+          <td class="col-raiz-abajo">
+            <input type="number" step="any" id="inputRaiz" class="input-raiz" aria-label="Raíz candidata">
+            <span class="etiqueta-peq">raíz</span>
+          </td>
+          <td class="celda-vacia-prod"></td>
+          <td><input type="number" step="any" data-fila="prod" data-col="1" aria-label="Producto bajo B"></td>
+          <td><input type="number" step="any" data-fila="prod" data-col="2" aria-label="Producto bajo C"></td>
+          <td><input type="number" step="any" data-fila="prod" data-col="3" aria-label="Producto bajo D"></td>
+        </tr>
+        <tr class="fila-resultado">
+          <td class="col-raiz-abajo"></td>
+          <td><input type="number" step="any" data-fila="res" data-col="0" aria-label="Resultado 1"></td>
+          <td><input type="number" step="any" data-fila="res" data-col="1" aria-label="Resultado 2"></td>
+          <td><input type="number" step="any" data-fila="res" data-col="2" aria-label="Resultado 3"></td>
+          <td><input type="number" step="any" data-fila="res" data-col="3" aria-label="Resultado 4 (resto)"></td>
+        </tr>
+      </table>
+      </div>
+      <div class="fila-input" style="justify-content:center;">
+        <button class="btn-primario" id="btnComprobarRuffini">Comprobar</button>
+      </div>
+      <div class="feedback feedback-incorrecto" id="feedbackRuffini" aria-live="polite"></div>
+    `;
+
+    const inputsCoef = bloque.querySelectorAll('input[data-fila="coef"]');
+    const inputRaiz = bloque.querySelector("#inputRaiz");
+    const inputsProd = bloque.querySelectorAll('input[data-fila="prod"]');
+    const inputsRes = bloque.querySelectorAll('input[data-fila="res"]');
+
+    const comprobar = () => comprobarRuffiniInteractivo(ec, inputsCoef, inputRaiz, inputsProd, inputsRes);
+    bloque.querySelector("#btnComprobarRuffini").addEventListener("click", comprobar);
+    [...inputsCoef, inputRaiz, ...inputsProd, ...inputsRes].forEach(inp => {
+      inp.addEventListener("keydown", e => { if (e.key === "Enter") comprobar(); });
+    });
+  }
+
+  function comprobarRuffiniInteractivo(ec, inputsCoef, inputRaiz, inputsProd, inputsRes) {
+    if (!exigirNombre()) return;
+    const feedback = document.getElementById("feedbackRuffini");
+
+    const coefsCorrectos = [ec.A, ec.B, ec.C, ec.D];
+    let coefsBien = true;
+    inputsCoef.forEach((inp, i) => {
+      const val = parseFloat(inp.value.replace(",", "."));
+      const ok = Number.isFinite(val) && Math.abs(val - coefsCorrectos[i]) < 1e-9;
+      inp.classList.toggle("correcta", ok);
+      inp.classList.toggle("incorrecta", !ok);
+      if (!ok) coefsBien = false;
+    });
+
+    if (!coefsBien) {
+      registrarIntento("ruffini", false);
+      mostrarFeedback(feedback, "error",
+        "Revisa los coeficientes: deben ser los del polinomio dato, escritos de mayor a menor grado (incluye el coeficiente principal y el término independiente; si algún término no aparece, su coeficiente es 0).");
+      return;
+    }
+
+    const raizPropuesta = parseFloat(inputRaiz.value.replace(",", "."));
+    const raizBien = Number.isFinite(raizPropuesta);
+
+    if (!raizBien) {
+      mostrarFeedback(feedback, "formato", "Escribe también la raíz que quieres probar en el recuadro de la izquierda.");
+      inputRaiz.focus();
+      return;
+    }
+
+    if (!esDivisor(ec.D, raizPropuesta)) {
+      mostrarFeedback(feedback, "formato",
+        `Ese número no es divisor de ${ec.D}, así que no puede ser una raíz entera. Elige una de las candidatas del apartado 1.`);
+      return;
+    }
+
+    const tabla = calcularRuffini(ec.A, ec.B, ec.C, ec.D, raizPropuesta);
+    let todoBien = true;
+
+    inputsProd.forEach(inp => {
+      const i = Number(inp.dataset.col);
+      const val = parseFloat(inp.value.replace(",", "."));
+      const ok = Number.isFinite(val) && Math.abs(val - tabla.productos[i]) < 1e-9;
+      inp.classList.toggle("correcta", ok);
+      inp.classList.toggle("incorrecta", !ok);
+      if (!ok) todoBien = false;
+    });
+
+    inputsRes.forEach((inp, i) => {
+      const val = parseFloat(inp.value.replace(",", "."));
+      const ok = Number.isFinite(val) && Math.abs(val - tabla.resultados[i]) < 1e-9;
+      inp.classList.toggle("correcta", ok);
+      inp.classList.toggle("incorrecta", !ok);
+      if (!ok) todoBien = false;
+    });
+
+    if (!todoBien) {
+      registrarIntento("ruffini", false);
+      mostrarFeedback(feedback, "error",
+        "Revisa las operaciones: baja el coeficiente principal tal cual; cada producto es raíz × resultado anterior (el primero es raíz × coeficiente principal); cada resultado es coeficiente + producto. El último resultado es el resto.");
+      return;
+    }
+
+    const resto = tabla.resto;
+    const esRaizReal = Math.abs(resto) < 1e-9;
+    mostrarPreguntaFinalRuffini(ec, raizPropuesta, resto, esRaizReal, tabla);
+  }
+
+  function mostrarPreguntaFinalRuffini(ec, raizPropuesta, resto, esRaizReal, tabla) {
+    const bloque = document.getElementById("bloqueRuffini");
+
+    let preg = bloque.querySelector(".pregunta-final");
+    if (preg) preg.remove();
+
+    const div = document.createElement("div");
+    div.className = "pregunta-final";
+    div.innerHTML = `
+      <div class="texto-pregunta">
+        El resto obtenido es <strong>${resto}</strong>. ¿Te quedas con x = ${raizPropuesta} como raíz del polinomio?
+      </div>
+      <div class="botones-respuesta">
+        <button class="btn-primario" data-resp="si">Sí, es raíz</button>
+        <button class="btn-secundario" data-resp="no">No, no es raíz</button>
+      </div>
+      <div class="feedback" id="feedbackPreguntaFinal" aria-live="polite"></div>
+    `;
+    bloque.appendChild(div);
+
+    const feedbackPreg = div.querySelector("#feedbackPreguntaFinal");
+
+    div.querySelectorAll("button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const resp = btn.dataset.resp;
+        const acierto = (resp === "si" && esRaizReal) || (resp === "no" && !esRaizReal);
+
+        if (!acierto) {
+          registrarIntento("ruffini", false);
+          if (esRaizReal) {
+            mostrarFeedback(feedbackPreg, "error",
+              "El resto es 0, así que x = " + raizPropuesta + " SÍ es raíz del polinomio. Vuelve a intentarlo.");
+          } else {
+            mostrarFeedback(feedbackPreg, "error",
+              "El resto no es 0, así que x = " + raizPropuesta + " NO es raíz del polinomio. Prueba con otra candidata.");
+          }
+          return;
+        }
+
+        if (esRaizReal) {
+          registrarIntento("ruffini", true);
+          div.querySelectorAll("button").forEach(b => b.disabled = true);
+          mostrarFeedback(feedbackPreg, "ok",
+            "Correcto: resto 0 ⇒ (x − " + raizPropuesta + ") divide al polinomio, así que x = " + raizPropuesta + " es raíz. Guardamos los coeficientes del cociente.");
+          bloque.querySelectorAll("input").forEach(inp => inp.disabled = true);
+          bloque.classList.add("resuelto");
+          document.getElementById("btnComprobarRuffini").disabled = true;
+          state.rondaActual.raizUsada = raizPropuesta;
+          state.rondaActual.b0 = tabla.resultados[0];
+          state.rondaActual.b1 = tabla.resultados[1];
+          state.rondaActual.b2 = tabla.resultados[2];
+          state.rondaActual.resueltoRuffini = true;
+          actualizarCocienteConRaizConocida();
+          comprobarSiMostrarPaso4();
+        } else {
+          // Acierto al identificar que NO es raíz: no cuenta como intento
+          // (probar una candidata que falla es parte natural del método).
+          div.querySelectorAll("button").forEach(b => b.disabled = true);
+          mostrarFeedback(feedbackPreg, "ok",
+            "Correcto: el resto no es 0, así que x = " + raizPropuesta + " no es raíz de este polinomio. Prueba con otra candidata.");
+          setTimeout(() => {
+            div.remove();
+            const inputRaizEl = bloque.querySelector("#inputRaiz");
+            inputRaizEl.value = "";
+            bloque.querySelectorAll('input[data-fila="prod"], input[data-fila="res"]').forEach(inp => {
+              inp.value = "";
+              inp.classList.remove("correcta", "incorrecta");
+            });
+            inputRaizEl.focus();
+          }, 1500);
+        }
+      });
+    });
+  }
+
+  // ---------- Paso 3: cociente ----------
+
+  function construirPasoCociente(ec) {
+    // Si el paso 2 (Ruffini) ya estaba cerrado, actualizarCocienteConRaizConocida()
+    // ya ha construido este bloque en cuanto se conoció la raíz, dentro de
+    // construirPasoRuffini. No volver a construirlo aquí o quedaría duplicado.
+    if (state.rondaActual.resueltoCociente) return;
+
+    // Si el paso 2 ya viene resuelto (tipo cerrado), la raíz ya se conoce
+    // en cuanto se construye el paso 2, así que aquí puede ya venir resuelto
+    // también (ver actualizarCocienteConRaizConocida). Si no, se muestra
+    // interactivo desde ya, aunque su comprobación espere a que la raíz
+    // se conozca (paso 2 resuelto de forma interactiva).
+    if (state.tipos.cociente.cerrado && state.rondaActual.raizUsada !== null) {
+      construirPasoCocienteResuelto(ec);
+      return;
+    }
+    construirPasoCocienteInteractivo(ec);
+  }
+
+  function construirPasoCocienteResuelto(ec) {
+    const bloque = nuevoBloque("bloqueCociente", "superado");
+    bloque.innerHTML = `
+      <p class="paso-titulo"><span class="paso-numero">3</span>Cociente de la división<span class="etiqueta-superado">Superado</span></p>
+      <p style="text-align:center; font-size:0.95rem;">${polinomioTexto(0, state.rondaActual.b0, state.rondaActual.b1, state.rondaActual.b2)} = 0</p>
+    `;
+    state.rondaActual.resueltoCociente = true;
+    comprobarSiMostrarPaso4();
+  }
+
+  function construirPasoCocienteInteractivo(ec) {
+    const bloque = nuevoBloque("bloqueCociente");
+
+    bloque.innerHTML = `
+      <p class="paso-titulo"><span class="paso-numero">3</span>Escribe el cociente de la división</p>
+      <p style="font-size:0.88rem; color:var(--color-texto-suave); text-align:center;">
+        El cociente es un polinomio de segundo grado cuyos coeficientes son los tres primeros resultados
+        de la tabla (sin contar el resto). Usa el botón <strong>x²</strong> para escribir directamente el término cuadrático
+        (también se admite escribir «x2» o «x^2»).
+      </p>
+      <div class="fila-input" style="justify-content:center;">
+        <input type="text" id="inputCociente" autocomplete="off" style="width:280px" placeholder="Ej: x² + 3x - 2" aria-label="Cociente">
+        <button type="button" class="btn-simbolo" id="btnCuadrado" title="Insertar x al cuadrado" aria-label="Insertar x al cuadrado">x²</button>
+        <button class="btn-primario" id="btnComprobarCociente">Comprobar</button>
+      </div>
+      <div class="feedback feedback-incorrecto" id="feedbackCociente" aria-live="polite"></div>
+    `;
+
+    const input = bloque.querySelector("#inputCociente");
+    const btnCuadrado = bloque.querySelector("#btnCuadrado");
+
+    btnCuadrado.addEventListener("click", () => insertarEnInput(input, "x²"));
+
+    const comprobar = () => comprobarCociente(ec, input);
+    bloque.querySelector("#btnComprobarCociente").addEventListener("click", comprobar);
+    input.addEventListener("keydown", e => { if (e.key === "Enter") comprobar(); });
+  }
+
+  function actualizarCocienteConRaizConocida() {
+    // Se llama justo cuando la raíz de la ronda pasa a conocerse
+    // (ruffini resuelto, interactivo o ya cerrado). Si el paso 3 ya estaba
+    // pintado en su versión interactiva pero el tipo está cerrado, lo
+    // sustituimos por la versión resuelta.
+    if (state.tipos.cociente.cerrado && !state.rondaActual.resueltoCociente) {
+      const actual = document.getElementById("bloqueCociente");
+      if (actual) actual.remove();
+      construirPasoCocienteResuelto(state.rondaActual.ec);
+    }
+  }
+
+  function comprobarCociente(ec, input) {
+    if (!exigirNombre()) return;
+    const feedback = document.getElementById("feedbackCociente");
+
+    if (!state.rondaActual.resueltoRuffini) {
+      mostrarFeedback(feedback, "formato",
+        "Antes de comprobar el cociente, completa el apartado 2 (tabla de Ruffini) y confirma la raíz.");
+      return;
+    }
+
+    const b0 = state.rondaActual.b0;
+    const b1 = state.rondaActual.b1;
+    const b2 = state.rondaActual.b2;
+
+    const coefs = parsearCuadratico(input.value);
+
+    if (!coefs) {
+      mostrarFeedback(feedback, "formato",
+        "No he entendido la expresión. Escribe un polinomio de segundo grado, por ejemplo «x² + 3x - 2» (también vale «x2» o «x^2»).");
+      return;
+    }
+
+    const [a, b, c] = coefs;
+    const correcto = Math.abs(a - b0) < 1e-9 && Math.abs(b - b1) < 1e-9 && Math.abs(c - b2) < 1e-9;
+
+    registrarIntento("cociente", correcto);
+
+    if (correcto) {
+      input.disabled = true; input.classList.add("correcta");
+      document.getElementById("btnCuadrado").disabled = true;
+      document.getElementById("bloqueCociente").classList.add("resuelto");
+      document.getElementById("btnComprobarCociente").disabled = true;
+      mostrarFeedback(feedback, "ok", "Correcto. Ese es el cociente.");
+      state.rondaActual.resueltoCociente = true;
+      comprobarSiMostrarPaso4();
+      return;
+    }
+
+    // Diagnóstico sin revelar los coeficientes correctos.
+    if (Math.abs(a) < 1e-9) {
+      mostrarFeedback(feedback, "error",
+        "El cociente de dividir un polinomio de tercer grado entre (x − raíz) es de grado 2: no puede faltar el término cuadrático.");
+    } else if (Math.abs(a + b0) < 1e-9 && Math.abs(b + b1) < 1e-9 && Math.abs(c + b2) < 1e-9) {
+      mostrarFeedback(feedback, "error",
+        "Revisa los signos: parece que has cambiado el signo de los tres coeficientes.");
+    } else if (Math.abs(a - ec.A) < 1e-9 && Math.abs(b - ec.B) < 1e-9 && Math.abs(c - ec.C) < 1e-9) {
+      mostrarFeedback(feedback, "error",
+        "Esos son los coeficientes del polinomio original, no los del cociente. Usa la última fila de la tabla de Ruffini (los resultados), sin contar el resto.");
+    } else {
+      mostrarFeedback(feedback, "error",
+        "No es correcto. Revisa que has copiado los tres coeficientes de la fila de resultados de la tabla de Ruffini, en el mismo orden y sin incluir el resto.");
+    }
+  }
+
+  // ---------- Paso 4: raíces del cociente ----------
+
+  function construirPasoRaices2(ec, b0, b1, b2, raizUsada) {
+    if (state.tipos.raices2.cerrado) {
+      const restantes = raicesRestantes(ec, raizUsada).sort((x, y) => x - y);
+      const bloque = nuevoBloque("bloqueRaices2", "superado");
+      bloque.innerHTML = `
+        <p class="paso-titulo"><span class="paso-numero">4</span>Raíces de la ecuación de segundo grado<span class="etiqueta-superado">Superado</span></p>
+        <p style="text-align:center; font-size:0.9rem;">${polinomioTexto(0, b0, b1, b2)} = 0</p>
+        <p style="text-align:center; font-size:1.05rem; font-family:'Libre Baskerville',serif; color:var(--color-acento);">x = ${restantes[0]} &nbsp;·&nbsp; x = ${restantes[1]}</p>
+      `;
+      mostrarResumenRonda(ec);
+      return;
+    }
+
+    const bloque = nuevoBloque("bloqueRaices2");
+    bloque.innerHTML = `
+      <p class="paso-titulo"><span class="paso-numero">4</span>Resuelve la ecuación de segundo grado resultante</p>
+      <p style="font-size:0.88rem; color:var(--color-texto-suave); text-align:center;">
+        ${polinomioTexto(0, b0, b1, b2)} = 0
+      </p>
+      <p style="font-size:0.82rem; color:var(--color-texto-suave); text-align:center;">
+        Escribe las dos soluciones en cualquier orden.
+      </p>
+      <div class="fila-input" style="justify-content:center;">
+        <label class="etiqueta-campo">x₁ =</label>
+        <input type="number" step="any" id="inputRaiz2a" aria-label="Primera raíz del cociente">
+        <label class="etiqueta-campo">x₂ =</label>
+        <input type="number" step="any" id="inputRaiz2b" aria-label="Segunda raíz del cociente">
+        <button class="btn-primario" id="btnComprobarRaices2">Comprobar</button>
+      </div>
+      <div class="feedback feedback-incorrecto" id="feedbackRaices2" aria-live="polite"></div>
+    `;
+    const inputA = bloque.querySelector("#inputRaiz2a");
+    const inputB = bloque.querySelector("#inputRaiz2b");
+    const comprobar = () => comprobarRaices2(ec, inputA, inputB, raizUsada);
+    bloque.querySelector("#btnComprobarRaices2").addEventListener("click", comprobar);
+    [inputA, inputB].forEach(inp => inp.addEventListener("keydown", e => { if (e.key === "Enter") comprobar(); }));
+    inputA.focus();
+  }
+
+  function comprobarRaices2(ec, inputA, inputB, raizUsada) {
+    if (!exigirNombre()) return;
+    const feedback = document.getElementById("feedbackRaices2");
+    const vA = parseFloat(inputA.value.replace(",", "."));
+    const vB = parseFloat(inputB.value.replace(",", "."));
+
+    if (!Number.isFinite(vA) || !Number.isFinite(vB)) {
+      mostrarFeedback(feedback, "formato", "Rellena los dos campos con números antes de comprobar.");
+      return;
+    }
+
+    const alumno = [vA, vB];
+    const correctas = raicesRestantes(ec, raizUsada);
+    const correcto = mismosValores(alumno, correctas);
+
+    registrarIntento("raices2", correcto);
+
+    if (correcto) {
+      inputA.disabled = true; inputB.disabled = true;
+      inputA.classList.add("correcta"); inputB.classList.add("correcta");
+      document.getElementById("bloqueRaices2").classList.add("resuelto");
+      document.getElementById("btnComprobarRaices2").disabled = true;
+      mostrarFeedback(feedback, "ok", "Correcto. Esas son las dos raíces que faltaban.");
+      mostrarResumenRonda(ec);
+      return;
+    }
+
+    // Diagnóstico sin revelar las raíces correctas.
+    if (mismosValores(alumno, correctas.map(x => -x))) {
+      mostrarFeedback(feedback, "error", "Revisa los signos: parece que has cambiado el signo de las dos soluciones.");
+    } else if (alumno.some(v => correctas.some(c => Math.abs(v - c) < 1e-9))) {
+      mostrarFeedback(feedback, "error", "Una de las dos soluciones es correcta; revisa la otra aplicando de nuevo la fórmula general o factorizando.");
+    } else {
+      mostrarFeedback(feedback, "error",
+        "No es correcto. Aplica la fórmula general (o factoriza) a la ecuación de segundo grado. El orden de las dos soluciones no importa.");
+    }
+  }
+
+  // ---------- Resumen de la ronda (se muestra al terminar el paso 4) ----------
+
+  function mostrarResumenRonda(ec) {
+    if (document.getElementById("bloqueResumenRonda")) return;
+    const bloque = nuevoBloque("bloqueResumenRonda", "resuelto");
+    const raices = ec.raices.slice().sort((a, b) => a - b);
+    bloque.innerHTML = `
+      <p class="paso-titulo">Ecuación resuelta</p>
+      <p style="text-align:center; font-size:0.95rem;">La ecuación <strong>${polinomioTexto(ec.A, ec.B, ec.C, ec.D)} = 0</strong> tiene como raíces:</p>
+      <p class="raices-reveladas">x = ${raices[0]} &nbsp;·&nbsp; x = ${raices[1]} &nbsp;·&nbsp; x = ${raices[2]}</p>
+      <div class="fila-input" style="justify-content:center;">
+        <button class="btn-primario" id="btnOtraEcuacion">Practicar con otra ecuación</button>
+      </div>
+    `;
+    bloque.querySelector("#btnOtraEcuacion").addEventListener("click", iniciarRonda);
+  }
+
+  // ================= Cambiar de ecuación (con confirmación) =================
+
+  document.getElementById("btnCambiarEcuacion").addEventListener("click", function () {
+    if (state.rondaActual.huboIntento) {
+      document.getElementById("overlayConfirmacion").classList.remove("oculto");
+    } else {
+      iniciarRonda();
+    }
+  });
+  document.getElementById("btnConfirmarCambio").addEventListener("click", function () {
+    document.getElementById("overlayConfirmacion").classList.add("oculto");
+    iniciarRonda();
+  });
+  document.getElementById("btnCancelarCambio").addEventListener("click", function () {
+    document.getElementById("overlayConfirmacion").classList.add("oculto");
+  });
+
+  // ================= Modal de calificación final =================
+
+  const COLORES_NOTA = [
+    { min: 10, fondo: "#1a7a1a", texto: "#fff" },
+    { min: 9, fondo: "#6dbf6d", texto: "#fff" },
+    { min: 8, fondo: "#1a4f8a", texto: "#fff" },
+    { min: 7, fondo: "#5b9bd5", texto: "#fff" },
+    { min: 6, fondo: "#c05c00", texto: "#fff" },
+    { min: 5, fondo: "#f5a623", texto: "#000" },
+    { min: -1, fondo: "#c0392b", texto: "#fff" }
+  ];
+
+  document.getElementById("btnFinalizar").addEventListener("click", function () {
+    if (!exigirNombre()) return;
+    state.alumno = document.getElementById("inputNombre").value.trim();
+
+    const nota = state.puntosGlobal;
+    const color = COLORES_NOTA.find(c => nota >= c.min) || COLORES_NOTA[COLORES_NOTA.length - 1];
+    const modal = document.getElementById("modalCalificacion");
+    modal.style.backgroundColor = color.fondo; modal.style.color = color.texto;
+
+    document.getElementById("modalTituloFicha").textContent = document.querySelector(".titulo-ficha").textContent;
+    document.getElementById("modalSubtituloFicha").textContent = document.querySelector(".subtitulo").textContent;
+    document.getElementById("modalAlumno").textContent = state.alumno;
+    document.getElementById("modalNota").textContent = formatearNumero(nota) + " / 10";
+
+    const ahora = new Date();
+    const fecha = `${String(ahora.getDate()).padStart(2,"0")}/${String(ahora.getMonth()+1).padStart(2,"0")}/${ahora.getFullYear()}`;
+    const hora = ahora.toTimeString().slice(0,8);
+    const segundosTotales = Math.ceil((Date.now() - state.inicio) / 1000);
+    const horasEmpleadas = String(Math.floor(segundosTotales / 3600)).padStart(2, "0");
+    const minutosEmpleados = String(Math.floor((segundosTotales % 3600) / 60)).padStart(2, "0");
+    document.getElementById("modalMeta").innerHTML =
+      `Fecha: ${fecha} &nbsp;·&nbsp; Hora: ${hora} &nbsp;·&nbsp; Tiempo empleado: ${horasEmpleadas}:${minutosEmpleados}`;
+
+    const tbody = document.getElementById("modalDesglose");
+    tbody.innerHTML = "";
+    TIPOS.forEach(t => {
+      const info = state.tipos[t];
+      const intentos = info.aciertos + info.fallos;
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>${NOMBRE_APARTADO[t]}</td><td>${info.superado ? "Sí" : "No"}</td><td>${intentos}</td><td>${info.aciertos}</td><td>${info.fallos}</td>`;
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById("overlayCalificacion").classList.remove("oculto");
+  });
+
+  document.getElementById("btnCerrarModal").addEventListener("click", function () {
+    document.getElementById("overlayCalificacion").classList.add("oculto");
+  });
+
+  // ================= Arranque =================
+  actualizarMarcador();
+  iniciarRonda();
+
+})();
+</script>
+</body>
+</html>
