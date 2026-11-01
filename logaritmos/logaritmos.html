@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Logaritmos · 1.º Bachillerato</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<style>
+:root{
+  --color-fondo:#F5F0E8; --color-fondo-card:#FDFAF3; --color-texto:#2C1F0E; --color-texto-suave:#6B4F35;
+  --color-acento:#A0522D; --color-acento-hover:#7B3B1E; --color-borde:#C9A96E; --color-borde-suave:#E0CEAA;
+  --color-cabecera:#3B2510; --color-cabecera-txt:#F5EDD8; --color-barra-alumno:#EFE4CC;
+  --color-correcto:#2E6B3E; --color-incorrecto:#8B1A1A; --color-neutro:#E8DFC8;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Lato',sans-serif;font-size:16px;color:var(--color-texto);background:var(--color-fondo);line-height:1.5;transition:background .6s}
+body.ficha-10{--color-fondo:#DCEFD9;--color-fondo-card:#F1FAEF;--color-borde:#1a7a1a}
+h1,h2,h3,.titulo-ficha{font-family:'Libre Baskerville',serif;color:var(--color-texto)}
+.cabecera{background:var(--color-cabecera);color:var(--color-cabecera-txt);font-family:'Libre Baskerville',serif;text-align:center;padding:12px 20px;border-bottom:3px solid var(--color-borde);font-size:.78rem;letter-spacing:.04em}
+.ficha-container{max-width:860px;margin:28px auto;background:var(--color-fondo-card);border:2px solid var(--color-borde);border-radius:6px;box-shadow:0 3px 12px rgba(44,31,14,.15);padding:32px 36px}
+.titulo-ficha{font-size:1.6rem;text-align:center;margin:0 0 4px}
+.titulo-ficha::after{content:'';display:block;width:60px;height:3px;background:var(--color-borde);margin:10px auto 0;border-radius:2px}
+.subtitulo{text-align:center;color:var(--color-texto-suave);font-family:'Libre Baskerville',serif;font-style:italic;font-size:1rem;margin:8px 0 20px}
+.barra{position:sticky;top:0;z-index:50;background:var(--color-barra-alumno);border:1.5px solid var(--color-borde);border-radius:6px;margin:0 0 22px;box-shadow:0 2px 6px rgba(44,31,14,.08);padding:9px 20px;display:flex;flex-wrap:wrap;gap:10px 26px;align-items:center;justify-content:center;font-size:.92rem}
+.barra label{font-family:'Libre Baskerville',serif;font-size:.85rem;color:var(--color-texto-suave)}
+.barra input#nombre{background:var(--color-fondo-card);border:1.5px solid var(--color-borde);border-radius:4px;padding:6px 10px;font-family:'Lato',sans-serif;font-size:.95rem;color:var(--color-texto);width:230px;max-width:60vw;outline:none}
+.barra input#nombre:focus{border-color:var(--color-acento)}
+.barra input#nombre.falta{border-color:var(--color-incorrecto);box-shadow:0 0 0 3px rgba(139,26,26,.18)}
+.barra .dato{color:var(--color-texto-suave)}
+.barra .dato b{color:var(--color-acento);font-family:'Libre Baskerville',serif}
+.aviso-nombre{color:var(--color-incorrecto);font-size:.82rem;font-weight:700;display:none;width:100%;text-align:center}
+.aviso-nombre.visible{display:block}
+
+.criterio{display:flex;gap:16px;align-items:center;background:#F8EFE0;border:1.5px solid var(--color-borde);border-left:5px solid var(--color-acento);border-radius:6px;padding:14px 18px;margin-bottom:18px}
+.criterio .icono{font-family:'Libre Baskerville',serif;font-size:1.7rem;font-weight:700;color:var(--color-acento);line-height:1;white-space:nowrap}
+.criterio p{margin:0;font-size:.95rem}
+.criterio .regla{font-family:'Libre Baskerville',serif;font-size:1.02rem;font-weight:700;color:var(--color-acento-hover);display:block;margin-bottom:2px}
+
+details.recordatorio{background:var(--color-fondo);border:1.5px solid var(--color-borde-suave);border-radius:6px;margin-bottom:22px;padding:0 18px}
+details.recordatorio summary{cursor:pointer;font-family:'Libre Baskerville',serif;font-size:.95rem;color:var(--color-texto-suave);padding:11px 0;list-style:none}
+details.recordatorio summary::before{content:'▸ ';color:var(--color-acento)}
+details.recordatorio[open] summary::before{content:'▾ '}
+.rec-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px 22px;padding:4px 0 16px;font-size:.95rem}
+.rec-grid div{padding:6px 0;border-bottom:1px dotted var(--color-borde-suave)}
+.rec-grid .rec-tit{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--color-texto-suave);display:block}
+
+.seccion-tit{font-family:'Libre Baskerville',serif;font-size:1.05rem;margin:0 0 10px;color:var(--color-texto)}
+.tipos-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:24px}
+.tipo-card{background:var(--color-fondo);border:1.5px solid var(--color-borde-suave);border-radius:6px;padding:10px 8px 9px;text-align:center;cursor:pointer;transition:border-color .2s,transform .15s,box-shadow .2s;font-family:'Lato',sans-serif;color:var(--color-texto)}
+.tipo-card:hover{border-color:var(--color-borde);transform:translateY(-1px)}
+.tipo-card.activo{border:2px solid var(--color-acento);box-shadow:0 2px 8px rgba(160,82,45,.2);background:var(--color-fondo-card)}
+.tipo-card.superado{background:#EAF4EC;border-color:var(--color-correcto)}
+.tipo-card .t-num{font-family:'Libre Baskerville',serif;font-size:.75rem;color:var(--color-texto-suave);letter-spacing:.05em}
+.tipo-card .t-nom{font-weight:700;font-size:.86rem;line-height:1.25;margin:2px 0 7px;min-height:2.2em;display:flex;align-items:center;justify-content:center}
+.tipo-card .t-est{font-size:.72rem;color:var(--color-texto-suave);margin-top:5px}
+.tipo-card.superado .t-est{color:var(--color-correcto);font-weight:700}
+.puntos{display:flex;gap:5px;justify-content:center}
+.punto{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--color-borde);display:inline-flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;background:var(--color-fondo-card)}
+.punto.ok{background:var(--color-correcto);border-color:var(--color-correcto);color:#fff}
+.punto.ko{background:var(--color-incorrecto);border-color:var(--color-incorrecto);color:#fff}
+
+.ejercicio-card{background:var(--color-fondo);border:1.5px solid var(--color-borde-suave);border-left:4px solid var(--color-borde);border-radius:4px;padding:20px 24px;margin-bottom:20px}
+.ej-cab{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;border-bottom:1px solid var(--color-borde-suave);padding-bottom:8px;margin-bottom:12px}
+.ej-tipo{font-family:'Libre Baskerville',serif;font-weight:700;color:var(--color-acento)}
+.ej-num{font-size:.85rem;color:var(--color-texto-suave)}
+.ej-inst{margin:0 0 6px;color:var(--color-texto-suave);font-size:.95rem}
+.ej-datos{font-size:.9rem;background:var(--color-fondo-card);border:1px dashed var(--color-borde);border-radius:4px;padding:6px 12px;display:inline-block;margin:4px 0 6px}
+.ej-enun{font-size:1.25rem;text-align:center;padding:14px 0 18px;overflow-x:auto}
+.resp-fila{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center}
+.resp-fila label{font-family:'Libre Baskerville',serif;font-size:.95rem;color:var(--color-texto-suave)}
+input.resp{background:var(--color-fondo-card);border:1.5px solid var(--color-borde);border-radius:4px;padding:9px 12px;font-family:'Lato',sans-serif;font-size:1.05rem;color:var(--color-texto);outline:none;width:200px}
+input.resp:focus{border-color:var(--color-acento)}
+input.resp:disabled{background:var(--color-neutro);color:var(--color-texto-suave)}
+.btn-sim{background:var(--color-fondo-card);border:1.5px solid var(--color-borde);border-radius:4px;width:40px;height:40px;font-size:1.05rem;cursor:pointer;color:var(--color-texto)}
+.btn-sim:hover{border-color:var(--color-acento)}
+.btn-sim:disabled{opacity:.5;cursor:default}
+.preview{text-align:center;min-height:1.7em;font-size:.9rem;color:var(--color-texto-suave);margin-top:8px}
+.preview.err{color:var(--color-incorrecto)}
+.ayuda-escritura{text-align:center;font-size:.8rem;color:var(--color-texto-suave);margin-top:2px}
+.btn-primario{background:var(--color-acento);color:#FDFAF3;border:none;border-radius:4px;padding:10px 22px;font-family:'Lato',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;letter-spacing:.03em;transition:background-color .2s}
+.btn-primario:hover{background:var(--color-acento-hover)}
+.btn-primario:disabled{background:#C9B39A;cursor:default}
+.btn-secundario{background:transparent;color:var(--color-acento);border:2px solid var(--color-borde);border-radius:4px;padding:9px 20px;font-family:'Lato',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;transition:border-color .2s,color .2s}
+.btn-secundario:hover{border-color:var(--color-acento);color:var(--color-acento-hover)}
+.btn-finalizar{background:var(--color-cabecera);color:var(--color-cabecera-txt);border:2px solid var(--color-borde);border-radius:4px;padding:11px 26px;font-family:'Libre Baskerville',serif;font-size:.98rem;font-weight:700;cursor:pointer;letter-spacing:.04em;transition:background-color .2s}
+.btn-finalizar:hover{background:#2C1A0A}
+
+.opciones{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.opcion{display:flex;align-items:center;gap:12px;background:var(--color-fondo-card);border:1.5px solid var(--color-borde-suave);border-radius:6px;padding:10px 14px;cursor:pointer;text-align:left;font-family:'Lato',sans-serif;font-size:1.05rem;color:var(--color-texto);transition:border-color .15s,background .15s;overflow-x:auto}
+.opcion:hover:not(:disabled){border-color:var(--color-borde)}
+.opcion .letra{font-family:'Libre Baskerville',serif;font-weight:700;color:var(--color-acento);border:1.5px solid var(--color-borde);border-radius:50%;width:28px;height:28px;flex:0 0 28px;display:flex;align-items:center;justify-content:center;font-size:.85rem}
+.opcion.sel{border:2px solid var(--color-acento);background:#FBF1E6}
+.opcion.correcta{border:2px solid var(--color-correcto);background:#EAF4EC}
+.opcion.erronea{border:2px solid var(--color-incorrecto);background:#F9EAEA}
+.opcion:disabled{cursor:default}
+.centro{text-align:center}
+
+.feedback-correcto{background:#EAF4EC;border:1.5px solid var(--color-correcto);color:var(--color-correcto);border-radius:4px;padding:10px 16px;margin-top:16px}
+.feedback-incorrecto{background:#F9EAEA;border:1.5px solid var(--color-incorrecto);color:var(--color-incorrecto);border-radius:4px;padding:10px 16px;margin-top:16px}
+.fb-tit{font-weight:700;font-size:1.02rem;margin-bottom:4px}
+.feedback-correcto p,.feedback-incorrecto p{margin:6px 0;color:var(--color-texto)}
+.fb-diag{font-weight:700}
+.feedback-incorrecto .fb-diag{color:var(--color-incorrecto)!important}
+.procedimiento{background:var(--color-fondo-card);border:1px solid var(--color-borde-suave);border-radius:4px;padding:8px 16px;margin-top:10px}
+.proc-tit{font-family:'Libre Baskerville',serif;font-size:.85rem;color:var(--color-texto-suave);letter-spacing:.04em;margin-bottom:2px}
+.paso{overflow-x:auto;overflow-y:hidden}
+.paso .katex-display{margin:.45em 0}
+.ventana{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--color-barra-alumno);border:1px solid var(--color-borde);border-radius:4px;padding:8px 14px;margin-top:10px;font-size:.92rem}
+.ventana .v-tit{font-family:'Libre Baskerville',serif;font-size:.8rem;color:var(--color-texto-suave)}
+.acciones{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:16px}
+.superado-banner{text-align:center;background:#EAF4EC;border:1.5px solid var(--color-correcto);border-radius:6px;padding:12px;color:var(--color-correcto);font-family:'Libre Baskerville',serif;font-weight:700;margin-top:14px}
+.aviso-input{color:var(--color-incorrecto);font-weight:700;font-size:.88rem;text-align:center;margin-top:8px;min-height:1.2em}
+
+.pie{border-top:1px solid var(--color-borde-suave);margin-top:26px;padding-top:20px;text-align:center}
+.pie p{font-size:.85rem;color:var(--color-texto-suave);margin:8px 0 0}
+
+.overlay{position:fixed;inset:0;background:rgba(44,31,14,.55);display:none;align-items:center;justify-content:center;z-index:100;padding:16px}
+.overlay.visible{display:flex}
+.modal-calificacion{border:3px solid var(--color-borde);border-radius:8px;font-family:'Libre Baskerville',serif;box-shadow:0 6px 24px rgba(44,31,14,.35);padding:28px 32px;min-width:320px;max-width:640px;width:100%;text-align:center;max-height:92vh;overflow-y:auto}
+.modal-calificacion .m-titulo{font-size:1.25rem;font-weight:700;margin:0}
+.modal-calificacion .m-sub{font-style:italic;font-size:.9rem;margin:4px 0 12px;opacity:.9}
+.modal-calificacion hr{border:none;border-top:1px solid currentColor;opacity:.4;margin:10px 0 14px}
+.modal-calificacion .m-inf{font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;opacity:.9}
+.modal-calificacion .m-nombre{font-size:1.15rem;margin:6px 0}
+.modal-calificacion .m-nota{font-size:3rem;font-weight:700;line-height:1.1;margin:4px 0}
+.modal-calificacion .m-datos{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 22px;font-family:'Lato',sans-serif;font-size:.92rem;margin:8px 0 14px}
+.desglose{width:100%;border-collapse:collapse;background:rgba(253,250,243,.95);color:var(--color-texto);font-family:'Lato',sans-serif;font-size:.86rem;border-radius:4px;overflow:hidden}
+.desglose th{background:var(--color-barra-alumno);font-family:'Libre Baskerville',serif;font-weight:700;font-size:.78rem;padding:7px 6px;text-align:center}
+.desglose td{padding:6px;border-top:1px solid var(--color-borde-suave);text-align:center}
+.desglose td:first-child,.desglose th:first-child{text-align:left}
+.est-ok{color:var(--color-correcto);font-weight:700}
+.est-no{color:var(--color-incorrecto);font-weight:700}
+.m-resumen{font-family:'Lato',sans-serif;font-size:.88rem;margin:10px 0 0}
+.m-botones{margin-top:16px}
+.m-botones button{background:var(--color-fondo-card);color:var(--color-texto);border:2px solid var(--color-borde);border-radius:4px;padding:9px 22px;font-family:'Lato',sans-serif;font-weight:700;cursor:pointer}
+
+@media (max-width:760px){
+  .ficha-container{margin:12px 8px;padding:20px 16px}
+  .tipos-grid{grid-template-columns:repeat(2,1fr)}
+  .opciones{grid-template-columns:1fr}
+  .criterio{flex-direction:column;align-items:flex-start;gap:6px}
+  .ej-enun{font-size:1.1rem}
+  .barra{padding:7px 10px;gap:4px 14px;font-size:.82rem}
+  .barra label{display:none}
+  .barra input#nombre{width:100%;max-width:none;padding:5px 9px;font-size:.9rem}
+  .paso{font-size:.86em}
+  .ejercicio-card{padding:16px 14px}
+  .opcion{font-size:.95rem;padding:9px 10px}
+}
+</style>
+</head>
+<body>
+
+<div class="cabecera">Material elaborado por Marta L Letona S. Basado en el trabajo de Javier Cayetano</div>
+
+<main class="ficha-container" id="ficha">
+  <h1 class="titulo-ficha">Logaritmos: definición y propiedades</h1>
+  <p class="subtitulo">1.º Bachillerato · Logaritmos</p>
+
+  <div class="barra" id="barra">
+    <label for="nombre">Alumno/a:</label>
+    <input type="text" id="nombre" placeholder="Nombre y apellidos" autocomplete="off" aria-label="Nombre del alumno o alumna">
+    <span class="dato">Nota: <b id="marcador-nota">0</b> / 10</span>
+    <span class="dato">Tipos superados: <b id="marcador-tipos">0</b> / 5</span>
+    <span class="dato">Fallos: <b id="marcador-fallos">0</b></span>
+    <div class="aviso-nombre" id="aviso-nombre">Escribe tu nombre antes de continuar.</div>
+  </div>
+
+  <div class="criterio" id="criterio">
+    <div class="icono">2 de 3</div>
+    <p><span class="regla">Para superar cada tipo debes acertar 2 de tus 3 últimos intentos.</span>
+    Hay 5 tipos de ejercicio y cada tipo superado suma 2 puntos. Cada fallo resta 0,5 puntos. Cuando superas un tipo, se cierra y ya no cuenta más.</p>
+  </div>
+
+  <details class="recordatorio">
+    <summary>Recordatorio: definición y propiedades de los logaritmos</summary>
+    <div class="rec-grid">
+      <div><span class="rec-tit">Definición</span><span data-lx="\log_a N = x \iff a^x = N"></span><br><small>con <span data-lx="a>0,\ a\neq 1,\ N>0"></span></small></div>
+      <div><span class="rec-tit">Valores notables</span><span data-lx="\log_a 1 = 0 \qquad \log_a a = 1"></span></div>
+      <div><span class="rec-tit">Producto</span><span data-lx="\log_a (M\cdot N) = \log_a M + \log_a N"></span></div>
+      <div><span class="rec-tit">Cociente</span><span data-lx="\log_a \dfrac{M}{N} = \log_a M - \log_a N"></span></div>
+      <div><span class="rec-tit">Potencia</span><span data-lx="\log_a M^n = n\,\log_a M"></span></div>
+      <div><span class="rec-tit">Raíz</span><span data-lx="\log_a \sqrt[n]{M^m} = \dfrac{m}{n}\,\log_a M"></span></div>
+      <div><span class="rec-tit">Cambio de base</span><span data-lx="\log_a N = \dfrac{\log N}{\log a}"></span></div>
+      <div><span class="rec-tit">Notación</span><span data-lx="\log N = \log_{10} N \qquad \ln N = \log_e N"></span></div>
+    </div>
+  </details>
+
+  <h2 class="seccion-tit">Tipos de ejercicio</h2>
+  <div class="tipos-grid" id="tipos-grid"></div>
+
+  <section class="ejercicio-card" id="ejercicio"></section>
+
+  <div class="pie">
+    <button class="btn-finalizar" id="btn-finalizar">Finalizar y Calificar</button>
+    <p>Puedes pulsarlo en cualquier momento para ver tu informe. Después podrás seguir practicando.</p>
+  </div>
+</main>
+
+<div class="overlay" id="overlay">
+  <div class="modal-calificacion" id="modal" role="dialog" aria-modal="true"></div>
+</div>
+
+<script>
+'use strict';
+const R = String.raw;
+
+/* ───────────── Aleatoriedad (seed fija solo con ?seed=N para QA) ───────────── */
+const params = new URLSearchParams(location.search);
+const SEED = params.has('seed') ? (parseInt(params.get('seed'), 10) >>> 0)
+  : ((window.crypto && crypto.getRandomValues) ? crypto.getRandomValues(new Uint32Array(1))[0] : Math.floor(Math.random() * 4294967296));
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const rnd = mulberry32(SEED);
+const ri = (a,b) => a + Math.floor(rnd()*(b-a+1));
+const pick = arr => arr[Math.floor(rnd()*arr.length)];
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+/* ───────────── Fracciones ───────────── */
+function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a||1;}
+function F(n,d=1){if(d<0){n=-n;d=-d;}const g=gcd(n,d);return {n:n/g,d:d/g};}
+const fmul=(a,b)=>F(a.n*b.n,a.d*b.d);
+const fdiv=(a,b)=>F(a.n*b.d,a.d*b.n);
+const fneg=a=>F(-a.n,a.d);
+const fabs=a=>F(Math.abs(a.n),a.d);
+const finv=a=>F(a.d,a.n);
+const fval=a=>a.n/a.d;
+function ipow(b,n){let r=1;for(let i=0;i<n;i++)r*=b;return r;}
+function expLx(f){ if(f.d===1) return String(f.n); return (f.n<0?'-':'')+R`\frac{${Math.abs(f.n)}}{${f.d}}`; }
+
+/* ───────────── Formato decimal con coma ───────────── */
+function shiftStr(M,e){let s=String(M);if(e>=0)return s+'0'.repeat(e);const k=-e;while(s.length<=k)s='0'+s;const ip=s.slice(0,s.length-k),fp=s.slice(s.length-k).replace(/0+$/,'');return fp?ip+','+fp:ip;}
+function fracToDec(num,den){for(let k=0;k<=8;k++){const p=num*Math.pow(10,k);if(p%den===0)return shiftStr(p/den,-k);}return null;}
+function decStr(x,dec=4){let s=x.toFixed(dec);if(s.indexOf('.')>=0)s=s.replace(/0+$/,'').replace(/\.$/,'');if(s==='-0')s='0';return s.replace('.',',');}
+const decLx = s => s.replace(',', '{,}');
+
+/* ───────────── Potencias en LaTeX ───────────── */
+// B fracción positiva, e exponente fracción. Si e no es entero, B debe ser entero.
+function powLatex(B,e,o={}){
+  if(e.d===1){
+    const p=e.n; let num,den;
+    if(p>=0){num=ipow(B.n,p);den=ipow(B.d,p);} else {num=ipow(B.d,-p);den=ipow(B.n,-p);}
+    if(den===1) return String(num);
+    if(o.decimal){const s=fracToDec(num,den); if(s) return decLx(s);}
+    return R`\frac{${num}}{${den}}`;
+  }
+  const k=B.n,p=e.n,q=e.d;
+  const rad=r=>{const inner=ipow(k,r);return q===2?R`\sqrt{${inner}}`:R`\sqrt[${q}]{${inner}}`;};
+  if(p>0){const m=Math.floor(p/q),r=p%q;return (m>0?String(ipow(k,m)):'')+rad(r);}
+  const P=-p;
+  if(o.neg==='inv'){const m=Math.floor(P/q),r=P%q;return R`\frac{1}{${(m>0?String(ipow(k,m)):'')+rad(r)}}`;}
+  const m=Math.ceil(P/q),r=m*q-P;return R`\frac{${rad(r)}}{${ipow(k,m)}}`;
+}
+const wrapArg = s => /^\d+\\sqrt/.test(s) ? R`\left(${s}\right)` : s;
+const wrapBase = s => (/\\frac|\\sqrt/.test(s)) ? R`\left(${s}\right)` : s;
+const Bname = B => B.d===1 ? String(B.n) : R`\left(\frac{${B.n}}{${B.d}}\right)`;
+function xTimes(r){ if(r.d===1&&r.n===1) return 'x'; if(r.d===1&&r.n===-1) return '-x'; return expLx(r)+'x'; }
+
+/* ───────────── Render KaTeX ───────────── */
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function kx(lx,display=false){
+  if(window.katex){try{return katex.renderToString(lx,{throwOnError:false,displayMode:display});}catch(e){}}
+  return '<code>'+esc(lx)+'</code>';
+}
+const mixed = t => t.replace(/\$([^$]+)\$/g,(_,l)=>kx(l));
+
+/* ───────────── Lector de expresiones del alumno ───────────── */
+function parseExpr(str){
+  let s=str.replace(/\s+/g,'').replace(/[−–]/g,'-').replace(/[·×]/g,'*').replace(/÷/g,'/').replace(/raíz|raiz|sqrt/gi,'√');
+  if(!s) throw 'vacío';
+  if(s.length>40) throw 'larga';
+  let i=0; const peek=()=>s[i];
+  function num(){const m=s.slice(i).match(/^\d+([.,]\d+)?/);if(!m)return null;i+=m[0].length;return {v:parseFloat(m[0].replace(',','.')),lx:decLx(m[0].replace('.',','))};}
+  function atom(){
+    const c=peek();
+    if(c==='('){i++;const e=expr();if(peek()!==')')throw 'paréntesis';i++;return {v:e.v,lx:R`\left(${e.lx}\right)`,inner:e.lx};}
+    if(c==='√'){i++;const a=atom();if(a.v<0)throw 'raíz';return {v:Math.sqrt(a.v),lx:R`\sqrt{${a.inner??a.lx}}`};}
+    const n=num(); if(n) return n;
+    throw 'símbolo';
+  }
+  function power(){const b=atom();if(peek()==='^'){i++;const e=unary();return {v:Math.pow(b.v,e.v),lx:R`{${b.lx}}^{${e.inner??e.lx}}`};}return b;}
+  function unary(){if(peek()==='-'){i++;const u=unary();return {v:-u.v,lx:'-'+u.lx};}if(peek()==='+'){i++;return unary();}return power();}
+  function term(){
+    let a=unary();
+    while(i<s.length){
+      const c=peek();
+      if(c==='*'||c==='/'){i++;const b=unary();
+        if(c==='*') a={v:a.v*b.v,lx:R`${a.lx}\cdot ${b.lx}`};
+        else {if(b.v===0)throw 'cero';a={v:a.v/b.v,lx:R`\frac{${a.inner??a.lx}}{${b.inner??b.lx}}`};}
+      } else if(c==='('||c==='√'||/\d/.test(c)){const b=power();a={v:a.v*b.v,lx:a.lx+b.lx};}
+      else break;
+    }
+    return a;
+  }
+  function expr(){let a=term();while(peek()==='+'||peek()==='-'){const c=s[i++];const b=term();a=c==='+'?{v:a.v+b.v,lx:a.lx+'+'+b.lx}:{v:a.v-b.v,lx:a.lx+'-'+b.lx};}return a;}
+  const r=expr(); if(i<s.length) throw 'sobra'; if(!isFinite(r.v)) throw 'infinito';
+  return r;
+}
+
+/* ═════════════ TIPO 1 · Logaritmo por definición ═════════════ */
+function genT1(){
+  for(let tries=0;tries<400;tries++){
+    const pat=pick(['int','int','dec10','inv','pow','root','root','frac']);
+    let B,r,s,dec=false,base10=false;
+    if(pat==='int'){const k=pick([2,3,5,7]);B=F(k);r=F(1);s=F(ri(-3,6));if(k===2){if(rnd()<.5)s=F(ri(-3,10));if(s.n<0&&rnd()<.6)dec=true;}}
+    else if(pat==='dec10'){B=F(10);r=F(1);s=F(pick([-5,-4,-3,-2,-1,2,3,4,5,6]));dec=true;base10=true;}
+    else if(pat==='inv'){const k=pick([2,3,5]);B=F(k);r=F(-1);s=F(pick([-4,-3,-2,-1,2,3,4,5]));}
+    else if(pat==='pow'){const k=pick([2,3,5,7,6]);B=F(k);r=F(pick([2,3]));s=F(pick([-3,-2,-1,1,1,2,3,4,5]));}
+    else if(pat==='root'){const k=pick([2,3,5,7]);B=F(k);
+      if(rnd()<.35){r=F(1,2);s=pick([F(2),F(3),F(4),F(-2),F(3,2),F(5,2),F(-1)]);}
+      else{r=pick([F(1),F(1),F(2),F(3)]);s=pick([F(1,2),F(1,3),F(1,4),F(3,2),F(2,3),F(-1,2),F(-3,2),F(5,2),F(-7,4),F(3,4),F(1,5),F(-1,3)]);}}
+    else {const pr=pick([[2,3],[3,2],[3,5],[5,3],[2,5],[5,2],[3,4],[4,3]]);B=F(pr[0],pr[1]);r=F(1);s=F(pick([-4,-3,-2,2,3,4]));}
+    const big=Math.max(B.n,B.d);
+    if(Math.pow(big,Math.abs(fval(s)))>(base10?1e7:3125)) continue;
+    if(Math.pow(big,Math.abs(fval(r)))>343) continue;
+    if(s.n===0&&rnd()<.6) continue;
+    const ans=fdiv(s,r);
+    if(ans.d>12) continue;
+    const bL=base10?'10':powLatex(B,r);
+    const NL=powLatex(B,s,{decimal:dec});
+    const logL=base10?R`\log `:R`\log_{${bL}} `;
+    const Bl=Bname(B);
+    const steps=[R`${logL}${wrapArg(NL)} = x \iff ${wrapBase(bL)}^{x} = ${NL}`];
+    const parts=[];
+    if(!(r.d===1&&r.n===1)) parts.push(R`${bL} = ${Bl}^{${expLx(r)}}`);
+    parts.push(R`${NL} = ${Bl}^{${expLx(s)}}`);
+    steps.push(parts.join(R`,\qquad `));
+    if(r.d===1&&r.n===1) steps.push(R`${Bl}^{x} = ${Bl}^{${expLx(s)}} \;\Rightarrow\; x = ${expLx(ans)}`);
+    else steps.push(R`${Bl}^{${xTimes(r)}} = ${Bl}^{${expLx(s)}} \;\Rightarrow\; ${xTimes(r)} = ${expLx(s)} \;\Rightarrow\; x = ${expLx(ans)}`);
+    const c=fval(ans), errs=[];
+    if(c!==0){
+      errs.push({val:-c,msg:R`Has obtenido el valor opuesto: es un <b>error de signo</b>. Si la base es mayor que 1 y el argumento menor que 1, el logaritmo es negativo; si la base es menor que 1, ocurre al revés. Revisa los exponentes negativos: $\frac{1}{a^n}=a^{-n}$.`});
+      errs.push({val:1/c,msg:R`Has invertido la relación. $\log_a N = x$ significa que <b>la base</b> elevada a $x$ da el argumento ($a^x=N$), no que el argumento elevado a $x$ dé la base.`});
+    }
+    if(!(r.d===1&&r.n===1)&&fval(s)!==c) errs.push({val:fval(s),msg:R`Has igualado solo el exponente del argumento, pero la base también es una potencia: $${bL} = ${Bl}^{${expLx(r)}}$. Al igualar exponentes queda $${xTimes(r)} = ${expLx(s)}$ y hay que despejar $x$.`});
+    return {tipo:'def',inst:'Calcula aplicando la definición de logaritmo.',enun:R`${logL}${wrapArg(NL)} = \;?`,
+      ansVal:c,ansLx:expLx(ans),steps,errs,
+      porque:'Has aplicado bien la definición: el logaritmo es el exponente al que hay que elevar la base para obtener el argumento. Escribir base y argumento como potencias de un mismo número permite igualar exponentes.'};
+  }
+}
+
+/* ═════════════ TIPO 2 · Incógnita en la base o en el argumento ═════════════ */
+function genT2(){
+  for(let tries=0;tries<400;tries++){
+    const v=pick(['base','base','arg','arg','exp','inv']);
+    if(v==='base'){
+      const k=pick([2,3,5,7]);const rx=pick([F(1),F(1),F(-1),F(1,2),F(-1,2)]);
+      const c=pick([F(2),F(3),F(-1),F(-2),F(1,2),F(-1,2),F(3,2),F(4),F(5),F(-3)]);
+      const s=fmul(rx,c); if(s.n===0||![1,2,4].includes(s.d)) continue;
+      if(Math.pow(k,Math.abs(fval(s)))>3125) continue;
+      if(rx.n===1&&rx.d===1&&c.n===1&&c.d===1) continue;
+      const B=F(k);
+      const NL=powLatex(B,s,{decimal:(k===2||k===5)&&rnd()<.5});
+      const xv=Math.pow(k,fval(rx)), xL=powLatex(B,rx,{neg:'inv'}), Nv=Math.pow(k,fval(s)), cv=fval(c);
+      const errs=[
+        {val:Math.pow(Nv,cv),msg:R`Has elevado el argumento al exponente $${expLx(c)}$. Lo que hay que hacer es <b>despejar</b> $x$ en $x^{${expLx(c)}} = ${NL}$: se eleva todo a $${expLx(finv(c))}$, el inverso del exponente.`},
+        {val:1/xv,msg:R`Error de signo en el exponente: has obtenido el inverso de la base correcta. Recuerda que $a^{-n} = \frac{1}{a^n}$.`},
+        {val:Nv/cv,msg:R`Has dividido el argumento entre el exponente. En $x^{${expLx(c)}} = ${NL}$ el exponente no se “pasa dividiendo”: hay que elevar a $${expLx(finv(c))}$.`}
+      ];
+      return {tipo:'inc',inst:'Halla la base $x$.',enun:R`\log_{x} ${wrapArg(NL)} = ${expLx(c)}`,ansVal:xv,ansLx:xL,
+        steps:[R`\log_{x} ${wrapArg(NL)} = ${expLx(c)} \iff x^{${expLx(c)}} = ${NL}`,
+               R`${NL} = ${k}^{${expLx(s)}} \;\Rightarrow\; x^{${expLx(c)}} = ${k}^{${expLx(s)}}`,
+               R`x = \left(${k}^{${expLx(s)}}\right)^{${expLx(finv(c))}} = ${k}^{${expLx(rx)}} = ${xL}`],
+        errs,extra:val=>(val<=0||Math.abs(val-1)<1e-12)?R`La base de un logaritmo tiene que ser <b>positiva y distinta de 1</b>; tu valor no puede ser base. Pasa a forma exponencial y despeja $x$.`:null,
+        porque:'Correcto: has pasado a la forma exponencial y has despejado la base elevando al inverso del exponente.'};
+    }
+    if(v==='arg'){
+      let B,r,c;
+      if(rnd()<.25){const pr=pick([[2,5],[3,4],[2,3],[5,2]]);B=F(pr[0],pr[1]);r=F(1);c=F(pick([-1,-2,2,3]));}
+      else{B=F(pick([2,3,5,7]));r=pick([F(1),F(2),F(3),F(-1),F(1,2)]);c=pick([F(2),F(3),F(-1),F(-2),F(1,2),F(3,2),F(-1,2),F(4),F(5),F(-3),F(2,3)]);}
+      const s=fmul(r,c); if(s.d!==1||s.n===0) continue;
+      const big=Math.max(B.n,B.d);
+      if(Math.pow(big,Math.abs(s.n))>3125||Math.pow(big,Math.abs(fval(r)))>343) continue;
+      const bL=powLatex(B,r), xL=powLatex(B,s), xv=Math.pow(fval(B),s.n), bv=Math.pow(fval(B),fval(r)), cv=fval(c);
+      const steps=[R`\log_{${bL}} x = ${expLx(c)} \iff x = ${wrapBase(bL)}^{${expLx(c)}}`];
+      if(!(r.d===1&&r.n===1)) steps.push(R`${wrapBase(bL)}^{${expLx(c)}} = \left(${Bname(B)}^{${expLx(r)}}\right)^{${expLx(c)}} = ${Bname(B)}^{${s.n}}`);
+      steps.push(R`x = ${xL}`);
+      return {tipo:'inc',inst:'Halla el argumento $x$.',enun:R`\log_{${bL}} x = ${expLx(c)}`,ansVal:xv,ansLx:xL,steps,
+        errs:[{val:bv*cv,msg:R`Has multiplicado la base por el exponente. La definición dice que $x$ es la base <b>elevada</b> al resultado: $x = ${wrapBase(bL)}^{${expLx(c)}}$.`},
+              {val:Math.pow(cv,bv),msg:'Has intercambiado base y exponente: la base del logaritmo es la base de la potencia.'},
+              {val:1/xv,msg:R`Error de signo en el exponente: has obtenido el inverso. Recuerda que $a^{-n}=\frac{1}{a^n}$.`}],
+        extra:val=>val<=0?'El argumento de un logaritmo siempre es positivo, así que x no puede ser negativo ni cero.':null,
+        porque:'Correcto: al pasar a forma exponencial, el argumento es la base elevada al valor del logaritmo.'};
+    }
+    if(v==='exp'){
+      const k=pick([2,3,5]);const s=pick([F(2),F(3),F(4),F(5),F(-1),F(-2),F(-3),F(1,2),F(3,2),F(-1,2)]);
+      if(Math.pow(k,Math.abs(fval(s)))>625) continue;
+      const NL=powLatex(F(k),s,{decimal:rnd()<.5}); const sv=fval(s);
+      return {tipo:'inc',inst:'Halla $x$ aplicando la definición de logaritmo.',enun:R`${k}^{x} = ${NL}`,ansVal:sv,ansLx:expLx(s),
+        steps:[R`${k}^{x} = ${NL} \iff x = \log_{${k}} ${wrapArg(NL)}`,R`${NL} = ${k}^{${expLx(s)}} \;\Rightarrow\; ${k}^{x} = ${k}^{${expLx(s)}} \;\Rightarrow\; x = ${expLx(s)}`],
+        errs:[{val:-sv,msg:R`Error de signo: un número menor que 1 se escribe con exponente negativo, $\frac{1}{a^n}=a^{-n}$.`},{val:1/sv,msg:'Has invertido el exponente. Escribe el segundo miembro como potencia de la misma base e iguala exponentes.'}],
+        porque:'Correcto: escribiendo ambos miembros como potencias de la misma base se igualan los exponentes.'};
+    }
+    // inv: k^(1/x) = k^m
+    const k=pick([2,3,5]);const m=pick([2,3,4,-1,-2]);
+    if(Math.pow(k,Math.abs(m))>625) continue;
+    const NL=powLatex(F(k),F(m)); const ans=F(1,m);
+    return {tipo:'inc',inst:'Halla $x$ aplicando la definición de logaritmo.',enun:R`${k}^{\frac{1}{x}} = ${NL}`,ansVal:fval(ans),ansLx:expLx(ans),
+      steps:[R`${k}^{\frac{1}{x}} = ${NL} \iff \frac{1}{x} = \log_{${k}} ${NL}`,R`${NL} = ${k}^{${m}} \;\Rightarrow\; \frac{1}{x} = ${m} \;\Rightarrow\; x = ${expLx(ans)}`],
+      errs:[{val:m,msg:R`Has hallado el valor de $\frac{1}{x}$, pero falta el último paso: despejar $x$ invirtiendo.`},{val:-1/m,msg:'Error de signo al escribir el segundo miembro como potencia.'}],
+      porque:'Correcto: igualando exponentes se obtiene 1/x y después se invierte.'};
+  }
+}
+
+/* ═════════════ TIPO 3 · Cálculo con log 2, log 3 y log 7 ═════════════ */
+const LG={2:0.3010,3:0.4771,5:0.6990,7:0.8451};
+function factoriza(n){const e={2:0,3:0,5:0,7:0};for(const p of [2,3,5,7])while(n%p===0){n/=p;e[p]++;}return n===1?e:null;}
+function logDe(e){return e[2]*LG[2]+e[3]*LG[3]+e[5]*LG[5]+e[7]*LG[7];}
+function potLx(e){const t=[];for(const p of [2,3,5,7])if(e[p])t.push(e[p]===1?String(p):R`${p}^{${e[p]}}`);return t.join(R`\cdot `)||'1';}
+function sumaLogLx(e){const t=[];for(const p of [2,3,5,7])if(e[p])t.push((e[p]===1?'':e[p])+R`\log ${p}`);return t.join(' + ');}
+function sumaNumLx(e){const t=[];for(const p of [2,3,5,7])if(e[p])t.push((e[p]===1?'':e[p]+R`\cdot `)+decLx(decStr(LG[p],4)));return t.join(' + ');}
+const nota5 = R`\log 5 = \log\frac{10}{2} = 1 - \log 2 = 0{,}6990`;
+function genT3(){
+  for(let tries=0;tries<500;tries++){
+    const v=pick(['dec','dec','root','frac','cambio']);
+    if(v==='dec'||v==='root'){
+      const a=ri(0,7),b=ri(0,3),c=ri(0,2),d=rnd()<.35?1:0;
+      const M=ipow(2,a)*ipow(3,b)*ipow(5,c)*ipow(7,d);
+      if(M<6||M>3000||M%10===0) continue;
+      if([a,b,c,d].filter(x=>x>0).length<(v==='dec'?2:1)) continue;
+      const ex=pick([0,0,-1,-2,-3]);
+      const Nstr=shiftStr(M,ex); const NL=decLx(Nstr);
+      const e={2:a,3:b,5:c,7:d}; const base=logDe(e)+ex;
+      const n=v==='root'?pick([2,3,5]):1; const val=base/n;
+      const desc= ex<0 ? R`${NL} = \frac{${potLx(e)}}{10^{${-ex}}}` : R`${NL} = ${potLx(e)}`;
+      const logExp = R`${sumaLogLx(e)}${ex<0?' - '+(-ex):''}`;
+      const numExp = R`${sumaNumLx(e)}${ex<0?' - '+(-ex):''}`;
+      const steps=[desc];
+      if(v==='root'){steps.push(R`\log\sqrt[${n}]{${NL}} = \frac{1}{${n}}\log ${NL} = \frac{1}{${n}}\left(${logExp}\right)`);steps.push(R`= \frac{1}{${n}}\left(${numExp}\right) = \frac{${decLx(decStr(base,4))}}{${n}} \approx ${decLx(decStr(val,4))}`);}
+      else {steps.push(R`\log ${NL} = ${logExp}`);steps.push(R`= ${numExp} = ${decLx(decStr(val,4))}`);}
+      if(c>0) steps.push(nota5);
+      const enun = v==='root' ? (n===2?R`\log\sqrt{${NL}}`:R`\log\sqrt[${n}]{${NL}}`) : R`\log ${NL}`;
+      const errs=[{val:-val,msg:'Error de signo. Revisa la potencia de 10 del denominador: un número menor que 1 tiene logaritmo negativo.'}];
+      if(n>1) errs.push({val:base,msg:R`Has calculado $\log ${NL}$, pero falta la raíz: $\log\sqrt[n]{A} = \frac{1}{n}\log A$, así que hay que dividir entre ${n}.`});
+      return {tipo:'aprox',inst:'Calcula usando solo los datos (sin la tecla log de la calculadora). Da el resultado con 4 decimales.',datos:true,enun,
+        ansVal:val,ansLx:decLx(decStr(val,4)),tol:0.002,steps,errs,
+        extra:x=>{const d=x-val;const k=Math.round(d);if(k!==0&&Math.abs(d-k)<0.003)return R`Te has equivocado en la potencia de 10: tu resultado difiere en un número entero. Escribe primero $${NL}$ como fracción con denominador $10^n$; cada factor 10 aporta $\log 10 = 1$.`;
+          return null;},
+        porque:R`Correcto: has descompuesto el número en factores primos y potencias de 10 y has aplicado las propiedades del producto, el cociente y la potencia.`};
+    }
+    if(v==='frac'){
+      const p=pick([2,3,4,6,8,9,12,16,18,27,7,14,21]),q=pick([5,3,2,4,7,9,25,10]);
+      if(gcd(p,q)!==1||p===q) continue;
+      const k=pick([1,2,3]);const ep=factoriza(p),eq=factoriza(q);
+      const val=k*(logDe(ep)-logDe(eq));
+      const fr=R`\frac{${p}}{${q}}`;
+      const enun = k===1?R`\log ${fr}`:R`\log\left(${fr}\right)^{${k}}`;
+      const steps=[];
+      if(k>1)steps.push(R`\log\left(${fr}\right)^{${k}} = ${k}\left(\log ${p} - \log ${q}\right)`);
+      else steps.push(R`\log ${fr} = \log ${p} - \log ${q}`);
+      steps.push(R`\log ${p} = ${sumaLogLx(ep)} = ${decLx(decStr(logDe(ep),4))},\qquad \log ${q} = ${sumaLogLx(eq)} = ${decLx(decStr(logDe(eq),4))}`);
+      steps.push(R`${k>1?k+R`\cdot`:''}\left(${decLx(decStr(logDe(ep),4))} - ${decLx(decStr(logDe(eq),4))}\right) = ${decLx(decStr(val,4))}`);
+      if(eq[5]||ep[5]) steps.push(nota5);
+      const errs=[{val:-val,msg:'Error de signo: has restado al revés. El logaritmo del numerador va primero: log(A/B) = log A − log B.'},
+        {val:k*(logDe(ep)+logDe(eq)),msg:R`Has sumado los logaritmos del numerador y del denominador. Para un cociente se <b>restan</b>: $\log\frac{A}{B} = \log A - \log B$.`}];
+      if(k>1) errs.push({val:val/k,msg:R`Has olvidado el exponente $${k}$: $\log A^{${k}} = ${k}\log A$, multiplica todo el resultado.`});
+      return {tipo:'aprox',inst:'Calcula usando solo los datos (sin la tecla log de la calculadora). Da el resultado con 4 decimales.',datos:true,enun,ansVal:val,ansLx:decLx(decStr(val,4)),tol:0.002,steps,errs,
+        porque:'Correcto: cociente → resta de logaritmos, potencia → el exponente multiplica.'};
+    }
+    // cambio de base
+    const A=pick([2,3,4,5,6,8,9,12,16,25,27]),Bb=pick([2,3,4,5,6,8,9,12]);
+    if(A===Bb) continue;
+    const eA=factoriza(A),eB=factoriza(Bb);const lA=logDe(eA),lB=logDe(eB);const val=lA/lB;
+    const steps=[R`\log_{${Bb}} ${A} = \frac{\log ${A}}{\log ${Bb}}`,
+      R`= \frac{${sumaLogLx(eA)}}{${sumaLogLx(eB)}} = \frac{${decLx(decStr(lA,4))}}{${decLx(decStr(lB,4))}} \approx ${decLx(decStr(val,4))}`];
+    if(eA[5]||eB[5]) steps.push(nota5);
+    return {tipo:'aprox',inst:'Calcula usando solo los datos y el cambio de base. Da el resultado con 4 decimales.',datos:true,enun:R`\log_{${Bb}} ${A}`,ansVal:val,ansLx:decLx(decStr(val,4)),tol:0.002,steps,
+      errs:[{val:lA-lB,msg:R`El cambio de base es un <b>cociente</b>, no una resta: $\log_a N = \frac{\log N}{\log a}$.`},
+            {val:lB/lA,msg:R`Has puesto la fracción al revés. En $\log_a N = \frac{\log N}{\log a}$ el argumento va arriba y la base abajo.`}],
+      porque:'Correcto: con el cambio de base pasas a logaritmos decimales, que sí puedes calcular con los datos.'};
+  }
+}
+
+/* ═════════════ TIPO 4 · Ecuaciones con propiedades ═════════════ */
+function genT4(){
+  const ln=rnd()<.5; const L=ln?R`\ln `:R`\log `; const Ln=ln?'ln':'log';
+  for(let tries=0;tries<300;tries++){
+    const v=pick(['E1','E2','E3','E4','E5','E6']);
+    let enun,ans,steps,errs=[];
+    if(v==='E1'){const a=ri(2,9),b=ri(2,9);if(a===b)continue;ans=F(a*b);
+      enun=R`${L}x = ${L}${a} + ${L}${b}`;
+      steps=[R`${L}${a} + ${L}${b} = ${L}(${a}\cdot ${b}) = ${L}${a*b}`,R`${L}x = ${L}${a*b} \;\Rightarrow\; x = ${a*b}`];
+      errs=[{val:a+b,msg:R`Has sumado los argumentos. La suma de logaritmos es el logaritmo del <b>producto</b>: $${L}A + ${L}B = ${L}(A\cdot B)$, no $${L}(A+B)$.`}];}
+    else if(v==='E2'){const b=ri(2,9);let a;if(rnd()<.6)a=b*ri(2,9);else{a=ri(2,30);if(a%b===0)continue;}ans=F(a,b);
+      enun=R`${L}x = ${L}${a} - ${L}${b}`;
+      steps=[R`${L}${a} - ${L}${b} = ${L}\frac{${a}}{${b}}`,R`x = ${expLx(ans)}`];
+      errs=[{val:a-b,msg:R`Has restado los argumentos. La resta de logaritmos es el logaritmo del <b>cociente</b>: $${L}A - ${L}B = ${L}\frac{A}{B}$.`}];}
+    else if(v==='E3'){const a=ri(2,5),n=ri(2,4);if(ipow(a,n)>625)continue;ans=F(ipow(a,n));
+      enun=R`${L}x = ${n}\,${L}${a}`;
+      steps=[R`${n}\,${L}${a} = ${L}${a}^{${n}} = ${L}${ipow(a,n)}`,R`x = ${ipow(a,n)}`];
+      errs=[{val:n*a,msg:R`Has multiplicado ${n}·${a}. El coeficiente pasa a ser <b>exponente</b>: $n\,${L}A = ${L}A^{n}$.`}];}
+    else if(v==='E4'){const a=ri(2,9),b=ri(2,9),c=ri(2,9);if(a===b||c===a||c===b)continue;ans=F(a*b,c);
+      enun=R`${L}x = ${L}${a} + ${L}${b} - ${L}${c}`;
+      steps=[R`${L}${a} + ${L}${b} - ${L}${c} = ${L}\frac{${a}\cdot ${b}}{${c}} = ${L}${expLx(ans)}`,R`x = ${expLx(ans)}`];
+      errs=[{val:a+b-c,msg:R`Has operado con los argumentos como si los logaritmos no estuvieran. Suma → producto y resta → cociente: $${L}A + ${L}B - ${L}C = ${L}\frac{A\cdot B}{C}$.`}];}
+    else if(v==='E5'){const a=pick([2,3]),m=ri(2,4),d=pick([2,3,5]),n=pick([2,3]);const b=ipow(d,n);if(b>125||a===d)continue;ans=F(ipow(a,m),d);
+      enun=R`${L}x = ${m}\,${L}${a} - \frac{1}{${n}}\,${L}${b}`;
+      steps=[R`${m}\,${L}${a} = ${L}${a}^{${m}} = ${L}${ipow(a,m)},\qquad \frac{1}{${n}}\,${L}${b} = ${L}${n===2?R`\sqrt{${b}}`:R`\sqrt[${n}]{${b}}`} = ${L}${d}`,
+             R`${L}x = ${L}${ipow(a,m)} - ${L}${d} = ${L}\frac{${ipow(a,m)}}{${d}} \;\Rightarrow\; x = ${expLx(ans)}`];
+      errs=[{val:ipow(a,m)-d,msg:R`Has restado los argumentos. La resta de logaritmos es un <b>cociente</b>.`},
+            {val:ipow(a,m)/b,msg:R`Has olvidado el coeficiente $\frac{1}{${n}}$: $\frac{1}{n}${L}B = ${L}\sqrt[n]{B}$, así que $${b}$ se convierte en $${d}$.`},
+            {val:m*a/(b/n),msg:R`Los coeficientes pasan a ser exponentes, no factores que multiplican al argumento.`}];}
+    else {const y=ri(2,9),n=pick([2,3]);
+      if(rnd()<.5){const a=ipow(y,n);if(a>729)continue;ans=F(y);
+        enun=R`${n}\,${L}x = ${L}${a}`;
+        steps=[R`${n}\,${L}x = ${L}x^{${n}} = ${L}${a}`,R`x^{${n}} = ${a} \;\Rightarrow\; x = ${n===2?R`\sqrt{${a}}`:R`\sqrt[3]{${a}}`} = ${y}`,R`\text{(la solución negativa no vale: el argumento debe ser positivo)}`];
+        errs=[{val:a/n,msg:R`Has dividido entre ${n}. El coeficiente es un exponente: $${n}\,${L}x = ${L}x^{${n}}$, y después hay que hacer la raíz.`},
+              {val:-y,msg:R`El argumento de un logaritmo debe ser positivo, así que la solución negativa no es válida.`}];}
+      else {const a=ri(2,9);if(ipow(a,n)>729)continue;ans=F(ipow(a,n));
+        enun=R`\frac{1}{${n}}\,${L}x = ${L}${a}`;
+        steps=[R`\frac{1}{${n}}\,${L}x = ${L}${n===2?R`\sqrt{x}`:R`\sqrt[3]{x}`} = ${L}${a}`,R`${n===2?R`\sqrt{x}`:R`\sqrt[3]{x}`} = ${a} \;\Rightarrow\; x = ${a}^{${n}} = ${ipow(a,n)}`];
+        errs=[{val:a*n,msg:R`Has multiplicado ${a}·${n}. El coeficiente $\frac{1}{${n}}$ es una raíz: $\frac{1}{n}${L}x = ${L}\sqrt[n]{x}$; para despejar hay que <b>elevar</b> a ${n}.`}];}
+    }
+    return {tipo:'ecu',inst:'Halla el valor de $x$ aplicando las propiedades de los logaritmos.',enun,ansVal:fval(ans),ansLx:expLx(ans),steps,errs,
+      extra:val=>val<=0?R`$x$ tiene que ser positivo: no existe el logaritmo de un número negativo ni de 0.`:null,
+      porque:`Correcto: has agrupado todo en un único ${Ln} en cada miembro y, al ser la función logarítmica inyectiva, has igualado los argumentos.`};
+  }
+}
+
+/* ═════════════ TIPO 5 · Desarrollar, comprimir y eliminar (test) ═════════════ */
+function termLx(v,e){const inner=e.n===1?v:R`${v}^{${e.n}}`;if(e.d===1)return inner;return e.d===2?R`\sqrt{${inner}}`:R`\sqrt[${e.d}]{${inner}}`;}
+function argLx(terms){const num=terms.filter(t=>t.s>0),den=terms.filter(t=>t.s<0);
+  const nl=num.length?num.map(t=>termLx(t.v,t.e)).join(R`\,`):'1';
+  if(!den.length)return nl;return R`\frac{${nl}}{${den.map(t=>termLx(t.v,t.e)).join(R`\,`)}}`;}
+function coefLx(c,first){const neg=c.n<0,a=Math.abs(c.n);const body=c.d===1?(a===1?'':String(a)):R`\frac{${a}}{${c.d}}`;return (neg?'-':(first?'':'+'))+body;}
+function sumLx(items,L=R`\log `){return items.map((it,i)=>coefLx(it.c,i===0)+L+it.v).join(' ');}
+const tenLx=k=>k>=0?String(ipow(10,k)):R`\frac{1}{${ipow(10,-k)}}`;
+
+function genDesarrollar(){
+  for(let tries=0;tries<200;tries++){
+    const vars=pick([['a','b','c'],['x','y','z'],['m','n','p']]);
+    const tPow={v:vars[0],e:F(ri(2,4)),s:1};
+    const tRoot={v:vars[1],e:pick([F(1,2),F(1,3),F(2,3),F(3,4),F(1,4),F(2,5),F(3,2)]),s:rnd()<.5?1:-1};
+    const tThird={v:vars[2],e:pick([F(1),F(2),F(3),F(1,2),F(3,4)]),s:-1};
+    if(tRoot.s===-1&&rnd()<.5)tThird.s=1;
+    const terms=[tPow,tRoot,tThird];
+    const corr=terms.map(t=>({c:t.s>0?t.e:fneg(t.e),v:t.v}));
+    const correct=sumLx(corr);
+    const D=[];
+    D.push({lx:sumLx(terms.map(t=>({c:t.e,v:t.v}))),msg:R`Error de signo: lo que está en el <b>denominador</b> se resta, porque $\log\frac{A}{B} = \log A - \log B$.`});
+    D.push({lx:sumLx(terms.map(t=>({c:t.e.d>1?(t.s>0?F(t.e.d,t.e.n):fneg(F(t.e.d,t.e.n))):(t.s>0?t.e:fneg(t.e)),v:t.v}))),msg:R`Has invertido el exponente de la raíz: $\sqrt[n]{a^m} = a^{m/n}$, así que su logaritmo es $\frac{m}{n}\log a$, no $\frac{n}{m}\log a$.`});
+    const numI=terms.filter(t=>t.s>0).map(t=>({c:t.e,v:t.v})),denI=terms.filter(t=>t.s<0).map(t=>({c:t.e,v:t.v}));
+    D.push({lx:R`\dfrac{${sumLx(numI)}}{${sumLx(denI)}}`,msg:R`El logaritmo de un cociente <b>no</b> es el cociente de los logaritmos: $\log\frac{A}{B} = \log A - \log B \neq \frac{\log A}{\log B}$.`});
+    D.push({lx:sumLx(terms.map(t=>{const c=t.e.d===1?F(1):t.e;return {c:t.s>0?c:fneg(c),v:t.v};})),msg:R`Has olvidado la propiedad de la potencia: $\log a^n = n\log a$. El exponente pasa multiplicando delante del logaritmo.`});
+    const opts=uniqueOpts(correct,D);if(!opts)continue;
+    return {tipo:'prop',mcq:true,inst:'Desarrolla aplicando las propiedades de los logaritmos. Elige la opción correcta.',
+      enun:R`\log ${argLx(terms)}`,options:opts,
+      steps:[R`\log ${argLx(terms)} = ${terms.map((t,i)=>(t.s>0?(i?'+':''):'-')+R`\log `+termLx(t.v,t.e)).join(' ')}`,R`= ${correct}`],
+      porque:'Correcto: producto → suma, cociente → resta y cada potencia o raíz aporta su exponente (m/n) como coeficiente.'};
+  }
+}
+function genComprimir(){
+  for(let tries=0;tries<200;tries++){
+    const vars=pick([['x','y'],['a','b'],['m','n'],['x','y','z']]);
+    const pool=[F(2),F(3),F(4),F(1,2),F(1,3),F(1,4),F(-1),F(-2),F(-1,2),F(-3),F(1)];
+    const items=vars.map(v=>({v,c:pick(pool)}));
+    if(!items.some(it=>!(Math.abs(it.c.n)===1&&it.c.d===1)))continue;
+    if(items.length===3&&!items.some(it=>it.c.n<0))continue;
+    const terms=items.map(it=>({v:it.v,e:fabs(it.c),s:it.c.n<0?-1:1}));
+    const correct=R`\log\left(${argLx(terms)}\right)`;
+    const D=[];
+    D.push({lx:R`\log\left(${terms.map((t,i)=>(t.s>0?(i?'+':''):'-')+termLx(t.v,t.e)).join(' ')}\right)`,msg:R`La suma (o resta) de logaritmos no es el logaritmo de una suma (o resta): $\log A + \log B = \log(A\cdot B)$ y $\log A - \log B = \log\frac{A}{B}$.`});
+    D.push({lx:R`\log\left(${argLx(terms.map(t=>({v:t.v,e:finv(t.e),s:t.s})))}\right)`,msg:R`El coeficiente pasa a ser el exponente tal cual: $\frac{1}{2}\log x = \log x^{1/2} = \log\sqrt{x}$ y $2\log x = \log x^2$. Has invertido los exponentes.`});
+    if(terms.some(t=>t.s<0)){
+      D.push({lx:R`\log\left(${argLx(terms.map(t=>({...t,s:1})))}\right)`,msg:R`Los términos con signo menos van al <b>denominador</b>: $\log A - \log B = \log\frac{A}{B}$.`});
+      if(terms.some(t=>t.s>0))D.push({lx:R`\log\left(${argLx(terms.map(t=>({...t,s:-t.s})))}\right)`,msg:'Has colocado al revés numerador y denominador: lo que resta va abajo y lo que suma va arriba.'});
+    }
+    D.push({lx:terms.map(t=>R`\log ${termLx(t.v,t.e)}`).join(R`\cdot `),msg:R`Has convertido la suma en un producto de logaritmos. La propiedad es $\log A + \log B = \log(A\cdot B)$: el producto va <b>dentro</b> del logaritmo.`});
+    const opts=uniqueOpts(correct,D);if(!opts)continue;
+    return {tipo:'prop',mcq:true,inst:'Expresa con un único logaritmo. Elige la opción correcta.',enun:sumLx(items),options:opts,
+      steps:[R`${sumLx(items)} = ${terms.map((t,i)=>(t.s>0?(i?'+':''):'-')+R`\log `+termLx(t.v,t.e)).join(' ')}`,R`= ${correct}`],
+      porque:'Correcto: cada coeficiente pasa a exponente; después, suma → producto y resta → cociente.'};
+  }
+}
+function genEliminar(){
+  for(let tries=0;tries<200;tries++){
+    const al=pick([F(1),F(2),F(3),F(4),F(2,3),F(1,2)]),be=pick([F(1),F(2),F(3)]);
+    const modo=pick(['+','-','const']);
+    const k=modo==='const'?pick([1,2]):pick([1,2,3,-1,-2]);
+    const sy=modo==='+'?1:-1;
+    const terms=[{v:'x',e:al,s:1},{v:'y',e:be,s:sy}];
+    const arg=argLx(terms);
+    const correct=R`${arg} = ${tenLx(k)}`;
+    let enun;
+    if(modo==='+')enun=R`${coefLx(al,true)}\log x + ${coefLx(be,true)}\log y = ${k}`;
+    else if(modo==='-')enun=R`${coefLx(al,true)}\log x - ${coefLx(be,true)}\log y = ${k}`;
+    else enun=R`${coefLx(al,true)}\log x - ${k} = ${coefLx(be,true)}\log y`;
+    const D=[];
+    D.push({lx:R`${arg} = ${k}`,msg:R`Al quitar el logaritmo, el otro miembro cambia: $\log A = k \iff A = 10^{k}$.`});
+    D.push({lx:R`${coefLx(al,true)}x ${sy>0?'+':'-'} ${coefLx(be,true)}y = ${tenLx(k)}`,msg:'Los logaritmos no se pueden “tachar” sin más: primero hay que agrupar todo en un único logaritmo con las propiedades (los coeficientes pasan a exponentes).'});
+    D.push({lx:R`${argLx(terms.map(t=>({...t,s:sy>0&&t.v==='y'?-1:1})))} = ${tenLx(k)}`,msg:R`Error al agrupar: la suma de logaritmos da un <b>producto</b> y la resta un <b>cociente</b>.`});
+    D.push({lx:R`${argLx(terms.map(t=>({...t,e:F(1)})))} = ${tenLx(k)}`,msg:R`Has olvidado los coeficientes: $n\log x = \log x^n$, así que deben aparecer como exponentes.`});
+    const opts=uniqueOpts(correct,D);if(!opts)continue;
+    const steps=[];
+    if(modo==='const')steps.push(R`${coefLx(al,true)}\log x - ${coefLx(be,true)}\log y = ${k}`);
+    steps.push(R`\log ${termLx('x',al)} ${sy>0?'+':'-'} \log ${termLx('y',be)} = ${k} \;\Rightarrow\; \log ${arg} = ${k}`);
+    steps.push(R`${arg} = 10^{${k}} = ${tenLx(k)}`);
+    return {tipo:'prop',mcq:true,inst:'Elimina los logaritmos (escribe la relación entre x e y sin logaritmos). Elige la opción correcta.',enun,options:opts,steps,
+      porque:'Correcto: primero se agrupa en un único logaritmo y después se aplica la definición, log A = k ⟺ A = 10ᵏ.'};
+  }
+}
+function uniqueOpts(correct,D){
+  const seen=new Set([correct]);const good=[];
+  for(const d of shuffle(D.slice())){if(!seen.has(d.lx)){seen.add(d.lx);good.push(d);}if(good.length===3)break;}
+  if(good.length<3)return null;
+  return shuffle([{lx:correct,ok:true},...good.map(d=>({lx:d.lx,ok:false,msg:d.msg}))]);
+}
+function genT5(){const r=rnd();return r<.4?genDesarrollar():r<.7?genComprimir():genEliminar();}
+
+/* ═════════════ Tipos, estado y puntuación ═════════════ */
+const TIPOS=[
+  {id:'def',nombre:'Logaritmo por definición',gen:genT1},
+  {id:'inc',nombre:'Incógnita en la base o el argumento',gen:genT2},
+  {id:'aprox',nombre:'Cálculo con log 2, log 3 y log 7',gen:genT3},
+  {id:'ecu',nombre:'Ecuaciones con propiedades',gen:genT4},
+  {id:'prop',nombre:'Desarrollar, comprimir y eliminar',gen:genT5}
+];
+const TIPO=Object.fromEntries(TIPOS.map(t=>[t.id,t]));
+const state={fallosTotales:0,tipos:{},inicio:Date.now(),activo:'def'};
+TIPOS.forEach(t=>state.tipos[t.id]={intentos:[],superado:false,cerrado:false,fallos:0,aciertos:0,total:0,num:0,actual:null});
+const PUNTO_POR_TIPO=10/TIPOS.length;
+const PENALIZACION_FALLO=0.5;
+
+function calcularNota(){
+  const superados=Object.values(state.tipos).filter(t=>t.superado).length;
+  const bruta=superados*PUNTO_POR_TIPO-state.fallosTotales*PENALIZACION_FALLO;
+  return Math.round(Math.min(10,Math.max(0,bruta))*100)/100;
+}
+function registrarIntento(tipo,correcto){
+  const t=state.tipos[tipo];
+  if(t.cerrado)return;
+  t.total++;
+  t.intentos.push(correcto);
+  if(t.intentos.length>3)t.intentos.shift();
+  if(correcto)t.aciertos++; else {t.fallos++;state.fallosTotales++;}
+  const aciertosEnVentana=t.intentos.filter(Boolean).length;
+  if(!t.superado&&aciertosEnVentana>=2){t.superado=true;t.cerrado=true;}
+}
+function siguienteTipoDisponible(){
+  const pend=Object.keys(state.tipos).filter(t=>!state.tipos[t].cerrado);
+  if(!pend.length)return null;
+  return pend[Math.floor(rnd()*pend.length)];
+}
+function nuevoEjercicio(id){
+  const t=state.tipos[id];t.num++;t.hist=t.hist||[];
+  let ex,k=0;do{ex=TIPO[id].gen();k++;}while(t.hist.includes(ex.enun)&&k<60);
+  t.hist.push(ex.enun);if(t.hist.length>15)t.hist.shift();
+  t.actual={ex,respondido:false,fb:'',sel:null,valor:''};
+}
+
+/* ═════════════ Interfaz ═════════════ */
+const $=id=>document.getElementById(id);
+const fmtNota=n=>decStr(n,2);
+
+function puntosHTML(t){return [0,1,2].map(i=>{const v=t.intentos[i];return `<span class="punto ${v===undefined?'':v?'ok':'ko'}">${v===undefined?'':v?'✓':'✗'}</span>`;}).join('');}
+
+function renderMarcador(){
+  $('marcador-nota').textContent=fmtNota(calcularNota());
+  $('marcador-tipos').textContent=Object.values(state.tipos).filter(t=>t.superado).length;
+  $('marcador-fallos').textContent=state.fallosTotales;
+  const todo10=calcularNota()===10;
+  document.body.classList.toggle('ficha-10',todo10);
+}
+function renderPanel(){
+  $('tipos-grid').innerHTML=TIPOS.map((T,i)=>{const t=state.tipos[T.id];
+    const est=t.superado?'✓ Superado':(t.total?`${t.intentos.filter(Boolean).length} de ${t.intentos.length} en la ventana`:'Sin empezar');
+    return `<button class="tipo-card ${state.activo===T.id?'activo':''} ${t.superado?'superado':''}" data-tipo="${T.id}" aria-pressed="${state.activo===T.id}">
+      <div class="t-num">TIPO ${i+1}</div><div class="t-nom">${T.nombre}</div>
+      <div class="puntos">${puntosHTML(t)}</div><div class="t-est">${est}</div></button>`;}).join('');
+  document.querySelectorAll('.tipo-card').forEach(b=>b.addEventListener('click',()=>seleccionarTipo(b.dataset.tipo)));
+}
+function seleccionarTipo(id){
+  const act=state.tipos[state.activo];
+  if(act&&act.actual&&!act.actual.respondido){const inp=$('resp');if(inp)act.actual.valor=inp.value;}
+  state.activo=id;const t=state.tipos[id];
+  if(!t.cerrado&&(!t.actual))nuevoEjercicio(id);
+  renderTodo();
+}
+function ventanaHTML(id){
+  const t=state.tipos[id];const a=t.intentos.filter(Boolean).length,n=t.intentos.length;
+  const txt=t.superado?`<b>¡Tipo superado!</b> Has conseguido 2 aciertos en tus últimos intentos: +${fmtNota(PUNTO_POR_TIPO)} puntos.`
+    :`Llevas <b>${a}</b> acierto${a===1?'':'s'} ${n===1?'en tu primer intento':`en tus últimos ${n} intentos`}. Necesitas <b>2 aciertos de 3</b> para superar este tipo.`;
+  return `<div class="ventana"><span class="v-tit">Últimos 3 intentos</span><span class="puntos">${puntosHTML(t)}</span><span>${txt}</span></div>`;
+}
+function renderEjercicio(){
+  const id=state.activo,t=state.tipos[id],T=TIPO[id],idx=TIPOS.indexOf(T)+1,box=$('ejercicio');
+  if(!t.actual){box.innerHTML='';return;}
+  const A=t.actual,ex=A.ex,dis=A.respondido?'disabled':'';
+  let h=`<div class="ej-cab"><span class="ej-tipo">Tipo ${idx} · ${T.nombre}</span><span class="ej-num">Ejercicio n.º ${t.num}</span></div>`;
+  h+=`<p class="ej-inst">${mixed(ex.inst)}</p>`;
+  if(ex.datos)h+=`<div class="ej-datos">Datos: ${kx(R`\log 2 \simeq 0{,}3010,\quad \log 3 \simeq 0{,}4771,\quad \log 7 \simeq 0{,}8451,\quad \log 10 = 1`)}</div>`;
+  h+=`<div class="ej-enun">${kx(ex.enun,true)}</div>`;
+  if(ex.mcq){
+    h+=`<div class="opciones">${ex.options.map((o,i)=>{let cls='';if(A.respondido){if(o.ok)cls='correcta';else if(A.sel===i)cls='erronea';}else if(A.sel===i)cls='sel';
+      return `<button class="opcion ${cls}" data-op="${i}" ${dis}><span class="letra">${'ABCD'[i]}</span><span>${kx(o.lx)}</span></button>`;}).join('')}</div>`;
+    h+=`<div class="centro"><button class="btn-primario" id="btn-comprobar" ${dis}>Comprobar</button></div>`;
+  } else {
+    h+=`<div class="resp-fila"><label for="resp">Resultado:</label>
+      <input class="resp" id="resp" type="text" inputmode="text" autocomplete="off" placeholder="${ex.tipo==='aprox'?'Ej.: 1,4771':'Ej.: -3/2'}" value="${esc(A.valor)}" ${dis}>
+      ${ex.tipo==='aprox'?'':`<button class="btn-sim" id="btn-raiz" title="Insertar raíz cuadrada" ${dis}>√</button>`}
+      <button class="btn-primario" id="btn-comprobar" ${dis}>Comprobar</button></div>
+      <div class="preview" id="preview"></div>
+      <div class="ayuda-escritura">${ex.tipo==='aprox'?'Usa coma decimal: 0,8930':'Escribe el valor exacto: fracciones con /, raíces con √ (por ejemplo 1/√7 o 3√3), potencias con ^'}</div>`;
+  }
+  h+=`<div class="aviso-input" id="aviso-input" aria-live="assertive"></div>`;
+  h+=`<div id="feedback" aria-live="polite">${A.fb}</div>`;
+  if(A.respondido){
+    h+='<div class="acciones">';
+    if(!t.cerrado)h+=`<button class="btn-secundario" id="btn-otro">Otro ejercicio de este tipo</button>`;
+    else{
+      const sig=siguienteTipoDisponible();
+      if(sig)h+=`<button class="btn-primario" id="btn-siguiente" data-sig="${sig}">Ir a otro tipo pendiente</button>`;
+      else h+=`</div><div class="superado-banner">¡Has superado los 5 tipos! Pulsa «Finalizar y Calificar» para ver tu informe.</div><div>`;
+    }
+    h+='</div>';
+  }
+  box.innerHTML=h;
+  // eventos
+  if(ex.mcq&&!A.respondido)box.querySelectorAll('.opcion').forEach(b=>b.addEventListener('click',()=>{A.sel=+b.dataset.op;box.querySelectorAll('.opcion').forEach(x=>x.classList.toggle('sel',+x.dataset.op===A.sel));$('aviso-input').textContent='';}));
+  const inp=$('resp');
+  if(inp&&!A.respondido){
+    inp.addEventListener('input',()=>{A.valor=inp.value;actualizarPreview();});
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter')comprobar();});
+    actualizarPreview();
+  }
+  const br=$('btn-raiz');if(br)br.addEventListener('click',()=>{const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+'√'+inp.value.slice(inp.selectionEnd??p);A.valor=inp.value;inp.focus();inp.setSelectionRange(p+1,p+1);actualizarPreview();});
+  const bc=$('btn-comprobar');if(bc)bc.addEventListener('click',comprobar);
+  const bo=$('btn-otro');if(bo)bo.addEventListener('click',()=>{nuevoEjercicio(id);renderTodo();const r=$('resp');if(r)r.focus();});
+  const bs=$('btn-siguiente');if(bs)bs.addEventListener('click',()=>{seleccionarTipo(bs.dataset.sig);$('ejercicio').scrollIntoView({behavior:'smooth',block:'start'});});
+}
+function actualizarPreview(){
+  const inp=$('resp'),pv=$('preview');if(!inp||!pv)return;
+  const s=inp.value.trim();
+  if(!s){pv.innerHTML='';pv.classList.remove('err');return;}
+  try{const p=parseExpr(s);pv.classList.remove('err');pv.innerHTML='He entendido: '+kx(p.lx);}
+  catch(e){pv.classList.add('err');pv.textContent='Expresión incompleta o no válida';}
+}
+function renderTodo(){renderMarcador();renderPanel();renderEjercicio();}
+
+function nombreValido(){
+  const n=$('nombre').value.trim();
+  if(n.length<2){$('nombre').classList.add('falta');$('aviso-nombre').classList.add('visible');$('nombre').focus();return false;}
+  $('nombre').classList.remove('falta');$('aviso-nombre').classList.remove('visible');return true;
+}
+$('nombre').addEventListener('input',()=>{if($('nombre').value.trim().length>=2){$('nombre').classList.remove('falta');$('aviso-nombre').classList.remove('visible');}});
+
+function comprobar(){
+  const id=state.activo,t=state.tipos[id],A=t.actual;
+  if(!A||A.respondido||t.cerrado)return;
+  const ex=A.ex;
+  if(!nombreValido())return;
+  let ok,fb;
+  if(ex.mcq){
+    if(A.sel===null){$('aviso-input').textContent='Elige una de las cuatro opciones antes de comprobar.';return;}
+    const o=ex.options[A.sel];ok=o.ok;
+    const corr=ex.options.findIndex(x=>x.ok);
+    fb=`<div class="${ok?'feedback-correcto':'feedback-incorrecto'}"><div class="fb-tit">${ok?'✓ Correcto':'✗ Incorrecto · −0,5 puntos'}</div>`;
+    fb+=ok?`<p>${mixed(ex.porque)}</p>`:`<p class="fb-diag">${mixed(o.msg)}</p><p>La opción correcta es la <b>${'ABCD'[corr]}</b>: ${kx(ex.options[corr].lx)}</p>`;
+    fb+='</div>';
+  } else {
+    const s=($('resp').value||'').trim();
+    if(!s){$('aviso-input').textContent='Escribe tu respuesta antes de comprobar.';return;}
+    let p;
+    try{p=parseExpr(s);}catch(e){$('aviso-input').textContent='No entiendo la expresión. Revisa paréntesis y símbolos (usa / para fracciones y √ para raíces). Este intento no cuenta.';return;}
+    const v=p.v,ans=ex.ansVal;
+    const tol=ex.tol??1e-9*Math.max(1,Math.abs(ans));
+    ok=Math.abs(v-ans)<=tol;
+    if(!ok&&ex.tol===undefined&&Math.abs(v-ans)<0.006&&/[.,]\d{2,}/.test(s)&&Math.abs(ans*1000-Math.round(ans*1000))>1e-6&&!(ex.errs||[]).some(e=>Math.abs(v-e.val)<1e-6)){
+      $('aviso-input').innerHTML='Tu valor decimal se acerca, pero es una <b>aproximación</b>. Escribe el valor <b>exacto</b> con fracciones o raíces (por ejemplo 1/√7 o 3√3). Este intento no cuenta.';return;}
+    let diag=null;
+    if(!ok){
+      for(const e of (ex.errs||[])){if(isFinite(e.val)&&Math.abs(v-e.val)<=(ex.tol??1e-9*Math.max(1,Math.abs(e.val)))&&Math.abs(e.val-ans)>tol){diag=e.msg;break;}}
+      if(!diag&&ex.extra)diag=ex.extra(v);
+      if(!diag)diag='El resultado no es correcto. Compara tu procedimiento con el de abajo paso a paso para localizar dónde está el error.';
+    }
+    fb=`<div class="${ok?'feedback-correcto':'feedback-incorrecto'}"><div class="fb-tit">${ok?'✓ Correcto':'✗ Incorrecto · −0,5 puntos'}</div>`;
+    fb+=ok?`<p>${mixed(ex.porque)}</p>`:`<p class="fb-diag">${mixed(diag)}</p><p>Tu respuesta: ${kx(p.lx)} &nbsp;·&nbsp; Solución: ${kx(ex.ansLx)}</p>`;
+    fb+='</div>';
+    A.valor=s;
+  }
+  fb+=`<div class="procedimiento"><div class="proc-tit">PROCEDIMIENTO</div>${ex.steps.map(st=>`<div class="paso">${kx(st,true)}</div>`).join('')}</div>`;
+  registrarIntento(id,ok);
+  fb+=ventanaHTML(id);
+  A.respondido=true;A.fb=fb;
+  renderTodo();
+}
+
+/* ═════════════ Informe final ═════════════ */
+function colorNota(n){
+  if(n>=10)return ['#1a7a1a','#fff'];const f=Math.floor(n);
+  if(f>=9)return ['#6dbf6d','#fff'];if(f>=8)return ['#1a4f8a','#fff'];if(f>=7)return ['#5b9bd5','#fff'];
+  if(f>=6)return ['#c05c00','#fff'];if(f>=5)return ['#f5a623','#000'];return ['#c0392b','#fff'];
+}
+const dos=n=>String(n).padStart(2,'0');
+function abrirInforme(){
+  if(!nombreValido())return;
+  const nota=calcularNota(),[bg,fg]=colorNota(nota),now=new Date();
+  const mins=Math.ceil((Date.now()-state.inicio)/60000);
+  const tiempo=`${dos(Math.floor(mins/60))}:${dos(mins%60)}`;
+  const titulo=document.querySelector('.titulo-ficha').textContent,sub=document.querySelector('.subtitulo').textContent;
+  const filas=TIPOS.map((T,i)=>{const t=state.tipos[T.id];return `<tr><td>${i+1}. ${T.nombre}</td><td class="${t.superado?'est-ok':'est-no'}">${t.superado?'Superado':'No superado'}</td><td>${t.total}</td><td>${t.aciertos}</td><td>${t.fallos}</td></tr>`;}).join('');
+  const sup=Object.values(state.tipos).filter(t=>t.superado).length;
+  const m=$('modal');m.style.background=bg;m.style.color=fg;
+  m.innerHTML=`<p class="m-titulo">${esc(titulo)}</p><p class="m-sub">${esc(sub)}</p><hr>
+    <div class="m-inf">Informe de la actividad</div>
+    <div class="m-nombre">${esc($('nombre').value.trim())}</div>
+    <div class="m-nota">${fmtNota(nota)}<span style="font-size:1.2rem"> / 10</span></div>
+    <div class="m-datos"><span>Fecha: <b>${dos(now.getDate())}/${dos(now.getMonth()+1)}/${now.getFullYear()}</b></span><span>Hora: <b>${dos(now.getHours())}:${dos(now.getMinutes())}:${dos(now.getSeconds())}</b></span><span>Tiempo empleado: <b>${tiempo}</b></span></div>
+    <table class="desglose"><thead><tr><th>Tipo de ejercicio</th><th>Estado</th><th>Intentos</th><th>Aciertos</th><th>Fallos</th></tr></thead><tbody>${filas}</tbody></table>
+    <p class="m-resumen">Tipos superados: <b>${sup} / 5</b> (+${fmtNota(sup*PUNTO_POR_TIPO)}) · Fallos totales: <b>${state.fallosTotales}</b> (−${fmtNota(state.fallosTotales*PENALIZACION_FALLO)})</p>
+    <div class="m-botones"><button id="btn-cerrar">Cerrar y seguir practicando</button></div>`;
+  $('overlay').classList.add('visible');
+  $('btn-cerrar').addEventListener('click',()=>{$('overlay').classList.remove('visible');$('btn-finalizar').focus();});
+  $('btn-cerrar').focus();
+}
+$('btn-finalizar').addEventListener('click',abrirInforme);
+$('overlay').addEventListener('click',e=>{if(e.target.id==='overlay')$('overlay').classList.remove('visible');});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('overlay').classList.contains('visible')){$('overlay').classList.remove('visible');$('btn-finalizar').focus();}});
+
+/* ═════════════ Inicio ═════════════ */
+document.querySelectorAll('[data-lx]').forEach(el=>el.innerHTML=kx(el.dataset.lx));
+nuevoEjercicio('def');
+renderTodo();
+</script>
+</body>
+</html>
