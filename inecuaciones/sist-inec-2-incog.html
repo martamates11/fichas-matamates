@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistemas de dos inecuaciones con dos incógnitas</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap');
+:root {
+  --color-fondo: #F5F0E8;
+  --color-fondo-card: #FDFAF3;
+  --color-texto: #2C1F0E;
+  --color-texto-suave: #6B4F35;
+  --color-acento: #A0522D;
+  --color-acento-hover: #7B3B1E;
+  --color-borde: #C9A96E;
+  --color-borde-suave: #E0CEAA;
+  --color-cabecera: #3B2510;
+  --color-cabecera-txt: #F5EDD8;
+  --color-barra-alumno: #EFE4CC;
+  --color-correcto: #2E6B3E;
+  --color-incorrecto: #8B1A1A;
+  --color-neutro: #E8DFC8;
+  --color-r1: #A0522D;
+  --color-r2: #2F5F8A;
+  --color-apagado: #A8998A;
+  --color-apagado-fondo: #F3EFE6;
+}
+* { box-sizing: border-box; }
+body { margin: 0; font-family: 'Lato', sans-serif; font-size: 16px; color: var(--color-texto); background: var(--color-fondo); }
+h1, h2, h3, .titulo-ficha { font-family: 'Libre Baskerville', serif; color: var(--color-texto); }
+
+.cabecera { background: var(--color-cabecera); color: var(--color-cabecera-txt); font-family: 'Libre Baskerville', serif; text-align: center; padding: 12px 20px; border-bottom: 3px solid var(--color-borde); font-size: .78rem; letter-spacing: .04em; }
+
+.ficha-container { max-width: 1000px; margin: 28px auto; background: var(--color-fondo-card); border: 2px solid var(--color-borde); border-radius: 6px; box-shadow: 0 3px 12px rgba(44,31,14,.15); padding: 32px 36px; transition: background .6s, border-color .6s; }
+.ficha-container.completa { background: #EEF6EE; border-color: #1a7a1a; }
+.titulo-ficha { font-size: 1.6rem; text-align: center; margin: 0 0 6px; }
+.titulo-ficha::after { content: ''; display: block; width: 60px; height: 3px; background: var(--color-borde); margin: 10px auto 0; border-radius: 2px; }
+.subtitulo { text-align: center; color: var(--color-texto-suave); font-family: 'Libre Baskerville', serif; font-style: italic; font-size: 1rem; margin: 8px 0 20px; }
+
+.barra { position: sticky; top: 0; z-index: 50; background: var(--color-barra-alumno); border: 1.5px solid var(--color-borde); border-radius: 6px; margin: 0 0 22px; box-shadow: 0 2px 6px rgba(44,31,14,.08); padding: 9px 20px; display: flex; flex-wrap: wrap; gap: 10px 26px; align-items: center; justify-content: center; font-size: .92rem; }
+.barra label { font-family: 'Libre Baskerville', serif; font-size: .85rem; color: var(--color-texto-suave); }
+.barra input#nombre { background: var(--color-fondo-card); border: 1.5px solid var(--color-borde); border-radius: 4px; padding: 6px 10px; font-family: 'Lato', sans-serif; font-size: .95rem; color: var(--color-texto); width: 230px; max-width: 60vw; outline: none; }
+.barra input#nombre:focus { border-color: var(--color-acento); }
+.barra input#nombre.falta { border-color: var(--color-incorrecto); box-shadow: 0 0 0 3px rgba(139,26,26,.18); }
+.barra .dato { color: var(--color-texto-suave); }
+.barra .dato b { color: var(--color-acento); font-family: 'Libre Baskerville', serif; }
+.dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid var(--color-borde); background: var(--color-fondo-card); margin: 0 2px; vertical-align: -1px; }
+.dot.ok { background: var(--color-correcto); border-color: var(--color-correcto); }
+.dot.ko { background: var(--color-incorrecto); border-color: var(--color-incorrecto); }
+.aviso-nombre { color: var(--color-incorrecto); font-size: .82rem; font-weight: 700; display: none; width: 100%; text-align: center; }
+.aviso-nombre.visible { display: block; }
+
+.criterio { background: #F6E6D8; border: 1.5px solid var(--color-acento); border-radius: 4px; padding: 10px 18px; text-align: center; color: var(--color-acento-hover); font-size: .93rem; margin: 0 0 18px; line-height: 1.5; }
+.criterio b { font-family: 'Libre Baskerville', serif; }
+
+details.metodo { background: var(--color-fondo); border: 1.5px solid var(--color-borde-suave); border-radius: 4px; padding: 12px 20px; margin-bottom: 20px; font-size: .92rem; color: var(--color-texto-suave); }
+details.metodo summary { cursor: pointer; font-family: 'Libre Baskerville', serif; color: var(--color-texto); font-size: .95rem; }
+details.metodo ol { margin: 10px 0 6px; padding-left: 22px; line-height: 1.55; }
+details.metodo .puntuacion { margin: 8px 0 0; padding-top: 8px; border-top: 1px dashed var(--color-borde-suave); }
+
+.enunciado { background: var(--color-fondo); border: 1.5px solid var(--color-borde-suave); border-left: 4px solid var(--color-borde); border-radius: 4px; padding: 16px 24px; margin-bottom: 20px; text-align: center; }
+.enunciado .etiqueta { font-size: .85rem; color: var(--color-texto-suave); letter-spacing: .03em; }
+.chip-nivel { display: inline-block; font-size: .75rem; font-weight: 700; color: var(--color-acento); border: 1.5px solid var(--color-borde); border-radius: 20px; padding: 2px 12px; margin-bottom: 6px; background: var(--color-fondo-card); letter-spacing: .04em; }
+.sistema { display: inline-flex; align-items: center; gap: 4px; margin: 6px 0 0; }
+.llave { font-family: 'Libre Baskerville', serif; font-size: 4.6rem; line-height: 1; transform: scaleX(.6); color: var(--color-texto); margin: -8px -4px 0 0; font-weight: 400; }
+.ecs { display: flex; flex-direction: column; gap: 2px; text-align: left; }
+.ec { display: flex; align-items: center; gap: 10px; font-family: 'Libre Baskerville', serif; font-size: 1.45rem; line-height: 1.75; white-space: nowrap; }
+.ec i, .mat i { font-family: 'Libre Baskerville', serif; font-style: italic; }
+.num-ec { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; border: 2px solid; font-family: 'Lato', sans-serif; font-weight: 700; font-size: .72rem; flex: none; }
+.c0 { color: var(--color-r1); border-color: var(--color-r1); }
+.c1 { color: var(--color-r2); border-color: var(--color-r2); }
+.mat { font-family: 'Libre Baskerville', serif; white-space: nowrap; }
+.r-et { font-family: 'Libre Baskerville', serif; font-style: italic; font-weight: 700; }
+.r-et.c0 { color: var(--color-r1); } .r-et.c1 { color: var(--color-r2); }
+
+.zona { display: grid; grid-template-columns: minmax(0,1fr) 420px; gap: 24px; align-items: start; }
+.columna-grafica { position: sticky; top: 74px; }
+@media (max-width: 900px) {
+  .zona { grid-template-columns: minmax(0, 1fr); }
+  .columna-grafica { position: static; order: -1; }
+  .ficha-container { padding: 20px 12px; margin: 12px 4px; }
+  .paso { padding: 12px 12px; }
+  table.valores th, table.valores td { min-width: 52px; padding: 6px 8px; }
+  .ec { font-size: 1.2rem; }
+  .barra { padding: 7px 10px; gap: 6px 14px; font-size: .85rem; }
+  .barra input#nombre { width: 100%; max-width: none; }
+  .criterio { font-size: .86rem; }
+  .modal-calificacion { padding: 22px 14px; min-width: 0; }
+  .modal-aviso { padding: 22px 16px; }
+  .grafica-card.en-paso { margin: 4px -4px 12px; padding: 6px; }
+  .llave { font-size: 3.8rem; }
+}
+
+.grupo { font-family: 'Libre Baskerville', serif; font-size: .8rem; letter-spacing: .09em; text-transform: uppercase; color: var(--color-texto-suave); margin: 20px 0 10px; display: flex; align-items: center; gap: 10px; }
+.grupo:first-child { margin-top: 0; }
+.grupo::after { content: ''; flex: 1; border-top: 1px solid var(--color-borde-suave); }
+.grupo .marca { width: 11px; height: 11px; border-radius: 50%; flex: none; }
+
+.paso { background: var(--color-fondo); border: 1.5px solid var(--color-borde-suave); border-left: 4px solid var(--color-borde-suave); border-radius: 4px; padding: 14px 18px; margin-bottom: 14px; transition: opacity .3s, border-color .3s; scroll-margin-top: 80px; }
+.paso.bloqueado { opacity: .45; }
+.paso.activo { border-left-color: var(--color-acento); box-shadow: 0 2px 8px rgba(160,82,45,.10); }
+.paso.hecho { border-left-color: var(--color-correcto); }
+.paso.fallado { border-left-color: var(--color-incorrecto); }
+.paso.revelado { border-left-color: var(--color-apagado); }
+.paso h3 { font-size: 1rem; margin: 0 0 8px; display: flex; align-items: center; gap: 10px; }
+.paso h3 .n { display: inline-flex; width: 26px; height: 26px; border-radius: 50%; align-items: center; justify-content: center; background: var(--color-borde-suave); color: var(--color-texto); font-size: .82rem; flex: none; }
+.paso.activo h3 .n { background: var(--color-acento); color: #FDFAF3; }
+.paso.hecho h3 .n { background: var(--color-correcto); color: #FDFAF3; }
+.paso.fallado h3 .n { background: var(--color-incorrecto); color: #FDFAF3; }
+.paso.revelado h3 .n { background: var(--color-apagado); color: #FDFAF3; }
+.instr { font-size: .9rem; color: var(--color-texto-suave); margin: 0 0 10px; line-height: 1.6; }
+.nota-in { font-size: .8rem; color: var(--color-texto-suave); margin: 6px 0 10px; font-style: italic; }
+
+input.num { width: 64px; text-align: center; background: var(--color-fondo-card); border: 1.5px solid var(--color-borde); border-radius: 4px; padding: 6px 6px; font-family: 'Libre Baskerville', serif; font-size: 1rem; color: var(--color-texto); outline: none; }
+input.num:focus, select:focus { border-color: var(--color-acento); }
+input:disabled, select:disabled { background: var(--color-neutro); color: var(--color-texto-suave); }
+select { background: var(--color-fondo-card); border: 1.5px solid var(--color-borde); border-radius: 4px; padding: 6px 8px; font-family: 'Lato', sans-serif; font-size: .95rem; color: var(--color-texto); outline: none; }
+.fila-forma { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-family: 'Libre Baskerville', serif; font-size: 1.1rem; }
+.fila-forma.lato { font-family: 'Lato', sans-serif; font-size: .95rem; }
+.fila-forma i { font-style: italic; }
+.oculto { display: none !important; }
+
+table.valores { border-collapse: collapse; margin: 6px 0 10px; font-family: 'Libre Baskerville', serif; }
+table.valores th, table.valores td { border: 1.5px solid var(--color-borde); padding: 6px 14px; text-align: center; min-width: 70px; }
+table.valores th { background: var(--color-barra-alumno); font-style: italic; font-weight: 400; }
+table.valores td { background: var(--color-fondo-card); }
+
+.trazos { display: flex; gap: 10px; flex-wrap: wrap; margin: 4px 0 10px; }
+.btn-trazo { display: inline-flex; align-items: center; gap: 8px; background: var(--color-fondo-card); border: 1.5px solid var(--color-borde); border-radius: 4px; padding: 7px 14px; font-family: 'Lato', sans-serif; font-size: .9rem; color: var(--color-texto); cursor: pointer; }
+.btn-trazo.sel { border-color: var(--color-acento); background: #F6E6D8; box-shadow: 0 0 0 2px rgba(160,82,45,.18); }
+.btn-trazo:disabled { cursor: default; opacity: .7; }
+.lectura-puntos { font-size: .88rem; color: var(--color-texto-suave); margin: 0 0 10px; }
+.lectura-puntos b { font-family: 'Libre Baskerville', serif; font-weight: 400; }
+
+.acciones { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.btn-primario { background: var(--color-acento); color: #FDFAF3; border: none; border-radius: 4px; padding: 9px 20px; font-family: 'Lato', sans-serif; font-size: .93rem; font-weight: 700; cursor: pointer; letter-spacing: .03em; transition: background-color .2s; }
+.btn-primario:hover:not(:disabled) { background: var(--color-acento-hover); }
+.btn-primario:disabled { background: var(--color-neutro); color: var(--color-texto-suave); cursor: default; }
+.btn-secundario { background: transparent; color: var(--color-acento); border: 2px solid var(--color-borde); border-radius: 4px; padding: 7px 16px; font-family: 'Lato', sans-serif; font-size: .88rem; font-weight: 700; cursor: pointer; transition: border-color .2s, color .2s; }
+.btn-secundario:hover:not(:disabled) { border-color: var(--color-acento); color: var(--color-acento-hover); }
+.btn-secundario:disabled { opacity: .5; cursor: default; }
+
+.fb { margin-top: 10px; font-size: .9rem; line-height: 1.6; }
+.fb:empty { display: none; }
+.feedback-correcto { background: #EAF4EC; border: 1.5px solid var(--color-correcto); color: var(--color-correcto); border-radius: 4px; padding: 10px 14px; }
+.feedback-incorrecto { background: #F9EAEA; border: 1.5px solid var(--color-incorrecto); color: var(--color-incorrecto); border-radius: 4px; padding: 10px 14px; }
+.feedback-incorrecto .solucion { margin-top: 8px; color: var(--color-texto); }
+.feedback-incorrecto .sigue { margin-top: 8px; color: var(--color-texto-suave); font-style: italic; font-size: .85rem; }
+.feedback-aviso { background: #FBF3E2; border: 1.5px solid var(--color-borde); color: var(--color-texto-suave); border-radius: 4px; padding: 8px 14px; }
+.feedback-solucion { background: var(--color-apagado-fondo); border: 1.5px dashed #B5A68C; color: var(--color-texto); border-radius: 4px; padding: 10px 14px; }
+.feedback-solucion > b:first-child { color: var(--color-texto-suave); font-family: 'Libre Baskerville', serif; }
+.deriv { margin: 6px 0 0; padding-left: 18px; color: var(--color-texto); }
+.deriv li { margin: 3px 0; }
+
+.resultado { border-radius: 6px; padding: 16px 20px; margin-top: 4px; border: 2px solid; }
+.resultado.ok { background: #EAF4EC; border-color: var(--color-correcto); }
+.resultado.ko { background: #FBF0EE; border-color: var(--color-incorrecto); }
+.resultado.neutro { background: var(--color-apagado-fondo); border-color: #B5A68C; }
+.resultado h3 { margin: 0 0 6px; font-size: 1.05rem; }
+.resultado.ok h3 { color: var(--color-correcto); }
+.resultado.ko h3 { color: var(--color-incorrecto); }
+.resultado.neutro h3 { color: var(--color-texto-suave); }
+.resultado p { margin: 4px 0 10px; font-size: .92rem; line-height: 1.55; }
+
+.grafica-card { background: var(--color-fondo-card); border: 1.5px solid var(--color-borde); border-radius: 6px; padding: 10px; box-shadow: 0 2px 8px rgba(44,31,14,.06); }
+#plano { width: 100%; height: auto; display: block; touch-action: manipulation; user-select: none; }
+#plano.interactivo { cursor: crosshair; }
+.graf-ayuda { font-size: .84rem; color: var(--color-texto-suave); text-align: center; margin: 8px 4px 2px; min-height: 1.3em; font-style: italic; }
+.leyenda { display: flex; justify-content: center; gap: 8px 16px; font-size: .78rem; color: var(--color-texto-suave); margin-top: 6px; flex-wrap: wrap; }
+.leyenda span { display: inline-flex; align-items: center; gap: 5px; }
+.leyenda i.l { display: inline-block; width: 22px; height: 0; border-top: 2.5px solid; }
+.leyenda i.z { display: inline-block; width: 14px; height: 12px; border-radius: 2px; }
+
+.pie { margin-top: 26px; padding-top: 18px; border-top: 1px solid var(--color-borde-suave); display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.btn-finalizar { background: var(--color-cabecera); color: var(--color-cabecera-txt); border: 2px solid var(--color-borde); border-radius: 4px; padding: 10px 24px; font-family: 'Libre Baskerville', serif; font-size: .95rem; font-weight: 700; cursor: pointer; letter-spacing: .04em; transition: background-color .2s; }
+.btn-finalizar:hover { background: #2C1A0A; }
+.btn-soluciones { background: transparent; color: var(--color-apagado); border: 1px solid #DDD0B6; border-radius: 4px; padding: 5px 14px; font-family: 'Lato', sans-serif; font-size: .78rem; font-weight: 400; letter-spacing: .02em; cursor: pointer; transition: color .2s, border-color .2s; }
+.btn-soluciones:hover:not(:disabled) { color: var(--color-texto-suave); border-color: var(--color-borde); }
+.btn-soluciones:disabled { opacity: .4; cursor: default; }
+
+.overlay { position: fixed; inset: 0; background: rgba(44,31,14,.55); display: none; align-items: center; justify-content: center; z-index: 100; padding: 16px; }
+.overlay.visible { display: flex; }
+.modal-aviso { background: var(--color-fondo-card); border: 3px solid var(--color-borde); border-radius: 8px; box-shadow: 0 6px 24px rgba(44,31,14,.35); padding: 26px 30px; max-width: 470px; width: 100%; }
+.modal-aviso h3 { font-size: 1.15rem; margin: 0 0 4px; text-align: center; }
+.modal-aviso h3::after { content: ''; display: block; width: 46px; height: 2px; background: var(--color-borde); margin: 10px auto 14px; border-radius: 2px; }
+.modal-aviso p { font-size: .92rem; line-height: 1.6; color: var(--color-texto-suave); margin: 0 0 10px; }
+.modal-aviso p b { color: var(--color-texto); }
+.modal-aviso .acciones { justify-content: center; margin-top: 18px; }
+.modal-calificacion { border: 3px solid var(--color-borde); border-radius: 8px; font-family: 'Libre Baskerville', serif; box-shadow: 0 6px 24px rgba(44,31,14,.35); padding: 28px 32px; min-width: 320px; max-width: 580px; width: 100%; max-height: 92vh; overflow-y: auto; text-align: center; }
+.modal-calificacion .m-titulo { font-size: 1.2rem; font-weight: 700; margin: 0; }
+.modal-calificacion .m-sub { font-size: .9rem; font-style: italic; margin: 4px 0 10px; opacity: .9; }
+.modal-calificacion hr { border: none; border-top: 1.5px solid currentColor; opacity: .45; margin: 10px 0 14px; }
+.modal-calificacion .m-inf { font-size: .82rem; letter-spacing: .08em; text-transform: uppercase; opacity: .9; }
+.modal-calificacion .m-nombre { font-size: 1.1rem; margin: 6px 0 2px; }
+.modal-calificacion .m-nota { font-size: 3rem; font-weight: 700; margin: 4px 0; line-height: 1.1; }
+.modal-calificacion .m-datos { font-family: 'Lato', sans-serif; font-size: .9rem; display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 18px; margin-bottom: 12px; }
+.modal-calificacion .tabla-scroll { overflow-x: auto; }
+.modal-calificacion table { width: 100%; border-collapse: collapse; font-family: 'Lato', sans-serif; font-size: .86rem; margin: 6px 0 12px; }
+.modal-calificacion th, .modal-calificacion td { border-bottom: 1px solid rgba(255,255,255,.35); padding: 5px 6px; }
+.modal-calificacion.oscuro-txt th, .modal-calificacion.oscuro-txt td { border-bottom-color: rgba(0,0,0,.2); }
+.modal-calificacion th, .modal-calificacion td:first-child { text-align: left; }
+.modal-calificacion th { font-weight: 700; }
+.modal-calificacion td:not(:first-child), .modal-calificacion th:not(:first-child) { text-align: center; }
+.modal-calificacion h4 { font-size: .95rem; margin: 14px 0 4px; text-align: left; }
+.modal-calificacion .btn-cerrar { margin-top: 10px; background: rgba(255,255,255,.92); color: var(--color-cabecera); border: 2px solid var(--color-borde); border-radius: 4px; padding: 8px 22px; font-family: 'Lato', sans-serif; font-weight: 700; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<div class="cabecera">Material elaborado por Marta L Letona S. Basado en el trabajo de Javier Cayetano</div>
+
+<div class="ficha-container" id="ficha">
+  <h1 class="titulo-ficha">Sistemas de dos inecuaciones con dos incógnitas</h1>
+  <p class="subtitulo">Álgebra · Resolución gráfica de sistemas</p>
+
+  <div class="barra">
+    <label for="nombre">Alumno/a:</label>
+    <input type="text" id="nombre" placeholder="Nombre y apellidos" autocomplete="off">
+    <span class="dato">Nota: <b id="marcador-nota">0</b> / 10</span>
+    <span class="dato">Pasos fallados: <b id="marcador-fallos">0</b></span>
+    <span class="dato">Sistemas terminados: <b id="marcador-sistemas">0</b></span>
+    <div class="aviso-nombre" id="aviso-nombre">Escribe tu nombre antes de continuar.</div>
+  </div>
+
+  <div class="criterio">Para superar la ficha basta con resolver <b>un sistema sin ningún error</b>.<br>Cada paso fallado, en cualquier sistema, resta <b>0,5 puntos</b>.</div>
+
+  <details class="metodo" open>
+    <summary>Método de resolución</summary>
+    <ol>
+      <li>Resuelve cada inecuación por separado: recta frontera (tabla de valores), trazo <b>continuo</b> si el signo es ≥ o ≤ y <b>discontinuo</b> si es &gt; o &lt;, punto de prueba y semiplano solución.</li>
+      <li>Estudia la posición de las dos rectas frontera. Si los coeficientes de <i>x</i> e <i>y</i> son proporcionales, las rectas son <b>paralelas</b>; si no, se cortan en un punto, que se obtiene resolviendo el sistema de ecuaciones.</li>
+      <li>La solución del sistema es la <b>región común</b> a los dos semiplanos, es decir, donde se superponen los dos rayados. Si no tienen ningún punto en común, el sistema no tiene solución.</li>
+      <li>Un punto de una frontera es solución solo si cumple las dos inecuaciones: el punto de corte pertenece a la solución únicamente si las dos rectas son continuas.</li>
+    </ol>
+    <p class="puntuacion">Superar la ficha vale <b>10 puntos</b> y cada paso fallado resta <b>0,5 puntos</b>; la nota nunca baja de 0. Si fallas un paso, verás la corrección y seguirás con el mismo sistema, pero ese sistema ya no contará como resuelto sin errores. Si pides ver las soluciones de un sistema, ese sistema no contará para la nota.</p>
+  </details>
+
+  <div class="enunciado">
+    <div class="chip-nivel" id="chip-sistema">Sistema n.º 1</div>
+    <div class="etiqueta">Resuelve gráficamente el sistema de inecuaciones</div>
+    <div id="expr"></div>
+  </div>
+
+  <div class="zona">
+    <div class="columna-pasos">
+      <div id="pasos"></div>
+      <div id="resultado"></div>
+    </div>
+    <div class="columna-grafica">
+      <div class="grafica-card" id="grafica-card">
+        <svg id="plano" viewBox="0 0 464 464" xmlns="http://www.w3.org/2000/svg" aria-label="Plano cartesiano">
+          <defs>
+            <clipPath id="clip-plano"><rect x="22" y="22" width="420" height="420"/></clipPath>
+            <pattern id="rayado-0" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+              <rect width="9" height="9" fill="rgba(160,82,45,0.10)"/>
+              <line x1="0" y1="0" x2="0" y2="9" stroke="rgba(160,82,45,0.42)" stroke-width="1.6"/>
+            </pattern>
+            <pattern id="rayado-1" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)">
+              <rect width="9" height="9" fill="rgba(47,95,138,0.10)"/>
+              <line x1="0" y1="0" x2="0" y2="9" stroke="rgba(47,95,138,0.42)" stroke-width="1.6"/>
+            </pattern>
+          </defs>
+          <rect x="0" y="0" width="464" height="464" fill="#FDFAF3"/>
+          <g id="g-semis" clip-path="url(#clip-plano)"></g>
+          <g id="g-region" clip-path="url(#clip-plano)"></g>
+          <g id="g-cuadricula"></g>
+          <g id="g-lineas" clip-path="url(#clip-plano)"></g>
+          <g id="g-puntos"></g>
+          <g id="g-prueba"></g>
+          <g id="g-corte"></g>
+          <circle id="fantasma" r="6" fill="none" stroke="#A0522D" stroke-width="1.5" stroke-dasharray="3 2" visibility="hidden"/>
+          <rect id="captura" x="0" y="0" width="464" height="464" fill="transparent"/>
+        </svg>
+        <div class="graf-ayuda" id="graf-ayuda"></div>
+        <div class="leyenda">
+          <span><i class="l" style="border-color:#A0522D"></i><span class="r-et c0">r₁</span></span>
+          <span><i class="l" style="border-color:#2F5F8A"></i><span class="r-et c1">r₂</span></span>
+          <span><i class="z" style="background:rgba(201,169,110,.55); border:1.5px dashed #B8892E"></i>Región elegida</span>
+          <span><i class="z" style="background:rgba(46,107,62,.32); border:1.5px solid #2E6B3E"></i>Solución</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pie">
+    <button class="btn-finalizar" id="btn-finalizar">Finalizar y Calificar</button>
+    <button class="btn-soluciones" id="btn-soluciones" type="button">Mostrar soluciones</button>
+  </div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal-calificacion" id="modal"></div>
+</div>
+
+<div class="overlay" id="overlay-sol" role="dialog" aria-modal="true" aria-labelledby="sol-titulo">
+  <div class="modal-aviso">
+    <h3 id="sol-titulo">¿Mostrar las soluciones?</h3>
+    <p>Verás resueltos, con sus explicaciones, todos los pasos que te quedan de <b>este sistema</b>.</p>
+    <p><b>Este sistema no contará para la nota</b>: ya no podrá darse por resuelto sin errores. Los pasos que hayas fallado antes en él siguen restando.</p>
+    <p>Después podrás seguir con un sistema nuevo.</p>
+    <div class="acciones">
+      <button class="btn-primario" id="sol-cancelar" type="button">Volver al ejercicio</button>
+      <button class="btn-secundario" id="sol-aceptar" type="button">Sí, mostrar soluciones</button>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+/* =========================================================
+   Aleatoriedad: ?seed=N en la URL solo para QA (reproducible).
+   En producción, sin parámetro: Math.random.
+   ========================================================= */
+const URLP = new URLSearchParams(location.search);
+let rand = Math.random;
+if (URLP.has('seed')) {
+  let s = (parseInt(URLP.get('seed'), 10) || 1) >>> 0;
+  rand = () => { s = (s + 0x6D2B79F5) >>> 0; let t = s; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+}
+const ri = (a, b) => a + Math.floor(rand() * (b - a + 1));
+const pick = arr => arr[Math.floor(rand() * arr.length)];
+const nz = (a, b) => { let v; do { v = ri(a, b); } while (v === 0); return v; };
+const gcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b) { [a, b] = [b, a % b]; } return a; };
+const lcm = (a, b) => Math.abs(a * b) / gcd(a, b);
+
+/* ===== Desigualdades ===== */
+const SIGNOS = ['>', '<', '≥', '≤'];
+const esEstricta = s => s === '>' || s === '<';
+const ladoPositivo = s => s === '>' || s === '≥';
+function cumple(v, s, c) {
+  switch (s) { case '>': return v > c; case '<': return v < c; case '≥': return v >= c; case '≤': return v <= c; }
+  return false;
+}
+
+/* ===== Formato matemático ===== */
+const N = n => n < 0 ? '−' + Math.abs(n) : '' + n;
+const P = n => n < 0 ? '(' + N(n) + ')' : '' + n;
+const V = v => `<i>${v}</i>`;
+function T(c, v, primero) {
+  if (c === 0) return '';
+  const a = Math.abs(c), cuerpo = (a === 1 ? '' : a) + V(v);
+  if (primero) return (c < 0 ? '−' : '') + cuerpo;
+  return (c < 0 ? ' − ' : ' + ') + cuerpo;
+}
+const lin = (a, b, c, s) => T(a, 'x', true) + T(b, 'y', a === 0) + ` ${s} ` + N(c);
+const M = html => `<span class="mat">${html}</span>`;
+const puntosTxt = n => (n === 1 ? '1 punto' : fmtNota(n) + ' puntos');
+const fmtNota = n => (Math.round(n * 100) / 100).toString().replace('.', ',');
+const SUB = ['₁', '₂'];
+const COL = ['#A0522D', '#2F5F8A'];
+const COL_OSC = ['#7B3B1E', '#1F4466'];
+const R = i => `<span class="r-et c${i}">r${SUB[i]}</span>`;
+const IQ = i => `<span class="num-ec c${i}" style="width:18px;height:18px;font-size:.65rem;vertical-align:-3px;display:inline-flex">${i + 1}</span>`;
+function sust(a, b, x, y) {
+  return `${N(a)}·${P(x)}` + (b < 0 ? ' − ' : ' + ') + `${Math.abs(b)}·${P(y)}`;
+}
+
+/* =========================================================
+   Geometría: recorte de polígonos por semiplanos
+   ========================================================= */
+const RANGO = 7, RANGO_PUNTOS = 6;
+const cuadrado = r => [[-r, -r], [r, -r], [r, r], [-r, r]];
+function recortar(poli, A, B, C, positivo) {     // Sutherland–Hodgman
+  const f = p => A * p[0] + B * p[1] - C;
+  const dentro = p => positivo ? f(p) >= 0 : f(p) <= 0;
+  const corte = (p, q) => { const t = f(p) / (f(p) - f(q)); return [p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t]; };
+  const out = [];
+  for (let i = 0; i < poli.length; i++) {
+    const cur = poli[i], prev = poli[(i + poli.length - 1) % poli.length];
+    const ci = dentro(cur), pi = dentro(prev);
+    if (ci) { if (!pi) out.push(corte(prev, cur)); out.push(cur); }
+    else if (pi) out.push(corte(prev, cur));
+  }
+  return out;
+}
+function area(poli) {
+  let s = 0;
+  for (let i = 0; i < poli.length; i++) { const p = poli[i], q = poli[(i + 1) % poli.length]; s += p[0] * q[1] - q[0] * p[1]; }
+  return Math.abs(s) / 2;
+}
+const fval = (l, p) => l.A * p[0] + l.B * p[1] - l.C;
+const enRecta = (l, p) => l.A * p[0] + l.B * p[1] === l.C;
+
+/* =========================================================
+   Generación de sistemas
+   ========================================================= */
+function puntosEnteros(A, B, C) {
+  const out = [];
+  for (let x = -RANGO_PUNTOS; x <= RANGO_PUNTOS; x++) {
+    const n = C - A * x;
+    if (n % B === 0) { const y = n / B + 0; if (Math.abs(y) <= RANGO_PUNTOS) out.push([x, y]); }
+  }
+  return out;
+}
+function tablaDe(l) {
+  const pts = puntosEnteros(l.A, l.B, l.C);
+  if (pts.length < 2) return null;
+  pts.sort((p1, p2) => (Math.abs(p1[0]) + Math.abs(p1[1])) - (Math.abs(p2[0]) + Math.abs(p2[1])));
+  const p1 = pts[0];
+  const p2 = pts.slice(1).find(p => Math.abs(p[0] - p1[0]) >= 2) || pts[1];
+  return [p1, p2].sort((a, b) => a[0] - b[0]);
+}
+function genSecantes() {
+  const x0 = ri(-4, 4), y0 = ri(-4, 4);
+  if (x0 === 0 && y0 === 0 && rand() < 0.75) return null;
+  const mk = () => { const A = nz(-4, 4), B = pick([1, -1, 2, -2, 3, -3]); return { A, B, C: A * x0 + B * y0 }; };
+  const l1 = mk(), l2 = mk();
+  const det = l1.A * l2.B - l2.A * l1.B;
+  if (det === 0) return null;
+  if (Math.abs(det) / (Math.hypot(l1.A, l1.B) * Math.hypot(l2.A, l2.B)) < 0.3) return null;
+  if (Math.abs(l1.C) > 14 || Math.abs(l2.C) > 14) return null;
+  return { tipo: 'secantes', l: [l1, l2], corte: [x0, y0] };
+}
+function genParalelas() {
+  const A = nz(-4, 4), B = pick([1, -1, 2, -2, 3, -3]);
+  if (gcd(A, B) !== 1) return null;
+  const m = pick([1, -1, 2, -2, 2, 3, -1]);
+  if (Math.abs(m * A) > 9 || Math.abs(m * B) > 9) return null;
+  const d1 = ri(-8, 8), d2 = ri(-8, 8);
+  if (d1 === d2) return null;
+  if (Math.abs(d1 - d2) / Math.hypot(A, B) < 1.4) return null;
+  const l = [{ A, B, C: d1 }, { A: m * A, B: m * B, C: m * d2 }];
+  if (rand() < 0.5) l.reverse();
+  return { tipo: 'paralelas', l, corte: null };
+}
+let ultimoHtml = '';
+function generar() {
+  for (let intento = 0; intento < 2000; intento++) {
+    const g = rand() < 0.3 ? genParalelas() : genSecantes();
+    if (!g) continue;
+    let valido = true;
+    for (const l of g.l) {
+      l.tabla = tablaDe(l);
+      if (!l.tabla) { valido = false; break; }
+      l.s = pick(SIGNOS);
+    }
+    if (!valido) continue;
+    // Evitar que las dos tablas den el punto de corte "regalado"
+    if (g.corte && g.l.every(l => l.tabla.some(p => p[0] === g.corte[0] && p[1] === g.corte[1])) && rand() < 0.8) continue;
+    g.html = g.l.map((l, i) => `<div class="ec"><span class="num-ec c${i}">${i + 1}</span><span>${lin(l.A, l.B, l.C, l.s)}</span></div>`).join('');
+    if (g.html === ultimoHtml) continue;
+    const pos = g.l.map(l => ladoPositivo(l.s));
+    const grande = recortar(recortar(cuadrado(1000), g.l[0].A, g.l[0].B, g.l[0].C, pos[0]), g.l[1].A, g.l[1].B, g.l[1].C, pos[1]);
+    g.vacia = grande.length < 3 || area(grande) < 1e-6;
+    ultimoHtml = g.html;
+    return g;
+  }
+  return null;
+}
+
+/* =========================================================
+   Estado y puntuación
+   Modelo: un único tipo («sistemas»); se supera con UN sistema
+   resuelto sin fallar ningún paso. Cada paso fallado: −0,5. Al superar, 10.
+   nota = clamp(10·superado − 0,5·fallosTotales, 0, 10), desde cero.
+   Un sistema con soluciones vistas no puede superar la ficha y
+   los pasos revelados no penalizan (los fallados antes sí).
+   ========================================================= */
+const PUNTO_POR_TIPO = 10, PENALIZACION_FALLO = 0.5;
+const state = {
+  fallosTotales: 0, intentos: [], superado: false, cerrado: false,
+  sistemas: [],
+  porPaso: { tabla: 0, puntos: 0, trazo: 0, prueba: 0, semiplano: 0, posicion: 0, corte: 0, region: 0, vertice: 0 },
+  inicio: Date.now()
+};
+function calcularNota() {
+  const bruta = (state.superado ? PUNTO_POR_TIPO : 0) - state.fallosTotales * PENALIZACION_FALLO;
+  return Math.round(Math.min(10, Math.max(0, bruta)) * 100) / 100;
+}
+function registrarIntento(correcto) {
+  if (state.cerrado) return;
+  state.intentos.push(correcto);
+  if (!state.superado && correcto) {
+    state.superado = true;
+    state.cerrado = true;
+  }
+}
+let ex = null;
+
+/* =========================================================
+   Plano cartesiano (SVG)
+   ========================================================= */
+const SVGNS = 'http://www.w3.org/2000/svg';
+const ESC = 30, MARGEN = 22;
+const X = x => MARGEN + (x + RANGO) * ESC;
+const Y = y => MARGEN + (RANGO - y) * ESC;
+const svg = document.getElementById('plano');
+const $ = id => document.getElementById(id);
+function el(tag, attrs, padre) {
+  const e = document.createElementNS(SVGNS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (padre) padre.appendChild(e);
+  return e;
+}
+function texto(padre, attrs, contenido) { const t = el('text', attrs, padre); t.textContent = contenido; return t; }
+function dibujarCuadricula() {
+  const g = $('g-cuadricula');
+  const etq = { 'font-size': 9.5, fill: '#6B4F35', 'font-family': 'Lato, sans-serif' };
+  for (let i = -RANGO; i <= RANGO; i++) {
+    const eje = i === 0;
+    el('line', { x1: X(i), y1: Y(-RANGO), x2: X(i), y2: Y(RANGO), stroke: eje ? '#6B4F35' : '#E0CEAA', 'stroke-width': eje ? 1.6 : 0.8 }, g);
+    el('line', { x1: X(-RANGO), y1: Y(i), x2: X(RANGO), y2: Y(i), stroke: eje ? '#6B4F35' : '#E0CEAA', 'stroke-width': eje ? 1.6 : 0.8 }, g);
+    if (i !== 0 && Math.abs(i) !== RANGO) {
+      texto(g, Object.assign({ x: X(i), y: Y(0) + 13, 'text-anchor': 'middle' }, etq), N(i));
+      texto(g, Object.assign({ x: X(0) - 5, y: Y(i) + 3.5, 'text-anchor': 'end' }, etq), N(i));
+    }
+  }
+  texto(g, Object.assign({ x: X(0) - 5, y: Y(0) + 13, 'text-anchor': 'end' }, etq), '0');
+  texto(g, { x: X(RANGO) - 4, y: Y(0) - 6, 'text-anchor': 'end', 'font-size': 14, fill: '#2C1F0E', 'font-family': 'Libre Baskerville, serif', 'font-style': 'italic' }, 'x');
+  texto(g, { x: X(0) + 7, y: Y(RANGO) + 13, 'font-size': 14, fill: '#2C1F0E', 'font-family': 'Libre Baskerville, serif', 'font-style': 'italic' }, 'y');
+  el('rect', { x: MARGEN, y: MARGEN, width: 2 * RANGO * ESC, height: 2 * RANGO * ESC, fill: 'none', stroke: '#C9A96E', 'stroke-width': 1.2 }, g);
+}
+function limpiar(id) { const g = $(id); while (g.firstChild) g.removeChild(g.firstChild); }
+function dibujarRecta(g, p1, p2, discontinua, color, ancho) {
+  const dx = p2[0] - p1[0], dy = p2[1] - p1[1], l = Math.hypot(dx, dy), k = 40 / l;
+  el('line', {
+    x1: X(p1[0] - dx * k), y1: Y(p1[1] - dy * k), x2: X(p1[0] + dx * k), y2: Y(p1[1] + dy * k),
+    stroke: color, 'stroke-width': ancho, 'stroke-linecap': 'round',
+    'stroke-dasharray': discontinua === null ? '2 5' : (discontinua ? '10 7' : 'none')
+  }, g);
+}
+const polyStr = poli => poli.map(p => X(p[0]) + ',' + Y(p[1])).join(' ');
+function poligonoRegion(pos0, pos1) {
+  const [a, b] = ex.l;
+  return recortar(recortar(cuadrado(RANGO + 0.5), a.A, a.B, a.C, pos0), b.A, b.B, b.C, pos1);
+}
+function etiquetaPunto(g, p, color) {
+  texto(g, { x: X(p[0]) + 9, y: Y(p[1]) - 8, 'font-size': 11, fill: color, 'font-family': 'Libre Baskerville, serif', 'paint-order': 'stroke', stroke: '#FDFAF3', 'stroke-width': 3 }, `(${N(p[0])}, ${N(p[1])})`);
+}
+const esPasoRecta = k => /^r\d$/.test(k);   // ojo: 'region' también empieza por r
+function pasoActual() { return ex && !ex.terminado ? ex.pasos[ex.idx] : null; }
+
+function renderPlano() {
+  ['g-semis', 'g-region', 'g-lineas', 'g-puntos', 'g-prueba', 'g-corte'].forEach(limpiar);
+  if (!ex) return;
+  const paso = pasoActual();
+  // Semiplanos
+  const gS = $('g-semis');
+  for (let i = 0; i < 2; i++) {
+    let pos = null;
+    if (ex.semiOk[i]) pos = ladoPositivo(ex.l[i].s);
+    else if (paso === 's' + i && ex.clic[i]) pos = fval(ex.l[i], ex.clic[i]) > 0;
+    if (pos === null) continue;
+    const l = ex.l[i];
+    el('polygon', { points: polyStr(recortar(cuadrado(RANGO + 0.5), l.A, l.B, l.C, pos)), fill: `url(#rayado-${i})`, opacity: ex.regionOk ? 0.45 : 1 }, gS);
+  }
+  // Región elegida por el alumno y región solución
+  const gR = $('g-region');
+  if (ex.regSel && (paso === 'region' || ex.regionOk) && !ex.revelado) {
+    const q = ex.regSel, pol = poligonoRegion(fval(ex.l[0], q) > 0, fval(ex.l[1], q) > 0);
+    if (pol.length >= 3) el('polygon', { points: polyStr(pol), fill: 'rgba(201,169,110,0.45)', stroke: '#B8892E', 'stroke-width': 1.5, 'stroke-dasharray': '5 4' }, gR);
+  }
+  if (ex.regionOk && !ex.vacia) {
+    const pol = poligonoRegion(ladoPositivo(ex.l[0].s), ladoPositivo(ex.l[1].s));
+    if (pol.length >= 3) el('polygon', { points: polyStr(pol), fill: 'rgba(46,107,62,0.30)' }, gR);
+  }
+  // Rectas
+  const gL = $('g-lineas'), gP = $('g-puntos');
+  for (let i = 0; i < 2; i++) {
+    const l = ex.l[i];
+    if (ex.lineaOk[i]) {
+      dibujarRecta(gL, l.tabla[0], l.tabla[1], esEstricta(l.s), COL[i], 2.6);
+      l.tabla.forEach(p => el('circle', { cx: X(p[0]), cy: Y(p[1]), r: 4, fill: COL[i], stroke: '#FDFAF3', 'stroke-width': 1.5 }, gP));
+      const pts = puntosEnteros(l.A, l.B, l.C);
+      const extremo = pts.length ? pts.reduce((m, p) => (p[0] > m[0] ? p : m)) : l.tabla[1];
+      texto(gP, { x: X(extremo[0]) + 6, y: Y(extremo[1]) + 16, 'font-size': 13, fill: COL_OSC[i], 'font-family': 'Libre Baskerville, serif', 'font-style': 'italic', 'font-weight': 700, 'paint-order': 'stroke', stroke: '#FDFAF3', 'stroke-width': 3 }, 'r' + SUB[i]);
+    } else if (paso === 'r' + i) {
+      const pts = ex.pts[i];
+      if (pts.length === 2) dibujarRecta(gL, pts[0], pts[1], ex.trazo[i] === null ? null : ex.trazo[i] === 'discontinua', COL[i], 2.6);
+      pts.forEach(p => {
+        el('circle', { cx: X(p[0]), cy: Y(p[1]), r: 6, fill: COL[i], stroke: '#FDFAF3', 'stroke-width': 2 }, gP);
+        etiquetaPunto(gP, p, COL_OSC[i]);
+      });
+    }
+  }
+  // Puntos mal situados (se ven hasta el paso siguiente)
+  ex.ptsMal.forEach(p => {
+    const cx = X(p[0]), cy = Y(p[1]);
+    el('line', { x1: cx - 5, y1: cy - 5, x2: cx + 5, y2: cy + 5, stroke: '#8B1A1A', 'stroke-width': 2.4, 'stroke-linecap': 'round' }, gP);
+    el('line', { x1: cx - 5, y1: cy + 5, x2: cx + 5, y2: cy - 5, stroke: '#8B1A1A', 'stroke-width': 2.4, 'stroke-linecap': 'round' }, gP);
+    etiquetaPunto(gP, p, '#8B1A1A');
+  });
+  // Punto de prueba
+  if (ex.pruebaVis) {
+    const { p, i } = ex.pruebaVis, g = $('g-prueba'), c = COL_OSC[i];
+    el('circle', { cx: X(p[0]), cy: Y(p[1]), r: 7, fill: '#FDFAF3', stroke: c, 'stroke-width': 2.4 }, g);
+    el('circle', { cx: X(p[0]), cy: Y(p[1]), r: 2.6, fill: c }, g);
+    texto(g, { x: X(p[0]) + 10, y: Y(p[1]) + 16, 'font-size': 11.5, fill: c, 'font-family': 'Libre Baskerville, serif', 'font-style': 'italic', 'paint-order': 'stroke', stroke: '#FDFAF3', 'stroke-width': 3 }, 'P');
+  }
+  // Punto de corte
+  if (ex.corteOk && ex.tipo === 'secantes') {
+    const p = ex.corte, g = $('g-corte');
+    const pertenece = !esEstricta(ex.l[0].s) && !esEstricta(ex.l[1].s);
+    const relleno = ex.regionOk ? (pertenece ? '#2E6B3E' : '#FDFAF3') : '#2C1F0E';
+    el('circle', { cx: X(p[0]), cy: Y(p[1]), r: 6, fill: relleno, stroke: ex.regionOk ? '#2E6B3E' : '#2C1F0E', 'stroke-width': 2.4 }, g);
+    texto(g, { x: X(p[0]) - 9, y: Y(p[1]) - 9, 'text-anchor': 'end', 'font-size': 11.5, fill: '#2C1F0E', 'font-family': 'Libre Baskerville, serif', 'font-weight': 700, 'paint-order': 'stroke', stroke: '#FDFAF3', 'stroke-width': 3.5 }, `(${N(p[0])}, ${N(p[1])})`);
+  }
+}
+function aMat(evt) {
+  const pt = svg.createSVGPoint(); pt.x = evt.clientX; pt.y = evt.clientY;
+  const p = pt.matrixTransform(svg.getScreenCTM().inverse());
+  return [(p.x - MARGEN) / ESC - RANGO, RANGO - (p.y - MARGEN) / ESC];
+}
+const distRecta = (l, p) => Math.abs(fval(l, p)) / Math.hypot(l.A, l.B);
+
+svg.addEventListener('pointermove', evt => {
+  const f = $('fantasma'), paso = pasoActual();
+  if (!paso || !esPasoRecta(paso)) { f.setAttribute('visibility', 'hidden'); return; }
+  const [x, y] = aMat(evt), sx = Math.round(x), sy = Math.round(y);
+  if (Math.abs(sx) > RANGO || Math.abs(sy) > RANGO) { f.setAttribute('visibility', 'hidden'); return; }
+  f.setAttribute('stroke', COL[+paso[1]]);
+  f.setAttribute('cx', X(sx)); f.setAttribute('cy', Y(sy)); f.setAttribute('visibility', 'visible');
+});
+svg.addEventListener('pointerleave', () => $('fantasma').setAttribute('visibility', 'hidden'));
+svg.addEventListener('click', evt => {
+  const paso = pasoActual();
+  if (!paso) return;
+  const [x, y] = aMat(evt);
+  if (esPasoRecta(paso)) {
+    const i = +paso[1], sx = Math.round(x), sy = Math.round(y);
+    if (Math.abs(sx) > RANGO || Math.abs(sy) > RANGO) return;
+    const pts = ex.pts[i], j = pts.findIndex(p => p[0] === sx && p[1] === sy);
+    if (j >= 0) pts.splice(j, 1);
+    else if (pts.length < 2) pts.push([sx, sy]);
+    else pts[1] = [sx, sy];
+    actualizarLecturaPuntos(i); limpiarFb(paso);
+  } else if (paso[0] === 's') {
+    const i = +paso[1];
+    if (Math.abs(x) > RANGO || Math.abs(y) > RANGO) return;
+    if (distRecta(ex.l[i], [x, y]) < 0.12) return;
+    ex.clic[i] = [x, y];
+    limpiarFb(paso);
+    $('graf-ayuda').textContent = 'Semiplano elegido. Puedes cambiarlo haciendo clic al otro lado antes de comprobar.';
+  } else if (paso === 'region') {
+    if (Math.abs(x) > RANGO || Math.abs(y) > RANGO) return;
+    if (ex.l.some(l => distRecta(l, [x, y]) < 0.12)) return;
+    ex.regSel = [x, y]; ex.sinSol = false;
+    const b = $('btn-sinsol'); if (b) b.classList.remove('sel');
+    limpiarFb('region');
+    $('graf-ayuda').textContent = 'Región elegida. Puedes cambiarla haciendo clic en otra antes de comprobar.';
+  } else return;
+  renderPlano();
+});
+
+/* =========================================================
+   Pasos del sistema
+   ========================================================= */
+const PASOS = ['t0', 'r0', 'p0', 's0', 't1', 'r1', 'p1', 's1', 'corte', 'region'];
+function titulo(k) {
+  if (k === 'corte') return 'Posición de las rectas y punto de corte';
+  if (k === 'region') return 'Región solución del sistema';
+  const i = +k[1];
+  return { t: `Tabla de valores de ${R(i)}`, r: `Representa la recta ${R(i)}`, p: `Punto de prueba en la inecuación ${IQ(i)}`, s: `Semiplano solución de la inecuación ${IQ(i)}` }[k[0]];
+}
+function htmlPaso(k) {
+  if (k === 'corte') {
+    const [a, b] = ex.l;
+    return `
+      <p class="instr">Las rectas frontera son ${R(0)}: ${M(lin(a.A, a.B, a.C, '='))} y ${R(1)}: ${M(lin(b.A, b.B, b.C, '='))}. Decide cómo son y, si se cortan, resuelve el sistema de ecuaciones (por reducción, sustitución o igualación). Puedes comprobarlo en el gráfico.</p>
+      <div class="fila-forma lato" style="margin-bottom:10px">Las rectas
+        <select id="in-pos" aria-label="posición de las rectas"><option value="">Elige…</option><option value="secantes">se cortan en un punto</option><option value="paralelas">son paralelas</option></select></div>
+      <div class="fila-forma oculto" id="fila-corte" style="margin-bottom:12px">Punto de corte: ( <input class="num" id="in-cx" inputmode="text" aria-label="x del punto de corte"> , <input class="num" id="in-cy" inputmode="text" aria-label="y del punto de corte"> )</div>
+      <div class="acciones"><button class="btn-primario" data-comprobar="corte">Comprobar</button></div>`;
+  }
+  if (k === 'region') return `
+      <p class="instr">Haz clic en la región del plano donde se cumplen <b>las dos inecuaciones a la vez</b> (donde se superponen los dos rayados). Si no hay ninguna, pulsa «El sistema no tiene solución».</p>
+      <div class="trazos"><button class="btn-trazo" id="btn-sinsol">∅ El sistema no tiene solución</button></div>
+      <div class="fila-forma lato" id="fila-vert" style="margin:4px 0 12px">¿El punto de corte de las dos rectas pertenece a la solución?
+        <select id="in-vert" aria-label="pertenencia del punto de corte"><option value="">Elige…</option><option value="si">Sí, pertenece</option><option value="no">No pertenece</option></select></div>
+      <p class="nota-in oculto" id="nota-paralelas">Las rectas son paralelas: no hay punto de corte.</p>
+      <div class="acciones"><button class="btn-primario" data-comprobar="region">Comprobar</button></div>`;
+  const i = +k[1], l = ex.l[i];
+  switch (k[0]) {
+    case 't': return `
+      <p class="instr">Cambia la desigualdad de ${IQ(i)} por «=» para obtener la recta frontera ${R(i)}: ${M(lin(l.A, l.B, l.C, '='))}. Calcula <i>y</i> para cada valor de <i>x</i>.</p>
+      <table class="valores"><tr><th>x</th><td>${N(l.tabla[0][0])}</td><td>${N(l.tabla[1][0])}</td></tr>
+      <tr><th>y</th><td><input class="num" id="in-y0-${i}" inputmode="text" aria-label="y para el primer valor"></td><td><input class="num" id="in-y1-${i}" inputmode="text" aria-label="y para el segundo valor"></td></tr></table>
+      <div class="acciones"><button class="btn-primario" data-comprobar="${k}">Comprobar</button></div>`;
+    case 'r': return `
+      <p class="instr">Haz clic en el plano sobre los dos puntos de tu tabla (otro clic sobre un punto lo borra). Después elige el tipo de trazo para ${R(i)}.</p>
+      <p class="lectura-puntos" id="lectura-puntos-${i}"></p>
+      <div class="trazos">
+        <button class="btn-trazo" data-trazo="continua" data-i="${i}"><svg width="34" height="10"><line x1="1" y1="5" x2="33" y2="5" stroke="${COL[i]}" stroke-width="2.6"/></svg>Continua</button>
+        <button class="btn-trazo" data-trazo="discontinua" data-i="${i}"><svg width="34" height="10"><line x1="1" y1="5" x2="33" y2="5" stroke="${COL[i]}" stroke-width="2.6" stroke-dasharray="7 5"/></svg>Discontinua</button>
+      </div>
+      <div class="acciones"><button class="btn-primario" data-comprobar="${k}">Comprobar</button><button class="btn-secundario" data-borrar="${i}">Borrar puntos</button></div>`;
+    case 'p': return `
+      <p class="instr">Elige un punto que <b>no</b> esté en ${R(i)} (en principio, el origen), sustitúyelo en el primer miembro ${M(T(l.A, 'x', true) + T(l.B, 'y', false))} de la inecuación ${IQ(i)} y decide si la cumple.</p>
+      <div class="fila-forma">P = ( <input class="num" id="in-px-${i}" value="0" inputmode="text" aria-label="x del punto"> , <input class="num" id="in-py-${i}" value="0" inputmode="text" aria-label="y del punto"> )</div>
+      <div class="fila-forma" style="margin-top:10px">Valor del primer miembro en P: <input class="num" id="in-v-${i}" inputmode="text" aria-label="valor"></div>
+      <div class="fila-forma lato" style="margin:10px 0 12px">¿Cumple P la inecuación ${IQ(i)}?
+        <select id="in-cumple-${i}" aria-label="cumple"><option value="">Elige…</option><option value="si">Sí, la cumple</option><option value="no">No la cumple</option></select></div>
+      <div class="acciones"><button class="btn-primario" data-comprobar="${k}">Comprobar</button></div>`;
+    case 's': return `
+      <p class="instr">Haz clic en el plano, a un lado de ${R(i)}, para rayar el semiplano solución de ${IQ(i)}. Puedes cambiarlo antes de comprobar.</p>
+      <div class="acciones"><button class="btn-primario" data-comprobar="${k}">Comprobar</button></div>`;
+  }
+}
+const GRUPOS = { t0: ['Primera inecuación', COL[0]], t1: ['Segunda inecuación', COL[1]], corte: ['Solución del sistema', '#2E6B3E'] };
+function renderSistema() {
+  $('expr').innerHTML = `<div class="sistema"><span class="llave">{</span><div class="ecs">${ex.html}</div></div>`;
+  $('chip-sistema').textContent = `Sistema n.º ${ex.n}`;
+  const card = $('grafica-card'); document.querySelector('.columna-grafica').appendChild(card);   // sacarlo antes de rehacer los pasos
+  $('pasos').innerHTML = ex.pasos.map((k, j) =>
+    (GRUPOS[k] ? `<div class="grupo"><span class="marca" style="background:${GRUPOS[k][1]}"></span>${GRUPOS[k][0]}</div>` : '') + `
+    <div class="paso bloqueado" id="paso-${k}">
+      <h3><span class="n">${j + 1}</span><span>${titulo(k)}</span></h3>
+      ${htmlPaso(k)}
+      <div class="fb" id="fb-${k}" aria-live="polite"></div>
+    </div>`).join('');
+  $('resultado').innerHTML = '';
+  document.querySelectorAll('[data-comprobar]').forEach(b => b.addEventListener('click', () => comprobar(b.dataset.comprobar)));
+  document.querySelectorAll('[data-trazo]').forEach(b => b.addEventListener('click', () => {
+    const i = +b.dataset.i;
+    ex.trazo[i] = b.dataset.trazo;
+    document.querySelectorAll(`[data-trazo][data-i="${i}"]`).forEach(o => o.classList.toggle('sel', o === b));
+    limpiarFb('r' + i); renderPlano();
+  }));
+  document.querySelectorAll('[data-borrar]').forEach(b => b.addEventListener('click', () => {
+    const i = +b.dataset.borrar; ex.pts[i] = []; actualizarLecturaPuntos(i); renderPlano();
+  }));
+  $('in-pos').addEventListener('change', () => { $('fila-corte').classList.toggle('oculto', $('in-pos').value !== 'secantes'); limpiarFb('corte'); });
+  $('btn-sinsol').addEventListener('click', () => {
+    ex.sinSol = !ex.sinSol;
+    $('btn-sinsol').classList.toggle('sel', ex.sinSol);
+    if (ex.sinSol) ex.regSel = null;
+    limpiarFb('region'); renderPlano();
+  });
+  document.querySelectorAll('#pasos input, #pasos select').forEach(c => {
+    c.addEventListener('keydown', e => { if (e.key === 'Enter') { const p = pasoActual(); if (p) comprobar(p); } });
+  });
+  activarPaso(0);
+}
+const AYUDAS = {
+  t: 'Completa la tabla; el plano se usa en el paso siguiente.',
+  r: i => `Haz clic en los cruces de la cuadrícula para marcar los dos puntos de r${SUB[i]}.`,
+  p: 'Comprueba con un punto que no esté sobre la recta.',
+  s: 'Haz clic a un lado de la recta para rayar ese semiplano.',
+  corte: 'Fíjate en el gráfico: ¿se cruzan las dos rectas?',
+  region: 'Haz clic en la región que cumple las dos inecuaciones.'
+};
+function activarPaso(j) {
+  ex.idx = j;
+  ex.pasos.forEach((k, m) => {
+    const d = $('paso-' + k);
+    d.classList.toggle('bloqueado', m > j);
+    d.classList.toggle('activo', m === j && !ex.terminado);
+    d.querySelectorAll('input, select, button').forEach(c => { c.disabled = ex.terminado || m !== j; });
+  });
+  $('btn-soluciones').disabled = ex.terminado;
+  const k = ex.pasos[j];
+  if (esPasoRecta(k)) actualizarLecturaPuntos(+k[1]);
+  if (k === 'region' && ex.tipo === 'paralelas') { $('fila-vert').classList.add('oculto'); $('nota-paralelas').classList.remove('oculto'); }
+  svg.classList.toggle('interactivo', !ex.terminado && (esPasoRecta(k) || /^s\d$/.test(k) || k === 'region'));
+  const ay = AYUDAS[k] || AYUDAS[k[0]];
+  $('graf-ayuda').textContent = typeof ay === 'function' ? ay(+k[1]) : ay;
+  if (!ex.terminado) {
+    const d = $('paso-' + k);
+    const foco = d.querySelector('input:not([disabled]), select:not([disabled])');
+    if (foco && window.matchMedia('(min-width: 901px)').matches) foco.focus({ preventScroll: true });
+    if (j > 0) d.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+  colocarGrafica();
+  renderPlano();
+}
+/* En móvil el plano se coloca dentro del paso activo, junto a sus controles,
+   para no tener que subir y bajar por la página. En escritorio va en su columna. */
+const MQ_MOVIL = window.matchMedia('(max-width: 900px)');
+function colocarGrafica() {
+  const card = $('grafica-card'), col = document.querySelector('.columna-grafica');
+  if (!MQ_MOVIL.matches || !ex) { card.classList.remove('en-paso'); if (card.parentNode !== col) col.appendChild(card); return; }
+  card.classList.add('en-paso');
+  if (ex.terminado) { const r = $('resultado'); r.parentNode.insertBefore(card, r); return; }
+  const d = $('paso-' + ex.pasos[ex.idx]), ins = d.querySelector('.instr');
+  ins.after(card);
+}
+MQ_MOVIL.addEventListener('change', colocarGrafica);
+function actualizarLecturaPuntos(i) {
+  const l = $('lectura-puntos-' + i); if (!l) return;
+  const pts = ex.pts[i];
+  l.innerHTML = pts.length === 0 ? 'Aún no has marcado ningún punto.'
+    : 'Puntos marcados: ' + pts.map(p => `<b style="color:${COL_OSC[i]}">(${N(p[0])}, ${N(p[1])})</b>`).join(' y ');
+}
+function limpiarFb(k) { const f = $('fb-' + k); if (f) f.innerHTML = ''; }
+function fb(k, tipo, html) { $('fb-' + k).innerHTML = `<div class="feedback-${tipo}">${html}</div>`; }
+function parseEntero(str) {
+  if (str == null) return null;
+  str = String(str).trim().replace(/[−–]/g, '-').replace(/\s+/g, '');
+  if (!/^[-+]?\d+$/.test(str)) return null;
+  return parseInt(str, 10);
+}
+
+/* ---------- Validaciones: devuelven {ok:true|false|null, html, cats} ---------- */
+function validarTabla(i) {
+  const l = ex.l[i];
+  const ys = [parseEntero($(`in-y0-${i}`).value), parseEntero($(`in-y1-${i}`).value)];
+  if (ys.some(v => v === null)) return { ok: null, html: 'Escribe un número entero en cada casilla de <i>y</i>.' };
+  const { A: a, B: b, C: c } = l, errores = [];
+  l.tabla.forEach(([x, y], j) => {
+    if (ys[j] === y) return;
+    const resto = c - a * x;
+    let tipo = '';
+    if ((c + a * x) % b === 0 && ys[j] === (c + a * x) / b && (c + a * x) / b !== y) tipo = ' Al pasar el término de la <i>x</i> al segundo miembro tiene que cambiar de signo.';
+    else if (ys[j] === -y) tipo = ' El valor absoluto está bien, pero el signo no: revisa el signo al dividir entre ' + N(b) + '.';
+    errores.push(`Para ${M(V('x') + ' = ' + N(x))}: ${M(`${N(a)}·${P(x)}${T(b, 'y', false)} = ${N(c)}`)} → ${M(`${T(b, 'y', true)} = ${N(c)} − ${P(a * x)} = ${N(resto)}`)}` +
+      (b === 1 ? '' : ` → ${M(`${V('y')} = ${N(resto)} : ${P(b)} = ${N(y)}`)}`) + `.${tipo}`);
+  });
+  const pts = `(${N(l.tabla[0][0])}, ${N(l.tabla[0][1])}) y (${N(l.tabla[1][0])}, ${N(l.tabla[1][1])})`;
+  if (!errores.length) return { ok: true, html: `<b>Correcto.</b> Los puntos ${pts} están en ${R(i)}: al sustituirlos se cumple la igualdad.` };
+  return { ok: false, cats: ['tabla'], html: '<b>Incorrecto.</b> Sustituye cada <i>x</i> en la recta y despeja <i>y</i>:<ul class="deriv">' + errores.map(e => `<li>${e}</li>`).join('') + `</ul><div class="sigue">Usa los puntos correctos, ${pts}, en el paso siguiente.</div>` };
+}
+function validarRecta(i) {
+  const pts = ex.pts[i];
+  if (pts.length < 2) return { ok: null, html: 'Marca dos puntos en el plano.' };
+  if (!ex.trazo[i]) return { ok: null, html: 'Elige si la recta es continua o discontinua.' };
+  const l = ex.l[i], s = l.s, cats = [], partes = [];
+  const mal = pts.filter(p => !enRecta(l, p));
+  if (mal.length) {
+    cats.push('puntos');
+    partes.push(mal.map(p => `El punto (${N(p[0])}, ${N(p[1])}) no está en ${R(i)}: ${M(`${sust(l.A, l.B, p[0], p[1])} = ${N(l.A * p[0] + l.B * p[1])} ≠ ${N(l.C)}`)}.`).join(' ') + ' Usa los puntos de tu tabla.');
+  }
+  const correcto = esEstricta(s) ? 'discontinua' : 'continua';
+  const porque = esEstricta(s)
+    ? `el signo «${s}» es estricto: en los puntos de la recta se da la igualdad, que no cumple la inecuación, así que la recta <b>no</b> forma parte de su solución`
+    : `el signo «${s}» incluye la igualdad: los puntos de la recta <b>sí</b> son solución de la inecuación`;
+  if (ex.trazo[i] !== correcto) { cats.push('trazo'); partes.push(`La recta debe ser <b>${correcto}</b>, porque ${porque}.`); }
+  if (!cats.length) return { ok: true, html: `<b>Correcto.</b> Recta ${correcto}: ${porque}.` };
+  ex.ptsMal = mal;
+  return { ok: false, cats, html: '<b>Incorrecto.</b> ' + partes.join('<br>') + '<div class="sigue">En el plano tienes ya la recta correcta para seguir.</div>' };
+}
+function puntoAlternativo(l) {
+  for (const p of [[0, 0], [1, 0], [0, 1], [-1, 0], [0, -1], [1, 1]]) if (!enRecta(l, p)) return p;
+  return [2, 0];
+}
+function validarPrueba(i) {
+  const l = ex.l[i];
+  const px = parseEntero($(`in-px-${i}`).value), py = parseEntero($(`in-py-${i}`).value), v = parseEntero($(`in-v-${i}`).value), resp = $(`in-cumple-${i}`).value;
+  if (px === null || py === null || v === null || !resp) return { ok: null, html: 'Escribe las coordenadas del punto, el valor del primer miembro y elige si la cumple.' };
+  const { A: a, B: b, C: c, s } = l;
+  const fijar = p => { const vb = a * p[0] + b * p[1]; ex.prueba[i] = { p, cumple: cumple(vb, s, c) }; ex.pruebaVis = { p, i }; };
+  if (enRecta(l, [px, py])) {
+    const alt = puntoAlternativo(l), va = a * alt[0] + b * alt[1], ca = cumple(va, s, c);
+    fijar(alt);
+    return { ok: false, cats: ['prueba'], html: `<b>Incorrecto.</b> El punto (${N(px)}, ${N(py)}) está <b>sobre ${R(i)}</b>: ahí el primer miembro vale exactamente ${N(c)}, así que no sirve para saber qué semiplano es la solución. Hay que elegir un punto fuera de la recta.` +
+      `<div class="solucion">Por ejemplo, P(${N(alt[0])}, ${N(alt[1])}): ${M(`${sust(a, b, alt[0], alt[1])} = ${N(va)}`)} y ${M(`${N(va)} ${s} ${N(c)}`)} es ${ca ? 'verdadero' : 'falso'}, así que P ${ca ? 'sí' : 'no'} cumple la inecuación.</div>` };
+  }
+  const vb = a * px + b * py, cumpleP = cumple(vb, s, c);
+  const calculo = M(`${sust(a, b, px, py)} = ${N(vb)}`);
+  fijar([px, py]);
+  if (v !== vb) return { ok: false, cats: ['prueba'], html: `<b>Incorrecto.</b> El valor del primer miembro en (${N(px)}, ${N(py)}) es ${calculo}; tú has escrito ${N(v)}. Revisa los productos y los signos.<div class="solucion">Como ${M(`${N(vb)} ${s} ${N(c)}`)} es ${cumpleP ? 'verdadero' : 'falso'}, P ${cumpleP ? 'sí' : 'no'} cumple la inecuación.</div>` };
+  if ((resp === 'si') !== cumpleP) return { ok: false, cats: ['prueba'], html: `<b>Incorrecto.</b> El valor ${N(vb)} está bien, pero ${M(`${N(vb)} ${s} ${N(c)}`)} es <b>${cumpleP ? 'verdadero' : 'falso'}</b>, así que el punto ${cumpleP ? 'sí' : 'no'} cumple la inecuación.` };
+  return { ok: true, html: `<b>Correcto.</b> ${calculo} y ${M(`${N(vb)} ${s} ${N(c)}`)} es ${cumpleP ? 'verdadero' : 'falso'}: P ${cumpleP ? 'es' : 'no es'} solución, así que la solución de ${IQ(i)} es el semiplano que ${cumpleP ? 'contiene' : '<b>no</b> contiene'} a P.` };
+}
+function validarSemiplano(i) {
+  if (!ex.clic[i]) return { ok: null, html: 'Haz clic en el plano, a un lado de la recta, para elegir el semiplano.' };
+  const l = ex.l[i];
+  const elegidoPos = fval(l, ex.clic[i]) > 0, solucionPos = ladoPositivo(l.s);
+  const { p, cumple: cP } = ex.prueba[i];
+  const explic = `P(${N(p[0])}, ${N(p[1])}) ${cP ? 'cumple' : 'no cumple'} la inecuación ${IQ(i)}, por eso su solución es el semiplano que ${cP ? 'contiene' : 'no contiene'} a P`;
+  if (elegidoPos === solucionPos) return { ok: true, html: `<b>Correcto.</b> ${explic}.` };
+  return { ok: false, cats: ['semiplano'], html: `<b>Incorrecto.</b> Has rayado el semiplano equivocado. ${explic}.<div class="sigue">En el plano tienes ya el semiplano correcto.</div>` };
+}
+function derivCorte() {
+  const [a, b] = ex.l, [x0, y0] = ex.corte;
+  const L = lcm(a.B, b.B), m1 = L / a.B, m2 = L / b.B;          // m1·B1 = m2·B2 = L
+  const cx = a.A * m1 - b.A * m2, cc = a.C * m1 - b.C * m2;
+  const ec1 = T(a.A * m1, 'x', true) + T(L, 'y', false) + ' = ' + N(a.C * m1);
+  const ec2 = T(b.A * m2, 'x', true) + T(L, 'y', false) + ' = ' + N(b.C * m2);
+  const pasos = [];
+  const mult = (m, i) => m === 1 ? `dejamos ${R(i)} como está` : `multiplicamos ${R(i)} por ${N(m)}`;
+  pasos.push(`Para eliminar la <i>y</i>, ${mult(m1, 0)} y ${mult(m2, 1)}, de modo que las dos tengan ${M(T(L, 'y', true))}: ${M(ec1)} y ${M(ec2)}.`);
+  pasos.push(`Restamos: ${M(T(cx, 'x', true) + ' = ' + N(cc))} → ${M(V('x') + ' = ' + N(x0))}.`);
+  const resto = a.C - a.A * x0;
+  pasos.push(`Sustituimos en ${R(0)}: ${M(`${N(a.A)}·${P(x0)}${T(a.B, 'y', false)} = ${N(a.C)}`)} → ${M(`${T(a.B, 'y', true)} = ${N(resto)}`)}` +
+    (a.B === 1 ? '' : ` → ${M(`${V('y')} = ${N(resto)} : ${P(a.B)} = ${N(y0)}`)}`) + '.');
+  return `<div class="solucion">El punto de corte es <b>(${N(x0)}, ${N(y0)})</b>:<ol class="deriv">${pasos.map(p => `<li>${p}</li>`).join('')}</ol></div>`;
+}
+function validarCorte() {
+  const [a, b] = ex.l, pos = $('in-pos').value;
+  if (!pos) return { ok: null, html: 'Elige si las rectas se cortan en un punto o son paralelas.' };
+  const cruz = `${M(`${N(a.A)}·${P(b.B)} = ${N(a.A * b.B)}`)} y ${M(`${N(b.A)}·${P(a.B)} = ${N(b.A * a.B)}`)}`;
+  if (ex.tipo === 'paralelas') {
+    const exp = `Los coeficientes de <i>x</i> e <i>y</i> de ${R(0)} y ${R(1)} son proporcionales (los productos cruzados ${cruz} son iguales), pero los términos independientes no guardan esa proporción. Las rectas tienen la misma inclinación y no se cortan: son <b>paralelas</b>. Si intentas resolver el sistema por reducción, desaparecen las dos incógnitas y llegas a una igualdad imposible.`;
+    if (pos === 'paralelas') return { ok: true, html: `<b>Correcto.</b> ${exp}` };
+    return { ok: false, cats: ['posicion'], html: `<b>Incorrecto.</b> ${exp}` };
+  }
+  if (pos === 'paralelas') return { ok: false, cats: ['posicion'], html: `<b>Incorrecto.</b> Los productos cruzados ${cruz} son distintos: los coeficientes de <i>x</i> e <i>y</i> no son proporcionales, así que las rectas no son paralelas y se cortan en un punto.` + derivCorte() };
+  const x = parseEntero($('in-cx').value), y = parseEntero($('in-cy').value);
+  if (x === null || y === null) return { ok: null, html: 'Escribe las dos coordenadas del punto de corte (números enteros).' };
+  const [x0, y0] = ex.corte;
+  const comp = (l, p) => M(`${sust(l.A, l.B, p[0], p[1])} = ${N(l.A * p[0] + l.B * p[1])}`);
+  if (x === x0 && y === y0) return { ok: true, html: `<b>Correcto.</b> (${N(x0)}, ${N(y0)}) está en las dos rectas: en ${R(0)}, ${comp(a, ex.corte)}, y en ${R(1)}, ${comp(b, ex.corte)}.` };
+  const p = [x, y], e1 = enRecta(a, p), e2 = enRecta(b, p);
+  let motivo;
+  if (x === y0 && y === x0) motivo = 'Has intercambiado las coordenadas: primero se escribe la <i>x</i> y después la <i>y</i>.';
+  else if (e1 && !e2) motivo = `El punto (${N(x)}, ${N(y)}) está en ${R(0)}, pero no en ${R(1)}: ${comp(b, p)} ≠ ${N(b.C)}. El punto de corte tiene que cumplir las dos ecuaciones.`;
+  else if (e2 && !e1) motivo = `El punto (${N(x)}, ${N(y)}) está en ${R(1)}, pero no en ${R(0)}: ${comp(a, p)} ≠ ${N(a.C)}. El punto de corte tiene que cumplir las dos ecuaciones.`;
+  else motivo = `El punto (${N(x)}, ${N(y)}) no está en ninguna de las dos rectas: en ${R(0)}, ${comp(a, p)} ≠ ${N(a.C)}.`;
+  return { ok: false, cats: ['corte'], html: `<b>Incorrecto.</b> ${motivo}` + derivCorte() };
+}
+function describirSolucion() {
+  const [a, b] = ex.l;
+  if (ex.vacia) return `Los semiplanos solución de ${IQ(0)} y ${IQ(1)} quedan cada uno hacia fuera de las rectas paralelas y no tienen ningún punto en común: <b>el sistema no tiene solución</b>.`;
+  if (ex.tipo === 'paralelas') {
+    const p0 = a.tabla[0], p1 = b.tabla[0];
+    const r0enS1 = (fval(b, p0) > 0) === ladoPositivo(b.s), r1enS0 = (fval(a, p1) > 0) === ladoPositivo(a.s);
+    if (r0enS1 && r1enS0) return `La solución es la <b>franja</b> comprendida entre las dos rectas paralelas: ahí se superponen los dos rayados.`;
+    const k = r0enS1 ? 0 : 1;
+    return `El semiplano de ${IQ(k)} está contenido en el de ${IQ(1 - k)}, así que la solución del sistema es <b>el semiplano de ${IQ(k)}</b>: todos sus puntos cumplen también la otra inecuación.`;
+  }
+  return `La solución es la región donde se superponen los dos rayados, con vértice en el punto de corte (${N(ex.corte[0])}, ${N(ex.corte[1])}).`;
+}
+function validarRegion() {
+  const sec = ex.tipo === 'secantes';
+  const vert = sec ? $('in-vert').value : '';
+  if (!ex.regSel && !ex.sinSol) return { ok: null, html: 'Haz clic en una región del plano o pulsa «El sistema no tiene solución».' };
+  if (sec && !vert) return { ok: null, html: 'Indica también si el punto de corte pertenece a la solución.' };
+  const [a, b] = ex.l, P0 = ladoPositivo(a.s), P1 = ladoPositivo(b.s);
+  let regOk, msgReg = '';
+  if (ex.vacia) {
+    regOk = ex.sinSol;
+    if (!regOk) msgReg = 'Has marcado una región, pero ninguna cumple las dos inecuaciones a la vez.';
+  } else if (ex.sinSol) {
+    regOk = false;
+    msgReg = 'Los dos semiplanos sí tienen puntos en común.';
+  } else {
+    const q = ex.regSel, c0 = (fval(a, q) > 0) === P0, c1 = (fval(b, q) > 0) === P1;
+    regOk = c0 && c1;
+    if (!regOk) msgReg = c0 ? `La región que has elegido cumple ${IQ(0)}, pero no ${IQ(1)}.`
+      : c1 ? `La región que has elegido cumple ${IQ(1)}, pero no ${IQ(0)}.`
+      : 'La región que has elegido no cumple ninguna de las dos inecuaciones.';
+  }
+  let vertOk = true, msgVert = '';
+  if (sec) {
+    const debe = !esEstricta(a.s) && !esEstricta(b.s);
+    vertOk = (vert === 'si') === debe;
+    const pc = `(${N(ex.corte[0])}, ${N(ex.corte[1])})`;
+    if (debe) msgVert = `El punto de corte ${pc} <b>sí</b> pertenece a la solución: las dos rectas son continuas (signos ${a.s} y ${b.s}), y el punto está en las dos, así que cumple las dos inecuaciones con la igualdad.`;
+    else {
+      const k = esEstricta(a.s) ? 0 : 1;
+      msgVert = `El punto de corte ${pc} <b>no</b> pertenece a la solución: está sobre ${R(k)}, que es discontinua (signo «${ex.l[k].s}», estricto), así que no cumple la inecuación ${IQ(k)}.`;
+    }
+  }
+  const sol = describirSolucion();
+  if (regOk && vertOk) return { ok: true, html: `<b>Correcto.</b> ${sol}` + (sec ? ` ${msgVert}` : '') };
+  const cats = [], partes = [];
+  if (!regOk) { cats.push('region'); partes.push(`${msgReg} ${sol}`); }
+  if (!vertOk) { cats.push('vertice'); partes.push(msgVert); }
+  else if (sec) partes.push(msgVert.replace('<b>', '').replace('</b>', '') + ' Esto lo tenías bien.');
+  return { ok: false, cats, html: '<b>Incorrecto.</b> ' + partes.join('<br>') + '<div class="sigue">En verde tienes la solución en el plano.</div>' };
+}
+function validar(k) {
+  if (k === 'corte') return validarCorte();
+  if (k === 'region') return validarRegion();
+  const i = +k[1];
+  return { t: validarTabla, r: validarRecta, p: validarPrueba, s: validarSemiplano }[k[0]](i);
+}
+function consolidar(k) {
+  if (!esPasoRecta(k)) ex.ptsMal = [];
+  if (esPasoRecta(k)) ex.lineaOk[+k[1]] = true;
+  if (k[0] === 's') { ex.semiOk[+k[1]] = true; ex.pruebaVis = null; }
+  if (k === 'corte') ex.corteOk = true;
+  if (k === 'region') ex.regionOk = true;
+}
+
+function nombreValido() {
+  const n = $('nombre');
+  if (n.value.trim()) { n.classList.remove('falta'); $('aviso-nombre').classList.remove('visible'); return true; }
+  n.classList.add('falta'); $('aviso-nombre').classList.add('visible'); n.focus(); return false;
+}
+function comprobar(k) {
+  if (!ex || ex.terminado || ex.pasos[ex.idx] !== k) return;
+  if (!nombreValido()) return;
+  const r = validar(k);
+  if (r.ok === null) { fb(k, 'aviso', r.html); return; }
+  if (r.ok) {
+    fb(k, 'correcto', r.html);
+    $('paso-' + k).classList.add('hecho');
+  } else {
+    fb(k, 'incorrecto', r.html);
+    $('paso-' + k).classList.add('fallado');
+    state.fallosTotales++;
+    ex.fallosSistema++;
+    ex.pasosFallados.push(k);
+    r.cats.forEach(c => state.porPaso[c]++);
+  }
+  consolidar(k);
+  if (ex.idx === ex.pasos.length - 1) finSistema();
+  else activarPaso(ex.idx + 1);
+  actualizarMarcador();
+}
+
+/* =========================================================
+   Mostrar soluciones: rellena con la respuesta correcta cada
+   paso pendiente, reutiliza la explicación del validador y
+   cierra el sistema sin que cuente para la nota.
+   ========================================================= */
+function puntoLado(l, positivo) {
+  const p = l.tabla[0], n = Math.hypot(l.A, l.B), s = positivo ? 1 : -1;
+  return [p[0] + s * 1.5 * l.A / n, p[1] + s * 1.5 * l.B / n];
+}
+function rellenarSolucion(k) {
+  const [a, b] = ex.l;
+  if (k === 'corte') {
+    $('in-pos').value = ex.tipo;
+    $('fila-corte').classList.toggle('oculto', ex.tipo !== 'secantes');
+    if (ex.tipo === 'secantes') { $('in-cx').value = N(ex.corte[0]); $('in-cy').value = N(ex.corte[1]); }
+    return;
+  }
+  if (k === 'region') {
+    if (ex.vacia) { ex.sinSol = true; ex.regSel = null; $('btn-sinsol').classList.add('sel'); }
+    else {
+      const pol = poligonoRegion(ladoPositivo(a.s), ladoPositivo(b.s));
+      ex.regSel = [pol.reduce((s, p) => s + p[0], 0) / pol.length, pol.reduce((s, p) => s + p[1], 0) / pol.length];
+      ex.sinSol = false; $('btn-sinsol').classList.remove('sel');
+    }
+    if (ex.tipo === 'secantes') $('in-vert').value = (!esEstricta(a.s) && !esEstricta(b.s)) ? 'si' : 'no';
+    return;
+  }
+  const i = +k[1], l = ex.l[i];
+  switch (k[0]) {
+    case 't':
+      $(`in-y0-${i}`).value = N(l.tabla[0][1]); $(`in-y1-${i}`).value = N(l.tabla[1][1]);
+      break;
+    case 'r':
+      ex.pts[i] = l.tabla.map(p => p.slice());
+      ex.trazo[i] = esEstricta(l.s) ? 'discontinua' : 'continua';
+      document.querySelectorAll(`[data-trazo][data-i="${i}"]`).forEach(o => o.classList.toggle('sel', o.dataset.trazo === ex.trazo[i]));
+      actualizarLecturaPuntos(i);
+      break;
+    case 'p': {
+      const p = puntoAlternativo(l), v = l.A * p[0] + l.B * p[1];
+      $(`in-px-${i}`).value = N(p[0]); $(`in-py-${i}`).value = N(p[1]); $(`in-v-${i}`).value = N(v);
+      $(`in-cumple-${i}`).value = cumple(v, l.s, l.C) ? 'si' : 'no';
+      break;
+    }
+    case 's':
+      ex.clic[i] = puntoLado(l, ladoPositivo(l.s));
+      break;
+  }
+}
+function revelarSoluciones() {
+  if (!ex || ex.terminado || state.cerrado) return;
+  const desde = ex.idx;
+  for (let j = desde; j < ex.pasos.length; j++) {
+    const k = ex.pasos[j];
+    ex.idx = j;
+    rellenarSolucion(k);
+    const r = validar(k);
+    fb(k, 'solucion', r.ok ? r.html.replace('<b>Correcto.</b>', '<b>Solución.</b>') : '<b>Solución.</b> ' + r.html);
+    $('paso-' + k).classList.add('revelado');
+    consolidar(k);
+  }
+  ex.terminado = true;
+  ex.revelado = true;
+  state.sistemas.push({ n: ex.n, tipo: ex.tipo, vacia: ex.vacia, fallos: ex.fallosSistema, ok: false, revelado: true });
+  activarPaso(ex.idx);
+  $('graf-ayuda').textContent = ex.vacia ? 'Soluciones mostradas: el sistema no tiene solución.' : 'Soluciones mostradas: en verde, la región solución del sistema.';
+  const previos = ex.fallosSistema;
+  const restan = previos === 0 ? ''
+    : previos === 1 ? ', aunque el paso que ya habías fallado sigue restando'
+    : `, aunque los ${previos} pasos que ya habías fallado siguen restando`;
+  $('resultado').innerHTML = `<div class="resultado neutro"><h3>Soluciones mostradas · sistema sin calificar</h3>
+    <p>Repasa la resolución de cada paso y el plano. Este sistema no cuenta para la nota${restan}. Para superar la ficha necesitas resolver otro sistema sin errores.</p>
+    <button class="btn-primario" id="btn-siguiente">Siguiente sistema</button></div>`;
+  $('btn-siguiente').addEventListener('click', nuevoSistema);
+  actualizarMarcador();
+  $('paso-' + ex.pasos[desde]).scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function cerrarAvisoSol() { $('overlay-sol').classList.remove('visible'); }
+$('btn-soluciones').addEventListener('click', () => {
+  if (!ex || ex.terminado) return;
+  $('overlay-sol').classList.add('visible');
+  $('sol-cancelar').focus();
+});
+$('sol-cancelar').addEventListener('click', cerrarAvisoSol);
+$('sol-aceptar').addEventListener('click', () => { cerrarAvisoSol(); revelarSoluciones(); });
+$('overlay-sol').addEventListener('click', e => { if (e.target === $('overlay-sol')) cerrarAvisoSol(); });
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  cerrarAvisoSol();
+  $('overlay').classList.remove('visible');
+});
+
+/* ---------- Cierre de cada sistema ---------- */
+function finSistema() {
+  ex.terminado = true;
+  const ok = ex.fallosSistema === 0;
+  registrarIntento(ok);
+  state.sistemas.push({ n: ex.n, tipo: ex.tipo, vacia: ex.vacia, fallos: ex.fallosSistema, ok });
+  activarPaso(ex.idx);
+  svg.classList.remove('interactivo');
+  $('graf-ayuda').textContent = ex.vacia ? 'El sistema no tiene solución: los semiplanos no se solapan.' : 'En verde, la región solución del sistema.';
+  actualizarMarcador();
+  const nota = calcularNota();
+  if (state.superado) {
+    if (nota >= 10) $('ficha').classList.add('completa');
+    $('resultado').innerHTML = `<div class="resultado ok"><h3>¡Ficha superada!</h3>
+      <p>Has resuelto un sistema sin ningún error. Tu nota es <b>${fmtNota(nota)}</b>${nota < 10 ? ` (10 menos ${state.fallosTotales} ${state.fallosTotales === 1 ? 'paso fallado' : 'pasos fallados'} × 0,5)` : ''}.</p>
+      <p>Pulsa «Finalizar y Calificar» para ver tu informe.</p></div>`;
+    return;
+  }
+  $('resultado').innerHTML = `<div class="resultado ko"><h3>Sistema con ${ex.fallosSistema} ${ex.fallosSistema === 1 ? 'paso fallado' : 'pasos fallados'} · −${puntosTxt(ex.fallosSistema * PENALIZACION_FALLO)}</h3>
+       <p>Este sistema no cuenta como resuelto sin errores. Repasa la solución en el plano y las correcciones de cada paso, y prueba con otro: para superar la ficha necesitas resolver uno entero sin errores.</p>
+       <button class="btn-primario" id="btn-siguiente">Siguiente sistema</button></div>`;
+  $('btn-siguiente').addEventListener('click', nuevoSistema);
+}
+let primeraCarga = true;
+function nuevoSistema() {
+  if (state.cerrado) return;
+  const g = generar();
+  ex = Object.assign(g, {
+    n: state.sistemas.length + 1, pasos: PASOS.slice(), idx: 0,
+    pts: [[], []], trazo: [null, null], clic: [null, null], prueba: [null, null],
+    lineaOk: [false, false], semiOk: [false, false], corteOk: false, regionOk: false,
+    regSel: null, sinSol: false, ptsMal: [], pruebaVis: null,
+    fallosSistema: 0, pasosFallados: [], terminado: false, revelado: false
+  });
+  renderSistema();
+  actualizarMarcador();
+  if (!primeraCarga) $('chip-sistema').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  primeraCarga = false;
+}
+function actualizarMarcador() {
+  $('marcador-nota').textContent = fmtNota(calcularNota());
+  $('marcador-fallos').textContent = state.fallosTotales;
+  $('marcador-sistemas').textContent = state.sistemas.length;
+}
+$('nombre').addEventListener('input', () => { if ($('nombre').value.trim()) { $('nombre').classList.remove('falta'); $('aviso-nombre').classList.remove('visible'); } });
+
+/* =========================================================
+   Informe final
+   ========================================================= */
+function colorNota(n) {
+  const f = Math.floor(n + 1e-9);
+  if (f >= 10) return ['#1a7a1a', '#fff'];
+  if (f === 9) return ['#6dbf6d', '#fff'];
+  if (f === 8) return ['#1a4f8a', '#fff'];
+  if (f === 7) return ['#5b9bd5', '#fff'];
+  if (f === 6) return ['#c05c00', '#fff'];
+  if (f === 5) return ['#f5a623', '#000'];
+  return ['#c0392b', '#fff'];
+}
+const dos = n => String(n).padStart(2, '0');
+const escapar = s => s.replace(/[<>&"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]));
+$('btn-finalizar').addEventListener('click', () => {
+  if (!nombreValido()) return;
+  const nota = calcularNota(), [bg, fg] = colorNota(nota), ahora = new Date();
+  const min = Math.ceil((Date.now() - state.inicio) / 60000);
+  const sinErr = state.sistemas.filter(s => s.ok).length;
+  const conSol = state.sistemas.filter(s => s.revelado).length;
+  const conErr = state.sistemas.length - sinErr - conSol;
+  const tipoTxt = s => s.tipo === 'secantes' ? 'Rectas secantes' : (s.vacia ? 'Paralelas · sin solución' : 'Rectas paralelas');
+  const resTxt = s => s.revelado ? 'Soluciones vistas' : (s.ok ? 'Sin errores' : 'Con errores');
+  const filasSis = state.sistemas.length
+    ? state.sistemas.map(s => `<tr><td>${s.n}. ${tipoTxt(s)}</td><td>${s.fallos}</td><td>${resTxt(s)}</td></tr>`).join('')
+    : '<tr><td colspan="3">Aún no has terminado ningún sistema.</td></tr>';
+  const NOMBRES_PASO = { tabla: 'Tabla de valores', puntos: 'Situar los puntos', trazo: 'Tipo de trazo', prueba: 'Punto de prueba', semiplano: 'Elegir el semiplano', posicion: 'Posición de las rectas', corte: 'Punto de corte', region: 'Región solución', vertice: 'Pertenencia del punto de corte' };
+  const filasPaso = Object.keys(NOMBRES_PASO).map(k => `<tr><td>${NOMBRES_PASO[k]}</td><td>${state.porPaso[k]}</td></tr>`).join('');
+  const modal = $('modal');
+  modal.style.background = bg; modal.style.color = fg;
+  modal.classList.toggle('oscuro-txt', fg === '#000');
+  modal.innerHTML = `
+    <p class="m-titulo">${document.querySelector('.titulo-ficha').textContent}</p>
+    <p class="m-sub">${document.querySelector('.subtitulo').textContent}</p>
+    <hr>
+    <div class="m-inf">Informe de la actividad</div>
+    <div class="m-nombre">${escapar($('nombre').value.trim())}</div>
+    <div class="m-nota">${fmtNota(nota)}<span style="font-size:1.1rem; font-weight:400"> / 10</span></div>
+    <div class="m-datos">
+      <span>Fecha: ${dos(ahora.getDate())}/${dos(ahora.getMonth() + 1)}/${ahora.getFullYear()}</span>
+      <span>Hora: ${dos(ahora.getHours())}:${dos(ahora.getMinutes())}:${dos(ahora.getSeconds())}</span>
+      <span>Tiempo empleado: ${dos(Math.floor(min / 60))}:${dos(min % 60)}</span>
+    </div>
+    <h4>Desglose del tipo de ejercicio: sistemas de inecuaciones</h4>
+    <div class="tabla-scroll"><table><tr><th>Estado</th><th>Sistemas</th><th>Sin errores</th><th>Con errores</th><th>Soluciones vistas</th></tr>
+      <tr><td>${state.superado ? 'Superado' : 'No superado'}</td><td>${state.sistemas.length}</td><td>${sinErr}</td><td>${conErr}</td><td>${conSol}</td></tr></table></div>
+    <div class="m-datos"><span>Pasos fallados en total: <b>${state.fallosTotales}</b>${state.fallosTotales ? ` (−${puntosTxt(state.fallosTotales * PENALIZACION_FALLO)})` : ''}</span></div>
+    <h4>Historial de sistemas</h4>
+    <div class="tabla-scroll"><table><tr><th>Sistema</th><th>Pasos fallados</th><th>Resultado</th></tr>${filasSis}</table></div>
+    <h4>Motivos de error por paso</h4>
+    <p style="font-family:Lato,sans-serif;font-size:.78rem;text-align:left;margin:0 0 4px;opacity:.9">Un mismo paso fallado puede tener dos motivos (por ejemplo, puntos y trazo de la recta), por eso esta suma puede ser mayor que el número de pasos fallados.</p>
+    <div class="tabla-scroll"><table><tr><th>Paso</th><th>Errores</th></tr>${filasPaso}</table></div>
+    <button class="btn-cerrar" id="btn-cerrar">${state.cerrado ? 'Cerrar' : 'Cerrar y seguir practicando'}</button>`;
+  $('overlay').classList.add('visible');
+  $('btn-cerrar').addEventListener('click', () => $('overlay').classList.remove('visible'));
+});
+$('overlay').addEventListener('click', e => { if (e.target === $('overlay')) $('overlay').classList.remove('visible'); });
+
+dibujarCuadricula();
+nuevoSistema();
+</script>
+</body>
+</html>
