@@ -1,0 +1,1458 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ecuaciones de segundo grado · Fórmula general</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+    chtml: { scale: 1.05 },
+    startup: { typeset: true }
+  };
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+:root{
+  --color-fondo:#F5F0E8;
+  --color-fondo-card:#FDFAF3;
+  --color-texto:#2C1F0E;
+  --color-texto-suave:#6B4F35;
+  --color-acento:#A0522D;
+  --color-acento-hover:#7B3B1E;
+  --color-borde:#C9A96E;
+  --color-borde-suave:#E0CEAA;
+  --color-cabecera:#3B2510;
+  --color-cabecera-txt:#F5EDD8;
+  --color-barra-alumno:#EFE4CC;
+  --color-correcto:#2E6B3E;
+  --color-incorrecto:#8B1A1A;
+  --color-neutro:#E8DFC8;
+  /* Colores de los coeficientes, afinados a la paleta crema */
+  --coef-a:#A0522D; --coef-a-bg:#F6E6DA;
+  --coef-b:#35566F; --coef-b-bg:#E2E9EE;
+  --coef-c:#5F6E24; --coef-c-bg:#ECEFD8;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:'Lato',sans-serif;font-size:16px;line-height:1.5;
+  color:var(--color-texto);background-color:var(--color-fondo);
+  background-image:
+    radial-gradient(rgba(160,82,45,.045) 1px,transparent 1px),
+    radial-gradient(rgba(201,169,110,.06) 1px,transparent 1px);
+  background-size:22px 22px,22px 22px;background-position:0 0,11px 11px;
+  min-height:100vh;transition:background-color .6s ease;
+}
+body.nota-maxima{background-color:#DDEDDF}
+h1,h2,h3{font-family:'Libre Baskerville',serif;color:var(--color-texto)}
+i.v{font-family:'Libre Baskerville',serif;font-style:italic}
+
+/* ---------- Cabecera (solo autoría) ---------- */
+.cabecera{
+  background-color:var(--color-cabecera);color:var(--color-cabecera-txt);
+  font-family:'Libre Baskerville',serif;text-align:center;
+  padding:12px 20px;border-bottom:3px solid var(--color-borde);
+  font-size:.78rem;letter-spacing:.04em;
+}
+
+/* ---------- Contenedor ---------- */
+.ficha-container{
+  max-width:820px;margin:28px auto 40px;background:var(--color-fondo-card);
+  border:2px solid var(--color-borde);border-radius:6px;
+  box-shadow:0 3px 12px rgba(44,31,14,.15);padding:32px 36px;
+}
+.titulo-ficha{
+  font-family:'Libre Baskerville',serif;font-size:1.6rem;text-align:center;
+  border-bottom:2px solid var(--color-borde);padding-bottom:10px;margin-bottom:10px;
+}
+.titulo-ficha::after{content:'';display:block;width:60px;height:3px;background:var(--color-borde);margin:8px auto 0;border-radius:2px}
+.subtitulo{
+  text-align:center;font-family:'Libre Baskerville',serif;font-style:italic;
+  color:var(--color-texto-suave);font-size:.95rem;margin-bottom:20px;
+}
+
+/* ---------- Barra del alumno ---------- */
+.barra{
+  position:sticky;top:0;z-index:50;background:var(--color-barra-alumno);
+  border:1.5px solid var(--color-borde);border-radius:6px;margin:0 0 22px;
+  box-shadow:0 2px 6px rgba(44,31,14,.08);color:var(--color-texto);
+  padding:9px 16px;display:flex;flex-wrap:wrap;gap:8px 18px;
+  align-items:center;justify-content:center;font-size:.92rem;
+}
+.barra label{font-family:'Libre Baskerville',serif;font-size:.85rem;color:var(--color-texto-suave)}
+.barra input#nombre{
+  background:var(--color-fondo-card);border:1.5px solid var(--color-borde);border-radius:4px;
+  padding:6px 10px;font-family:'Lato',sans-serif;font-size:.95rem;color:var(--color-texto);
+  width:200px;max-width:60vw;outline:none;transition:border-color .2s,box-shadow .2s;
+}
+.barra input#nombre:focus{border-color:var(--color-acento)}
+.barra input#nombre.falta{border-color:var(--color-incorrecto);box-shadow:0 0 0 3px rgba(139,26,26,.18)}
+.barra .dato{color:var(--color-texto-suave);white-space:nowrap}
+.barra .dato b{color:var(--color-acento);font-family:'Libre Baskerville',serif}
+.barra .dato.pen b{color:var(--color-incorrecto)}
+.aviso-nombre{color:var(--color-incorrecto);font-size:.82rem;font-weight:700;display:none;width:100%;text-align:center}
+.aviso-nombre.visible{display:block}
+
+/* ---------- Recordatorio ---------- */
+.recordatorio{
+  background:var(--color-fondo);border:1.5px solid var(--color-borde-suave);
+  border-left:4px solid var(--color-borde);border-radius:4px;padding:16px 22px;margin-bottom:22px;
+}
+.recordatorio h2{font-size:1rem;margin-bottom:6px}
+.formula-ref{text-align:center;font-size:1.05rem;margin:6px 0 10px;overflow-x:auto}
+.formula-ref .mj-fallback{font-family:'Libre Baskerville',serif}
+.criterio{font-size:.9rem;color:var(--color-texto-suave)}
+.criterio b{color:var(--color-texto)}
+
+/* ---------- Pestañas de nivel ---------- */
+.niveles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
+.tab{
+  background:var(--color-fondo-card);border:1.5px solid var(--color-borde-suave);
+  border-bottom:3px solid var(--color-borde-suave);border-radius:5px;
+  padding:10px 10px 9px;cursor:pointer;text-align:center;font-family:'Lato',sans-serif;
+  color:var(--color-texto-suave);transition:border-color .2s,background .2s,transform .15s;
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+}
+.tab:hover{border-color:var(--color-borde)}
+.tab[aria-selected="true"]{background:var(--color-barra-alumno);border-color:var(--color-acento);color:var(--color-texto)}
+.tab-num{font-family:'Libre Baskerville',serif;font-weight:700;font-size:.95rem;color:var(--color-acento)}
+.tab-nombre{font-size:.78rem;line-height:1.25}
+.ventana{display:flex;gap:6px;margin-top:3px;min-height:14px;align-items:center}
+.punto{width:12px;height:12px;border-radius:50%;border:1.5px solid var(--color-borde);background:transparent}
+.punto.ok{background:var(--color-correcto);border-color:var(--color-correcto)}
+.punto.ko{background:var(--color-incorrecto);border-color:var(--color-incorrecto)}
+.sello-tab{font-size:.72rem;font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:var(--color-correcto)}
+.tab.superado{border-bottom-color:var(--color-correcto)}
+
+/* ---------- Enunciado ---------- */
+.zona{display:none}
+.zona.activa{display:block;animation:aparecer .35s ease}
+@keyframes aparecer{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.ejercicio-card{
+  background:var(--color-fondo);border:1.5px solid var(--color-borde-suave);
+  border-left:4px solid var(--color-borde);border-radius:4px;padding:18px 22px;margin-bottom:16px;
+}
+.enun-top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.etiqueta{font-family:'Libre Baskerville',serif;font-size:.85rem;color:var(--color-texto-suave)}
+.ecuacion{
+  font-family:'Libre Baskerville',serif;font-size:clamp(1.2rem,4.4vw,1.75rem);text-align:center;
+  background:var(--color-fondo-card);border:1px dashed var(--color-borde);border-radius:4px;
+  padding:14px 10px;letter-spacing:.02em;overflow-x:auto;white-space:nowrap;
+}
+.pista{margin-top:10px;font-size:.88rem;color:var(--color-texto-suave)}
+.pista b{font-family:'Libre Baskerville',serif;font-style:italic;color:var(--color-acento)}
+
+/* ---------- Pasos ---------- */
+.paso{
+  background:var(--color-fondo-card);border:1.5px solid var(--color-borde-suave);
+  border-left:4px solid var(--color-borde);border-radius:4px;padding:16px 20px;margin-bottom:14px;
+  transition:opacity .3s,border-color .3s,filter .3s;
+}
+.paso.bloqueado{opacity:.45;pointer-events:none;filter:saturate(.6)}
+.paso.hecho{border-left-color:var(--color-correcto)}
+.paso-cab{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.paso-num{
+  width:28px;height:28px;border-radius:50%;border:2px solid var(--color-borde);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  font-family:'Libre Baskerville',serif;font-weight:700;font-size:.85rem;
+  color:var(--color-acento);background:var(--color-fondo);transition:all .3s;
+}
+.paso.hecho .paso-num{background:var(--color-correcto);border-color:var(--color-correcto);color:#fff}
+.paso-cab h3{font-size:.98rem;font-weight:700}
+.paso-ayuda{font-size:.88rem;color:var(--color-texto-suave);margin-bottom:12px}
+.ca{color:var(--coef-a);font-weight:700}.cb{color:var(--coef-b);font-weight:700}.cc{color:var(--coef-c);font-weight:700}
+
+.fila-campos{display:flex;gap:14px 22px;flex-wrap:wrap;justify-content:center;align-items:flex-end}
+.grupo-campo{display:flex;flex-direction:column;align-items:center;gap:4px}
+.grupo-campo .etq{font-family:'Libre Baskerville',serif;font-size:.95rem}
+.campo{
+  background:var(--color-fondo);border:1.5px solid var(--color-borde);border-radius:4px;
+  padding:7px 8px;width:92px;text-align:center;font-family:'Libre Baskerville',serif;
+  font-size:1.1rem;color:var(--color-texto);outline:none;transition:border-color .2s,background .2s;
+}
+.campo:focus{border-color:var(--color-acento);background:#fff}
+.campo.ok{border-color:var(--color-correcto);background:#EAF4EC}
+.campo.ko{border-color:var(--color-incorrecto);background:#F9EAEA;animation:vibrar .3s}
+.campo:disabled{cursor:not-allowed;color:var(--color-texto)}
+.campo.ancho{width:120px}
+@keyframes vibrar{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+
+/* ---------- Botones ---------- */
+.acciones{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:12px}
+.btn-primario{
+  background-color:var(--color-acento);color:#FDFAF3;border:none;border-radius:4px;
+  padding:10px 22px;font-family:'Lato',sans-serif;font-size:.95rem;font-weight:700;
+  cursor:pointer;letter-spacing:.03em;transition:background-color .2s ease,transform .1s;
+}
+.btn-primario:hover{background-color:var(--color-acento-hover)}
+.btn-primario:active{transform:scale(.97)}
+.btn-secundario{
+  background-color:transparent;color:var(--color-acento);border:2px solid var(--color-borde);
+  border-radius:4px;padding:9px 20px;font-family:'Lato',sans-serif;font-size:.95rem;font-weight:700;
+  cursor:pointer;transition:border-color .2s,color .2s,background .2s;
+}
+.btn-secundario:hover{border-color:var(--color-acento);color:var(--color-acento-hover)}
+.btn-mini{padding:5px 12px;font-size:.8rem}
+.btn-finalizar{
+  background-color:var(--color-cabecera);color:var(--color-cabecera-txt);
+  border:2px solid var(--color-borde);border-radius:4px;padding:12px 28px;
+  font-family:'Libre Baskerville',serif;font-size:.98rem;font-weight:700;cursor:pointer;
+  letter-spacing:.04em;transition:background-color .2s;display:block;margin:26px auto 0;
+}
+.btn-finalizar:hover{background-color:#2C1A0A}
+button:disabled{cursor:not-allowed}
+button:focus-visible,.campo:focus-visible{outline:3px solid rgba(160,82,45,.35);outline-offset:2px}
+
+/* ---------- Retroalimentación ---------- */
+.fb{display:none;margin-top:12px;font-size:.92rem;line-height:1.5}
+.fb.visible{display:block;animation:aparecer .25s ease}
+.feedback-correcto{background-color:#EAF4EC;border:1.5px solid var(--color-correcto);color:var(--color-correcto);border-radius:4px;padding:10px 16px}
+.feedback-correcto b,.feedback-correcto strong{font-weight:900}
+.feedback-incorrecto{background-color:#F9EAEA;border:1.5px solid var(--color-incorrecto);color:var(--color-incorrecto);border-radius:4px;padding:10px 16px}
+.feedback-info{background:var(--color-barra-alumno);border:1.5px solid var(--color-borde);color:var(--color-texto-suave);border-radius:4px;padding:10px 16px}
+.feedback-incorrecto .solucion{margin-top:6px;color:var(--color-texto);font-style:italic}
+.pen{font-weight:700;white-space:nowrap}
+
+/* ---------- Paso 2: fichas y fórmula ---------- */
+.fichas{
+  display:flex;gap:12px;justify-content:center;flex-wrap:wrap;padding:10px;margin-bottom:14px;
+  background:var(--color-fondo);border:1.5px dashed var(--color-borde-suave);border-radius:4px;
+}
+.ficha{
+  font-family:'Libre Baskerville',serif;font-size:1.05rem;padding:6px 14px;border-radius:4px;
+  border:2px solid;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;
+  transition:transform .12s,box-shadow .12s,opacity .12s;
+}
+.ficha small{font-family:'Lato',sans-serif;font-size:.75rem;opacity:.8;margin-right:4px}
+.ficha.coef-a{color:var(--coef-a);border-color:var(--coef-a);background:var(--coef-a-bg)}
+.ficha.coef-b{color:var(--coef-b);border-color:var(--coef-b);background:var(--coef-b-bg)}
+.ficha.coef-c{color:var(--coef-c);border-color:var(--coef-c);background:var(--coef-c-bg)}
+.ficha.sel{box-shadow:0 0 0 3px rgba(160,82,45,.35);transform:translateY(-2px)}
+.ficha.arrastrando{opacity:.35}
+.ficha:disabled{cursor:default;opacity:.6}
+.ghost{position:fixed;pointer-events:none;z-index:9999;opacity:.95;margin:0;box-shadow:0 6px 16px rgba(44,31,14,.25)}
+
+.fi{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  font-family:'Libre Baskerville',serif;font-size:1.12rem;overflow-x:auto;padding:6px 2px 4px;
+}
+.fi .frac{display:inline-flex;flex-direction:column;align-items:center}
+.fi .num{display:flex;align-items:center;gap:3px;padding:0 6px 6px;white-space:nowrap}
+.fi .linea{align-self:stretch;height:2px;background:var(--color-texto)}
+.fi .den{padding-top:6px;display:flex;align-items:center;gap:3px;white-space:nowrap}
+.raiz{display:inline-flex;align-items:stretch}
+.raiz-sig{font-size:1.9em;line-height:1;transform:translateY(3px);margin-right:-2px}
+.raiz-cont{border-top:2px solid var(--color-texto);padding:5px 4px 0;display:flex;align-items:center;gap:3px;margin-top:5px}
+.hueco{
+  min-width:48px;height:36px;padding:0 6px;border:2px dashed var(--color-borde);border-radius:4px;
+  background:#fff;font-family:'Libre Baskerville',serif;font-size:1.02rem;color:var(--color-texto-suave);
+  cursor:pointer;transition:all .15s;
+}
+.hueco.sobre{border-style:solid;border-color:var(--color-acento);background:var(--color-barra-alumno)}
+.hueco.lleno-a{border-style:solid;border-color:var(--coef-a);background:var(--coef-a-bg);color:var(--coef-a)}
+.hueco.lleno-b{border-style:solid;border-color:var(--coef-b);background:var(--coef-b-bg);color:var(--coef-b)}
+.hueco.lleno-c{border-style:solid;border-color:var(--coef-c);background:var(--coef-c-bg);color:var(--coef-c)}
+.hueco.ok{border-style:solid;border-color:var(--color-correcto)!important;background:#EAF4EC!important;color:var(--color-correcto)!important}
+.hueco.ko{border-style:solid;border-color:var(--color-incorrecto)!important;background:#F9EAEA!important;color:var(--color-incorrecto)!important;animation:vibrar .3s}
+.nota-arrastre{text-align:center;font-size:.8rem;color:var(--color-texto-suave);margin-top:4px}
+
+/* ---------- Paso 4 ---------- */
+.delta-dato{text-align:center;font-family:'Libre Baskerville',serif;font-size:1.1rem;margin-bottom:10px}
+.opciones{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.opcion{
+  background:var(--color-fondo);border:2px solid var(--color-borde-suave);border-radius:4px;padding:10px 8px;
+  font-family:'Lato',sans-serif;font-size:.9rem;font-weight:700;color:var(--color-texto);cursor:pointer;
+  transition:border-color .2s,background .2s;line-height:1.3;
+}
+.opcion span{display:block;font-weight:400;font-size:.78rem;color:var(--color-texto-suave);margin-top:2px}
+.opcion:hover:not(:disabled){border-color:var(--color-acento)}
+.opcion.ok{border-color:var(--color-correcto);background:#EAF4EC}
+.opcion.ko{border-color:var(--color-incorrecto);background:#F9EAEA}
+.opcion:disabled{opacity:.75}
+.opcion.ok:disabled,.opcion.ko:disabled{opacity:1}
+
+/* ---------- Paso 5 ---------- */
+.formula-num{text-align:center;font-size:1.12rem;margin:2px 0 12px;overflow-x:auto;font-family:'Libre Baskerville',serif}
+.nota-formato{text-align:center;font-size:.8rem;color:var(--color-texto-suave);margin-top:8px}
+
+/* ---------- Cierre del ejercicio ---------- */
+.cierre{display:none;margin-top:6px}
+.cierre.visible{display:block;animation:aparecer .3s ease}
+.resultado{border-radius:4px;padding:14px 18px;border:1.5px solid;text-align:center}
+.resultado.ok{background:#EAF4EC;border-color:var(--color-correcto);color:var(--color-correcto)}
+.resultado.ko{background:#F9EAEA;border-color:var(--color-incorrecto);color:var(--color-incorrecto)}
+.resultado h4{font-family:'Libre Baskerville',serif;font-size:1.05rem;margin-bottom:4px}
+.resultado p{font-size:.9rem;color:var(--color-texto)}
+.superado-aviso{margin-top:10px;padding:10px 14px;border:2px solid var(--color-borde);background:var(--color-barra-alumno);border-radius:4px;font-family:'Libre Baskerville',serif;color:var(--color-texto)}
+
+.nivel-cerrado{text-align:center;padding:26px 20px;background:var(--color-fondo);border:1.5px solid var(--color-borde);border-radius:4px;margin-bottom:16px}
+.sello{
+  width:64px;height:64px;border-radius:50%;margin:0 auto 10px;border:3px double var(--color-correcto);
+  color:var(--color-correcto);display:flex;align-items:center;justify-content:center;
+  font-family:'Libre Baskerville',serif;font-size:1.8rem;transform:rotate(-8deg);
+}
+.nivel-cerrado h3{margin-bottom:6px}
+.nivel-cerrado p{color:var(--color-texto-suave);font-size:.92rem;margin-bottom:12px}
+
+/* ---------- Historial ---------- */
+.historial{margin-top:6px}
+.historial h4{font-family:'Libre Baskerville',serif;font-size:.85rem;color:var(--color-texto-suave);font-weight:400;font-style:italic;margin-bottom:6px;text-align:center}
+.hist-lista{display:flex;flex-direction:column;gap:5px}
+.hist-item{font-size:.83rem;padding:5px 10px;border-left:3px solid;background:var(--color-fondo);border-radius:0 4px 4px 0}
+.hist-item.ok{border-color:var(--color-correcto)}
+.hist-item.ko{border-color:var(--color-incorrecto)}
+.hist-item .marca{font-weight:900;margin-right:6px}
+.hist-item.ok .marca{color:var(--color-correcto)}.hist-item.ko .marca{color:var(--color-incorrecto)}
+.hist-item .ec{font-family:'Libre Baskerville',serif}
+
+.creditos{text-align:center;font-size:.75rem;color:var(--color-texto-suave);margin-top:14px;font-style:italic}
+
+/* ---------- Modales ---------- */
+.overlay{position:fixed;inset:0;background:rgba(44,31,14,.55);z-index:10000;display:flex;align-items:center;justify-content:center;padding:16px;animation:aparecer .2s ease}
+.modal-calificacion{
+  border:3px solid var(--color-borde);border-radius:8px;font-family:'Libre Baskerville',serif;
+  box-shadow:0 6px 24px rgba(44,31,14,.35);padding:26px 28px;width:100%;max-width:520px;
+  text-align:center;max-height:92vh;overflow-y:auto;
+}
+.m-titulo{font-size:1.15rem;font-weight:700}
+.m-sub{font-size:.85rem;font-style:italic;opacity:.9}
+.m-sep{border:none;border-top:1.5px solid currentColor;opacity:.35;margin:12px 0}
+.m-enc{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;opacity:.85}
+.m-nombre{font-size:1.2rem;font-weight:700;margin-top:4px}
+.m-nota{font-size:3.2rem;font-weight:700;line-height:1.1;margin-top:6px}
+.m-sobre{font-size:.85rem;opacity:.85;margin-bottom:12px}
+.m-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px;font-family:'Lato',sans-serif}
+.m-celda{background:rgba(255,255,255,.16);border-radius:4px;padding:6px 4px}
+.m-celda .l{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;opacity:.8}
+.m-celda .v{font-weight:900;font-size:.92rem}
+.m-tabla{width:100%;border-collapse:collapse;font-family:'Lato',sans-serif;font-size:.84rem;margin-bottom:10px}
+.m-tabla th,.m-tabla td{padding:5px 6px;border-bottom:1px solid rgba(255,255,255,.28)}
+.m-tabla th{font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;opacity:.85;font-weight:700}
+.m-tabla td:first-child,.m-tabla th:first-child{text-align:left}
+.m-detalle{font-family:'Lato',sans-serif;font-size:.82rem;text-align:left;background:rgba(255,255,255,.14);border-radius:4px;padding:8px 12px;margin-bottom:10px;line-height:1.55}
+.m-captura{font-family:'Lato',sans-serif;font-size:.84rem;font-weight:700;background:rgba(255,255,255,.2);border-radius:4px;padding:8px 12px;margin-bottom:14px}
+.m-btn{font-family:'Lato',sans-serif;font-weight:700;font-size:.92rem;border:2px solid currentColor;background:rgba(255,255,255,.15);color:inherit;border-radius:4px;padding:8px 20px;cursor:pointer}
+.m-btn:hover{background:rgba(255,255,255,.3)}
+.confirm-box{background:var(--color-fondo-card);border:3px solid var(--color-borde);border-radius:8px;padding:24px 24px 20px;max-width:400px;width:100%;box-shadow:0 6px 24px rgba(44,31,14,.35);text-align:center}
+.confirm-box p{margin-bottom:16px;font-size:.95rem}
+.confirm-box .acciones{margin-top:0}
+
+@media (max-width:640px){
+  .ficha-container{margin:14px 8px 28px;padding:20px 14px}
+  .barra{padding:8px 10px;gap:6px 14px}
+  .niveles{gap:6px}
+  .tab{padding:8px 4px}
+  .tab-nombre{font-size:.7rem}
+  .paso{padding:14px 12px}
+  .ejercicio-card{padding:14px 12px}
+  .opciones{grid-template-columns:1fr}
+  .fi{font-size:.98rem;gap:6px;justify-content:flex-start}
+  .hueco{min-width:40px;height:34px;font-size:.92rem;padding:0 4px}
+  .campo{width:80px}
+  .modal-calificacion{padding:20px 14px}
+}
+@media (max-width:480px){
+  .barra{padding:6px 8px;gap:4px 12px;font-size:.8rem}
+  .barra label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  .barra input#nombre{width:100%;max-width:none;padding:5px 8px;font-size:.9rem}
+  .solo-ancho{display:none}
+  .fi{font-size:.84rem;gap:3px}
+  .fi .num{gap:1px;padding:0 2px 5px}
+  .fi .den{gap:1px}
+  .hueco{min-width:30px;height:30px;padding:0 3px;font-size:.84rem}
+  .raiz-sig{font-size:1.7em}
+  .raiz-cont{gap:1px;padding:4px 2px 0}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="cabecera">Material elaborado por Marta L Letona S. Basado en el trabajo de Javier Cayetano</header>
+
+<main class="ficha-container">
+  <h1 class="titulo-ficha">Ecuaciones de segundo grado</h1>
+  <p class="subtitulo">Álgebra · Fórmula general y discriminante</p>
+
+  <div class="barra">
+    <label for="nombre">Alumno/a:</label>
+    <input type="text" id="nombre" placeholder="Nombre y apellidos" autocomplete="off" spellcheck="false">
+    <span class="dato">Nota: <b id="marcador-nota">0</b> / 10</span>
+    <span class="dato">Niveles<span class="solo-ancho"> superados</span>: <b id="marcador-niveles">0</b> / 3</span>
+    <span class="dato pen">Penalización: <b id="marcador-pen">0</b></span>
+    <div class="aviso-nombre" id="aviso-nombre" role="alert">Escribe tu nombre antes de continuar.</div>
+  </div>
+
+  <section class="recordatorio">
+    <h2>Recuerda</h2>
+    <div class="formula-ref">
+      \[ ax^2+bx+c=0 \;\Longrightarrow\; x=\dfrac{-b\pm\sqrt{b^2-4ac}}{2a}, \qquad \Delta=b^2-4ac \]
+    </div>
+    <p class="criterio">
+      Cada nivel vale <b>3,33 puntos</b> y se supera resolviendo bien <b>2 de 3 ejercicios seguidos</b>.
+      Un ejercicio está bien resuelto si aciertas la respuesta final a la primera.
+      Cada fallo en un paso intermedio resta <b>0,1</b> y cada respuesta final incorrecta resta <b>0,5</b>.
+      Un nivel superado se cierra y ya no suma ni resta.
+    </p>
+  </section>
+
+  <nav class="niveles" id="niveles" role="tablist" aria-label="Niveles"></nav>
+
+  <div id="zonas"></div>
+
+  <button class="btn-finalizar" id="btn-finalizar" type="button">Finalizar y calificar</button>
+</main>
+
+<script>
+'use strict';
+
+/* =====================================================================
+   CONFIGURACIÓN
+   Modelo de puntuación: ventana móvil por nivel (2 aciertos de 3).
+   Nota = niveles superados · (10 / 3) − penalizaciones (mínimo 0).
+   ===================================================================== */
+const CONFIG = {
+  PUNTOS_MAX: 10,
+  PENALIZACION_PASO: 0.1,   // fallo en un paso intermedio (pasos 1-3, raíz, interpretación de Δ)
+  PENALIZACION_FINAL: 0.5,  // respuesta final incorrecta (soluciones o "sin solución")
+  VENTANA: 3,
+  ACIERTOS_PARA_SUPERAR: 2
+};
+const NIVELES = {
+  1: { nombre: 'Forma general',
+       pista: 'La ecuación ya está igualada a cero. Si falta algún término, su coeficiente es 0.' },
+  2: { nombre: 'Términos en ambos miembros',
+       pista: 'Pasa todos los términos al primer miembro (al cambiar de miembro cambian de signo) y agrupa los semejantes.' },
+  3: { nombre: 'Paréntesis y casos especiales',
+       pista: 'Desarrolla los paréntesis, pasa todo al primer miembro y agrupa. Algunas ecuaciones tienen una única solución y otras ninguna.' }
+};
+const PUNTOS_POR_NIVEL = CONFIG.PUNTOS_MAX / Object.keys(NIVELES).length;
+const NOMBRE_PASO = {
+  identificar: 'Identificar a, b y c',
+  sustituir: 'Sustituir en la fórmula',
+  calcular: 'Calcular −b, Δ y 2a',
+  discriminante: 'Interpretar Δ',
+  raiz: 'Calcular √Δ',
+  soluciones: 'Soluciones finales'
+};
+
+const state = {
+  penalizacion: 0,
+  fallosPaso: { identificar: 0, sustituir: 0, calcular: 0, discriminante: 0, raiz: 0, soluciones: 0 },
+  niveles: {},
+  activo: 1,
+  inicio: Date.now()
+};
+Object.keys(NIVELES).forEach(k => {
+  state.niveles[k] = { intentos: [], superado: false, cerrado: false, ejercicios: 0,
+                       aciertos: 0, fallos: 0, historial: [], ej: null, ultimo: '' };
+});
+
+/* =====================================================================
+   UTILIDADES
+   ===================================================================== */
+const $ = id => document.getElementById(id);
+const rnd = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
+const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+const rndNZ = (a, b) => { let v; do { v = rnd(a, b); } while (v === 0); return v; };
+const gcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b) { [a, b] = [b, a % b]; } return a; };
+const MENOS = '\u2212';
+
+function frac(n, d) {
+  if (d < 0) { n = -n; d = -d; }
+  const g = gcd(n, d) || 1;
+  return { n: n / g, d: d / g };
+}
+function fmtNum(x) {
+  const r = Math.round(x * 1000) / 1000;
+  const s = Math.abs(r).toLocaleString('es-ES', { maximumFractionDigits: 3, useGrouping: false });
+  return (r < 0 ? MENOS : '') + s;
+}
+function fmtPts(x) {
+  return (Math.round(x * 100) / 100).toLocaleString('es-ES', { maximumFractionDigits: 2 });
+}
+function fmtFrac(f) { return f.d === 1 ? fmtNum(f.n) : `${fmtNum(f.n)}/${f.d}`; }
+function fmtFracDec(f) { return f.d === 1 ? fmtNum(f.n) : `${fmtFrac(f)} = ${fmtNum(f.n / f.d)}`; }
+function tex(n) { return String(n); }            // en LaTeX el signo menos se escribe con '-'
+function par(n) { return n < 0 ? `(${fmtNum(n)})` : fmtNum(n); }
+
+function X(html) { return html ? '<i class="v">x</i>' : 'x'; }
+/* Polinomio A·x² + B·x + C con signos y coeficientes implícitos bien formateados */
+function fmtPoly(A, B, C, html = true) {
+  const t = [], x = X(html);
+  [[A, x + '²'], [B, x], [C, '']].forEach(([k, v]) => {
+    if (k === 0) return;
+    const abs = Math.abs(k);
+    const cuerpo = (abs === 1 && v) ? v : abs + v;
+    if (t.length === 0) t.push((k < 0 ? MENOS : '') + cuerpo);
+    else t.push((k < 0 ? ` ${MENOS} ` : ' + ') + cuerpo);
+  });
+  return t.length ? t.join('') : '0';
+}
+/* Binomio k·x + m (m ≠ 0) */
+function lin(k, m, html = true) {
+  const x = X(html);
+  return (k === 1 ? x : k + x) + (m > 0 ? ` + ${m}` : ` ${MENOS} ${Math.abs(m)}`);
+}
+function texto(html) { return html.replace(/<[^>]+>/g, ''); }
+
+/* Enteros: acepta "−3", "-3", "+3" */
+function parseEntero(s) {
+  s = String(s).trim().replace(/\u2212/g, '-').replace(/\s+/g, '');
+  return /^[-+]?\d+$/.test(s) ? parseInt(s, 10) : NaN;
+}
+/* Racionales: entero, decimal con coma o punto, o fracción a/b */
+function parseRacional(s) {
+  s = String(s).trim().replace(/\u2212/g, '-').replace(/\s+/g, '').replace(',', '.');
+  if (/^[-+]?\d+\/[-+]?\d+$/.test(s)) {
+    const [n, d] = s.split('/').map(Number);
+    return d === 0 ? NaN : n / d;
+  }
+  return /^[-+]?(\d+\.?\d*|\.\d+)$/.test(s) ? parseFloat(s) : NaN;
+}
+const igual = (v, f) => Math.abs(v - f.n / f.d) < 1e-9;
+
+function proporcional(u, v) {
+  if (u.every(x => x === 0) || v.every(x => x === 0)) return false;
+  return u[0] * v[1] === u[1] * v[0] && u[0] * v[2] === u[2] * v[0] && u[1] * v[2] === u[2] * v[1];
+}
+function tipografiar(el) {
+  if (window.MathJax && typeof MathJax.typesetPromise === 'function') {
+    MathJax.typesetPromise([el]).catch(() => {});
+  }
+}
+
+/* =====================================================================
+   GENERACIÓN DE ECUACIONES
+   Se construyen a partir de sus factores para controlar las soluciones.
+   L = coeficientes del primer miembro, R = del segundo; ecuación real: L − R = 0
+   ===================================================================== */
+function polyDesdeFactores(d1, n1, d2, n2, s = 1) {
+  // "+ 0" evita el −0 de JavaScript
+  return { a: s * d1 * d2 + 0, b: -s * (d1 * n2 + d2 * n1) + 0, c: s * n1 * n2 + 0,
+           raices: [frac(n1, d1), frac(n2, d2)] };
+}
+
+function generar(nv) {
+  const st = state.niveles[nv];
+  let ej, i = 0;
+  do { ej = generarUno(nv); i++; } while ((!ej || ej.plano === st.ultimo) && i < 40);
+  st.ultimo = ej.plano;
+  return ej;
+}
+
+function generarUno(nv) {
+  if (nv === 1) {
+    let r1, r2;
+    do { r1 = rnd(-6, 6); r2 = rnd(-6, 6); } while (r1 === 0 && r2 === 0);
+    const P = polyDesdeFactores(1, r1, 1, r2);
+    return montar(nv, P, { L: [P.a, P.b, P.c], R: [0, 0, 0] });
+  }
+
+  if (nv === 2) {
+    let P;
+    while (true) {
+      const d1 = pick([1, 1, 2]), d2 = pick([1, 1, 1, 2]);
+      const n1 = rnd(-5, 5), n2 = rnd(-5, 5);
+      if (n1 === 0 && n2 === 0) continue;
+      P = polyDesdeFactores(d1, n1, d2, n2, pick([1, 1, -1]));
+      if (Math.abs(P.b) <= 30 && Math.abs(P.c) <= 30) break;
+    }
+    let R, L;
+    do {
+      R = [0, 0, 0];
+      pick([[0], [1], [2], [0, 1], [0, 2], [1, 2], [1, 2], [0, 1, 2]])
+        .forEach(i => { R[i] = i === 0 ? rndNZ(-3, 3) : rndNZ(-8, 8); });
+      L = [P.a + R[0], P.b + R[1], P.c + R[2]];
+    } while (L[0] === 0 && L[1] === 0);
+    return montar(nv, P, { L, R });
+  }
+
+  // Nivel 3
+  const tipo = pick(['normal', 'normal', 'normal', 'normal', 'normal', 'neg', 'neg', 'neg', 'doble', 'doble']);
+  let P;
+  if (tipo === 'normal') {
+    let n1, n2;
+    do { n1 = rnd(-5, 5); n2 = rnd(-5, 5); } while (n1 === 0 && n2 === 0);
+    P = polyDesdeFactores(1, n1, pick([1, 1, 2]), n2);
+  } else if (tipo === 'neg') {
+    const a = pick([1, 1, 2]), b = rnd(-6, 6);
+    const c = Math.floor(b * b / (4 * a)) + rnd(1, 3);
+    P = { a, b, c, raices: [] };
+  } else {
+    const r = rndNZ(-5, 5);
+    P = polyDesdeFactores(1, r, 1, r);
+  }
+  const pl = plantillaParentesis(P);
+  if (!pl) return null;
+  return montar(nv, P, pl);
+}
+
+function plantillaParentesis(P) {
+  for (let k = 0; k < 80; k++) {
+    const T = pick(P.a === 1 ? ['T1', 'T2', 'T2', 'T3', 'T3'] : ['T4', 'T5', 'T5']);
+    let L, p, q, izq, m = 0, n = 0;
+    if (T === 'T1') {                       // x(x + m) = q
+      if (P.b === 0 || P.c === 0) continue;
+      m = P.b; p = 0; q = -P.c; L = [1, m, 0];
+      izq = `${X(true)}(${lin(1, m)})`;
+    } else if (T === 'T2') {                // (x + m)² = px + q
+      m = rndNZ(-5, 5); p = 2 * m - P.b; q = m * m - P.c; L = [1, 2 * m, m * m];
+      izq = `(${lin(1, m)})²`;
+    } else if (T === 'T3') {                // (x + m)(x + n) = px + q
+      m = rndNZ(-5, 5); n = rndNZ(-5, 5); if (m === n) continue;
+      p = m + n - P.b; q = m * n - P.c; L = [1, m + n, m * n];
+      izq = `(${lin(1, m)})(${lin(1, n)})`;
+    } else if (T === 'T4') {                // 2x(x + m) = px + q
+      m = rndNZ(-4, 4); p = 2 * m - P.b; q = -P.c; L = [2, 2 * m, 0];
+      izq = `2${X(true)}(${lin(1, m)})`;
+    } else {                                // (2x + m)(x + n) = px + q
+      m = rndNZ(-5, 5); n = rndNZ(-5, 5);
+      p = 2 * n + m - P.b; q = m * n - P.c; L = [2, 2 * n + m, m * n];
+      izq = `(${lin(2, m)})(${lin(1, n)})`;
+    }
+    if (p === 0 && q === 0) continue;       // evitaría "producto = 0", que se resuelve sin fórmula
+    if (Math.abs(p) > 25 || Math.abs(q) > 40) continue;
+    return { L, R: [0, p, q], izq, T, m };
+  }
+  return null;
+}
+
+function montar(nv, P, { L, R, izq, T, m }) {
+  const izqHtml = izq || fmtPoly(L[0], L[1], L[2]);
+  const derHtml = fmtPoly(R[0], R[1], R[2]);
+  const html = `${izqHtml} = ${derHtml}`;
+  return { nv, P, L, R, T: T || null, m: m || 0, html, plano: texto(html),
+           coef: null, D: null, paso: 1, interactuado: false, terminado: false,
+           slots: {}, raizOk: false };
+}
+
+/* =====================================================================
+   PUNTUACIÓN
+   ===================================================================== */
+function nota() {
+  const sup = Object.values(state.niveles).filter(n => n.superado).length;
+  const bruto = sup * PUNTOS_POR_NIVEL - state.penalizacion;
+  return Math.max(0, Math.min(CONFIG.PUNTOS_MAX, Math.round(bruto * 100) / 100));
+}
+function penalizar(clave, cantidad) {
+  state.penalizacion = Math.round((state.penalizacion + cantidad) * 100) / 100;
+  state.fallosPaso[clave]++;
+  actualizarBarra();
+  return ` <span class="pen">(${MENOS}${fmtPts(cantidad)} puntos)</span>`;
+}
+function actualizarBarra() {
+  $('marcador-nota').textContent = fmtPts(nota());
+  $('marcador-niveles').textContent = Object.values(state.niveles).filter(n => n.superado).length;
+  $('marcador-pen').textContent = state.penalizacion > 0 ? MENOS + fmtPts(state.penalizacion) : '0';
+}
+
+/* =====================================================================
+   NOMBRE DEL ALUMNO
+   ===================================================================== */
+function exigirNombre() {
+  const inp = $('nombre');
+  if (inp.value.trim().length < 2) {
+    inp.classList.add('falta');
+    $('aviso-nombre').classList.add('visible');
+    inp.focus();
+    return false;
+  }
+  inp.classList.remove('falta');
+  $('aviso-nombre').classList.remove('visible');
+  return true;
+}
+$('nombre').addEventListener('input', () => {
+  if ($('nombre').value.trim().length >= 2) {
+    $('nombre').classList.remove('falta');
+    $('aviso-nombre').classList.remove('visible');
+  }
+});
+
+/* =====================================================================
+   PESTAÑAS DE NIVEL
+   ===================================================================== */
+function renderTabs() {
+  const nav = $('niveles');
+  nav.innerHTML = Object.keys(NIVELES).map(k => {
+    const st = state.niveles[k];
+    const puntos = [0, 1, 2].map(i => {
+      const v = st.intentos[i];
+      return `<span class="punto ${v === true ? 'ok' : v === false ? 'ko' : ''}"></span>`;
+    }).join('');
+    const estado = st.superado
+      ? `<span class="sello-tab">✓ Superado</span>`
+      : `<span class="ventana" aria-label="Últimos intentos">${puntos}</span>`;
+    return `<button class="tab ${st.superado ? 'superado' : ''}" role="tab" type="button"
+              aria-selected="${String(Number(k) === state.activo)}" data-nivel="${k}">
+              <span class="tab-num">Nivel ${k}</span>
+              <span class="tab-nombre">${NIVELES[k].nombre}</span>${estado}</button>`;
+  }).join('');
+}
+function activarNivel(nv) {
+  state.activo = nv;
+  document.querySelectorAll('.zona').forEach(z => z.classList.toggle('activa', Number(z.dataset.nivel) === nv));
+  renderTabs();
+}
+
+/* =====================================================================
+   RENDER DE UN EJERCICIO
+   ===================================================================== */
+function crearZonas() {
+  $('zonas').innerHTML = Object.keys(NIVELES).map(k =>
+    `<div class="zona" id="zona-${k}" data-nivel="${k}" role="tabpanel">
+       <div id="zonaej-${k}"></div>
+       <div class="historial" id="hist-${k}"></div>
+     </div>`).join('');
+}
+
+function nuevoEjercicio(nv) {
+  const st = state.niveles[nv];
+  st.ej = generar(nv);
+  renderEjercicio(nv);
+}
+
+function renderEjercicio(nv) {
+  const st = state.niveles[nv], ej = st.ej, s = '-' + nv;
+  $('zonaej-' + nv).innerHTML = `
+  <div class="ejercicio-card">
+    <div class="enun-top">
+      <span class="etiqueta">Nivel ${nv} · Ejercicio n.º ${st.ejercicios + 1}</span>
+      <button class="btn-secundario btn-mini" type="button" data-accion="saltar" id="saltar${s}">Saltar ejercicio</button>
+    </div>
+    <div class="ecuacion" aria-label="Ecuación: ${ej.plano}">${ej.html}</div>
+    <p class="pista"><b>Pista.</b> ${NIVELES[nv].pista}</p>
+  </div>
+
+  <section class="paso" id="p1${s}">
+    <header class="paso-cab"><span class="paso-num">1</span>
+      <h3>Ordena la ecuación e identifica <span class="ca">a</span>, <span class="cb">b</span> y <span class="cc">c</span></h3></header>
+    <p class="paso-ayuda">Escríbela en la forma <i class="v">a</i><i class="v">x</i>² + <i class="v">b</i><i class="v">x</i> + <i class="v">c</i> = 0.
+      ${nv === 1 ? '' : 'Vale cualquier ecuación equivalente (por ejemplo, multiplicada por −1).'}</p>
+    <div class="fila-campos">
+      <label class="grupo-campo"><span class="etq ca">a =</span><input class="campo" id="ia${s}" autocomplete="off" aria-label="Coeficiente a"></label>
+      <label class="grupo-campo"><span class="etq cb">b =</span><input class="campo" id="ib${s}" autocomplete="off" aria-label="Coeficiente b"></label>
+      <label class="grupo-campo"><span class="etq cc">c =</span><input class="campo" id="ic${s}" autocomplete="off" aria-label="Coeficiente c"></label>
+    </div>
+    <div class="fb" id="fb1${s}" aria-live="polite"></div>
+    <div class="acciones"><button class="btn-primario" type="button" data-accion="c1">Comprobar</button></div>
+  </section>
+
+  <section class="paso bloqueado" id="p2${s}">
+    <header class="paso-cab"><span class="paso-num">2</span><h3>Sustituye los coeficientes en la fórmula</h3></header>
+    <p class="paso-ayuda">Arrastra cada ficha a su hueco o pulsa una ficha y después el hueco. Pulsa un hueco lleno para vaciarlo.</p>
+    <div class="fichas" id="fichas${s}"></div>
+    <div class="fi">
+      <span style="white-space:nowrap"><i class="v">x</i> =</span>
+      <div class="frac">
+        <div class="num">
+          <span>${MENOS}(</span>${hueco('nb', nv)}<span>)</span><span>&thinsp;±&thinsp;</span>
+          <span class="raiz"><span class="raiz-sig">√</span><span class="raiz-cont">
+            <span>(</span>${hueco('bb', nv)}<span>)²</span><span>&nbsp;${MENOS}&nbsp;4·(</span>${hueco('a1', nv)}<span>)·(</span>${hueco('c', nv)}<span>)</span>
+          </span></span>
+        </div>
+        <div class="linea"></div>
+        <div class="den"><span>2·(</span>${hueco('a2', nv)}<span>)</span></div>
+      </div>
+    </div>
+    <div class="fb" id="fb2${s}" aria-live="polite"></div>
+    <div class="acciones"><button class="btn-primario" type="button" data-accion="c2">Comprobar</button></div>
+  </section>
+
+  <section class="paso bloqueado" id="p3${s}">
+    <header class="paso-cab"><span class="paso-num">3</span><h3>Calcula −<i class="v">b</i>, el discriminante Δ y 2<i class="v">a</i></h3></header>
+    <p class="paso-ayuda">Δ = <i class="v">b</i>² − 4·<i class="v">a</i>·<i class="v">c</i>. Cuidado con los signos.</p>
+    <div class="fila-campos">
+      <label class="grupo-campo"><span class="etq">−<i class="v">b</i> =</span><input class="campo" id="inb${s}" autocomplete="off" aria-label="Valor de menos b"></label>
+      <label class="grupo-campo"><span class="etq">Δ =</span><input class="campo ancho" id="id${s}" autocomplete="off" aria-label="Valor del discriminante"></label>
+      <label class="grupo-campo"><span class="etq">2<i class="v">a</i> =</span><input class="campo" id="i2a${s}" autocomplete="off" aria-label="Valor de 2a"></label>
+    </div>
+    <div class="fb" id="fb3${s}" aria-live="polite"></div>
+    <div class="acciones"><button class="btn-primario" type="button" data-accion="c3">Comprobar</button></div>
+  </section>
+
+  <section class="paso bloqueado" id="p4${s}">
+    <header class="paso-cab"><span class="paso-num">4</span><h3>¿Cuántas soluciones tiene la ecuación?</h3></header>
+    <p class="paso-ayuda">Decide mirando el signo del discriminante. Solo hay un intento.</p>
+    <div class="delta-dato" id="delta${s}"></div>
+    <div class="opciones">
+      <button class="opcion" type="button" data-accion="c4" data-op="2">Dos soluciones<span>distintas</span></button>
+      <button class="opcion" type="button" data-accion="c4" data-op="1">Una solución<span>(solución doble)</span></button>
+      <button class="opcion" type="button" data-accion="c4" data-op="0">Ninguna solución<span>real</span></button>
+    </div>
+    <div class="fb" id="fb4${s}" aria-live="polite"></div>
+  </section>
+
+  <section class="paso bloqueado" id="p5${s}">
+    <header class="paso-cab"><span class="paso-num">5</span><h3>Calcula las soluciones</h3></header>
+    <div id="p5body${s}"><p class="paso-ayuda">Se desbloquea al terminar el paso 4.</p></div>
+    <div class="fb" id="fb5${s}" aria-live="polite"></div>
+  </section>
+
+  <div class="cierre" id="cierre${s}"></div>`;
+  renderHistorial(nv);
+}
+
+function hueco(id, nv) {
+  return `<button class="hueco" type="button" data-hueco="${id}" data-nv="${nv}" aria-label="Hueco vacío">?</button>`;
+}
+
+function renderCerrado(nv) {
+  const pendiente = Object.keys(NIVELES).map(Number).find(k => !state.niveles[k].cerrado);
+  $('zonaej-' + nv).innerHTML = `
+    <div class="nivel-cerrado">
+      <div class="sello">✓</div>
+      <h3>Nivel ${nv} superado</h3>
+      <p>Has resuelto bien 2 de 3 ejercicios seguidos. Este nivel está cerrado: ya no suma ni resta puntos.</p>
+      ${pendiente
+        ? `<button class="btn-primario" type="button" data-accion="ir" data-destino="${pendiente}">Ir al nivel ${pendiente}</button>`
+        : `<p><b>Has superado los tres niveles.</b> Pulsa «Finalizar y calificar» para ver tu informe.</p>`}
+    </div>`;
+  renderHistorial(nv);
+}
+
+function renderHistorial(nv) {
+  const h = state.niveles[nv].historial;
+  $('hist-' + nv).innerHTML = h.length ? `
+    <h4>Ejercicios realizados en este nivel</h4>
+    <div class="hist-lista">${h.slice().reverse().map(e =>
+      `<div class="hist-item ${e.ok ? 'ok' : 'ko'}"><span class="marca">${e.ok ? '✓' : '✗'}</span>
+       <span class="ec">${e.ec}</span> — ${e.detalle}</div>`).join('')}</div>` : '';
+}
+
+/* ---------- utilidades de pasos ---------- */
+const ejDe = nv => state.niveles[nv].ej;
+function mostrarFb(nv, paso, tipo, html) {
+  const el = $(`fb${paso}-${nv}`);
+  el.className = 'fb visible ' + (tipo === 'ok' ? 'feedback-correcto' : tipo === 'ko' ? 'feedback-incorrecto' : 'feedback-info');
+  el.innerHTML = html;
+}
+function marcarCampo(id, ok) {
+  const el = $(id);
+  el.classList.remove('ok', 'ko');
+  void el.offsetWidth;
+  el.classList.add(ok ? 'ok' : 'ko');
+}
+function completar(nv, n) {
+  const p = $(`p${n}-${nv}`);
+  p.classList.add('hecho');
+  p.querySelectorAll('input, button').forEach(el => { el.disabled = true; });
+}
+function desbloquear(nv, n) {
+  const p = $(`p${n}-${nv}`);
+  p.classList.remove('bloqueado');
+  setTimeout(() => {
+    const f = p.querySelector('input:not(:disabled), button:not(:disabled)');
+    if (f) f.focus({ preventScroll: true });
+    p.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, 120);
+}
+function interaccion(ej) {
+  if (!ej.interactuado) ej.interactuado = true;
+}
+
+/* =====================================================================
+   PASO 1 · Identificar coeficientes
+   ===================================================================== */
+function comprobar1(nv) {
+  const ej = ejDe(nv);
+  if (ej.paso !== 1 || ej.terminado) return;
+  const u = ['ia', 'ib', 'ic'].map(k => parseEntero($(`${k}-${nv}`).value));
+  if (u.some(isNaN)) {
+    mostrarFb(nv, 1, 'info', 'Escribe los tres coeficientes como números enteros. Si falta un término, su coeficiente es 0.');
+    return;
+  }
+  interaccion(ej);
+  const P = [ej.P.a, ej.P.b, ej.P.c];
+  if (u[0] !== 0 && proporcional(u, P)) {
+    ['ia', 'ib', 'ic'].forEach(k => marcarCampo(`${k}-${nv}`, true));
+    ej.coef = { a: u[0], b: u[1], c: u[2] };
+    ej.D = u[1] * u[1] - 4 * u[0] * u[2];
+    let msg = `<b>Correcto.</b> La ecuación ordenada es ${fmtPoly(u[0], u[1], u[2])} = 0.`;
+    if (u[0] !== P[0]) msg += ' Tu ecuación es equivalente a la que sale directamente (todos los coeficientes están multiplicados por el mismo número), así que es igual de válida.';
+    if (u[0] < 0) msg += ' Consejo: cuando <i class="v">a</i> es negativo suele ser más cómodo multiplicar por −1.';
+    mostrarFb(nv, 1, 'ok', msg);
+    completar(nv, 1);
+    ej.paso = 2;
+    crearFichas(nv);
+    desbloquear(nv, 2);
+  } else {
+    ['ia', 'ib', 'ic'].forEach(k => marcarCampo(`${k}-${nv}`, false));
+    const pen = penalizar('identificar', CONFIG.PENALIZACION_PASO);
+    mostrarFb(nv, 1, 'ko', diagnostico1(ej, u) + pen);
+  }
+}
+
+function diagnostico1(ej, u) {
+  const P = [ej.P.a, ej.P.b, ej.P.c];
+  if (u[0] === 0) return 'Si <i class="v">a</i> = 0 desaparece el término en <i class="v">x</i>² y la ecuación ya no sería de segundo grado. <i class="v">a</i> es el número que multiplica a <i class="v">x</i>².';
+  if (ej.R.some(v => v !== 0)) {
+    const suma = [0, 1, 2].map(i => ej.L[i] + ej.R[i]);
+    if (proporcional(u, suma)) return 'Al pasar un término al otro miembro hay que cambiarle el signo: lo que está sumando pasa restando, y al revés.';
+    if (proporcional(u, ej.L)) return 'Solo has tenido en cuenta el primer miembro. Pasa también los términos del segundo miembro (cambiados de signo) y agrupa los semejantes.';
+  }
+  if (ej.T === 'T2' && proporcional(u, [1, P[1] - 2 * ej.m, P[2]])) {
+    return 'Revisa el cuadrado del binomio: (<i class="v">x</i> + <i class="v">m</i>)² = <i class="v">x</i>² + 2·<i class="v">m</i>·<i class="v">x</i> + <i class="v">m</i>². Te falta el doble producto.';
+  }
+  if (P[1] !== P[2] && proporcional(u, [P[0], P[2], P[1]])) {
+    return 'Has intercambiado <i class="v">b</i> y <i class="v">c</i>: <i class="v">b</i> es el coeficiente de <i class="v">x</i> y <i class="v">c</i> es el término sin <i class="v">x</i> (término independiente).';
+  }
+  const s0 = Math.sign(u[0]) * Math.sign(P[0]);
+  const idx = [1, 2].filter(i => P[i] !== 0 && u[i] !== 0 && Math.sign(u[i]) * s0 !== Math.sign(P[i]));
+  if (idx.length) {
+    const v = [...P]; idx.forEach(i => { v[i] = -v[i]; });
+    if (proporcional(u, v)) {
+      const n = idx.map(i => i === 1 ? '<i class="v">b</i>' : '<i class="v">c</i>').join(' y de ');
+      return `Casi: revisa el signo de ${n}. El signo que va delante de cada término forma parte de su coeficiente.`;
+    }
+  }
+  if (ej.nv === 1) return 'Algún coeficiente no es correcto. <i class="v">a</i> acompaña a <i class="v">x</i>², <i class="v">b</i> acompaña a <i class="v">x</i> y <i class="v">c</i> es el número solo; el signo de delante forma parte del coeficiente.';
+  if (ej.nv === 2) return 'Algún coeficiente no es correcto. Pasa todos los términos al primer miembro cambiando de signo los que cambian de miembro, y agrupa: <i class="v">x</i>² con <i class="v">x</i>², <i class="v">x</i> con <i class="v">x</i> y números con números.';
+  return 'Algún coeficiente no es correcto. Desarrolla primero cada paréntesis por separado, después pasa todo al primer miembro y agrupa los términos semejantes.';
+}
+
+/* =====================================================================
+   PASO 2 · Sustituir (arrastrar o pulsar)
+   ===================================================================== */
+const HUECO_ESPERA = { nb: 'b', bb: 'b', a1: 'a', c: 'c', a2: 'a' };
+const HUECO_TEXTO = {
+  nb: 'en −( ) va <i class="v">b</i>',
+  bb: 'dentro de ( )² va <i class="v">b</i>',
+  a1: 'en 4·( )·( ), el primer hueco es <i class="v">a</i>',
+  c: 'en 4·( )·( ), el segundo hueco es <i class="v">c</i>',
+  a2: 'en el denominador 2·( ) va <i class="v">a</i>'
+};
+
+function crearFichas(nv) {
+  const { a, b, c } = ejDe(nv).coef;
+  $('fichas-' + nv).innerHTML = [['a', a], ['b', b], ['c', c]].map(([k, v]) =>
+    `<button class="ficha coef-${k}" type="button" data-coef="${k}" data-val="${v}" data-nv="${nv}"
+       aria-label="Ficha ${k} igual a ${fmtNum(v)}"><small>${k} =</small>${fmtNum(v)}</button>`).join('');
+}
+
+let seleccion = null;
+let arrastre = null;
+let suprimirClickHasta = 0;
+
+function seleccionar(f) {
+  document.querySelectorAll('.ficha.sel').forEach(x => x.classList.remove('sel'));
+  if (seleccion && seleccion === f) { seleccion = null; return; }
+  seleccion = f; f.classList.add('sel');
+}
+function colocar(h, f) {
+  const nv = Number(h.dataset.nv), ej = ejDe(nv);
+  if (!ej || ej.paso !== 2 || Number(f.dataset.nv) !== nv) return;
+  const val = Number(f.dataset.val), coef = f.dataset.coef;
+  ej.slots[h.dataset.hueco] = { val, coef };
+  h.textContent = fmtNum(val);
+  h.className = `hueco lleno-${coef}`;
+  h.setAttribute('aria-label', `Hueco con ${fmtNum(val)}. Pulsa para vaciar`);
+}
+function vaciar(h) {
+  const ej = ejDe(Number(h.dataset.nv));
+  if (!ej || ej.paso !== 2) return;
+  delete ej.slots[h.dataset.hueco];
+  h.textContent = '?';
+  h.className = 'hueco';
+  h.setAttribute('aria-label', 'Hueco vacío');
+}
+function huecoEn(x, y) {
+  const el = document.elementFromPoint(x, y);
+  const h = el && el.closest('.hueco');
+  return h && !h.disabled ? h : null;
+}
+function resaltar(h) {
+  document.querySelectorAll('.hueco.sobre').forEach(x => x.classList.remove('sobre'));
+  if (h) h.classList.add('sobre');
+}
+
+document.addEventListener('pointerdown', e => {
+  const f = e.target.closest('.ficha');
+  if (!f || f.disabled) return;
+  arrastre = { f, x0: e.clientX, y0: e.clientY, ghost: null };
+});
+document.addEventListener('pointermove', e => {
+  if (!arrastre) return;
+  if (!arrastre.ghost) {
+    if (Math.hypot(e.clientX - arrastre.x0, e.clientY - arrastre.y0) < 6) return;
+    const g = arrastre.f.cloneNode(true);
+    g.classList.remove('sel'); g.classList.add('ghost');
+    document.body.appendChild(g);
+    arrastre.ghost = g;
+    arrastre.f.classList.add('arrastrando');
+  }
+  e.preventDefault();
+  const g = arrastre.ghost;
+  g.style.left = (e.clientX - g.offsetWidth / 2) + 'px';
+  g.style.top = (e.clientY - g.offsetHeight / 2) + 'px';
+  resaltar(huecoEn(e.clientX, e.clientY));
+}, { passive: false });
+function terminarArrastre(e, cancelado) {
+  if (!arrastre) return;
+  if (arrastre.ghost) {
+    if (!cancelado) {
+      const h = huecoEn(e.clientX, e.clientY);
+      if (h) colocar(h, arrastre.f);
+    }
+    arrastre.ghost.remove();
+    arrastre.f.classList.remove('arrastrando');
+    resaltar(null);
+    suprimirClickHasta = Date.now() + 400;
+  }
+  arrastre = null;
+}
+document.addEventListener('pointerup', e => terminarArrastre(e, false));
+document.addEventListener('pointercancel', e => terminarArrastre(e, true));
+
+function comprobar2(nv) {
+  const ej = ejDe(nv);
+  if (ej.paso !== 2 || ej.terminado) return;
+  const ids = Object.keys(HUECO_ESPERA);
+  if (ids.some(id => !ej.slots[id])) {
+    mostrarFb(nv, 2, 'info', 'Coloca un valor en cada uno de los cinco huecos.');
+    return;
+  }
+  interaccion(ej);
+  const malos = [];
+  ids.forEach(id => {
+    const ok = ej.slots[id].val === ej.coef[HUECO_ESPERA[id]];   // se compara el VALOR
+    const h = document.querySelector(`#p2-${nv} .hueco[data-hueco="${id}"]`);
+    h.classList.remove('ok', 'ko'); void h.offsetWidth;
+    h.classList.add(ok ? 'ok' : 'ko');
+    if (!ok) malos.push(id);
+  });
+  if (!malos.length) {
+    const { a, b, c } = ej.coef;
+    let msg = '<b>Correcto.</b> La fórmula queda sustituida.';
+    if (b < 0 || c < 0 || a < 0) msg += ` Fíjate en que los números negativos van entre paréntesis: (${fmtNum(-3)})² = 9, mientras que ${MENOS}3² = ${MENOS}9.`;
+    mostrarFb(nv, 2, 'ok', msg);
+    completar(nv, 2);
+    ej.paso = 3;
+    desbloquear(nv, 3);
+  } else {
+    const pen = penalizar('sustituir', CONFIG.PENALIZACION_PASO);
+    mostrarFb(nv, 2, 'ko', 'Revisa los huecos marcados: ' + malos.map(id => HUECO_TEXTO[id]).join('; ') + '.' + pen);
+  }
+}
+
+/* =====================================================================
+   PASO 3 · −b, Δ y 2a
+   ===================================================================== */
+function comprobar3(nv) {
+  const ej = ejDe(nv);
+  if (ej.paso !== 3 || ej.terminado) return;
+  const vnb = parseEntero($('inb-' + nv).value), vd = parseEntero($('id-' + nv).value), v2a = parseEntero($('i2a-' + nv).value);
+  if ([vnb, vd, v2a].some(isNaN)) {
+    mostrarFb(nv, 3, 'info', 'Rellena los tres campos con números enteros.');
+    return;
+  }
+  interaccion(ej);
+  const { a, b, c } = ej.coef, D = ej.D, ac4 = 4 * a * c;
+  const ok = [vnb === -b, vd === D, v2a === 2 * a];
+  marcarCampo('inb-' + nv, ok[0]); marcarCampo('id-' + nv, ok[1]); marcarCampo('i2a-' + nv, ok[2]);
+  const detalleD = `Δ = ${par(b)}² ${MENOS} 4·${par(a)}·${par(c)} = ${fmtNum(b * b)} ${ac4 >= 0 ? MENOS + ' ' + fmtNum(ac4) : '+ ' + fmtNum(-ac4)} = ${fmtNum(D)}`;
+  if (ok.every(Boolean)) {
+    mostrarFb(nv, 3, 'ok', `<b>Correcto.</b> −<i class="v">b</i> = ${fmtNum(-b)}; ${detalleD}; 2<i class="v">a</i> = ${fmtNum(2 * a)}.`);
+    completar(nv, 3);
+    ej.paso = 4;
+    $('delta-' + nv).innerHTML = `Δ = ${fmtNum(D)}`;
+    desbloquear(nv, 4);
+    return;
+  }
+  const msgs = [];
+  if (!ok[0]) msgs.push(vnb === b && b !== 0
+    ? '−<i class="v">b</i> es el opuesto de <i class="v">b</i>: hay que cambiarle el signo.'
+    : 'Revisa −<i class="v">b</i>: es el opuesto de <i class="v">b</i>.');
+  if (!ok[1]) {
+    let m;
+    if (b !== 0 && vd === -b * b - ac4) m = 'El cuadrado de un número negativo es positivo: (−3)² = 9. Por eso <i class="v">b</i>² nunca es negativo.';
+    else if (ac4 !== 0 && vd === b * b + ac4) m = 'Cuidado con el signo del término −4·<i class="v">a</i>·<i class="v">c</i>: multiplica también los signos de <i class="v">a</i> y <i class="v">c</i>.';
+    else if (b !== 0 && b !== 2 && vd === 2 * b - ac4) m = '<i class="v">b</i>² es <i class="v">b</i>·<i class="v">b</i>, no 2·<i class="v">b</i>.';
+    else m = 'Revisa Δ: calcula primero <i class="v">b</i>², después 4·<i class="v">a</i>·<i class="v">c</i> (con sus signos) y resta.';
+    msgs.push(m);
+  }
+  if (!ok[2]) msgs.push(v2a === 2 + a ? '2<i class="v">a</i> significa 2·<i class="v">a</i> (multiplicación), no 2 + <i class="v">a</i>.' : 'Revisa 2<i class="v">a</i>: es el doble de <i class="v">a</i>.');
+  const pen = penalizar('calcular', CONFIG.PENALIZACION_PASO);
+  mostrarFb(nv, 3, 'ko', msgs.join('<br>') + pen);
+}
+
+/* =====================================================================
+   PASO 4 · Interpretar el discriminante (un único intento)
+   ===================================================================== */
+function comprobar4(nv, op) {
+  const ej = ejDe(nv);
+  if (ej.paso !== 4 || ej.terminado) return;
+  interaccion(ej);
+  const D = ej.D, correcta = D > 0 ? '2' : D === 0 ? '1' : '0';
+  const acierto = op === correcta;
+  document.querySelectorAll(`#p4-${nv} .opcion`).forEach(b => {
+    if (b.dataset.op === correcta) b.classList.add('ok');
+    else if (b.dataset.op === op) b.classList.add('ko');
+  });
+  const expl = D > 0
+    ? `Como Δ = ${fmtNum(D)} &gt; 0, √Δ es un número real positivo y el signo ± da dos soluciones distintas.`
+    : D === 0
+      ? 'Como Δ = 0, √Δ = 0 y el + y el − dan el mismo valor: hay una única solución (solución doble).'
+      : `Como Δ = ${fmtNum(D)} &lt; 0, no existe ningún número real cuyo cuadrado sea negativo: la ecuación no tiene solución real.`;
+  completar(nv, 4);
+
+  if (D < 0) {                                   // en este caso el paso 4 es la respuesta final
+    ej.paso = 6;
+    if (acierto) {
+      mostrarFb(nv, 4, 'ok', `<b>Correcto.</b> ${expl}`);
+      terminarEjercicio(nv, true, 'sin solución real');
+    } else {
+      const pen = penalizar('discriminante', CONFIG.PENALIZACION_FINAL);
+      mostrarFb(nv, 4, 'ko', `No es correcto. ${expl}${pen}`);
+      terminarEjercicio(nv, false, 'sin solución real');
+    }
+    return;
+  }
+  if (acierto) mostrarFb(nv, 4, 'ok', `<b>Correcto.</b> ${expl}`);
+  else mostrarFb(nv, 4, 'ko', `No es correcto. ${expl}${penalizar('discriminante', CONFIG.PENALIZACION_PASO)}`);
+  ej.paso = 5;
+  renderPaso5(nv);
+  desbloquear(nv, 5);
+}
+
+/* =====================================================================
+   PASO 5 · √Δ y soluciones (las soluciones tienen un único intento)
+   ===================================================================== */
+function renderPaso5(nv) {
+  const ej = ejDe(nv), { a, b } = ej.coef, D = ej.D, s = '-' + nv;
+  const cuerpo = $('p5body' + s);
+  if (D > 0) {
+    cuerpo.innerHTML = `
+      <p class="paso-ayuda">Primero calcula √Δ. Después escribe las dos soluciones: <b>solo tienes un intento</b> para ellas.</p>
+      <div class="formula-num">\\( x=\\dfrac{${tex(-b)}\\pm\\sqrt{${tex(D)}}}{${tex(2 * a)}} \\)</div>
+      <div class="fila-campos">
+        <label class="grupo-campo"><span class="etq">√Δ =</span><input class="campo" id="ir${s}" autocomplete="off" aria-label="Raíz cuadrada del discriminante"></label>
+        <label class="grupo-campo"><span class="etq"><i class="v">x</i>₁ =</span><input class="campo" id="ix1${s}" autocomplete="off" aria-label="Primera solución"></label>
+        <label class="grupo-campo"><span class="etq"><i class="v">x</i>₂ =</span><input class="campo" id="ix2${s}" autocomplete="off" aria-label="Segunda solución"></label>
+      </div>
+      <p class="nota-formato">Puedes escribir enteros, fracciones (3/2) o decimales (1,5).</p>
+      <div class="acciones"><button class="btn-primario" type="button" data-accion="c5">Comprobar</button></div>`;
+  } else {
+    cuerpo.innerHTML = `
+      <p class="paso-ayuda">Como Δ = 0, las dos soluciones coinciden. Escribe la solución: <b>solo tienes un intento</b>.</p>
+      <div class="formula-num">\\( x=\\dfrac{${tex(-b)}\\pm\\sqrt{0}}{${tex(2 * a)}}=\\dfrac{${tex(-b)}}{${tex(2 * a)}} \\)</div>
+      <div class="fila-campos">
+        <label class="grupo-campo"><span class="etq"><i class="v">x</i> =</span><input class="campo" id="ix1${s}" autocomplete="off" aria-label="Solución"></label>
+      </div>
+      <p class="nota-formato">Puedes escribir un entero, una fracción (3/2) o un decimal (1,5).</p>
+      <div class="acciones"><button class="btn-primario" type="button" data-accion="c5">Comprobar</button></div>`;
+  }
+  tipografiar(cuerpo);
+}
+
+function comprobar5(nv) {
+  const ej = ejDe(nv);
+  if (ej.paso !== 5 || ej.terminado) return;
+  const { a, b } = ej.coef, D = ej.D, nb = -b, den = 2 * a;
+  interaccion(ej);
+
+  if (D > 0 && !ej.raizOk) {
+    const vr = parseRacional($('ir-' + nv).value);
+    if (isNaN(vr)) { mostrarFb(nv, 5, 'info', 'Escribe primero el valor de √Δ.'); return; }
+    const n = Math.round(Math.sqrt(D));
+    if (Math.abs(vr - n) < 1e-9) {
+      ej.raizOk = true;
+      marcarCampo('ir-' + nv, true);
+      $('ir-' + nv).disabled = true;
+    } else {
+      marcarCampo('ir-' + nv, false);
+      let m;
+      if (Math.abs(vr + n) < 1e-9) m = 'Toma la raíz positiva: el signo ± de la fórmula ya se encarga del valor negativo.';
+      else if (Math.abs(vr - D / 2) < 1e-9) m = 'La raíz cuadrada no es la mitad del número: busca el número que multiplicado por sí mismo da Δ.';
+      else m = `Busca el número que, multiplicado por sí mismo, da ${fmtNum(D)}.`;
+      mostrarFb(nv, 5, 'ko', m + penalizar('raiz', CONFIG.PENALIZACION_PASO) + '<br><i>Las soluciones todavía no se han corregido.</i>');
+      return;
+    }
+  }
+
+  const raices = D === 0 ? [ej.P.raices[0]] : ej.P.raices;
+  const v1 = parseRacional($('ix1-' + nv).value);
+  const v2 = D > 0 ? parseRacional($('ix2-' + nv).value) : null;
+  if (isNaN(v1) || (D > 0 && isNaN(v2))) {
+    mostrarFb(nv, 5, 'info', (D > 0 ? '√Δ es correcta. Ahora escribe las dos soluciones' : 'Escribe la solución') + ' (entero, fracción o decimal).');
+    return;
+  }
+
+  const n = Math.round(Math.sqrt(D));
+  const f1 = frac(nb + n, den), f2 = frac(nb - n, den);
+  let acierto, detalle;
+  if (D > 0) {
+    acierto = (igual(v1, raices[0]) && igual(v2, raices[1])) || (igual(v1, raices[1]) && igual(v2, raices[0]));
+    detalle = `<i class="v">x</i>₁ = (${fmtNum(nb)} + ${fmtNum(n)}) / ${par(den)} = ${fmtFracDec(f1)} &nbsp;y&nbsp; <i class="v">x</i>₂ = (${fmtNum(nb)} ${MENOS} ${fmtNum(n)}) / ${par(den)} = ${fmtFracDec(f2)}`;
+  } else {
+    acierto = igual(v1, raices[0]);
+    detalle = `<i class="v">x</i> = ${fmtNum(nb)} / ${par(den)} = ${fmtFracDec(f1)}`;
+  }
+  ['ix1', 'ix2'].forEach(k => { const el = $(`${k}-${nv}`); if (el) { marcarCampo(`${k}-${nv}`, acierto); el.disabled = true; } });
+  const btn = document.querySelector(`#p5-${nv} [data-accion="c5"]`);
+  if (btn) btn.disabled = true;
+  $('p5-' + nv).classList.add('hecho');
+  ej.paso = 6;
+
+  const solTxt = D > 0 ? `${fmtFrac(f1)} y ${fmtFrac(f2)}` : `${fmtFrac(f1)} (doble)`;
+  if (acierto) {
+    mostrarFb(nv, 5, 'ok', `<b>Correcto.</b> ${detalle}.`);
+    terminarEjercicio(nv, true, solTxt);
+  } else {
+    const pen = penalizar('soluciones', CONFIG.PENALIZACION_FINAL);
+    mostrarFb(nv, 5, 'ko', `${diagnostico5(v1, v2, nb, n, den, D, raices)}${pen}<div class="solucion">Las soluciones correctas eran: ${detalle}.</div>`);
+    terminarEjercicio(nv, false, solTxt);
+  }
+}
+
+function diagnostico5(v1, v2, nb, n, den, D, raices) {
+  const vals = D > 0 ? [v1, v2] : [v1];
+  const casan = (objetivos) => {
+    if (D === 0) return Math.abs(vals[0] - objetivos[0]) < 1e-9;
+    return (Math.abs(vals[0] - objetivos[0]) < 1e-9 && Math.abs(vals[1] - objetivos[1]) < 1e-9) ||
+           (Math.abs(vals[0] - objetivos[1]) < 1e-9 && Math.abs(vals[1] - objetivos[0]) < 1e-9);
+  };
+  const r = raices.map(f => f.n / f.d);
+  if (casan(r.map(x => -x)) && r.some(x => x !== 0)) return 'Tienes las soluciones cambiadas de signo: parece que has usado <i class="v">b</i> en lugar de −<i class="v">b</i> en el numerador.';
+  if (den !== 1 && casan([nb + n, nb - n])) return `Te falta dividir entre 2<i class="v">a</i> = ${fmtNum(den)}.`;
+  if (den !== 2 && casan([(nb + n) / 2, (nb - n) / 2])) return `El denominador es 2<i class="v">a</i> = ${fmtNum(den)}, no 2.`;
+  if (D > 0) {
+    const bienUna = r.some(x => Math.abs(v1 - x) < 1e-9) || r.some(x => Math.abs(v2 - x) < 1e-9);
+    if (bienUna) return 'Una de las dos soluciones es correcta; revisa la otra: calcula por separado el caso con + y el caso con −.';
+  }
+  return 'No es correcto. Calcula por separado (−<i class="v">b</i> + √Δ) / 2<i class="v">a</i> y (−<i class="v">b</i> − √Δ) / 2<i class="v">a</i>, y simplifica.';
+}
+
+/* =====================================================================
+   FIN DE EJERCICIO · ventana móvil
+   ===================================================================== */
+function registrarIntento(nv, acierto, detalle, ec) {
+  const st = state.niveles[nv];
+  if (st.cerrado) return false;
+  st.ejercicios++;
+  if (acierto) st.aciertos++; else st.fallos++;
+  st.intentos.push(acierto);
+  if (st.intentos.length > CONFIG.VENTANA) st.intentos.shift();
+  st.historial.push({ ok: acierto, ec, detalle });
+  let superadoAhora = false;
+  if (!st.superado && st.intentos.filter(Boolean).length >= CONFIG.ACIERTOS_PARA_SUPERAR) {
+    st.superado = true; st.cerrado = true; superadoAhora = true;
+  }
+  actualizarBarra();
+  renderTabs();
+  renderHistorial(nv);
+  return superadoAhora;
+}
+
+function terminarEjercicio(nv, acierto, solTxt) {
+  const ej = ejDe(nv);
+  ej.terminado = true;
+  const saltar = $('saltar-' + nv);
+  if (saltar) saltar.disabled = true;
+  const superadoAhora = registrarIntento(nv, acierto, `soluciones: ${solTxt}`, ej.plano);
+  const st = state.niveles[nv];
+  const aciertosVentana = st.intentos.filter(Boolean).length;
+  const cierre = $('cierre-' + nv);
+  cierre.innerHTML = `
+    <div class="resultado ${acierto ? 'ok' : 'ko'}">
+      <h4>${acierto ? 'Ejercicio bien resuelto' : 'Ejercicio no superado'}</h4>
+      <p>${superadoAhora ? '' : `En tus últimos ${st.intentos.length} ejercicio${st.intentos.length === 1 ? '' : 's'} de este nivel llevas ${aciertosVentana} bien resuelto${aciertosVentana === 1 ? '' : 's'}. Necesitas 2 de 3 seguidos.`}</p>
+      ${superadoAhora ? `<div class="superado-aviso">¡Nivel ${nv} superado! Suma ${fmtPts(PUNTOS_POR_NIVEL)} puntos y queda cerrado.</div>` : ''}
+    </div>
+    <div class="acciones"><button class="btn-primario" type="button" data-accion="siguiente">${st.cerrado ? 'Continuar' : 'Siguiente ejercicio'}</button></div>`;
+  cierre.classList.add('visible');
+  setTimeout(() => {
+    const b = cierre.querySelector('button');
+    if (b) b.focus({ preventScroll: true });
+    cierre.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, 150);
+}
+
+function siguiente(nv) {
+  const st = state.niveles[nv];
+  if (st.cerrado) { st.ej = null; renderCerrado(nv); }
+  else nuevoEjercicio(nv);
+  $('zona-' + nv).scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function saltar(nv) {
+  const ej = ejDe(nv);
+  if (!ej || ej.terminado) return;
+  if (!ej.interactuado) { nuevoEjercicio(nv); return; }
+  confirmar('Ya has empezado este ejercicio. Si lo saltas, contará como <b>ejercicio fallado</b> en la ventana de este nivel (no resta nota). ¿Quieres saltarlo?', () => {
+    registrarIntento(nv, false, 'saltado', ej.plano);
+    nuevoEjercicio(nv);
+  });
+}
+
+/* =====================================================================
+   MODALES
+   ===================================================================== */
+function confirmar(msg, alAceptar) {
+  const ov = document.createElement('div');
+  ov.className = 'overlay';
+  ov.innerHTML = `<div class="confirm-box" role="dialog" aria-modal="true">
+      <p>${msg}</p>
+      <div class="acciones">
+        <button class="btn-secundario" type="button" data-r="no">Cancelar</button>
+        <button class="btn-primario" type="button" data-r="si">Sí, continuar</button>
+      </div></div>`;
+  document.body.appendChild(ov);
+  ov.querySelector('[data-r="no"]').focus();
+  ov.addEventListener('click', e => {
+    const r = e.target.closest('[data-r]');
+    if (!r && e.target !== ov) return;
+    ov.remove();
+    if (r && r.dataset.r === 'si') alAceptar();
+  });
+}
+
+function finalizar() {
+  if (!exigirNombre()) return;
+  const n = nota();
+  let bg, col;
+  if (n >= 10) { bg = '#1a7a1a'; col = '#fff'; }
+  else if (n >= 9) { bg = '#6dbf6d'; col = '#fff'; }
+  else if (n >= 8) { bg = '#1a4f8a'; col = '#fff'; }
+  else if (n >= 7) { bg = '#5b9bd5'; col = '#fff'; }
+  else if (n >= 6) { bg = '#c05c00'; col = '#fff'; }
+  else if (n >= 5) { bg = '#f5a623'; col = '#000'; }
+  else { bg = '#c0392b'; col = '#fff'; }
+  document.body.classList.toggle('nota-maxima', n >= 10);
+
+  const ahora = new Date();
+  const fecha = ahora.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  const hora = ahora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  const min = Math.ceil((Date.now() - state.inicio) / 60000);
+  const tiempo = String(Math.floor(min / 60)).padStart(2, '0') + ':' + String(min % 60).padStart(2, '0');
+  const titulo = document.querySelector('.titulo-ficha').textContent;
+  const sub = document.querySelector('.subtitulo').textContent;
+
+  const filas = Object.keys(NIVELES).map(k => {
+    const st = state.niveles[k];
+    return `<tr><td>${k}. ${NIVELES[k].nombre}</td><td>${st.superado ? '✓ Superado' : 'No superado'}</td>
+            <td>${st.ejercicios}</td><td>${st.aciertos}</td><td>${st.fallos}</td></tr>`;
+  }).join('');
+  const pasos = Object.entries(state.fallosPaso);
+  const maxFallos = Math.max(...pasos.map(p => p[1]));
+  const peores = pasos.filter(p => p[1] === maxFallos && maxFallos > 0).map(p => NOMBRE_PASO[p[0]]);
+  const listaPasos = pasos.map(([k, v]) => `${NOMBRE_PASO[k]}: <b>${v}</b>`).join(' · ');
+
+  const ov = document.createElement('div');
+  ov.className = 'overlay';
+  ov.innerHTML = `
+    <div class="modal-calificacion" style="background:${bg};color:${col}" role="dialog" aria-modal="true" aria-label="Informe de la actividad">
+      <div class="m-titulo">${titulo}</div>
+      <div class="m-sub">${sub}</div>
+      <hr class="m-sep">
+      <div class="m-enc">Informe de la actividad</div>
+      <div class="m-nombre">${escaparHTML($('nombre').value.trim())}</div>
+      <div class="m-nota">${fmtPts(n)}</div>
+      <div class="m-sobre">puntos sobre ${CONFIG.PUNTOS_MAX}</div>
+      <div class="m-grid">
+        <div class="m-celda"><div class="l">Fecha</div><div class="v">${fecha}</div></div>
+        <div class="m-celda"><div class="l">Hora</div><div class="v">${hora}</div></div>
+        <div class="m-celda"><div class="l">Tiempo</div><div class="v">${tiempo}</div></div>
+      </div>
+      <table class="m-tabla">
+        <thead><tr><th>Nivel</th><th>Estado</th><th>Ejerc.</th><th>Bien</th><th>Mal</th></tr></thead>
+        <tbody>${filas}</tbody>
+      </table>
+      <div class="m-detalle">
+        <b>Fallos por paso:</b> ${listaPasos}<br>
+        ${peores.length ? `<b>Donde más falla:</b> ${peores.join(', ')}<br>` : ''}
+        <b>Penalización acumulada:</b> ${state.penalizacion > 0 ? MENOS + fmtPts(state.penalizacion) : '0'} puntos
+      </div>
+      <div class="m-captura">Haz una captura de pantalla y entrégala en Google Classroom.</div>
+      <button class="m-btn" type="button" data-cerrar>Seguir practicando</button>
+    </div>`;
+  document.body.appendChild(ov);
+  ov.querySelector('[data-cerrar]').focus();
+  ov.addEventListener('click', e => {
+    if (e.target.closest('[data-cerrar]') || e.target === ov) {
+      ov.remove();
+      document.body.classList.remove('nota-maxima');
+    }
+  });
+}
+function escaparHTML(s) {
+  return s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+/* =====================================================================
+   EVENTOS
+   ===================================================================== */
+document.addEventListener('click', e => {
+  // Pestañas
+  const tab = e.target.closest('.tab');
+  if (tab) { activarNivel(Number(tab.dataset.nivel)); return; }
+
+  // Fichas y huecos (paso 2)
+  const f = e.target.closest('.ficha');
+  if (f) { if (Date.now() < suprimirClickHasta || f.disabled) return; seleccionar(f); return; }
+  const h = e.target.closest('.hueco');
+  if (h) {
+    if (Date.now() < suprimirClickHasta || h.disabled) return;
+    if (seleccion && Number(seleccion.dataset.nv) === Number(h.dataset.nv)) {
+      colocar(h, seleccion);
+      seleccion.classList.remove('sel');
+      seleccion = null;
+    } else if (h.textContent !== '?') {
+      vaciar(h);
+    }
+    return;
+  }
+
+  const b = e.target.closest('[data-accion]');
+  if (!b || b.disabled) return;
+  const zona = b.closest('.zona');
+  const nv = zona ? Number(zona.dataset.nivel) : state.activo;
+  const acc = b.dataset.accion;
+
+  if (acc === 'siguiente') { siguiente(nv); return; }
+  if (acc === 'saltar') { saltar(nv); return; }
+  if (acc === 'ir') { activarNivel(Number(b.dataset.destino)); return; }
+  if (!exigirNombre()) return;
+  if (acc === 'c1') comprobar1(nv);
+  else if (acc === 'c2') comprobar2(nv);
+  else if (acc === 'c3') comprobar3(nv);
+  else if (acc === 'c4') comprobar4(nv, b.dataset.op);
+  else if (acc === 'c5') comprobar5(nv);
+});
+
+// Enter en cualquier campo de un paso = Comprobar
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    const ov = document.querySelector('.overlay');
+    if (ov) { ov.remove(); document.body.classList.remove('nota-maxima'); }
+    return;
+  }
+  if (e.key !== 'Enter') return;
+  const inp = e.target.closest('.paso .campo');
+  if (!inp) return;
+  e.preventDefault();
+  const btn = inp.closest('.paso').querySelector('[data-accion^="c"]:not(:disabled)');
+  if (btn) btn.click();
+});
+
+// Al volver a escribir en un campo marcado en rojo, se quita la marca
+document.addEventListener('input', e => {
+  if (e.target.classList && e.target.classList.contains('campo')) e.target.classList.remove('ko');
+});
+
+$('btn-finalizar').addEventListener('click', finalizar);
+
+/* =====================================================================
+   INICIO
+   ===================================================================== */
+crearZonas();
+Object.keys(NIVELES).forEach(k => nuevoEjercicio(Number(k)));
+activarNivel(1);
+actualizarBarra();
+</script>
+</body>
+</html>
