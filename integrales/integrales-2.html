@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Integrales Inmediatas II · Nivel Avanzado</title>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script" async></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Lato:wght@300;400;700&display=swap');
+  :root{--crema:#fdf6e3;--crema2:#f5e6c8;--crema3:#ede0c4;--marron:#5c3d1e;--marron2:#8b5e3c;--acento:#c0392b;--acento2:#e74c3c;--verde:#1b5e20;--azul:#1a4f8a;--texto:#3b2a1a;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Lato',sans-serif;background:var(--crema);color:var(--texto);}
+  .cabecera{background:linear-gradient(135deg,var(--marron),var(--marron2));color:var(--crema);text-align:center;padding:14px 20px 10px;border-bottom:4px solid var(--acento);}
+  .autoria{font-size:.72rem;opacity:.85;margin-bottom:4px;}
+  .cabecera h1{font-family:'Playfair Display',serif;font-size:1.4rem;}
+  .subtitulo{font-size:.8rem;opacity:.8;margin-top:3px;}
+  .top-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;background:var(--crema2);border-bottom:2px solid var(--crema3);padding:10px 20px;}
+  .nombre-box{display:flex;align-items:center;gap:8px;}
+  .nombre-box label{font-weight:700;font-size:.85rem;color:var(--marron);}
+  .nombre-box input{border:1.5px solid var(--crema3);border-radius:6px;padding:5px 10px;font-size:.9rem;background:var(--crema);color:var(--texto);font-family:'Lato',sans-serif;width:180px;}
+  .score-box{display:flex;gap:14px;}
+  .score-item{text-align:center;font-size:.8rem;color:var(--marron);}
+  .score-item span{display:block;font-size:1.3rem;font-weight:700;}
+  .main{max-width:1000px;margin:0 auto;padding:20px 16px 40px;}
+  .progreso-label{font-size:.75rem;color:var(--marron2);margin-bottom:4px;}
+  .barra-wrap{height:6px;background:var(--crema3);border-radius:10px;margin-bottom:18px;overflow:hidden;}
+  .barra-fill{height:100%;background:linear-gradient(90deg,var(--acento2),var(--acento));border-radius:10px;transition:width .4s;}
+  .card{background:white;border:1.5px solid var(--crema3);border-radius:14px;padding:22px 24px;box-shadow:0 3px 14px rgba(92,61,30,.08);margin-bottom:18px;}
+  .card-tipo{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--acento2);margin-bottom:6px;}
+  .enunciado-global{font-size:.92rem;line-height:1.6;margin-bottom:20px;background:var(--crema);padding:12px 18px;border-radius:12px;border-left:5px solid var(--acento2);}
+  .pasos{display:flex;flex-direction:column;gap:16px;margin-bottom:20px;}
+  .paso{background:var(--crema);border-radius:12px;padding:16px;border-left:5px solid var(--crema3);transition:.2s;}
+  .paso.ok{border-left-color:var(--verde);background:#f0f7f0;}
+  .paso.fail{border-left-color:var(--acento);background:#fef5f3;}
+  .paso-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
+  .paso-titulo{font-weight:700;font-size:.95rem;color:var(--marron);display:flex;align-items:center;flex-wrap:wrap;gap:8px;}
+  .btn-check{background:transparent;border:1px solid var(--azul);border-radius:20px;padding:4px 14px;font-size:.7rem;font-weight:700;color:var(--azul);cursor:pointer;transition:all .2s;}
+  .btn-check:hover{background:var(--azul);color:white;}
+  .limite-visual{background:#f5ede0;padding:20px 18px;border-radius:12px;margin-bottom:14px;text-align:center;border:1px solid var(--crema3);min-height:85px;display:flex;align-items:center;justify-content:center;}
+  .limite-math{font-size:1.25rem;}
+  .mjx-chtml{font-size:1.2rem !important;}
+  .respuesta-area{width:100%;margin-top:8px;}
+  .input-group{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+  .input-group input{flex:1;padding:10px 14px;border-radius:10px;border:1.5px solid var(--crema3);background:white;font-size:.9rem;font-family:'Lato',monospace;min-width:180px;}
+  .input-group input:focus{outline:2px solid var(--acento2);border-color:transparent;}
+  .fb{font-size:.8rem;margin-top:10px;padding:8px 12px;border-radius:8px;line-height:1.5;display:none;}
+  .fb.ok{background:#e8f5e9;color:var(--verde);display:block;}
+  .fb.fail{background:#fdecea;color:#c62828;display:block;}
+  .acciones{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;margin-top:14px;}
+  .btn{padding:9px 18px;border-radius:8px;border:none;font-size:.85rem;font-weight:700;cursor:pointer;font-family:'Lato',sans-serif;transition:all .2s;}
+  .btn:disabled{opacity:.5;cursor:not-allowed;}
+  .btn-secondary{background:var(--crema2);color:var(--marron);border:1.5px solid var(--crema3);}
+  .btn-secondary:hover{background:var(--crema3);}
+  .btn-fin{background:var(--marron);color:var(--crema);padding:10px 22px;}
+  .btn-fin:hover{background:var(--acento);}
+  .global-fb{margin-top:12px;padding:10px;border-radius:10px;background:var(--crema2);text-align:center;font-size:.85rem;}
+  .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;align-items:center;justify-content:center;}
+  .overlay.show{display:flex;}
+  .modal{border-radius:16px;padding:30px 34px;min-width:290px;max-width:400px;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,.3);}
+  .modal h2{font-family:'Playfair Display',serif;font-size:1.5rem;margin-bottom:6px;}
+  .modal-alumno{font-size:1rem;margin-bottom:16px;opacity:.9;}
+  .nota-grande{font-size:3rem;font-weight:900;margin-bottom:6px;}
+  .meta-modal{font-size:.83rem;opacity:.85;margin-bottom:18px;line-height:1.8;}
+  .modal .btn-cerrar{padding:8px 20px;border-radius:8px;border:2px solid rgba(255,255,255,.5);background:transparent;font-size:.88rem;font-weight:700;cursor:pointer;font-family:'Lato',sans-serif;}
+  .modal .btn-cerrar:hover{background:rgba(255,255,255,.15);}
+  .puntaje-info{font-size:.7rem;color:var(--marron2);margin-left:10px;}
+  .puntaje-info.ganado{color:var(--verde);font-weight:bold;}
+  .puntaje-info.perdido{color:#c62828;}
+  .tipo-badge{display:inline-block;font-size:.65rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:10px;background:var(--crema3);color:var(--marron2);margin-left:6px;}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+  .paso.cerrado{opacity:.75;}
+  .confirm-modal{background:white;border-radius:16px;padding:26px 30px;max-width:380px;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,.3);}
+  .confirm-modal h3{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--marron);margin-bottom:10px;}
+  .confirm-modal p{font-size:.88rem;color:var(--texto);margin-bottom:20px;line-height:1.5;}
+  .confirm-actions{display:flex;gap:12px;justify-content:center;}
+  .confirm-actions button{padding:9px 18px;border-radius:8px;border:none;font-size:.85rem;font-weight:700;cursor:pointer;font-family:'Lato',sans-serif;}
+  .btn-confirmar-si{background:var(--acento);color:white;}
+  .btn-confirmar-no{background:var(--crema2);color:var(--marron);border:1.5px solid var(--crema3);}
+</style>
+</head>
+<body>
+
+<div class="cabecera">
+  <div class="autoria">Material elaborado por Marta L de Letona S. · Integrales Inmediatas · Nivel Avanzado</div>
+  <h1>📦 Integrales Inmediatas II · Mayor Complejidad</h1>
+  <div class="subtitulo">Tipos: polinomios avanzados · raíces compuestas · exponenciales mixtas · logaritmos · seno/coseno · fracciones algebraicas</div>
+</div>
+
+<div class="top-bar">
+  <div class="nombre-box">
+    <label for="nomAlumno">👤 Alumno/a:</label>
+    <input type="text" id="nomAlumno" placeholder="Escribe tu nombre…" autocomplete="off">
+  </div>
+  <div class="score-box">
+    <div class="score-item"><span id="s-pts">0.00</span>Puntos</div>
+    <div class="score-item"><span id="s-max">10</span>Máx. 10</div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="progreso-label" id="prog-label">Completa las 5 integrales (2 puntos cada acierto a la primera)</div>
+  <div class="barra-wrap"><div class="barra-fill" id="barra" style="width:0%"></div></div>
+
+  <div class="card">
+    <div class="card-tipo">🧮 5 EJERCICIOS · CADA UNO VALE 2 PUNTOS (SOLO SI ACIERTAS ANTES DE VER LA SOLUCIÓN)</div>
+    <div class="enunciado-global">
+      📐 <strong>Instrucciones:</strong> Calcula la integral indefinida (primitiva) de cada función. <strong>No olvides la constante +C</strong>.<br><br>
+      • <strong>Polinomios / Potencias:</strong> \(\int x^n dx = \frac{x^{n+1}}{n+1}+C\) (para \(n \neq -1\)).<br>
+      • <strong>Raíces:</strong> \(\sqrt[n]{x^m}=x^{m/n}\) ⇒ aplicar regla de la potencia.<br>
+      • <strong>Exponencial:</strong> \(\int e^x dx = e^x + C\) , \(\int a^x dx = \frac{a^x}{\ln a}+C\).<br>
+      • <strong>Logaritmo:</strong> \(\int \frac{1}{x} dx = \ln|x| + C\).<br>
+      • <strong>Seno y Coseno:</strong> \(\int \sin x\,dx = -\cos x + C\) , \(\int \cos x\,dx = \sin x + C\).<br>
+      • <strong>Fracciones algebraicas:</strong> \(\int x^{-n} dx = \frac{x^{-n+1}}{-n+1}+C\) (para \(n \neq 1\)).
+    </div>
+
+    <div class="pasos" id="pasosContainer"></div>
+
+    <div class="acciones">
+      <button class="btn btn-secondary" id="newExerciseBtn">🔄 Nueva tanda de integrales</button>
+      <button class="btn btn-fin" id="finalizarBtn">📋 Finalizar y Calificar</button>
+    </div>
+    <div class="global-fb" id="gfb"></div>
+  </div>
+</div>
+
+<div class="overlay" id="confirmOverlay">
+  <div class="confirm-modal">
+    <h3>⚠️ Vas a perder tu puntuación actual</h3>
+    <p id="confirmTexto">Tienes puntos ya conseguidos en esta tanda. Si generas una nueva tanda, se perderán y empezarás desde 0.</p>
+    <div class="confirm-actions">
+      <button class="btn-confirmar-no" id="confirmCancelar">Cancelar</button>
+      <button class="btn-confirmar-si" id="confirmAceptar">Sí, continuar</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal" id="modal">
+    <h2 id="m-titulo"></h2>
+    <div class="modal-alumno" id="m-alumno"></div>
+    <div class="nota-grande" id="m-nota"></div>
+    <div class="meta-modal" id="m-meta"></div>
+    <div style="font-size:.74rem;margin-bottom:14px;">📸 Captura y entrega en Google Classroom.</div>
+    <button class="btn-cerrar" id="closeModalBtn">Cerrar y seguir practicando</button>
+  </div>
+</div>
+
+<script>
+// ======================== BANCO DE INTEGRALES INMEDIATAS - NIVEL AVANZADO ========================
+
+const BANCO = [
+  { latex:"\\int \\left(\\frac{7}{x} - \\frac{5}{x^2} + \\frac{1}{x^3}\\right) \\, dx", sol:"7ln|x|+5/x-1/(2x^2)+C", solMostrar:"7·ln|x| + 5/x − 1/(2x²) + C", categoria:"logaritmo" },
+  { latex:"\\int \\frac{3}{x^5} \\, dx", sol:"-3/(4x^4)+C", solMostrar:"−3/(4x⁴) + C", categoria:"fraccion" },
+  { latex:"\\int \\left(\\frac{2}{3}x^5 + \\sqrt{5}\\,x^2 - 4\\right) \\, dx", sol:"(1/9)x^6+(sqrt(5)/3)x^3-4x+C", solMostrar:"(1/9)x⁶ + (√5/3)x³ − 4x + C", categoria:"polinomio" },
+  { latex:"\\int \\sqrt{x^3} \\, dx", sol:"(2/5)x^(5/2)+C", solMostrar:"(2/5)·x^(5/2) + C", categoria:"raiz" },
+  { latex:"\\int (2e^x + 3^x) \\, dx", sol:"2e^x+3^x/ln(3)+C", solMostrar:"2eˣ + 3ˣ/ln 3 + C", categoria:"exponencial" },
+  { latex:"\\int (3\\sin x - 4\\cos x + 2) \\, dx", sol:"-3cos(x)-4sin(x)+2x+C", solMostrar:"−3·cos x − 4·sin x + 2x + C", categoria:"sencos" },
+  { latex:"\\int \\frac{1}{x^3} \\, dx", sol:"-1/(2x^2)+C", solMostrar:"−1/(2x²) + C", categoria:"fraccion" },
+  { latex:"\\int \\left(\\frac{5}{x} - \\frac{2}{x^3} + 4x\\right) \\, dx", sol:"5ln|x|+1/x^2+2x^2+C", solMostrar:"5·ln|x| + 1/x² + 2x² + C", categoria:"logaritmo" },
+  { latex:"\\int \\frac{2}{x^4} \\, dx", sol:"-2/(3x^3)+C", solMostrar:"−2/(3x³) + C", categoria:"fraccion" },
+  { latex:"\\int \\sqrt[3]{x^2} \\, dx", sol:"(3/5)x^(5/3)+C", solMostrar:"(3/5)·x^(5/3) + C", categoria:"raiz" },
+  { latex:"\\int (4^x - 2e^x) \\, dx", sol:"4^x/ln(4)-2e^x+C", solMostrar:"4ˣ/ln 4 − 2eˣ + C", categoria:"exponencial" },
+  { latex:"\\int (5\\cos x + 3\\sin x - e^x) \\, dx", sol:"5sin(x)-3cos(x)-e^x+C", solMostrar:"5·sin x − 3·cos x − eˣ + C", categoria:"sencos" },
+  { latex:"\\int \\left(\\sqrt{2}\\,x^4 - \\frac{3}{4}x^2 + \\ln(4)\\,x\\right) \\, dx", sol:"(sqrt(2)/5)x^5-(1/4)x^3+(ln(4)/2)x^2+C", solMostrar:"(√2/5)x⁵ − (1/4)x³ + (ln 4/2)x² + C", categoria:"polinomio" }
+];
+
+const LABELS = {
+  polinomio:   "Polinomio Avanzado",
+  raiz:        "Raíz Compuesta",
+  exponencial: "Exponencial Mixta",
+  logaritmo:   "Logaritmo Combinado",
+  sencos:      "Seno/Coseno",
+  fraccion:    "Fracción Algebraica"
+};
+
+function generarTanda() {
+  const categorias = ["polinomio", "raiz", "exponencial", "logaritmo", "sencos"];
+  if(Math.random() > 0.5) categorias[4] = "fraccion";
+  
+  const bloques = categorias.map(cat => BANCO.filter(l=>l.categoria===cat));
+  let tanda = bloques.map(b => b[Math.floor(Math.random()*b.length)]);
+  for(let i=tanda.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[tanda[i],tanda[j]]=[tanda[j],tanda[i]];}
+  return tanda;
+}
+
+// ========== COMPARADOR POR EVALUACIÓN NUMÉRICA ==========
+// Evalúa ambas expresiones como funciones reales en varios puntos de x y compara sus valores
+// (restando entre dos puntos para anular cualquier constante de integración), lo que las hace
+// robustas frente a reordenación de términos, simplificación de coeficientes y variantes de notación.
+
+function separarTerminosNivelSuperior(s) {
+  const terminos = [];
+  let actual = '';
+  let signo = '+';
+  let profundidad = 0;
+  for (let i = 0; i < s.length; i++) {
+    const c = s[i];
+    if (c === '(') profundidad++;
+    if (c === ')') profundidad--;
+    if ((c === '+' || c === '-') && profundidad === 0 && i > 0) {
+      if (actual) terminos.push({ signo, cuerpo: actual });
+      actual = '';
+      signo = c;
+    } else if ((c === '+' || c === '-') && i === 0) {
+      signo = c;
+    } else {
+      actual += c;
+    }
+  }
+  if (actual) terminos.push({ signo, cuerpo: actual });
+  return terminos;
+}
+
+function limpiarBaseExpresion(s) {
+  return s.trim()
+    .replace(/\s+/g, '')
+    .replace(/·/g, '*')
+    .replace(/×/g, '*')
+    .replace(/−/g, '-')
+    .replace(/\\left/g, '')
+    .replace(/\\right/g, '')
+    .replace(/\\,/g, '')
+    .replace(/\\/g, '');
+}
+
+function terminoATextoJS(cuerpo) {
+  let s = cuerpo;
+  s = s.replace(/ln\(x\)/gi, '__LNX__');
+  s = s.replace(/ln\|x\|/gi, '__LNX__');
+  s = s.replace(/lnx\b/gi, '__LNX__');
+  s = s.replace(/sin\(x\)/gi, '__SIN__');
+  s = s.replace(/sinx\b/gi, '__SIN__');
+  s = s.replace(/sen\(x\)/gi, '__SIN__');
+  s = s.replace(/senx\b/gi, '__SIN__');
+  s = s.replace(/cos\(x\)/gi, '__COS__');
+  s = s.replace(/cosx\b/gi, '__COS__');
+  s = s.replace(/e\^x/gi, '__EXP__');
+  s = s.replace(/sqrt\(([^)]+)\)/gi, 'Math.sqrt($1)');
+  s = s.replace(/√\(([^)]+)\)/g, 'Math.sqrt($1)');
+  s = s.replace(/√(\d+(\.\d+)?)/g, 'Math.sqrt($1)');
+  s = s.replace(/ln\(([^)]+)\)/gi, 'Math.log($1)');
+  s = s.replace(/ln(\d+(\.\d+)?)/gi, 'Math.log($1)');
+  s = s.replace(/(\d+(\.\d+)?)\^x/g, 'Math.pow($1,x)');
+  s = s.replace(/x\^\(([^)]+)\)/g, 'Math.pow(x,($1))');
+  s = s.replace(/x\^\{([^}]+)\}/g, 'Math.pow(x,($1))');
+  s = s.replace(/x\^(-?\d+(\.\d+)?)/g, 'Math.pow(x,$1)');
+  s = s.replace(/__LNX__/g, 'Math.log(Math.abs(x))');
+  s = s.replace(/__SIN__/g, 'Math.sin(x)');
+  s = s.replace(/__COS__/g, 'Math.cos(x)');
+  s = s.replace(/__EXP__/g, 'Math.exp(x)');
+  s = s.replace(/(\d)(?=[a-zA-Z(])/g, '$1*');
+  s = s.replace(/\)(?=[a-zA-Z0-9(])/g, ')*');
+  s = s.replace(/\^/g, '**');
+  return s;
+}
+
+function esConstanteArbitraria(cuerpoOriginal) {
+  return /^c$/i.test(cuerpoOriginal.trim());
+}
+
+function expresionAFuncionEvaluable(strOriginal) {
+  const base = limpiarBaseExpresion(strOriginal);
+  if (!base) throw new Error('expresión vacía');
+  const terminos = separarTerminosNivelSuperior(base);
+  const partes = [];
+  for (const t of terminos) {
+    if (esConstanteArbitraria(t.cuerpo)) continue;
+    partes.push(t.signo + '(' + terminoATextoJS(t.cuerpo) + ')');
+  }
+  const expr = partes.length ? partes.join('') : '0';
+  // eslint-disable-next-line no-new-func
+  return new Function('x', 'return (' + expr + ');');
+}
+
+const PUNTOS_PRUEBA_NUMERICA = [0.6, 1.3, 2.1, 3.7, 4.4];
+
+function sonEquivalentes(respuesta, solucion) {
+  let fResp, fSol;
+  try {
+    fResp = expresionAFuncionEvaluable(respuesta);
+    fSol = expresionAFuncionEvaluable(solucion);
+  } catch (e) {
+    return false;
+  }
+  const x0 = PUNTOS_PRUEBA_NUMERICA[0];
+  let refResp, refSol;
+  try {
+    refResp = fResp(x0);
+    refSol = fSol(x0);
+  } catch (e) {
+    return false;
+  }
+  if (!isFinite(refResp) || !isFinite(refSol)) return false;
+
+  for (let i = 1; i < PUNTOS_PRUEBA_NUMERICA.length; i++) {
+    const x = PUNTOS_PRUEBA_NUMERICA[i];
+    let vResp, vSol;
+    try {
+      vResp = fResp(x);
+      vSol = fSol(x);
+    } catch (e) {
+      return false;
+    }
+    if (!isFinite(vResp) || !isFinite(vSol)) return false;
+    if (Math.abs((vResp - refResp) - (vSol - refSol)) > 1e-6) return false;
+  }
+  return true;
+}
+
+let currentInts=[], stepState={}, totalPoints=0, startTime=Date.now();
+const N_EJERCICIOS=5;
+const STEP_MAX = 10/N_EJERCICIOS;       // 2 puntos por ejercicio
+
+// NOTA SOBRE PUNTUACIÓN (revisión aplicada):
+// El feedback de fallo de esta ficha muestra SIEMPRE la primitiva completa y exacta (solMostrar).
+// Por tanto no se aplica deducción graduada (no tendría sentido: el alumno ya ha visto el resultado
+// numérico). En su lugar: el primer fallo bloquea la puntuación de ese ejercicio a 0 de forma
+// permanente para esta tanda. El alumno puede seguir corrigiendo su respuesta para comprobar que
+// la entiende (feedback ✅ pedagógico), pero eso ya no puede sumar puntos. La única forma de volver
+// a puntuar ese tipo de ejercicio es generar una tanda nueva ("Nueva tanda de integrales").
+
+function formatearTiempoHHMM(segundos) {
+  const totalMinutosCeil = Math.ceil(segundos / 60);
+  const horas = Math.floor(totalMinutosCeil / 60);
+  const minutos = totalMinutosCeil % 60;
+  return `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}`;
+}
+
+function renderMath(){ if(window.MathJax) MathJax.typesetPromise().catch(()=>{}); }
+
+function updateStepInfo(i){
+  const el=document.getElementById(`info_${i}`);
+  if(!el)return;
+  const st=stepState[i];
+  if(st.finalizado && st.puntosGanados>0){
+    el.innerHTML=`(${st.puntosGanados.toFixed(2)} pts ✓)`;el.className='puntaje-info ganado';
+  }else if(st.puntuacionBloqueada){
+    el.innerHTML='(0 pts · resultado ya revelado)';el.className='puntaje-info perdido';
+  }else{
+    el.innerHTML=`(${STEP_MAX.toFixed(2)} pts pendiente)`;el.className='puntaje-info';
+  }
+}
+
+function updateTotalPoints(){
+  totalPoints=0;
+  let superados=0;
+  for(let i=0;i<currentInts.length;i++){
+    const st=stepState[i];
+    if(st){
+      totalPoints+=st.puntosGanados;
+      if(st.finalizado && st.puntosGanados>0) superados++;
+    }
+  }
+  document.getElementById('s-pts').innerText=totalPoints.toFixed(2);
+  document.getElementById('barra').style.width=`${(superados/currentInts.length)*100}%`;
+  document.getElementById('prog-label').innerHTML=`Integrales correctas: ${superados}/${currentInts.length} | Puntos: ${totalPoints.toFixed(2)}/10`;
+}
+
+function checkStep(idx){
+  const st=stepState[idx];
+  // Si el ejercicio ya está finalizado (acierto limpio, o acierto confirmado tras bloqueo),
+  // se ignora cualquier intento adicional aunque el botón se reactive manipulando el DOM.
+  if(st.finalizado) return;
+
+  const d=currentInts[idx];
+  const inputEl=document.getElementById(`resp_${idx}`);
+  const raw=inputEl.value;
+  const fb=document.getElementById(`fb_${idx}`);
+  if(!raw.trim()){
+    fb.innerHTML='❌ Introduce una respuesta (recuerda +C).';fb.className='fb fail';return;
+  }
+
+  const ok = sonEquivalentes(raw, d.sol);
+  const paso=document.getElementById(`paso_${idx}`);
+
+  if(ok){
+    if(st.puntuacionBloqueada){
+      // El resultado ya se reveló en un fallo anterior: se confirma visualmente que es correcto,
+      // pero no se otorga ningún punto. Aquí sí se cierra la UI, porque el alumno ya ha demostrado
+      // (para sí mismo) que sabe llegar al resultado una vez visto.
+      st.finalizado = true;
+      fb.innerHTML=`✅ Correcto. Como la solución ya se mostró tras tu fallo anterior, este ejercicio se queda en <strong>0.00 pts</strong>.`;
+      fb.className='fb ok';paso.classList.add('ok');paso.classList.remove('fail');
+      cerrarExercicioUI(idx);
+    } else {
+      // Acierto limpio, antes de cualquier fallo: puntuación completa.
+      st.puntosGanados = STEP_MAX;
+      st.finalizado = true;
+      fb.innerHTML=`✅ ¡Correcto! La integral es <strong>${d.solMostrar}</strong>. Ganas ${st.puntosGanados.toFixed(2)} pts en este ejercicio.`;
+      fb.className='fb ok';paso.classList.add('ok');paso.classList.remove('fail');
+      cerrarExercicioUI(idx);
+    }
+  }else{
+    if(!st.puntuacionBloqueada){
+      st.puntuacionBloqueada = true;
+      st.puntosGanados = 0;
+    }
+    fb.innerHTML=`❌ Incorrecto. Tu respuesta: "${raw}"<br>La integral correcta es <strong>${d.solMostrar}</strong>.<br>Como el resultado ya ha quedado a la vista, este ejercicio se queda en <strong>0 pts</strong> para esta tanda, aunque ahora la corrijas bien. Puedes seguir intentándolo para comprobar que la entiendes.`;
+    fb.className='fb fail';paso.classList.add('fail');paso.classList.remove('ok');
+    // No se deshabilita el input/botón: se permite seguir corrigiendo con fines pedagógicos,
+    // pero la puntuación ya ha quedado bloqueada en 0 (ver st.puntuacionBloqueada arriba).
+  }
+  updateStepInfo(idx);updateTotalPoints();
+}
+
+function cerrarExercicioUI(idx){
+  const paso=document.getElementById(`paso_${idx}`);
+  const input=document.getElementById(`resp_${idx}`);
+  const btn=document.querySelector(`.btn-check[data-idx="${idx}"]`);
+  paso.classList.add('cerrado');
+  input.disabled=true;
+  if(btn) btn.disabled=true;
+}
+
+function hayProgreso(){
+  return Object.values(stepState).some(st => st.puntuacionBloqueada || st.puntosGanados>0 || st.finalizado);
+}
+
+function renderizarIntegrales(){
+  const container=document.getElementById('pasosContainer');
+  container.innerHTML='';stepState={};
+  currentInts.forEach((d,idx)=>{
+    stepState[idx]={finalizado:false,puntuacionBloqueada:false,puntosGanados:0};
+    const div=document.createElement('div');
+    div.className='paso';div.id=`paso_${idx}`;
+    div.innerHTML=`
+      <div class="paso-head">
+        <div class="paso-titulo">
+          📌 Integral ${idx+1}
+          <span class="tipo-badge">${LABELS[d.categoria]||d.categoria}</span>
+          <span class="puntaje-info" id="info_${idx}">(${STEP_MAX.toFixed(2)} pts pendiente)</span>
+        </div>
+        <button class="btn-check" data-idx="${idx}">✓ Comprobar</button>
+      </div>
+      <div class="limite-visual">
+        <div class="limite-math" id="math_${idx}">\\(${d.latex}\\)</div>
+      </div>
+      <div class="respuesta-area">
+        <label class="sr-only" for="resp_${idx}">Respuesta a la integral ${idx+1}</label>
+        <div class="input-group">
+          <input type="text" id="resp_${idx}" placeholder="Escribe la primitiva (ej: x⁴/4 + C, sin x + C…)" autocomplete="off">
+        </div>
+      </div>
+      <div class="fb" id="fb_${idx}" aria-live="polite"></div>
+    `;
+    container.appendChild(div);
+  });
+  renderMath();
+  document.querySelectorAll('.btn-check').forEach(btn=>{
+    btn.addEventListener('click',()=>checkStep(parseInt(btn.getAttribute('data-idx'))));
+  });
+  for(let i=0;i<currentInts.length;i++){
+    const inp=document.getElementById(`resp_${i}`);
+    if(inp){
+      inp.value='';
+      inp.addEventListener('keydown',(ev)=>{
+        if(ev.key==='Enter'){ ev.preventDefault(); checkStep(i); }
+      });
+    }
+  }
+  updateTotalPoints();
+}
+
+function iniciarNuevaTanda(){
+  startTime=Date.now();
+  currentInts=generarTanda();
+  renderizarIntegrales();
+  document.getElementById('gfb').innerHTML='';
+  totalPoints=0;updateTotalPoints();
+}
+
+function resetAndNew(){
+  if(hayProgreso()){
+    document.getElementById('confirmTexto').innerText =
+      `Llevas ${totalPoints.toFixed(2)} puntos en esta tanda. Si generas una nueva, se perderán y empezarás desde 0.`;
+    document.getElementById('confirmOverlay').classList.add('show');
+  }else{
+    iniciarNuevaTanda();
+  }
+}
+
+function finalizar(){
+  const nombre=document.getElementById('nomAlumno').value.trim();
+  if(!nombre){
+    const inp=document.getElementById('nomAlumno');
+    inp.style.border='2px solid #c62828';inp.placeholder='⚠️ Introduce tu nombre';inp.focus();
+    setTimeout(()=>{inp.style.border='1.5px solid var(--crema3)';inp.placeholder='Escribe tu nombre…';},2000);
+    return;
+  }
+  const now=new Date();
+  const elapsed=Math.floor((Date.now()-startTime)/1000);
+  const tiempoFormateado = formatearTiempoHHMM(elapsed);
+  const ok=Object.values(stepState).filter(s=>s.finalizado && s.puntosGanados>0).length;
+  
+  document.getElementById('m-alumno').innerHTML=nombre;
+  document.getElementById('m-nota').innerHTML=`${totalPoints.toFixed(2)} / 10`;
+  document.getElementById('m-meta').innerHTML=
+    `📅 ${now.toLocaleDateString('es-ES')} &nbsp;🕐 ${now.toTimeString().slice(0,8)}<br>`+
+    `⏱ Tiempo empleado: <strong>${tiempoFormateado}</strong> horas:min<br>`+
+    `✅ Integrales correctas: ${ok}/${currentInts.length}<br>`+
+    `🎯 Puntos obtenidos: ${totalPoints.toFixed(2)}/10<br>`+
+    `📊 Nivel: Avanzado (Integrales Inmediatas II)`;
+  
+  const nota=totalPoints;
+  let bg,textColor='white',titulo;
+  if(nota>=10){bg='#1a7a1a';titulo='🏆 ¡Excelente! Dominas las integrales avanzadas';}
+  else if(nota>=9){bg='#6dbf6d';titulo='🌟 Muy bien - Gran nivel';}
+  else if(nota>=8){bg='#1a4f8a';titulo='Notable - Sigue así';}
+  else if(nota>=7){bg='#5b9bd5';titulo='Bien - Puedes mejorar';}
+  else if(nota>=6){bg='#c05c00';titulo='Suficiente - Repasa teoría';}
+  else if(nota>=5){bg='#f5a623';textColor='black';titulo='Mejorable - Más práctica';}
+  else{bg='#c0392b';titulo='Sigue practicando - Necesitas repaso';}
+  
+  const m=document.getElementById('modal');
+  m.style.backgroundColor=bg;m.style.color=textColor;
+  document.getElementById('m-titulo').innerText=titulo;
+  document.querySelector('.btn-cerrar').style.color=textColor;
+  document.getElementById('overlay').classList.add('show');
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  currentInts=generarTanda();
+  renderizarIntegrales();
+  document.getElementById('newExerciseBtn').addEventListener('click',resetAndNew);
+  document.getElementById('finalizarBtn').addEventListener('click',finalizar);
+  document.getElementById('closeModalBtn').addEventListener('click',()=>document.getElementById('overlay').classList.remove('show'));
+  document.getElementById('confirmAceptar').addEventListener('click',()=>{
+    document.getElementById('confirmOverlay').classList.remove('show');
+    iniciarNuevaTanda();
+  });
+  document.getElementById('confirmCancelar').addEventListener('click',()=>{
+    document.getElementById('confirmOverlay').classList.remove('show');
+  });
+});
+</script>
+</body>
+</html>
