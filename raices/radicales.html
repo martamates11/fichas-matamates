@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Operaciones con radicales</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(', '\\)']], displayMath: [] },
+    chtml: { scale: 1.05 },
+    options: { enableMenu: false }
+  };
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js" id="MathJax-script"></script>
+<style>
+:root {
+  --color-fondo: #F5F0E8;
+  --color-fondo-card: #FDFAF3;
+  --color-texto: #2C1F0E;
+  --color-texto-suave: #6B4F35;
+  --color-acento: #A0522D;
+  --color-acento-hover: #7B3B1E;
+  --color-borde: #C9A96E;
+  --color-borde-suave: #E0CEAA;
+  --color-cabecera: #3B2510;
+  --color-cabecera-txt: #F5EDD8;
+  --color-barra-alumno: #EFE4CC;
+  --color-correcto: #2E6B3E;
+  --color-incorrecto: #8B1A1A;
+  --color-neutro: #E8DFC8;
+  --color-aviso-fondo: #FBF3E0;
+  --color-aviso: #7A5A1E;
+  --color-ok-fondo: #EAF4EC;
+  --color-nota-10: #1a7a1a;
+  --color-criterio: #F3E6CF;
+  --color-superado-fondo: #F1F4EC;
+  --color-cabecera-hover: #2C1A0A;
+  --color-error-fondo: #F9EAEA;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: 'Lato', sans-serif;
+  font-size: 16px;
+  color: var(--color-texto);
+  background-color: var(--color-fondo);
+  line-height: 1.5;
+  transition: background-color .6s ease;
+}
+body.ficha-perfecta { background-color: var(--color-nota-10); }
+h1, h2, h3, .titulo-ficha { font-family: 'Libre Baskerville', serif; color: var(--color-texto); }
+
+.cabecera {
+  background-color: var(--color-cabecera);
+  color: var(--color-cabecera-txt);
+  font-family: 'Libre Baskerville', serif;
+  text-align: center;
+  padding: 12px 20px;
+  border-bottom: 3px solid var(--color-borde);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+}
+.ficha-container {
+  max-width: 860px;
+  margin: 28px auto;
+  background: var(--color-fondo-card);
+  border: 2px solid var(--color-borde);
+  border-radius: 6px;
+  box-shadow: 0 3px 12px rgba(44, 31, 14, 0.15);
+  padding: 32px 36px;
+}
+.titulo-ficha {
+  font-size: 1.6rem;
+  text-align: center;
+  border-bottom: 2px solid var(--color-borde);
+  padding-bottom: 10px;
+  margin: 0 0 6px;
+}
+.titulo-ficha::after {
+  content: '';
+  display: block;
+  width: 60px; height: 3px;
+  background: var(--color-borde);
+  margin: 8px auto 0;
+  border-radius: 2px;
+}
+.subtitulo {
+  text-align: center;
+  font-family: 'Libre Baskerville', serif;
+  font-style: italic;
+  color: var(--color-texto-suave);
+  font-size: 1rem;
+  margin: 0 0 20px;
+}
+
+/* Barra del alumno */
+.barra {
+  position: sticky; top: 0; z-index: 50;
+  background: var(--color-barra-alumno);
+  border: 1.5px solid var(--color-borde);
+  border-radius: 6px;
+  margin: 0 0 22px;
+  box-shadow: 0 2px 6px rgba(44, 31, 14, 0.08);
+  color: var(--color-texto);
+  padding: 9px 20px;
+  display: flex; flex-wrap: wrap; gap: 10px 26px;
+  align-items: center; justify-content: center;
+  font-size: .92rem;
+}
+.barra label { font-family: 'Libre Baskerville', serif; font-size: .85rem; color: var(--color-texto-suave); }
+.barra input#nombre {
+  background: var(--color-fondo-card); border: 1.5px solid var(--color-borde); border-radius: 4px;
+  padding: 6px 10px; font-family: 'Lato', sans-serif; font-size: .95rem;
+  color: var(--color-texto); width: 230px; max-width: 60vw; outline: none;
+}
+.barra input#nombre:focus { border-color: var(--color-acento); }
+.barra input#nombre.falta { border-color: var(--color-incorrecto); box-shadow: 0 0 0 3px rgba(139,26,26,.18); }
+.barra .dato { color: var(--color-texto-suave); }
+.barra .dato b { color: var(--color-acento); font-family: 'Libre Baskerville', serif; }
+.aviso-nombre { color: var(--color-incorrecto); font-size: .82rem; font-weight: 700; display: none; width: 100%; text-align: center; }
+.aviso-nombre.visible { display: block; }
+
+/* Instrucciones */
+.instrucciones {
+  background: var(--color-fondo);
+  border: 1px solid var(--color-borde-suave);
+  border-radius: 6px;
+  padding: 14px 20px;
+  margin-bottom: 14px;
+  font-size: .92rem;
+  color: var(--color-texto-suave);
+}
+.instrucciones p { margin: 4px 0; }
+.criterio {
+  display: flex; gap: 14px; align-items: center;
+  background: var(--color-criterio);
+  border: 2px solid var(--color-borde);
+  border-radius: 6px;
+  padding: 12px 18px;
+  margin-bottom: 26px;
+  font-size: .95rem;
+}
+.criterio .sello {
+  flex: 0 0 auto;
+  font-family: 'Libre Baskerville', serif; font-weight: 700;
+  color: var(--color-fondo-card); background: var(--color-acento);
+  border-radius: 50%; width: 58px; height: 58px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .95rem; line-height: 1.05; text-align: center;
+  box-shadow: 0 0 0 3px var(--color-fondo-card), 0 0 0 5px var(--color-borde);
+}
+.criterio b { color: var(--color-acento-hover); }
+
+/* Tarjetas */
+.ejercicio-card {
+  background: var(--color-fondo);
+  border: 1.5px solid var(--color-borde-suave);
+  border-left: 4px solid var(--color-borde);
+  border-radius: 4px;
+  padding: 18px 24px 20px;
+  margin-bottom: 22px;
+  transition: border-color .3s, background-color .3s;
+}
+.ejercicio-card.superado { border-left-color: var(--color-correcto); background: var(--color-superado-fondo); }
+.card-cab { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
+.card-cab .num {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--color-acento); color: var(--color-fondo-card);
+  font-family: 'Libre Baskerville', serif; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; flex: 0 0 32px;
+}
+.superado .card-cab .num { background: var(--color-correcto); }
+.card-cab h2 { font-size: 1.12rem; margin: 0; flex: 1 1 auto; }
+.ventana { display: flex; gap: 6px; align-items: center; }
+.ventana .punto {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 1.5px solid var(--color-borde);
+  background: var(--color-fondo-card);
+  font-size: .72rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; color: #fff;
+}
+.ventana .punto.ok { background: var(--color-correcto); border-color: var(--color-correcto); }
+.ventana .punto.ko { background: var(--color-incorrecto); border-color: var(--color-incorrecto); }
+.estado-tipo {
+  font-size: .78rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 20px;
+  border: 1.5px solid var(--color-borde); color: var(--color-texto-suave); background: var(--color-fondo-card);
+}
+.superado .estado-tipo { border-color: var(--color-correcto); color: #fff; background: var(--color-correcto); }
+
+details.recuerda {
+  margin: 8px 0 10px;
+  border: 1px dashed var(--color-borde);
+  border-radius: 4px;
+  background: var(--color-fondo-card);
+  font-size: .92rem;
+}
+details.recuerda summary {
+  cursor: pointer; padding: 6px 12px;
+  font-family: 'Libre Baskerville', serif; font-size: .85rem; color: var(--color-acento);
+  list-style: none;
+}
+details.recuerda summary::-webkit-details-marker { display: none; }
+details.recuerda summary::before { content: '▸ '; }
+details.recuerda[open] summary::before { content: '▾ '; }
+details.recuerda .cuerpo { padding: 2px 16px 10px; color: var(--color-texto); }
+details.recuerda .cuerpo p { margin: 6px 0; }
+
+.instr-tipo { margin: 6px 0 12px; color: var(--color-texto-suave); font-size: .95rem; }
+
+.linea-ejercicio {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px;
+  background: var(--color-fondo-card);
+  border: 1px solid var(--color-borde-suave);
+  border-radius: 6px;
+  padding: 16px 18px;
+  min-height: 84px;
+}
+.enunciado { font-size: 1.22rem; }
+.igual { font-family: 'Libre Baskerville', serif; font-size: 1.4rem; color: var(--color-texto-suave); }
+.plantilla { display: inline-flex; align-items: center; gap: 4px; font-family: 'Libre Baskerville', serif; font-size: 1.2rem; }
+.plantilla .por { margin: 0 2px; color: var(--color-texto-suave); }
+
+.casilla {
+  width: 3.2em; height: 1.95em;
+  text-align: center;
+  font-family: 'Libre Baskerville', serif; font-size: 1rem;
+  background: var(--color-fondo);
+  border: 1.5px solid var(--color-borde);
+  border-radius: 4px;
+  color: var(--color-texto);
+  outline: none; padding: 2px 4px;
+  transition: border-color .2s, box-shadow .2s;
+}
+.casilla:focus { border-color: var(--color-acento); box-shadow: 0 0 0 3px rgba(160,82,45,.15); }
+.casilla:disabled { background: var(--color-neutro); color: var(--color-texto); opacity: 1; -webkit-text-fill-color: var(--color-texto); }
+.casilla.coef { width: 3.2em; }
+.casilla.mini { width: 2.5em; height: 1.85em; font-size: .82rem; }
+
+/* Radical dibujado para la plantilla de respuesta */
+.rad { display: inline-flex; align-items: stretch; vertical-align: middle; margin: 0 2px; }
+.rad-idx {
+  align-self: flex-start; margin-right: -6px; margin-top: -8px; z-index: 1;
+  font-size: .78rem; min-width: 10px; text-align: right;
+}
+.rad-idx.texto { margin-right: -4px; margin-top: -4px; font-size: .8rem; }
+.rad-signo { width: 22px; flex: 0 0 22px; color: var(--color-texto); overflow: visible; }
+.rad-dentro {
+  border-top: 2px solid var(--color-texto);
+  padding: 5px 6px 2px 4px;
+  display: inline-flex; align-items: center; gap: 4px;
+}
+.pot { display: inline-flex; align-items: flex-start; }
+.pot .base { padding-top: .45em; }
+.pot .exp { margin-left: 2px; }
+.frac { display: inline-flex; flex-direction: column; align-items: center; }
+.frac .num-f { padding: 0 4px 3px; border-bottom: 1.5px solid var(--color-texto); }
+.frac .den-f { padding: 3px 4px 0; }
+
+.vista {
+  margin-top: 8px; font-size: .88rem; color: var(--color-texto-suave);
+  min-height: 1.8em;
+}
+.vista .vista-tex { color: var(--color-texto); }
+
+.acciones { display: flex; gap: 12px; margin-top: 12px; flex-wrap: wrap; }
+.btn-primario {
+  background-color: var(--color-acento); color: #FDFAF3;
+  border: none; border-radius: 4px; padding: 10px 22px;
+  font-family: 'Lato', sans-serif; font-size: 0.95rem; font-weight: 700;
+  cursor: pointer; letter-spacing: 0.03em; transition: background-color 0.2s ease;
+}
+.btn-primario:hover { background-color: var(--color-acento-hover); }
+.btn-primario:disabled { background: var(--color-neutro); color: var(--color-texto-suave); cursor: default; }
+.btn-secundario {
+  background-color: transparent; color: var(--color-acento);
+  border: 2px solid var(--color-borde); border-radius: 4px; padding: 9px 20px;
+  font-family: 'Lato', sans-serif; font-size: 0.95rem; font-weight: 700;
+  cursor: pointer; transition: border-color 0.2s, color 0.2s;
+}
+.btn-secundario:hover { border-color: var(--color-acento); color: var(--color-acento-hover); }
+[hidden] { display: none !important; }
+
+.feedback { margin-top: 14px; }
+.feedback:empty { display: none; }
+.fb { border-radius: 4px; padding: 12px 16px; font-size: .95rem; }
+.fb p { margin: 5px 0; }
+.fb .fb-tit { font-weight: 700; font-family: 'Libre Baskerville', serif; }
+.fb-ok { background: var(--color-ok-fondo); border: 1.5px solid var(--color-correcto); color: var(--color-texto); }
+.fb-ok .fb-tit { color: var(--color-correcto); }
+.fb-error { background: var(--color-error-fondo); border: 1.5px solid var(--color-incorrecto); color: var(--color-texto); }
+.fb-error .fb-tit { color: var(--color-incorrecto); }
+.fb-aviso { background: var(--color-aviso-fondo); border: 1.5px dashed var(--color-borde); color: var(--color-texto); }
+.fb-aviso .fb-tit { color: var(--color-aviso); }
+.fb-neutro { background: var(--color-fondo-card); border: 1.5px solid var(--color-borde-suave); color: var(--color-texto-suave); }
+.fb .solucion {
+  margin-top: 10px; padding: 10px 14px;
+  background: var(--color-fondo-card); border-left: 3px solid var(--color-borde);
+  border-radius: 3px; overflow-x: auto;
+}
+.fb .solucion b { font-family: 'Libre Baskerville', serif; color: var(--color-acento-hover); }
+.fb-superado { margin-top: 10px; font-weight: 700; color: var(--color-correcto); font-family: 'Libre Baskerville', serif; }
+
+.separador { border: none; border-top: 1px solid var(--color-borde-suave); margin: 26px 0; }
+.pie { text-align: center; }
+.pie p { color: var(--color-texto-suave); font-size: .88rem; margin: 0 0 12px; }
+.felicitacion {
+  display: none; text-align: center; font-family: 'Libre Baskerville', serif;
+  color: var(--color-correcto); font-size: 1.05rem; margin-bottom: 14px;
+}
+.felicitacion.visible { display: block; }
+.btn-finalizar {
+  background-color: var(--color-cabecera); color: var(--color-cabecera-txt);
+  border: 2px solid var(--color-borde); border-radius: 4px; padding: 11px 28px;
+  font-family: 'Libre Baskerville', serif; font-size: 0.98rem; font-weight: 700;
+  cursor: pointer; letter-spacing: 0.04em; transition: background-color 0.2s;
+}
+.btn-finalizar:hover { background-color: var(--color-cabecera-hover); }
+
+/* Modal */
+.overlay {
+  position: fixed; inset: 0; background: rgba(44, 31, 14, 0.55);
+  display: none; align-items: center; justify-content: center; z-index: 200; padding: 16px;
+}
+.overlay.visible { display: flex; }
+.modal-calificacion {
+  border: 3px solid var(--color-borde); border-radius: 8px;
+  font-family: 'Libre Baskerville', serif;
+  box-shadow: 0 6px 24px rgba(44, 31, 14, 0.35);
+  padding: 28px 32px; min-width: 300px; max-width: 640px; width: 100%;
+  max-height: 92vh; overflow-y: auto;
+  text-align: center;
+}
+.modal-calificacion .m-titulo { font-size: 1.3rem; font-weight: 700; margin: 0; }
+.modal-calificacion .m-sub { font-style: italic; font-size: .92rem; margin: 4px 0 10px; opacity: .92; }
+.modal-calificacion hr { border: none; border-top: 1.5px solid currentColor; opacity: .45; margin: 10px 0 14px; }
+.modal-calificacion .m-inf { font-size: .82rem; letter-spacing: .12em; text-transform: uppercase; margin: 0 0 8px; opacity: .9; }
+.modal-calificacion .m-nombre { font-size: 1.1rem; margin: 0 0 6px; }
+.modal-calificacion .m-nota { font-size: 3rem; font-weight: 700; line-height: 1.1; margin: 6px 0; }
+.modal-calificacion .m-nota small { font-size: 1.1rem; font-weight: 400; }
+.modal-calificacion .m-datos { display: flex; justify-content: center; gap: 8px 22px; flex-wrap: wrap; font-family: 'Lato', sans-serif; font-size: .92rem; margin-bottom: 14px; }
+.tabla-desglose { width: 100%; border-collapse: collapse; font-family: 'Lato', sans-serif; font-size: .86rem; margin-top: 6px; }
+.tabla-desglose th, .tabla-desglose td { padding: 6px 6px; border-bottom: 1px solid rgba(255,255,255,.35); }
+.tabla-desglose th { font-weight: 700; font-size: .78rem; text-transform: uppercase; letter-spacing: .04em; }
+.tabla-desglose td:first-child, .tabla-desglose th:first-child { text-align: left; }
+.oscuro .tabla-desglose th, .oscuro .tabla-desglose td { border-bottom-color: rgba(0,0,0,.2); }
+.tabla-desglose tbody tr { background: rgba(255,255,255,.08); }
+.tabla-desglose .corto { display: none; }
+.enunciado .termino { display: inline-block; margin-right: .15em; }
+.m-pie { font-family: 'Lato', sans-serif; font-size: .78rem; margin-top: 10px; opacity: .9; }
+.m-cerrar {
+  margin-top: 16px; background: rgba(255,255,255,.18); color: inherit;
+  border: 2px solid currentColor; border-radius: 4px; padding: 8px 24px;
+  font-family: 'Lato', sans-serif; font-weight: 700; cursor: pointer; font-size: .92rem;
+}
+.m-cerrar:hover { background: rgba(255,255,255,.3); }
+
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+@media (max-width: 640px) {
+  .ficha-container { margin: 12px 8px; padding: 20px 14px; }
+  .titulo-ficha { font-size: 1.3rem; }
+  .barra { padding: 8px 10px; gap: 6px 14px; }
+  .ejercicio-card { padding: 14px 12px 16px; }
+  .linea-ejercicio { padding: 12px 10px; }
+  .enunciado { font-size: 1.05rem; max-width: 100%; }
+  .barra { font-size: .82rem; }
+  .barra input#nombre { width: 170px; padding: 4px 8px; }
+  .criterio { flex-direction: column; text-align: center; }
+  .modal-calificacion { padding: 20px 14px; }
+  .modal-calificacion .m-nota { font-size: 2.4rem; }
+  .tabla-desglose { table-layout: fixed; font-size: .7rem; }
+  .tabla-desglose th, .tabla-desglose td { padding: 4px 2px; }
+  .tabla-desglose th:first-child, .tabla-desglose td:first-child { width: 36%; }
+  .tabla-desglose .largo { display: none; }
+  .tabla-desglose .corto { display: inline; }
+}
+</style>
+</head>
+<body>
+
+<div class="cabecera">Material elaborado por Marta L Letona S. Basado en el trabajo de Javier Cayetano</div>
+
+<main class="ficha-container" id="ficha">
+  <h1 class="titulo-ficha">Operaciones con radicales</h1>
+  <p class="subtitulo">Matemáticas · Radicales: extraer, introducir, simplificar, multiplicar, dividir y sumar</p>
+
+  <div class="barra" role="region" aria-label="Datos del alumno y puntuación">
+    <label for="nombre">Alumno/a:</label>
+    <input type="text" id="nombre" placeholder="Nombre y apellidos" autocomplete="off">
+    <span class="dato">Nota: <b id="marcador-nota">0</b> / 10</span>
+    <span class="dato">Superados: <b id="marcador-sup">0</b> / 6</span>
+    <span class="dato">Fallos: <b id="marcador-fallos">0</b></span>
+    <div class="aviso-nombre" id="aviso-nombre" role="alert">Escribe tu nombre antes de continuar.</div>
+  </div>
+
+  <div class="instrucciones">
+    <p>Escribe la respuesta en las casillas y pulsa <b>Comprobar</b> (o la tecla Intro). Debajo verás cómo queda escrita tu respuesta.</p>
+    <p>Si un coeficiente o un exponente vale 1, puedes dejar la casilla vacía. Para un coeficiente −1 basta con escribir el signo −.</p>
+    <p>Da siempre el resultado <b>simplificado</b>. Si tu respuesta es equivalente pero se puede simplificar más, te avisaremos sin penalizar.</p>
+  </div>
+
+  <div class="criterio">
+    <div class="sello">2 de 3</div>
+    <div>Cada ejercicio se supera con <b>2 aciertos en los 3 últimos intentos</b>. Cada ejercicio superado vale <b>1,67 puntos</b> y cada fallo resta <b>0,25 puntos</b>. Para sacar un 10 hay que superar los seis.</div>
+  </div>
+
+  <div id="ejercicios"></div>
+
+  <hr class="separador">
+  <div class="pie">
+    <div class="felicitacion" id="felicitacion">¡Has superado los seis ejercicios! Pulsa «Finalizar y calificar» para ver tu informe.</div>
+    <p>Puedes pulsar el botón en cualquier momento para ver tu informe; después podrás seguir con los ejercicios que te queden.</p>
+    <button class="btn-finalizar" id="btn-finalizar" type="button">Finalizar y calificar</button>
+  </div>
+</main>
+
+<div class="overlay" id="overlay" aria-hidden="true">
+  <div class="modal-calificacion" id="modal" role="dialog" aria-modal="true" aria-labelledby="m-titulo" tabindex="-1"></div>
+</div>
+
+<script>
+(function () {
+'use strict';
+
+/* ================================================================
+   Azar: semilla fija solo con ?seed=N (pruebas); en producción, aleatoria
+   ================================================================ */
+const params = new URLSearchParams(location.search);
+const SEED = params.has('seed') ? (parseInt(params.get('seed'), 10) || 1) : null;
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+function semillaReal() {
+  try { const a = new Uint32Array(1); crypto.getRandomValues(a); return a[0]; }
+  catch (e) { return (Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0; }
+}
+const rnd = mulberry32(SEED !== null ? SEED : semillaReal());
+const ri = (a, b) => a + Math.floor(rnd() * (b - a + 1));
+const pick = arr => arr[Math.floor(rnd() * arr.length)];
+function barajar(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+
+/* ================================================================
+   Utilidades aritméticas
+   ================================================================ */
+const gcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b) { [a, b] = [b, a % b]; } return a; };
+const lcm = (a, b) => a / gcd(a, b) * b;
+function factorizar(n) {
+  const f = {};
+  let d = 2;
+  while (d * d <= n) { while (n % d === 0) { f[d] = (f[d] || 0) + 1; n /= d; } d++; }
+  if (n > 1) f[n] = (f[n] || 0) + 1;
+  return f;
+}
+function coprimoCon(a) { const op = []; for (let s = 1; s < a; s++) if (gcd(s, a) === 1) op.push(s); return pick(op); }
+const MAX_SEGURO = 1e12;
+
+/* ================================================================
+   LaTeX
+   ================================================================ */
+const SQ = '\\square';
+function tRaiz(n, dentro) { return n === 2 ? `\\sqrt{${dentro}}` : `\\sqrt[\\leftroot{4}\\uproot{5}${n}]{${dentro}}`; }
+function tPot(b, e) { return e === 1 ? `${b}` : `${b}^{${e}}`; }
+function tCR(c, n, r) {
+  const R = tRaiz(n, r);
+  if (c === 1) return R;
+  if (c === -1) return '-' + R;
+  return `${c}${R}`;
+}
+function tFact(n) {
+  if (n === 1) return '1';
+  const f = factorizar(n);
+  return Object.keys(f).map(p => tPot(p, f[p])).join('\\cdot ');
+}
+const M = t => `\\(${t}\\)`;
+const crudo = v => (v === '' || v == null) ? SQ : v.replace(/[−–]/g, '-');
+function crudoCoef(v) {
+  const s = (v || '').trim().replace(/[−–]/g, '-');
+  return s === '' ? '' : s;
+}
+function fmt(x) {
+  return (Math.round(x * 100) / 100).toLocaleString('es-ES', { maximumFractionDigits: 2 });
+}
+
+/* ================================================================
+   Piezas HTML de la plantilla de respuesta
+   ================================================================ */
+function inp(k, etiqueta, opts = {}) {
+  const cls = ['casilla', opts.cls || ''].join(' ');
+  const modo = opts.signo ? 'text' : 'numeric';
+  return `<input type="text" inputmode="${modo}" class="${cls}" data-k="${k}" aria-label="${etiqueta}" autocomplete="off" spellcheck="false">`;
+}
+const SVG_RAIZ = '<svg class="rad-signo" viewBox="0 0 22 60" preserveAspectRatio="none" aria-hidden="true"><path d="M1 35 L6 31.5 L12.5 57 L22 1" fill="none" stroke="currentColor" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round"/></svg>';
+function hRad(indice, dentro) {
+  // indice: '' (raíz cuadrada), número fijo o HTML de casilla
+  let idx = '';
+  if (indice !== '' && indice !== 2) {
+    idx = typeof indice === 'number'
+      ? `<span class="rad-idx texto">${indice}</span>`
+      : `<span class="rad-idx">${indice}</span>`;
+  }
+  return `<span class="rad">${idx}${SVG_RAIZ}<span class="rad-dentro">${dentro}</span></span>`;
+}
+function hPot(base, expHTML) { return `<span class="pot"><span class="base">${base}</span><span class="exp">${expHTML}</span></span>`; }
+function hFrac(a, b) { return `<span class="frac"><span class="num-f">${a}</span><span class="den-f">${b}</span></span>`; }
+
+/* ================================================================
+   Tipo 1 · Extraer factores
+   ================================================================ */
+function pasosExtraer(N, n) {
+  const f = factorizar(N);
+  const fuera = [], dentro = [];
+  Object.keys(f).forEach(p => {
+    const q = Math.floor(f[p] / n), r = f[p] % n;
+    if (q > 0) fuera.push(tPot(p, q));
+    if (r > 0) dentro.push(tPot(p, r));
+  });
+  return { fuera: fuera.join('\\cdot '), dentro: dentro.join('\\cdot ') || '1' };
+}
+function genExtraer() {
+  let n, m, k, a, N;
+  for (;;) {
+    n = rnd() < 0.62 ? 2 : 3;
+    if (n === 2) { m = pick([2, 3, 5, 6, 7, 10, 11, 13, 14, 15]); k = ri(2, 12); a = rnd() < 0.4 ? ri(2, 5) : 1; }
+    else { m = pick([2, 3, 4, 5, 6, 7, 9, 10]); k = ri(2, 6); a = rnd() < 0.35 ? ri(2, 3) : 1; }
+    N = Math.pow(k, n) * m;
+    if (N <= 1200) break;
+  }
+  const C = a * k, R = m, total = Math.pow(a, n) * N;
+  const enun = tCR(a, n, N);
+  const p = pasosExtraer(N, n);
+  const aPref = a > 1 ? `${a}\\cdot ` : '';
+  const sol = `<p>${M(`${enun} = ${aPref}${tRaiz(n, tFact(N))} = ${aPref}${p.fuera}${tRaiz(n, p.dentro)} = ${tCR(C, n, R)}`)}</p>
+    <p>Cada exponente se divide entre el índice (${n}): el cociente es el exponente con el que el factor sale fuera y el resto, el que se queda dentro.</p>`;
+  return {
+    enun,
+    plantilla: `${inp('c', 'Coeficiente (vacío = 1)', { cls: 'coef' })}${hRad(n, inp('r', 'Radicando'))}`,
+    campos: { c: { opcional: true, def: 1 }, r: {} },
+    correcta: { c: String(C), r: String(R) },
+    vista: raw => `${crudoCoef(raw.c)}${tRaiz(n, crudo(raw.r))}`,
+    tuya: v => tCR(v.c, n, v.r),
+    sol,
+    comprobar(v) {
+      const c = v.c, r = v.r;
+      if (c < 1 || r < 1) return { res: 'incompleto', msg: 'El coeficiente y el radicando tienen que ser números naturales (1, 2, 3…). Revisa lo que has escrito.' };
+      if (c > 100000 || r > 1e9 || Math.pow(c, n) * r > MAX_SEGURO) return { res: 'incompleto', msg: 'Ese número es demasiado grande para ser la respuesta: al extraer factores el radicando se hace más pequeño. Revisa lo que has escrito.' };
+      if (Math.pow(c, n) * r === total) {
+        if (r === R) {
+          const desc = Object.keys(factorizar(R)).length === 1 && factorizar(R)[R] === 1 ? `${M(String(R))} es primo` : `en ${M(R + ' = ' + tFact(R))} ningún exponente llega al índice ${n}`;
+          return { res: 'ok', msg: `Has extraído todos los factores posibles: ${desc}, así que no se puede sacar nada más.` };
+        }
+        if (c === a) return { res: 'equiv', msg: `No has extraído ningún factor. Descompón ${M(String(N))} en factores primos y busca exponentes mayores o iguales que ${n}.` };
+        return { res: 'equiv', msg: `Tu expresión ${M(tCR(c, n, r))} es equivalente, pero no está simplificada: en ${M(r + ' = ' + tFact(r))} todavía hay algún exponente mayor o igual que el índice ${n}. Sigue extrayendo.` };
+      }
+      if (r === R) {
+        if (c === a * Math.pow(k, n) || c === Math.pow(k, n)) return { res: 'fallo', msg: `Has sacado ${M(tPot(k, n))} en lugar de ${M(String(k))}: un factor que sale de una raíz de índice ${n} pierde el exponente ${n} (porque ${M(tRaiz(n, tPot(k, n)) + ' = ' + k)}).` };
+        if (a > 1 && c === k) return { res: 'fallo', msg: `Has extraído bien los factores de ${M(String(N))}, pero te has olvidado del ${a} que ya estaba delante del radical: hay que multiplicarlo por lo que sale.` };
+        return { res: 'fallo', msg: `El radicando ${M(String(R))} es correcto; el error está en el coeficiente. Recuerda multiplicar entre sí todos los factores que salen${a > 1 ? ` y también por el ${a} que ya estaba delante` : ''}.` };
+      }
+      return { res: 'fallo', msg: `Tu expresión no es equivalente al radical inicial: comprueba que ${M(`${c}^{${n}}\\cdot ${r}`)} no da ${M(String(total))}. Empieza descomponiendo el radicando en factores primos.` };
+    }
+  };
+}
+
+/* ================================================================
+   Tipo 2 · Introducir factores
+   ================================================================ */
+function genIntroducir() {
+  let n, a, b, R;
+  for (;;) {
+    const u = rnd();
+    n = u < 0.6 ? 2 : (u < 0.9 ? 3 : 4);
+    if (n === 2) { a = ri(2, 9); b = pick([2, 3, 5, 6, 7, 10, 11]); }
+    else if (n === 3) { a = ri(2, 5); b = pick([2, 3, 4, 5, 6, 7, 9]); }
+    else { a = ri(2, 3); b = pick([2, 3, 5]); }
+    R = Math.pow(a, n) * b;
+    if (R <= 800) break;
+  }
+  const enun = tCR(a, n, b);
+  const sol = `<p>${M(`${enun} = ${tRaiz(n, `${tPot(a, n)}\\cdot ${b}`)} = ${tRaiz(n, `${Math.pow(a, n)}\\cdot ${b}`)} = ${tRaiz(n, R)}`)}</p>
+    <p>Para meter un factor dentro de una raíz de índice ${n} hay que elevarlo a ${n}, porque ${M(`${a} = ${tRaiz(n, tPot(a, n))}`)}.</p>`;
+  return {
+    enun,
+    plantilla: hRad(n, inp('r', 'Radicando')),
+    campos: { r: {} },
+    correcta: { r: String(R) },
+    vista: raw => tRaiz(n, crudo(raw.r)),
+    tuya: v => tRaiz(n, v.r),
+    sol,
+    comprobar(v) {
+      const r = v.r;
+      if (r === R) return { res: 'ok', msg: `Correcto: el ${a} entra elevado al índice, ${M(`${tPot(a, n)} = ${Math.pow(a, n)}`)}, y se multiplica por ${b}.` };
+      if (r === a * b) return { res: 'fallo', msg: `Has multiplicado ${a}·${b} sin elevar el ${a}. Al introducirlo en una raíz de índice ${n}, el factor entra elevado a ${n}.` };
+      if (n !== 2 && r === a * a * b) return { res: 'fallo', msg: `Has elevado el ${a} al cuadrado, pero el índice es ${n}: tiene que entrar elevado a ${n}.` };
+      if (n !== 3 && r === a * a * a * b) return { res: 'fallo', msg: `Has elevado el ${a} al cubo, pero el índice es ${n}: tiene que entrar elevado a ${n}.` };
+      if (r === Math.pow(a, n)) return { res: 'fallo', msg: `Has elevado bien el ${a}, pero falta multiplicarlo por el radicando ${b} que ya estaba dentro.` };
+      if (r === Math.pow(a, n) + b) return { res: 'fallo', msg: `Has sumado en lugar de multiplicar: dentro del radical, ${M(tPot(a, n))} y ${b} se multiplican.` };
+      return { res: 'fallo', msg: `El factor ${a} debe entrar elevado al índice ${n} y multiplicar al radicando: ${M(`${tPot(a, n)}\\cdot ${b}`)}.` };
+    }
+  };
+}
+
+/* ================================================================
+   Tipo 3 · Simplificar radicales (índice y exponente)
+   ================================================================ */
+function vectorValor(base, e, n) {
+  // devuelve {primo: [num, den]} con el exponente racional de cada primo
+  const f = factorizar(base); const v = {};
+  Object.keys(f).forEach(p => { v[p] = [f[p] * e, n]; });
+  return v;
+}
+function mismoValor(v1, v2) {
+  const k1 = Object.keys(v1), k2 = Object.keys(v2);
+  if (k1.length !== k2.length) return false;
+  return k1.every(p => v2[p] && v1[p][0] * v2[p][1] === v2[p][0] * v1[p][1]);
+}
+function genSimplificar() {
+  let np, ep, d, p, n, e;
+  for (;;) {
+    np = ri(2, 5); ep = ri(1, np - 1);
+    if (gcd(np, ep) !== 1) continue;
+    d = ri(2, 4); n = np * d; if (n > 20) continue;
+    e = ep * d; p = pick([2, 3, 5, 7]);
+    break;
+  }
+  const val = Math.pow(p, e);
+  const comoNumero = val <= 2000 && rnd() < 0.5;
+  const enun = tRaiz(n, comoNumero ? val : tPot(p, e));
+  const objetivo = vectorValor(p, ep, np);
+  const sol = `<p>${M(`${comoNumero ? `${enun} = ` : ''}${tRaiz(n, tPot(p, e))} = ${tRaiz(`${n}:${d}`, `${p}^{${e}:${d}}`)} = ${tRaiz(np, tPot(p, ep))}`)}</p>
+    <p>${comoNumero ? `Primero se escribe ${M(`${val} = ${tPot(p, e)}`)}. ` : ''}El m.c.d. de índice (${n}) y exponente (${e}) es ${d}: se dividen ambos entre ${d}.</p>`;
+  return {
+    enun,
+    plantilla: hRad(inp('i', 'Índice', { cls: 'mini' }), hPot(inp('b', 'Base'), inp('e', 'Exponente (vacío = 1)', { cls: 'mini' }))),
+    campos: { i: {}, b: {}, e: { opcional: true, def: 1 } },
+    correcta: { i: String(np), b: String(p), e: ep === 1 ? '' : String(ep) },
+    vista: raw => tRaiz(raw.i ? crudo(raw.i) : SQ, `${crudo(raw.b)}^{${raw.e ? crudo(raw.e) : '1'}}`),
+    tuya: v => tRaiz(v.i, tPot(v.b, v.e)),
+    sol,
+    comprobar(v) {
+      const i = v.i, b = v.b, x = v.e;
+      if (i < 2) return { res: 'incompleto', msg: 'El índice de un radical tiene que ser 2 o mayor. Revisa lo que has escrito.' };
+      if (b < 2 || x < 1 || b > 1e9) return { res: 'incompleto', msg: 'La base debe ser un número natural mayor que 1 y el exponente, al menos 1. Revisa lo que has escrito.' };
+      if (mismoValor(vectorValor(b, x, i), objetivo)) {
+        if (i === np) return { res: 'ok', msg: `Correcto: ${M(`${tRaiz(n, tPot(p, e))} = ${tRaiz(np, tPot(p, ep))}`)}. Al dividir índice y exponente entre su m.c.d. (${d}) quedan ${np} y ${ep}, que no tienen divisores comunes, así que no se puede simplificar más.` };
+        const basePrima = Object.keys(factorizar(b)).length === 1 && factorizar(b)[b] === 1;
+        if (gcd(i, x) === 1 && !basePrima) return { res: 'equiv', msg: `${M(tRaiz(i, tPot(b, x)))} es equivalente, pero todavía se puede simplificar: escribe ${M(String(b))} como potencia de un número primo y después divide índice y exponente entre su m.c.d.` };
+        return { res: 'equiv', msg: `${M(tRaiz(i, tPot(b, x)))} es equivalente, pero todavía se puede simplificar: el índice y el exponente siguen teniendo un divisor común.` };
+      }
+      if (i === np && x === e && b === p) return { res: 'fallo', msg: `Has dividido el índice entre ${d}, pero no el exponente. Para que el radical no cambie, hay que dividir los dos entre el mismo número.` };
+      if (i === n && x === ep && b === p) return { res: 'fallo', msg: `Has dividido el exponente entre ${d}, pero no el índice. Hay que dividir los dos entre el mismo número.` };
+      if (b === p && i === n - (e - x) && x < e) return { res: 'fallo', msg: 'Parece que has restado lo mismo al índice y al exponente. Simplificar es dividir ambos entre el mismo número, no restar.' };
+      return { res: 'fallo', msg: `${comoNumero ? `Escribe primero ${M(String(val))} como potencia de un número primo. ` : ''}Después divide índice y exponente entre su máximo común divisor.` };
+    }
+  };
+}
+
+/* ================================================================
+   Tipos 4 y 5 · Productos y cocientes con índices distintos
+   ================================================================ */
+const PARES = [[2, 3], [2, 4], [2, 6], [3, 4], [3, 6], [4, 6]];
+const FRASE_SIMPLIFICA = 'es equivalente, pero no es la forma más sencilla: índice y exponentes tienen un divisor común (o no has usado el mínimo común múltiplo de los índices). Simplifica.';
+
+function radicandoTex(p, s, comoNumero) { return comoNumero ? String(Math.pow(p, s)) : tPot(p, s); }
+
+function crearMismaBase(op, a, b, s1, s2, p, comoNumero) {
+  const Mc = lcm(a, b), X = Mc / a * s1, Y = Mc / b * s2;
+  const E = op === 'prod' ? X + Y : X - Y;
+  const g = gcd(E, Mc), E2 = E / g, M2 = Mc / g;
+  const r1 = tRaiz(a, radicandoTex(p, s1, comoNumero)), r2 = tRaiz(b, radicandoTex(p, s2, comoNumero));
+  const enun = op === 'prod' ? `${r1}\\cdot ${r2}` : `\\dfrac{${r1}}{${r2}}`;
+  const signo = op === 'prod' ? '+' : '-';
+  const paso1 = op === 'prod' ? `${tRaiz(Mc, tPot(p, X))}\\cdot ${tRaiz(Mc, tPot(p, Y))}` : `\\dfrac{${tRaiz(Mc, tPot(p, X))}}{${tRaiz(Mc, tPot(p, Y))}}`;
+  let cadena = `${enun} = `;
+  if (comoNumero) cadena += (op === 'prod' ? `${tRaiz(a, tPot(p, s1))}\\cdot ${tRaiz(b, tPot(p, s2))}` : `\\dfrac{${tRaiz(a, tPot(p, s1))}}{${tRaiz(b, tPot(p, s2))}}`) + ' = ';
+  cadena += `${paso1} = ${tRaiz(Mc, `${p}^{${X}${signo}${Y}}`)} = ${tRaiz(Mc, tPot(p, E))}`;
+  if (g > 1) cadena += ` = ${tRaiz(M2, tPot(p, E2))}`;
+  const sol = `<p>${M(cadena)}</p>
+    <p>${comoNumero ? `Escribimos ${M(`${Math.pow(p, s1)} = ${tPot(p, s1)}`)} y ${M(`${Math.pow(p, s2)} = ${tPot(p, s2)}`)}. ` : ''}El índice común es ${M(`\\text{m.c.m.}(${a},${b}) = ${Mc}`)}; cada exponente se multiplica por lo mismo que su índice. ${op === 'prod' ? 'Al multiplicar potencias de la misma base, los exponentes se suman.' : 'Al dividir potencias de la misma base, los exponentes se restan.'}${g > 1 ? ` Por último se simplifica dividiendo índice y exponente entre ${g}.` : ''}</p>`;
+  return {
+    enun,
+    plantilla: hRad(inp('i', 'Índice', { cls: 'mini' }), hPot(`${p}`, inp('e', 'Exponente (vacío = 1)', { cls: 'mini' }))),
+    campos: { i: {}, e: { opcional: true, def: 1 } },
+    correcta: { i: String(M2), e: E2 === 1 ? '' : String(E2) },
+    vista: raw => tRaiz(raw.i ? crudo(raw.i) : SQ, `${p}^{${raw.e ? crudo(raw.e) : '1'}}`),
+    tuya: v => tRaiz(v.i, tPot(p, v.e)),
+    sol,
+    comprobar(v) {
+      const i = v.i, e = v.e;
+      if (i < 2 || e < 1 || i > 1000 || e > 1000) return { res: 'incompleto', msg: 'El índice tiene que ser 2 o mayor y el exponente, al menos 1. Revisa lo que has escrito.' };
+      if (e * M2 === E2 * i) {
+        if (i === M2) return { res: 'ok', msg: `Correcto: has pasado a índice común y has ${op === 'prod' ? 'sumado' : 'restado'} los exponentes de la misma base${g > 1 ? ', y además has simplificado' : ''}.` };
+        return { res: 'equiv', msg: `${M(tRaiz(i, tPot(p, e)))} ${FRASE_SIMPLIFICA}` };
+      }
+      if (i === a + b) return { res: 'fallo', msg: `Los índices no se suman. El índice común es el mínimo común múltiplo de ${a} y ${b}.` };
+      if (i === Mc && e === (op === 'prod' ? s1 + s2 : s1 - s2)) return { res: 'fallo', msg: `Has puesto el índice común (${Mc}), pero no has transformado los exponentes: si el índice se multiplica por un número, el exponente se multiplica por el mismo número.` };
+      if (op === 'quot' && i === Mc && e === X + Y) return { res: 'fallo', msg: 'Has sumado los exponentes, pero en un cociente de potencias de la misma base los exponentes se restan.' };
+      if (op === 'prod' && i === Mc && e === Math.abs(X - Y)) return { res: 'fallo', msg: 'Has restado los exponentes, pero en un producto de potencias de la misma base los exponentes se suman.' };
+      if (i === Mc && e !== E) return { res: 'fallo', msg: `El índice común (${Mc}) es correcto; revisa los exponentes: cada uno se multiplica por lo mismo que su índice.${comoNumero ? ` No olvides escribir antes los radicandos como potencias de ${p}.` : ''}` };
+      return { res: 'fallo', msg: `Pasa los dos radicales a índice común (el m.c.m. de ${a} y ${b}) y después ${op === 'prod' ? 'suma' : 'resta'} los exponentes.` };
+    }
+  };
+}
+
+function crearDosBases(op, a, b, s1, s2, p, q) {
+  const Mc = lcm(a, b), X = Mc / a * s1, Y = Mc / b * s2;
+  const r1 = tRaiz(a, tPot(p, s1)), r2 = tRaiz(b, tPot(q, s2));
+  const enun = op === 'prod' ? `${r1}\\cdot ${r2}` : `\\dfrac{${r1}}{${r2}}`;
+  const dentroTex = (x, y) => op === 'prod' ? `${tPot(p, x)}\\cdot ${tPot(q, y)}` : `\\dfrac{${tPot(p, x)}}{${tPot(q, y)}}`;
+  const paso1 = op === 'prod' ? `${tRaiz(Mc, tPot(p, X))}\\cdot ${tRaiz(Mc, tPot(q, Y))}` : `\\dfrac{${tRaiz(Mc, tPot(p, X))}}{${tRaiz(Mc, tPot(q, Y))}}`;
+  const sol = `<p>${M(`${enun} = ${paso1} = ${tRaiz(Mc, dentroTex(X, Y))}`)}</p>
+    <p>El índice común es ${M(`\\text{m.c.m.}(${a},${b}) = ${Mc}`)}. El primer índice se multiplica por ${Mc / a}, así que su exponente también: ${M(`${s1}\\cdot ${Mc / a} = ${X}`)}. El segundo índice se multiplica por ${Mc / b}: ${M(`${s2}\\cdot ${Mc / b} = ${Y}`)}. Con el mismo índice, ${op === 'prod' ? 'el producto de raíces es la raíz del producto' : 'el cociente de raíces es la raíz del cociente'}.</p>`;
+  const casX = inp('x', `Exponente de ${p} (vacío = 1)`, { cls: 'mini' });
+  const casY = inp('y', `Exponente de ${q} (vacío = 1)`, { cls: 'mini' });
+  const dentroHTML = op === 'prod'
+    ? `${hPot(`${p}`, casX)}<span class="por">·</span>${hPot(`${q}`, casY)}`
+    : hFrac(hPot(`${p}`, casX), hPot(`${q}`, casY));
+  return {
+    enun,
+    plantilla: hRad(inp('i', 'Índice', { cls: 'mini' }), dentroHTML),
+    campos: { i: {}, x: { opcional: true, def: 1 }, y: { opcional: true, def: 1 } },
+    correcta: { i: String(Mc), x: X === 1 ? '' : String(X), y: Y === 1 ? '' : String(Y) },
+    vista: raw => tRaiz(raw.i ? crudo(raw.i) : SQ, op === 'prod'
+      ? `${p}^{${raw.x ? crudo(raw.x) : '1'}}\\cdot ${q}^{${raw.y ? crudo(raw.y) : '1'}}`
+      : `\\dfrac{${p}^{${raw.x ? crudo(raw.x) : '1'}}}{${q}^{${raw.y ? crudo(raw.y) : '1'}}}`),
+    tuya: v => tRaiz(v.i, dentroTex(v.x, v.y)),
+    sol,
+    comprobar(v) {
+      const i = v.i, x = v.x, y = v.y;
+      if (i < 2 || x < 1 || y < 1 || i > 1000 || x > 1000 || y > 1000) return { res: 'incompleto', msg: 'El índice tiene que ser 2 o mayor y los exponentes, al menos 1. Revisa lo que has escrito.' };
+      if (x * Mc === X * i && y * Mc === Y * i) {
+        if (i === Mc) return { res: 'ok', msg: `Correcto: índice común ${Mc} y cada exponente multiplicado por el mismo factor que su índice.` };
+        return { res: 'equiv', msg: `${M(tRaiz(i, dentroTex(x, y)))} ${FRASE_SIMPLIFICA}` };
+      }
+      if (i === a + b) return { res: 'fallo', msg: `Los índices no se suman. El índice común es el mínimo común múltiplo de ${a} y ${b}.` };
+      if (i === Mc && x === s1 && y === s2) return { res: 'fallo', msg: `Has puesto el índice común (${Mc}), pero no has transformado los exponentes: si el índice se multiplica por un número, el exponente se multiplica por el mismo número.` };
+      if (x === Mc / b * s1 && y === Mc / a * s2 && i === Mc) return { res: 'fallo', msg: 'Has cruzado los factores: cada exponente se multiplica por lo mismo que se ha multiplicado SU propio índice.' };
+      if (i === Mc) return { res: 'fallo', msg: `El índice común (${Mc}) es correcto; revisa los exponentes: cada uno se multiplica por lo mismo que su índice.` };
+      return { res: 'fallo', msg: `Primero hay que pasar a índice común: el m.c.m. de ${a} y ${b}.` };
+    }
+  };
+}
+
+function genProducto() {
+  for (;;) {
+    let [a, b] = pick(PARES); if (rnd() < 0.5) [a, b] = [b, a];
+    const s1 = coprimoCon(a), s2 = coprimoCon(b), Mc = lcm(a, b);
+    if (rnd() < 0.35) {
+      const E = Mc / a * s1 + Mc / b * s2; const g = gcd(E, Mc);
+      if (E >= Mc || Mc / g < 2) continue;
+      return crearMismaBase('prod', a, b, s1, s2, pick([2, 3, 5, 7]), false);
+    }
+    const p = pick([2, 3, 5, 7]), q = pick([2, 3, 5, 7]);
+    if (p === q) continue;
+    const X = Mc / a * s1, Y = Mc / b * s2;
+    if (gcd(gcd(X, Y), Mc) !== 1) continue;
+    return crearDosBases('prod', a, b, s1, s2, p, q);
+  }
+}
+function genCociente() {
+  for (;;) {
+    let [a, b] = pick(PARES); if (rnd() < 0.5) [a, b] = [b, a];
+    const Mc = lcm(a, b);
+    if (rnd() < 0.65) {
+      const p = pick([2, 3, 5]), s1 = ri(1, 6), s2 = ri(1, 6);
+      if (Math.pow(p, s1) > 1000 || Math.pow(p, s2) > 1000) continue;
+      if (s1 >= a || s2 >= b) continue;                    // enunciado ya simplificado
+      const E = Mc / a * s1 - Mc / b * s2;
+      if (E <= 0) continue;
+      const g = gcd(E, Mc), E2 = E / g, M2 = Mc / g;
+      if (M2 < 2 || E2 >= M2) continue;
+      return crearMismaBase('quot', a, b, s1, s2, p, true);
+    }
+    const s1 = coprimoCon(a), s2 = coprimoCon(b);
+    const p = pick([2, 3, 5, 7]), q = pick([2, 3, 5, 7]);
+    if (p === q) continue;
+    const X = Mc / a * s1, Y = Mc / b * s2;
+    if (gcd(gcd(X, Y), Mc) !== 1) continue;
+    return crearDosBases('quot', a, b, s1, s2, p, q);
+  }
+}
+
+/* ================================================================
+   Tipo 6 · Sumas de radicales
+   ================================================================ */
+function tSuma(terminos, n) {
+  return terminos.map((t, idx) => {
+    const abs = Math.abs(t.c);
+    const cuerpo = (abs === 1 ? '' : abs) + tRaiz(n, t.rad);
+    if (idx === 0) return (t.c < 0 ? '-' : '') + cuerpo;
+    return (t.c < 0 ? ' - ' : ' + ') + cuerpo;
+  }).join('');
+}
+function tSumaCoefs(terminos, m, n) {
+  return terminos.map((t, idx) => {
+    const v = t.c * t.s, abs = Math.abs(v);
+    const cuerpo = (abs === 1 ? '' : abs) + tRaiz(n, m);
+    if (idx === 0) return (v < 0 ? '-' : '') + cuerpo;
+    return (v < 0 ? ' - ' : ' + ') + cuerpo;
+  }).join('');
+}
+function genSuma() {
+  for (;;) {
+    const n = rnd() < 0.72 ? 2 : 3;
+    const m = n === 2 ? pick([2, 3, 5, 6, 7, 10]) : pick([2, 3, 4, 5]);
+    const lim = n === 2 ? 600 : 700;
+    const T = ri(3, 4);
+    const opciones = [];
+    for (let s = 1; s <= 8; s++) if (Math.pow(s, n) * m <= lim) opciones.push(s);
+    if (opciones.length < T) continue;
+    const ss = barajar(opciones).slice(0, T);
+    if (ss.filter(s => s > 1).length < 2) continue;
+    const terminos = ss.map(s => { let c; do { c = ri(-5, 5); } while (c === 0); return { c, s, rad: Math.pow(s, n) * m }; });
+    const C = terminos.reduce((acc, t) => acc + t.c * t.s, 0);
+    if (C === 0 && rnd() < 0.85) continue;
+    if (Math.abs(C) > 40) continue;
+    const enun = tSuma(terminos, n);
+    const partes = terminos.map((t, idx) => {
+      const abs = Math.abs(t.c);
+      const cuerpo = (abs === 1 ? '' : abs) + tRaiz(n, t.rad);
+      return idx === 0 ? (t.c < 0 ? '-' : '') + cuerpo : (t.c < 0 ? '-\\,' : '+\\,') + cuerpo;
+    });
+    const sumaRadicandos = terminos.reduce((acc, t) => acc + t.rad, 0);
+    const resTex = C === 0 ? '0' : tCR(C, n, m);
+    const extracciones = terminos.map(t => M(`${tRaiz(n, t.rad)} = ${tRaiz(n, `${tPot(t.s, n)}\\cdot ${m}`)} = ${t.s === 1 ? tRaiz(n, m) : t.s + tRaiz(n, m)}`)).join('<br>');
+    const sol = `<p>Extraemos factores en cada término:</p><p>${extracciones}</p>
+      <p>${M(`${enun} = ${tSumaCoefs(terminos, m, n)} = ${resTex}`)}</p>
+      <p>Todos los términos quedan con ${M(tRaiz(n, m))}: son semejantes y se suman sus coeficientes.</p>`;
+    return {
+      enun, partes,
+      plantilla: `${inp('c', 'Coeficiente (vacío = 1; − = −1)', { cls: 'coef', signo: true })}${hRad(n, inp('r', 'Radicando'))}`,
+      campos: { c: { opcional: true, def: 1, signo: true }, r: { opcional: true, def: null } },
+      correcta: { c: String(C), r: C === 0 ? '' : String(m) },
+      vista: raw => `${crudoCoef(raw.c)}${tRaiz(n, crudo(raw.r))}`,
+      tuya: v => (v.c === 0 ? '0' : tCR(v.c, n, v.r === null ? SQ : v.r)),
+      sol,
+      comprobar(v) {
+        const c = v.c, r = v.r;
+        if (c === 0) {
+          if (C === 0) return { res: 'ok', msg: 'Correcto: al sumar los coeficientes de los radicales semejantes se obtiene 0.' };
+          return { res: 'fallo', msg: 'El resultado no es 0. Extrae factores en cada término y suma con cuidado los coeficientes, respetando los signos.' };
+        }
+        if (r === null) return { res: 'incompleto' };
+        if (r < 1) return { res: 'incompleto', msg: 'El radicando tiene que ser un número natural (1, 2, 3…). Revisa lo que has escrito.' };
+        if (C === 0) return { res: 'fallo', msg: 'Revisa la suma de los coeficientes: fíjate bien en los signos.' };
+        if (Math.abs(c) > 10000 || r > 1e9 || Math.pow(Math.abs(c), n) * r > MAX_SEGURO) return { res: 'incompleto', msg: 'Ese número es demasiado grande para ser la respuesta. Revisa lo que has escrito.' };
+        const mismoSigno = (c > 0) === (C > 0);
+        const mismoValorAbs = Math.pow(Math.abs(c), n) * r === Math.pow(Math.abs(C), n) * m;
+        if (mismoSigno && mismoValorAbs) {
+          if (r === m) return { res: 'ok', msg: `Correcto: todos los términos son semejantes a ${M(tRaiz(n, m))} y has sumado bien sus coeficientes.` };
+          return { res: 'equiv', msg: `${M(tCR(c, n, r))} es equivalente, pero todavía se pueden extraer factores del radicando ${M(String(r))}. Simplifica.` };
+        }
+        if (r === sumaRadicandos) return { res: 'fallo', msg: `Has sumado los radicandos, y eso no se puede hacer: ${M(`\\sqrt{a}+\\sqrt{b}\\neq\\sqrt{a+b}`)}. Primero se extraen factores y después se suman los coeficientes de los radicales semejantes.` };
+        if (!mismoSigno && mismoValorAbs) return { res: 'fallo', msg: 'El valor absoluto es correcto, pero el signo no: revisa los signos al sumar los coeficientes.' };
+        if (r === m) return { res: 'fallo', msg: `El radicando ${M(String(m))} es correcto; el error está en los coeficientes. Comprueba lo que sale de cada término y la suma con sus signos.` };
+        return { res: 'fallo', msg: 'Extrae factores en cada término hasta que todos tengan el mismo radicando y, después, suma los coeficientes respetando sus signos.' };
+      }
+    };
+  }
+}
+
+/* ================================================================
+   Definición de los tipos
+   ================================================================ */
+const TIPOS = [
+  { id: 'extraer', nombre: 'Extraer factores', gen: genExtraer,
+    instr: 'Extrae del radical todos los factores posibles.',
+    recuerda: `<p>${M('\\sqrt[\\leftroot{4}\\uproot{5}n]{a^{n}\\cdot b}=a\\sqrt[\\leftroot{4}\\uproot{5}n]{b}')}. Descompón el radicando en factores primos y divide cada exponente entre el índice: el cociente sale fuera y el resto se queda dentro.</p><p>Ejemplo: ${M('\\sqrt{72}=\\sqrt{2^{3}\\cdot 3^{2}}=2\\cdot 3\\sqrt{2}=6\\sqrt{2}')}</p>` },
+  { id: 'introducir', nombre: 'Introducir factores', gen: genIntroducir,
+    instr: 'Introduce el factor dentro del radical y escribe el radicando resultante como un número.',
+    recuerda: `<p>${M('a\\sqrt[\\leftroot{4}\\uproot{5}n]{b}=\\sqrt[\\leftroot{4}\\uproot{5}n]{a^{n}\\cdot b}')}. El factor entra elevado al índice.</p><p>Ejemplo: ${M('3\\sqrt[\\leftroot{4}\\uproot{5}3]{2}=\\sqrt[\\leftroot{4}\\uproot{5}3]{3^{3}\\cdot 2}=\\sqrt[\\leftroot{4}\\uproot{5}3]{54}')}</p>` },
+  { id: 'simplificar', nombre: 'Simplificar radicales', gen: genSimplificar,
+    instr: 'Simplifica el radical: escribe el índice, la base y el exponente del radical equivalente más sencillo.',
+    recuerda: `<p>${M('\\sqrt[\\leftroot{4}\\uproot{5}n\\cdot k]{a^{m\\cdot k}}=\\sqrt[\\leftroot{4}\\uproot{5}n]{a^{m}}')}. Se dividen índice y exponente entre su máximo común divisor.</p><p>Ejemplo: ${M('\\sqrt[\\leftroot{4}\\uproot{5}6]{9}=\\sqrt[\\leftroot{4}\\uproot{5}6]{3^{2}}=\\sqrt[\\leftroot{4}\\uproot{5}3]{3}')}</p>` },
+  { id: 'productos', nombre: 'Productos de radicales', gen: genProducto,
+    instr: 'Reduce a índice común y escribe el producto como un único radical simplificado.',
+    recuerda: `<p>Primero se reducen a índice común (el m.c.m. de los índices): ${M('\\sqrt[\\leftroot{4}\\uproot{5}n]{a^{m}}=\\sqrt[\\leftroot{4}\\uproot{5}n\\cdot k]{a^{m\\cdot k}}')}. Después, ${M('\\sqrt[\\leftroot{4}\\uproot{5}n]{a}\\cdot\\sqrt[\\leftroot{4}\\uproot{5}n]{b}=\\sqrt[\\leftroot{4}\\uproot{5}n]{a\\cdot b}')}.</p><p>Ejemplo: ${M('\\sqrt[\\leftroot{4}\\uproot{5}3]{2}\\cdot\\sqrt[\\leftroot{4}\\uproot{5}4]{7}=\\sqrt[\\leftroot{4}\\uproot{5}12]{2^{4}}\\cdot\\sqrt[\\leftroot{4}\\uproot{5}12]{7^{3}}=\\sqrt[\\leftroot{4}\\uproot{5}12]{2^{4}\\cdot 7^{3}}')}</p>` },
+  { id: 'cocientes', nombre: 'Cocientes de radicales', gen: genCociente,
+    instr: 'Reduce a índice común y escribe el cociente como un único radical simplificado.',
+    recuerda: `<p>Igual que en el producto, se reduce a índice común: ${M('\\dfrac{\\sqrt[\\leftroot{4}\\uproot{5}n]{a}}{\\sqrt[\\leftroot{4}\\uproot{5}n]{b}}=\\sqrt[\\leftroot{4}\\uproot{5}n]{\\dfrac{a}{b}}')}. Si la base es la misma, los exponentes se restan.</p><p>Ejemplo: ${M('\\dfrac{\\sqrt[\\leftroot{4}\\uproot{5}4]{8}}{\\sqrt[\\leftroot{4}\\uproot{5}6]{4}}=\\dfrac{\\sqrt[\\leftroot{4}\\uproot{5}12]{2^{9}}}{\\sqrt[\\leftroot{4}\\uproot{5}12]{2^{4}}}=\\sqrt[\\leftroot{4}\\uproot{5}12]{2^{5}}')}</p>` },
+  { id: 'sumas', nombre: 'Sumas de radicales', gen: genSuma,
+    instr: 'Extrae factores en cada término y opera. Escribe el resultado como un único radical (si da 0, escribe 0 en el coeficiente).',
+    recuerda: `<p>Solo se suman radicales semejantes (mismo índice y mismo radicando): se suman sus coeficientes.</p><p>Ejemplo: ${M('\\sqrt{12}+\\sqrt{27}=2\\sqrt{3}+3\\sqrt{3}=5\\sqrt{3}')}. Nunca se suman los radicandos: ${M('\\sqrt{12}+\\sqrt{27}\\neq\\sqrt{39}')}.</p>` }
+];
+
+/* ================================================================
+   Estado y lógica de corrección (ventana móvil 2 de 3)
+   ================================================================ */
+const state = { fallosTotales: 0, tipos: {}, inicio: Date.now() };
+TIPOS.forEach(t => {
+  state.tipos[t.id] = { intentos: [], superado: false, cerrado: false, fallos: 0, aciertos: 0, intentosTotales: 0, avisos: 0 };
+});
+const PUNTO_POR_TIPO = 10 / TIPOS.length;
+const PENALIZACION_FALLO = 0.25;
+const actual = {};
+
+function calcularNota() {
+  const superados = Object.values(state.tipos).filter(t => t.superado).length;
+  const bruta = superados * PUNTO_POR_TIPO - state.fallosTotales * PENALIZACION_FALLO;
+  return Math.round(Math.min(10, Math.max(0, bruta)) * 100) / 100;
+}
+
+function registrarIntento(tipo, correcto) {
+  const t = state.tipos[tipo];
+  if (t.cerrado) return;
+  t.intentosTotales++;
+  t.intentos.push(correcto);
+  if (t.intentos.length > 3) t.intentos.shift();
+  if (correcto) t.aciertos++;
+  else { t.fallos++; state.fallosTotales++; }
+  if (!t.superado && t.intentos.filter(Boolean).length >= 2) {
+    t.superado = true;
+    t.cerrado = true;
+  }
+}
+
+/* ================================================================
+   MathJax (con respaldo: si no carga, el LaTeX queda visible como texto)
+   ================================================================ */
+function tipografiar(el) {
+  const MJ = window.MathJax;
+  if (MJ && typeof MJ.typesetPromise === 'function') {
+    const p = (MJ.startup && MJ.startup.promise) ? MJ.startup.promise : Promise.resolve();
+    return p.then(() => { if (MJ.typesetClear) MJ.typesetClear([el]); return MJ.typesetPromise([el]); }).catch(() => {});
+  }
+  return Promise.resolve();
+}
+
+/* ================================================================
+   Interfaz
+   ================================================================ */
+const $ = sel => document.querySelector(sel);
+const cont = $('#ejercicios');
+const inputNombre = $('#nombre');
+const avisoNombre = $('#aviso-nombre');
+
+function construirTarjetas() {
+  TIPOS.forEach((t, idx) => {
+    const sec = document.createElement('section');
+    sec.className = 'ejercicio-card';
+    sec.id = 'card-' + t.id;
+    sec.dataset.tipo = t.id;
+    sec.innerHTML = `
+      <div class="card-cab">
+        <span class="num">${idx + 1}</span>
+        <h2>${t.nombre}</h2>
+        <div class="ventana" aria-label="Resultado de los tres últimos intentos">
+          <span class="punto"></span><span class="punto"></span><span class="punto"></span>
+        </div>
+        <span class="estado-tipo">Pendiente</span>
+      </div>
+      <details class="recuerda"><summary>Recuerda</summary><div class="cuerpo">${t.recuerda}</div></details>
+      <p class="instr-tipo">${t.instr}</p>
+      <div class="cuerpo-ej"></div>`;
+    cont.appendChild(sec);
+    nuevoEjercicio(t.id, true);
+  });
+}
+
+function nuevoEjercicio(tipoId, inicial) {
+  const tipo = TIPOS.find(t => t.id === tipoId);
+  const previo = actual[tipoId];
+  let ej, k = 0;
+  do { ej = tipo.gen(); } while (previo && ej.enun === previo.enun && ++k < 50);
+  ej.corregido = false;
+  actual[tipoId] = ej;
+  const card = document.getElementById('card-' + tipoId);
+  const cuerpo = card.querySelector('.cuerpo-ej');
+  cuerpo.innerHTML = `
+    <div class="linea-ejercicio">
+      <span class="enunciado">${ej.partes ? ej.partes.map(t => `<span class="termino">${M(t)}</span>`).join('') : M(ej.enun)}</span>
+      <span class="igual">=</span>
+      <span class="plantilla">${ej.plantilla}</span>
+    </div>
+    <div class="vista">Así queda tu respuesta: <span class="vista-tex"></span></div>
+    <div class="acciones">
+      <button type="button" class="btn-primario btn-comprobar">Comprobar</button>
+      <button type="button" class="btn-secundario btn-otro" hidden>Otro ejercicio</button>
+    </div>
+    <div class="feedback" aria-live="polite"></div>`;
+  actualizarVista(tipoId, true);
+  tipografiar(cuerpo);
+  if (!inicial) { const c = cuerpo.querySelector('.casilla'); if (c) c.focus(); }
+}
+
+const temporizadores = {};
+function actualizarVista(tipoId, inmediato) {
+  const card = document.getElementById('card-' + tipoId);
+  const ej = actual[tipoId];
+  const raw = {};
+  card.querySelectorAll('.casilla').forEach(i => { raw[i.dataset.k] = i.value.trim().replace(/[^0-9\-−–+]/g, '').slice(0, 12); });
+  const destino = card.querySelector('.vista-tex');
+  const pintar = () => { destino.textContent = M(ej.vista(raw)); tipografiar(destino); };
+  clearTimeout(temporizadores[tipoId]);
+  if (inmediato) pintar(); else temporizadores[tipoId] = setTimeout(pintar, 220);
+}
+
+function leerCampo(valor, spec) {
+  const s = valor.trim().replace(/[−–]/g, '-').replace(/\s+/g, '');
+  if (s === '') return spec.opcional ? { ok: true, val: spec.def } : { ok: false, motivo: 'vacio' };
+  if (spec.signo && s === '-') return { ok: true, val: -1 };
+  if (spec.signo && s === '+') return { ok: true, val: 1 };
+  const re = spec.signo ? /^[-+]?\d+$/ : /^\+?\d+$/;
+  if (!re.test(s)) return { ok: false, motivo: 'formato' };
+  return { ok: true, val: parseInt(s, 10) };
+}
+
+function nombreOk() {
+  if (inputNombre.value.trim() === '') {
+    inputNombre.classList.add('falta');
+    avisoNombre.classList.add('visible');
+    inputNombre.focus();
+    return false;
+  }
+  return true;
+}
+
+function feedbackHTML(clase, html) { return `<div class="fb ${clase}">${html}</div>`; }
+
+function comprobar(tipoId) {
+  const t = state.tipos[tipoId];
+  const ej = actual[tipoId];
+  const card = document.getElementById('card-' + tipoId);
+  const fb = card.querySelector('.feedback');
+  if (t.cerrado || ej.corregido) return;
+  if (!nombreOk()) return;
+
+  const vals = {};
+  const casillas = card.querySelectorAll('.casilla');
+  let todasVacias = true, error = null;
+  casillas.forEach(i => {
+    if (i.value.trim() !== '') todasVacias = false;
+    const r = leerCampo(i.value, ej.campos[i.dataset.k]);
+    if (!r.ok && !error) error = r.motivo;
+    vals[i.dataset.k] = r.ok ? r.val : null;
+  });
+  if (todasVacias || error === 'vacio') {
+    fb.innerHTML = feedbackHTML('fb-neutro', '<p>Completa las casillas antes de comprobar.</p>');
+    return;
+  }
+  if (error === 'formato') {
+    fb.innerHTML = feedbackHTML('fb-neutro', '<p>Escribe solo números enteros en las casillas (sin decimales, letras ni espacios).</p>');
+    return;
+  }
+
+  const res = ej.comprobar(vals);
+  if (res.res === 'incompleto') {
+    fb.innerHTML = feedbackHTML('fb-neutro', `<p>${res.msg || 'Completa las casillas antes de comprobar.'}</p><p>No cuenta como intento.</p>`);
+    return;
+  }
+  if (res.res === 'equiv') {
+    const firma = JSON.stringify(vals);
+    if (ej.ultimoAviso !== firma) { t.avisos++; ej.ultimoAviso = firma; }
+    fb.innerHTML = feedbackHTML('fb-aviso', `<p class="fb-tit">Casi: falta simplificar</p><p>${res.msg}</p><p>No cuenta como fallo; corrige tu respuesta y vuelve a comprobar.</p>`);
+    tipografiar(fb);
+    return;
+  }
+
+  const correcto = res.res === 'ok';
+  ej.corregido = true;
+  casillas.forEach(i => { i.disabled = true; });
+  card.querySelector('.btn-comprobar').disabled = true;
+  registrarIntento(tipoId, correcto);
+
+  let html;
+  if (correcto) {
+    html = feedbackHTML('fb-ok', `<p class="fb-tit">✓ Correcto</p><p>${res.msg}</p>`);
+  } else {
+    html = feedbackHTML('fb-error', `<p class="fb-tit">✗ Incorrecto</p><p>Tu respuesta: ${M(ej.tuya(vals))}</p><p>${res.msg}</p><div class="solucion"><b>Solución</b>${ej.sol}</div>`);
+  }
+  if (t.cerrado) html += `<p class="fb-superado">★ Ejercicio superado: ${fmt(PUNTO_POR_TIPO)} puntos conseguidos.</p>`;
+  fb.innerHTML = html;
+  tipografiar(fb);
+
+  const btnOtro = card.querySelector('.btn-otro');
+  if (!t.cerrado) { btnOtro.hidden = false; btnOtro.focus(); }
+  else card.querySelector('.btn-comprobar').hidden = true;
+  actualizarUI(tipoId);
+}
+
+function actualizarUI(tipoId) {
+  if (tipoId) {
+    const t = state.tipos[tipoId];
+    const card = document.getElementById('card-' + tipoId);
+    const puntos = card.querySelectorAll('.ventana .punto');
+    puntos.forEach((p, i) => {
+      const v = t.intentos[i];
+      p.className = 'punto' + (v === true ? ' ok' : v === false ? ' ko' : '');
+      p.textContent = v === true ? '✓' : v === false ? '✗' : '';
+    });
+    const estado = card.querySelector('.estado-tipo');
+    if (t.superado) { card.classList.add('superado'); estado.textContent = 'Superado'; }
+    else estado.textContent = t.intentosTotales ? 'En curso' : 'Pendiente';
+  }
+  $('#marcador-nota').textContent = fmt(calcularNota());
+  const sup = Object.values(state.tipos).filter(t => t.superado).length;
+  $('#marcador-sup').textContent = sup;
+  $('#marcador-fallos').textContent = state.fallosTotales;
+  $('#felicitacion').classList.toggle('visible', sup === TIPOS.length);
+}
+
+/* ================================================================
+   Informe final
+   ================================================================ */
+function colorNota(n) {
+  if (n >= 10) return ['#1a7a1a', '#fff'];
+  if (n >= 9) return ['#6dbf6d', '#000'];
+  if (n >= 8) return ['#1a4f8a', '#fff'];
+  if (n >= 7) return ['#5b9bd5', '#000'];
+  if (n >= 6) return ['#c05c00', '#fff'];
+  if (n >= 5) return ['#f5a623', '#000'];
+  return ['#c0392b', '#fff'];
+}
+const dos = n => String(n).padStart(2, '0');
+function abrirModal() {
+  if (!nombreOk()) return;
+  const nota = calcularNota();
+  const ahora = new Date();
+  const minutos = Math.ceil((Date.now() - state.inicio) / 60000);
+  const [fondo, texto] = colorNota(nota);
+  const filas = TIPOS.map((tp, i) => {
+    const t = state.tipos[tp.id];
+    return `<tr><td>${i + 1}. ${tp.nombre}</td><td>${t.superado ? '<span class="largo">✓ Superado</span><span class="corto">✓</span>' : '<span class="largo">No superado</span><span class="corto">✗</span>'}</td><td>${t.intentosTotales}</td><td>${t.aciertos}</td><td>${t.fallos}</td><td>${t.avisos}</td></tr>`;
+  }).join('');
+  const titulo = document.querySelector('.titulo-ficha').textContent;
+  const sub = document.querySelector('.subtitulo').textContent;
+  const modal = $('#modal');
+  modal.style.background = fondo;
+  modal.style.color = texto;
+  modal.classList.toggle('oscuro', texto === '#000');
+  modal.innerHTML = `
+    <p class="m-titulo" id="m-titulo">${titulo}</p>
+    <p class="m-sub">${sub}</p>
+    <hr>
+    <p class="m-inf">Informe de la actividad</p>
+    <p class="m-nombre" id="m-nombre"></p>
+    <p class="m-nota">${fmt(nota)} <small>/ 10</small></p>
+    <div class="m-datos">
+      <span>Fecha: <b>${dos(ahora.getDate())}/${dos(ahora.getMonth() + 1)}/${ahora.getFullYear()}</b></span>
+      <span>Hora: <b>${dos(ahora.getHours())}:${dos(ahora.getMinutes())}:${dos(ahora.getSeconds())}</b></span>
+      <span>Tiempo empleado: <b>${dos(Math.floor(minutos / 60))}:${dos(minutos % 60)}</b></span>
+    </div>
+    <table class="tabla-desglose">
+      <thead><tr><th>Ejercicio</th><th><span class="largo">Estado</span><span class="corto">Sup.</span></th><th><span class="largo">Intentos</span><span class="corto">Int.</span></th><th><span class="largo">Aciertos</span><span class="corto">Ac.</span></th><th><span class="largo">Fallos</span><span class="corto">Fal.</span></th><th><span class="largo">Sin simplificar</span><span class="corto">S. s.</span></th></tr></thead>
+      <tbody>${filas}</tbody>
+    </table>
+    <p class="m-pie">Superados: ${Object.values(state.tipos).filter(t => t.superado).length} de ${TIPOS.length} · Fallos totales: ${state.fallosTotales} (−${fmt(state.fallosTotales * PENALIZACION_FALLO)} puntos) · «Sin simplificar» (S. s.) cuenta los avisos de respuestas equivalentes no simplificadas, que no penalizan.</p>
+    <button type="button" class="m-cerrar" id="m-cerrar">Cerrar y continuar</button>`;
+  $('#m-nombre').textContent = inputNombre.value.trim();
+  document.body.classList.toggle('ficha-perfecta', nota >= 10);
+  const ov = $('#overlay');
+  ov.classList.add('visible');
+  ov.setAttribute('aria-hidden', 'false');
+  $('#m-cerrar').addEventListener('click', cerrarModal);
+  modal.focus();
+}
+function cerrarModal() {
+  const ov = $('#overlay');
+  ov.classList.remove('visible');
+  ov.setAttribute('aria-hidden', 'true');
+  $('#btn-finalizar').focus();
+}
+
+/* ================================================================
+   Eventos
+   ================================================================ */
+cont.addEventListener('click', e => {
+  const card = e.target.closest('.ejercicio-card');
+  if (!card) return;
+  const tipoId = card.dataset.tipo;
+  if (e.target.closest('.btn-comprobar')) comprobar(tipoId);
+  else if (e.target.closest('.btn-otro')) nuevoEjercicio(tipoId, false);
+});
+cont.addEventListener('input', e => {
+  if (!e.target.classList.contains('casilla')) return;
+  const card = e.target.closest('.ejercicio-card');
+  actualizarVista(card.dataset.tipo, false);
+});
+cont.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  const card = e.target.closest('.ejercicio-card');
+  if (!card || !e.target.classList.contains('casilla')) return;
+  e.preventDefault();
+  comprobar(card.dataset.tipo);
+});
+inputNombre.addEventListener('input', () => {
+  if (inputNombre.value.trim() !== '') { inputNombre.classList.remove('falta'); avisoNombre.classList.remove('visible'); }
+});
+$('#btn-finalizar').addEventListener('click', abrirModal);
+$('#overlay').addEventListener('click', e => { if (e.target.id === 'overlay') cerrarModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('#overlay').classList.contains('visible')) cerrarModal(); });
+
+construirTarjetas();
+actualizarUI();
+
+/* Ganchos para pruebas automáticas: solo con ?seed=N */
+if (SEED !== null) {
+  window.__ficha = {
+    state, actual, calcularNota, TIPOS,
+    generar: id => TIPOS.find(t => t.id === id).gen(),
+    nuevo: id => nuevoEjercicio(id, false)
+  };
+}
+})();
+</script>
+</body>
+</html>
