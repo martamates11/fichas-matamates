@@ -22,6 +22,8 @@
   --color-incorrecto: #8B1A1A;
   --color-neutro: #E8DFC8;
   --color-aviso: #B7791F;
+  --color-apagado: #A8998A;
+  --color-apagado-fondo: #F3EFE6;
 }
 
 * { box-sizing: border-box; }
@@ -99,11 +101,29 @@ h1, h2, h3, .titulo-ficha { font-family: 'Libre Baskerville', serif; color: var(
 .subtitulo { text-align: center; color: var(--color-texto-suave); font-size: .92rem; margin: 6px 0 22px; }
 
 .instrucciones {
-  background: var(--color-fondo); border: 1px dashed var(--color-borde);
-  border-radius: 4px; padding: 14px 18px; font-size: .92rem; color: var(--color-texto-suave);
-  margin-bottom: 22px;
+  background: var(--color-fondo); border: 1.5px solid var(--color-borde-suave);
+  border-left: 4px solid var(--color-borde); border-radius: 4px;
+  font-size: .9rem; color: var(--color-texto-suave); margin-bottom: 22px;
 }
-.instrucciones p { margin: 4px 0; }
+.instrucciones summary {
+  list-style: none; cursor: pointer; display: flex; align-items: center; gap: 10px;
+  padding: 12px 22px; font-family: 'Libre Baskerville', serif; font-size: 1rem; font-weight: 700;
+  color: var(--color-texto); user-select: none; border-radius: 4px;
+}
+.instrucciones summary::-webkit-details-marker { display: none; }
+.instrucciones summary::after {
+  content: ''; margin-left: auto; width: 8px; height: 8px; flex-shrink: 0;
+  border-right: 2px solid var(--color-acento); border-bottom: 2px solid var(--color-acento);
+  transform: rotate(45deg); transition: transform .25s; margin-top: -4px;
+}
+.instrucciones[open] summary::after { transform: rotate(-135deg); margin-top: 4px; }
+.instrucciones summary:hover { background: #EFE4CC; }
+.instrucciones summary:focus-visible { outline: 2px solid var(--color-acento); outline-offset: 2px; }
+.instrucciones .resumen-cerrado { font-family: 'Lato', sans-serif; font-weight: 400; font-size: .8rem; color: var(--color-texto-suave); }
+.instrucciones[open] .resumen-cerrado { display: none; }
+.instrucciones ul { margin: 0 22px 14px 40px; padding: 0; }
+.instrucciones li { margin: 4px 0; }
+.instrucciones strong { color: var(--color-texto); }
 .instrucciones kbd { font-family:'Lato',sans-serif; font-size:.8rem; border:1px solid var(--color-borde); border-bottom-width:2px; border-radius:3px; padding:0 5px; background: var(--color-fondo-card); color: var(--color-texto); }
 .instrucciones code {
   font-family: 'Libre Baskerville', serif; background: var(--color-neutro);
@@ -131,7 +151,9 @@ details.recordatorio summary {
   padding: 20px 24px;
   margin-bottom: 26px;
 }
+.ejercicio-card { scroll-margin-top: 80px; }
 .ejercicio-card.bloqueado { border-left-color: var(--color-texto-suave); }
+.ejercicio-card.revelado { border-left-color: var(--color-apagado); }
 .ej-cab { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 6px; }
 .ej-cab h2 { font-size: 1.1rem; margin: 0; }
 .ej-puntos {
@@ -178,6 +200,7 @@ input.resp:disabled { color: var(--color-texto); -webkit-text-fill-color: var(--
 input.resp.bien { border-color: var(--color-correcto); background: #EAF4EC; }
 input.resp.mal  { border-color: var(--color-incorrecto); background: #F9EAEA; border-width: 2px; }
 input.resp.vacia { border-color: var(--color-aviso); box-shadow: 0 0 0 3px rgba(183,121,31,.25); }
+input.resp.revelada { border: 1.5px dashed var(--color-apagado); background: var(--color-apagado-fondo); }
 .nota-celda { font-size: .8rem; margin-top: 3px; min-height: 0; }
 .nota-celda.mal { color: var(--color-incorrecto); }
 .nota-celda.bien { color: var(--color-correcto); }
@@ -208,11 +231,23 @@ input.resp.vacia { border-color: var(--color-aviso); box-shadow: 0 0 0 3px rgba(
 .btn-primario:disabled { background: var(--color-neutro); color: var(--color-texto-suave); cursor: default; }
 .aviso-validacion { color: var(--color-aviso); font-size: .88rem; font-weight: 700; }
 
+/* Botón «Mostrar solución»: apagado, que no invite a pulsarlo */
+.btn-soluciones {
+  margin-left: auto;
+  background: transparent; color: var(--color-apagado);
+  border: 1px solid #DDD0B6; border-radius: 4px; padding: 5px 14px;
+  font-family: 'Lato', sans-serif; font-size: .78rem; font-weight: 400;
+  cursor: pointer; transition: color .2s, border-color .2s;
+}
+.btn-soluciones:hover:not(:disabled) { color: var(--color-texto-suave); border-color: var(--color-borde); }
+.btn-soluciones:disabled { opacity: .4; cursor: default; }
+
 .feedback { margin-top: 16px; display: none; }
 .feedback.visible { display: block; }
-.feedback-correcto, .feedback-incorrecto { border-radius: 4px; padding: 12px 16px; }
+.feedback-correcto, .feedback-incorrecto, .feedback-solucion { border-radius: 4px; padding: 12px 16px; }
 .feedback-correcto { background: #EAF4EC; border: 1.5px solid var(--color-correcto); color: var(--color-correcto); }
 .feedback-incorrecto { background: #F9EAEA; border: 1.5px solid var(--color-incorrecto); color: var(--color-incorrecto); }
+.feedback-solucion { background: var(--color-apagado-fondo); border: 1.5px dashed var(--color-apagado); color: var(--color-texto-suave); }
 .feedback .titular { font-weight: 700; margin-bottom: 4px; }
 .feedback p { margin: 5px 0; color: var(--color-texto); }
 .feedback ul { margin: 6px 0 4px 18px; padding: 0; color: var(--color-texto); }
@@ -234,7 +269,7 @@ input.resp.vacia { border-color: var(--color-aviso); box-shadow: 0 0 0 3px rgba(
 }
 .btn-finalizar:hover { background-color: #2C1A0A; }
 
-/* ---------- Modal ---------- */
+/* ---------- Modales ---------- */
 .overlay {
   position: fixed; inset: 0; background: rgba(44, 31, 14, 0.55);
   display: none; align-items: center; justify-content: center; z-index: 100; padding: 16px;
@@ -263,11 +298,26 @@ input.resp.vacia { border-color: var(--color-aviso); box-shadow: 0 0 0 3px rgba(
   font-family: 'Lato', sans-serif; font-weight: 700; cursor: pointer;
 }
 
+/* Aviso previo de «Mostrar solución» */
+.modal-confirmar {
+  background: var(--color-fondo-card); border: 2px solid var(--color-borde); border-radius: 8px;
+  box-shadow: 0 6px 24px rgba(44, 31, 14, 0.35); padding: 26px 30px; width: min(460px, 100%);
+}
+.modal-confirmar h2 { font-size: 1.15rem; margin: 0 0 10px; }
+.modal-confirmar p { font-size: .93rem; color: var(--color-texto-suave); margin: 6px 0; }
+.modal-confirmar .botones { display: flex; justify-content: flex-end; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
+.btn-secundario {
+  background: transparent; color: var(--color-texto-suave); border: 1px solid var(--color-borde);
+  border-radius: 4px; padding: 9px 16px; font-family: 'Lato', sans-serif; font-size: .88rem; cursor: pointer;
+}
+.btn-secundario:hover { color: var(--color-texto); border-color: var(--color-acento); }
+
 @media (max-width: 640px) {
   .ficha-container { margin: 14px 8px; padding: 20px 16px; }
   .pasos.dos-col { grid-template-columns: 1fr; }
   .det { gap: 6px 14px; font-size: 1.1rem; }
   .ejercicio-card { padding: 16px 14px; }
+  .btn-soluciones { margin-left: 0; }
 }
 </style>
 </head>
@@ -288,11 +338,15 @@ input.resp.vacia { border-color: var(--color-aviso); box-shadow: 0 0 0 3px rgba(
     <div class="aviso-nombre" id="aviso-nombre">Escribe tu nombre antes de continuar.</div>
   </div>
 
-  <div class="instrucciones">
-    <p>Calcula cada determinante. Escribe primero los <strong>productos intermedios</strong> y después el <strong>resultado</strong>.</p>
-    <p>Cada ejercicio se corrige <strong>una sola vez</strong>: al pulsar «Corregir» queda bloqueado. La puntuación depende del resultado final; los pasos sirven para localizar dónde está el error.</p>
-    <p>Con <kbd>Intro</kbd> pasas a la casilla siguiente. Para escribir la letra usa <code>a</code>; para las potencias, los botones <code>a²</code> <code>a³</code> o bien <code>a^2</code>. Ejemplos válidos: <code>−6a²</code>, <code>4a³ − 2a + 7</code>, <code>−12</code>.</p>
-  </div>
+  <details class="instrucciones" open>
+    <summary>Cómo funciona <span class="resumen-cerrado">· 2 + 4 + 4 puntos, una corrección por ejercicio</span></summary>
+    <ul>
+      <li>Calcula cada determinante. Escribe primero los <strong>productos intermedios</strong> y después el <strong>resultado</strong>.</li>
+      <li>Cada ejercicio se corrige <strong>una sola vez</strong>: al pulsar «Corregir» queda bloqueado. La puntuación depende del resultado final; los pasos sirven para localizar dónde está el error.</li>
+      <li>Si te atascas, «Mostrar solución» resuelve ese ejercicio paso a paso. <strong>Ese ejercicio no cuenta para la nota</strong>, pero después puedes hacer otro del mismo tipo, con números distintos, que sí puntúa.</li>
+      <li>Con <kbd>Intro</kbd> pasas a la casilla siguiente. Para escribir la letra usa <code>a</code>; para las potencias, los botones <code>a²</code> <code>a³</code> o bien <code>a^2</code>. Ejemplos válidos: <code>−6a²</code>, <code>4a³ − 2a + 7</code>, <code>−12</code>.</li>
+    </ul>
+  </details>
 
   <details class="recordatorio">
     <summary>Recordatorio: regla de Sarrus (determinantes 3×3)</summary>
@@ -340,6 +394,18 @@ input.resp.vacia { border-color: var(--color-aviso); box-shadow: 0 0 0 3px rgba(
 
 <div class="overlay" id="overlay" role="dialog" aria-modal="true">
   <div class="modal-calificacion" id="modal"></div>
+</div>
+
+<div class="overlay" id="overlay-sol" role="dialog" aria-modal="true" aria-labelledby="sol-titulo">
+  <div class="modal-confirmar">
+    <h2 id="sol-titulo">¿Mostrar la solución?</h2>
+    <p id="sol-texto"></p>
+    <p>Los demás ejercicios no se ven afectados.</p>
+    <div class="botones">
+      <button type="button" class="btn-secundario" id="sol-si">Sí, mostrar la solución</button>
+      <button type="button" class="btn-primario" id="sol-no">Volver al ejercicio</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -396,6 +462,9 @@ function fmt(p) {
   if (!parts.length) return '0';
   return parts.map((t, i) => (i === 0 ? (t.sign === '−' ? '−' : '') + t.body : ' ' + t.sign + ' ' + t.body)).join('');
 }
+/* Versión en texto plano, para rellenar casillas (a², a³) */
+const fmtTxt = p => fmt(p).replace(/<i>a<\/i>/g, 'a')
+  .replace(/<sup>(\d+)<\/sup>/g, (m, e) => ({ '2': '²', '3': '³' }[e] || '^' + e));
 /* Entre paréntesis si es negativo o tiene varios términos */
 function fmtPar(p) {
   const s = fmt(p);
@@ -505,17 +574,18 @@ function gen3x3a() {
    Estado
    ========================================================= */
 const EJ = {
-  1: { titulo: 'Ejercicio 1 · Determinante 2×2 con parámetro', max: 2, tipo: '2x2', datos: gen2x2(), teclas: ['a', 'a²'] },
-  2: { titulo: 'Ejercicio 2 · Determinante 3×3 con números enteros', max: 4, tipo: '3x3', datos: gen3x3int(), teclas: [] },
-  3: { titulo: 'Ejercicio 3 · Determinante 3×3 con parámetro', max: 4, tipo: '3x3', datos: gen3x3a(), teclas: ['a', 'a²', 'a³'] }
+  1: { titulo: 'Ejercicio 1 · Determinante 2×2 con parámetro', max: 2, tipo: '2x2', gen: gen2x2, teclas: ['a', 'a²'] },
+  2: { titulo: 'Ejercicio 2 · Determinante 3×3 con números enteros', max: 4, tipo: '3x3', gen: gen3x3int, teclas: [] },
+  3: { titulo: 'Ejercicio 3 · Determinante 3×3 con parámetro', max: 4, tipo: '3x3', gen: gen3x3a, teclas: ['a', 'a²', 'a³'] }
 };
+for (const n of [1, 2, 3]) EJ[n].datos = EJ[n].gen();
 const state = {
   inicio: Date.now(),
   nota: 0,
   ej: {
-    1: { corregido: false, puntos: 0, resultadoOk: false, pasosOk: 0, pasosTotal: 2 },
-    2: { corregido: false, puntos: 0, resultadoOk: false, pasosOk: 0, pasosTotal: 6 },
-    3: { corregido: false, puntos: 0, resultadoOk: false, pasosOk: 0, pasosTotal: 6 }
+    1: { corregido: false, revelado: false, vistas: 0, puntos: 0, resultadoOk: false, pasosOk: 0, pasosTotal: 2 },
+    2: { corregido: false, revelado: false, vistas: 0, puntos: 0, resultadoOk: false, pasosOk: 0, pasosTotal: 6 },
+    3: { corregido: false, revelado: false, vistas: 0, puntos: 0, resultadoOk: false, pasosOk: 0, pasosTotal: 6 }
   }
 };
 
@@ -534,10 +604,7 @@ function celdaHTML(id, etiqueta) {
     '<div class="nota-celda" id="' + id + '-nota"></div></div>';
 }
 
-function render() {
-  const cont = document.getElementById('ejercicios');
-  let html = '';
-  for (const n of [1, 2, 3]) {
+function cardHTML(n) {
     const E = EJ[n];
     let cuerpo = matrizHTML(E.datos.M);
     if (E.tipo === '2x2') {
@@ -563,21 +630,25 @@ function render() {
     const enunciado = E.tipo === '2x2'
       ? 'Calcula el determinante. Escribe el producto de cada diagonal y después el resultado.'
       : 'Aplica la regla de Sarrus: escribe los seis productos (el orden dentro de cada columna no importa) y después el resultado.';
-    html += '<section class="ejercicio-card" id="card-' + n + '">' +
-      '<div class="ej-cab"><h2>' + E.titulo + '</h2><span class="ej-puntos">' + E.max + ' puntos</span></div>' +
+    const version = state.ej[n].vistas ? ' <small style="font-family:Lato,sans-serif;font-weight:400;color:var(--color-texto-suave);">· versión ' + (state.ej[n].vistas + 1) + '</small>' : '';
+    return '<section class="ejercicio-card" id="card-' + n + '">' +
+      '<div class="ej-cab"><h2>' + E.titulo + version + '</h2><span class="ej-puntos">' + E.max + ' puntos</span></div>' +
       '<p class="ej-enunciado">' + enunciado + '</p>' + cuerpo +
       '<div class="acciones"><button type="button" class="btn-primario" id="btn-' + n + '">Corregir</button>' +
-      '<span class="aviso-validacion" id="aviso-' + n + '"></span></div>' +
+      '<span class="aviso-validacion" id="aviso-' + n + '"></span>' +
+      '<button type="button" class="btn-soluciones" id="btn-sol-' + n + '">Mostrar solución</button></div>' +
       '<div class="feedback" id="fb-' + n + '" aria-live="polite"></div></section>';
-  }
-  cont.innerHTML = html;
+}
 
-  for (const n of [1, 2, 3]) document.getElementById('btn-' + n).addEventListener('click', () => corregir(n));
-
-  // Teclado de potencias: inserta en la última casilla enfocada del ejercicio
-  const ultimo = {};
-  document.querySelectorAll('input.resp').forEach(inp => {
-    inp.addEventListener('focus', () => { ultimo[inp.id.split('-')[0].slice(1)] = inp; });
+// Teclado de potencias: inserta en la última casilla enfocada de cada ejercicio
+const ultimo = {};
+function wire(n) {
+  const card = document.getElementById('card-' + n);
+  document.getElementById('btn-' + n).addEventListener('click', () => corregir(n));
+  document.getElementById('btn-sol-' + n).addEventListener('click', () => pedirSolucion(n));
+  delete ultimo[n];
+  card.querySelectorAll('input.resp').forEach(inp => {
+    inp.addEventListener('focus', () => { ultimo[n] = inp; });
     inp.addEventListener('input', () => { inp.classList.remove('vacia'); });
     // Enter pasa a la casilla siguiente (nunca corrige: el intento es único)
     inp.addEventListener('keydown', ev => {
@@ -589,10 +660,9 @@ function render() {
       if (sig) sig.focus(); else card.querySelector('.btn-primario').focus();
     });
   });
-  document.querySelectorAll('.tecla').forEach(b => {
+  card.querySelectorAll('.tecla').forEach(b => {
     b.addEventListener('mousedown', ev => ev.preventDefault());
     b.addEventListener('click', () => {
-      const n = b.dataset.ej;
       const inp = ultimo[n] || document.getElementById('e' + n + '-res');
       if (inp.disabled) return;
       const ini = inp.selectionStart ?? inp.value.length, fin = inp.selectionEnd ?? inp.value.length;
@@ -602,6 +672,26 @@ function render() {
       inp.classList.remove('vacia');
     });
   });
+}
+
+function render() {
+  document.getElementById('ejercicios').innerHTML = [1, 2, 3].map(cardHTML).join('');
+  [1, 2, 3].forEach(wire);
+}
+
+/* Nueva instancia del mismo tipo (distinta de la anterior) tras ver la solución */
+function nuevoEjercicio(n) {
+  const E = EJ[n], S = state.ej[n];
+  const anterior = JSON.stringify(E.datos.M);
+  let d, k = 0;
+  do { d = E.gen(); k++; } while (JSON.stringify(d.M) === anterior && k < 50);
+  E.datos = d;
+  Object.assign(S, { corregido: false, revelado: false, puntos: 0, resultadoOk: false, pasosOk: 0 });
+  document.getElementById('card-' + n).outerHTML = cardHTML(n);
+  wire(n);
+  actualizarMarcador();
+  document.getElementById('card-' + n).scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.querySelector('#card-' + n + ' input.resp').focus({ preventScroll: true });
 }
 
 /* =========================================================
@@ -695,7 +785,51 @@ function pintarCelda(id, ok, msg, correcto, aviso) {
 }
 
 /* =========================================================
-   Corrección
+   Mostrar solución (por ejercicio)
+   ========================================================= */
+let solPendiente = null;
+const overlaySol = document.getElementById('overlay-sol');
+function pedirSolucion(n) {
+  if (state.ej[n].corregido) return;
+  solPendiente = n;
+  document.getElementById('sol-texto').innerHTML =
+    'Verás resuelto el <strong>ejercicio ' + n + '</strong> con todos sus pasos. Ese ejercicio <strong>no contará para la nota</strong>. Después podrás hacer otro del mismo tipo, con números distintos, que sí puntuará (' + EJ[n].max + ' puntos).';
+  overlaySol.classList.add('visible');
+  document.getElementById('sol-no').focus();
+}
+function cerrarSol() {
+  overlaySol.classList.remove('visible');
+  const n = solPendiente;
+  solPendiente = null;
+  return n;
+}
+document.getElementById('sol-no').addEventListener('click', () => {
+  const n = cerrarSol();
+  if (n) document.getElementById('btn-sol-' + n).focus();
+});
+document.getElementById('sol-si').addEventListener('click', () => {
+  const n = cerrarSol();
+  if (n) corregir(n, true);
+});
+overlaySol.addEventListener('click', e => { if (e.target === overlaySol) cerrarSol(); });
+
+/* Rellena las casillas con la solución correcta (texto plano legible por parsePoly) */
+function rellenarSolucion(n) {
+  const D = EJ[n].datos;
+  const poner = (id, p) => { const inp = document.getElementById(id); inp.value = fmtTxt(p); inp.classList.remove('vacia'); };
+  if (EJ[n].tipo === '2x2') {
+    poner('e1-p', D.pasos.principal);
+    poner('e1-s', D.pasos.secundaria);
+  } else {
+    D.suman.forEach((p, i) => poner('e' + n + '-s' + (i + 1), p));
+    D.restan.forEach((p, i) => poner('e' + n + '-r' + (i + 1), p));
+  }
+  poner('e' + n + '-res', D.det);
+  document.getElementById('aviso-' + n).textContent = '';
+}
+
+/* =========================================================
+   Corrección (revelar = true → solución mostrada, sin calificar)
    ========================================================= */
 function leer(ids) {
   let faltan = 0;
@@ -708,10 +842,11 @@ function leer(ids) {
   return { vals, faltan };
 }
 
-function corregir(n) {
+function corregir(n, revelar = false) {
   const E = EJ[n], S = state.ej[n];
   if (S.corregido) return;
-  if (!exigirNombre()) return;
+  if (!revelar && !exigirNombre()) return;
+  if (revelar) rellenarSolucion(n);
 
   const aviso = document.getElementById('aviso-' + n);
   const conLetra = n !== 2;
@@ -719,6 +854,7 @@ function corregir(n) {
   const idRes = 'e' + n + '-res';
   const { vals, faltan } = leer([...idsPasos, idRes]);
   if (faltan) {
+    if (revelar) { console.error('Bug: la solución rellenada no se puede leer (ejercicio ' + n + ').'); return; }
     aviso.textContent = faltan === 1
       ? 'Hay una casilla vacía o que no se entiende. Revísala: el intento no se ha consumido.'
       : 'Hay ' + faltan + ' casillas vacías o que no se entienden. Revísalas: el intento no se ha consumido.';
@@ -773,13 +909,20 @@ function corregir(n) {
     ];
   }
 
-  // Resultado: es lo único que puntúa
   const okRes = eq(res, D.det);
   pintarCelda(idRes, okRes, '', D.det);
-  S.resultadoOk = okRes;
-  S.pasosOk = pasosOk;
-  S.puntos = okRes ? E.max : 0;
+
+  // Autocomprobación: el validador debe aceptar su propia solución
+  if (revelar && (!okRes || pasosOk !== S.pasosTotal)) {
+    console.error('Bug: el validador no acepta la solución del ejercicio ' + n + '.');
+  }
+
   S.corregido = true;
+  S.revelado = revelar;
+  if (revelar) S.vistas++;
+  S.resultadoOk = revelar ? false : okRes;
+  S.pasosOk = revelar ? 0 : pasosOk;
+  S.puntos = (!revelar && okRes) ? E.max : 0;
 
   // Feedback pedagógico
   let fb = '';
@@ -789,7 +932,20 @@ function corregir(n) {
         ? 'Con Sarrus, cada producto toma un elemento de cada fila y de cada columna; con letras, se suman exponentes y al final se agrupan términos semejantes.'
         : 'Con Sarrus, cada producto toma exactamente un elemento de cada fila y de cada columna.');
 
-  if (okRes) {
+  if (revelar) {
+    // Casillas en tono neutro, sin verde de acierto
+    document.querySelectorAll('#card-' + n + ' input.resp').forEach(inp => {
+      inp.classList.remove('bien', 'mal');
+      inp.classList.add('revelada');
+      const nota = document.getElementById(inp.id + '-nota');
+      nota.className = 'nota-celda'; nota.innerHTML = '';
+    });
+    fb = '<div class="feedback-solucion"><div class="titular">Solución · este ejercicio no puntúa</div>' +
+      '<p>' + concepto + '</p>' +
+      (E.tipo === '2x2'
+        ? '<p>Fíjate en que la casilla de la diagonal secundaria lleva el producto tal cual; el «−» se aplica al restar.</p>'
+        : '<p>Fíjate en que los productos que restan se escriben tal cual; el «−» se aplica a la suma de los tres, al final.</p>');
+  } else if (okRes) {
     fb = '<div class="feedback-correcto"><div class="titular">✔ Resultado correcto: +' + E.max + ' puntos</div>';
     if (pasosOk === S.pasosTotal) fb += '<p>Todo el procedimiento es correcto. ' + concepto + '</p>';
     else fb += '<p>El resultado es correcto, pero hay alguna casilla intermedia mal (en rojo). Revísala: un resultado bien obtenido con pasos mal escritos suele ser casualidad o un error de escritura.</p>';
@@ -814,17 +970,23 @@ function corregir(n) {
   }
   fb += '<div class="solucion"><div style="font-family:Lato,sans-serif;font-size:.8rem;color:#6B4F35;margin-bottom:4px;">Resolución completa</div>' +
     lineas.map(l => '<div class="linea">' + l + '</div>').join('') + '</div></div>';
+  if (revelar) {
+    fb += '<div class="acciones"><button type="button" class="btn-primario" id="btn-otro-' + n + '">Hacer otro ejercicio de este tipo</button>' +
+      '<span style="font-size:.85rem;color:var(--color-texto-suave);">Este sí puntúa: ' + E.max + ' puntos.</span></div>';
+  }
 
   const fbEl = document.getElementById('fb-' + n);
   fbEl.innerHTML = fb;
   fbEl.classList.add('visible');
+  if (revelar) document.getElementById('btn-otro-' + n).addEventListener('click', () => nuevoEjercicio(n));
 
   // Bloqueo definitivo
   document.querySelectorAll('#card-' + n + ' input.resp, #card-' + n + ' .tecla').forEach(el => { el.disabled = true; });
   const btn = document.getElementById('btn-' + n);
   btn.disabled = true;
-  btn.textContent = 'Corregido · bloqueado';
-  document.getElementById('card-' + n).classList.add('bloqueado');
+  btn.textContent = revelar ? 'Solución vista · bloqueado' : 'Corregido · bloqueado';
+  document.getElementById('btn-sol-' + n).disabled = true;
+  document.getElementById('card-' + n).classList.add(revelar ? 'revelado' : 'bloqueado');
 
   actualizarMarcador();
 }
@@ -832,7 +994,7 @@ function corregir(n) {
 function actualizarMarcador() {
   state.nota = [1, 2, 3].reduce((acc, n) => acc + state.ej[n].puntos, 0);
   document.getElementById('marcador-nota').textContent = state.nota;
-  document.getElementById('marcador-corr').textContent = [1, 2, 3].filter(n => state.ej[n].corregido).length;
+  document.getElementById('marcador-corr').textContent = [1, 2, 3].filter(n => state.ej[n].corregido && !state.ej[n].revelado).length;
 }
 
 /* =========================================================
@@ -858,9 +1020,12 @@ document.getElementById('btn-finalizar').addEventListener('click', () => {
   const filas = [1, 2, 3].map(n => {
     const S = state.ej[n];
     const nombre = ['', '2×2 con parámetro', '3×3 enteros', '3×3 con parámetro'][n];
-    if (!S.corregido) return '<tr><td>' + n + '. ' + nombre + '</td><td colspan="3"><em>Sin corregir</em></td><td>0 / ' + EJ[n].max + '</td></tr>';
-    return '<tr><td>' + n + '. ' + nombre + '</td><td>Corregido</td><td>' + (S.resultadoOk ? '✔' : '✘') + '</td><td>' + S.pasosOk + ' / ' + S.pasosTotal + '</td><td><strong>' + S.puntos + ' / ' + EJ[n].max + '</strong></td></tr>';
+    const fila = n + '. ' + nombre;
+    if (!S.corregido) return '<tr><td>' + fila + '</td><td colspan="3"><em>Sin corregir</em></td><td>' + S.vistas + '</td><td>0 / ' + EJ[n].max + '</td></tr>';
+    if (S.revelado) return '<tr><td>' + fila + '</td><td>Solución vista</td><td>—</td><td>—</td><td>' + S.vistas + '</td><td><strong>0 / ' + EJ[n].max + '</strong></td></tr>';
+    return '<tr><td>' + fila + '</td><td>Corregido</td><td>' + (S.resultadoOk ? '✔' : '✘') + '</td><td>' + S.pasosOk + ' / ' + S.pasosTotal + '</td><td>' + S.vistas + '</td><td><strong>' + S.puntos + ' / ' + EJ[n].max + '</strong></td></tr>';
   }).join('');
+  const vistas = [1, 2, 3].reduce((acc, n) => acc + state.ej[n].vistas, 0);
 
   const modal = document.getElementById('modal');
   modal.style.background = bg;
@@ -874,8 +1039,9 @@ document.getElementById('btn-finalizar').addEventListener('click', () => {
     '<div style="font-size:.9rem;">sobre 10</div>' +
     '<div class="modal-datos">Fecha: ' + dos(ahora.getDate()) + '/' + dos(ahora.getMonth() + 1) + '/' + ahora.getFullYear() +
     ' · Hora: ' + dos(ahora.getHours()) + ':' + dos(ahora.getMinutes()) + ':' + dos(ahora.getSeconds()) +
-    '<br>Tiempo empleado: ' + dos(Math.floor(minutos / 60)) + ':' + dos(minutos % 60) + ' (hh:mm)</div>' +
-    '<table class="tabla-informe"><thead><tr><th>Ejercicio</th><th>Estado</th><th>Resultado</th><th>Pasos bien</th><th>Puntos</th></tr></thead><tbody>' + filas + '</tbody></table>' +
+    '<br>Tiempo empleado: ' + dos(Math.floor(minutos / 60)) + ':' + dos(minutos % 60) + ' (hh:mm)' +
+    '<br>Soluciones vistas: ' + vistas + '</div>' +
+    '<table class="tabla-informe"><thead><tr><th>Ejercicio</th><th>Estado</th><th>Resultado</th><th>Pasos bien</th><th>Sol. vistas</th><th>Puntos</th></tr></thead><tbody>' + filas + '</tbody></table>' +
     '<button type="button" class="btn-cerrar" id="btn-cerrar">Cerrar</button>';
   document.getElementById('overlay').classList.add('visible');
   document.getElementById('btn-cerrar').addEventListener('click', cerrarModal);
@@ -883,6 +1049,11 @@ document.getElementById('btn-finalizar').addEventListener('click', () => {
 });
 function cerrarModal() { document.getElementById('overlay').classList.remove('visible'); }
 document.getElementById('overlay').addEventListener('click', e => { if (e.target.id === 'overlay') cerrarModal(); });
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if (overlaySol.classList.contains('visible')) cerrarSol();
+  else cerrarModal();
+});
 function escapeHTML(s) { return s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 
 render();
