@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Probabilidad de sucesos contextualizada</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f0e8;--surface:#fffdf7;--ink:#1a1008;--soft:#5c4a30;
+  --accent:#c8401a;--gold:#c8941a;--border:#d4c4a0;
+  --ok:#2a6b4f;--err:#c8401a;--blue:#1a3a6b;
+  --inp-bg:#fef9f0;--inp-b:#c8b48a;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);}
+.autoria{background:var(--ink);text-align:center;padding:5px 12px;font-size:10px;color:rgba(245,240,232,.55);}
+.hdr{background:var(--ink);color:var(--bg);padding:22px 40px 20px;}
+.hdr-in{max-width:860px;margin:0 auto;}
+.htag{display:inline-block;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#c8941a;background:rgba(200,148,26,.15);border:1px solid rgba(200,148,26,.4);padding:3px 10px;border-radius:2px;}
+.hdr h1{font-family:'Playfair Display',serif;font-size:clamp(28px,5vw,48px);font-weight:900;margin-top:8px;}
+.hdr h1 span{color:#c8941a;}
+.hmeta{font-size:11px;color:rgba(245,240,232,.5);margin-top:4px;}
+.pts-info{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;}
+.pts-badge{font-family:'DM Mono',monospace;font-size:10px;padding:3px 9px;border-radius:2px;border:1px solid;}
+.pts-badge.s{ border-color:rgba(26,58,107,.5); color:#9ab3d4;}
+.pts-badge.e{ border-color:rgba(200,64,26,.4); color:#f09070;}
+.nbar{background:#fffdf7;border-bottom:2px solid #d4c4a0;padding:13px 40px;}
+.nbar-in{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.nlabel{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#5c4a30;}
+.ninp{flex:1;max-width:340px;border:none;border-bottom:2px solid #d4c4a0;background:transparent;font-size:16px;padding:3px 8px;outline:none;}
+.ninp:focus{border-color:#c8401a;}
+.ninp.ninp-error{border-color:#c8401a;}
+.name-msg{font-size:11.5px;color:#c8401a;display:none;}
+.name-msg.show{display:block;}
+.sbar{background:#fffdf7;border-bottom:1px solid #d4c4a0;padding:9px 40px;}
+.sbar-in{max-width:860px;margin:0 auto;display:flex;gap:16px;align-items:center;flex-wrap:wrap;}
+.chip{font-family:'DM Mono',monospace;font-size:12px;padding:3px 11px;border-radius:20px;border:1.5px solid;}
+.chip.pts{border-color:#1a3a6b;color:#1a3a6b;background:rgba(26,58,107,.07);}
+.chip.ok{border-color:#2a6b4f;color:#2a6b4f;background:rgba(42,107,79,.07);}
+.chip.err{border-color:#c8401a;color:#c8401a;background:rgba(200,64,26,.07);}
+main{max-width:860px;margin:0 auto;padding:28px 18px 60px;}
+.stitle{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+.snum{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#1a3a6b;color:#fff;font-family:'Playfair Display',serif;font-size:18px;font-weight:700;}
+.sinfo h2{font-family:'Playfair Display',serif;font-size:20px;}
+.sinfo p{font-size:12px;color:#5c4a30;}
+.pts-pill{margin-left:auto;font-family:'DM Mono',monospace;font-size:11px;padding:4px 12px;border-radius:20px;border:1.5px solid #1a3a6b;color:#1a3a6b;}
+.card{background:#fffdf7;border:1.5px solid #d4c4a0;border-radius:6px;padding:24px 28px;margin-bottom:20px;position:relative;}
+.card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:#1a3a6b;}
+.card.cor{border-color:#2a6b4f;background:rgba(42,107,79,.04);}
+.card.wrong{border-color:#c8401a;background:rgba(200,64,26,.04);}
+.ctag{display:inline-block;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:2px 8px;border-radius:2px;margin-bottom:9px;background:rgba(26,58,107,.12);color:#1a3a6b;}
+.qtext{font-size:14.5px;line-height:1.72;margin-bottom:16px;}
+.qtext strong{color:#1a3a6b;}
+.fq{ border-top:1.5px solid #d4c4a0; padding-top:14px; margin-top:0; }
+.fqlabel{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:2px;text-transform:uppercase;color:#1a3a6b;margin-bottom:9px;font-weight:600;}
+.ans-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;}
+.ans-label{font-family:'DM Mono',monospace;font-size:12px;color:#5c4a30;}
+.ans-inp{border:1.5px solid #c8b48a;border-radius:4px;background:#fef9f0;font-family:'DM Mono',monospace;font-size:14px;padding:7px 12px;width:200px;outline:none;}
+.ans-inp:focus{border-color:#1a3a6b;}
+.ans-inp.vok{border-color:#2a6b4f!important;background:rgba(42,107,79,.07);}
+.ans-inp.ver{border-color:#c8401a!important;background:rgba(200,64,26,.07);}
+.fmt-hint{font-size:11px;color:#5c4a30;font-style:italic;margin-bottom:8px;background:rgba(200,148,26,.08);display:inline-block;padding:3px 10px;border-radius:12px;}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;}
+.btn-chk{background:#1a1008;color:#f5f0e8;border:none;padding:9px 20px;border-radius:3px;font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;}
+.btn-chk:hover{background:#c8401a;}
+.btn-chk:disabled{opacity:.38;}
+.btn-otro{display:none;background:#1a3a6b;color:#fff;border:none;padding:9px 20px;border-radius:3px;font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;}
+.btn-otro:hover{background:#0f2650;}
+.fb{display:none;margin-top:12px;padding:11px 14px;border-radius:4px;font-size:13.5px;border:1.5px solid;}
+.fb.show{display:block;}
+.fb.ok{border-color:#2a6b4f;background:rgba(42,107,79,.08);color:#2a6b4f;}
+.fb.er{border-color:#c8401a;background:rgba(200,64,26,.08);color:#c8401a;}
+.fb.warn{border-color:#c8941a;background:rgba(200,148,26,.1);color:#8a6d1a;}
+.fb .why{margin-top:5px;font-family:'DM Mono',monospace;font-size:11.5px;color:#5c4a30;}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+.submit-area{margin-top:40px;text-align:center;}
+.btn-sub{background:#c8401a;color:#fff;border:none;padding:15px 46px;font-family:'Playfair Display',serif;font-size:17px;font-weight:700;border-radius:4px;cursor:pointer;box-shadow:4px 4px 0 #1a1008;}
+.btn-sub:hover{background:#a83212;}
+.overlay-name{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;align-items:center;justify-content:center;}
+.overlay-name.show{display:flex;}
+.modal-name{background:#fffdf7;border:2px solid #c8401a;border-radius:8px;padding:32px 36px;max-width:400px;text-align:center;}
+.modal-name h3{font-family:'Playfair Display',serif;font-size:22px;color:#c8401a;}
+.modal-name p{font-size:13.5px;color:#5c4a30;margin-bottom:20px;}
+.modal-name-inp{width:100%;border:1.5px solid #c8b48a;border-radius:4px;background:#fef9f0;font-size:16px;padding:9px 12px;margin-bottom:16px;}
+.modal-name-inp.mn-error{border-color:#c8401a;}
+.btn-name-ok{background:#c8401a;color:#fff;border:none;padding:10px 28px;border-radius:3px;font-weight:700;cursor:pointer;width:100%;}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;align-items:center;justify-content:center;}
+.overlay.show{display:flex;}
+.modal{background:#fffdf7;border:2px solid #1a1008;border-radius:8px;padding:36px 40px;max-width:480px;text-align:center;box-shadow:8px 8px 0 #1a1008;position:relative;}
+.modal-close{position:absolute;top:12px;right:14px;background:none;border:none;font-size:20px;cursor:pointer;}
+.rname{font-family:'DM Mono',monospace;font-size:12px;letter-spacing:2px;}
+.rgrade{font-family:'Playfair Display',serif;font-size:68px;font-weight:900;margin:8px 0;}
+.rlabel{font-size:14px;margin-bottom:18px;}
+.rstats{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+.sbox{padding:9px 18px;border:1.5px solid #d4c4a0;border-radius:4px;font-family:'DM Mono',monospace;font-size:12px;}
+.rfooter{font-size:10.5px;color:#5c4a30;margin-top:16px;border-top:1px solid #d4c4a0;padding-top:11px;}
+.modal.n10{background:#1a7a1a;color:#fff;}
+.modal.n9 {background:#6dbf6d;color:#fff;}
+.modal.n8 {background:#1a4f8a;color:#fff;}
+.modal.n7 {background:#5b9bd5;color:#fff;}
+.modal.n6 {background:#c05c00;color:#fff;}
+.modal.n5 {background:#f5a623;color:#1a1008;}
+.modal.n4,.modal.n3,.modal.n2,.modal.n1,.modal.n0{background:#c0392b;color:#fff;}
+</style>
+</head>
+<body>
+<div class="autoria">Material elaborado por Marta L Letona S. Basado en trabajo de J.Cayetano.</div>
+<header class="hdr">
+  <div class="hdr-in">
+    <span class="htag">Matemáticas CC.SS. II · PAU Extremadura</span>
+    <h1>Probabilidad de <span>sucesos</span></h1>
+    <p class="hmeta">Álgebra de sucesos: unión, intersección, probabilidad condicionada, independencia y leyes de De Morgan</p>
+    <div class="pts-info">
+      <span class="pts-badge s">5 ejercicios · 2 puntos c/u → Total 10 pts</span>
+      <span class="pts-badge e">Error → 0 pts</span>
+    </div>
+  </div>
+</header>
+<div class="nbar" id="nbar">
+  <div class="nbar-in">
+    <label class="nlabel" for="sName">Alumno/a</label>
+    <input class="ninp" id="sName" type="text" placeholder="Escribe tu nombre…" autocomplete="off" aria-label="Nombre y apellidos del alumno">
+    <span class="name-msg" id="nameMsg">⚠ Introduce tu nombre antes de entregar</span>
+  </div>
+</div>
+<div class="sbar">
+  <div class="sbar-in">
+    <span class="chip pts" id="cPts">Puntuación: 0 / 10</span>
+    <span class="chip ok"  id="cOk">✓ 0 correctas</span>
+    <span class="chip err" id="cErr">✗ 0 erróneas</span>
+  </div>
+</div>
+<main>
+<div class="stitle">
+  <div class="snum">1</div>
+  <div class="sinfo"><h2>Álgebra de sucesos</h2><p>Calcula la probabilidad pedida. Redondea a <strong>3 decimales</strong> (ej: 0,375)</p></div>
+  <span class="pts-pill">10 puntos (5 ejercicios)</span>
+</div>
+<div class="card" id="sucesosContainer"></div>
+<div class="submit-area">
+  <button class="btn-sub" onclick="submitAll()">Finalizar y Calificar</button>
+</div>
+</main>
+
+<div class="overlay-name" id="overlayName">
+  <div class="modal-name">
+    <h3>✏️ Falta tu nombre</h3>
+    <p>Para guardar el resultado necesitas identificarte.</p>
+    <label class="sr-only" for="modalNameInp">Nombre y apellidos</label>
+    <input class="modal-name-inp" id="modalNameInp" type="text" placeholder="Nombre y apellidos…" aria-label="Nombre y apellidos">
+    <button class="btn-name-ok" onclick="confirmName()">Continuar →</button>
+  </div>
+</div>
+<div class="overlay-name" id="overlayConfirmNew">
+  <div class="modal-name">
+    <h3>⚠️ Vas a perder puntos</h3>
+    <p id="confirmNewExMsg">Este ejercicio ya tiene puntos ganados. Si generas uno nuevo, los perderás.</p>
+    <div style="display:flex;gap:10px;">
+      <button class="btn-name-ok" style="background:#5c4a30;width:auto;flex:1;" onclick="cancelarNewExercise()">Cancelar</button>
+      <button class="btn-name-ok" style="width:auto;flex:1;" onclick="confirmarNewExercise()">Sí, perder puntos</button>
+    </div>
+  </div>
+</div>
+<div class="overlay-name" id="overlayIncompleto">
+  <div class="modal-name">
+    <h3>⚠️ Ficha incompleta</h3>
+    <p id="incompleteMsg"></p>
+    <div style="display:flex;gap:10px;">
+      <button class="btn-name-ok" style="background:#5c4a30;width:auto;flex:1;" onclick="cancelarFinalizar()">Seguir trabajando</button>
+      <button class="btn-name-ok" style="width:auto;flex:1;" onclick="confirmarFinalizarIncompleto()">Finalizar igualmente</button>
+    </div>
+  </div>
+</div>
+<div class="overlay" id="overlay">
+  <div class="modal" id="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="rname" id="rName"></div>
+    <div class="rgrade" id="rGrade"></div>
+    <div class="rlabel" id="rLabel"></div>
+    <div class="rstats">
+      <div class="sbox" id="rS1"></div>
+      <div class="sbox" id="rS2"></div>
+      <div class="sbox" id="rS3"></div>
+      <div class="sbox" id="rS4"></div>
+    </div>
+    <div class="rfooter">Material elaborado por Marta L Letona S.</div>
+  </div>
+</div>
+
+<script>
+const PTOS_POR_EJERCICIO = 2;
+const MAX_SCORE = 10;
+let answered = {};
+let results = {};
+let startTime = Date.now();
+let currentExercises = [];
+
+function approx(a,b,t=0.001){ return Math.abs(a-b)<t; }
+
+function round3(x) {
+    return Math.round(x * 1000) / 1000;
+}
+
+function randProb(min, max) {
+    return round3(min + Math.random() * (max - min));
+}
+
+// IMPORTANTE: Todos los valores se generan con 3 decimales de precisión
+// y se muestran con esa misma precisión para que coincidan exactamente
+function crearEjercicio(tipo, idUnico) {
+    let pA, pB, pAB, pAgB, pBgA, pAUB, pNinguna;
+    let texto = "";
+    let pregunta = "";
+    let explicacion = "";
+    let respuesta = 0;
+    
+    if(tipo === 'periodicos') {
+        pA = randProb(0.2, 0.8);
+        pB = randProb(0.2, 0.8);
+        let minAB = Math.max(0, pA + pB - 1);
+        let maxAB = Math.min(pA, pB);
+        if (minAB > maxAB) minAB = maxAB - 0.05;
+        if (minAB < 0) minAB = 0;
+        pAB = randProb(minAB, maxAB);
+        respuesta = round3(pA + pB - pAB);
+        
+        texto = `En una ciudad, el ${(pA*100).toFixed(1)}% de los adultos lee el periódico digital, el ${(pB*100).toFixed(1)}% lee el periódico impreso y el ${(pAB*100).toFixed(1)}% lee ambos formatos.`;
+        pregunta = `Si se elige un adulto al azar, calcula la probabilidad de que lea al menos uno de los dos formatos (digital o impreso).`;
+        explicacion = `P(D ∪ I) = P(D) + P(I) - P(D∩I) = ${pA.toFixed(3)} + ${pB.toFixed(3)} - ${pAB.toFixed(3)} = ${respuesta.toFixed(3)}`;
+    }
+    else if(tipo === 'salud') {
+        pB = randProb(0.2, 0.7);
+        pAgB = randProb(0.3, 0.8);
+        pAB = round3(pAgB * pB);
+        // maxA debe respetar además la cota de unión válida: pA + pB - pAB <= 1
+        let minA = Math.max(pAB + 0.05, 0.2);
+        let maxA = Math.min(0.95, pAB + 0.5, 1 - pB + pAB);
+        pA = randProb(minA, maxA);
+        
+        respuesta = round3(pA + pB - pAB);
+        
+        texto = `En un centro de salud, el ${(pA*100).toFixed(1)}% de los pacientes tiene hipertensión, el ${(pB*100).toFixed(1)}% tiene diabetes. Además, se sabe que la probabilidad de que un paciente tenga hipertensión dado que tiene diabetes es ${pAgB.toFixed(3)}.`;
+        pregunta = `Calcula la probabilidad de que un paciente elegido al azar tenga hipertensión o diabetes.`;
+        explicacion = `P(H∩D) = P(H|D)·P(D) = ${pAgB.toFixed(3)} × ${pB.toFixed(3)} = ${pAB.toFixed(3)}<br>P(H ∪ D) = ${pA.toFixed(3)} + ${pB.toFixed(3)} - ${pAB.toFixed(3)} = ${respuesta.toFixed(3)}`;
+    }
+    else if(tipo === 'maquinas') {
+        pA = randProb(0.3, 0.8);
+        pB = randProb(0.3, 0.8);
+        let pAmbasAveriadas = round3(pA * pB);
+        respuesta = round3(1 - pAmbasAveriadas);
+        
+        texto = `En una fábrica, dos máquinas funcionan de forma independiente. La probabilidad de que la máquina A se averíe en un día es ${pA.toFixed(3)} y la probabilidad de que la máquina B se averíe es ${pB.toFixed(3)}.`;
+        pregunta = `Calcula la probabilidad de que al menos una de las dos máquinas no se averíe (es decir, que la máquina A funcione o la máquina B funcione). Aplica las leyes de De Morgan si lo necesitas.`;
+        explicacion = `P(Ā ∪ B̅) = 1 - P(A ∩ B) = 1 - (${pA.toFixed(3)} × ${pB.toFixed(3)}) = 1 - ${pAmbasAveriadas.toFixed(3)} = ${respuesta.toFixed(3)}`;
+    }
+    else if(tipo === 'concurso') {
+        pA = randProb(0.2, 0.5);
+        let maxB = Math.min(0.5, 1 - pA);
+        if(maxB < 0.1) maxB = 0.1;
+        pB = randProb(0.1, maxB);
+        respuesta = round3(pA + pB);
+        
+        texto = `En un concurso de televisión, los concursantes solo pueden ganar un único premio. El ${(pA*100).toFixed(1)}% de los concursantes gana un viaje, y el ${(pB*100).toFixed(1)}% gana un coche. Los premios son mutuamente excluyentes (no se pueden ganar ambos).`;
+        pregunta = `Calcula la probabilidad de que un concursante elegido al azar gane algún premio.`;
+        explicacion = `Son sucesos incompatibles → P(Viaje ∪ Coche) = ${pA.toFixed(3)} + ${pB.toFixed(3)} = ${respuesta.toFixed(3)}`;
+    }
+    else if(tipo === 'universidad') {
+        pB = randProb(0.3, 0.7);
+        let maxAB = pB - 0.05;
+        let minAB = 0.05;
+        if (maxAB < minAB) maxAB = minAB + 0.1;
+        pAB = randProb(minAB, maxAB);
+        let minA = pAB + 0.05;
+        let maxA = Math.min(0.95, pAB + 0.5);
+        pA = randProb(minA, maxA);
+        
+        respuesta = round3(pAB / pB);
+        
+        texto = `En una universidad, el ${(pA*100).toFixed(1)}% de los estudiantes aprueba Matemáticas, el ${(pB*100).toFixed(1)}% aprueba Estadística y el ${(pAB*100).toFixed(1)}% aprueba ambas asignaturas.`;
+        pregunta = `Si se elige un estudiante que ha aprobado Estadística, ¿cuál es la probabilidad de que también haya aprobado Matemáticas?`;
+        explicacion = `P(M|E) = P(M∩E) / P(E) = ${pAB.toFixed(3)} / ${pB.toFixed(3)} = ${respuesta.toFixed(3)}`;
+    }
+    else if(tipo === 'sensores') {
+        pA = randProb(0.2, 0.6);
+        pB = randProb(0.2, 0.6);
+        respuesta = round3(pA + pB - (pA * pB));
+        
+        texto = `En un sistema de seguridad, se instalan dos sensores de movimiento que funcionan de forma independiente. La probabilidad de que el primer sensor detecte un intruso es ${pA.toFixed(3)} y la probabilidad de que el segundo sensor lo detecte es ${pB.toFixed(3)}.`;
+        pregunta = `Calcula la probabilidad de que al menos uno de los dos sensores detecte al intruso.`;
+        explicacion = `P(S1 ∪ S2) = P(S1) + P(S2) - P(S1)·P(S2) = ${pA.toFixed(3)} + ${pB.toFixed(3)} - (${pA.toFixed(3)} × ${pB.toFixed(3)}) = ${respuesta.toFixed(3)}`;
+    }
+    else if(tipo === 'redes_sociales') {
+        pA = randProb(0.3, 0.7);
+        pB = randProb(0.3, 0.7);
+        let minUnion = Math.max(pA, pB);
+        let maxUnion = Math.min(1, pA + pB);
+        pAUB = randProb(minUnion, maxUnion);
+        pAB = round3(pA + pB - pAUB);
+        pNinguna = round3(1 - pAUB);
+        
+        respuesta = pAB;
+        
+        texto = `Una empresa realiza una encuesta sobre uso de redes sociales. El ${(pA*100).toFixed(1)}% de los jóvenes usa Instagram, el ${(pB*100).toFixed(1)}% usa TikTok, y el ${(pNinguna*100).toFixed(1)}% no usa ninguna de las dos redes.`;
+        pregunta = `Calcula la probabilidad de que un joven elegido al azar use ambas redes sociales (Instagram y TikTok).`;
+        explicacion = `P(ninguna) = 1 - P(I ∪ T) → P(I ∪ T) = ${pAUB.toFixed(3)}<br>P(I ∩ T) = P(I) + P(T) - P(I∪T) = ${pA.toFixed(3)} + ${pB.toFixed(3)} - ${pAUB.toFixed(3)} = ${respuesta.toFixed(3)}`;
+    }
+    else if(tipo === 'viviendas') {
+        pA = randProb(0.4, 0.8);
+        pB = randProb(0.3, 0.7);
+        let minInter = Math.max(0, pA + pB - 1);
+        let maxInter = Math.min(pA, pB);
+        if (minInter > maxInter) minInter = maxInter - 0.05;
+        if (minInter < 0) minInter = 0;
+        let pInter = randProb(minInter, maxInter);
+        pBgA = round3(pInter / pA);
+        pAB = round3(pBgA * pA);
+        pAUB = round3(pA + pB - pAB);
+        respuesta = round3(1 - pAUB);
+        
+        texto = `En una ciudad, el ${(pA*100).toFixed(1)}% de las viviendas tiene jardín, el ${(pB*100).toFixed(1)}% tiene garaje. La probabilidad de que una vivienda tenga garaje sabiendo que tiene jardín es ${pBgA.toFixed(3)}.`;
+        pregunta = `Calcula la probabilidad de que una vivienda elegida al azar no tenga ni jardín ni garaje.`;
+        explicacion = `P(G∩J) = P(G|J)·P(J) = ${pBgA.toFixed(3)} × ${pA.toFixed(3)} = ${pAB.toFixed(3)}<br>P(J∪G) = ${pA.toFixed(3)} + ${pB.toFixed(3)} - ${pAB.toFixed(3)} = ${pAUB.toFixed(3)}<br>P(ninguna) = 1 - ${pAUB.toFixed(3)} = ${respuesta.toFixed(3)}`;
+    }
+
+    return {
+        id: idUnico,
+        tipo: tipo,
+        texto: texto,
+        pregunta: pregunta,
+        respuesta: respuesta,
+        explicacion: explicacion
+    };
+}
+
+function generar5Ejercicios() {
+    const tipos = ['periodicos', 'salud', 'maquinas', 'concurso', 'universidad', 'sensores', 'redes_sociales', 'viviendas'];
+    let ejercicios = [];
+    let tiposUsados = new Set();
+    
+    while(ejercicios.length < 5 && tiposUsados.size < tipos.length) {
+        let tipo = tipos[Math.floor(Math.random() * tipos.length)];
+        if(!tiposUsados.has(tipo)) {
+            tiposUsados.add(tipo);
+            ejercicios.push(crearEjercicio(tipo, 'ex_' + Date.now() + '_' + ejercicios.length + '_' + Math.random().toString(36).slice(2)));
+        }
+    }
+    
+    while(ejercicios.length < 5) {
+        ejercicios.push(crearEjercicio('periodicos', 'ex_' + Date.now() + '_' + ejercicios.length + '_' + Math.random().toString(36).slice(2)));
+    }
+    
+    return ejercicios;
+}
+
+function buildExercises() {
+    currentExercises = generar5Ejercicios();
+    let html = '<span class="ctag">5 problemas contextualizados · Números aleatorios · Respuesta numérica (3 decimales)</span>';
+    
+    for(let idx = 0; idx < currentExercises.length; idx++) {
+        const ex = currentExercises[idx];
+        html += `<div id="exCard_${ex.id}" class="fq" style="border-top: ${idx===0?'none':'1.5px solid #d4c4a0'}; padding-top: ${idx===0?'0':'14px'}; margin-top: ${idx===0?'0':'14px'}">
+            <p class="fqlabel">Ejercicio ${idx+1}</p>
+            <p class="qtext">${ex.texto}<br><br><strong>${ex.pregunta}</strong></p>
+            <p class="fmt-hint">📐 Escribe el resultado con <strong>3 decimales</strong> (usa coma o punto decimal). Ejemplo: 0,375 o 0.375</p>
+            <div class="ans-row">
+                <label class="ans-label" for="ans_${ex.id}">P =</label>
+                <input class="ans-inp" id="ans_${ex.id}" type="text" placeholder="0,000" autocomplete="off" aria-label="Respuesta al ejercicio ${idx+1}, probabilidad entre 0 y 1">
+            </div>
+            <div class="actions">
+                <button class="btn-chk" id="chk_${ex.id}" onclick="checkAlgebra('${ex.id}')">✓ Comprobar</button>
+                <button class="btn-otro" id="otro_${ex.id}" onclick="newExercise('${ex.id}')" style="display:none">🔄 Otro ejercicio</button>
+            </div>
+            <div class="fb" id="fb_${ex.id}" aria-live="polite"></div>
+        </div>`;
+    }
+    
+    document.getElementById('sucesosContainer').innerHTML = html;
+}
+
+function checkAlgebra(exId){
+    if(answered[exId]) return;
+    const ex = currentExercises.find(e=>e.id===exId);
+    if(!ex) return;
+    
+    const inp = document.getElementById(`ans_${exId}`);
+    const fbWarn = document.getElementById(`fb_${exId}`);
+    if(!inp || inp.value.trim() === ''){ 
+        fbWarn.className = 'fb show warn';
+        fbWarn.innerHTML = '⚠ Escribe tu respuesta antes de comprobar.';
+        return; 
+    }
+    
+    let raw = inp.value.trim().replace(',', '.');
+    let val = parseFloat(raw);
+    if(isNaN(val)){ 
+        fbWarn.className = 'fb show warn';
+        fbWarn.innerHTML = '⚠ Introduce un número válido (usa punto o coma decimal).';
+        return; 
+    }
+    
+    val = round3(val);
+    const isOk = approx(val, ex.respuesta, 0.001);
+    
+    answered[exId] = true;
+    results[exId] = { ok: isOk, answered: true };
+    
+    inp.classList.remove('vok','ver');
+    inp.classList.add(isOk ? 'vok' : 'ver');
+    inp.disabled = true;
+    
+    const fb = document.getElementById(`fb_${exId}`);
+    fb.className = `fb show ${isOk ? 'ok' : 'er'}`;
+    
+    if(isOk){
+        fb.innerHTML = `<strong>✓ ¡Correcto! +${PTOS_POR_EJERCICIO} puntos</strong><div class="why">${ex.explicacion}</div>`;
+    } else {
+        fb.innerHTML = `<strong>✗ Incorrecto. 0 puntos</strong><div class="why">La respuesta correcta es <strong>${ex.respuesta.toFixed(3)}</strong><br>${ex.explicacion}</div>`;
+    }
+    
+    document.getElementById(`chk_${exId}`).disabled = true;
+    const otroBtn = document.getElementById(`otro_${exId}`);
+    if(otroBtn) otroBtn.style.display = 'inline-flex';
+    
+    const container = document.getElementById('sucesosContainer').parentElement.querySelector('.card');
+    const allCorrect = currentExercises.every(exer => answered[exer.id] && results[exer.id]?.ok);
+    const anyWrong = currentExercises.some(exer => answered[exer.id] && !results[exer.id]?.ok);
+    if(allCorrect) container.classList.add('cor');
+    else if(anyWrong) container.classList.add('wrong');
+    else container.classList.remove('cor','wrong');
+    
+    updateScoreUI();
+}
+
+let pendingNewExerciseId = null;
+
+function newExercise(oldId){
+    // Si el ejercicio ya tenía puntos ganados, hay que confirmar antes de borrarlos.
+    const tieneQuePerder = results[oldId] && results[oldId].ok;
+    if(tieneQuePerder){
+        pendingNewExerciseId = oldId;
+        document.getElementById('confirmNewExMsg').textContent =
+            `Este ejercicio ya tiene ${PTOS_POR_EJERCICIO} puntos ganados. Si generas uno nuevo, los perderás. ¿Quieres continuar?`;
+        document.getElementById('overlayConfirmNew').classList.add('show');
+        return;
+    }
+    ejecutarNewExercise(oldId);
+}
+
+function cancelarNewExercise(){
+    document.getElementById('overlayConfirmNew').classList.remove('show');
+    pendingNewExerciseId = null;
+}
+
+function confirmarNewExercise(){
+    document.getElementById('overlayConfirmNew').classList.remove('show');
+    if(pendingNewExerciseId){
+        ejecutarNewExercise(pendingNewExerciseId);
+        pendingNewExerciseId = null;
+    }
+}
+
+function ejecutarNewExercise(oldId){
+    const index = currentExercises.findIndex(e=>e.id===oldId);
+    if(index === -1) return;
+    
+    const tipos = ['periodicos', 'salud', 'maquinas', 'concurso', 'universidad', 'sensores', 'redes_sociales', 'viviendas'];
+    // Evitar repetir un tipo que ya esté presente en otro de los huecos actuales
+    const tiposEnUso = new Set(currentExercises.filter((e,i)=>i!==index).map(e=>e.tipo));
+    let disponibles = tipos.filter(t=>!tiposEnUso.has(t));
+    if(disponibles.length === 0) disponibles = tipos;
+    let nuevoTipo = disponibles[Math.floor(Math.random() * disponibles.length)];
+    let newEx = crearEjercicio(nuevoTipo, 'ex_' + Date.now() + '_' + index + '_' + Math.random().toString(36).slice(2));
+    
+    currentExercises[index] = newEx;
+    
+    if(answered[oldId]){
+        delete answered[oldId];
+        delete results[oldId];
+    }
+    
+    buildExercises();
+    updateScoreUI();
+    
+    const container = document.getElementById('sucesosContainer').parentElement.querySelector('.card');
+    container.classList.remove('cor','wrong');
+}
+
+function calcScore(){
+    let tot = 0;
+    Object.values(results).forEach(r=>{ if(r.ok) tot += PTOS_POR_EJERCICIO; });
+    return Math.round(Math.min(MAX_SCORE, tot) * 100) / 100;
+}
+
+function updateScoreUI(){
+    const okCount = Object.values(results).filter(r=>r.ok).length;
+    const errCount = Object.values(results).filter(r=>r.answered && !r.ok).length;
+    const s = calcScore();
+    document.getElementById('cPts').textContent = 'Puntuación: '+ s +' / 10';
+    document.getElementById('cOk').textContent = '✓ '+ okCount +' correctas';
+    document.getElementById('cErr').textContent = '✗ '+ errCount +' erróneas';
+}
+
+let pendingSubmitName = null;
+
+function submitAll(){
+    const name = document.getElementById('sName').value.trim();
+    if(!name){
+        document.getElementById('overlayName').classList.add('show');
+        return;
+    }
+    proceedSubmit(name);
+}
+
+function proceedSubmit(name){
+    const done = Object.keys(answered).length;
+    const total = currentExercises.length;
+    if(done < total){
+        pendingSubmitName = name;
+        const notaActual = calcScore();
+        document.getElementById('incompleteMsg').textContent =
+            `Te faltan ${total - done} de ${total} ejercicios por responder. Si finalizas ahora, tu nota será ${notaActual.toFixed(1)} / ${MAX_SCORE}.`;
+        document.getElementById('overlayIncompleto').classList.add('show');
+        return;
+    }
+    showResult(name);
+}
+
+function cancelarFinalizar(){
+    document.getElementById('overlayIncompleto').classList.remove('show');
+    pendingSubmitName = null;
+}
+
+function confirmarFinalizarIncompleto(){
+    document.getElementById('overlayIncompleto').classList.remove('show');
+    if(pendingSubmitName){
+        showResult(pendingSubmitName);
+        pendingSubmitName = null;
+    }
+}
+
+function confirmName(){
+    const inp = document.getElementById('modalNameInp');
+    const val = inp.value.trim();
+    if(!val){ 
+        inp.classList.add('mn-error'); 
+        setTimeout(()=>inp.classList.remove('mn-error'),400);
+        return; 
+    }
+    document.getElementById('sName').value = val;
+    document.getElementById('overlayName').classList.remove('show');
+    proceedSubmit(val);
+}
+
+function showResult(name){
+    const okCount = Object.values(results).filter(r=>r.ok).length;
+    const errCount = Object.values(results).filter(r=>r.answered && !r.ok).length;
+    const done = Object.keys(answered).length;
+    const nota = calcScore();
+    const now = new Date();
+    const fecha = now.toLocaleDateString('es-ES');
+    const hora = now.toLocaleTimeString('es-ES');
+    const elapsed = Math.floor((Date.now()-startTime)/1000);
+    const mm = Math.floor(elapsed/60).toString().padStart(2,'0');
+    const ss = (elapsed%60).toString().padStart(2,'0');
+    
+    const modal = document.getElementById('modal');
+    modal.className = 'modal';
+    const cls = nota>=10?'n10':nota>=9?'n9':nota>=8?'n8':nota>=7?'n7':nota>=6?'n6':nota>=5?'n5':'n0';
+    modal.classList.add(cls);
+    
+    document.getElementById('rName').textContent = name.toUpperCase();
+    document.getElementById('rGrade').textContent = nota.toFixed(1)+' / '+MAX_SCORE;
+    document.getElementById('rLabel').textContent = nota>=9?'¡Excelente! Dominas el álgebra de sucesos.':nota>=7?'Muy bien. Sigue practicando.':nota>=5?'Aprobado. Revisa los errores.':'Necesitas repasar las leyes de probabilidad.';
+    document.getElementById('rS1').textContent = '📅 '+fecha+'  🕐 '+hora;
+    document.getElementById('rS2').textContent = '⏱ Tiempo: '+mm+':'+ss;
+    document.getElementById('rS3').textContent = '✓ '+okCount+' correctas  ✗ '+errCount+' erróneas';
+    document.getElementById('rS4').textContent = 'Ejercicios respondidos: '+done+' / 5  ·  Puntuación: '+nota.toFixed(1);
+    document.getElementById('overlay').classList.add('show');
+}
+
+function closeModal(){ document.getElementById('overlay').classList.remove('show'); }
+
+document.getElementById('overlay').addEventListener('click',function(e){ if(e.target===this) closeModal(); });
+
+// Soporte de tecla Enter para comprobar respuesta (delegado, funciona con inputs generados dinámicamente)
+document.addEventListener('keydown', function(e){
+    if(e.key === 'Enter' && e.target.classList && e.target.classList.contains('ans-inp') && !e.target.disabled){
+        e.preventDefault();
+        const exId = e.target.id.replace('ans_', '');
+        checkAlgebra(exId);
+    }
+});
+
+buildExercises();
+</script>
+</body>
+</html>
