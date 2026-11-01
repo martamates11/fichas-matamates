@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Problemas con sistemas de ecuaciones · 3º ESO</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap');
+
+:root {
+  --color-fondo: #F5F0E8;
+  --color-fondo-card: #FDFAF3;
+  --color-texto: #2C1F0E;
+  --color-texto-suave: #6B4F35;
+  --color-acento: #A0522D;
+  --color-acento-hover: #7B3B1E;
+  --color-borde: #C9A96E;
+  --color-borde-suave: #E0CEAA;
+  --color-cabecera: #3B2510;
+  --color-cabecera-txt: #F5EDD8;
+  --color-correcto: #2E6B3E;
+  --color-incorrecto: #8B1A1A;
+  --color-neutro: #E8DFC8;
+}
+
+* { box-sizing: border-box; }
+
+body, .ficha {
+  font-family: 'Lato', sans-serif;
+  font-size: 16px;
+  color: var(--color-texto);
+  background-color: var(--color-fondo);
+  margin: 0;
+}
+
+h1, h2, h3, .titulo-ficha { font-family: 'Libre Baskerville', serif; color: var(--color-texto); }
+
+.cabecera {
+  background-color: var(--color-cabecera);
+  color: var(--color-cabecera-txt);
+  font-family: 'Libre Baskerville', serif;
+  text-align: center;
+  padding: 12px 20px;
+  border-bottom: 3px solid var(--color-borde);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+}
+
+.ficha-container {
+  max-width: 760px;
+  margin: 28px auto;
+  background: var(--color-fondo-card);
+  border: 2px solid var(--color-borde);
+  border-radius: 6px;
+  box-shadow: 0 3px 12px rgba(44, 31, 14, 0.15);
+  padding: 32px 36px 40px;
+}
+
+.header-ficha { border-bottom: 2px solid var(--color-borde); padding-bottom: 16px; margin-bottom: 24px; }
+.titulo-ficha { font-size: 1.5rem; text-align: center; margin: 0 0 6px; }
+.titulo-ficha::after { content: ''; display: block; width: 60px; height: 3px; background: var(--color-borde); margin: 8px auto 0; border-radius: 2px; }
+.subtitulo { text-align: center; color: var(--color-texto-suave); font-size: 0.9rem; margin-bottom: 16px; }
+
+.fila-header-datos { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+.bloque-nombre { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.bloque-nombre label { font-size: 0.9rem; color: var(--color-texto-suave); white-space: nowrap; }
+.bloque-nombre input { width: 140px; min-width: 0; }
+
+.marcador { font-family: 'Libre Baskerville', serif; font-size: 0.95rem; color: var(--color-texto-suave); text-align: right; white-space: nowrap; }
+.marcador span { color: var(--color-acento); font-weight: 700; }
+
+.chips-tipos { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 16px; }
+.chip-tipo {
+  font-family: 'Lato', sans-serif; font-size: 0.72rem; font-weight: 700; padding: 6px 14px;
+  border-radius: 20px; border: 1.5px solid var(--color-borde-suave); color: var(--color-texto-suave);
+  background: var(--color-fondo); transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+  cursor: pointer;
+}
+.chip-tipo:hover:not(:disabled) { border-color: var(--color-acento); color: var(--color-acento); background: var(--color-fondo-card); }
+.chip-tipo.activo { border-color: var(--color-acento); color: var(--color-acento); background: var(--color-fondo-card); }
+.chip-tipo.superado { background: var(--color-correcto); color: #fff; border-color: var(--color-correcto); cursor: default; }
+.chip-tipo:disabled { cursor: default; }
+.instruccion-eleccion { text-align: center; font-size: 0.82rem; color: var(--color-texto-suave); margin-top: 6px; margin-bottom: 0; }
+
+.ejercicio-card {
+  background: var(--color-fondo); border: 1.5px solid var(--color-borde-suave); border-left: 4px solid var(--color-borde);
+  border-radius: 4px; padding: 20px 24px; margin-bottom: 18px;
+}
+.ejercicio-card.resuelto { border-left-color: var(--color-correcto); }
+.ejercicio-card.con-error { border-left-color: var(--color-incorrecto); }
+
+.paso-titulo { font-family: 'Libre Baskerville', serif; font-size: 1.02rem; margin: 0 0 10px; }
+.paso-numero {
+  display: inline-block; background: var(--color-acento); color: #FDFAF3; width: 22px; height: 22px; border-radius: 50%;
+  text-align: center; line-height: 22px; font-size: 0.85rem; margin-right: 8px;
+}
+.enunciado { font-size: 1rem; margin-bottom: 4px; }
+.definicion-incognitas { font-size: 0.88rem; color: var(--color-texto-suave); font-style: italic; margin: 8px 0 16px; }
+
+.sistema { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 14px 0; font-size: 1.15rem; font-family: 'Libre Baskerville', serif; }
+.llave { font-size: 3.8rem; font-weight: 100; line-height: 1; color: var(--color-acento); transform: scaleX(0.5) scaleY(1.45); user-select: none; }
+.ecuaciones { display: flex; flex-direction: column; gap: 10px; }
+.ecuacion-linea { padding: 6px 14px; border-radius: 4px; }
+.ecuacion-linea.con-error { animation: sacudida 0.3s; }
+@keyframes sacudida { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+
+.linea-blanco { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.linea-blanco .var-fija { font-family: 'Libre Baskerville', serif; }
+.etiqueta-incognita { font-size: 0.88rem; color: var(--color-texto-suave); min-width: 210px; }
+
+.feedback { border-radius: 4px; padding: 9px 14px; margin-top: 10px; font-size: 0.9rem; display: none; }
+.feedback.mostrar { display: block; }
+.feedback-correcto { background-color: #EAF4EC; border: 1.5px solid var(--color-correcto); color: var(--color-correcto); font-weight: 700; }
+.feedback-incorrecto { background-color: #F9EAEA; border: 1.5px solid var(--color-incorrecto); color: var(--color-incorrecto); }
+
+.fila-input { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 10px; }
+input[type="text"], input[type="number"] {
+  background-color: var(--color-fondo-card); border: 1.5px solid var(--color-borde); border-radius: 4px;
+  padding: 8px 12px; font-family: 'Lato', sans-serif; font-size: 1rem; color: var(--color-texto); outline: none;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+input[type="text"]:focus, input[type="number"]:focus { border-color: var(--color-acento); }
+input[type="number"] { width: 100px; }
+input[type="text"] { width: 220px; }
+input.correcta { background-color: #EAF4EC; border-color: var(--color-correcto); }
+input.incorrecta { background-color: #F9EAEA; border-color: var(--color-incorrecto); }
+input:disabled { opacity: 1; }
+
+.btn-primario, .btn-secundario, .btn-finalizar {
+  border-radius: 4px; font-family: 'Lato', sans-serif; font-size: 0.95rem; font-weight: 700; cursor: pointer;
+  letter-spacing: 0.03em; padding: 10px 22px; transition: background-color 0.2s ease, border-color 0.2s, color 0.2s;
+}
+.btn-primario { background-color: var(--color-acento); color: #FDFAF3; border: none; }
+.btn-primario:hover { background-color: var(--color-acento-hover); }
+.btn-primario:disabled { background-color: var(--color-neutro); color: var(--color-texto-suave); cursor: not-allowed; }
+.btn-secundario { background-color: transparent; color: var(--color-acento); border: 2px solid var(--color-borde); padding: 9px 20px; }
+.btn-secundario:hover { border-color: var(--color-acento); color: var(--color-acento-hover); }
+.btn-finalizar {
+  background-color: var(--color-cabecera); color: var(--color-cabecera-txt); border: 2px solid var(--color-borde);
+  font-family: 'Libre Baskerville', serif; padding: 10px 24px; letter-spacing: 0.04em; display: block; margin: 26px auto 0;
+}
+.btn-finalizar:hover { background-color: #2C1A0A; }
+
+.mensaje-final { text-align: center; font-family: 'Libre Baskerville', serif; font-size: 1.05rem; padding: 30px 10px; }
+
+.overlay { position: fixed; inset: 0; background: rgba(44, 31, 14, 0.55); display: flex; align-items: center; justify-content: center; z-index: 50; }
+.overlay.oculto { display: none; }
+.modal-calificacion {
+  border: 3px solid var(--color-borde); border-radius: 8px; font-family: 'Libre Baskerville', serif;
+  box-shadow: 0 6px 24px rgba(44, 31, 14, 0.35); padding: 32px 36px; min-width: 320px; max-width: 92vw;
+  text-align: center; background: var(--color-fondo-card); color: var(--color-texto);
+}
+.modal-calificacion .nota-grande { font-size: 2.6rem; font-weight: 700; margin: 10px 0; }
+.modal-calificacion table { width: 100%; margin-top: 16px; border-collapse: collapse; font-family: 'Lato', sans-serif; font-size: 0.82rem; }
+.modal-calificacion th, .modal-calificacion td { border-bottom: 1px solid rgba(255,255,255,0.3); padding: 5px 6px; text-align: left; }
+.modal-calificacion .meta { font-family: 'Lato', sans-serif; font-size: 0.85rem; margin-top: 6px; }
+.modal-calificacion .cerrar-modal { margin-top: 20px; }
+
+@media (max-width: 480px) {
+  .ficha-container { padding: 20px 16px; margin: 12px; }
+  .sistema { font-size: 1rem; gap: 4px; }
+  .llave { font-size: 2.8rem; }
+  .fila-header-datos { gap: 6px; }
+  .bloque-nombre input { width: 84px; padding: 6px 8px; }
+  .etiqueta-incognita { min-width: 0; width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<div class="cabecera">Material elaborado por Marta L Letona S. Basado en el trabajo de Javier Cayetano</div>
+
+<div class="ficha-container">
+
+  <div class="header-ficha">
+    <h1 class="titulo-ficha">Problemas con sistemas de ecuaciones</h1>
+    <p class="subtitulo">3º ESO · Plantea el sistema y resuélvelo</p>
+    <p style="text-align:center; font-size:0.82rem; color:var(--color-texto-suave); margin-top:-10px; margin-bottom:14px;">
+      Hay 6 tipos de problema. Resolviendo un problema de un tipo (planteamiento y resolución correctos) ese tipo queda superado y suma 10/6 puntos. Cada fallo resta 0,5 puntos a la nota.
+    </p>
+    <div class="fila-header-datos">
+      <div class="bloque-nombre">
+        <label for="inputNombre">Nombre:</label>
+        <input type="text" id="inputNombre" autocomplete="off">
+      </div>
+      <div class="marcador" aria-live="polite">
+        Nota: <span id="marcadorNota">0</span>/10 &nbsp;·&nbsp;
+        Tipos superados: <span id="marcadorSuperados">0</span>/6
+      </div>
+    </div>
+    <div class="chips-tipos" id="chipsTipos"></div>
+    <p class="instruccion-eleccion" id="instruccionEleccion">Elige arriba el tipo de problema con el que quieres practicar.</p>
+  </div>
+
+  <div id="contenedorPasos"></div>
+
+  <button class="btn-finalizar" id="btnFinalizar">Finalizar y calificar</button>
+</div>
+
+<div class="overlay oculto" id="overlayCalificacion">
+  <div class="modal-calificacion" id="modalCalificacion">
+    <h2 id="modalAlumno"></h2>
+    <div class="nota-grande" id="modalNota"></div>
+    <div class="meta" id="modalMeta"></div>
+    <table>
+      <thead><tr><th>Tipo de problema</th><th>Superado</th><th>Intentos</th><th>Aciertos</th><th>Fallos</th></tr></thead>
+      <tbody id="modalDesglose"></tbody>
+    </table>
+    <button class="btn-secundario cerrar-modal" id="btnCerrarModal">Seguir practicando</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ================= Utilidades =================
+
+  function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+  function pick(arr) { return arr[randInt(0, arr.length - 1)]; }
+
+  function sanearExpresion(expr) {
+    const limpio = expr.replace(/\s+/g, "");
+    if (limpio === "" || !/^[0-9xy+\-*/().]+$/.test(limpio)) return null;
+    return limpio
+      .replace(/(\d)([xy(])/g, "$1*$2")
+      .replace(/([xy])(\d)/g, "$1*$2")
+      .replace(/\)(\d|[xy(])/g, ")*$1");
+  }
+
+  function evaluarLadoXY(texto) {
+    const expr = sanearExpresion(texto);
+    if (expr === null) return null;
+    try { return new Function("x", "y", "return (" + expr + ");"); } catch (err) { return null; }
+  }
+
+  function validarEcuacionXY(texto, coefX, coefY, rhs) {
+    const partes = texto.trim().split("=");
+    if (partes.length !== 2) return false;
+    const fIzq = evaluarLadoXY(partes[0]);
+    const fDer = evaluarLadoXY(partes[1]);
+    if (!fIzq || !fDer) return false;
+    const puntos = [[-3, 2], [0, 0], [4, -1], [2, 5], [-1, -4], [1, 1]];
+    return puntos.every(([x, y]) => {
+      const diffAlumno = fIzq(x, y) - fDer(x, y);
+      const diffReal = (coefX * x + coefY * y) - rhs;
+      return Number.isFinite(diffAlumno) && Math.abs(diffAlumno - diffReal) < 1e-9;
+    });
+  }
+
+  function mostrarFeedback(el, tipo, html) {
+    el.classList.remove("feedback-correcto", "feedback-incorrecto");
+    el.classList.add("mostrar", tipo === "ok" ? "feedback-correcto" : "feedback-incorrecto");
+    el.innerHTML = html;
+  }
+
+  function nuevoBloque(contenedor, id, extraClass) {
+    const div = document.createElement("div");
+    div.className = "ejercicio-card" + (extraClass ? " " + extraClass : "");
+    div.id = id;
+    contenedor.appendChild(div);
+    return div;
+  }
+
+  // ================= Generadores de los 6 tipos de problema =================
+  // Cada generador devuelve: tipoNombre, enunciado, defineIncognitas, xLabel, yLabel,
+  // xSufijo, ySufijo, a,b,e1 (ecuación 1), c,d,e2 (ecuación 2), x0,y0 (solución),
+  // pista1, pista2 (para cada ecuación, reveladas solo tras fallo).
+
+  function genSumaDiferencia() {
+    const y0 = randInt(4, 16);
+    const dif = randInt(2, 10);
+    const x0 = y0 + dif;
+    const S = x0 + y0, D = x0 - y0;
+    return {
+      tipoNombre: "Suma y diferencia",
+      enunciado: `La suma de dos números es ${S}, y su diferencia es ${D}. Calcula esos dos números.`,
+      defineIncognitas: `Llama x al número mayor e y al número menor.`,
+      xLabel: "Número mayor", yLabel: "Número menor", xSufijo: "", ySufijo: "",
+      a: 1, b: 1, e1: S, c: 1, d: -1, e2: D, x0, y0,
+      pista1: `"La suma es ${S}" se traduce directamente en x + y = ${S}.`,
+      pista2: `"La diferencia es ${D}" es el mayor menos el menor: x − y = ${D}.`
+    };
+  }
+
+  function genCompraCombinada() {
+    const productos = [["kiwis", "patatas"], ["manzanas", "peras"], ["naranjas", "limones"], ["tomates", "pimientos"]];
+    const [prod1, prod2] = pick(productos);
+    let a, b, c, d, x0, y0, intentos = 0;
+    do {
+      intentos++;
+      a = randInt(1, 6); b = randInt(1, 6); c = randInt(1, 6); d = randInt(1, 6);
+      x0 = randInt(1, 9); y0 = randInt(1, 9);
+    } while ((a * d - b * c === 0 || (a === c && b === d) || x0 === y0) && intentos < 300);
+    const e1 = a * x0 + b * y0, e2 = c * x0 + d * y0;
+    return {
+      tipoNombre: "Compra combinada",
+      enunciado: `Si ${a} kg de ${prod1} y ${b} kg de ${prod2} cuestan ${e1} €, y ${c} kg de ${prod1} y ${d} kg de ${prod2} cuestan ${e2} €, ¿cuánto vale el kilo de ${prod1} y el de ${prod2}?`,
+      defineIncognitas: `Llama x al precio del kg de ${prod1} e y al precio del kg de ${prod2}.`,
+      xLabel: `Precio del kg de ${prod1}`, yLabel: `Precio del kg de ${prod2}`, xSufijo: "€", ySufijo: "€",
+      a, b, e1, c, d, e2, x0, y0,
+      pista1: `La primera compra da ${a}x + ${b}y = ${e1}.`,
+      pista2: `La segunda compra da ${c}x + ${d}y = ${e2}.`
+    };
+  }
+
+  function genEdades() {
+    const parejas = [["Ana", "Beatriz"], ["Marcos", "Diego"], ["Lucía", "Elena"], ["Pablo", "Iván"]];
+    const [nombre1, nombre2] = pick(parejas);
+    // Se acota x0 <= 55 para evitar edades irreales (sin la cota, hasta un 15% de
+    // las generaciones daban una de las dos edades por encima de 60 años).
+    let y0, n, k, x0, intentos = 0;
+    do {
+      intentos++;
+      y0 = randInt(6, 15);
+      n = randInt(2, 6);
+      k = pick([2, 3]);
+      x0 = k * (y0 + n) - n;
+    } while (x0 > 55 && intentos < 200);
+    const S = x0 + y0;
+    const relacion = k === 2 ? "el doble" : "el triple";
+    return {
+      tipoNombre: "Problemas de edades",
+      enunciado: `Dentro de ${n} años, la edad de ${nombre1} será ${relacion} que la de ${nombre2}. Actualmente, entre las dos suman ${S} años. ¿Qué edad tiene cada una ahora?`,
+      defineIncognitas: `Llama x a la edad actual de ${nombre1} e y a la edad actual de ${nombre2}.`,
+      xLabel: `Edad actual de ${nombre1}`, yLabel: `Edad actual de ${nombre2}`, xSufijo: "años", ySufijo: "años",
+      a: 1, b: 1, e1: S, c: 1, d: -k, e2: (k - 1) * n, x0, y0,
+      pista1: `La suma de las edades actuales da x + y = ${S}.`,
+      pista2: `Dentro de ${n} años cada edad aumenta ${n}: será x+${n} e y+${n}. Que la primera sea ${relacion} de la segunda es x + ${n} = ${k}·(y + ${n}), que ordenado da x - ${k}y = ${(k - 1) * n}.`
+    };
+  }
+
+  function genPerimetro() {
+    const y0 = randInt(3, 12);
+    const D = randInt(2, 10);
+    const x0 = y0 + D;
+    const P = 2 * (x0 + y0);
+    return {
+      tipoNombre: "Perímetro de un rectángulo",
+      enunciado: `El perímetro de un rectángulo mide ${P} cm. La base mide ${D} cm más que la altura. Calcula las dimensiones del rectángulo.`,
+      defineIncognitas: `Llama x a la base e y a la altura.`,
+      xLabel: "Base", yLabel: "Altura", xSufijo: "cm", ySufijo: "cm",
+      a: 2, b: 2, e1: P, c: 1, d: -1, e2: D, x0, y0,
+      pista1: `El perímetro de un rectángulo es 2·(base + altura): 2x + 2y = ${P}.`,
+      pista2: `"La base mide ${D} cm más que la altura" es x − y = ${D}.`
+    };
+  }
+
+  function genEntradas() {
+    let pa, pn;
+    do { pa = randInt(4, 10); pn = randInt(2, 8); } while (pa <= pn);
+    const x0 = randInt(6, 35), y0 = randInt(6, 35);
+    const T = x0 + y0, R = pa * x0 + pn * y0;
+    return {
+      tipoNombre: "Entradas y recaudación",
+      enunciado: `En un cine se han vendido ${T} entradas entre adultos y niños, y se han recaudado ${R} €. La entrada de adulto cuesta ${pa} € y la de niño ${pn} €. ¿Cuántas entradas de cada tipo se vendieron?`,
+      defineIncognitas: `Llama x al número de entradas de adulto e y al número de entradas de niño.`,
+      xLabel: "Entradas de adulto", yLabel: "Entradas de niño", xSufijo: "", ySufijo: "",
+      a: 1, b: 1, e1: T, c: pa, d: pn, e2: R, x0, y0,
+      pista1: `El total de entradas da x + y = ${T}.`,
+      pista2: `La recaudación es precio por cantidad, sumada: ${pa}x + ${pn}y = ${R}.`
+    };
+  }
+
+  function genCifras() {
+    // Generación directa (sin swap posterior): x0 son las decenas [1,8], y0 las
+    // unidades, siempre mayor que x0, así D = 9(y0-x0) es siempre positivo y no
+    // hay riesgo de que el "número forzado" coincida con las decenas.
+    const x0 = randInt(1, 8);
+    const y0 = randInt(x0 + 1, 9);
+    const S = x0 + y0;
+    const D = 9 * (y0 - x0);
+    return {
+      tipoNombre: "Cifras de un número",
+      enunciado: `Un número de dos cifras es tal que la suma de sus cifras es ${S}. Si se invierte el orden de las cifras, el número obtenido es ${D} unidades mayor que el original. Halla el número.`,
+      defineIncognitas: `Llama x a la cifra de las decenas e y a la cifra de las unidades. El número es 10x + y; el número con las cifras invertidas es 10y + x.`,
+      xLabel: "Cifra de las decenas", yLabel: "Cifra de las unidades", xSufijo: "", ySufijo: "",
+      a: 1, b: 1, e1: S, c: -9, d: 9, e2: D, x0, y0,
+      pista1: `La suma de las cifras da x + y = ${S}.`,
+      pista2: `El invertido menos el original es (10y+x) − (10x+y) = ${D}, que simplificado da -9x + 9y = ${D}.`
+    };
+  }
+
+  const TIPOS_INFO = {
+    sumaDif: { nombre: "Suma y diferencia", generar: genSumaDiferencia },
+    compra: { nombre: "Compra combinada", generar: genCompraCombinada },
+    edades: { nombre: "Edades", generar: genEdades },
+    perimetro: { nombre: "Perímetro", generar: genPerimetro },
+    entradas: { nombre: "Entradas y recaudación", generar: genEntradas },
+    cifras: { nombre: "Cifras de un número", generar: genCifras }
+  };
+  const ORDEN_TIPOS = ["sumaDif", "compra", "edades", "perimetro", "entradas", "cifras"];
+
+  // ================= Estado global =================
+
+  const PUNTO_POR_TIPO = 10 / ORDEN_TIPOS.length;
+  const PENALIZACION_FALLO = 0.5;
+
+  const state = { alumno: "", inicio: Date.now(), puntosGlobal: 0, tipos: {} };
+  ORDEN_TIPOS.forEach(k => { state.tipos[k] = { superado: false, numIntentos: 0, aciertos: 0, fallos: 0 }; });
+
+  function actualizarMarcadorGlobal() {
+    const nota = Math.round(state.puntosGlobal * 10) / 10;
+    document.getElementById("marcadorNota").textContent = nota % 1 === 0 ? nota : nota.toFixed(1);
+    const superados = ORDEN_TIPOS.filter(k => state.tipos[k].superado).length;
+    document.getElementById("marcadorSuperados").textContent = superados;
+  }
+
+  // Los chips son botones: el alumno elige libremente, en cualquier momento, qué tipo
+  // de problema (de los aún no superados) quiere practicar a continuación.
+  function renderChips(tipoActivo) {
+    const cont = document.getElementById("chipsTipos");
+    cont.innerHTML = "";
+    ORDEN_TIPOS.forEach(k => {
+      const superado = state.tipos[k].superado;
+      const chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "chip-tipo" + (superado ? " superado" : "") + (k === tipoActivo ? " activo" : "");
+      chip.textContent = TIPOS_INFO[k].nombre + (superado ? " ✓" : "");
+      chip.disabled = superado;
+      chip.setAttribute("aria-label", superado ? `${TIPOS_INFO[k].nombre}, superado` : `Practicar ${TIPOS_INFO[k].nombre}`);
+      if (!superado) chip.addEventListener("click", () => iniciarProblema(k));
+      cont.appendChild(chip);
+    });
+    const instruccion = document.getElementById("instruccionEleccion");
+    const pendientes = ORDEN_TIPOS.filter(k => !state.tipos[k].superado);
+    instruccion.textContent = pendientes.length === 0
+      ? "Has superado los 6 tipos de problema."
+      : "Elige arriba el tipo de problema con el que quieres practicar.";
+  }
+
+  function penalizarFallo() {
+    state.puntosGlobal = Math.max(0, state.puntosGlobal - PENALIZACION_FALLO);
+    actualizarMarcadorGlobal();
+  }
+
+  // Registra el resultado de una ronda completa (planteamiento ya correcto + cálculo).
+  // No hace falta ventana móvil ni varios intentos: basta un acierto en el cálculo
+  // (con el planteamiento ya bien hecho, exigido antes de llegar aquí) para superar el tipo.
+  function registrarIntento(tipoKey, correcto) {
+    const t = state.tipos[tipoKey];
+    t.numIntentos++;
+    if (correcto) t.aciertos++; else t.fallos++;
+    if (!t.superado && correcto) {
+      t.superado = true;
+      state.puntosGlobal = Math.min(10, state.puntosGlobal + PUNTO_POR_TIPO);
+    }
+    actualizarMarcadorGlobal();
+  }
+
+  // ================= Construcción de un problema =================
+
+  const contenedor = document.getElementById("contenedorPasos");
+
+  function iniciarProblema(tipoKey) {
+    const s = TIPOS_INFO[tipoKey].generar();
+    s.tipoKey = tipoKey;
+    renderChips(tipoKey);
+    contenedor.innerHTML = "";
+    construirPasoPlantear(s);
+  }
+
+  function construirPasoPlantear(s) {
+    const bloque = nuevoBloque(contenedor, "bloquePlantear");
+    bloque.innerHTML = `
+      <p class="paso-titulo"><span class="paso-numero">1</span>${s.tipoNombre}: plantea el sistema</p>
+      <p class="enunciado">${s.enunciado}</p>
+      <p class="definicion-incognitas">${s.defineIncognitas}</p>
+      <div class="sistema">
+        <span class="llave">{</span>
+        <div class="ecuaciones">
+          <div class="ecuacion-linea"><input type="text" id="inputEc1" autocomplete="off" aria-label="Primera ecuación"></div>
+          <div class="ecuacion-linea"><input type="text" id="inputEc2" autocomplete="off" aria-label="Segunda ecuación"></div>
+        </div>
+      </div>
+      <div class="fila-input" style="justify-content:center;">
+        <button class="btn-primario" id="btnComprobarPlantear">Comprobar</button>
+      </div>
+      <div class="feedback feedback-incorrecto" id="feedbackPlantear" aria-live="polite"></div>
+    `;
+    const in1 = bloque.querySelector("#inputEc1");
+    const in2 = bloque.querySelector("#inputEc2");
+    const comprobar = () => comprobarPlantear(s, in1, in2);
+    bloque.querySelector("#btnComprobarPlantear").addEventListener("click", comprobar);
+    in1.addEventListener("keydown", e => { if (e.key === "Enter") comprobar(); });
+    in2.addEventListener("keydown", e => { if (e.key === "Enter") comprobar(); });
+    in1.focus();
+  }
+
+  function comprobarPlantear(s, in1, in2) {
+    const feedback = document.getElementById("feedbackPlantear");
+    // Se admite que el alumno coloque las dos ecuaciones en cualquier orden.
+    const okDirecto = validarEcuacionXY(in1.value, s.a, s.b, s.e1) && validarEcuacionXY(in2.value, s.c, s.d, s.e2);
+    const okCruzado = validarEcuacionXY(in1.value, s.c, s.d, s.e2) && validarEcuacionXY(in2.value, s.a, s.b, s.e1);
+
+    if (okDirecto || okCruzado) {
+      in1.disabled = true; in2.disabled = true;
+      in1.classList.add("correcta"); in2.classList.add("correcta");
+      document.getElementById("bloquePlantear").classList.add("resuelto");
+      document.getElementById("btnComprobarPlantear").disabled = true;
+      mostrarFeedback(feedback, "ok", "Correcto. Ese es el sistema que traduce el enunciado.");
+      construirPasoResolver(s);
+    } else {
+      // El fallo en el planteamiento penaliza en el momento (como cualquier fallo), pero
+      // no impide superar el tipo: basta con acertar planteamiento y cálculo una vez,
+      // sin límite de reintentos aquí.
+      penalizarFallo();
+      const ok1 = validarEcuacionXY(in1.value, s.a, s.b, s.e1) || validarEcuacionXY(in1.value, s.c, s.d, s.e2);
+      const ok2 = validarEcuacionXY(in2.value, s.a, s.b, s.e1) || validarEcuacionXY(in2.value, s.c, s.d, s.e2);
+      let msg = "";
+      if (!ok1) msg += s.pista1 + " ";
+      if (!ok2) msg += s.pista2 + " ";
+      if (ok1 && ok2) msg = "Cada ecuación es correcta por separado, pero no pueden ser la misma: revisa que cada una traduzca un dato distinto del enunciado.";
+      mostrarFeedback(feedback, "error", msg.trim());
+    }
+  }
+
+  function construirPasoResolver(s) {
+    const bloque = nuevoBloque(contenedor, "bloqueResolver");
+    bloque.innerHTML = `
+      <p class="paso-titulo"><span class="paso-numero">2</span>Resuelve el sistema por el método que prefieras</p>
+      <div class="fila-input">
+        <span class="etiqueta-incognita">${s.xLabel}</span>
+        <input type="number" id="inputX" step="any" aria-label="${s.xLabel}">
+        <span>${s.xSufijo}</span>
+      </div>
+      <div class="fila-input">
+        <span class="etiqueta-incognita">${s.yLabel}</span>
+        <input type="number" id="inputY" step="any" aria-label="${s.yLabel}">
+        <span>${s.ySufijo}</span>
+      </div>
+      <div class="fila-input">
+        <button class="btn-primario" id="btnComprobarResolver">Comprobar</button>
+      </div>
+      <div class="feedback feedback-incorrecto" id="feedbackResolver" aria-live="polite"></div>
+    `;
+    const inX = bloque.querySelector("#inputX");
+    const inY = bloque.querySelector("#inputY");
+    const comprobar = () => comprobarResolver(s, inX, inY);
+    bloque.querySelector("#btnComprobarResolver").addEventListener("click", comprobar);
+    inX.addEventListener("keydown", e => { if (e.key === "Enter") comprobar(); });
+    inY.addEventListener("keydown", e => { if (e.key === "Enter") comprobar(); });
+    inX.focus();
+  }
+
+  function comprobarResolver(s, inX, inY) {
+    const feedback = document.getElementById("feedbackResolver");
+    const valX = parseFloat(inX.value.replace(",", "."));
+    const valY = parseFloat(inY.value.replace(",", "."));
+    const okX = Number.isFinite(valX) && Math.abs(valX - s.x0) < 1e-9;
+    const okY = Number.isFinite(valY) && Math.abs(valY - s.y0) < 1e-9;
+    const correcto = okX && okY;
+
+    inX.disabled = true; inY.disabled = true;
+    document.getElementById("btnComprobarResolver").disabled = true;
+    inX.classList.add(okX ? "correcta" : "incorrecta");
+    inY.classList.add(okY ? "correcta" : "incorrecta");
+    document.getElementById("bloqueResolver").classList.add(correcto ? "resuelto" : "con-error");
+
+    if (correcto) {
+      mostrarFeedback(feedback, "ok", "Correcto. Problema resuelto.");
+    } else {
+      // El resultado exacto queda revelado aquí (regla 0.5b): este intento de cálculo no
+      // admite reintento sobre el mismo enunciado, pero el tipo sigue abierto y el próximo
+      // problema de este tipo (generado por algoritmo) trae otros números.
+      penalizarFallo();
+      mostrarFeedback(feedback, "error",
+        `No es correcto. La solución es ${s.xLabel.toLowerCase()} = ${s.x0} ${s.xSufijo}, ${s.yLabel.toLowerCase()} = ${s.y0} ${s.ySufijo}.`);
+    }
+
+    finalizarProblema(s, correcto);
+  }
+
+  // El planteamiento, si hizo falta, ya se acertó (con reintentos) antes de llegar aquí,
+  // así que basta con este único acierto en el cálculo para dar el tipo por superado:
+  // no hace falta repetir el problema una segunda o tercera vez.
+  function finalizarProblema(s, correcto) {
+    registrarIntento(s.tipoKey, correcto);
+    renderChips(null);
+
+    const bloqueFinal = nuevoBloque(contenedor, "bloqueSiguiente");
+    const quedanPendientes = ORDEN_TIPOS.some(k => !state.tipos[k].superado);
+
+    if (!quedanPendientes) {
+      bloqueFinal.innerHTML = `
+        <div class="mensaje-final">
+          Has superado los 6 tipos de problema. Pulsa «Finalizar y calificar» para ver tu nota.
+        </div>`;
+      return;
+    }
+
+    const texto = correcto
+      ? `Correcto: has superado el tipo «${s.tipoNombre}». Elige arriba qué tipo quieres practicar ahora.`
+      : `Este intento no se ha superado. Elige arriba el mismo tipo («${s.tipoNombre}») para intentarlo con otro problema, u otro tipo distinto.`;
+    bloqueFinal.innerHTML = `<p style="text-align:center; font-size:0.9rem; color:var(--color-texto-suave);">${texto}</p>`;
+  }
+
+  // ================= Modal de calificación =================
+
+  const COLORES_NOTA = [
+    { min: 10, fondo: "#1a7a1a", texto: "#fff" },
+    { min: 9, fondo: "#6dbf6d", texto: "#fff" },
+    { min: 8, fondo: "#1a4f8a", texto: "#fff" },
+    { min: 7, fondo: "#5b9bd5", texto: "#fff" },
+    { min: 6, fondo: "#c05c00", texto: "#fff" },
+    { min: 5, fondo: "#f5a623", texto: "#000" },
+    { min: -1, fondo: "#c0392b", texto: "#fff" }
+  ];
+
+  document.getElementById("btnFinalizar").addEventListener("click", function () {
+    const nombre = document.getElementById("inputNombre").value.trim();
+    if (!nombre) { document.getElementById("inputNombre").focus(); return; }
+    state.alumno = nombre;
+
+    const nota = Math.round(state.puntosGlobal * 10) / 10;
+    const color = COLORES_NOTA.find(c => nota >= c.min) || COLORES_NOTA[COLORES_NOTA.length - 1];
+    const modal = document.getElementById("modalCalificacion");
+    modal.style.backgroundColor = color.fondo; modal.style.color = color.texto;
+    document.getElementById("modalAlumno").textContent = state.alumno;
+    document.getElementById("modalNota").textContent = (nota % 1 === 0 ? nota : nota.toFixed(1)) + " / 10";
+
+    const ahora = new Date();
+    const fecha = `${String(ahora.getDate()).padStart(2, "0")}/${String(ahora.getMonth() + 1).padStart(2, "0")}/${ahora.getFullYear()}`;
+    const hora = ahora.toTimeString().slice(0, 8);
+    const segundosTotales = Math.ceil((Date.now() - state.inicio) / 1000);
+    const horasEmpleadas = String(Math.floor(segundosTotales / 3600)).padStart(2, "0");
+    const minutosEmpleados = String(Math.floor((segundosTotales % 3600) / 60)).padStart(2, "0");
+    const superados = ORDEN_TIPOS.filter(k => state.tipos[k].superado).length;
+    document.getElementById("modalMeta").innerHTML =
+      `Fecha: ${fecha} &nbsp;·&nbsp; Hora: ${hora} &nbsp;·&nbsp; Tiempo empleado: ${horasEmpleadas}:${minutosEmpleados} &nbsp;·&nbsp; Tipos superados: ${superados}/6`;
+
+    const tbody = document.getElementById("modalDesglose");
+    tbody.innerHTML = "";
+    ORDEN_TIPOS.forEach(k => {
+      const t = state.tipos[k];
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>${TIPOS_INFO[k].nombre}</td><td>${t.superado ? "Sí" : "No"}</td><td>${t.numIntentos}</td><td>${t.aciertos}</td><td>${t.fallos}</td>`;
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById("overlayCalificacion").classList.remove("oculto");
+  });
+
+  document.getElementById("btnCerrarModal").addEventListener("click", function () {
+    document.getElementById("overlayCalificacion").classList.add("oculto");
+  });
+
+  // ================= Arranque =================
+  // No se elige un tipo al azar: el alumno empieza pinchando uno de los chips.
+  actualizarMarcadorGlobal();
+  renderChips(null);
+  nuevoBloque(contenedor, "bloqueEspera").innerHTML =
+    `<div class="mensaje-final">Elige arriba el tipo de problema con el que quieres empezar.</div>`;
+
+})();
+</script>
+</body>
+</html>
