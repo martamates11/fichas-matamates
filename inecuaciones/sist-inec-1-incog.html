@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ficha interactiva · Inecuaciones con una incógnita</title>
+<title>Ficha interactiva · Sistemas de inecuaciones con una incógnita</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap');
 
@@ -22,9 +22,9 @@
   --color-correcto: #2E6B3E;
   --color-incorrecto: #8B1A1A;
   --color-neutro: #E8DFC8;
-  --color-polo: #6E3A68;
-  --color-polo-suave: #F1E6EF;
-  --color-acento-suave: #FBF3EA;
+  --color-sistema: #FBF3E3;
+  --color-apagado: #A8998A;
+  --color-apagado-fondo: #F3EFE6;
 }
 
 * { box-sizing: border-box; }
@@ -36,11 +36,6 @@ body {
   color: var(--color-texto);
   background-color: var(--color-fondo);
   line-height: 1.45;
-}
-
-.sr-only {
-  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
-  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
 }
 
 /* ---------- Cabecera (solo autoría) ---------- */
@@ -57,7 +52,7 @@ body {
 
 /* ---------- Contenedor ---------- */
 .ficha-container {
-  max-width: 860px;
+  max-width: 880px;
   margin: 28px auto;
   background: var(--color-fondo-card);
   border: 2px solid var(--color-borde);
@@ -65,7 +60,6 @@ body {
   box-shadow: 0 3px 12px rgba(44, 31, 14, 0.15);
   padding: 32px 36px;
 }
-
 .titulo-ficha {
   font-family: 'Libre Baskerville', serif;
   font-size: 1.6rem;
@@ -121,7 +115,6 @@ body {
   border: 1.5px solid var(--color-borde-suave);
   border-left: 4px solid var(--color-borde);
   border-radius: 4px;
-  padding: 0;
   margin-bottom: 26px;
   font-size: .92rem;
   color: var(--color-texto-suave);
@@ -144,7 +137,6 @@ body {
 .ico-lleno { background: var(--color-acento); }
 .ico-vacio { background: var(--color-fondo-card); }
 .ico-tramo { display: inline-block; width: 18px; height: 5px; background: var(--color-acento); border-radius: 3px; vertical-align: 2px; margin: 0 3px; }
-.polo-txt { color: var(--color-polo); font-weight: 700; }
 
 /* ---------- Tarjetas de ejercicio ---------- */
 .ejercicio-card {
@@ -160,6 +152,8 @@ body {
   display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; flex-wrap: wrap;
   border-bottom: 1px solid var(--color-borde-suave); padding-bottom: 12px; margin-bottom: 16px;
 }
+.card-cab > div:first-child { flex: 1 1 320px; min-width: 0; }
+.ventana { flex: none; }
 .card-num {
   font-family: 'Lato', sans-serif; font-size: .75rem; letter-spacing: .12em; text-transform: uppercase;
   color: var(--color-acento); font-weight: 700;
@@ -184,16 +178,25 @@ body {
   border-radius: 4px;
   text-align: center;
   font-family: 'Libre Baskerville', serif;
-  font-size: 1.3rem;
-  padding: 16px 12px;
+  font-size: 1.25rem;
+  padding: 14px 12px;
   margin: 4px 4px 14px;
   color: var(--color-texto);
   overflow-x: auto;
 }
 .consigna { color: var(--color-texto-suave); font-size: .93rem; margin: 0 0 6px; }
 
+/* Sistema con llave */
+.sistema { display: inline-flex; align-items: stretch; gap: 12px; text-align: left; color: var(--color-texto); }
+.llave { flex: none; width: 16px; display: flex; }
+.llave svg { display: block; width: 16px; height: 100%; color: var(--color-texto); }
+.sistema-filas { display: flex; flex-direction: column; justify-content: center; gap: 10px; padding: 4px 0; }
+.sistema-fila { display: flex; align-items: baseline; gap: 26px; justify-content: space-between; white-space: nowrap; }
+.et { font-family: 'Lato', sans-serif; font-size: .78rem; font-weight: 700; color: var(--color-acento); letter-spacing: .04em; }
+
 .paso { margin-top: 18px; padding-top: 14px; border-top: 1px dashed var(--color-borde-suave); }
 .paso-tit { font-family: 'Libre Baskerville', serif; font-size: .98rem; color: var(--color-texto); margin-bottom: 4px; display: flex; align-items: center; gap: 10px; }
+.paso-tit .et { font-size: .8rem; }
 .paso-n {
   flex: none; width: 24px; height: 24px; border-radius: 50%; background: var(--color-cabecera);
   color: var(--color-cabecera-txt); font-size: .78rem; display: inline-flex; align-items: center; justify-content: center;
@@ -203,11 +206,14 @@ body {
 .paso-cuerpo { margin-left: 34px; }
 .paso.ok .paso-n { background: var(--color-correcto); }
 .paso.mal .paso-n { background: var(--color-incorrecto); }
+.paso.rev .paso-n { background: var(--color-apagado); }
 
 .fila-expr {
   display: flex; align-items: center; flex-wrap: wrap; gap: 7px;
   font-family: 'Libre Baskerville', serif; font-size: 1.1rem;
 }
+.fila-expr + .fila-expr { margin-top: 10px; }
+.et-ineq { font-family: 'Lato', sans-serif; font-size: .8rem; font-weight: 700; color: var(--color-acento); min-width: 30px; }
 .mat { font-family: 'Libre Baskerville', serif; white-space: nowrap; }
 
 input[type="text"], select {
@@ -226,13 +232,12 @@ input.coef { width: 58px; text-align: center; font-family: 'Libre Baskerville', 
 select.simb { font-family: 'Libre Baskerville', serif; font-size: 1.05rem; padding: 5px 6px; cursor: pointer; }
 .ok-campo { border-color: var(--color-correcto) !important; background-color: #EAF4EC !important; }
 .mal-campo { border-color: var(--color-incorrecto) !important; background-color: #F9EAEA !important; }
+.rev-campo { border-color: var(--color-apagado) !important; border-style: dashed !important; background-color: var(--color-apagado-fondo) !important; }
 input:disabled, select:disabled { color: var(--color-texto); opacity: 1; cursor: default; }
 
-/* Fracciones apiladas */
 .frac { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; margin: 0 4px; }
-.frac > .num { padding: 0 6px 3px; display: flex; align-items: center; gap: 5px; white-space: nowrap; }
-.frac > .den { padding: 3px 6px 0; border-top: 1.6px solid var(--color-texto); display: flex; align-items: center; gap: 5px; white-space: nowrap; }
-.pizarra .frac > .num, .pizarra .frac > .den { font-size: 1.05rem; }
+.frac > .num { padding: 0 6px 3px; white-space: nowrap; }
+.frac > .den { padding: 3px 6px 0; border-top: 1.6px solid var(--color-texto); white-space: nowrap; }
 
 /* ---------- Botones ---------- */
 .btn-primario {
@@ -241,7 +246,6 @@ input:disabled, select:disabled { color: var(--color-texto); opacity: 1; cursor:
   cursor: pointer; letter-spacing: 0.03em; transition: background-color 0.2s ease;
 }
 .btn-primario:hover { background-color: var(--color-acento-hover); }
-.btn-primario:disabled { background-color: var(--color-neutro); color: var(--color-texto-suave); cursor: default; }
 .btn-secundario {
   background-color: transparent; color: var(--color-acento); border: 2px solid var(--color-borde); border-radius: 4px;
   padding: 9px 20px; font-family: 'Lato', sans-serif; font-size: 0.95rem; font-weight: 700; cursor: pointer;
@@ -258,8 +262,19 @@ input:disabled, select:disabled { color: var(--color-texto); opacity: 1; cursor:
 .aviso-incompleto { color: var(--color-incorrecto); font-size: .88rem; font-weight: 700; text-align: center; margin-top: 10px; display: none; }
 .aviso-incompleto.visible { display: block; }
 
-/* ---------- Recta numérica ---------- */
-.recta-tools { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+/* Botón «Mostrar soluciones»: apagado, que no invite a pulsarlo */
+.card-sol { text-align: center; margin-top: 14px; }
+.btn-soluciones {
+  background: transparent; color: var(--color-apagado);
+  border: 1px solid #DDD0B6; border-radius: 4px; padding: 5px 14px;
+  font-family: 'Lato', sans-serif; font-size: .78rem; font-weight: 400;
+  cursor: pointer; transition: color .2s, border-color .2s;
+}
+.btn-soluciones:hover:not(:disabled) { color: var(--color-texto-suave); border-color: var(--color-borde); }
+.btn-soluciones:disabled { opacity: .4; cursor: default; }
+
+/* ---------- Rectas apiladas ---------- */
+.recta-tools { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
 .recta-tools button {
   background: var(--color-fondo-card); border: 1.5px solid var(--color-borde-suave); border-radius: 999px;
   padding: 5px 12px; font-family: 'Lato', sans-serif; font-size: .82rem; color: var(--color-texto-suave);
@@ -270,16 +285,32 @@ input:disabled, select:disabled { color: var(--color-texto); opacity: 1; cursor:
 .recta-tools button.activo .ico-vacio { background: var(--color-cabecera); border-color: var(--color-cabecera-txt); }
 .recta-tools button.activo .ico-lleno { background: var(--color-cabecera-txt); border-color: var(--color-cabecera-txt); }
 .recta-tools button.activo .ico-tramo { background: var(--color-cabecera-txt); }
-.recta-tools .limpiar { margin-left: auto; border-style: dashed; }
-.recta-scroll { overflow-x: auto; }
 .recta-svg {
-  min-width: 560px; background: var(--color-fondo-card); border: 1.5px solid var(--color-borde-suave);
+  background: var(--color-fondo-card); border: 1.5px solid var(--color-borde-suave);
   border-radius: 4px; cursor: crosshair; touch-action: manipulation;
 }
 .recta-svg.bloqueada { cursor: default; }
 .recta-svg svg { display: block; width: 100%; height: auto; }
-.recta-ayuda { font-size: .8rem; color: var(--color-texto-suave); margin: 6px 0 0; font-style: italic; }
-.recta-svg.ok-campo, .recta-svg.mal-campo { border-width: 2px; }
+.recta-svg.sis { background: var(--color-sistema); border-color: var(--color-borde); }
+.recta-svg.ok-campo, .recta-svg.mal-campo, .recta-svg.rev-campo { border-width: 2px; }
+.recta-ayuda { font-size: .8rem; color: var(--color-texto-suave); margin: 8px 0 0; font-style: italic; }
+
+.pila-scroll { overflow-x: auto; padding-bottom: 4px; }
+.pila { min-width: 640px; display: grid; grid-template-columns: 96px 1fr; gap: 8px 10px; align-items: center; }
+.pila-lab { text-align: right; font-family: 'Libre Baskerville', serif; font-size: .95rem; color: var(--color-texto); }
+.pila-lab small { display: block; font-family: 'Lato', sans-serif; font-size: .72rem; color: var(--color-texto-suave); margin-top: 1px; }
+.pila-lab.sis { color: var(--color-acento); font-weight: 700; }
+.limpiar-fila {
+  margin-top: 5px; background: transparent; border: 1px dashed var(--color-borde); border-radius: 999px;
+  font-family: 'Lato', sans-serif; font-size: .7rem; color: var(--color-texto-suave); padding: 2px 9px; cursor: pointer;
+}
+.limpiar-fila:hover { border-style: solid; color: var(--color-texto); }
+.pila-sep { grid-column: 1 / -1; position: relative; border-top: 1.5px dashed var(--color-borde); margin: 12px 0 6px; height: 0; }
+.pila-sep span {
+  position: absolute; left: 50%; top: 0; transform: translate(-50%, -50%);
+  background: var(--color-fondo); padding: 0 12px; font-family: 'Libre Baskerville', serif; font-style: italic;
+  font-size: .82rem; color: var(--color-acento); white-space: nowrap;
+}
 
 /* ---------- Intervalos ---------- */
 .iv-linea { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-family: 'Libre Baskerville', serif; }
@@ -308,7 +339,7 @@ input:disabled, select:disabled { color: var(--color-texto); opacity: 1; cursor:
 }
 .iv-tools button:hover { border-color: var(--color-borde); }
 .iv-nota { font-size: .8rem; color: var(--color-texto-suave); font-style: italic; margin-top: 6px; }
-.iv.mal-campo, .iv.ok-campo { border-width: 2px; }
+.iv.mal-campo, .iv.ok-campo, .iv.rev-campo { border-width: 2px; }
 
 /* ---------- Tabla de signos ---------- */
 .ts-scroll { overflow-x: auto; padding-bottom: 4px; }
@@ -319,28 +350,17 @@ input:disabled, select:disabled { color: var(--color-texto); opacity: 1; cursor:
   border-right: 2px solid var(--color-texto); white-space: nowrap;
 }
 .ts-cab .ts-lab { border-right: none; color: var(--color-texto-suave); font-style: italic; }
-.ts-eje { position: relative; height: 74px; border-bottom: 2px solid var(--color-texto); margin: 0 0 0 0; }
-.ts-inf { position: absolute; top: 14px; transform: translateX(-50%); font-size: .95rem; color: var(--color-texto-suave); }
+.ts-eje { position: relative; height: 54px; border-bottom: 2px solid var(--color-texto); }
+.ts-inf { position: absolute; top: 14px; font-size: .95rem; color: var(--color-texto-suave); }
 .ts-inf.izq { transform: translateX(4px); }
 .ts-inf.der { transform: translateX(calc(-100% - 4px)); }
-.ts-crit { position: absolute; top: 6px; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.ts-crit { position: absolute; top: 8px; transform: translateX(-50%); }
 .ts-in { width: 52px; text-align: center; font-family: 'Libre Baskerville', serif; padding: 5px 4px !important; }
-.ts-polo {
-  font-family: 'Lato', sans-serif; font-size: .68rem; letter-spacing: .05em; text-transform: uppercase;
-  border: 1.5px dashed var(--color-borde); background: var(--color-fondo-card); color: var(--color-texto-suave);
-  border-radius: 999px; padding: 1px 8px; cursor: pointer;
-}
-.ts-crit.es-polo .ts-in { border-color: var(--color-polo); color: var(--color-polo); background: var(--color-polo-suave); font-weight: 700; }
-.ts-crit.es-polo .ts-polo { background: var(--color-polo); color: #fff; border: 1.5px solid var(--color-polo); }
 .ts-celdas { display: grid; grid-template-columns: repeat(var(--ncol), 1fr); border-bottom: 1px solid var(--color-borde-suave); }
 .ts-final .ts-celdas { border-bottom: none; border-top: 2px solid var(--color-texto); }
 .ts-final .ts-lab { font-weight: 700; border-top: 2px solid var(--color-texto); }
-.ts-celda {
-  display: flex; align-items: center; justify-content: center; min-height: 44px;
-  border-left: 2px solid var(--color-borde);
-}
+.ts-celda { display: flex; align-items: center; justify-content: center; min-height: 44px; border-left: 2px solid var(--color-borde); }
 .ts-celda:first-child { border-left: none; }
-.ts-celda.linea-polo { border-left: 2.5px dashed var(--color-polo); }
 .ts-c {
   width: 40px; height: 32px; border-radius: 4px; border: 1.5px dashed var(--color-borde);
   background: var(--color-fondo-card); font-family: 'Libre Baskerville', serif; font-size: 1.25rem; line-height: 1;
@@ -349,72 +369,20 @@ input:disabled, select:disabled { color: var(--color-texto); opacity: 1; cursor:
 .ts-c:hover { background: var(--color-fondo); }
 .ts-c[data-v="+"] { border-style: solid; color: var(--color-texto); }
 .ts-c[data-v="-"] { border-style: solid; color: var(--color-acento); }
-.ts-fila.fila-polo .ts-lab { color: var(--color-polo); font-weight: 700; }
 .ts-signo { font-size: 1.2rem; }
 .ts-signo.neg { color: var(--color-acento); }
 .ts-estatica .ts-eje { height: 40px; }
 .ts-estatica .ts-crit { top: 10px; font-size: .95rem; }
-.ts-estatica .ts-crit.es-polo span { color: var(--color-polo); font-weight: 700; border-bottom: 2px dashed var(--color-polo); }
 .ts-estatica .ts-celda { min-height: 34px; }
 .ts-ayuda { font-size: .8rem; color: var(--color-texto-suave); font-style: italic; margin-top: 6px; }
-
-.ts-fila.fila-cte .ts-lab { font-style: italic; }
-
-/* ---------- Conmutador de método ---------- */
-.metodo-switch {
-  display: inline-flex; border: 1.5px solid var(--color-borde); border-radius: 999px; overflow: hidden;
-  background: var(--color-fondo-card); margin: 0 0 14px;
-}
-.metodo-switch button {
-  border: none; background: transparent; padding: 7px 16px; cursor: pointer;
-  font-family: 'Lato', sans-serif; font-size: .86rem; font-weight: 700; color: var(--color-texto-suave);
-  transition: background-color .2s, color .2s;
-}
-.metodo-switch button + button { border-left: 1.5px solid var(--color-borde); }
-.metodo-switch button.activo { background: var(--color-cabecera); color: var(--color-cabecera-txt); }
-.metodo-switch button:disabled { cursor: default; }
-.metodo-switch button:not(.activo):not(:disabled):hover { background: var(--color-fondo); color: var(--color-texto); }
-.recta-ayuda.aviso-ayuda { color: var(--color-acento); font-weight: 700; font-style: normal; }
-.metodo-nota { font-size: .82rem; color: var(--color-texto-suave); font-style: italic; margin: -6px 0 12px; }
-
-/* ---------- Método rápido: raíces y forma ---------- */
-.rap-bloque { margin-bottom: 14px; }
-.rap-et { font-family: 'Libre Baskerville', serif; font-size: .9rem; color: var(--color-texto-suave); margin-bottom: 6px; }
-.formas { display: flex; gap: 12px; flex-wrap: wrap; }
-.forma-btn {
-  display: flex; align-items: center; gap: 12px; text-align: left; cursor: pointer;
-  background: var(--color-fondo-card); border: 1.5px solid var(--color-borde-suave); border-radius: 6px;
-  padding: 8px 16px 8px 10px; font-family: 'Lato', sans-serif; color: var(--color-texto);
-  transition: border-color .2s, box-shadow .2s, background-color .2s; min-width: 210px;
-}
-.forma-btn svg { flex: none; }
-.forma-btn .f-tit { font-family: 'Libre Baskerville', serif; font-weight: 700; font-size: .98rem; display: block; }
-.forma-btn .f-sub { font-size: .8rem; color: var(--color-texto-suave); display: block; }
-.forma-btn:hover:not(:disabled) { border-color: var(--color-borde); }
-.forma-btn.activo { border-color: var(--color-acento); box-shadow: 0 0 0 3px rgba(160,82,45,.15); background: var(--color-acento-suave); }
-.forma-btn:disabled { cursor: default; }
-.parab-vacia {
-  border: 1.5px dashed var(--color-borde); border-radius: 4px; padding: 26px 16px; text-align: center;
-  color: var(--color-texto-suave); font-style: italic; font-size: .9rem; background: var(--color-fondo-card);
-}
-
-/* ---------- Pestañas de la resolución ---------- */
-.res-tabs { display: flex; gap: 0; margin: 8px 0 0; border-bottom: 1.5px solid var(--color-borde); flex-wrap: wrap; }
-.res-tab {
-  border: 1.5px solid transparent; border-bottom: none; background: transparent; cursor: pointer;
-  padding: 7px 14px; font-family: 'Libre Baskerville', serif; font-size: .9rem; color: var(--color-texto-suave);
-  border-radius: 4px 4px 0 0; white-space: nowrap; margin-bottom: -1.5px;
-}
-.res-tab.activo { border-color: var(--color-borde); background: var(--color-fondo-card); color: var(--color-acento); font-weight: 700; }
-.res-tab .usado { white-space: nowrap; font-family: 'Lato', sans-serif; font-size: .7rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--color-correcto); margin-left: 6px; }
-.res-panel { display: none; padding-top: 4px; }
-.res-panel.activo { display: block; }
 
 /* ---------- Feedback ---------- */
 .card-feedback { margin-top: 18px; }
 .fb-banner { border-radius: 4px; padding: 12px 16px; font-weight: 700; }
 .feedback-correcto { background-color: #EAF4EC; border: 1.5px solid var(--color-correcto); color: var(--color-correcto); }
 .feedback-incorrecto { background-color: #F9EAEA; border: 1.5px solid var(--color-incorrecto); color: var(--color-incorrecto); }
+.feedback-solucion { background-color: var(--color-apagado-fondo); border: 1.5px dashed var(--color-apagado); color: var(--color-texto-suave); }
+.feedback-solucion small { display: block; font-weight: 400; margin-top: 3px; }
 .fb-pasos { list-style: none; padding: 0; margin: 12px 0 0; }
 .fb-pasos li {
   padding: 9px 14px 9px 38px; position: relative; border-radius: 4px; margin-bottom: 6px; font-size: .92rem;
@@ -428,19 +396,23 @@ input:disabled, select:disabled { color: var(--color-texto); opacity: 1; cursor:
 .fb-pasos .motivo { display: block; margin-top: 3px; color: var(--color-texto); }
 .resolucion {
   margin-top: 12px; background: var(--color-fondo-card); border: 1.5px solid var(--color-borde);
-  border-radius: 4px; padding: 0;
+  border-radius: 4px;
 }
 .resolucion summary { cursor: pointer; padding: 10px 16px; font-family: 'Libre Baskerville', serif; color: var(--color-acento); }
 .resolucion .res-cuerpo { padding: 4px 18px 14px; font-size: .93rem; }
 .resolucion ol { padding-left: 20px; margin: 6px 0; }
 .resolucion li { margin: 10px 0; }
+.resolucion .pila-sep span { background: var(--color-fondo-card); }
+.res-sub {
+  font-family: 'Libre Baskerville', serif; color: var(--color-acento); font-size: 1rem; font-weight: 700;
+  margin: 16px 0 4px; padding-bottom: 4px; border-bottom: 1px solid var(--color-borde-suave);
+}
 .res-expr { display: block; text-align: center; font-family: 'Libre Baskerville', serif; font-size: 1.02rem; margin: 6px 0; overflow-x: auto; }
-.res-final { font-family: 'Libre Baskerville', serif; }
 
 /* ---------- Pie ---------- */
 .pie { text-align: center; margin-top: 10px; padding-top: 22px; border-top: 1px solid var(--color-borde-suave); }
 
-/* ---------- Modal ---------- */
+/* ---------- Modales ---------- */
 .overlay {
   position: fixed; inset: 0; background: rgba(44, 31, 14, 0.55);
   display: none; align-items: center; justify-content: center; z-index: 100; padding: 16px;
@@ -448,7 +420,7 @@ input:disabled, select:disabled { color: var(--color-texto); opacity: 1; cursor:
 .overlay.show { display: flex; }
 .modal-calificacion {
   border: 3px solid var(--color-borde); border-radius: 8px; font-family: 'Libre Baskerville', serif;
-  box-shadow: 0 6px 24px rgba(44, 31, 14, 0.35); padding: 28px 32px; min-width: 320px; max-width: 640px; width: 100%;
+  box-shadow: 0 6px 24px rgba(44, 31, 14, 0.35); padding: 28px 32px; min-width: 320px; max-width: 700px; width: 100%;
   text-align: center; max-height: 92vh; overflow-y: auto;
 }
 .modal-calificacion .m-titulo { font-size: 1.25rem; font-weight: 700; margin: 0; }
@@ -466,6 +438,17 @@ input:disabled, select:disabled { color: var(--color-texto); opacity: 1; cursor:
 .desglose .pasos-err { font-size: .78rem; color: var(--color-texto-suave); text-align: left; }
 .modal-calificacion .cerrar { margin-top: 18px; }
 
+.modal-aviso {
+  background: var(--color-fondo-card); color: var(--color-texto);
+  border: 2px solid var(--color-borde); outline: 1px solid var(--color-borde-suave); outline-offset: 4px;
+  border-radius: 8px; box-shadow: 0 6px 24px rgba(44, 31, 14, 0.35);
+  padding: 26px 30px 24px; max-width: 470px; width: 100%; text-align: center;
+}
+.modal-aviso h2 { font-family: 'Libre Baskerville', serif; font-size: 1.2rem; margin: 0 0 14px; color: var(--color-texto); }
+.modal-aviso p { font-size: .93rem; color: var(--color-texto-suave); margin: 0 0 10px; text-align: left; }
+.modal-aviso p b { color: var(--color-texto); }
+.modal-aviso .acciones { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 20px; }
+
 body.aprobado-10 { background-color: #1a7a1a; }
 body.aprobado-10 .ficha-container { background: #eafaea; }
 
@@ -473,9 +456,11 @@ body.aprobado-10 .ficha-container { background: #eafaea; }
   .ficha-container { margin: 12px 8px; padding: 22px 16px; }
   .ejercicio-card { padding: 16px 14px; }
   .paso-cuerpo, .paso-ayuda { margin-left: 0; }
-  .pizarra { font-size: 1.1rem; }
+  .pizarra { font-size: 1.02rem; }
   .barra { padding: 8px 10px; gap: 6px 16px; }
   .ventana { text-align: left; }
+  .sistema-fila { gap: 14px; }
+  .modal-aviso { padding: 22px 18px; }
 }
 </style>
 </head>
@@ -486,14 +471,14 @@ body.aprobado-10 .ficha-container { background: #eafaea; }
 </div>
 
 <main class="ficha-container">
-  <h1 class="titulo-ficha">Inecuaciones con una incógnita</h1>
-  <p class="subtitulo">Inecuaciones de primer grado, de segundo grado y racionales</p>
+  <h1 class="titulo-ficha">Sistemas de inecuaciones con una incógnita</h1>
+  <p class="subtitulo">Sistemas de inecuaciones de primer y segundo grado</p>
 
   <div class="barra">
     <label for="nombre">Alumno/a:</label>
     <input type="text" id="nombre" placeholder="Nombre y apellidos" autocomplete="off">
     <span class="dato">Nota: <b id="marcador-nota">0</b> / 10</span>
-    <span class="dato">Tipos superados: <b id="marcador-sup">0</b> / 3</span>
+    <span class="dato">Tipos superados: <b id="marcador-sup">0</b> / 2</span>
     <span class="dato">Fallos: <b id="marcador-fallos">0</b></span>
     <div class="aviso-nombre" id="aviso-nombre">Escribe tu nombre antes de continuar.</div>
   </div>
@@ -501,12 +486,13 @@ body.aprobado-10 .ficha-container { background: #eafaea; }
   <details class="recuerda">
     <summary>Recuerda antes de empezar</summary>
     <ul>
-      <li>Si <b>multiplicas o divides</b> los dos miembros por un <b>número negativo</b>, el sentido de la desigualdad <b>se invierte</b> (≤ pasa a ≥, &lt; pasa a &gt;). Al sumar, restar o pasar términos de un miembro a otro, el sentido no cambia.</li>
-      <li><span class="ico-lleno"></span> <b>Círculo relleno</b> y <b>corchete</b> [ ]: el extremo pertenece a la solución (≤ o ≥).</li>
-      <li><span class="ico-vacio"></span> <b>Círculo vacío</b> y <b>paréntesis</b> ( ): el extremo no pertenece (&lt; o &gt;, los <span class="polo-txt">polos</span> y siempre ±∞).</li>
-      <li>En la tabla de signos, el factor <b>x − r</b> es negativo a la izquierda de r y positivo a la derecha. Si el coeficiente de x² es negativo, se añade la fila del factor <b>−1</b>, negativa en todos los tramos.</li>
-      <li><b>Método rápido</b> en segundo grado: si a &gt; 0 la parábola es <b>cóncava</b> (sonrisa ∪); si a &lt; 0 es <b>convexa</b> (hacia abajo ∩). La expresión es positiva donde la parábola queda <b>por encima</b> del eje X y negativa donde queda <b>por debajo</b>.</li>
-      <li>Los <span class="polo-txt">polos</span> (valores que anulan el denominador) <b>nunca</b> forman parte de la solución.</li>
+      <li>La <b>solución de un sistema</b> son los valores de x que cumplen <b>todas</b> las inecuaciones <b>a la vez</b>: es la <b>intersección</b> (∩) de las soluciones de cada una.</li>
+      <li>Resuelve cada inecuación por separado, representa sus soluciones <b>una debajo de otra</b> con la misma escala y quédate con los tramos que están sombreados <b>en todas</b> las rectas.</li>
+      <li>Si <b>multiplicas o divides</b> por un <b>número negativo</b>, el sentido de la desigualdad <b>se invierte</b>. Al pasar términos de un miembro a otro, el sentido no cambia.</li>
+      <li><span class="ico-lleno"></span> <b>Círculo relleno</b> y <b>corchete</b> [ ]: el extremo pertenece a la solución (≤ o ≥). <span class="ico-vacio"></span> <b>Círculo vacío</b> y <b>paréntesis</b> ( ): no pertenece (&lt; o &gt;, y siempre junto a ±∞).</li>
+      <li>En cada extremo de la solución del sistema, el corchete o el paréntesis lo decide <b>la inecuación de la que procede</b> ese extremo.</li>
+      <li>En la tabla de signos, el factor <b>x − r</b> es negativo a la izquierda de r y positivo a la derecha.</li>
+      <li>Si en un ejercicio pulsas <b>«Mostrar soluciones»</b>, verás su resolución completa, pero <b>ese ejercicio no contará para la nota</b> (ni suma ni resta). Después podrás hacer otro del mismo tipo.</li>
     </ul>
   </details>
 
@@ -516,6 +502,20 @@ body.aprobado-10 .ficha-container { background: #eafaea; }
     <button class="btn-finalizar" id="btnFinalizar">Finalizar y Calificar</button>
   </div>
 </main>
+
+<!-- Aviso previo a «Mostrar soluciones» -->
+<div class="overlay" id="overlaySol">
+  <div class="modal-aviso" role="dialog" aria-modal="true" aria-labelledby="solTitulo">
+    <h2 id="solTitulo">¿Mostrar las soluciones?</h2>
+    <p>Verás resuelto, con su explicación paso a paso, el <b>ejercicio que tienes en curso</b> en esta tarjeta.</p>
+    <p><b>Ese ejercicio no contará para la nota</b>: no suma ni resta. Los fallos que ya hayas cometido en otros ejercicios siguen contando.</p>
+    <p>Después podrás seguir con un ejercicio nuevo del mismo tipo.</p>
+    <div class="acciones">
+      <button class="btn-primario" id="btnSolVolver">Volver al ejercicio</button>
+      <button class="btn-secundario" id="btnSolSi">Sí, mostrar soluciones</button>
+    </div>
+  </div>
+</div>
 
 <div class="overlay" id="overlay">
   <div class="modal-calificacion" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitulo">
@@ -563,14 +563,13 @@ const SIMB_HTML = { lt: '&lt;', le: '≤', gt: '&gt;', ge: '≥' };
 const esEstricto = s => s === 'lt' || s === 'gt';
 const sentido = s => (s === 'lt' || s === 'le') ? 'menor' : 'mayor';
 const invertir = s => ({ lt: 'gt', le: 'ge', gt: 'lt', ge: 'le' })[s];
+const cmpNum = (a, b) => (a < b ? -1 : (a > b ? 1 : 0));
 
 function fmtNum(n) {
   if (n === Infinity) return '+∞';
   if (n === -Infinity) return MENOS + '∞';
   return n < 0 ? MENOS + Math.abs(n) : String(n);
 }
-function fmtNumPar(n) { return n < 0 ? '(' + fmtNum(n) + ')' : fmtNum(n); }
-// coeficientes de mayor a menor grado
 function fmtPoly(coefs) {
   const deg = coefs.length - 1;
   let out = '';
@@ -578,14 +577,13 @@ function fmtPoly(coefs) {
     const e = deg - i;
     if (c === 0) return;
     const abs = Math.abs(c);
-    const xp = e === 0 ? '' : (e === 1 ? 'x' : (e === 2 ? 'x²' : 'x³'));
+    const xp = e === 0 ? '' : (e === 1 ? 'x' : 'x²');
     const term = e === 0 ? String(abs) : (abs === 1 ? '' : abs) + xp;
     if (out === '') out = (c < 0 ? MENOS : '') + term;
     else out += (c < 0 ? ' ' + MENOS + ' ' : ' + ') + term;
   });
   return out || '0';
 }
-// suma sin simplificar: [[coef,'x'|''], ...]
 function fmtSuma(terms) {
   let out = '';
   terms.filter(([c]) => c !== 0).forEach(([c, v]) => {
@@ -600,27 +598,18 @@ function fmtFactor(r) {
   if (r === 0) return 'x';
   return r > 0 ? `x ${MENOS} ${r}` : `x + ${-r}`;
 }
-const fmtFactorPar = r => r === 0 ? 'x' : `(${fmtFactor(r)})`;
+function gcd(a, b) { while (b) { [a, b] = [b, a % b]; } return a; }
 function fmtLinealBonito(m, n) {
-  // m x + n, a veces sacando factor común
   const g = gcd(Math.abs(m), Math.abs(n));
   if (m > 0 && n !== 0 && g >= 2 && rand() < 0.5) return `${g}(${fmtPoly([m / g, n / g])})`;
   return fmtPoly([m, n]);
 }
-function gcd(a, b) { while (b) { [a, b] = [b, a % b]; } return a; }
 function frac(num, den) { return `<span class="frac"><span class="num">${num}</span><span class="den">${den}</span></span>`; }
-function mul(p, q) { // polinomios (mayor a menor)
-  const r = new Array(p.length + q.length - 1).fill(0);
-  p.forEach((a, i) => q.forEach((b, j) => { r[i + j] += a * b; }));
-  return r;
-}
 function sumaPol(p, q) {
   const n = Math.max(p.length, q.length);
   const P = Array(n - p.length).fill(0).concat(p), Q = Array(n - q.length).fill(0).concat(q);
   return P.map((v, i) => v + Q[i]);
 }
-const negPol = p => p.map(v => -v);
-const evalPol = (p, x) => p.reduce((acc, c) => acc * x + c, 0);
 function fmtIntervalo(i) {
   return `${i.loInc ? '[' : '('}${fmtNum(i.lo)}, ${fmtNum(i.hi)}${i.hiInc ? ']' : ')'}`;
 }
@@ -635,30 +624,77 @@ function listaY(arr) {
   if (arr.length <= 1) return arr.join('');
   return arr.slice(0, -1).join(', ') + ' y ' + arr[arr.length - 1];
 }
+const LLAVE = `<span class="llave" aria-hidden="true"><svg viewBox="0 0 16 100" preserveAspectRatio="none"><path d="M14 1 C7 1 8 7 8 15 L8 40 C8 46 6 50 2 50 C6 50 8 54 8 60 L8 85 C8 93 7 99 14 99" fill="none" stroke="currentColor" stroke-width="1.7" vector-effect="non-scaling-stroke" stroke-linecap="round"/></svg></span>`;
+function sistemaHTML(filas) {
+  return `<span class="sistema">${LLAVE}<span class="sistema-filas">${filas.map((f, i) =>
+    `<span class="sistema-fila"><span>${f}</span><span class="et">(${i + 1})</span></span>`).join('')}</span></span>`;
+}
 
 /* =====================================================================
-   Solución a partir de los valores críticos (factores simples y mónicos)
+   Conjuntos de intervalos: unión, intersección, comparación
    ===================================================================== */
-function signosEsperados(n, a = 1) {
-  // filas de factores: columna j < valor i  -> negativo si j <= i
+function normalizar(L) {
+  const s = L.map(i => ({ ...i })).sort((x, y) => cmpNum(x.lo, y.lo) || (y.loInc - x.loInc));
+  const out = [];
+  s.forEach(i => {
+    const u = out[out.length - 1];
+    if (u && (i.lo < u.hi || (i.lo === u.hi && (u.hiInc || i.loInc)))) {
+      if (i.hi > u.hi) { u.hi = i.hi; u.hiInc = i.hiInc; }
+      else if (i.hi === u.hi) u.hiInc = u.hiInc || i.hiInc;
+    } else out.push(i);
+  });
+  return out;
+}
+function intersecar(A, B) {
+  const r = [];
+  A.forEach(a => B.forEach(b => {
+    let lo, loInc, hi, hiInc;
+    if (a.lo > b.lo) { lo = a.lo; loInc = a.loInc; } else if (b.lo > a.lo) { lo = b.lo; loInc = b.loInc; } else { lo = a.lo; loInc = a.loInc && b.loInc; }
+    if (a.hi < b.hi) { hi = a.hi; hiInc = a.hiInc; } else if (b.hi < a.hi) { hi = b.hi; hiInc = b.hiInc; } else { hi = a.hi; hiInc = a.hiInc && b.hiInc; }
+    if (lo < hi || (lo === hi && loInc && hiInc)) r.push({ lo, hi, loInc, hiInc });
+  }));
+  return normalizar(r);
+}
+const unir = (A, B) => normalizar(A.concat(B));
+function igualesIL(A, B) {
+  const a = normalizar(A), b = normalizar(B);
+  return a.length === b.length && a.every((x, k) => x.lo === b[k].lo && x.hi === b[k].hi && x.loInc === b[k].loInc && x.hiInc === b[k].hiInc);
+}
+const extremos = L => [...new Set(L.flatMap(i => [i.lo, i.hi]).filter(v => isFinite(v)))].sort((a, b) => a - b);
+// Cobertura en puntos intermedios (semienteros): permite reconocer «qué zona» ha sombreado
+// el alumno sin tener en cuenta los extremos. Solo se usa para diagnosticar errores.
+const MUESTRAS = (() => { const m = [-1000]; for (let x = -11.5; x <= 11.5; x += 1) m.push(x); m.push(1000); return m; })();
+const cobertura = L => MUESTRAS.map(x => L.some(i => x > i.lo && x < i.hi));
+const mismaCobertura = (A, B) => { const a = cobertura(A), b = cobertura(B); return a.every((v, k) => v === b[k]); };
+function incluidoEn(v, intervalos) {
+  return intervalos.some(i => (i.lo === v && i.loInc) || (i.hi === v && i.hiInc));
+}
+const claveV = v => v === -Infinity ? '-inf' : (v === Infinity ? 'inf' : String(v));
+const claveTramo = i => claveV(i.lo) + '|' + claveV(i.hi);
+// Convierte una solución (lista de intervalos) en los puntos y tramos de una recta
+function solARecta(sol) {
+  const pts = {};
+  extremos(sol).forEach(v => { pts[v] = incluidoEn(v, sol) ? 'lleno' : 'vacio'; });
+  return [pts, sol.map(claveTramo)];
+}
+
+/* =====================================================================
+   Signos (factores mónicos simples)
+   ===================================================================== */
+function signosEsperados(n) {
   const filas = [];
   for (let i = 0; i < n; i++) {
     const f = [];
     for (let j = 0; j <= n; j++) f.push(j <= i ? '-' : '+');
     filas.push(f);
   }
-  const cte = [];
   const final = [];
-  for (let j = 0; j <= n; j++) {
-    cte.push(a < 0 ? '-' : '+');
-    const neg = (n - j) % 2 === 1;
-    final.push((neg !== (a < 0)) ? '-' : '+');
-  }
-  return { filas, cte, final };
+  for (let j = 0; j <= n; j++) final.push(((n - j) % 2 === 0) ? '+' : '-');
+  return { filas, final };
 }
-function solucionDesdeSignos(crit, polos, simb, a = 1) {
+function solucionDesdeSignos(crit, simb) {
   const n = crit.length;
-  const { final } = signosEsperados(n, a);
+  const { final } = signosEsperados(n);
   const quierePos = simb === 'gt' || simb === 'ge';
   const estricto = esEstricto(simb);
   const intervalos = [];
@@ -666,35 +702,25 @@ function solucionDesdeSignos(crit, polos, simb, a = 1) {
     if ((final[j] === '+') === quierePos) {
       const lo = j === 0 ? -Infinity : crit[j - 1];
       const hi = j === n ? Infinity : crit[j];
-      intervalos.push({
-        lo, hi,
-        loInc: isFinite(lo) && !estricto && !polos.includes(lo),
-        hiInc: isFinite(hi) && !estricto && !polos.includes(hi)
-      });
+      intervalos.push({ lo, hi, loInc: isFinite(lo) && !estricto, hiInc: isFinite(hi) && !estricto });
     }
   }
   return intervalos;
 }
-const claveV = v => v === -Infinity ? '-inf' : (v === Infinity ? 'inf' : String(v));
-const claveTramo = i => claveV(i.lo) + '|' + claveV(i.hi);
-function incluidoEn(v, intervalos) {
-  return intervalos.some(i => (i.lo === v && i.loInc) || (i.hi === v && i.hiInc));
-}
 
 /* =====================================================================
-   Recta numérica (dibujo + editor)
+   Recta numérica: dibujo
    ===================================================================== */
-const RW = 720, RH = 92, AY = 42, XL = 34, XR = 686;
+const RMIN = -10, RMAX = 10;
+const RW = 720, RH = 74, AY = 28, XL = 34, XR = 686;
 function svgRecta({ min, max, puntos, tramos, hoverPunto = null, hoverTramo = null, hoverModo = 'lleno' }) {
   const X = v => XL + (v - min) / (max - min) * (XR - XL);
   const xDe = k => k === '-inf' ? 12 : (k === 'inf' ? RW - 12 : X(+k));
   let s = `<svg viewBox="0 0 ${RW} ${RH}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Recta numérica">`;
-  // resaltado del tramo bajo el cursor
   if (hoverTramo) {
     const [a, b] = hoverTramo.split('|');
     s += `<rect x="${xDe(a)}" y="${AY - 13}" width="${xDe(b) - xDe(a)}" height="26" rx="6" fill="#C9A96E" opacity="0.25"/>`;
   }
-  // eje
   s += `<line x1="8" y1="${AY}" x2="${RW - 8}" y2="${AY}" stroke="#3B2510" stroke-width="1.6"/>`;
   s += `<polygon points="${RW - 4},${AY} ${RW - 13},${AY - 5} ${RW - 13},${AY + 5}" fill="#3B2510"/>`;
   s += `<polygon points="4,${AY} 13,${AY - 5} 13,${AY + 5}" fill="#3B2510"/>`;
@@ -703,7 +729,6 @@ function svgRecta({ min, max, puntos, tramos, hoverPunto = null, hoverTramo = nu
     s += `<line x1="${x}" y1="${AY - (big ? 7 : 5)}" x2="${x}" y2="${AY + (big ? 7 : 5)}" stroke="${big ? '#3B2510' : '#6B4F35'}" stroke-width="${big ? 1.6 : 1}"/>`;
     s += `<text x="${x}" y="${AY + 26}" font-size="${big ? 12.5 : 11}" fill="${big ? '#2C1F0E' : '#6B4F35'}" font-weight="${v === 0 ? 700 : 400}" text-anchor="middle" font-family="Lato, sans-serif">${fmtNum(v)}</text>`;
   }
-  // tramos sombreados
   tramos.forEach(k => {
     const [a, b] = k.split('|');
     const x1 = xDe(a), x2 = xDe(b);
@@ -711,12 +736,9 @@ function svgRecta({ min, max, puntos, tramos, hoverPunto = null, hoverTramo = nu
     if (a === '-inf') s += `<polygon points="${x1 - 6},${AY} ${x1 + 6},${AY - 9} ${x1 + 6},${AY + 9}" fill="#A0522D"/>`;
     if (b === 'inf') s += `<polygon points="${x2 + 6},${AY} ${x2 - 6},${AY - 9} ${x2 - 6},${AY + 9}" fill="#A0522D"/>`;
   });
-  // vista previa del punto
   if (hoverPunto !== null && !puntos.has(hoverPunto)) {
-    const x = X(hoverPunto);
-    s += `<circle cx="${x}" cy="${AY}" r="7.5" fill="${hoverModo === 'lleno' ? '#A0522D' : '#FDFAF3'}" stroke="#A0522D" stroke-width="2.5" opacity="0.45"/>`;
+    s += `<circle cx="${X(hoverPunto)}" cy="${AY}" r="7.5" fill="${hoverModo === 'lleno' ? '#A0522D' : '#FDFAF3'}" stroke="#A0522D" stroke-width="2.5" opacity="0.45"/>`;
   }
-  // puntos
   puntos.forEach((tipo, v) => {
     const x = X(v);
     if (tipo === 'lleno') s += `<circle cx="${x}" cy="${AY}" r="7.5" fill="#A0522D" stroke="#3B2510" stroke-width="1.5"/>`;
@@ -725,28 +747,13 @@ function svgRecta({ min, max, puntos, tramos, hoverPunto = null, hoverTramo = nu
   return s + '</svg>';
 }
 
-function crearRecta(cont, { min, max }) {
-  const puntos = new Map();   // valor -> 'lleno' | 'vacio'
-  let tramos = new Set();     // 'a|b'
-  let modo = 'lleno', hoverPunto = null, hoverTramo = null, bloqueada = false;
-  const AYUDAS = {
-    lleno: 'Pulsa sobre un número de la recta para marcar un extremo incluido (círculo relleno).',
-    vacio: 'Pulsa sobre un número de la recta para marcar un extremo excluido (círculo vacío).',
-    tramo: 'Pulsa entre dos puntos (o a un lado de ellos) para sombrear o quitar ese tramo.',
-    borrar: 'Pulsa sobre un punto para borrarlo.'
-  };
-  cont.innerHTML = `
-    <div class="recta-tools" role="toolbar" aria-label="Herramientas de la recta">
-      <button type="button" data-modo="lleno" class="activo"><span class="ico-lleno"></span> Extremo incluido</button>
-      <button type="button" data-modo="vacio"><span class="ico-vacio"></span> Extremo excluido</button>
-      <button type="button" data-modo="tramo"><span class="ico-tramo"></span> Sombrear tramo</button>
-      <button type="button" data-modo="borrar">✕ Borrar punto</button>
-      <button type="button" data-accion="limpiar" class="limpiar">Limpiar</button>
-    </div>
-    <div class="recta-scroll"><div class="recta-svg"></div></div>
-    <p class="recta-ayuda">${AYUDAS.lleno}</p>`;
-  const zona = cont.querySelector('.recta-svg');
-  const ayuda = cont.querySelector('.recta-ayuda');
+/* =====================================================================
+   Rectas apiladas (una barra de herramientas para todas)
+   ===================================================================== */
+function filaRecta(zona, { min, max }, getModo) {
+  const puntos = new Map();
+  let tramos = new Set();
+  let hoverPunto = null, hoverTramo = null, bloqueada = false;
   const ordenados = () => [...puntos.keys()].sort((a, b) => a - b);
   function regiones() {
     const b = ['-inf', ...ordenados().map(String), 'inf'];
@@ -769,14 +776,13 @@ function crearRecta(cont, { min, max }) {
     }
     return false;
   }
-  // tras cambiar los puntos, conserva el sombreado allí donde ya estaba
   function reajustar(viejos) {
     const nuevos = new Set();
     regiones().forEach(k => { if (sombreadoEn(medio(k), viejos)) nuevos.add(k); });
     tramos = nuevos;
   }
   function dibujar() {
-    zona.innerHTML = svgRecta({ min, max, puntos, tramos, hoverPunto, hoverTramo, hoverModo: modo });
+    zona.innerHTML = svgRecta({ min, max, puntos, tramos, hoverPunto, hoverTramo, hoverModo: getModo() });
   }
   function valorCont(ev) {
     const svg = zona.querySelector('svg');
@@ -792,17 +798,9 @@ function crearRecta(cont, { min, max }) {
     for (const v of o) { if (v < vc) lo = String(v); else { hi = String(v); break; } }
     return lo + '|' + hi;
   }
-  cont.querySelector('.recta-tools').addEventListener('click', e => {
-    const b = e.target.closest('button');
-    if (!b || bloqueada) return;
-    if (b.dataset.accion === 'limpiar') { puntos.clear(); tramos = new Set(); dibujar(); return; }
-    modo = b.dataset.modo;
-    cont.querySelectorAll('[data-modo]').forEach(x => x.classList.toggle('activo', x === b));
-    ayuda.textContent = AYUDAS[modo];
-    hoverPunto = hoverTramo = null; dibujar();
-  });
   zona.addEventListener('pointermove', e => {
     if (bloqueada) return;
+    const modo = getModo();
     const vc = valorCont(e);
     let hp = null, ht = null;
     if (modo === 'lleno' || modo === 'vacio') { const v = Math.round(vc); if (v >= min && v <= max) hp = v; }
@@ -812,6 +810,7 @@ function crearRecta(cont, { min, max }) {
   zona.addEventListener('pointerleave', () => { hoverPunto = hoverTramo = null; if (!bloqueada) dibujar(); });
   zona.addEventListener('click', e => {
     if (bloqueada) return;
+    const modo = getModo();
     const vc = valorCont(e);
     if (modo === 'lleno' || modo === 'vacio') {
       const v = Math.round(vc);
@@ -832,238 +831,79 @@ function crearRecta(cont, { min, max }) {
   dibujar();
   return {
     leer: () => ({ puntos: new Map(puntos), tramos: new Set(tramos) }),
-    bloquear() {
-      bloqueada = true; hoverPunto = hoverTramo = null; dibujar();
-      zona.classList.add('bloqueada');
-      cont.querySelectorAll('.recta-tools button').forEach(b => { b.disabled = true; });
-    },
+    limpiar() { if (bloqueada) return; puntos.clear(); tramos = new Set(); dibujar(); },
+    redibujar() { hoverPunto = hoverTramo = null; dibujar(); },
+    bloquear() { bloqueada = true; hoverPunto = hoverTramo = null; dibujar(); zona.classList.add('bloqueada'); },
     marcar(ok) { zona.classList.add(ok ? 'ok-campo' : 'mal-campo'); },
-    // solo para pruebas automáticas
     _fijar(pts, trs) { puntos.clear(); Object.entries(pts).forEach(([v, t]) => puntos.set(+v, t)); tramos = new Set(trs); dibujar(); }
   };
 }
-function rectaSolucionHTML(min, max, crit, intervalos) {
-  const puntos = new Map();
-  crit.forEach(v => puntos.set(v, incluidoEn(v, intervalos) ? 'lleno' : 'vacio'));
-  return `<div class="recta-scroll"><div class="recta-svg bloqueada">${svgRecta({ min, max, puntos, tramos: new Set(intervalos.map(claveTramo)) })}</div></div>`;
-}
-
-/* =====================================================================
-   Parábola (método rápido de segundo grado)
-   Los tramos se identifican por posición: 0 = (−∞, x₁), 1 = (x₁, x₂), 2 = (x₂, +∞)
-   ===================================================================== */
-const PW = 720, PH = 236, PAY = 118, PROF = 80;
-function svgParabola({ min, max, r1, r2, a, tramos, puntos, hoverTramo = null, hoverPunto = null, hoverModo = 'lleno' }) {
-  const X = v => XL + (v - min) / (max - min) * (XR - XL);
-  const esc = PROF / (((r2 - r1) / 2) ** 2);
-  const Y = x => PAY - a * (x - r1) * (x - r2) * esc;
-  const bordes = [[8, X(r1)], [X(r1), X(r2)], [X(r2), PW - 8]];
-  const vDe = px => min + (px - XL) / (XR - XL) * (max - min);
-  const camino = (pxA, pxB) => {
-    let d = '';
-    const N = 90;
-    for (let i = 0; i <= N; i++) {
-      const px = pxA + (pxB - pxA) * i / N;
-      d += (i ? ' L ' : 'M ') + px.toFixed(1) + ' ' + Y(vDe(px)).toFixed(1);
-    }
-    return d;
-  };
-  const id = 'pc' + (++svgParabola.n);
-  let s = `<svg viewBox="0 0 ${PW} ${PH}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Parábola con sus raíces sobre el eje X">
-    <defs><clipPath id="${id}"><rect x="0" y="6" width="${PW}" height="${PH - 12}"/></clipPath></defs>`;
-  if (hoverTramo !== null) {
-    const [x1, x2] = bordes[hoverTramo];
-    s += `<rect x="${x1}" y="6" width="${x2 - x1}" height="${PH - 12}" rx="6" fill="#C9A96E" opacity="0.18"/>`;
-  }
-  // rótulos de signo
-  const rot = (y, t) => `<rect x="${PW - 172}" y="${y - 13}" width="160" height="18" rx="3" fill="#FDFAF3" opacity="0.92"/><text x="${PW - 16}" y="${y}" font-size="12" fill="#6B4F35" font-style="italic" text-anchor="end" font-family="Libre Baskerville, serif">${t}</text>`;
-  // relleno de los tramos elegidos
-  s += `<g clip-path="url(#${id})">`;
-  tramos.forEach(j => {
-    const [x1, x2] = bordes[j];
-    s += `<path d="${camino(x1, x2)} L ${x2.toFixed(1)} ${PAY} L ${x1.toFixed(1)} ${PAY} Z" fill="#A0522D" opacity="0.16"/>`;
-  });
-  // curva completa y arcos elegidos
-  s += `<path d="${camino(8, PW - 8)}" fill="none" stroke="#3B2510" stroke-width="2"/>`;
-  tramos.forEach(j => {
-    const [x1, x2] = bordes[j];
-    s += `<path d="${camino(x1, x2)}" fill="none" stroke="#A0522D" stroke-width="4.5" stroke-linecap="round"/>`;
-  });
-  s += `</g>`;
-  // eje
-  s += `<line x1="8" y1="${PAY}" x2="${PW - 8}" y2="${PAY}" stroke="#3B2510" stroke-width="1.6"/>`;
-  s += `<polygon points="${PW - 4},${PAY} ${PW - 13},${PAY - 5} ${PW - 13},${PAY + 5}" fill="#3B2510"/>`;
-  s += `<polygon points="4,${PAY} 13,${PAY - 5} 13,${PAY + 5}" fill="#3B2510"/>`;
-  for (let v = min; v <= max; v++) {
-    const x = X(v), big = v % 5 === 0, raiz = v === r1 || v === r2;
-    s += `<line x1="${x}" y1="${PAY - (big ? 6 : 4)}" x2="${x}" y2="${PAY + (big ? 6 : 4)}" stroke="${big ? '#3B2510' : '#6B4F35'}" stroke-width="${big ? 1.4 : 1}"/>`;
-    const ty = a > 0 ? PAY - 12 : PAY + 22;   // números en el lado contrario al vértice
-    s += `<text x="${x}" y="${ty}" font-size="${raiz ? 13 : 10.5}" fill="${raiz ? '#2C1F0E' : '#6B4F35'}" font-weight="${raiz || v === 0 ? 700 : 400}" text-anchor="middle" font-family="Lato, sans-serif">${fmtNum(v)}</text>`;
-  }
-  // tramos sombreados sobre el eje
-  tramos.forEach(j => {
-    const [x1, x2] = bordes[j];
-    s += `<line x1="${x1}" y1="${PAY}" x2="${x2}" y2="${PAY}" stroke="#A0522D" stroke-width="7" stroke-linecap="${j === 1 ? 'round' : 'butt'}" opacity="0.88"/>`;
-    if (j === 0) s += `<polygon points="${x1 - 6},${PAY} ${x1 + 6},${PAY - 9} ${x1 + 6},${PAY + 9}" fill="#A0522D"/>`;
-    if (j === 2) s += `<polygon points="${x2 + 6},${PAY} ${x2 - 6},${PAY - 9} ${x2 - 6},${PAY + 9}" fill="#A0522D"/>`;
-  });
-  // extremos (raíces)
-  [r1, r2].forEach((r, i) => {
-    const x = X(r), t = puntos[i];
-    if (hoverPunto === i && t !== hoverModo) {
-      s += `<circle cx="${x}" cy="${PAY}" r="7.5" fill="${hoverModo === 'lleno' ? '#A0522D' : '#FDFAF3'}" stroke="#A0522D" stroke-width="2.5" opacity="0.5"/>`;
-    } else if (t === 'lleno') s += `<circle cx="${x}" cy="${PAY}" r="7.5" fill="#A0522D" stroke="#3B2510" stroke-width="1.5"/>`;
-    else if (t === 'vacio') s += `<circle cx="${x}" cy="${PAY}" r="7.5" fill="#FDFAF3" stroke="#A0522D" stroke-width="2.8"/>`;
-    else s += `<circle cx="${x}" cy="${PAY}" r="7.5" fill="#FDFAF3" stroke="#C9A96E" stroke-width="2" stroke-dasharray="3 2.5"/>`;
-    if (t === '' && !(hoverPunto === i)) {
-      const ly = a > 0 ? PAY + 30 : PAY - 22;
-      s += `<circle cx="${x}" cy="${ly - 4}" r="9" fill="#A0522D"/><text x="${x}" y="${ly}" font-size="12" font-weight="700" fill="#FDFAF3" text-anchor="middle" font-family="Lato, sans-serif">?</text>`;
-    }
-  });
-  s += rot(22, 'por encima del eje: +') + rot(PH - 12, `por debajo del eje: ${MENOS}`);
-  return s + '</svg>';
-}
-svgParabola.n = 0;
-const ICONO_FORMA = {
-  concava: `<svg width="46" height="34" viewBox="0 0 46 34" aria-hidden="true"><line x1="2" y1="17" x2="44" y2="17" stroke="#C9A96E" stroke-width="1.2"/><path d="M5 3 Q23 50 41 3" fill="none" stroke="#A0522D" stroke-width="2.6" stroke-linecap="round"/></svg>`,
-  convexa: `<svg width="46" height="34" viewBox="0 0 46 34" aria-hidden="true"><line x1="2" y1="17" x2="44" y2="17" stroke="#C9A96E" stroke-width="1.2"/><path d="M5 31 Q23 -16 41 31" fill="none" stroke="#A0522D" stroke-width="2.6" stroke-linecap="round"/></svg>`
-};
-function crearRapido(contRaices, contParab, { min, max }) {
-  let forma = '', modo = 'lleno', hoverTramo = null, hoverPunto = null, bloq = false;
-  const puntos = ['', ''];
-  const tramos = new Set();
-  contRaices.innerHTML = `
-    <div class="rap-bloque">
-      <div class="rap-et">Raíces de la ecuación de segundo grado, de menor a mayor</div>
-      <div class="fila-expr"><span class="mat">x₁ =</span>
-        <input type="text" class="coef" data-r="0" placeholder="?" autocomplete="off" aria-label="Raíz menor">
-        <span class="mat">&lt; &nbsp;x₂ =</span>
-        <input type="text" class="coef" data-r="1" placeholder="?" autocomplete="off" aria-label="Raíz mayor">
-      </div>
-    </div>
-    <div class="rap-bloque">
-      <div class="rap-et">¿Cómo es la parábola? Fíjate en el signo del coeficiente de x²</div>
-      <div class="formas" role="radiogroup" aria-label="Forma de la parábola">
-        <button type="button" class="forma-btn" data-forma="concava" role="radio" aria-checked="false">${ICONO_FORMA.concava}<span><span class="f-tit">Cóncava</span><span class="f-sub">sonrisa ∪ · a &gt; 0</span></span></button>
-        <button type="button" class="forma-btn" data-forma="convexa" role="radio" aria-checked="false">${ICONO_FORMA.convexa}<span><span class="f-tit">Convexa</span><span class="f-sub">hacia abajo ∩ · a &lt; 0</span></span></button>
-      </div>
-    </div>`;
+const SEPARADOR_SIS = `<div class="pila-sep"><span>∩ &nbsp;valores que cumplen las dos a la vez</span></div>`;
+function crearPila(cont, filas) {
+  let modo = 'lleno';
   const AYUDAS = {
-    lleno: 'Pulsa sobre una raíz para marcarla como extremo incluido (círculo relleno).',
-    vacio: 'Pulsa sobre una raíz para marcarla como extremo excluido (círculo vacío).',
-    tramo: 'Pulsa en un tramo para elegirlo como solución (o para quitarlo): se resalta el trozo de parábola y el tramo del eje.',
-    falta: 'Te falta marcar las raíces con «?»: elige «Extremo incluido» o «Extremo excluido» y pulsa sobre cada una de ellas.'
+    lleno: 'Pulsa sobre un número de una recta para marcar un extremo incluido (círculo relleno).',
+    vacio: 'Pulsa sobre un número de una recta para marcar un extremo excluido (círculo vacío).',
+    tramo: 'Pulsa entre dos puntos (o a un lado de ellos) para sombrear o quitar ese tramo.',
+    borrar: 'Pulsa sobre un punto para borrarlo.'
   };
-  contParab.innerHTML = `
-    <div class="recta-tools" role="toolbar" aria-label="Herramientas de la parábola">
+  let h = `<div class="recta-tools" role="toolbar" aria-label="Herramientas de las rectas">
       <button type="button" data-modo="lleno" class="activo"><span class="ico-lleno"></span> Extremo incluido</button>
       <button type="button" data-modo="vacio"><span class="ico-vacio"></span> Extremo excluido</button>
-      <button type="button" data-modo="tramo"><span class="ico-tramo"></span> Elegir tramo</button>
-      <button type="button" data-accion="limpiar" class="limpiar">Limpiar</button>
-    </div>
-    <div class="recta-scroll"><div class="recta-svg" data-zona></div></div>
-    <p class="recta-ayuda">${AYUDAS.lleno}</p>`;
-  const zona = contParab.querySelector('[data-zona]');
-  const ayuda = contParab.querySelector('.recta-ayuda');
-  const raices = () => [0, 1].map(i => parseEntero(contRaices.querySelector(`[data-r="${i}"]`).value));
-  function dibujable() {
-    const [r1, r2] = raices();
-    return forma && r1 !== null && r2 !== null && r1 < r2 && r1 >= min && r2 <= max;
-  }
-  function dibujar() {
-    if (!dibujable()) {
-      zona.classList.add('parab-vacia');
-      zona.style.cursor = 'default';
-      zona.innerHTML = 'Para dibujar la parábola, escribe en el paso 2 las dos raíces (de menor a mayor, entre ' + fmtNum(min) + ' y ' + max + ') y elige su forma.';
-      return;
-    }
-    zona.classList.remove('parab-vacia');
-    zona.style.cursor = '';
-    const [r1, r2] = raices();
-    zona.innerHTML = svgParabola({ min, max, r1, r2, a: forma === 'concava' ? 1 : -1, tramos, puntos, hoverTramo, hoverPunto, hoverModo: modo });
-  }
-  function valorCont(ev) {
-    const rc = zona.querySelector('svg').getBoundingClientRect();
-    const px = (ev.clientX - rc.left) * PW / rc.width;
-    return min + (px - XL) / (XR - XL) * (max - min);
-  }
-  function actualizarAyuda() {
-    ayuda.textContent = (tramos.size && puntos.some(t => t === '')) ? AYUDAS.falta : AYUDAS[modo];
-    ayuda.classList.toggle('aviso-ayuda', ayuda.textContent === AYUDAS.falta);
-  }
-  function objetivo(vc) {
-    const [r1, r2] = raices();
-    if (modo === 'tramo') {
-      if (Math.abs(vc - r1) < 0.2 || Math.abs(vc - r2) < 0.2) return null;
-      return vc < r1 ? 0 : (vc < r2 ? 1 : 2);
-    }
-    const d1 = Math.abs(vc - r1), d2 = Math.abs(vc - r2);
-    if (Math.min(d1, d2) > 0.75) return null;
-    return d1 <= d2 ? 0 : 1;
-  }
-  contRaices.addEventListener('input', e => { if (e.target.dataset.r !== undefined) dibujar(); });
-  contRaices.addEventListener('click', e => {
-    const b = e.target.closest('.forma-btn');
-    if (!b || bloq) return;
-    forma = b.dataset.forma;
-    contRaices.querySelectorAll('.forma-btn').forEach(x => {
-      x.classList.toggle('activo', x === b);
-      x.setAttribute('aria-checked', x === b ? 'true' : 'false');
-    });
-    dibujar();
+      <button type="button" data-modo="tramo"><span class="ico-tramo"></span> Sombrear tramo</button>
+      <button type="button" data-modo="borrar">✕ Borrar punto</button>
+    </div><div class="pila-scroll"><div class="pila">`;
+  filas.forEach(f => {
+    if (f.sis) h += SEPARADOR_SIS;
+    h += `<div class="pila-lab ${f.sis ? 'sis' : ''}"><div>${f.lab}</div>${f.sub ? `<small>${f.sub}</small>` : ''}<button type="button" class="limpiar-fila" data-limpiar="${f.key}">limpiar</button></div>
+      <div class="recta-svg ${f.sis ? 'sis' : ''}" data-fila="${f.key}"></div>`;
   });
-  contParab.querySelector('.recta-tools').addEventListener('click', e => {
+  h += `</div></div><p class="recta-ayuda">${AYUDAS.lleno}</p>`;
+  cont.innerHTML = h;
+  const ayuda = cont.querySelector('.recta-ayuda');
+  const api = {};
+  filas.forEach(f => { api[f.key] = filaRecta(cont.querySelector(`.recta-svg[data-fila="${f.key}"]`), { min: RMIN, max: RMAX }, () => modo); });
+  let bloq = false;
+  cont.querySelector('.recta-tools').addEventListener('click', e => {
     const b = e.target.closest('button');
     if (!b || bloq) return;
-    if (b.dataset.accion === 'limpiar') { puntos[0] = puntos[1] = ''; tramos.clear(); dibujar(); actualizarAyuda(); return; }
     modo = b.dataset.modo;
-    contParab.querySelectorAll('[data-modo]').forEach(x => x.classList.toggle('activo', x === b));
-    hoverTramo = hoverPunto = null; dibujar(); actualizarAyuda();
+    cont.querySelectorAll('[data-modo]').forEach(x => x.classList.toggle('activo', x === b));
+    ayuda.textContent = AYUDAS[modo];
+    Object.values(api).forEach(a => a.redibujar());
   });
-  zona.addEventListener('pointermove', e => {
-    if (bloq || !dibujable()) return;
-    const o = objetivo(valorCont(e));
-    const ht = modo === 'tramo' ? o : null, hp = modo === 'tramo' ? null : o;
-    if (ht !== hoverTramo || hp !== hoverPunto) { hoverTramo = ht; hoverPunto = hp; dibujar(); }
-  });
-  zona.addEventListener('pointerleave', () => { hoverTramo = hoverPunto = null; if (!bloq) dibujar(); });
-  zona.addEventListener('click', e => {
-    if (bloq || !dibujable()) return;
-    const o = objetivo(valorCont(e));
-    if (o === null) return;
-    if (modo === 'tramo') { if (tramos.has(o)) tramos.delete(o); else tramos.add(o); }
-    else puntos[o] = modo;
-    hoverPunto = null;
-    dibujar(); actualizarAyuda();
-  });
-  dibujar();
+  cont.querySelectorAll('[data-limpiar]').forEach(b => b.addEventListener('click', () => { if (!bloq) api[b.dataset.limpiar].limpiar(); }));
   return {
-    leer() { const [r1, r2] = raices(); return { r1, r2, forma, puntos: [...puntos], tramos: new Set(tramos), dibujable: dibujable() }; },
+    fila: k => api[k],
     bloquear() {
-      bloq = true; hoverTramo = hoverPunto = null; dibujar();
-      zona.classList.add('bloqueada');
-      contRaices.querySelectorAll('input, button').forEach(x => { x.disabled = true; });
-      contParab.querySelectorAll('.recta-tools button').forEach(x => { x.disabled = true; });
-    },
-    marcarRaiz(i, ok) { contRaices.querySelector(`[data-r="${i}"]`).classList.add(ok ? 'ok-campo' : 'mal-campo'); },
-    marcarForma(ok) { const b = contRaices.querySelector('.forma-btn.activo'); if (b) b.classList.add(ok ? 'ok-campo' : 'mal-campo'); },
-    marcarParab(ok) { zona.classList.add(ok ? 'ok-campo' : 'mal-campo'); },
-    _fijar(r1, r2, f, pts, trs) {
-      contRaices.querySelector('[data-r="0"]').value = fmtNum(r1);
-      contRaices.querySelector('[data-r="1"]').value = fmtNum(r2);
-      forma = f;
-      contRaices.querySelectorAll('.forma-btn').forEach(x => x.classList.toggle('activo', x.dataset.forma === f));
-      puntos[0] = pts[0]; puntos[1] = pts[1];
-      tramos.clear(); trs.forEach(j => tramos.add(j));
-      dibujar();
+      bloq = true;
+      Object.values(api).forEach(a => a.bloquear());
+      cont.querySelectorAll('button').forEach(b => { b.disabled = true; });
+      cont.querySelectorAll('.limpiar-fila').forEach(b => { b.style.visibility = 'hidden'; });
+      ayuda.style.display = 'none';
     }
   };
 }
-function parabolaSolucionHTML(min, max, r1, r2, a, sol) {
-  const tramos = new Set();
-  sol.forEach(i => { tramos.add(i.lo === -Infinity ? 0 : (i.hi === Infinity ? 2 : 1)); });
-  const puntos = [r1, r2].map(r => incluidoEn(r, sol) ? 'lleno' : 'vacio');
-  return `<div class="recta-scroll"><div class="recta-svg bloqueada">${svgParabola({ min, max, r1, r2, a, tramos, puntos })}</div></div>`;
+function pilaEstaticaHTML(filas) {
+  let h = '<div class="pila-scroll"><div class="pila">';
+  filas.forEach(f => {
+    if (f.sis) h += SEPARADOR_SIS;
+    const puntos = new Map();
+    extremos(f.sol).forEach(v => puntos.set(v, incluidoEn(v, f.sol) ? 'lleno' : 'vacio'));
+    h += `<div class="pila-lab ${f.sis ? 'sis' : ''}"><div>${f.lab}</div>${f.sub ? `<small>${f.sub}</small>` : ''}</div>
+      <div class="recta-svg bloqueada ${f.sis ? 'sis' : ''}">${svgRecta({ min: RMIN, max: RMAX, puntos, tramos: new Set(f.sol.map(claveTramo)) })}</div>`;
+  });
+  return h + '</div></div>';
+}
+// Pasa la recta del alumno a una lista de intervalos (para diagnosticar unión / solución parcial)
+function rectaAIntervalos(g) {
+  const L = [];
+  g.tramos.forEach(k => {
+    const [a, b] = k.split('|');
+    const lo = a === '-inf' ? -Infinity : +a, hi = b === 'inf' ? Infinity : +b;
+    L.push({ lo, hi, loInc: isFinite(lo) && g.puntos.get(lo) === 'lleno', hiInc: isFinite(hi) && g.puntos.get(hi) === 'lleno' });
+  });
+  return normalizar(L);
 }
 
 /* =====================================================================
@@ -1118,10 +958,9 @@ function crearIntervalos(cont, { maxFilas = 3 } = {}) {
     const acc = b.dataset.acc;
     if (acc === 'add') { if (filas.length < maxFilas) { filas.push({ li: '(', ld: ')', lo: '', hi: '' }); render(); } return; }
     if (acc === 'minf' || acc === 'pinf') {
-      if (!ultimo) { ultimo = { i: filas.length - 1, lado: acc === 'minf' ? 'lo' : 'hi' }; }
+      if (!ultimo) ultimo = { i: filas.length - 1, lado: acc === 'minf' ? 'lo' : 'hi' };
       filas[ultimo.i][ultimo.lado] = acc === 'minf' ? MENOS + '∞' : '+∞';
-      const sel = `.iv-ext[data-i="${ultimo.i}"][data-lado="${ultimo.lado}"]`;
-      const inp = cont.querySelector(sel);
+      const inp = cont.querySelector(`.iv-ext[data-i="${ultimo.i}"][data-lado="${ultimo.lado}"]`);
       if (inp) { inp.value = filas[ultimo.i][ultimo.lado]; inp.focus(); }
     }
   });
@@ -1158,48 +997,33 @@ function crearIntervalos(cont, { maxFilas = 3 } = {}) {
 }
 
 /* =====================================================================
-   Tabla de signos
+   Tabla de signos (dos factores)
    ===================================================================== */
-function crearTabla(cont, { n, conPolos, final, cte = false }) {
+function crearTabla(cont, { n, final }) {
   const ncol = n + 1;
-  const polos = new Set();
   let bloq = false;
   let h = `<div class="ts-scroll"><div class="ts" style="--ncol:${ncol}">
     <div class="ts-fila ts-cab"><div class="ts-lab">x</div><div class="ts-eje">
       <span class="ts-inf izq" style="left:0">${MENOS}∞</span>`;
   for (let k = 0; k < n; k++) {
-    h += `<div class="ts-crit" data-k="${k}" style="left:${((k + 1) / ncol * 100).toFixed(3)}%">
-      <input type="text" class="ts-in" data-k="${k}" placeholder="?" autocomplete="off" aria-label="Valor crítico ${k + 1}">
-      ${conPolos ? `<button type="button" class="ts-polo" data-k="${k}" aria-pressed="false">polo</button>` : ''}
-    </div>`;
+    h += `<div class="ts-crit" style="left:${((k + 1) / ncol * 100).toFixed(3)}%">
+      <input type="text" class="ts-in" data-k="${k}" placeholder="?" autocomplete="off" aria-label="Raíz ${k + 1}"></div>`;
   }
   h += `<span class="ts-inf der" style="left:100%">+∞</span></div></div>`;
-  if (cte) {
-    h += `<div class="ts-fila fila-cte"><div class="ts-lab">${MENOS}1</div><div class="ts-celdas">`;
-    for (let j = 0; j < ncol; j++) h += `<div class="ts-celda" data-col="${j}"><button type="button" class="ts-c" data-f="cte" data-c="${j}" data-v="" aria-label="Signo del factor ${MENOS}1, tramo ${j + 1}"></button></div>`;
-    h += `</div></div>`;
-  }
   for (let i = 0; i < n; i++) {
-    h += `<div class="ts-fila" data-fila="${i}"><div class="ts-lab" data-lab="${i}">x ${MENOS} ?</div><div class="ts-celdas">`;
-    for (let j = 0; j < ncol; j++) h += `<div class="ts-celda" data-col="${j}"><button type="button" class="ts-c" data-f="${i}" data-c="${j}" data-v="" aria-label="Signo de la fila ${i + 1}, tramo ${j + 1}"></button></div>`;
+    h += `<div class="ts-fila"><div class="ts-lab" data-lab="${i}">x ${MENOS} ?</div><div class="ts-celdas">`;
+    for (let j = 0; j < ncol; j++) h += `<div class="ts-celda"><button type="button" class="ts-c" data-f="${i}" data-c="${j}" data-v="" aria-label="Signo de la fila ${i + 1}, tramo ${j + 1}"></button></div>`;
     h += `</div></div>`;
   }
   h += `<div class="ts-fila ts-final"><div class="ts-lab">${final}</div><div class="ts-celdas">`;
-  for (let j = 0; j < ncol; j++) h += `<div class="ts-celda" data-col="${j}"><button type="button" class="ts-c" data-f="final" data-c="${j}" data-v="" aria-label="Signo de la fila ${final}, tramo ${j + 1}"></button></div>`;
+  for (let j = 0; j < ncol; j++) h += `<div class="ts-celda"><button type="button" class="ts-c" data-f="final" data-c="${j}" data-v="" aria-label="Signo del ${final.toLowerCase()}, tramo ${j + 1}"></button></div>`;
   h += `</div></div></div></div>
-    <div class="ts-ayuda">Escribe los valores críticos de menor a mayor sobre las líneas divisorias. Pulsa cada casilla para elegir + o ${MENOS}${conPolos ? '. Pulsa «polo» bajo los valores que anulan el denominador' : ''}.</div>`;
+    <div class="ts-ayuda">Escribe las raíces de menor a mayor sobre las líneas divisorias. Pulsa cada casilla para elegir + o ${MENOS}.</div>`;
   cont.innerHTML = h;
-
   function refrescar() {
     for (let k = 0; k < n; k++) {
       const v = parseEntero(cont.querySelector(`.ts-in[data-k="${k}"]`).value);
       cont.querySelector(`[data-lab="${k}"]`).textContent = v === null ? `x ${MENOS} ?` : fmtFactor(v);
-      const esP = polos.has(k);
-      cont.querySelector(`.ts-crit[data-k="${k}"]`).classList.toggle('es-polo', esP);
-      cont.querySelector(`.ts-fila[data-fila="${k}"]`).classList.toggle('fila-polo', esP);
-      cont.querySelectorAll(`.ts-celda[data-col="${k + 1}"]`).forEach(c => c.classList.toggle('linea-polo', esP));
-      const bp = cont.querySelector(`.ts-polo[data-k="${k}"]`);
-      if (bp) bp.setAttribute('aria-pressed', esP ? 'true' : 'false');
     }
   }
   cont.addEventListener('input', e => { if (e.target.classList.contains('ts-in')) refrescar(); });
@@ -1210,10 +1034,7 @@ function crearTabla(cont, { n, conPolos, final, cte = false }) {
       const sig = { '': '+', '+': '-', '-': '' }[c.dataset.v];
       c.dataset.v = sig;
       c.textContent = sig === '-' ? MENOS : sig;
-      return;
     }
-    const p = e.target.closest('.ts-polo');
-    if (p) { const k = +p.dataset.k; if (polos.has(k)) polos.delete(k); else polos.add(k); refrescar(); }
   });
   return {
     leer() {
@@ -1223,46 +1044,35 @@ function crearTabla(cont, { n, conPolos, final, cte = false }) {
       const filas = [];
       for (let i = 0; i < n; i++) { const r = []; for (let j = 0; j < ncol; j++) r.push(celda(i, j)); filas.push(r); }
       const fin = []; for (let j = 0; j < ncol; j++) fin.push(celda('final', j));
-      const ct = []; if (cte) for (let j = 0; j < ncol; j++) ct.push(celda('cte', j));
-      return { vals, polos: [...Array(n).keys()].map(k => polos.has(k)), filas, final: fin, cte: ct };
+      return { vals, filas, final: fin };
     },
     bloquear() { bloq = true; cont.querySelectorAll('input, button').forEach(x => { x.disabled = true; }); },
     marcarCelda(f, j, ok) { cont.querySelector(`.ts-c[data-f="${f}"][data-c="${j}"]`).classList.add(ok ? 'ok-campo' : 'mal-campo'); },
     marcarValor(k, ok) { cont.querySelector(`.ts-in[data-k="${k}"]`).classList.add(ok ? 'ok-campo' : 'mal-campo'); },
-    marcarPolo(k, ok) { const b = cont.querySelector(`.ts-polo[data-k="${k}"]`); if (b && !ok) b.classList.add('mal-campo'); },
-    _fijar(vals, polosArr, filas, fin, ct) {
+    _fijar(vals, filas, fin) {
       vals.forEach((v, k) => { cont.querySelector(`.ts-in[data-k="${k}"]`).value = fmtNum(v); });
-      polos.clear(); (polosArr || []).forEach((p, k) => { if (p) polos.add(k); });
       const pon = (f, j, s) => { const c = cont.querySelector(`.ts-c[data-f="${f}"][data-c="${j}"]`); c.dataset.v = s; c.textContent = s === '-' ? MENOS : s; };
       filas.forEach((r, i) => r.forEach((s, j) => pon(i, j, s)));
       fin.forEach((s, j) => pon('final', j, s));
-      (ct || []).forEach((s, j) => pon('cte', j, s));
       refrescar();
     }
   };
 }
-function tablaEstaticaHTML(crit, polos, final, a = 1) {
+function tablaEstaticaHTML(crit, final) {
   const n = crit.length, ncol = n + 1;
-  const { filas, final: fin } = signosEsperados(n, a);
+  const { filas, final: fin } = signosEsperados(n);
   const sg = s => `<span class="ts-signo ${s === '-' ? 'neg' : ''}">${s === '-' ? MENOS : '+'}</span>`;
   let h = `<div class="ts-scroll"><div class="ts ts-estatica" style="--ncol:${ncol}">
     <div class="ts-fila ts-cab"><div class="ts-lab">x</div><div class="ts-eje"><span class="ts-inf izq" style="left:0">${MENOS}∞</span>`;
-  crit.forEach((c, k) => {
-    h += `<div class="ts-crit ${polos.includes(c) ? 'es-polo' : ''}" style="left:${((k + 1) / ncol * 100).toFixed(3)}%"><span>${fmtNum(c)}</span></div>`;
-  });
+  crit.forEach((c, k) => { h += `<div class="ts-crit" style="left:${((k + 1) / ncol * 100).toFixed(3)}%"><span>${fmtNum(c)}</span></div>`; });
   h += `<span class="ts-inf der" style="left:100%">+∞</span></div></div>`;
-  if (a < 0) {
-    h += `<div class="ts-fila fila-cte"><div class="ts-lab">${MENOS}1</div><div class="ts-celdas">`;
-    for (let j = 0; j < ncol; j++) h += `<div class="ts-celda">${sg('-')}</div>`;
-    h += `</div></div>`;
-  }
   crit.forEach((c, i) => {
-    h += `<div class="ts-fila ${polos.includes(c) ? 'fila-polo' : ''}"><div class="ts-lab">${fmtFactor(c)}</div><div class="ts-celdas">`;
-    for (let j = 0; j < ncol; j++) h += `<div class="ts-celda ${j > 0 && polos.includes(crit[j - 1]) ? 'linea-polo' : ''}">${sg(filas[i][j])}</div>`;
+    h += `<div class="ts-fila"><div class="ts-lab">${fmtFactor(c)}</div><div class="ts-celdas">`;
+    for (let j = 0; j < ncol; j++) h += `<div class="ts-celda">${sg(filas[i][j])}</div>`;
     h += `</div></div>`;
   });
   h += `<div class="ts-fila ts-final"><div class="ts-lab">${final}</div><div class="ts-celdas">`;
-  for (let j = 0; j < ncol; j++) h += `<div class="ts-celda ${j > 0 && polos.includes(crit[j - 1]) ? 'linea-polo' : ''}">${sg(fin[j])}</div>`;
+  for (let j = 0; j < ncol; j++) h += `<div class="ts-celda">${sg(fin[j])}</div>`;
   return h + `</div></div></div></div>`;
 }
 
@@ -1270,20 +1080,20 @@ function tablaEstaticaHTML(crit, polos, final, a = 1) {
    Comparadores con feedback pedagógico
    ===================================================================== */
 function motivoExtremo(v, incluido, ctx, forma) {
+  if (ctx.motivo) return ctx.motivo(v, incluido, forma);
   const si = forma === 'grafica' ? 'círculo relleno' : 'corchete';
   const no = forma === 'grafica' ? 'círculo vacío' : 'paréntesis';
-  if (ctx.polos.includes(v)) return `x = ${fmtNum(v)} anula el denominador (es un polo): la fracción no existe ahí, así que queda siempre excluido (${no}).`;
   if (incluido) return `Con «${SIMB[ctx.simb]}» también vale la igualdad, así que x = ${fmtNum(v)} forma parte de la solución (${si}).`;
   return `Con «${SIMB[ctx.simb]}» la desigualdad es estricta: x = ${fmtNum(v)} no cumple la inecuación (${no}).`;
 }
 function compararIntervalos(al, sol, ctx) {
   const msgs = [];
-  const A = [...al].sort((x, y) => x.lo - y.lo);
+  const A = [...al].sort((x, y) => cmpNum(x.lo, y.lo));
   if (A.some(i => (!isFinite(i.lo) && i.loInc) || (!isFinite(i.hi) && i.hiInc)))
     msgs.push('Junto a −∞ o +∞ va siempre paréntesis: el infinito no es un número y nunca se alcanza.');
   if (A.length !== sol.length) {
     msgs.push(sol.length === 1 ? 'La solución es un único intervalo, sin uniones.' :
-      `La solución está formada por ${sol.length} intervalos unidos con ∪ (uno por cada tramo que cumple la inecuación).`);
+      `La solución está formada por ${sol.length} intervalos unidos con ∪.`);
     return { ok: false, msgs };
   }
   if (A.some((i, k) => i.lo !== sol[k].lo || i.hi !== sol[k].hi)) {
@@ -1297,13 +1107,16 @@ function compararIntervalos(al, sol, ctx) {
   });
   return { ok: msgs.length === 0, msgs };
 }
-function compararRecta(al, sol, crit, ctx) {
+function compararRecta(al, sol, ctx) {
+  const crit = extremos(sol);
   const msgs = [];
   const marcados = [...al.puntos.keys()];
   const faltan = crit.filter(v => !al.puntos.has(v));
-  const sobran = marcados.filter(v => !crit.includes(v));
-  if (faltan.length) msgs.push(`Falta marcar ${faltan.length > 1 ? 'los puntos' : 'el punto'} x = ${listaY(faltan.map(fmtNum))}: ${crit.length > 1 ? 'todos los valores críticos' : 'el extremo de la solución'} se ${crit.length > 1 ? 'señalan' : 'señala'} en la recta.`);
-  if (sobran.length) msgs.push(`${sobran.length > 1 ? 'Sobran los puntos' : 'Sobra el punto'} x = ${listaY(sobran.map(fmtNum))}: no ${sobran.length > 1 ? 'son extremos' : 'es un extremo'} de la solución.`);
+  const sobran = marcados.filter(v => !crit.includes(v)).sort((a, b) => a - b);
+  if (faltan.length) msgs.push(`Falta marcar ${faltan.length > 1 ? 'los puntos' : 'el punto'} x = ${listaY(faltan.map(fmtNum))}: ${faltan.length > 1 ? 'son extremos' : 'es un extremo'} de la solución y se ${faltan.length > 1 ? 'señalan' : 'señala'} en la recta.`);
+  const sobranSinMotivo = [];
+  sobran.forEach(v => { const m = ctx.motivoSobra && ctx.motivoSobra(v); if (m) msgs.push(m); else sobranSinMotivo.push(v); });
+  if (sobranSinMotivo.length) msgs.push(`${sobranSinMotivo.length > 1 ? 'Sobran los puntos' : 'Sobra el punto'} x = ${listaY(sobranSinMotivo.map(fmtNum))}: no ${sobranSinMotivo.length > 1 ? 'son extremos' : 'es un extremo'} de la solución.`);
   crit.filter(v => al.puntos.has(v)).forEach(v => {
     const inc = incluidoEn(v, sol);
     if ((al.puntos.get(v) === 'lleno') !== inc) msgs.push(motivoExtremo(v, inc, ctx, 'grafica'));
@@ -1312,7 +1125,7 @@ function compararRecta(al, sol, crit, ctx) {
     const esp = new Set(sol.map(claveTramo));
     const iguales = (A, B) => A.size === B.size && [...A].every(x => B.has(x));
     if (!iguales(al.tramos, esp)) {
-      const b = ['-inf', ...[...crit].sort((a, c) => a - c).map(String), 'inf'];
+      const b = ['-inf', ...crit.map(String), 'inf'];
       const todos = []; for (let i = 0; i < b.length - 1; i++) todos.push(b[i] + '|' + b[i + 1]);
       const comp = new Set(todos.filter(k => !esp.has(k)));
       if (al.tramos.size === 0) msgs.push('No has sombreado ningún tramo: usa «Sombrear tramo» para marcar los valores que son solución.');
@@ -1326,16 +1139,18 @@ function compararRecta(al, sol, crit, ctx) {
 }
 
 /* =====================================================================
-   EJERCICIO 1 · Primer grado
+   Inecuación lineal: generador, corrección y resolución
    ===================================================================== */
-function genLineal() {
-  for (let t = 0; t < 1000; t++) {
-    const s = rndNZ(-12, 12);
+function genLineal(sMin, sMax) {
+  for (let t = 0; t < 3000; t++) {
+    const s = rndInt(sMin, sMax);
     const k = rand() < 0.5 ? -rndInt(1, 5) : rndInt(1, 5);   // coeficiente de x tras agrupar
     const a = rndNZ(-7, 7);
     const c = a - k;
     if (c === 0 || Math.abs(c) > 7) continue;
-    const b = rndNZ(-12, 12);
+    let b, p = null;
+    if (Math.abs(a) >= 2 && rand() < 0.4) { p = rndNZ(-5, 5); b = a * p; }
+    else b = rndNZ(-12, 12);
     const d = b + k * s;
     if (d === 0 || Math.abs(d) > 40) continue;
     const simb = elegir(['lt', 'le', 'gt', 'ge']);
@@ -1343,117 +1158,84 @@ function genLineal() {
     const sol = (simbFinal === 'gt' || simbFinal === 'ge')
       ? [{ lo: s, hi: Infinity, loInc: simbFinal === 'ge', hiInc: false }]
       : [{ lo: -Infinity, hi: s, loInc: false, hiInc: simbFinal === 'le' }];
-    return { a, b, c, d, k, s, simb, simbFinal, sol, crit: [s] };
+    const izq = p !== null ? `${fmtNum(a)}(${fmtPoly([1, p])})` : fmtSuma([[a, 'x'], [b, '']]);
+    const texto = `${izq} ${SIMB_HTML[simb]} ${fmtSuma([[c, 'x'], [d, '']])}`;
+    return { a, b, c, d, k, s, p, simb, simbFinal, sol, texto };
   }
 }
-function montarLineal(cuerpo) {
-  const ej = genLineal();
-  const S = SIMB_HTML[ej.simb];
-  const txt = `${fmtSuma([[ej.a, 'x'], [ej.b, '']])} ${S} ${fmtSuma([[ej.c, 'x'], [ej.d, '']])}`;
-  cuerpo.innerHTML = `
-    <div class="pizarra">${txt}</div>
-    <p class="consigna">Resuelve la inecuación y da la solución de tres formas: como desigualdad, en la recta y como intervalo.</p>
-    <div class="paso" data-paso="1">
-      <div class="paso-tit"><span class="paso-n">1</span>Solución como desigualdad</div>
-      <div class="paso-cuerpo"><div class="fila-expr"><span class="mat">x</span>
-        <select class="simb" data-k="simb" aria-label="Símbolo de la desigualdad"><option value="">?</option><option value="lt">&lt;</option><option value="le">≤</option><option value="gt">&gt;</option><option value="ge">≥</option></select>
-        <input type="text" class="coef" data-k="val" placeholder="?" autocomplete="off" aria-label="Valor de la desigualdad">
-      </div></div>
-    </div>
-    <div class="paso" data-paso="2">
-      <div class="paso-tit"><span class="paso-n">2</span>Representación gráfica</div>
-      <div class="paso-cuerpo" data-recta></div>
-    </div>
-    <div class="paso" data-paso="3">
-      <div class="paso-tit"><span class="paso-n">3</span>Solución en forma de intervalo</div>
-      <div class="paso-cuerpo" data-iv></div>
-    </div>`;
-  const recta = crearRecta(cuerpo.querySelector('[data-recta]'), { min: -15, max: 15 });
-  const iv = crearIntervalos(cuerpo.querySelector('[data-iv]'));
-  const q = s => cuerpo.querySelector(s);
-  const paso = n => cuerpo.querySelector(`.paso[data-paso="${n}"]`);
-  const ctx = {
-    simb: ej.simbFinal, polos: [],
-    msgContrario: `Has sombreado hacia el lado contrario: «x ${SIMB[ej.simbFinal]} ${fmtNum(ej.s)}» son los números ${sentido(ej.simbFinal)}es que ${fmtNum(ej.s)}, que en la recta están a la ${sentido(ej.simbFinal) === 'mayor' ? 'derecha' : 'izquierda'}.`,
-    msgTramos: 'El tramo sombreado no coincide con la solución.',
-    msgExtremos: `Los extremos no coinciden: la solución empieza o termina en x = ${fmtNum(ej.s)} y se extiende hacia ${sentido(ej.simbFinal) === 'mayor' ? '+∞' : '−∞'}.`
-  };
-
-  function resolucion() {
-    const agr = `${fmtSuma([[ej.a, 'x'], [-ej.c, 'x']])} ${SIMB_HTML[ej.simb]} ${fmtSuma([[ej.d, ''], [-ej.b, '']])}`;
-    const red = `${fmtSuma([[ej.k, 'x']])} ${SIMB_HTML[ej.simb]} ${fmtNum(ej.d - ej.b)}`;
-    let div;
-    if (ej.k === 1) div = `El coeficiente de x ya es 1, así que la desigualdad queda directamente despejada.`;
-    else if (ej.k > 0) div = `Dividimos los dos miembros entre ${ej.k}, que es <b>positivo</b>: el sentido de la desigualdad <b>no cambia</b>.`;
-    else div = `Dividimos los dos miembros entre ${fmtNum(ej.k)}, que es <b>negativo</b>: el sentido de la desigualdad <b>se invierte</b> (${SIMB_HTML[ej.simb]} pasa a ${SIMB_HTML[ej.simbFinal]}).`;
-    return `<ol>
-      <li>Pasamos los términos con x al primer miembro y los números al segundo (cada término que cambia de miembro cambia de signo):
-        <span class="res-expr">${agr}</span><span class="res-expr">${red}</span></li>
-      <li>${div}<span class="res-expr">x ${SIMB_HTML[ej.simbFinal]} ${fmtNum(ej.s)}</span></li>
-      <li>La solución son todos los números ${sentido(ej.simbFinal)}es que ${fmtNum(ej.s)}${esEstricto(ej.simbFinal) ? '' : ', incluido el propio ' + fmtNum(ej.s)}:
-        <span class="res-expr">x ${SIMB_HTML[ej.simbFinal]} ${fmtNum(ej.s)} &nbsp;⟺&nbsp; ${fmtIntervalos(ej.sol)}</span>
-        ${rectaSolucionHTML(-15, 15, ej.crit, ej.sol)}</li>
-    </ol>`;
+function filaDesig(i) {
+  return `<div class="fila-expr"><span class="et-ineq">(${i})</span><span class="mat">x</span>
+    <select class="simb" data-k="simb${i}" aria-label="Símbolo de la solución de (${i})"><option value="">?</option><option value="lt">&lt;</option><option value="le">≤</option><option value="gt">&gt;</option><option value="ge">≥</option></select>
+    <input type="text" class="coef" data-k="val${i}" placeholder="?" autocomplete="off" aria-label="Valor de la solución de (${i})"></div>`;
+}
+function desigCompleta(cuerpo, i) {
+  return cuerpo.querySelector(`[data-k="simb${i}"]`).value !== '' && parseEntero(cuerpo.querySelector(`[data-k="val${i}"]`).value) !== null;
+}
+function fijarDesig(cuerpo, ej, i) {
+  cuerpo.querySelector(`[data-k="simb${i}"]`).value = ej.simbFinal;
+  cuerpo.querySelector(`[data-k="val${i}"]`).value = fmtNum(ej.s);
+}
+function corregirDesig(cuerpo, ej, i) {
+  const sel = cuerpo.querySelector(`[data-k="simb${i}"]`), inV = cuerpo.querySelector(`[data-k="val${i}"]`);
+  const v = parseEntero(inV.value);
+  const ok = sel.value === ej.simbFinal && v === ej.s;
+  const agrupado = `${fmtSuma([[ej.k, 'x']])} ${SIMB[ej.simb]} ${fmtNum(ej.d - ej.b)}`;
+  let m;
+  if (ok) {
+    if (ej.k === 1) m = 'Bien despejado: tras agrupar, el coeficiente de x ya es 1 y el sentido se mantiene.';
+    else if (ej.k < 0) m = `Bien: al dividir entre ${fmtNum(ej.k)}, que es negativo, has invertido el sentido de la desigualdad.`;
+    else m = `Bien despejado: al dividir entre ${ej.k}, que es positivo, el sentido se mantiene.`;
+  } else if (v !== ej.s) {
+    m = `El valor frontera no es ${fmtNum(v)}. Revisa la transposición: al pasar un término de un miembro a otro cambia de signo. Agrupando queda ${agrupado}.`;
+    if (v === -ej.s) m = `Has obtenido ${fmtNum(v)} en lugar de ${fmtNum(ej.s)}: es un error de signo al despejar. Agrupando queda ${agrupado}, y hay que dividir entre ${fmtNum(ej.k)} con su signo.`;
+    if (ej.p !== null) m += ` Recuerda también que al quitar el paréntesis el ${fmtNum(ej.a)} multiplica a los dos términos: ${fmtNum(ej.a)}(${fmtPoly([1, ej.p])}) = ${fmtSuma([[ej.a, 'x'], [ej.b, '']])}.`;
+    if (sel.value && sentido(sel.value) !== sentido(ej.simbFinal) && ej.k < 0) m += ` Además, al dividir entre ${fmtNum(ej.k)} (negativo) hay que invertir el sentido.`;
+  } else if (sentido(sel.value) !== sentido(ej.simbFinal)) {
+    m = ej.k < 0
+      ? `El número es correcto, pero al final divides entre ${fmtNum(ej.k)}, que es negativo: hay que invertir el sentido de la desigualdad.`
+      : `El número es correcto, pero has invertido el sentido sin motivo: solo se invierte al multiplicar o dividir por un número negativo${ej.k === 1 ? '' : `, y aquí divides entre ${ej.k}, que es positivo`}.`;
+  } else {
+    m = `El sentido es correcto, pero la inecuación original usa «${SIMB[ej.simb]}», que ${esEstricto(ej.simb) ? 'es estricta' : 'incluye la igualdad'}. Despejar nunca cambia si la desigualdad es estricta o no.`;
   }
-
+  sel.classList.add(sel.value === ej.simbFinal ? 'ok-campo' : 'mal-campo');
+  inV.classList.add(v === ej.s ? 'ok-campo' : 'mal-campo');
+  return { nombre: `Inecuación (${i})`, ok, msgs: [m] };
+}
+function ctxLineal(ej) {
+  const lado = sentido(ej.simbFinal) === 'mayor' ? 'derecha' : 'izquierda';
   return {
-    ej,
-    corregir() {
-      const sel = q('[data-k="simb"]'), inV = q('[data-k="val"]');
-      const v = parseEntero(inV.value);
-      const g = recta.leer();
-      const I = iv.leer();
-      const faltan = [];
-      if (!sel.value || v === null) faltan.push('la desigualdad (símbolo y número entero)');
-      if (g.puntos.size === 0) faltan.push('la representación gráfica');
-      if (I.incompleto) faltan.push('el intervalo');
-      else if (I.error) faltan.push('el intervalo (' + I.error + ')');
-      if (faltan.length) return { incompleto: faltan };
-
-      const pasos = [];
-      // Paso 1
-      let ok1 = sel.value === ej.simbFinal && v === ej.s, m1;
-      if (ok1) m1 = ej.k < 0 ? 'Bien: al dividir entre un número negativo has invertido el sentido de la desigualdad.' : 'Bien despejado: al dividir entre un número positivo el sentido se mantiene.';
-      else if (v !== ej.s) {
-        m1 = `El valor frontera no es ${fmtNum(v)}. Revisa la transposición: al pasar un término de un miembro a otro cambia de signo. Agrupando queda ${fmtSuma([[ej.k, 'x']])} ${SIMB[ej.simb]} ${fmtNum(ej.d - ej.b)}.`;
-        if (v === -ej.s) m1 = `Has obtenido ${fmtNum(v)} en lugar de ${fmtNum(ej.s)}: es un error de signo al despejar. Agrupando queda ${fmtSuma([[ej.k, 'x']])} ${SIMB[ej.simb]} ${fmtNum(ej.d - ej.b)}, y hay que dividir entre ${fmtNum(ej.k)} con su signo.`;
-        if (sel.value && sentido(sel.value) !== sentido(ej.simbFinal) && ej.k < 0) m1 += ` Además, al dividir entre ${fmtNum(ej.k)} (negativo) hay que invertir el sentido.`;
-      } else if (sentido(sel.value) !== sentido(ej.simbFinal)) {
-        m1 = ej.k < 0
-          ? `El número es correcto, pero al final divides entre ${fmtNum(ej.k)}, que es negativo: hay que invertir el sentido de la desigualdad.`
-          : `El número es correcto, pero has invertido el sentido sin motivo: solo se invierte al multiplicar o dividir por un número negativo, y aquí divides entre ${ej.k}, que es positivo.`;
-      } else {
-        m1 = `El sentido es correcto, pero la inecuación original usa «${SIMB[ej.simb]}», que ${esEstricto(ej.simb) ? 'es estricta' : 'incluye la igualdad'}. Despejar nunca cambia si la desigualdad es estricta o no.`;
-      }
-      sel.classList.add(sel.value === ej.simbFinal ? 'ok-campo' : 'mal-campo');
-      inV.classList.add(v === ej.s ? 'ok-campo' : 'mal-campo');
-      pasos.push({ nombre: 'Desigualdad', ok: ok1, msgs: [m1] });
-      // Paso 2
-      const r2 = compararRecta(g, ej.sol, ej.crit, ctx);
-      recta.marcar(r2.ok);
-      pasos.push({ nombre: 'Representación gráfica', ok: r2.ok, msgs: r2.ok ? ['Extremo y tramo bien representados.'] : r2.msgs });
-      // Paso 3
-      const r3 = compararIntervalos(I.intervalos, ej.sol, ctx);
-      iv.marcar(r3.ok);
-      pasos.push({ nombre: 'Intervalo', ok: r3.ok, msgs: r3.ok ? ['Intervalo bien escrito, con paréntesis junto al infinito.'] : r3.msgs });
-      [1, 2, 3].forEach(n => paso(n).classList.add(pasos[n - 1].ok ? 'ok' : 'mal'));
-      return { ok: pasos.every(p => p.ok), pasos, resolucion: resolucion() };
-    },
-    bloquear() { cuerpo.querySelectorAll('.paso-cuerpo > .fila-expr input, .paso-cuerpo > .fila-expr select').forEach(x => { x.disabled = true; }); recta.bloquear(); iv.bloquear(); },
-    _test: { recta, iv }
+    simb: ej.simbFinal,
+    msgContrario: `Has sombreado hacia el lado contrario: «x ${SIMB[ej.simbFinal]} ${fmtNum(ej.s)}» son los números ${sentido(ej.simbFinal)}es que ${fmtNum(ej.s)}, que en la recta están a la ${lado}.`,
+    msgTramos: 'El tramo sombreado no coincide con la solución de esta inecuación.'
   };
+}
+function resolucionLineal(ej, i) {
+  const agr = `${fmtSuma([[ej.a, 'x'], [-ej.c, 'x']])} ${SIMB_HTML[ej.simb]} ${fmtSuma([[ej.d, ''], [-ej.b, '']])}`;
+  const red = `${fmtSuma([[ej.k, 'x']])} ${SIMB_HTML[ej.simb]} ${fmtNum(ej.d - ej.b)}`;
+  let div;
+  if (ej.k === 1) div = 'El coeficiente de x ya es 1, así que la desigualdad queda directamente despejada.';
+  else if (ej.k > 0) div = `Dividimos los dos miembros entre ${ej.k}, que es <b>positivo</b>: el sentido de la desigualdad <b>no cambia</b>.`;
+  else div = `Dividimos los dos miembros entre ${fmtNum(ej.k)}, que es <b>negativo</b>: el sentido de la desigualdad <b>se invierte</b> (${SIMB_HTML[ej.simb]} pasa a ${SIMB_HTML[ej.simbFinal]}).`;
+  return `<ol>
+    ${ej.p !== null ? `<li>Quitamos el paréntesis (el ${fmtNum(ej.a)} multiplica a los dos términos):
+      <span class="res-expr">${fmtNum(ej.a)}(${fmtPoly([1, ej.p])}) = ${fmtSuma([[ej.a, 'x'], [ej.b, '']])}</span></li>` : ''}
+    <li>Pasamos los términos con x al primer miembro y los números al segundo (cada término que cambia de miembro cambia de signo):
+      <span class="res-expr">${agr}</span><span class="res-expr">${red}</span></li>
+    <li>${div}<span class="res-expr">x ${SIMB_HTML[ej.simbFinal]} ${fmtNum(ej.s)}</span></li>
+    <li>Solución de (${i}): todos los números ${sentido(ej.simbFinal)}es que ${fmtNum(ej.s)}${esEstricto(ej.simbFinal) ? '' : ', incluido el propio ' + fmtNum(ej.s)}
+      <span class="res-expr">${fmtIntervalos(ej.sol)}</span></li>
+  </ol>`;
 }
 
 /* =====================================================================
-   EJERCICIO 2 · Segundo grado
+   Inecuación de segundo grado (igual que en la ficha de inecuaciones)
    ===================================================================== */
 function genCuadratica() {
-  for (let t = 0; t < 4000; t++) {
+  for (let t = 0; t < 2000; t++) {
     let r1 = rndInt(-7, 7), r2 = rndInt(-7, 7);
     if (r1 === r2) continue;
     if (r1 > r2) [r1, r2] = [r2, r1];
-    const A = rand() < 0.5 ? 1 : -1;                  // coeficiente principal tras pasar todo al primer miembro
-    const T = [A, -A * (r1 + r2), A * r1 * r2];
+    const T = [1, -(r1 + r2), r1 * r2];
     const plantilla = elegir(['prod', 'prod', 'xpar', 'cuad', 'dos', 'difcuad']);
     let Lexp, Ltxt, p = 0, q = 0;
     if (plantilla === 'prod') { p = rndNZ(-6, 6); q = rndNZ(-6, 6); Lexp = [1, p + q, p * q]; Ltxt = `(${fmtPoly([1, p])})(${fmtPoly([1, q])})`; }
@@ -1467,489 +1249,380 @@ function genCuadratica() {
     const Rtxt = R[0] === 0 ? fmtLinealBonito(R[1], R[2]) : fmtPoly(R);
     const simb = elegir(['lt', 'le', 'gt', 'ge']);
     const crit = [r1, r2];
-    const sol = solucionDesdeSignos(crit, [], simb, A);
-    return { r1, r2, A, T, plantilla, p, q, Lexp, Ltxt, R, Rtxt, simb, crit, sol };
+    const sol = solucionDesdeSignos(crit, simb);
+    return { r1, r2, T, plantilla, p, q, Lexp, Ltxt, R, Rtxt, simb, crit, sol, texto: `${Ltxt} ${SIMB_HTML[simb]} ${Rtxt}` };
   }
 }
 function filaCoefs(prefijo, etiquetas) {
-  // etiquetas: ['x²','x',''] -> [ ]x² + [ ]x + [ ]
   return etiquetas.map((e, i) => `${i > 0 ? '<span>+</span>' : ''}<input type="text" class="coef" data-k="${prefijo}${i}" placeholder="?" autocomplete="off" aria-label="Coeficiente ${e || 'término independiente'}">${e ? `<span class="mat">${e}</span>` : ''}`).join(' ');
 }
 const SELECT_SIMB = k => `<select class="simb" data-k="${k}" aria-label="Símbolo de la desigualdad"><option value="">?</option><option value="lt">&lt;</option><option value="le">≤</option><option value="gt">&gt;</option><option value="ge">≥</option></select>`;
-function formulaCuadratica(B, C, raices, A = 1) {
-  const D = B * B - 4 * A * C, s = Math.round(Math.sqrt(D));
-  return `<span class="res-expr">x = ${frac(`${fmtNum(-B)} ± √${D}`, fmtNum(2 * A))} = ${frac(`${fmtNum(-B)} ± ${s}`, fmtNum(2 * A))} &nbsp;→&nbsp; x = ${fmtNum(raices[0])}, &nbsp;x = ${fmtNum(raices[1])}</span>`;
+function formulaCuadratica(B, C, raices) {
+  const D = B * B - 4 * C, s = Math.round(Math.sqrt(D));
+  return `<span class="res-expr">x = ${frac(`${fmtNum(-B)} ± √${D}`, '2')} = ${frac(`${fmtNum(-B)} ± ${s}`, '2')} &nbsp;→&nbsp; x = ${fmtNum(raices[0])}, &nbsp;x = ${fmtNum(raices[1])}</span>`;
 }
-function textoSigno(simb) { return (simb === 'gt' || simb === 'ge') ? 'positivo (+)' : 'negativo (−)'; }
-function textoSignoF(simb) { return (simb === 'gt' || simb === 'ge') ? 'positiva (+)' : 'negativa (−)'; }
-const ladoEje = simb => (simb === 'gt' || simb === 'ge') ? 'por encima' : 'por debajo';
-const tramoDeIntervalo = i => i.lo === -Infinity ? 0 : (i.hi === Infinity ? 2 : 1);
-const nombreForma = A => A > 0 ? 'cóncava (sonrisa ∪)' : 'convexa (hacia abajo ∩)';
-
-const METODOS = {
-  tabla:  { nombre: 'Con tabla de signos', tit2: 'Raíces y tabla de signos', tit3: 'Representación gráfica', paso2: 'Tabla de signos', paso3: 'Representación gráfica' },
-  rapido: { nombre: 'Método rápido (parábola)', tit2: 'Raíces y forma de la parábola', tit3: 'Elige los tramos sobre la parábola', paso2: 'Raíces y forma de la parábola', paso3: 'Tramos sobre la parábola' }
-};
-
-function montarCuadratica(cuerpo) {
-  const ej = genCuadratica();
-  cuerpo.innerHTML = `
-    <div class="pizarra">${ej.Ltxt} ${SIMB_HTML[ej.simb]} ${ej.Rtxt}</div>
-    <p class="consigna">Resuelve la inecuación paso a paso.</p>
-    <div class="paso" data-paso="1">
-      <div class="paso-tit"><span class="paso-n">1</span>Quita paréntesis y pasa todo al primer miembro</div>
-      <p class="paso-ayuda">Escribe cada coeficiente con su signo (por ejemplo, ${MENOS}3). No multipliques ni dividas la inecuación: deja el coeficiente de x² tal como resulta al pasar los términos.</p>
-      <div class="paso-cuerpo"><div class="fila-expr">${filaCoefs('t', ['x²', 'x', ''])} ${SELECT_SIMB('simb')} <span class="mat">0</span></div></div>
-    </div>
-    <div class="paso" data-paso="2">
-      <div class="paso-tit"><span class="paso-n">2</span><span data-tit="2">${METODOS.tabla.tit2}</span></div>
-      <div class="paso-cuerpo">
-        <div class="metodo-switch" role="group" aria-label="Método de resolución">
-          <button type="button" data-metodo="tabla" class="activo" aria-pressed="true">${METODOS.tabla.nombre}</button>
-          <button type="button" data-metodo="rapido" aria-pressed="false">${METODOS.rapido.nombre}</button>
-        </div>
-        <p class="metodo-nota">Elige el método que prefieras: los dos puntúan igual.</p>
-        <div data-panel="tabla"><div data-tabla></div></div>
-        <div data-panel="rapido" hidden><div data-rap2></div></div>
-      </div>
-    </div>
-    <div class="paso" data-paso="3">
-      <div class="paso-tit"><span class="paso-n">3</span><span data-tit="3">${METODOS.tabla.tit3}</span></div>
-      <div class="paso-cuerpo">
-        <div data-panel="tabla"><div data-recta></div></div>
-        <div data-panel="rapido" hidden><div data-rap3></div></div>
-      </div>
-    </div>
-    <div class="paso" data-paso="4">
-      <div class="paso-tit"><span class="paso-n">4</span>Solución en forma de intervalo</div>
-      <div class="paso-cuerpo" data-iv></div>
-    </div>`;
-  const tabla = crearTabla(cuerpo.querySelector('[data-tabla]'), { n: 2, conPolos: false, final: 'Producto', cte: ej.A < 0 });
-  const recta = crearRecta(cuerpo.querySelector('[data-recta]'), { min: -10, max: 10 });
-  const rapido = crearRapido(cuerpo.querySelector('[data-rap2]'), cuerpo.querySelector('[data-rap3]'), { min: -10, max: 10 });
-  const iv = crearIntervalos(cuerpo.querySelector('[data-iv]'));
-  const q = s => cuerpo.querySelector(s);
-  const paso = n => cuerpo.querySelector(`.paso[data-paso="${n}"]`);
+const textoSigno = simb => (simb === 'gt' || simb === 'ge') ? 'positivo (+)' : 'negativo (−)';
+function ctxCuadratica(ej) {
   const Tpol = fmtPoly(ej.T);
-  const factTxt = `${ej.A < 0 ? MENOS : ''}${ej.r1 === 0 ? 'x' + fmtFactorPar(ej.r2) : fmtFactorPar(ej.r1) + fmtFactorPar(ej.r2)}`;
-  let metodo = 'tabla';
-  function ponerMetodo(m) {
-    metodo = m;
-    cuerpo.querySelectorAll('[data-metodo]').forEach(b => {
-      b.classList.toggle('activo', b.dataset.metodo === m);
-      b.setAttribute('aria-pressed', b.dataset.metodo === m ? 'true' : 'false');
-    });
-    cuerpo.querySelectorAll('[data-panel]').forEach(p => { p.hidden = p.dataset.panel !== m; });
-    q('[data-tit="2"]').textContent = METODOS[m].tit2;
-    q('[data-tit="3"]').textContent = METODOS[m].tit3;
-  }
-  q('.metodo-switch').addEventListener('click', e => {
-    const b = e.target.closest('[data-metodo]');
-    if (b && !b.disabled) ponerMetodo(b.dataset.metodo);
-  });
-  const ctx = {
-    simb: ej.simb, polos: [],
-    msgContrario: `Has sombreado los tramos contrarios: la inecuación pide ${Tpol} ${SIMB[ej.simb]} 0, es decir, los tramos donde el producto es ${textoSigno(ej.simb)}.`,
-    msgTramos: `Sombrea exactamente los tramos en los que la última fila de la tabla es ${textoSignoF(ej.simb)}.`,
-    msgExtremos: `Los extremos de los intervalos son las raíces ${fmtNum(ej.r1)} y ${fmtNum(ej.r2)} (y ±∞ si el tramo no está acotado). Busca los tramos con signo ${textoSigno(ej.simb)}.`
-  };
-
-  function resolucion(usado) {
-    const Rpar = ej.R[0] === 0 ? `(${fmtPoly(ej.R.slice(1))})` : `(${fmtPoly(ej.R)})`;
-    const incluye = esEstricto(ej.simb) ? 'Como la desigualdad es estricta, las raíces no se incluyen.' : 'Como la desigualdad admite el 0, las raíces se incluyen.';
-    const tab = m => `<button type="button" role="tab" aria-selected="${m === usado}" class="res-tab ${m === usado ? 'activo' : ''}" data-tab="${m}">${METODOS[m].nombre}${m === usado ? ' <span class="usado">(tu método)</span>' : ''}</button>`;
-    const filaCte = ej.A < 0 ? ` Como a = ${MENOS}1 es negativo, se añade la fila del factor ${MENOS}1, que es negativa en todos los tramos.` : '';
-    return `<ol>
-      <li>Quitamos paréntesis: <span class="res-expr">${ej.Ltxt} = ${fmtPoly(ej.Lexp)}</span>
-        Pasamos todo al primer miembro (lo que cambia de miembro cambia de signo; el sentido de la desigualdad no cambia):
-        <span class="res-expr">${fmtPoly(ej.Lexp)} ${MENOS} ${Rpar} ${SIMB_HTML[ej.simb]} 0 &nbsp;→&nbsp; ${Tpol} ${SIMB_HTML[ej.simb]} 0</span></li>
-      <li>Resolvemos ${Tpol} = 0:${formulaCuadratica(ej.T[1], ej.T[2], ej.crit, ej.A)}
-        Así, ${Tpol} = ${factTxt}.</li>
-    </ol>
-    <div class="res-tabs" role="tablist">${tab('tabla')}${tab('rapido')}</div>
-    <div class="res-panel ${usado === 'tabla' ? 'activo' : ''}" role="tabpanel" data-tabpanel="tabla"><ol start="3">
-      <li>Tabla de signos (cada factor x ${MENOS} r es negativo a la izquierda de su raíz y positivo a la derecha; el producto sigue la regla de los signos).${filaCte}
-        ${tablaEstaticaHTML(ej.crit, [], 'Producto', ej.A)}</li>
-      <li>Buscamos «${SIMB_HTML[ej.simb]} 0», es decir, los tramos con signo ${textoSigno(ej.simb)}. ${incluye}
-        <span class="res-expr">Solución: ${fmtIntervalos(ej.sol)}</span>
-        ${rectaSolucionHTML(-10, 10, ej.crit, ej.sol)}</li>
-    </ol></div>
-    <div class="res-panel ${usado === 'rapido' ? 'activo' : ''}" role="tabpanel" data-tabpanel="rapido"><ol start="3">
-      <li>El coeficiente de x² es a = ${fmtNum(ej.A)}, ${ej.A > 0 ? 'positivo' : 'negativo'}: la parábola y = ${Tpol} es <b>${nombreForma(ej.A)}</b> y corta al eje X en x = ${fmtNum(ej.r1)} y x = ${fmtNum(ej.r2)}.</li>
-      <li>Buscamos «${SIMB_HTML[ej.simb]} 0», es decir, los tramos en los que la parábola queda <b>${ladoEje(ej.simb)}</b> del eje X. ${incluye}
-        <span class="res-expr">Solución: ${fmtIntervalos(ej.sol)}</span>
-        ${parabolaSolucionHTML(-10, 10, ej.r1, ej.r2, ej.A, ej.sol)}</li>
-    </ol></div>`;
-  }
-
-  function corregirPaso1(c, sel) {
-    const okC = c.every((v, i) => v === ej.T[i]);
-    const okS = sel.value === ej.simb;
-    const m1 = [];
-    const multiplicado = c.every((v, i) => v === -ej.T[i]) && sel.value === invertir(ej.simb);
-    if (okC && okS) m1.push(`Bien ordenada: ${Tpol} ${SIMB[ej.simb]} 0.`);
-    else if (multiplicado) m1.push(`Lo que has escrito es equivalente (has multiplicado por ${MENOS}1 e invertido el sentido), pero en este paso se pide pasar todo al primer miembro sin multiplicar: debe quedar ${Tpol} ${SIMB[ej.simb]} 0, con a = ${fmtNum(ej.A)}.`);
-    else {
-      if (!okC) {
-        const errSigno = sumaPol(ej.Lexp, ej.R);
-        if (c.every((v, i) => v === errSigno[i])) m1.push('Has sumado el segundo miembro en lugar de restarlo: al pasar un término al otro miembro cambia de signo.');
-        else if (ej.plantilla === 'cuad' && c[0] === ej.T[0] && c[1] === ej.T[1] - 2 * ej.p && c[2] === ej.T[2]) m1.push(`Te has olvidado del doble producto: (${fmtPoly([1, ej.p])})² = x² ${ej.p > 0 ? '+' : MENOS} ${2 * Math.abs(ej.p)}x + ${ej.p * ej.p}, no x² + ${ej.p * ej.p}.`);
-        else if (ej.plantilla === 'dos' && c[0] !== ej.T[0]) m1.push(`Revisa el coeficiente de x²: (${fmtPoly([2, ej.p])})(${fmtPoly([1, ej.q])}) aporta 2x², y al restar ${fmtPoly(ej.R)} queda ${fmtPoly([ej.T[0], 0, 0])}.`);
-        else m1.push(`Los coeficientes no son correctos. Desarrolla primero ${ej.Ltxt} = ${fmtPoly(ej.Lexp)} y después resta el segundo miembro término a término.`);
-      }
-      if (!okS) m1.push(`El símbolo debe seguir siendo «${SIMB[ej.simb]}»: pasar términos de un miembro a otro no cambia el sentido de la desigualdad.`);
-    }
-    [0, 1, 2].forEach(i => q(`[data-k="t${i}"]`).classList.add(c[i] === ej.T[i] ? 'ok-campo' : 'mal-campo'));
-    sel.classList.add(okS ? 'ok-campo' : 'mal-campo');
-    return { nombre: 'Ordenar la inecuación', ok: okC && okS, msgs: m1 };
-  }
-  function msgRaices(vals) {
-    if (vals[0] === ej.r2 && vals[1] === ej.r1) return 'Las raíces son correctas, pero se colocan de menor a mayor, igual que en la recta real.';
-    if ([...vals].sort((a, b) => a - b).join() === [-ej.r2, -ej.r1].join()) return `Has cambiado el signo de las raíces: el factor x ${MENOS} r se anula en x = r. Las raíces de ${Tpol} = 0 son x = ${fmtNum(ej.r1)} y x = ${fmtNum(ej.r2)}.`;
-    return `Las raíces de ${Tpol} = 0 son x = ${fmtNum(ej.r1)} y x = ${fmtNum(ej.r2)}. Comprueba la fórmula: x = (${MENOS}b ± √(b² ${MENOS} 4ac)) / 2a.`;
-  }
-
-  function corregirTabla(tb) {
-    const m2 = [];
-    const okVals = tb.vals[0] === ej.r1 && tb.vals[1] === ej.r2;
-    tb.vals.forEach((v, k) => tabla.marcarValor(k, v === ej.crit[k]));
-    if (!okVals) m2.push(msgRaices(tb.vals));
-    const esp = signosEsperados(2, ej.A);
-    let malFactor = false, malFinal = false, malCte = false;
-    tb.filas.forEach((r, i) => r.forEach((s, j) => { const ok = s === esp.filas[i][j]; tabla.marcarCelda(i, j, ok); if (!ok) malFactor = true; }));
-    tb.cte.forEach((s, j) => { const ok = s === '-'; tabla.marcarCelda('cte', j, ok); if (!ok) malCte = true; });
-    tb.final.forEach((s, j) => { const ok = s === esp.final[j]; tabla.marcarCelda('final', j, ok); if (!ok) malFinal = true; });
-    if (malCte) m2.push(`La fila del factor ${MENOS}1 es negativa en todos los tramos: es una constante y no depende de x.`);
-    if (malFactor) m2.push(`Revisa los signos de los factores: x ${MENOS} r es negativo para x &lt; r y positivo para x &gt; r (prueba con un número de cada tramo).`);
-    if (malFinal) m2.push(ej.A < 0
-      ? `La fila del producto se obtiene multiplicando los signos de cada columna, incluido el del factor ${MENOS}1: cuenta los signos negativos (par → +, impar → ${MENOS}).`
-      : `La fila del producto se obtiene multiplicando los signos de cada columna: (${MENOS})·(${MENOS}) = +, (${MENOS})·(+) = ${MENOS}, (+)·(+) = +.`);
-    const ok2 = okVals && !malFactor && !malFinal && !malCte;
-    if (ok2) m2.push(ej.A < 0 ? `Raíces bien ordenadas y signos correctos, incluida la fila del ${MENOS}1.` : 'Raíces bien ordenadas y signos correctos en todos los tramos.');
-    return { nombre: METODOS.tabla.paso2, ok: ok2, msgs: m2 };
-  }
-
-  function corregirRapido(rp, c) {
-    // Paso 2: raíces y forma
-    const m2 = [];
-    const okVals = rp.r1 === ej.r1 && rp.r2 === ej.r2;
-    rapido.marcarRaiz(0, rp.r1 === ej.r1);
-    rapido.marcarRaiz(1, rp.r2 === ej.r2);
-    if (!okVals) m2.push(msgRaices([rp.r1, rp.r2]));
-    const aAlumno = rp.forma === 'concava' ? 1 : -1;
-    const okForma = aAlumno === ej.A;
-    rapido.marcarForma(okForma);
-    if (!okForma) {
-      let m = `Has elegido ${rp.forma === 'concava' ? 'cóncava' : 'convexa'}, pero el coeficiente de x² es a = ${fmtNum(ej.A)}, ${ej.A > 0 ? 'positivo' : 'negativo'}: la parábola es ${nombreForma(ej.A)}.`;
-      if (c[0] !== ej.T[0] && Math.sign(c[0]) === aAlumno) m += ' Tu elección es coherente con el coeficiente que escribiste en el paso 1, pero ese coeficiente no es correcto.';
-      m2.push(m);
-    }
-    if (okVals && okForma) m2.push(`Raíces correctas y forma bien elegida: a = ${fmtNum(ej.A)} es ${ej.A > 0 ? 'positivo' : 'negativo'}, así que la parábola es ${nombreForma(ej.A)}.`);
-    const p2 = { nombre: METODOS.rapido.paso2, ok: okVals && okForma, msgs: m2 };
-
-    // Paso 3: tramos y extremos sobre la parábola
-    const m3 = [];
-    const esp = new Set(ej.sol.map(tramoDeIntervalo));
-    const iguales = (A, B) => A.size === B.size && [...A].every(x => B.has(x));
-    const comp = new Set([0, 1, 2].filter(j => !esp.has(j)));
-    if (!iguales(rp.tramos, esp)) {
-      if (iguales(rp.tramos, comp) && !okForma) m3.push(`Tu elección es coherente con la parábola que has dibujado, pero como su forma no es correcta, los tramos tampoco. Con la parábola ${nombreForma(ej.A)}, hay que elegir los tramos que quedan ${ladoEje(ej.simb)} del eje X.`);
-      else if (iguales(rp.tramos, comp)) m3.push(`Has elegido los tramos contrarios: la inecuación pide ${Tpol} ${SIMB[ej.simb]} 0, es decir, los tramos en los que la parábola queda ${ladoEje(ej.simb)} del eje X.`);
-      else m3.push(`Elige exactamente los tramos en los que la parábola queda ${ladoEje(ej.simb)} del eje X: ahí la expresión es ${textoSignoF(ej.simb)}.`);
-    }
-    const inc = !esEstricto(ej.simb);
-    [rp.r1, rp.r2].forEach((r, i) => {
-      if ((rp.puntos[i] === 'lleno') !== inc) m3.push(motivoExtremo(r, inc, ctx, 'grafica'));
-    });
-    const coincide = m3.length === 0;
-    const ok3 = coincide && okForma;
-    if (coincide && !okForma) m3.push(`Los tramos y los extremos coinciden con la solución, pero no con la parábola que has dibujado: con tu forma, esos tramos quedarían ${ladoEje(invertir(ej.simb))} del eje. Revisa el paso 2.`);
-    else if (coincide && !okVals) m3.push(`Has elegido bien qué tramos y extremos forman la solución, pero sobre unas raíces que no son las correctas (revisa el paso 2).`);
-    else if (ok3) m3.push(`Correcto: has elegido los tramos en los que la parábola queda ${ladoEje(ej.simb)} del eje X y has marcado bien si las raíces se incluyen.`);
-    rapido.marcarParab(ok3);
-    return [p2, { nombre: METODOS.rapido.paso3, ok: ok3, msgs: m3 }];
-  }
-
   return {
-    ej,
-    corregir() {
-      const c = [0, 1, 2].map(i => parseEntero(q(`[data-k="t${i}"]`).value));
-      const sel = q('[data-k="simb"]');
-      const I = iv.leer();
-      const faltan = [];
-      if (c.some(v => v === null) || !sel.value) faltan.push('el paso 1 (tres coeficientes enteros y el símbolo)');
-      let tb = null, g = null, rp = null;
-      if (metodo === 'tabla') {
-        tb = tabla.leer();
-        g = recta.leer();
-        if (tb.vals.some(v => v === null) || tb.filas.flat().concat(tb.final, tb.cte).some(s => s === '')) faltan.push('la tabla de signos (raíces y todas las casillas)');
-        if (g.puntos.size === 0) faltan.push('la representación gráfica');
-      } else {
-        rp = rapido.leer();
-        if (rp.r1 === null || rp.r2 === null || !rp.forma) faltan.push('el paso 2 (las dos raíces y la forma de la parábola)');
-        else if (rp.r1 >= rp.r2) faltan.push('el paso 2 (escribe las raíces de menor a mayor: x₁ < x₂)');
-        else if (!rp.dibujable) faltan.push(`el paso 2 (raíces entre ${MENOS}10 y 10)`);
-        else {
-          const sinMarcar = [rp.r1, rp.r2].filter((r, i) => rp.puntos[i] === '').map(fmtNum);
-          const det = [];
-          if (sinMarcar.length) det.push(`${sinMarcar.length === 2 ? `las raíces ${sinMarcar[0]} y ${sinMarcar[1]} siguen sin marcar` : `la raíz ${sinMarcar[0]} sigue sin marcar`}: elige «Extremo incluido» o «Extremo excluido» y pulsa sobre cada «?»`);
-          if (rp.tramos.size === 0) det.push('elige al menos un tramo con «Elegir tramo»');
-          if (det.length) faltan.push('la parábola (' + det.join('; además, ') + ')');
-        }
-      }
-      if (I.incompleto) faltan.push('el intervalo');
-      else if (I.error) faltan.push('el intervalo (' + I.error + ')');
-      if (faltan.length) return { incompleto: faltan };
-
-      const pasos = [corregirPaso1(c, sel)];
-      if (metodo === 'tabla') {
-        pasos.push(corregirTabla(tb));
-        const r3 = compararRecta(g, ej.sol, ej.crit, ctx);
-        recta.marcar(r3.ok);
-        pasos.push({ nombre: METODOS.tabla.paso3, ok: r3.ok, msgs: r3.ok ? [`Correcto: has sombreado los tramos con producto ${textoSigno(ej.simb)} y has marcado bien si las raíces se incluyen.`] : r3.msgs });
-      } else {
-        pasos.push(...corregirRapido(rp, c));
-      }
-      const r4 = compararIntervalos(I.intervalos, ej.sol, ctx);
-      iv.marcar(r4.ok);
-      pasos.push({ nombre: 'Intervalo', ok: r4.ok, msgs: r4.ok ? ['Intervalo bien escrito.'] : r4.msgs });
-      [1, 2, 3, 4].forEach(n => paso(n).classList.add(pasos[n - 1].ok ? 'ok' : 'mal'));
-      return { ok: pasos.every(p => p.ok), pasos, resolucion: resolucion(metodo), metodo };
-    },
-    bloquear() {
-      cuerpo.querySelectorAll('.fila-expr input, .fila-expr select, .metodo-switch button').forEach(x => { x.disabled = true; });
-      tabla.bloquear(); recta.bloquear(); rapido.bloquear(); iv.bloquear();
-    },
-    _test: { tabla, recta, rapido, iv, ponerMetodo }
+    simb: ej.simb,
+    msgContrario: `Has sombreado los tramos contrarios: la inecuación pide ${Tpol} ${SIMB[ej.simb]} 0, es decir, los tramos donde el producto es ${textoSigno(ej.simb)}.`,
+    msgTramos: `Sombrea exactamente los tramos en los que la última fila de la tabla es ${textoSigno(ej.simb)}.`
   };
+}
+function corregirOrdenCuad(cuerpo, ej) {
+  const q = s => cuerpo.querySelector(s);
+  const c = [0, 1, 2].map(i => parseEntero(q(`[data-k="t${i}"]`).value));
+  const sel = q('[data-k="simbQ"]');
+  const Tpol = fmtPoly(ej.T);
+  const okC = c.every((v, i) => v === ej.T[i]);
+  const okS = sel.value === ej.simb;
+  const m = [];
+  if (okC && okS) m.push(`Bien ordenada: ${Tpol} ${SIMB[ej.simb]} 0.`);
+  else {
+    if (!okC) {
+      const errSigno = sumaPol(ej.Lexp, ej.R);
+      if (c.every((v, i) => v === errSigno[i])) m.push('Has sumado el segundo miembro en lugar de restarlo: al pasar un término al otro miembro cambia de signo.');
+      else if (ej.plantilla === 'cuad' && c[0] === 1 && c[1] === ej.T[1] - 2 * ej.p && c[2] === ej.T[2]) m.push(`Te has olvidado del doble producto: (${fmtPoly([1, ej.p])})² = ${fmtPoly([1, 2 * ej.p, ej.p * ej.p])}, no ${fmtPoly([1, 0, ej.p * ej.p])}.`);
+      else if (ej.plantilla === 'dos' && c[0] !== 1) m.push(`Revisa el coeficiente de x²: (${fmtPoly([2, ej.p])})(${fmtPoly([1, ej.q])}) aporta 2x², y al restar ${fmtPoly(ej.R)} queda 1x².`);
+      else m.push(`Los coeficientes no son correctos. Desarrolla primero ${ej.Ltxt} = ${fmtPoly(ej.Lexp)} y después resta el segundo miembro término a término.`);
+    }
+    if (!okS) m.push(`El símbolo debe seguir siendo «${SIMB[ej.simb]}»: pasar términos de un miembro a otro no cambia el sentido de la desigualdad.`);
+  }
+  [0, 1, 2].forEach(i => q(`[data-k="t${i}"]`).classList.add(c[i] === ej.T[i] ? 'ok-campo' : 'mal-campo'));
+  sel.classList.add(okS ? 'ok-campo' : 'mal-campo');
+  return { nombre: 'Ordenar (1)', ok: okC && okS, msgs: m };
+}
+function corregirTabla(tabla, ej) {
+  const tb = tabla.leer();
+  const Tpol = fmtPoly(ej.T);
+  const m = [];
+  const okVals = tb.vals[0] === ej.r1 && tb.vals[1] === ej.r2;
+  tb.vals.forEach((v, k) => tabla.marcarValor(k, v === ej.crit[k]));
+  if (!okVals) {
+    if (tb.vals[0] === ej.r2 && tb.vals[1] === ej.r1) m.push('Las raíces son correctas, pero se colocan de menor a mayor, igual que en la recta real.');
+    else if ([...tb.vals].sort((a, b) => a - b).join() === [-ej.r2, -ej.r1].join()) m.push(`Has cambiado el signo de las raíces: el factor x ${MENOS} r se anula en x = r. Las raíces de ${Tpol} = 0 son x = ${fmtNum(ej.r1)} y x = ${fmtNum(ej.r2)}.`);
+    else m.push(`Las raíces de ${Tpol} = 0 son x = ${fmtNum(ej.r1)} y x = ${fmtNum(ej.r2)}. Comprueba la fórmula: x = (−b ± √(b² − 4ac)) / 2a.`);
+  }
+  const esp = signosEsperados(2);
+  let malFactor = false, malFinal = false;
+  tb.filas.forEach((r, i) => r.forEach((s, j) => { const ok = s === esp.filas[i][j]; tabla.marcarCelda(i, j, ok); if (!ok) malFactor = true; }));
+  tb.final.forEach((s, j) => { const ok = s === esp.final[j]; tabla.marcarCelda('final', j, ok); if (!ok) malFinal = true; });
+  if (malFactor) m.push(`Revisa los signos de los factores: x ${MENOS} r es negativo para x &lt; r y positivo para x &gt; r (prueba con un número de cada tramo).`);
+  if (malFinal) m.push(`La fila del producto se obtiene multiplicando los signos de cada columna: (${MENOS})·(${MENOS}) = +, (${MENOS})·(+) = ${MENOS}, (+)·(+) = +.`);
+  const ok = okVals && !malFactor && !malFinal;
+  if (ok) m.push('Raíces bien ordenadas y signos correctos en todos los tramos.');
+  return { nombre: 'Tabla de signos (1)', ok, msgs: m };
+}
+function tablaCompleta(tabla) {
+  const tb = tabla.leer();
+  return !tb.vals.some(v => v === null) && !tb.filas.flat().concat(tb.final).some(s => s === '');
+}
+function resolucionCuadratica(ej) {
+  const Tpol = fmtPoly(ej.T);
+  const Rpar = ej.R[0] === 0 ? `(${fmtPoly(ej.R.slice(1))})` : `(${fmtPoly(ej.R)})`;
+  return `<ol>
+    <li>Quitamos paréntesis: <span class="res-expr">${ej.Ltxt} = ${fmtPoly(ej.Lexp)}</span>
+      Pasamos todo al primer miembro (lo que cambia de miembro cambia de signo; el sentido no cambia):
+      <span class="res-expr">${fmtPoly(ej.Lexp)} ${MENOS} ${Rpar} ${SIMB_HTML[ej.simb]} 0 &nbsp;→&nbsp; ${Tpol} ${SIMB_HTML[ej.simb]} 0</span></li>
+    <li>Resolvemos ${Tpol} = 0:${formulaCuadratica(ej.T[1], ej.T[2], ej.crit)}
+      Así, ${Tpol} = (${fmtFactor(ej.r1)})(${fmtFactor(ej.r2)}).</li>
+    <li>Tabla de signos:${tablaEstaticaHTML(ej.crit, 'Producto')}</li>
+    <li>Buscamos «${SIMB_HTML[ej.simb]} 0»: los tramos con signo ${textoSigno(ej.simb)}. ${esEstricto(ej.simb) ? 'Como la desigualdad es estricta, las raíces no se incluyen.' : 'Como admite el 0, las raíces se incluyen.'}
+      <span class="res-expr">Solución de (1): ${fmtIntervalos(ej.sol)}</span></li>
+  </ol>`;
 }
 
 /* =====================================================================
-   EJERCICIO 3 · Racional
+   El sistema: intersección, contexto de corrección y diagnóstico
    ===================================================================== */
-function genRacional() {
-  for (let t = 0; t < 3000; t++) {
-    const a = rndInt(-6, 6), b = rndInt(-6, 6), p = rndInt(-6, 6);
-    if (a === b || a === p || b === p) continue;
-    const [n1, n2] = a < b ? [a, b] : [b, a];
-    const N = [1, -(n1 + n2), n1 * n2];
-    const den = [1, -p];
-    const plantilla = elegir(['lineal', 'fraccion']);
-    const k = rndNZ(-4, 4);
-    let A, Lnum = null, e = 0, u = 0, v = 0;
-    if (plantilla === 'lineal') { e = rndInt(-5, 5); A = mul([1, e - k], den); }
-    else {
-      u = rndInt(-6, 6); v = rndInt(-9, 9);
-      Lnum = [1, u, v];
-      if (evalPol(Lnum, p) === 0) continue;
-      A = sumaPol(Lnum, negPol(mul([k], den)));
+function datosSistema(sol1, sol2, origen) {
+  return { sol1, sol2, sol: intersecar(sol1, sol2), union: unir(sol1, sol2), origen };
+}
+function ctxSistema(S) {
+  return {
+    msgContrario: 'Has sombreado justo los tramos que no son solución. La solución del sistema es la zona en la que las dos rectas de arriba están sombreadas a la vez.',
+    msgTramos: 'Los tramos sombreados no coinciden con la solución del sistema: mira las dos rectas de arriba y sombrea solo donde las dos están sombreadas a la vez.',
+    msgExtremos: `Los extremos de la solución del sistema son ${listaY(extremos(S.sol).map(fmtNum))}${S.sol.some(i => !isFinite(i.lo) || !isFinite(i.hi)) ? ' (y ±∞ en el lado no acotado)' : ''}: son los puntos donde empieza o termina la zona común de las dos soluciones.`,
+    motivo(v, incluido, forma) {
+      const o = S.origen.get(v);
+      const si = forma === 'grafica' ? 'círculo relleno' : 'corchete';
+      const no = forma === 'grafica' ? 'círculo vacío' : 'paréntesis';
+      return `x = ${fmtNum(v)} es el extremo que impone la inecuación ${o.et}, que usa «${SIMB[o.simb]}»: ${incluido
+        ? `admite la igualdad, así que x = ${fmtNum(v)} es solución del sistema (${si})`
+        : `es estricta, así que x = ${fmtNum(v)} no es solución del sistema (${no})`}.`;
+    },
+    motivoSobra(v) {
+      const o = S.origen.get(v);
+      if (!o) return null;
+      return `x = ${fmtNum(v)} es extremo de la inecuación ${o.et}, pero no de la solución del sistema: justo a la izquierda y justo a la derecha de ${fmtNum(v)} alguna de las dos inecuaciones no se cumple, así que ahí no empieza ni termina ningún tramo de la solución.`;
     }
-    const W = [A[1] - N[1], A[2] - N[2]];          // numerador de la fracción del segundo miembro
-    if (W[0] === 0 || Math.abs(W[0]) > 20 || Math.abs(W[1]) > 40) continue;
-    if (evalPol(W, p) === 0) continue;               // la fracción no debe simplificarse
-    const simb = elegir(['lt', 'le', 'gt', 'ge']);
-    const crit = [n1, n2, p].sort((x, y) => x - y);
-    const sol = solucionDesdeSignos(crit, [p], simb);
-    const denTxt = fmtPoly(den);
-    const kTxt = (k > 0 ? ' + ' : ` ${MENOS} `) + Math.abs(k);
-    const Ltxt = plantilla === 'lineal' ? fmtPoly([1, e]) : frac(fmtPoly(Lnum), denTxt);
-    const Rtxt = frac(fmtPoly(W), denTxt) + kTxt;
-    return { n1, n2, p, N, den, plantilla, k, e, u, v, Lnum, A, W, simb, crit, sol, Ltxt, Rtxt, denTxt };
+  };
+}
+// Errores conceptuales típicos: confundir intersección con unión, o quedarse con una sola inecuación
+function diagnosticoSistema(L, S) {
+  if (!L.length || mismaCobertura(L, S.sol)) return null;
+  if (mismaCobertura(L, S.sol1)) return 'Has dado la solución de la inecuación (1) sola. Los valores del sistema tienen que cumplir también la (2): quédate solo con la parte común de las dos soluciones.';
+  if (mismaCobertura(L, S.sol2)) return 'Has dado la solución de la inecuación (2) sola. Los valores del sistema tienen que cumplir también la (1): quédate solo con la parte común de las dos soluciones.';
+  if (mismaCobertura(L, S.union)) return 'Has juntado las dos soluciones (la unión: valores que cumplen al menos una). En un sistema deben cumplirse las dos a la vez: es la intersección, la zona donde se solapan los dos sombreados.';
+  return null;
+}
+function corregirGraficaSistema(g, S, ctx) {
+  const r = compararRecta(g, S.sol, ctx);
+  if (r.ok) return { nombre: 'Gráfica del sistema', ok: true, msgs: ['Correcto: has dejado solo la zona común de las dos soluciones, con los extremos bien marcados.'] };
+  const d = diagnosticoSistema(rectaAIntervalos(g), S);
+  return { nombre: 'Gráfica del sistema', ok: false, msgs: d ? [d] : r.msgs };
+}
+function corregirIntervaloSistema(I, S, ctx) {
+  const r = compararIntervalos(I.intervalos, S.sol, ctx);
+  if (r.ok) return { nombre: 'Intervalo del sistema', ok: true, msgs: [`Bien escrito: ${fmtIntervalos(S.sol)}.`] };
+  const d = diagnosticoSistema(I.intervalos, S);
+  return { nombre: 'Intervalo del sistema', ok: false, msgs: d ? [d].concat(r.msgs.filter(m => m.startsWith('Junto a'))) : r.msgs };
+}
+function resolucionSistema(S, filas, nota) {
+  const ext = extremos(S.sol).map(v => {
+    const o = S.origen.get(v);
+    return `x = ${fmtNum(v)} procede de ${o.et}, con «${SIMB_HTML[o.simb]}»: ${incluidoEn(v, S.sol) ? 'se incluye (corchete)' : 'no se incluye (paréntesis)'}`;
+  });
+  return `<p>Representamos las dos soluciones una debajo de otra, con la misma escala. La solución del sistema son los valores sombreados <b>en las dos rectas a la vez</b>.${nota ? ' ' + nota : ''}</p>
+    ${pilaEstaticaHTML(filas)}
+    <span class="res-expr">Solución del sistema: ${fmtIntervalos(S.sol)}</span>
+    <p>${ext.join('; ')}.</p>`;
+}
+function marcarPaso(cuerpo, n, ok) { cuerpo.querySelector(`.paso[data-paso="${n}"]`).classList.add(ok ? 'ok' : 'mal'); }
+function graficaParcial(g, sol, ctx, nombre, okMsg) {
+  const r = compararRecta(g, sol, ctx);
+  return { nombre, ok: r.ok, msgs: r.ok ? [okMsg] : r.msgs };
+}
+// Rellena las tres rectas de una pila con las soluciones correctas
+function fijarPila(pila, sol1, sol2, solS) {
+  pila.fila('1')._fijar(...solARecta(sol1));
+  pila.fila('2')._fijar(...solARecta(sol2));
+  pila.fila('s')._fijar(...solARecta(solS));
+}
+
+/* =====================================================================
+   EJERCICIO 1 · Sistema de dos inecuaciones de primer grado
+   ===================================================================== */
+function genSistemaLineal() {
+  const quieroOpuestos = rand() < 0.65;
+  for (let t = 0; t < 3000; t++) {
+    const e1 = genLineal(-8, 8), e2 = genLineal(-8, 8);
+    if (Math.abs(e1.s - e2.s) < 2) continue;
+    const opuestos = sentido(e1.simbFinal) !== sentido(e2.simbFinal);
+    if (opuestos !== quieroOpuestos) continue;
+    const origen = new Map([[e1.s, { et: '(1)', simb: e1.simbFinal }], [e2.s, { et: '(2)', simb: e2.simbFinal }]]);
+    const S = datosSistema(e1.sol, e2.sol, origen);
+    if (!S.sol.length) continue;
+    return { e1, e2, S, opuestos };
   }
 }
-function montarRacional(cuerpo) {
-  const ej = genRacional();
+function montarSistemaLineal(cuerpo) {
+  const ej = genSistemaLineal();
+  const { e1, e2, S } = ej;
   cuerpo.innerHTML = `
-    <div class="pizarra">${ej.Ltxt} ${SIMB_HTML[ej.simb]} ${ej.Rtxt}</div>
-    <p class="consigna">Resuelve la inecuación paso a paso.</p>
+    <div class="pizarra">${sistemaHTML([e1.texto, e2.texto])}</div>
+    <p class="consigna">Resuelve cada inecuación por separado, representa las dos soluciones una debajo de otra y, justo debajo, la solución del sistema: los valores de x que cumplen las dos a la vez. Por último, escríbela como intervalo.</p>
     <div class="paso" data-paso="1">
-      <div class="paso-tit"><span class="paso-n">1</span>Deja una sola fracción en el primer miembro y 0 en el segundo</div>
-      <p class="paso-ayuda">Pasa todos los términos al primer miembro y reduce a común denominador. Escribe cada coeficiente con su signo.</p>
-      <div class="paso-cuerpo"><div class="fila-expr">
-        <span class="frac"><span class="num">${filaCoefs('n', ['x²', 'x', ''])}</span><span class="den">${filaCoefs('d', ['x', ''])}</span></span>
-        ${SELECT_SIMB('simb')} <span class="mat">0</span>
-      </div></div>
+      <div class="paso-tit"><span class="paso-n">1</span>Resuelve cada inecuación</div>
+      <div class="paso-cuerpo">${filaDesig(1)}${filaDesig(2)}</div>
     </div>
     <div class="paso" data-paso="2">
-      <div class="paso-tit"><span class="paso-n">2</span>Factoriza numerador y denominador</div>
-      <p class="paso-ayuda">Escribe las raíces: si un factor es x + 3, la raíz es ${MENOS}3.</p>
-      <div class="paso-cuerpo"><div class="fila-expr">
-        <span class="frac"><span class="num">(x ${MENOS} <input type="text" class="coef" data-k="f0" placeholder="?" autocomplete="off" aria-label="Primera raíz del numerador">)(x ${MENOS} <input type="text" class="coef" data-k="f1" placeholder="?" autocomplete="off" aria-label="Segunda raíz del numerador">)</span>
-        <span class="den">x ${MENOS} <input type="text" class="coef" data-k="f2" placeholder="?" autocomplete="off" aria-label="Raíz del denominador"></span></span>
-        ${SIMB_HTML[ej.simb]} <span class="mat">0</span>
-      </div></div>
+      <div class="paso-tit"><span class="paso-n">2</span>Representa las soluciones y la del sistema</div>
+      <div class="paso-cuerpo" data-pila></div>
     </div>
     <div class="paso" data-paso="3">
-      <div class="paso-tit"><span class="paso-n">3</span>Tabla de signos (marca los <span class="polo-txt">polos</span>)</div>
-      <div class="paso-cuerpo" data-tabla></div>
-    </div>
-    <div class="paso" data-paso="4">
-      <div class="paso-tit"><span class="paso-n">4</span>Representación gráfica</div>
-      <div class="paso-cuerpo" data-recta></div>
-    </div>
-    <div class="paso" data-paso="5">
-      <div class="paso-tit"><span class="paso-n">5</span>Solución en forma de intervalo</div>
+      <div class="paso-tit"><span class="paso-n">3</span>Solución del sistema en forma de intervalo</div>
       <div class="paso-cuerpo" data-iv></div>
     </div>`;
-  const tabla = crearTabla(cuerpo.querySelector('[data-tabla]'), { n: 3, conPolos: true, final: 'Cociente' });
-  const recta = crearRecta(cuerpo.querySelector('[data-recta]'), { min: -10, max: 10 });
+  const pila = crearPila(cuerpo.querySelector('[data-pila]'), [
+    { key: '1', lab: '(1)', sub: 'solución de (1)' },
+    { key: '2', lab: '(2)', sub: 'solución de (2)' },
+    { key: 's', lab: 'Sistema', sub: '(1) ∩ (2)', sis: true }
+  ]);
   const iv = crearIntervalos(cuerpo.querySelector('[data-iv]'));
-  const q = s => cuerpo.querySelector(s);
-  const paso = n => cuerpo.querySelector(`.paso[data-paso="${n}"]`);
-  const Ntxt = fmtPoly(ej.N);
-  const fracFinal = frac(Ntxt, ej.denTxt);
-  const fracFact = frac(ej.n1 === 0 ? 'x' + fmtFactorPar(ej.n2) : fmtFactorPar(ej.n1) + fmtFactorPar(ej.n2), fmtFactor(ej.p));
-  const ctx = {
-    simb: ej.simb, polos: [ej.p],
-    msgContrario: `Has sombreado los tramos contrarios: la inecuación pide que la fracción sea ${textoSignoF(ej.simb)}.`,
-    msgTramos: `Sombrea exactamente los tramos en los que la fila del cociente es ${textoSignoF(ej.simb)}.`,
-    msgExtremos: `Los extremos de los intervalos son los valores críticos ${listaY(ej.crit.map(fmtNum))} (y ±∞ si el tramo no está acotado). Mira en la tabla qué tramos tienen signo ${textoSigno(ej.simb)}.`
-  };
+  const ctxS = ctxSistema(S);
 
   function resolucion() {
-    const Wtxt = fmtPoly(ej.W);
-    const kMov = (ej.k > 0 ? ` ${MENOS} ` : ' + ') + Math.abs(ej.k);
-    let paso1;
-    if (ej.plantilla === 'lineal') {
-      paso1 = `<span class="res-expr">${ej.Ltxt} ${MENOS} ${frac(Wtxt, ej.denTxt)}${kMov} ${SIMB_HTML[ej.simb]} 0</span>
-        Agrupamos la parte entera: ${fmtPoly([1, ej.e])}${kMov} = ${fmtPoly([1, ej.e - ej.k])}, y la escribimos con denominador ${ej.denTxt}:
-        <span class="res-expr">${frac(`(${fmtPoly([1, ej.e - ej.k])})(${ej.denTxt}) ${MENOS} (${Wtxt})`, ej.denTxt)} ${SIMB_HTML[ej.simb]} 0</span>
-        <span class="res-expr">${frac(`${fmtPoly(ej.A)} ${MENOS} (${Wtxt})`, ej.denTxt)} ${SIMB_HTML[ej.simb]} 0 &nbsp;→&nbsp; ${fracFinal} ${SIMB_HTML[ej.simb]} 0</span>`;
-    } else {
-      paso1 = `<span class="res-expr">${ej.Ltxt} ${MENOS} ${frac(Wtxt, ej.denTxt)}${kMov} ${SIMB_HTML[ej.simb]} 0</span>
-        El número ${fmtNum(-ej.k)} se escribe con denominador ${ej.denTxt} multiplicándolo arriba y abajo:
-        <span class="res-expr">${frac(`(${fmtPoly(ej.Lnum)}) ${MENOS} (${Wtxt})${ej.k > 0 ? ` ${MENOS} ` : ' + '}${Math.abs(ej.k)}(${ej.denTxt})`, ej.denTxt)} ${SIMB_HTML[ej.simb]} 0 &nbsp;→&nbsp; ${fracFinal} ${SIMB_HTML[ej.simb]} 0</span>`;
-    }
-    return `<ol>
-      <li>Pasamos todo al primer miembro (el sentido de la desigualdad no cambia):${paso1}</li>
-      <li>Factorizamos. Numerador: ${Ntxt} = 0 ${formulaCuadratica(ej.N[1], ej.N[2], [ej.n1, ej.n2])}
-        Denominador: ${ej.denTxt} = 0 → x = ${fmtNum(ej.p)}, que es un <span class="polo-txt">polo</span>.
-        <span class="res-expr">${fracFact} ${SIMB_HTML[ej.simb]} 0</span></li>
-      <li>Tabla de signos con los valores críticos ordenados; el <span class="polo-txt">polo</span> va marcado con línea discontinua:
-        ${tablaEstaticaHTML(ej.crit, [ej.p], 'Cociente')}</li>
-      <li>Buscamos los tramos con signo ${textoSigno(ej.simb)}. ${esEstricto(ej.simb) ? 'Como la desigualdad es estricta, ningún valor crítico se incluye.' : `Los ceros del numerador (${fmtNum(ej.n1)} y ${fmtNum(ej.n2)}) se incluyen porque admitimos el 0; el polo ${fmtNum(ej.p)} nunca.`}
-        <span class="res-expr">Solución: ${fmtIntervalos(ej.sol)}</span>
-        ${rectaSolucionHTML(-10, 10, ej.crit, ej.sol)}</li>
-    </ol>`;
+    const nota = ej.opuestos ? '' : 'Como las dos soluciones se extienden hacia el mismo lado, el sistema se queda con la más restrictiva.';
+    return `<div class="res-sub">Inecuación (1): ${e1.texto}</div>${resolucionLineal(e1, 1)}
+      <div class="res-sub">Inecuación (2): ${e2.texto}</div>${resolucionLineal(e2, 2)}
+      <div class="res-sub">Solución del sistema</div>
+      ${resolucionSistema(S, [
+        { lab: '(1)', sub: `x ${SIMB_HTML[e1.simbFinal]} ${fmtNum(e1.s)}`, sol: e1.sol },
+        { lab: '(2)', sub: `x ${SIMB_HTML[e2.simbFinal]} ${fmtNum(e2.s)}`, sol: e2.sol },
+        { lab: 'Sistema', sub: '(1) ∩ (2)', sol: S.sol, sis: true }], nota)}`;
   }
 
   return {
     ej,
     corregir() {
-      const nc = [0, 1, 2].map(i => parseEntero(q(`[data-k="n${i}"]`).value));
-      const dc = [0, 1].map(i => parseEntero(q(`[data-k="d${i}"]`).value));
-      const sel = q('[data-k="simb"]');
-      const fc = [0, 1, 2].map(i => parseEntero(q(`[data-k="f${i}"]`).value));
-      const tb = tabla.leer();
-      const g = recta.leer();
+      const g = { 1: pila.fila('1').leer(), 2: pila.fila('2').leer(), s: pila.fila('s').leer() };
       const I = iv.leer();
       const faltan = [];
-      if (nc.concat(dc).some(v => v === null) || !sel.value) faltan.push('el paso 1 (coeficientes enteros y símbolo)');
-      if (fc.some(v => v === null)) faltan.push('la factorización');
-      if (tb.vals.some(v => v === null) || tb.filas.flat().concat(tb.final).some(s => s === '')) faltan.push('la tabla de signos (valores críticos y todas las casillas)');
-      if (g.puntos.size === 0) faltan.push('la representación gráfica');
+      [1, 2].forEach(i => { if (!desigCompleta(cuerpo, i)) faltan.push(`la solución de (${i}) (símbolo y número entero)`); });
+      const sinGraf = [['1', 'la recta de (1)'], ['2', 'la recta de (2)'], ['s', 'la recta del sistema']].filter(([k]) => g[k].puntos.size === 0 && g[k].tramos.size === 0).map(x => x[1]);
+      if (sinGraf.length) faltan.push(listaY(sinGraf));
       if (I.incompleto) faltan.push('el intervalo');
       else if (I.error) faltan.push('el intervalo (' + I.error + ')');
       if (faltan.length) return { incompleto: faltan };
 
       const pasos = [];
-      // Paso 1
-      const okN = nc.every((v, i) => v === ej.N[i]);
-      const okD = dc.every((v, i) => v === ej.den[i]);
-      const okS = sel.value === ej.simb;
-      const m1 = [];
-      if (okN && okD && okS) m1.push(`Bien reducida: (${Ntxt}) / (${ej.denTxt}) ${SIMB[ej.simb]} 0. Todo en un miembro y 0 en el otro: así ya solo importa el signo de la fracción.`);
-      else {
-        if (!okD) m1.push(`El denominador común es ${ej.denTxt}: es el único denominador que aparece.`);
-        if (!okN) {
-          const kDen = mul([ej.k], ej.den);
-          const sinK = sumaPol(sumaPol(sumaPol(ej.A, kDen), [0, 0, -ej.k]), [0, -ej.W[0], -ej.W[1]]); // olvidó multiplicar k por el denominador
-          const signoW = sumaPol(ej.A, [0, -ej.W[0], ej.W[1]]);                 // −(wx+z) mal distribuido
-          if (nc.every((v, i) => v === sinK[i])) m1.push(`El número ${fmtNum(ej.k)} también hay que escribirlo con denominador ${ej.denTxt}: ${fmtNum(ej.k)} = ${fmtNum(ej.k)}(${ej.denTxt}) / (${ej.denTxt}). No basta con restarlo en el numerador.`);
-          else if (nc.every((v, i) => v === signoW[i])) m1.push(`Al restar una fracción, el signo menos afecta a todo su numerador: ${MENOS}(${fmtPoly(ej.W)}) = ${fmtPoly(negPol(ej.W))}.`);
-          else m1.push(`El numerador no es correcto. Escribe todo con denominador ${ej.denTxt} y opera con cuidado los signos: el resultado debe ser ${Ntxt}.`);
-        }
-        if (!okS) m1.push(`El símbolo debe seguir siendo «${SIMB[ej.simb]}»: no hemos multiplicado por nada negativo, solo hemos pasado términos y reducido a común denominador.`);
-      }
-      [0, 1, 2].forEach(i => q(`[data-k="n${i}"]`).classList.add(nc[i] === ej.N[i] ? 'ok-campo' : 'mal-campo'));
-      [0, 1].forEach(i => q(`[data-k="d${i}"]`).classList.add(dc[i] === ej.den[i] ? 'ok-campo' : 'mal-campo'));
-      sel.classList.add(okS ? 'ok-campo' : 'mal-campo');
-      pasos.push({ nombre: 'Una sola fracción', ok: okN && okD && okS, msgs: m1 });
-
-      // Paso 2
-      const okNum = [fc[0], fc[1]].sort((x, y) => x - y).join() === [ej.n1, ej.n2].join();
-      const okDen = fc[2] === ej.p;
-      const m2 = [];
-      if (okNum && okDen) m2.push('Factorización correcta: los valores críticos son los ceros del numerador y del denominador.');
-      else {
-        const opuestos = [-fc[0], -fc[1]].sort((x, y) => x - y).join() === [ej.n1, ej.n2].join() || fc[2] === -ej.p;
-        if (opuestos) m2.push(`Cuidado con el signo de las raíces: el factor x ${MENOS} r se anula en x = r. Si el factor es x + 3, la raíz es ${MENOS}3.`);
-        if (!okNum) m2.push(`Las raíces del numerador ${Ntxt} son ${fmtNum(ej.n1)} y ${fmtNum(ej.n2)}.`);
-        if (!okDen) m2.push(`El denominador ${ej.denTxt} se anula en x = ${fmtNum(ej.p)}.`);
-      }
-      if (okNum) { q('[data-k="f0"]').classList.add('ok-campo'); q('[data-k="f1"]').classList.add('ok-campo'); }
-      else [0, 1].forEach(i => q(`[data-k="f${i}"]`).classList.add([ej.n1, ej.n2].includes(fc[i]) && fc[0] !== fc[1] ? 'ok-campo' : 'mal-campo'));
-      q('[data-k="f2"]').classList.add(okDen ? 'ok-campo' : 'mal-campo');
-      pasos.push({ nombre: 'Factorización', ok: okNum && okDen, msgs: m2 });
-
-      // Paso 3: tabla
-      const m3 = [];
-      const okVals = tb.vals.every((v, k) => v === ej.crit[k]);
-      tb.vals.forEach((v, k) => tabla.marcarValor(k, v === ej.crit[k]));
-      if (!okVals) {
-        if ([...tb.vals].sort((x, y) => x - y).join() === ej.crit.join()) m3.push('Los valores críticos son correctos, pero se colocan de menor a mayor, como en la recta real.');
-        else m3.push(`Los valores críticos son los ceros del numerador y del denominador, ordenados: ${listaY(ej.crit.map(fmtNum))}.`);
-      }
-      const polosEsp = ej.crit.map(c => c === ej.p);
-      const okPolos = okVals ? tb.polos.every((x, k) => x === polosEsp[k]) : true;
-      if (okVals) tb.polos.forEach((x, k) => tabla.marcarPolo(k, x === polosEsp[k]));
-      if (okVals && !okPolos) {
-        if (!tb.polos.some(Boolean)) m3.push(`No has marcado el polo: x = ${fmtNum(ej.p)} anula el denominador y hay que señalarlo para recordar que nunca se incluye.`);
-        else m3.push(`Solo es polo x = ${fmtNum(ej.p)}, que anula el denominador. Los ceros del numerador (${fmtNum(ej.n1)} y ${fmtNum(ej.n2)}) no son polos.`);
-      }
-      const esp = signosEsperados(3);
-      let malFactor = false, malFinal = false;
-      tb.filas.forEach((r, i) => r.forEach((s, j) => { const ok = s === esp.filas[i][j]; tabla.marcarCelda(i, j, ok); if (!ok) malFactor = true; }));
-      tb.final.forEach((s, j) => { const ok = s === esp.final[j]; tabla.marcarCelda('final', j, ok); if (!ok) malFinal = true; });
-      if (malFactor) m3.push(`Revisa los signos de los factores: x ${MENOS} r es negativo para x &lt; r y positivo para x &gt; r. Da igual que el factor esté en el numerador o en el denominador.`);
-      if (malFinal) m3.push('El signo del cociente sigue la misma regla que el producto: cuenta cuántos signos negativos hay en cada columna (par → +, impar → −).');
-      const ok3 = okVals && okPolos && !malFactor && !malFinal;
-      if (ok3) m3.push('Valores críticos ordenados, polo bien marcado y signos correctos.');
-      pasos.push({ nombre: 'Tabla de signos', ok: ok3, msgs: m3 });
-
-      // Paso 4 y 5
-      const r4 = compararRecta(g, ej.sol, ej.crit, ctx);
-      recta.marcar(r4.ok);
-      pasos.push({ nombre: 'Representación gráfica', ok: r4.ok, msgs: r4.ok ? [`Correcto: el polo ${fmtNum(ej.p)} queda con círculo vacío y los tramos sombreados son los de signo ${textoSigno(ej.simb)}.`] : r4.msgs });
-      const r5 = compararIntervalos(I.intervalos, ej.sol, ctx);
-      iv.marcar(r5.ok);
-      pasos.push({ nombre: 'Intervalo', ok: r5.ok, msgs: r5.ok ? ['Intervalos bien escritos: el polo siempre con paréntesis.'] : r5.msgs });
-      [1, 2, 3, 4, 5].forEach(n => paso(n).classList.add(pasos[n - 1].ok ? 'ok' : 'mal'));
+      pasos.push(corregirDesig(cuerpo, e1, 1));
+      pasos.push(corregirDesig(cuerpo, e2, 2));
+      pasos.push(graficaParcial(g[1], e1.sol, ctxLineal(e1), 'Gráfica de (1)', 'Extremo y tramo bien representados.'));
+      pasos.push(graficaParcial(g[2], e2.sol, ctxLineal(e2), 'Gráfica de (2)', 'Extremo y tramo bien representados.'));
+      pasos.push(corregirGraficaSistema(g.s, S, ctxS));
+      pasos.push(corregirIntervaloSistema(I, S, ctxS));
+      ['1', '2', 's'].forEach((k, n) => pila.fila(k).marcar(pasos[2 + n].ok));
+      iv.marcar(pasos[5].ok);
+      marcarPaso(cuerpo, 1, pasos[0].ok && pasos[1].ok);
+      marcarPaso(cuerpo, 2, pasos[2].ok && pasos[3].ok && pasos[4].ok);
+      marcarPaso(cuerpo, 3, pasos[5].ok);
       return { ok: pasos.every(p => p.ok), pasos, resolucion: resolucion() };
     },
-    bloquear() { cuerpo.querySelectorAll('.fila-expr input, .fila-expr select').forEach(x => { x.disabled = true; }); tabla.bloquear(); recta.bloquear(); iv.bloquear(); },
-    _test: { tabla, recta, iv }
+    rellenarSolucion() {
+      fijarDesig(cuerpo, e1, 1);
+      fijarDesig(cuerpo, e2, 2);
+      fijarPila(pila, e1.sol, e2.sol, S.sol);
+      iv._fijar(S.sol);
+    },
+    bloquear() {
+      cuerpo.querySelectorAll('.fila-expr input, .fila-expr select').forEach(x => { x.disabled = true; });
+      pila.bloquear(); iv.bloquear();
+    },
+    _test: { pila, iv }
   };
 }
 
 /* =====================================================================
-   Estado, puntuación (cada tipo se supera con un acierto) y tarjetas
+   EJERCICIO 2 · Sistema: segundo grado + primer grado
+   ===================================================================== */
+function genSistemaMixto() {
+  for (let t = 0; t < 3000; t++) {
+    const q = genCuadratica();
+    const l = genLineal(-8, 8);
+    if (q.crit.includes(l.s)) continue;
+    const origen = new Map([[q.r1, { et: '(1)', simb: q.simb }], [q.r2, { et: '(1)', simb: q.simb }], [l.s, { et: '(2)', simb: l.simbFinal }]]);
+    const S = datosSistema(q.sol, l.sol, origen);
+    if (!S.sol.length) continue;
+    // que la segunda inecuación recorte de verdad: la solución no puede coincidir con una de las parciales
+    if (igualesIL(S.sol, q.sol) || igualesIL(S.sol, l.sol)) continue;
+    return { q, l, S };
+  }
+}
+function montarSistemaMixto(cuerpo) {
+  const ej = genSistemaMixto();
+  const { q, l, S } = ej;
+  cuerpo.innerHTML = `
+    <div class="pizarra">${sistemaHTML([q.texto, l.texto])}</div>
+    <p class="consigna">Resuelve cada inecuación como en la ficha anterior, representa las dos soluciones una debajo de otra y, justo debajo, la solución del sistema. Por último, escríbela como intervalo.</p>
+    <div class="paso" data-paso="1">
+      <div class="paso-tit"><span class="paso-n">1</span><span class="et">(1)</span>Quita paréntesis y pasa todo al primer miembro</div>
+      <p class="paso-ayuda">Escribe cada coeficiente con su signo (por ejemplo, ${MENOS}3).</p>
+      <div class="paso-cuerpo"><div class="fila-expr">${filaCoefs('t', ['x²', 'x', ''])} ${SELECT_SIMB('simbQ')} <span class="mat">0</span></div></div>
+    </div>
+    <div class="paso" data-paso="2">
+      <div class="paso-tit"><span class="paso-n">2</span><span class="et">(1)</span>Raíces y tabla de signos</div>
+      <div class="paso-cuerpo" data-tabla></div>
+    </div>
+    <div class="paso" data-paso="3">
+      <div class="paso-tit"><span class="paso-n">3</span><span class="et">(2)</span>Resuelve la inecuación de primer grado</div>
+      <div class="paso-cuerpo">${filaDesig(2)}</div>
+    </div>
+    <div class="paso" data-paso="4">
+      <div class="paso-tit"><span class="paso-n">4</span>Representa las soluciones y la del sistema</div>
+      <div class="paso-cuerpo" data-pila></div>
+    </div>
+    <div class="paso" data-paso="5">
+      <div class="paso-tit"><span class="paso-n">5</span>Solución del sistema en forma de intervalo</div>
+      <div class="paso-cuerpo" data-iv></div>
+    </div>`;
+  const tabla = crearTabla(cuerpo.querySelector('[data-tabla]'), { n: 2, final: 'Producto' });
+  const pila = crearPila(cuerpo.querySelector('[data-pila]'), [
+    { key: '1', lab: '(1)', sub: 'solución de (1)' },
+    { key: '2', lab: '(2)', sub: 'solución de (2)' },
+    { key: 's', lab: 'Sistema', sub: '(1) ∩ (2)', sis: true }
+  ]);
+  const iv = crearIntervalos(cuerpo.querySelector('[data-iv]'));
+  const ctxS = ctxSistema(S);
+
+  function resolucion() {
+    return `<div class="res-sub">Inecuación (1): ${q.texto}</div>${resolucionCuadratica(q)}
+      <div class="res-sub">Inecuación (2): ${l.texto}</div>${resolucionLineal(l, 2)}
+      <div class="res-sub">Solución del sistema</div>
+      ${resolucionSistema(S, [
+        { lab: '(1)', sub: `${fmtPoly(q.T)} ${SIMB_HTML[q.simb]} 0`, sol: q.sol },
+        { lab: '(2)', sub: `x ${SIMB_HTML[l.simbFinal]} ${fmtNum(l.s)}`, sol: l.sol },
+        { lab: 'Sistema', sub: '(1) ∩ (2)', sol: S.sol, sis: true }], '')}`;
+  }
+
+  return {
+    ej,
+    corregir() {
+      const c = [0, 1, 2].map(i => parseEntero(cuerpo.querySelector(`[data-k="t${i}"]`).value));
+      const g = { 1: pila.fila('1').leer(), 2: pila.fila('2').leer(), s: pila.fila('s').leer() };
+      const I = iv.leer();
+      const faltan = [];
+      if (c.some(v => v === null) || !cuerpo.querySelector('[data-k="simbQ"]').value) faltan.push('el paso 1 (tres coeficientes enteros y el símbolo)');
+      if (!tablaCompleta(tabla)) faltan.push('la tabla de signos (raíces y todas las casillas)');
+      if (!desigCompleta(cuerpo, 2)) faltan.push('la solución de (2) (símbolo y número entero)');
+      const sinGraf = [['1', 'la recta de (1)'], ['2', 'la recta de (2)'], ['s', 'la recta del sistema']].filter(([k]) => g[k].puntos.size === 0 && g[k].tramos.size === 0).map(x => x[1]);
+      if (sinGraf.length) faltan.push(listaY(sinGraf));
+      if (I.incompleto) faltan.push('el intervalo');
+      else if (I.error) faltan.push('el intervalo (' + I.error + ')');
+      if (faltan.length) return { incompleto: faltan };
+
+      const pasos = [];
+      pasos.push(corregirOrdenCuad(cuerpo, q));
+      pasos.push(corregirTabla(tabla, q));
+      pasos.push(corregirDesig(cuerpo, l, 2));
+      pasos.push(graficaParcial(g[1], q.sol, ctxCuadratica(q), 'Gráfica de (1)',
+        `Correcto: has sombreado los tramos con producto ${textoSigno(q.simb)} y has marcado bien si las raíces se incluyen.`));
+      pasos.push(graficaParcial(g[2], l.sol, ctxLineal(l), 'Gráfica de (2)', 'Extremo y tramo bien representados.'));
+      pasos.push(corregirGraficaSistema(g.s, S, ctxS));
+      pasos.push(corregirIntervaloSistema(I, S, ctxS));
+      ['1', '2', 's'].forEach((k, n) => pila.fila(k).marcar(pasos[3 + n].ok));
+      iv.marcar(pasos[6].ok);
+      marcarPaso(cuerpo, 1, pasos[0].ok);
+      marcarPaso(cuerpo, 2, pasos[1].ok);
+      marcarPaso(cuerpo, 3, pasos[2].ok);
+      marcarPaso(cuerpo, 4, pasos[3].ok && pasos[4].ok && pasos[5].ok);
+      marcarPaso(cuerpo, 5, pasos[6].ok);
+      return { ok: pasos.every(p => p.ok), pasos, resolucion: resolucion() };
+    },
+    rellenarSolucion() {
+      q.T.forEach((v, i) => { cuerpo.querySelector(`[data-k="t${i}"]`).value = fmtNum(v); });
+      cuerpo.querySelector('[data-k="simbQ"]').value = q.simb;
+      const esp = signosEsperados(2);
+      tabla._fijar(q.crit, esp.filas, esp.final);
+      fijarDesig(cuerpo, l, 2);
+      fijarPila(pila, q.sol, l.sol, S.sol);
+      iv._fijar(S.sol);
+    },
+    bloquear() {
+      cuerpo.querySelectorAll('.fila-expr input, .fila-expr select').forEach(x => { x.disabled = true; });
+      tabla.bloquear(); pila.bloquear(); iv.bloquear();
+    },
+    _test: { tabla, pila, iv }
+  };
+}
+
+/* =====================================================================
+   Estado y puntuación: cada tipo se supera con un ejercicio correcto
    ===================================================================== */
 const TIPOS = {
-  lineal:     { num: 'Ejercicio 1', nombre: 'Inecuación de primer grado', montar: montarLineal },
-  cuadratica: { num: 'Ejercicio 2', nombre: 'Inecuación de segundo grado', montar: montarCuadratica },
-  racional:   { num: 'Ejercicio 3', nombre: 'Inecuación racional', montar: montarRacional }
+  lineal: { num: 'Ejercicio 1', nombre: 'Sistema de dos inecuaciones de primer grado', corto: 'Primer grado + primer grado', montar: montarSistemaLineal },
+  mixto:  { num: 'Ejercicio 2', nombre: 'Sistema con una inecuación de segundo grado y otra de primer grado', corto: 'Segundo grado + primer grado', montar: montarSistemaMixto }
 };
 const state = { tipos: {}, inicio: Date.now(), fallosTotales: 0 };
 Object.keys(TIPOS).forEach(t => {
-  state.tipos[t] = { superado: false, cerrado: false, nIntentos: 0, aciertos: 0, fallos: 0, pasoFallos: {}, metodos: {} };
+  state.tipos[t] = { superado: false, cerrado: false, nIntentos: 0, aciertos: 0, fallos: 0, solucionesVistas: 0, pasoFallos: {} };
 });
 const PUNTO_POR_TIPO = 10 / Object.keys(TIPOS).length;
 const PENALIZACION_FALLO = 0.5;
 const ctrl = {};
-// La nota se recalcula siempre desde cero: puntos de los tipos superados menos todas
-// las penalizaciones, y el suelo de 0 se aplica solo al resultado final. Así un fallo
-// cuenta igual tanto si se comete al principio como al final.
+// La nota se recalcula siempre desde cero; el suelo de 0 se aplica solo al resultado final.
 function calcularNota() {
   const superados = Object.values(state.tipos).filter(x => x.superado).length;
   const bruta = superados * PUNTO_POR_TIPO - state.fallosTotales * PENALIZACION_FALLO;
@@ -1974,10 +1647,12 @@ function construirTarjetas() {
         <button class="btn-secundario" data-nuevo="${t}" hidden>Otro ejercicio de este tipo</button>
       </div>
       <div class="aviso-incompleto" id="aviso-${t}"></div>
+      <div class="card-sol"><button type="button" class="btn-soluciones" data-sol="${t}">Mostrar soluciones</button></div>
       <div class="card-feedback" id="fb-${t}" aria-live="polite"></div>`;
     cont.appendChild(sec);
     sec.querySelector('[data-corregir]').addEventListener('click', () => corregir(t));
     sec.querySelector('[data-nuevo]').addEventListener('click', () => montar(t, true));
+    sec.querySelector('[data-sol]').addEventListener('click', () => pedirSoluciones(t));
     montar(t, false);
   });
 }
@@ -1986,8 +1661,10 @@ function montar(t, desplazar) {
   const sec = document.getElementById('card-' + t);
   ctrl[t] = TIPOS[t].montar(document.getElementById('cuerpo-' + t));
   ctrl[t].corregido = false;
+  ctrl[t].revelado = false;
   sec.querySelector('[data-corregir]').hidden = false;
   sec.querySelector('[data-nuevo]').hidden = true;
+  actualizarBtnSol(t);
   document.getElementById('fb-' + t).innerHTML = '';
   document.getElementById('aviso-' + t).classList.remove('visible');
   pintarVentana(t);
@@ -1997,8 +1674,11 @@ function pintarVentana(t) {
   const st = state.tipos[t];
   const v = document.getElementById('ventana-' + t);
   if (st.superado) { v.innerHTML = '<span class="insignia">✓ Superado</span>'; return; }
+  const notas = [];
+  if (st.fallos) notas.push(`${st.fallos} ${st.fallos === 1 ? 'intento fallido' : 'intentos fallidos'}`);
+  if (st.solucionesVistas) notas.push(`${st.solucionesVistas} ${st.solucionesVistas === 1 ? 'solución vista' : 'soluciones vistas'}`);
   v.innerHTML = `<span class="estado-pend">Pendiente</span>` +
-    (st.fallos ? `<div class="ventana-nota">${st.fallos} ${st.fallos === 1 ? 'intento fallido' : 'intentos fallidos'}</div>` : `<div class="ventana-nota">Se supera con un ejercicio correcto</div>`);
+    `<div class="ventana-nota">${notas.length ? notas.join(' · ') : 'Se supera con un ejercicio correcto'}</div>`;
 }
 function nombreOK() {
   const inp = document.getElementById('nombre');
@@ -2010,24 +1690,17 @@ function nombreOK() {
   inp.classList.remove('falta'); av.classList.remove('visible');
   return true;
 }
-function registrarIntento(t, correcto, pasos, metodo) {
+function registrarIntento(t, correcto, pasos) {
   const st = state.tipos[t];
   if (st.cerrado) return false;
   st.nIntentos++;
-  if (metodo) {
-    const m = st.metodos[metodo] || (st.metodos[metodo] = { intentos: 0, aciertos: 0 });
-    m.intentos++;
-    if (correcto) m.aciertos++;
-  }
   if (correcto) st.aciertos++;
   else {
     st.fallos++; state.fallosTotales++;
     pasos.filter(p => !p.ok).forEach(p => { st.pasoFallos[p.nombre] = (st.pasoFallos[p.nombre] || 0) + 1; });
   }
   let recienSuperado = false;
-  if (!st.superado && correcto) {
-    st.superado = true; st.cerrado = true; recienSuperado = true;
-  }
+  if (!st.superado && correcto) { st.superado = true; st.cerrado = true; recienSuperado = true; }
   actualizarMarcador();
   return recienSuperado;
 }
@@ -2046,15 +1719,16 @@ function corregir(t) {
   aviso.classList.remove('visible');
   c.corregido = true;
   c.bloquear();
-  const recien = registrarIntento(t, r.ok, r.pasos, r.metodo);
+  const recien = registrarIntento(t, r.ok, r.pasos);
   const sec = document.getElementById('card-' + t);
   sec.querySelector('[data-corregir]').hidden = true;
   sec.querySelector('[data-nuevo]').hidden = st.cerrado;
+  actualizarBtnSol(t);
   if (st.superado) sec.classList.add('superado');
   pintarVentana(t);
-  let banner;
-  if (r.ok && recien) banner = `<div class="fb-banner feedback-correcto">✓ ¡Ejercicio correcto! Has superado este tipo: +${fmtDec(PUNTO_POR_TIPO)} puntos.</div>`;
-  else banner = `<div class="fb-banner feedback-incorrecto">✗ El ejercicio tiene errores (${MENOS}${fmtDec(PENALIZACION_FALLO)} puntos). Lee los motivos, revisa la resolución y prueba con otro ejercicio.</div>`;
+  const banner = (r.ok && recien)
+    ? `<div class="fb-banner feedback-correcto">✓ ¡Ejercicio correcto! Has superado este tipo: +${fmtDec(PUNTO_POR_TIPO)} puntos.</div>`
+    : `<div class="fb-banner feedback-incorrecto">✗ El ejercicio tiene errores (${MENOS}${fmtDec(PENALIZACION_FALLO)} puntos). Lee los motivos, revisa la resolución y prueba con otro ejercicio.</div>`;
   const lista = '<ul class="fb-pasos">' + r.pasos.map(p =>
     `<li class="${p.ok ? 'ok' : 'mal'}"><b>${p.nombre}.</b>${p.msgs.map(m => `<span class="motivo">${m}</span>`).join('')}</li>`).join('') + '</ul>';
   const res = `<details class="resolucion" ${r.ok ? '' : 'open'}><summary>Resolución paso a paso</summary><div class="res-cuerpo">${r.resolucion}</div></details>`;
@@ -2064,6 +1738,56 @@ function actualizarMarcador() {
   document.getElementById('marcador-nota').textContent = fmtDec(calcularNota());
   document.getElementById('marcador-sup').textContent = Object.values(state.tipos).filter(x => x.superado).length;
   document.getElementById('marcador-fallos').textContent = state.fallosTotales;
+}
+
+/* =====================================================================
+   Mostrar soluciones (por tarjeta): el ejercicio en curso no cuenta para la nota
+   ===================================================================== */
+let solPendiente = null;
+const haySolDisponible = t => !state.tipos[t].cerrado && ctrl[t] && !ctrl[t].corregido;
+function actualizarBtnSol(t) {
+  const b = document.querySelector(`[data-sol="${t}"]`);
+  const disp = haySolDisponible(t);
+  b.disabled = !disp;
+  b.parentElement.hidden = state.tipos[t].cerrado;
+}
+function pedirSoluciones(t) {
+  if (!haySolDisponible(t)) return;
+  solPendiente = t;
+  document.getElementById('overlaySol').classList.add('show');
+  document.getElementById('btnSolVolver').focus();
+}
+function cerrarAvisoSol() {
+  document.getElementById('overlaySol').classList.remove('show');
+  if (solPendiente) { const b = document.querySelector(`[data-sol="${solPendiente}"]`); if (b && !b.disabled) b.focus(); }
+  solPendiente = null;
+}
+function revelarSoluciones(t) {
+  const st = state.tipos[t], c = ctrl[t];
+  if (!haySolDisponible(t)) return;
+  // Se rellenan los controles con la solución y se pasa por el propio validador:
+  // si no la aceptara, sería un bug del generador o del validador.
+  c.rellenarSolucion();
+  const r = c.corregir();
+  if (r.incompleto || !r.ok) console.error('Mostrar soluciones: el validador no acepta la solución generada.', t, r);
+  c.corregido = true;
+  c.revelado = true;
+  c.bloquear();
+  st.solucionesVistas++;            // NO se llama a registrarIntento(): ni suma ni resta
+  const sec = document.getElementById('card-' + t);
+  // Marcas neutras: lo rellenado no es mérito del alumno
+  sec.querySelectorAll('.ok-campo').forEach(x => { x.classList.remove('ok-campo'); x.classList.add('rev-campo'); });
+  sec.querySelectorAll('.paso.ok').forEach(x => { x.classList.remove('ok'); x.classList.add('rev'); });
+  sec.querySelector('[data-corregir]').hidden = true;
+  sec.querySelector('[data-nuevo]').hidden = false;
+  document.getElementById('aviso-' + t).classList.remove('visible');
+  actualizarBtnSol(t);
+  pintarVentana(t);
+  document.getElementById('fb-' + t).innerHTML =
+    `<div class="fb-banner feedback-solucion">Soluciones mostradas · ejercicio sin calificar
+       <small>Lee la resolución con calma y, cuando la entiendas, prueba con otro ejercicio de este tipo.</small></div>
+     <details class="resolucion" open><summary>Resolución paso a paso</summary><div class="res-cuerpo">${r.resolucion}</div></details>`;
+  actualizarMarcador();
 }
 
 /* =====================================================================
@@ -2086,14 +1810,12 @@ function finalizar() {
   document.getElementById('mFecha').textContent = `${p2(ahora.getDate())}/${p2(ahora.getMonth() + 1)}/${ahora.getFullYear()}`;
   document.getElementById('mHora').textContent = `${p2(ahora.getHours())}:${p2(ahora.getMinutes())}:${p2(ahora.getSeconds())}`;
   document.getElementById('mTiempo').textContent = `${p2(Math.floor(totalMin / 60))}:${p2(totalMin % 60)}`;
-  let filas = '<tr><th>Tipo</th><th>Estado</th><th>Intentos</th><th>Aciertos</th><th>Fallos</th></tr>';
+  let filas = '<tr><th>Tipo</th><th>Estado</th><th>Intentos</th><th>Aciertos</th><th>Fallos</th><th>Soluciones vistas</th></tr>';
   Object.entries(TIPOS).forEach(([t, d]) => {
     const st = state.tipos[t];
     const errs = Object.entries(st.pasoFallos).sort((a, b) => b[1] - a[1]).map(([n, c]) => `${n} (${c})`).join(', ');
-    filas += `<tr><td>${d.nombre}</td><td class="${st.superado ? 'est-ok' : 'est-no'}">${st.superado ? 'Superado' : 'No superado'}</td><td>${st.nIntentos}</td><td>${st.aciertos}</td><td>${st.fallos}</td></tr>`;
-    const mets = Object.entries(st.metodos).map(([m, v]) => `${m === 'rapido' ? 'rápido (parábola)' : 'tabla de signos'}: ${v.intentos} ${v.intentos === 1 ? 'intento' : 'intentos'}, ${v.aciertos} ${v.aciertos === 1 ? 'acierto' : 'aciertos'}`).join(' · ');
-    if (mets) filas += `<tr><td colspan="5" class="pasos-err">Método usado: ${mets}</td></tr>`;
-    if (errs) filas += `<tr><td colspan="5" class="pasos-err">Pasos con errores: ${errs}</td></tr>`;
+    filas += `<tr><td>${d.corto}</td><td class="${st.superado ? 'est-ok' : 'est-no'}">${st.superado ? 'Superado' : 'No superado'}</td><td>${st.nIntentos}</td><td>${st.aciertos}</td><td>${st.fallos}</td><td>${st.solucionesVistas}</td></tr>`;
+    if (errs) filas += `<tr><td colspan="6" class="pasos-err">Pasos con errores: ${errs}</td></tr>`;
   });
   document.getElementById('mDesglose').innerHTML = filas;
   const banda = Math.floor(Math.min(10, Math.max(0, nota)));
@@ -2106,21 +1828,25 @@ function finalizar() {
 }
 
 document.getElementById('btnFinalizar').addEventListener('click', finalizar);
-document.addEventListener('click', e => {
-  const b = e.target.closest('.res-tab');
-  if (!b) return;
-  const caja = b.closest('.res-cuerpo');
-  caja.querySelectorAll('.res-tab').forEach(x => { x.classList.toggle('activo', x === b); x.setAttribute('aria-selected', x === b ? 'true' : 'false'); });
-  caja.querySelectorAll('.res-panel').forEach(p => p.classList.toggle('activo', p.dataset.tabpanel === b.dataset.tab));
-});
 document.getElementById('btnCerrar').addEventListener('click', () => document.getElementById('overlay').classList.remove('show'));
 document.getElementById('nombre').addEventListener('input', e => {
   if (e.target.value.trim()) { e.target.classList.remove('falta'); document.getElementById('aviso-nombre').classList.remove('visible'); }
 });
+document.getElementById('btnSolVolver').addEventListener('click', cerrarAvisoSol);
+document.getElementById('btnSolSi').addEventListener('click', () => {
+  const t = solPendiente;
+  document.getElementById('overlaySol').classList.remove('show');
+  solPendiente = null;
+  if (t) revelarSoluciones(t);
+});
+document.getElementById('overlaySol').addEventListener('click', e => { if (e.target.id === 'overlaySol') cerrarAvisoSol(); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && document.getElementById('overlaySol').classList.contains('show')) cerrarAvisoSol();
+});
 
 construirTarjetas();
 actualizarMarcador();
-if (SEED !== null) window.__test = { state, ctrl, montar };
+if (SEED !== null) window.__test = { state, ctrl, montar, intersecar, normalizar, revelarSoluciones };
 </script>
 </body>
 </html>
