@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>División de polinomios</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --color-fondo:#F5F0E8; --color-fondo-card:#FDFAF3; --color-texto:#2C1F0E; --color-texto-suave:#6B4F35;
+  --color-acento:#A0522D; --color-acento-hover:#7B3B1E; --color-borde:#C9A96E; --color-borde-suave:#E0CEAA;
+  --color-cabecera:#3B2510; --color-cabecera-txt:#F5EDD8; --color-barra-alumno:#EFE4CC;
+  --color-correcto:#2E6B3E; --color-incorrecto:#8B1A1A; --color-neutro:#E8DFC8;
+  --color-apagado:#A8998A; --color-apagado-fondo:#F3EFE6;
+  --tinta:#23395B; --cuadricula:rgba(201,169,110,.22);
+  --col:80px; --alto-fila:46px;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Lato',sans-serif;font-size:16px;color:var(--color-texto);background:var(--color-fondo);transition:background-color .6s}
+body.superada{background:#d6ecd6}
+body.teclado-on{padding-bottom:190px}
+h1,h2,h3,.titulo-ficha{font-family:'Libre Baskerville',serif;color:var(--color-texto)}
+.cabecera{background:var(--color-cabecera);color:var(--color-cabecera-txt);font-family:'Libre Baskerville',serif;text-align:center;padding:12px 20px;border-bottom:3px solid var(--color-borde);font-size:.78rem;letter-spacing:.04em}
+.ficha-container{max-width:860px;margin:28px auto;background:var(--color-fondo-card);border:2px solid var(--color-borde);border-radius:6px;box-shadow:0 3px 12px rgba(44,31,14,.15);padding:32px 36px}
+.titulo-ficha{font-size:1.6rem;text-align:center;border-bottom:2px solid var(--color-borde);padding-bottom:10px;margin:0 0 8px}
+.titulo-ficha::after{content:'';display:block;width:60px;height:3px;background:var(--color-borde);margin:8px auto 0;border-radius:2px}
+.subtitulo{text-align:center;color:var(--color-texto-suave);font-family:'Libre Baskerville',serif;font-style:italic;font-size:1rem;margin:0 0 18px}
+
+/* Barra del alumno */
+.barra{position:sticky;top:0;z-index:50;background:var(--color-barra-alumno);border:1.5px solid var(--color-borde);border-radius:6px;margin:0 0 22px;box-shadow:0 2px 6px rgba(44,31,14,.08);padding:9px 20px;display:flex;flex-wrap:wrap;gap:10px 24px;align-items:center;justify-content:center;font-size:.92rem}
+.barra label{font-family:'Libre Baskerville',serif;font-size:.85rem;color:var(--color-texto-suave)}
+.barra input#nombre{background:var(--color-fondo-card);border:1.5px solid var(--color-borde);border-radius:4px;padding:6px 10px;font-family:'Lato',sans-serif;font-size:.95rem;color:var(--color-texto);width:230px;max-width:60vw;outline:none}
+.barra input#nombre:focus{border-color:var(--color-acento)}
+.barra input#nombre.falta{border-color:var(--color-incorrecto);box-shadow:0 0 0 3px rgba(139,26,26,.18)}
+.barra .dato{color:var(--color-texto-suave)}
+.barra .dato b{color:var(--color-acento);font-family:'Libre Baskerville',serif}
+.sellos{display:inline-flex;gap:5px;vertical-align:middle;margin-left:4px}
+.sello{width:15px;height:15px;border-radius:50%;border:1.5px solid var(--color-borde);background:var(--color-fondo-card);transition:background .4s,transform .4s}
+.sello.lleno{background:var(--color-correcto);border-color:var(--color-correcto);transform:scale(1.12)}
+.sello.parcial{background:var(--color-acento);border-color:var(--color-acento)}
+.sello.revelada{background:var(--color-apagado);border-color:var(--color-apagado)}
+.sello.actual{border:2px solid var(--color-acento);box-shadow:0 0 0 2px rgba(160,82,45,.18)}
+.valor-div{float:right;font-family:'Libre Baskerville',serif;font-size:.85rem;color:var(--color-texto-suave);margin-left:10px}
+.valor-div b{color:var(--color-acento)}
+.aviso-nombre{color:var(--color-incorrecto);font-size:.82rem;font-weight:700;display:none;width:100%;text-align:center}
+.aviso-nombre.visible{display:block}
+
+/* Tarjetas */
+.ejercicio-card{background:var(--color-fondo);border:1.5px solid var(--color-borde-suave);border-left:4px solid var(--color-borde);border-radius:4px;padding:18px 22px;margin-bottom:20px}
+.instrucciones{font-size:.9rem;color:var(--color-texto-suave);line-height:1.55}
+.instrucciones h2{font-size:1rem;margin:0;color:var(--color-texto);display:inline}
+.instrucciones summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;user-select:none}
+.instrucciones summary::-webkit-details-marker{display:none}
+.instrucciones summary::before{content:'';width:9px;height:9px;border-right:2px solid var(--color-acento);border-bottom:2px solid var(--color-acento);transform:rotate(-45deg);transition:transform .25s;flex:none;margin-right:2px}
+.instrucciones[open] summary::before{transform:rotate(45deg)}
+.instrucciones summary h2{flex:1}
+.instrucciones .plegar-txt{font-size:.78rem;color:var(--color-apagado);font-family:'Lato',sans-serif}
+.instrucciones .plegar-txt::after{content:'Mostrar'}
+.instrucciones[open] .plegar-txt::after{content:'Ocultar'}
+.instrucciones summary:hover .plegar-txt{color:var(--color-acento)}
+.instrucciones summary:focus-visible{outline:2px solid var(--color-acento);outline-offset:3px;border-radius:3px}
+.instrucciones .cuerpo-instr{margin-top:10px;animation:aparecer .3s ease}
+.instrucciones:not([open]){padding-top:12px;padding-bottom:12px}
+.instrucciones ol{margin:6px 0 10px;padding-left:20px}
+.instrucciones li{margin:3px 0}
+.instrucciones .puntuacion{border-top:1px solid var(--color-borde-suave);padding-top:8px;margin-top:6px}
+.instrucciones b{color:var(--color-texto)}
+.m{font-family:'Libre Baskerville',serif;white-space:nowrap;color:var(--color-texto)}
+
+.enunciado{font-family:'Libre Baskerville',serif;font-size:1.02rem;margin:0 0 14px;line-height:1.7}
+.enunciado .num-div{display:inline-block;background:var(--color-cabecera);color:var(--color-cabecera-txt);font-size:.75rem;padding:2px 9px;border-radius:3px;margin-right:8px;letter-spacing:.05em;vertical-align:2px}
+
+/* Papel cuadriculado */
+.papel{background-color:#FFFDF7;background-image:linear-gradient(var(--cuadricula) 1px,transparent 1px),linear-gradient(90deg,var(--cuadricula) 1px,transparent 1px);background-size:22px 22px;border:1px solid var(--color-borde-suave);border-radius:4px;box-shadow:inset 0 0 18px rgba(201,169,110,.18),0 1px 3px rgba(44,31,14,.08);padding:22px 18px 26px;overflow-x:auto;position:relative}
+.papel::before{content:'';position:absolute;left:34px;top:0;bottom:0;width:1px;background:rgba(160,82,45,.25)}
+.division{display:inline-grid;grid-template-columns:auto auto;align-items:start;margin-left:28px}
+.izq{display:flex;flex-direction:column}
+.fila{display:grid;grid-template-columns:repeat(5,var(--col));height:var(--alto-fila);align-items:center}
+.celda{display:flex;align-items:baseline;justify-content:flex-end;padding-right:12px;position:relative;font-family:'Kalam',cursive;color:var(--tinta);font-size:1.3rem}
+.pot{font-family:'Kalam',cursive;font-size:1.15rem;color:var(--tinta);margin-left:3px;flex:none}
+.fila-pot{display:none}
+.valor{font-family:'Kalam',cursive;font-size:1.3rem;color:var(--tinta)}
+input.num{flex:none;width:2.2em;font-family:'Kalam',cursive;font-size:1.3rem;color:var(--tinta);text-align:right;background:rgba(255,255,255,.75);border:none;border-bottom:2px dashed var(--color-borde);border-radius:3px 3px 0 0;padding:1px 3px 0;outline:none;transition:background .25s,border-color .25s}
+input.num:focus,input.num.activa{border-bottom:2px solid var(--color-acento);background:#fff;box-shadow:0 0 0 2px rgba(160,82,45,.12)}
+input.num:disabled{background:transparent;border-bottom-color:transparent;color:var(--tinta);-webkit-text-fill-color:var(--tinta);opacity:1}
+.celda.ok input.num,.celda.ok .valor{animation:destello .9s ease}
+@keyframes destello{0%{background:rgba(46,107,62,.28)}100%{background:transparent}}
+.celda.corregida input.num{color:var(--color-acento);-webkit-text-fill-color:var(--color-acento)}
+.celda.corregida .pot{color:var(--color-acento)}
+.tachado{position:absolute;top:-9px;left:2px;font-family:'Kalam',cursive;font-size:.85rem;color:var(--color-incorrecto);text-decoration:line-through;text-decoration-thickness:2px;opacity:.85}
+.celda.revelada input.num,.celda.revelada .pot{color:#7d6f62;-webkit-text-fill-color:#7d6f62}
+.baja{animation:bajar .7s cubic-bezier(.2,.8,.3,1) both}
+@keyframes bajar{from{opacity:0;transform:translateY(-34px)}to{opacity:1;transform:none}}
+.fila-raya{display:grid;grid-template-columns:repeat(5,var(--col));height:6px}
+.raya{height:2px;background:var(--tinta);border-radius:2px;transform-origin:left;animation:trazar .55s ease-out both;align-self:center;margin-right:4px}
+@keyframes trazar{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.fila-escritura{animation:aparecer .35s ease both}
+@keyframes aparecer{from{opacity:0}to{opacity:1}}
+
+.der{min-width:190px}
+.caja-divisor{height:var(--alto-fila);border-left:2.5px solid var(--tinta);border-bottom:2.5px solid var(--tinta);display:flex;align-items:center;padding:0 14px;font-family:'Kalam',cursive;font-size:1.3rem;color:var(--tinta);white-space:nowrap}
+.cociente{padding:8px 0 0 14px;font-family:'Kalam',cursive;font-size:1.3rem;color:var(--tinta);min-height:var(--alto-fila);display:flex;flex-wrap:wrap;align-items:baseline;gap:4px}
+.cociente .termino{animation:aparecer .4s ease both;white-space:nowrap}
+.cociente .termino.corregida{color:var(--color-acento)}
+.cociente .termino.revelada{color:#7d6f62}
+.editor-coc{display:inline-flex;align-items:baseline;gap:2px}
+.editor-coc .pot-prev{min-width:1.4em;font-family:'Kalam',cursive;color:var(--tinta)}
+.exps{display:flex;gap:5px;margin:8px 0 0 14px;flex-wrap:wrap}
+.exps button{font-family:'Kalam',cursive;font-size:1.05rem;background:var(--color-fondo-card);color:var(--tinta);border:1.5px solid var(--color-borde-suave);border-radius:4px;padding:1px 10px;cursor:pointer;transition:all .2s}
+.exps button:hover{border-color:var(--color-borde)}
+.exps button.sel{background:var(--tinta);color:#fff;border-color:var(--tinta)}
+.exps .lbl{font-size:.75rem;color:var(--color-texto-suave);align-self:center;font-family:'Lato',sans-serif}
+
+/* Pasos y controles */
+.paso{margin:16px 0 10px;font-size:.95rem;color:var(--color-texto);line-height:1.5;border-left:3px solid var(--color-acento);padding:4px 0 4px 12px;background:linear-gradient(90deg,rgba(160,82,45,.06),transparent)}
+.paso .etq{font-family:'Libre Baskerville',serif;color:var(--color-acento);font-weight:700;margin-right:6px}
+.controles{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0}
+.btn-primario{background:var(--color-acento);color:#FDFAF3;border:none;border-radius:4px;padding:10px 22px;font-family:'Lato',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;letter-spacing:.03em;transition:background-color .2s}
+.btn-primario:hover{background:var(--color-acento-hover)}
+.btn-secundario{background:transparent;color:var(--color-acento);border:2px solid var(--color-borde);border-radius:4px;padding:9px 18px;font-family:'Lato',sans-serif;font-size:.92rem;font-weight:700;cursor:pointer;transition:border-color .2s,color .2s}
+.btn-secundario:hover{border-color:var(--color-acento);color:var(--color-acento-hover)}
+.aviso-paso{color:var(--color-incorrecto);font-size:.85rem;font-weight:700}
+
+/* Feedback */
+.fb{border-radius:4px;padding:11px 16px;margin:10px 0;line-height:1.55;font-size:.93rem;animation:aparecer .3s ease}
+.fb.bien{background:#EAF4EC;border:1.5px solid var(--color-correcto);color:#1f4a2b}
+.fb.mal{background:#F9EAEA;border:1.5px solid var(--color-incorrecto);color:#5e1414}
+.fb.sol{background:var(--color-apagado-fondo);border:1.5px dashed var(--color-apagado);color:var(--color-texto)}
+.fb b.tit{font-family:'Libre Baskerville',serif}
+.fb ul{margin:6px 0 2px;padding-left:20px}
+.fb li{margin:2px 0}
+.fb .regla{display:block;margin-top:6px;font-style:italic;color:var(--color-texto-suave)}
+
+/* Resultado final */
+.final-panel{margin-top:14px}
+.linea-res{display:flex;align-items:center;flex-wrap:wrap;gap:4px 2px;margin:8px 0;font-family:'Kalam',cursive;font-size:1.3rem;color:var(--tinta)}
+.linea-res .lab{font-family:'Libre Baskerville',serif;font-size:1rem;color:var(--color-texto);margin-right:8px;min-width:58px}
+.linea-res .celda{padding-right:4px}
+.poli-final{animation:aparecer .4s ease both}
+.poli-final.corregida{color:var(--color-acento)}
+.poli-final.revelada{color:#7d6f62}
+.comprobacion{font-family:'Libre Baskerville',serif;font-size:.92rem;background:var(--color-fondo-card);border:1px solid var(--color-borde-suave);border-radius:4px;padding:10px 14px;margin-top:10px;line-height:1.7}
+.resultado-div{margin-top:14px;padding:14px 18px;border-radius:5px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;font-family:'Libre Baskerville',serif}
+.resultado-div.perfecta{background:#EAF4EC;border:2px solid var(--color-correcto);color:#1f4a2b}
+.resultado-div.errores{background:#FBF1E6;border:2px solid var(--color-acento);color:var(--color-acento-hover)}
+.resultado-div.revelada{background:var(--color-apagado-fondo);border:2px dashed var(--color-apagado);color:var(--color-texto-suave)}
+
+/* Pie */
+.pie{display:flex;flex-direction:column;align-items:center;gap:16px;margin-top:26px;padding-top:20px;border-top:1px solid var(--color-borde-suave)}
+.btn-finalizar{background:var(--color-cabecera);color:var(--color-cabecera-txt);border:2px solid var(--color-borde);border-radius:4px;padding:10px 24px;font-family:'Libre Baskerville',serif;font-size:.95rem;font-weight:700;cursor:pointer;letter-spacing:.04em;transition:background-color .2s}
+.btn-finalizar:hover{background:#2C1A0A}
+.btn-soluciones{background:transparent;color:var(--color-apagado);border:1px solid #DDD0B6;border-radius:4px;padding:5px 14px;font-family:'Lato',sans-serif;font-size:.78rem;cursor:pointer;transition:color .2s,border-color .2s}
+.btn-soluciones:hover:not(:disabled){color:var(--color-texto-suave);border-color:var(--color-borde)}
+.btn-soluciones:disabled{opacity:.4;cursor:default}
+
+/* Modales */
+.overlay{position:fixed;inset:0;background:rgba(44,31,14,.55);display:none;align-items:center;justify-content:center;z-index:200;padding:16px}
+.overlay.abierto{display:flex}
+.modal{background:var(--color-fondo-card);border:3px solid var(--color-borde);border-radius:8px;box-shadow:0 6px 24px rgba(44,31,14,.35);padding:28px 30px;max-width:460px;width:100%;font-family:'Lato',sans-serif}
+.modal h3{margin:0 0 10px;font-size:1.15rem}
+.modal p{font-size:.92rem;line-height:1.55;color:var(--color-texto-suave)}
+.modal .botones{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:16px}
+.modal-calificacion{max-width:620px;max-height:92vh;overflow-y:auto;text-align:center;font-family:'Libre Baskerville',serif;padding:26px 28px}
+.inf-titulo{font-size:1.3rem;font-weight:700;margin:0}
+.inf-sub{font-style:italic;font-size:.88rem;opacity:.85;margin:4px 0 0}
+.inf-sep{border:none;border-top:1.5px solid currentColor;opacity:.35;margin:14px 0}
+.inf-h{font-size:.95rem;letter-spacing:.08em;text-transform:uppercase;margin:0 0 10px}
+.inf-nota{font-size:3rem;font-weight:700;line-height:1;margin:6px 0}
+.inf-datos{display:grid;grid-template-columns:auto auto;gap:4px 16px;justify-content:center;font-family:'Lato',sans-serif;font-size:.92rem;margin:10px 0}
+.inf-datos span:nth-child(odd){text-align:right;opacity:.85}
+.inf-datos span:nth-child(even){text-align:left;font-weight:700}
+.inf-tabla{width:100%;border-collapse:collapse;font-family:'Lato',sans-serif;font-size:.82rem;margin:8px 0;background:rgba(255,255,255,.12)}
+.inf-tabla th,.inf-tabla td{border:1px solid rgba(255,255,255,.35);padding:5px 6px}
+.inf-tabla th{font-weight:700}
+.inf-tabla td.izq{text-align:left}
+.texto-oscuro .inf-tabla th,.texto-oscuro .inf-tabla td{border-color:rgba(0,0,0,.25)}
+.inf-cerrar{margin-top:16px;background:rgba(255,255,255,.92);color:var(--color-texto);border:none;border-radius:4px;padding:9px 22px;font-family:'Lato',sans-serif;font-weight:700;cursor:pointer}
+
+/* Teclado propio */
+.teclado{position:fixed;left:0;right:0;bottom:0;background:var(--color-cabecera);border-top:3px solid var(--color-borde);padding:8px 8px calc(8px + env(safe-area-inset-bottom));display:none;z-index:150;box-shadow:0 -4px 14px rgba(0,0,0,.2)}
+.teclado.visible{display:block}
+.teclado .rejilla{max-width:480px;margin:0 auto;display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.teclado button{font-family:'Lato',sans-serif;font-size:1.25rem;font-weight:700;padding:10px 0;border-radius:6px;border:1px solid #6b4f35;background:#FDFAF3;color:var(--color-texto);touch-action:manipulation;-webkit-user-select:none;user-select:none}
+.teclado button:active{background:var(--color-borde-suave)}
+.teclado button.esp{background:#EFE4CC}
+.teclado button.ok{grid-column:span 2;background:var(--color-acento);color:#fff;border-color:var(--color-acento);font-size:1rem}
+
+@media (max-width:640px){
+  :root{--col:40px;--alto-fila:40px}
+  .der{margin-top:24px}
+  .izq .pot{display:none}
+  .fila-pot{display:grid;height:22px;align-items:end;border-bottom:1px dashed var(--color-borde-suave);margin-bottom:2px}
+  .fila-pot span{text-align:right;padding-right:4px;font-family:'Kalam',cursive;font-size:.85rem;color:var(--color-acento)}
+  .ficha-container{margin:0;border-radius:0;padding:16px 8px;border-left:none;border-right:none}
+  .ejercicio-card{padding:12px 6px;border-left-width:3px}
+  .instrucciones{padding:12px 12px}
+  .papel{padding:14px 4px 16px;background-size:18px 18px}
+  .papel::before{display:none}
+  .division{margin-left:0}
+  .celda{padding-right:4px}
+  .celda,.valor,input.num,.caja-divisor,.cociente,.linea-res{font-size:1rem}
+  .caja-divisor{font-size:.86rem}
+  .pot{font-size:.88rem}
+  input.num{width:1.9em;padding:1px 1px 0}
+  .der{min-width:0}
+  .caja-divisor{padding:0 8px}
+  .cociente{padding-left:8px}
+  .exps{margin-left:8px}
+  .exps button{padding:1px 7px}
+  .tachado{font-size:.72rem;top:-8px}
+  .barra{padding:8px 10px;gap:6px 14px}
+}
+@media print{.teclado,.pie,.controles{display:none}}
+</style>
+</head>
+<body>
+<div class="cabecera">Material elaborado por Marta L Letona S. Basado en el trabajo de Javier Cayetano</div>
+
+<div class="ficha-container" id="ficha">
+  <h1 class="titulo-ficha">División de polinomios</h1>
+  <p class="subtitulo">Álgebra · División de polinomios paso a paso</p>
+
+  <div class="barra" id="barra">
+    <label for="nombre">Alumno/a:</label>
+    <input type="text" id="nombre" placeholder="Nombre y apellidos" autocomplete="off">
+    <span class="dato">Nota: <b id="m-nota">0</b> / 10</span>
+    <span class="dato">Divisiones: <b id="m-perf">0</b> / 4 <span class="sellos" id="sellos"></span></span>
+    <span class="dato">Pasos fallados: <b id="m-fallos">0</b></span>
+    <div class="aviso-nombre" id="aviso-nombre">Escribe tu nombre antes de continuar.</div>
+  </div>
+
+  <details class="ejercicio-card instrucciones" id="instrucciones" open>
+    <summary><h2>Cómo se trabaja</h2><span class="plegar-txt"></span></summary>
+    <div class="cuerpo-instr">
+    Vas a dividir como en el cuaderno, paso a paso:
+    <ol>
+      <li>Escribe el dividendo <b>completo y ordenado</b>: si falta algún grado, pon un <b>0</b> en su columna.</li>
+      <li>Divide el primer término del dividendo entre el primer término del divisor y escribe el resultado en el cociente.</li>
+      <li>Multiplica ese término por todo el divisor y escríbelo debajo <b>con el signo cambiado</b>.</li>
+      <li>Se echa la raya y <b>sumas</b> columna a columna; los términos que no intervienen bajan solos.</li>
+      <li>Decide si se puede seguir dividiendo y repite hasta que el resto tenga menor grado que el divisor.</li>
+      <li>Escribe el cociente C(x) y el resto R(x).</li>
+    </ol>
+    <div class="puntuacion">
+      <b>Puntuación.</b> La ficha tiene <b>4 divisiones</b> y cada una vale <b>2,5 puntos</b>.
+      Cada paso fallado resta <b>0,25</b> a la división en la que lo fallas (una división nunca baja de 0); la ficha corrige el paso y sigues con la misma división.
+      Si usas «Mostrar soluciones», esa división vale 0 puntos.
+    </div>
+    </div>
+  </details>
+
+  <div class="ejercicio-card" id="zona">
+    <div class="enunciado" id="enunciado"></div>
+    <div class="papel">
+      <div class="division">
+        <div class="izq" id="izq"></div>
+        <div class="der">
+          <div class="caja-divisor" id="caja-divisor"></div>
+          <div class="cociente" id="cociente"></div>
+          <div class="exps" id="exps" hidden></div>
+        </div>
+      </div>
+    </div>
+    <div class="paso" id="paso"></div>
+    <div class="final-panel" id="final"></div>
+    <div class="controles" id="controles"></div>
+    <div id="feedback" aria-live="polite"></div>
+    <div id="cierre"></div>
+  </div>
+
+  <div class="pie">
+    <button class="btn-finalizar" id="btn-finalizar">Finalizar y Calificar</button>
+    <button class="btn-soluciones" id="btn-soluciones">Mostrar soluciones</button>
+  </div>
+</div>
+
+<!-- Modal: mostrar soluciones -->
+<div class="overlay" id="ov-sol">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="sol-tit">
+    <h3 id="sol-tit">¿Mostrar las soluciones?</h3>
+    <p>Verás resuelto, con sus explicaciones, lo que te queda de <b>esta división</b>. Esta división <b>valdrá 0 puntos</b> y cuenta como una de las 4 de la ficha. Después podrás seguir con la siguiente.</p>
+    <div class="botones">
+      <button class="btn-secundario" id="sol-si">Sí, mostrar soluciones</button>
+      <button class="btn-primario" id="sol-no">Volver al ejercicio</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: informe -->
+<div class="overlay" id="ov-inf">
+  <div class="modal modal-calificacion" id="informe" role="dialog" aria-modal="true"></div>
+</div>
+
+<!-- Teclado propio -->
+<div class="teclado" id="teclado" aria-hidden="true">
+  <div class="rejilla">
+    <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
+    <button data-k="4">4</button><button data-k="5">5</button><button data-k="bs" class="esp" aria-label="Borrar">⌫</button>
+    <button data-k="6">6</button><button data-k="7">7</button><button data-k="8">8</button>
+    <button data-k="9">9</button><button data-k="0">0</button><button data-k="mas" class="esp" aria-label="Signo más">+</button>
+    <button data-k="menos" class="esp" aria-label="Signo menos">−</button><button data-k="prev" class="esp" aria-label="Casilla anterior">←</button><button data-k="next" class="esp" aria-label="Casilla siguiente">→</button>
+    <button data-k="ok" class="ok">Comprobar</button>
+    <button data-k="hide" class="esp" aria-label="Ocultar teclado" style="font-size:.85rem">Ocultar</button>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+/* ================= Configuración ================= */
+const PUNTOS_DIV = 2.5, PENALIZACION = 0.25, OBJETIVO = 4;
+const PARAMS = new URLSearchParams(location.search);
+const MODO_TEST = PARAMS.has('seed');
+let rng = Math.random;
+if (MODO_TEST){ let a = (parseInt(PARAMS.get('seed'),10)||1) >>> 0;
+  rng = function(){ a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+// Táctil: puntero grueso, o cualquier dispositivo con pantalla táctil (también dentro del iframe de Google Sites)
+const COARSE = (window.matchMedia && (window.matchMedia('(pointer: coarse)').matches || window.matchMedia('(any-pointer: coarse)').matches))
+            || (navigator.maxTouchPoints||0) > 0;
+const GUIONES = /[‐-―−﹘﹣－]/g;   // −, –, —, ‐… que mandan algunos teclados
+
+const ri = (a,b)=> a + Math.floor(rng()*(b-a+1));
+const pick = arr => arr[Math.floor(rng()*arr.length)];
+const nz = (a,b)=>{ let v; do{ v = ri(a,b); }while(v===0); return v; };
+
+/* ================= Formato matemático ================= */
+const SUP = ['⁰','¹','²','³','⁴'];
+const xp = k => k===0 ? '' : (k===1 ? 'x' : 'x'+SUP[k]);
+const num = c => c<0 ? '−'+Math.abs(c) : String(c);
+const numP = c => c<0 ? '('+num(c)+')' : num(c);
+const numS = c => c<0 ? '−'+Math.abs(c) : '+'+c;   // con signo explícito, para términos que no encabezan
+function mono(c,k){ if(c===0) return '0'+xp(k); const a=Math.abs(c); return (c<0?'−':'')+((a===1&&k>0)?'':a)+xp(k); }
+const monoP = (c,k) => c<0 ? '('+mono(c,k)+')' : mono(c,k);
+function poli(arr, completo){
+  let s='';
+  for(let k=arr.length-1;k>=0;k--){
+    const c=arr[k]; if(c===0 && !completo) continue;
+    const a=Math.abs(c), t=((a===1&&k>0)?'':a)+xp(k);
+    if(s==='') s=(c<0?'−':'')+t; else s+=(c<0?' − ':' + ')+t;
+  }
+  return s||'0';
+}
+const M = s => '<span class="m">'+s+'</span>';
+function parse(v){ v=String(v).replace(GUIONES,'-').trim(); if(v===''||v==='-') return null; const n=parseInt(v,10); return isNaN(n)?null:n; }
+
+/* ================= Generador ================= */
+function mult(A,B){ const r=Array(A.length+B.length-1).fill(0); A.forEach((a,i)=>B.forEach((b,k)=>{ r[i+k]+=a*b; })); return r; }
+const usadas = new Set();
+function intento(exacta, quiereCero){
+  const q = rng()<0.5 ? 2 : 3, dc = 4-q;
+  const Q = Array(q+1).fill(0);
+  Q[q] = pick([1,1,-1,2,-2,3,-3,1,2,-1]);
+  for(let k=0;k<q;k++) Q[k]=ri(-5,5);
+  if(Q[0]===0) return null;
+  if(q===3 && Q[1]===0 && Q[2]===0) return null;
+  const C = Array(dc+1).fill(0);
+  C[dc]=nz(-3,3); for(let k=0;k<dc;k++) C[k]=nz(-4,4);
+  const QC = mult(Q,C);
+  const R = Array(q).fill(0);
+  if(!exacta){
+    for(let k=0;k<q;k++) R[k]=ri(-6,6);
+    if(quiereCero && rng()<0.6){ const k=ri(0,q-1), v=-QC[k]; if(Math.abs(v)<=9) R[k]=v; }
+    if(R.every(v=>v===0)) return null;
+  }
+  const P = QC.slice(); R.forEach((v,k)=>{ P[k]+=v; });
+  if(P.some(v=>Math.abs(v)>40)) return null;
+  const tieneCero = P.slice(0,4).some(v=>v===0);
+  if(quiereCero && !tieneCero) return null;
+  if(!quiereCero && tieneCero) return null;
+  // Pasos de la división
+  let rem = P.slice(); const pasos=[];
+  for(let j=dc;j>=0;j--){
+    const d=q+j, coef=rem[d]/Q[q];
+    if(coef!==C[j]) return null;
+    const prod={}, suma={}, bajan={};
+    for(let k=j;k<=d;k++) prod[k]=-coef*Q[k-j];
+    const nuevo=rem.slice(); for(let k=j;k<=d;k++) nuevo[k]=rem[k]+prod[k];
+    for(let k=j;k<d;k++) suma[k]=nuevo[k];
+    for(let k=0;k<j;k++) bajan[k]=rem[k];
+    if(Object.values(prod).concat(Object.values(suma)).some(v=>Math.abs(v)>60)) return null;
+    pasos.push({j,d,coef,antes:rem.slice(),prod,suma,bajan});
+    rem=nuevo;
+  }
+  const clave = P.join(',')+'|'+Q.join(',');
+  if(usadas.has(clave)) return null;
+  usadas.add(clave);
+  return {P,Q,C,R,q,dc,QC,pasos,exacta};
+}
+function generar(){
+  const exacta = rng()<0.25, quiereCero = rng()<0.6;
+  for(let t=0;t<6000;t++){ const g=intento(exacta,quiereCero); if(g) return g; }
+  for(let t=0;t<6000;t++){ const g=intento(exacta,!quiereCero); if(g) return g; }
+  for(;;){ const g=intento(false,false); if(g) return g; }
+}
+
+/* ================= Estado ================= */
+const S = { fallos:0, perfectas:0, terminadas:0, divisiones:[], errTipos:{}, inicio:Date.now(), cerrada:false };
+let D = null;
+const ETIQ_ERR = {
+  ceros:'Olvidar los ceros del dividendo', dividendo:'Copiar mal el dividendo',
+  'coc-exp':'Exponente del término del cociente', 'coc-signo':'Signo del término del cociente', 'coc-valor':'Coeficiente del término del cociente',
+  'prod-signo':'No cambiar el signo del producto', 'prod-calc':'Errores al multiplicar',
+  'suma-resta':'Restar en vez de sumar', 'suma-calc':'Errores al sumar',
+  decision:'Decidir cuándo termina la división', resultado:'Escribir el cociente y el resto'
+};
+
+function valorDiv(d){ return Math.max(0, PUNTOS_DIV - d.errores*PENALIZACION); }
+function puntosDiv(d){ return (d.terminada && !d.revelada) ? valorDiv(d) : 0; }
+function calcularNota(){
+  // Cada división vale 2,5 menos 0,25 por paso fallado en ella (suelo 0 por división); revelada = 0
+  const bruta = S.divisiones.reduce((a,d)=>a+puntosDiv(d),0);
+  return Math.round(Math.min(10,Math.max(0,bruta))*100)/100;
+}
+const fmtNota = n => (Math.round(n*100)/100).toString().replace('.',',');
+
+/* ================= DOM ================= */
+const $ = id => document.getElementById(id);
+const izq=$('izq'), coc=$('cociente'), exps=$('exps'), cajaDiv=$('caja-divisor');
+const pasoEl=$('paso'), ctrl=$('controles'), fbEl=$('feedback'), finalEl=$('final'), cierreEl=$('cierre');
+
+function sellos(){ const c=$('sellos'); c.innerHTML='';
+  for(let i=0;i<OBJETIVO;i++){ const d=S.divisiones[i], s=document.createElement('span');
+    let cls='sello', tit='División '+(i+1)+': pendiente';
+    if(d && d.terminada){ cls+= d.estado==='perfecta'?' lleno':(d.estado==='revelada'?' revelada':' parcial'); tit='División '+(i+1)+': '+fmtNota(puntosDiv(d))+' puntos'; }
+    else if(d){ cls+=' actual'; tit='División '+(i+1)+': en curso'; }
+    s.className=cls; s.title=tit; c.appendChild(s); } }
+function actualizarMarcador(){
+  $('m-nota').textContent=fmtNota(calcularNota());
+  $('m-perf').textContent=S.terminadas;
+  const vd=$('valor-div'); if(vd && D) vd.innerHTML = D.revelada ? 'Esta división: <b>0</b> (soluciones vistas)' : 'Esta división vale: <b>'+fmtNota(valorDiv(D))+'</b> / 2,5';
+  $('m-fallos').textContent=S.fallos;
+  sellos();
+  $('btn-soluciones').disabled = !D || D.terminada || S.cerrada;
+}
+
+function crearInput(){
+  const inp=document.createElement('input');
+  inp.className='num'; inp.type='text'; inp.autocomplete='off'; inp.spellcheck=false; inp.maxLength=4;
+  inp.setAttribute('inputmode', COARSE ? 'none' : 'text');
+  inp.setAttribute('aria-label','coeficiente');
+  inp.addEventListener('input',()=>{ let v=inp.value.replace(GUIONES,'-').replace(/[^0-9+\-]/g,''); const sg=(v.match(/[+-]/g)||[]).pop()||''; v=sg+v.replace(/[+-]/g,'').slice(0,3); if(inp.value!==v) inp.value=v; });
+  inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); accionPrincipal(); } });
+  return inp;
+}
+function celda(k, contenido, conPot){
+  const c=document.createElement('div'); c.className='celda'; c.style.gridColumn=String(5-k);
+  c.appendChild(contenido);
+  if(conPot!==false && k>0){ const p=document.createElement('span'); p.className='pot'; p.textContent=xp(k); c.appendChild(p); }
+  return c;
+}
+function valorEstatico(v,k){ const s=document.createElement('span'); s.className='valor'; s.textContent=numS(v); return celda(k,s); }
+function nuevaFila(cls){ const f=document.createElement('div'); f.className='fila fila-escritura '+(cls||''); izq.appendChild(f); return f; }
+
+function setPaso(etq, html){ pasoEl.innerHTML='<span class="etq">'+etq+'</span>'+html; }
+function setFeedback(cls, html){ fbEl.innerHTML = html ? '<div class="fb '+cls+'">'+html+'</div>' : ''; }
+function avisoPaso(txt){ let a=ctrl.querySelector('.aviso-paso'); if(!a){ a=document.createElement('span'); a.className='aviso-paso'; ctrl.appendChild(a);} a.textContent=txt; }
+function botonComprobar(){ ctrl.innerHTML=''; const b=document.createElement('button'); b.className='btn-primario'; b.id='btn-comprobar'; b.textContent='Comprobar'; b.onclick=accionPrincipal; ctrl.appendChild(b); }
+function enfocarPrimero(){ if(COARSE) return; const i=document.querySelector('input.num:not(:disabled)'); if(i) i.focus({preventScroll:true}); }
+
+/* Marcar casillas tras comprobar */
+function marcarCasillas(inputs, correctos, valores, modo){
+  // modo: 'ok' | 'corregir' | 'revelar'
+  const lider=Math.max(...Object.keys(inputs).map(Number));   // primer término de la fila: sin «+»
+  Object.keys(inputs).forEach(k=>{
+    const inp=inputs[k], cel=inp.parentElement, ok = valores[k]===correctos[k] || (valores[k]===null && correctos[k]===0 && inp.dataset.vacioCero==='1');
+    if(modo==='revelar'){ cel.classList.add('revelada'); }
+    else if(!ok && modo==='corregir'){ cel.classList.add('corregida'); const t=document.createElement('span'); t.className='tachado'; t.textContent = valores[k]===null ? '∅' : num(valores[k]); cel.appendChild(t); }
+    else cel.classList.add('ok');
+    inp.value = (+k===lider) ? num(correctos[k]) : numS(correctos[k]); inp.disabled=true;
+  });
+}
+
+/* ================= Pasos ================= */
+const H = {};
+
+H.dividendo = {
+  crear(st){
+    const f=nuevaFila('fila-dividendo'); st.inputs={};
+    for(let k=4;k>=0;k--){ const i=crearInput(); i.setAttribute('aria-label','coeficiente de '+(k?xp(k):'término independiente')+' del dividendo'); st.inputs[k]=i; f.appendChild(celda(k,i)); }
+    setPaso('Dividendo.','Escribe P(x) en las casillas, ordenado de mayor a menor grado y <b>completo</b>: si falta algún grado, escribe un <b>0</b> en su columna. Escribe cada coeficiente con su signo (<b>+</b> o <b>−</b>), para que el polinomio se lea completo.');
+  },
+  correctos(){ const r={}; for(let k=4;k>=0;k--) r[k]=D.g.P[k]; return r; },
+  comprobar(st){
+    const P=D.g.P, val={}; let vacios=0;
+    for(let k=4;k>=0;k--){ val[k]=parse(st.inputs[k].value); if(val[k]===null) vacios++; }
+    if(vacios===5) return {incompleto:'Escribe los coeficientes del dividendo.'};
+    const errs=[], tipos=new Set();
+    // ¿Ha escrito los términos seguidos sin dejar hueco?
+    const nzP=[]; for(let k=4;k>=0;k--) if(P[k]!==0) nzP.push(P[k]);
+    const escritos=[]; for(let k=4;k>=0;k--) if(val[k]!==null && val[k]!==0) escritos.push(val[k]);
+    const seguidos = P.some(v=>v===0) && escritos.length===nzP.length && escritos.every((v,i)=>v===nzP[i]) && [4,3,2,1,0].some(k=>val[k]!==P[k]);
+    if(seguidos){ tipos.add('ceros'); errs.push('Has escrito los términos seguidos, sin dejar sitio al que falta. Cada coeficiente va en la columna de su grado; donde no hay término se escribe 0.'); }
+    else for(let k=4;k>=0;k--){
+      if(val[k]===P[k]) continue;
+      if(P[k]===0){ tipos.add('ceros'); errs.push('Falta el '+M('0'+xp(k))+(k===0?' (término independiente)':'')+': P(x) no tiene ese término, pero hay que escribir un 0 en su columna para que todo quede alineado al restar.'); }
+      else if(val[k]===-P[k]){ tipos.add('dividendo'); errs.push('En la columna de '+M(k?xp(k):'1')+' el signo está cambiado: el término es '+M(mono(P[k],k))+'.'); }
+      else { tipos.add('dividendo'); errs.push('En la columna de '+M(k?xp(k):'1')+' va '+M(num(P[k]))+(val[k]===null?' y la has dejado vacía.':', no '+M(num(val[k]))+'.')); }
+    }
+    const ok = errs.length===0;
+    const html = ok
+      ? '<b class="tit">Correcto.</b> El dividendo está completo y ordenado. Los ceros reservan la columna de los grados que faltan: así cada término que escribas debajo caerá en la columna de su mismo grado.'
+      : '<b class="tit">Revisa el dividendo.</b><ul><li>'+errs.join('</li><li>')+'</li></ul>Completo y ordenado es '+M(poli(P,true))+'. Lo he corregido para que sigas.';
+    return {ok, val, tipos:[...tipos], html};
+  },
+  fijar(st,modo,val){ marcarCasillas(st.inputs, this.correctos(st), val||{}, modo); }
+};
+
+H.cociente = {
+  crear(st){
+    const p=D.g.pasos[st.i];
+    const ed=document.createElement('span'); ed.className='editor-coc';
+    if(D.cocTerminos.length){ const mas=document.createElement('span'); mas.textContent='\u00a0'; ed.appendChild(mas); }
+    const i=crearInput(); i.setAttribute('aria-label','coeficiente del término del cociente');
+    const pv=document.createElement('span'); pv.className='pot-prev'; pv.textContent='';
+    ed.appendChild(i); ed.appendChild(pv); coc.appendChild(ed);
+    st.inp=i; st.pv=pv; st.exp=null; st.ed=ed;
+    exps.innerHTML='<span class="lbl">Exponente:</span>'; exps.hidden=false;
+    [[3,'x³'],[2,'x²'],[1,'x'],[0,'sin x']].forEach(([e,t])=>{
+      const b=document.createElement('button'); b.type='button'; b.textContent=t; b.dataset.e=e;
+      b.onclick=()=>{ st.exp=e; exps.querySelectorAll('button').forEach(x=>x.classList.toggle('sel',x===b)); pv.textContent=xp(e); };
+      exps.appendChild(b);
+    });
+    const ord = st.i===0 ? 'el primer término del dividendo' : 'el primer término de lo que ha quedado tras la raya';
+    setPaso('Cociente.','Divide '+ord+' entre el primer término del divisor y escribe el resultado en el cociente: el coeficiente en la casilla y el exponente con los botones.');
+  },
+  comprobar(st){
+    const p=D.g.pasos[st.i], a=p.antes[p.d], b=D.g.Q[D.g.q], c=p.coef, e=p.j, q=D.g.q;
+    const v=parse(st.inp.value);
+    if(v===null) return {incompleto:'Escribe el coeficiente del término.'};
+    if(st.exp===null) return {incompleto:'Elige el exponente con los botones.'};
+    const errs=[], tipos=new Set();
+    if(st.exp!==e){
+      tipos.add('coc-exp');
+      if(st.exp===p.d+q && p.d+q<=3) errs.push('Has <b>sumado</b> los exponentes. Al dividir potencias de la misma base se <b>restan</b>: '+p.d+' − '+q+' = '+e+'.');
+      else errs.push('El exponente es la resta de los exponentes: '+M(xp(p.d))+' : '+M(xp(q))+' = '+M(e?xp(e):'1')+' (porque '+p.d+' − '+q+' = '+e+').');
+    }
+    if(v!==c){
+      if(v===-c){ tipos.add('coc-signo'); errs.push('El signo no es correcto: '+numP(a)+' : '+numP(b)+' = '+num(c)+'. Signos iguales dan +, signos distintos dan −.'); }
+      else if(v===a*b && a*b!==c){ tipos.add('coc-valor'); errs.push('Has <b>multiplicado</b> los coeficientes; hay que <b>dividirlos</b>: '+numP(a)+' : '+numP(b)+' = '+num(c)+'.'); }
+      else { tipos.add('coc-valor'); errs.push('El coeficiente es '+numP(a)+' : '+numP(b)+' = '+num(c)+'.'); }
+    }
+    const ok=errs.length===0;
+    const exp = M(monoP(a,p.d))+' : '+M(monoP(b,q))+' = '+M(mono(c,e));
+    const html = ok
+      ? '<b class="tit">Correcto.</b> '+exp+'. Se dividen los coeficientes y se restan los exponentes.'
+      : '<b class="tit">Revisa el término del cociente.</b><ul><li>'+errs.join('</li><li>')+'</li></ul>El término es '+exp+'. Lo he corregido para que sigas.';
+    return {ok, val:{v,exp:st.exp}, tipos:[...tipos], html};
+  },
+  fijar(st,modo){
+    const p=D.g.pasos[st.i];
+    st.ed.remove(); exps.hidden=true; exps.innerHTML='';
+    D.cocTerminos.push({c:p.coef,k:p.j,modo});
+    pintarCociente();
+  }
+};
+function pintarCociente(){
+  coc.querySelectorAll('.termino').forEach(n=>n.remove());
+  const frag=document.createDocumentFragment();
+  D.cocTerminos.forEach((t,idx)=>{
+    const s=document.createElement('span'); s.className='termino'+(t.modo==='corregir'?' corregida':(t.modo==='revelar'?' revelada':''));
+    const a=Math.abs(t.c), cuerpo=((a===1&&t.k>0)?'':a)+xp(t.k);
+    s.textContent = idx===0 ? (t.c<0?'−':'')+cuerpo : (t.c<0?'− ':'+ ')+cuerpo;
+    frag.appendChild(s);
+  });
+  coc.insertBefore(frag, coc.firstChild);
+}
+
+H.producto = {
+  crear(st){
+    const p=D.g.pasos[st.i]; const f=nuevaFila('fila-producto'); st.inputs={};
+    for(let k=p.d;k>=p.j;k--){ const i=crearInput(); i.dataset.vacioCero='1'; i.setAttribute('aria-label','producto, columna '+(k?xp(k):'término independiente')); st.inputs[k]=i; f.appendChild(celda(k,i)); }
+    const t=mono(p.coef,p.j);
+    setPaso('Producto.','Multiplica '+M(t)+' por todo el divisor y escribe el resultado debajo, <b>con el signo cambiado</b>, cada término en la columna de su grado. Si algún producto da 0, puedes escribir 0 o dejar la casilla vacía.');
+  },
+  correctos(st){ return Object.assign({}, D.g.pasos[st.i].prod); },
+  comprobar(st){
+    const p=D.g.pasos[st.i], Q=D.g.Q, val={}; let vacios=0, n=0;
+    for(let k=p.d;k>=p.j;k--){ n++; val[k]=parse(st.inputs[k].value); if(val[k]===null) vacios++; }
+    if(vacios===n) return {incompleto:'Escribe el producto debajo del dividendo.'};
+    const v0={}; Object.keys(val).forEach(k=>{ v0[k]= val[k]===null?0:val[k]; });
+    const t=mono(p.coef,p.j), errs=[], tipos=new Set();
+    const sinCambiar = Object.keys(val).every(k=>v0[k]===-p.prod[k]) && Object.keys(val).some(k=>p.prod[k]!==0);
+    if(sinCambiar){
+      tipos.add('prod-signo');
+      errs.push('Has escrito '+M(t)+' · Q(x) <b>sin cambiarle el signo</b>. Al colocarlo bajo el dividendo se escribe con el signo cambiado: así, al echar la raya, solo hay que sumar y el primer término se anula.');
+    } else for(let k=p.d;k>=p.j;k--){
+      if(v0[k]===p.prod[k]) continue;
+      const qk=Q[k-p.j], real=p.coef*qk;
+      const cuenta=M(monoP(p.coef,p.j))+' · '+M(monoP(qk,k-p.j))+' = '+M(mono(real,k))+', que cambiado de signo es '+M(mono(-real,k));
+      if(v0[k]===real && real!==0){ tipos.add('prod-signo'); errs.push('En la columna de '+M(k?xp(k):'1')+' no has cambiado el signo: '+cuenta+'.'); }
+      else if(v0[k]===-p.prod[k] ){ tipos.add('prod-signo'); errs.push('En la columna de '+M(k?xp(k):'1')+' el signo no es correcto: '+cuenta+'.'); }
+      else { tipos.add('prod-calc'); errs.push('En la columna de '+M(k?xp(k):'1')+': '+cuenta+'.'); }
+    }
+    const filas=[]; for(let k=p.d;k>=p.j;k--) filas.push(p.prod[k]);
+    const prodPoli = (()=>{ const arr=Array(p.d+1).fill(0); for(let k=p.j;k<=p.d;k++) arr[k]=-p.prod[k]; return poli(arr); })();
+    const cambPoli = (()=>{ const arr=Array(p.d+1).fill(0); for(let k=p.j;k<=p.d;k++) arr[k]=p.prod[k]; return poli(arr); })();
+    const ok=errs.length===0;
+    const html = ok
+      ? '<b class="tit">Correcto.</b> '+M(monoP(p.coef,p.j))+' · ('+M(poli(Q))+') = '+M(prodPoli)+'; con el signo cambiado queda '+M(cambPoli)+'. Fíjate en que el primer término es el opuesto del que tiene encima: por eso se anulará al sumar.'
+      : '<b class="tit">Revisa el producto.</b><ul><li>'+errs.join('</li><li>')+'</li></ul>'+M(monoP(p.coef,p.j))+' · ('+M(poli(Q))+') = '+M(prodPoli)+'; con el signo cambiado: '+M(cambPoli)+'. Lo he corregido para que sigas.';
+    return {ok, val:v0, tipos:[...tipos], html};
+  },
+  fijar(st,modo,val){ marcarCasillas(st.inputs, this.correctos(st), val||{}, modo); }
+};
+
+H.suma = {
+  crear(st){
+    const p=D.g.pasos[st.i];
+    const fr=document.createElement('div'); fr.className='fila-raya';
+    const r=document.createElement('div'); r.className='raya'; r.style.gridColumn=(5-p.d)+' / '+(5-p.j+1); fr.appendChild(r); izq.appendChild(fr);
+    const f=nuevaFila('fila-suma'); st.inputs={};
+    for(let k=p.d-1;k>=p.j;k--){ const i=crearInput(); i.dataset.vacioCero='1'; i.setAttribute('aria-label','suma, columna '+(k?xp(k):'término independiente')); st.inputs[k]=i; f.appendChild(celda(k,i)); }
+    let idx=0;
+    for(let k=p.j-1;k>=0;k--){ const c=valorEstatico(p.bajan[k],k); c.classList.add('baja'); c.style.animationDelay=(0.45+0.15*idx++)+'s'; f.appendChild(c); }
+    setPaso('Suma.','Ya está echada la raya: <b>suma</b> columna a columna lo que hay encima de ella. La columna de '+M(xp(p.d))+' se anula, así que no se escribe'+(p.j>0?'; los términos que no intervienen bajan solos.':'.'));
+  },
+  correctos(st){ return Object.assign({}, D.g.pasos[st.i].suma); },
+  comprobar(st){
+    const p=D.g.pasos[st.i], val={}; let vacios=0, n=0;
+    for(let k=p.d-1;k>=p.j;k--){ n++; val[k]=parse(st.inputs[k].value); if(val[k]===null) vacios++; }
+    if(vacios===n) return {incompleto:'Escribe el resultado de la suma.'};
+    const v0={}; Object.keys(val).forEach(k=>{ v0[k]= val[k]===null?0:val[k]; });
+    const errs=[], tipos=new Set();
+    for(let k=p.d-1;k>=p.j;k--){
+      const e=p.suma[k]; if(v0[k]===e) continue;
+      const cuenta=numP(p.antes[k])+' + '+numP(p.prod[k])+' = '+num(e);
+      if(v0[k]===p.antes[k]-p.prod[k]){ tipos.add('suma-resta'); errs.push('En la columna de '+M(k?xp(k):'1')+' has <b>restado</b>. El signo ya lo cambiaste al escribir el producto: ahora solo se suma, '+cuenta+'.'); }
+      else { tipos.add('suma-calc'); errs.push('En la columna de '+M(k?xp(k):'1')+': '+cuenta+'.'); }
+    }
+    const ok=errs.length===0;
+    const html = ok
+      ? '<b class="tit">Correcto.</b> Al sumar, el término de '+M(xp(p.d))+' se anula (para eso se cambió el signo) y el grado baja.'
+      : '<b class="tit">Revisa la suma.</b><ul><li>'+errs.join('</li><li>')+'</li></ul>Lo he corregido para que sigas.';
+    return {ok, val:v0, tipos:[...tipos], html};
+  },
+  fijar(st,modo,val){ marcarCasillas(st.inputs, this.correctos(st), val||{}, modo); }
+};
+
+function infoResto(st){
+  const p=D.g.pasos[st.i], q=D.g.q;
+  const resto=Array(p.d).fill(0); for(let k=0;k<p.d;k++) resto[k]= k>=p.j ? p.suma[k] : p.bajan[k];
+  let g=-1; for(let k=resto.length-1;k>=0;k--) if(resto[k]!==0){ g=k; break; }
+  return {g, q, sigue: p.j>0, resto};
+}
+H.decision = {
+  crear(st){
+    setPaso('¿Seguimos?','Mira el grado de lo que ha quedado debajo de la raya y compáralo con el grado del divisor. ¿Se puede seguir dividiendo?');
+  },
+  controles(st){
+    ctrl.innerHTML='';
+    const b1=document.createElement('button'); b1.className='btn-primario'; b1.textContent='Sí, sigo dividiendo'; b1.onclick=()=>elegir(st,true);
+    const b2=document.createElement('button'); b2.className='btn-secundario'; b2.textContent='No, la división ha terminado'; b2.onclick=()=>elegir(st,false);
+    ctrl.appendChild(b1); ctrl.appendChild(b2);
+  },
+  explicacion(st){
+    const r=infoResto(st);
+    if(r.sigue) return 'Lo que queda tiene grado '+r.g+', mayor o igual que el grado del divisor ('+r.q+'): todavía se puede dividir.';
+    if(r.g<0) return 'El resto es 0: la división es <b>exacta</b> y ha terminado.';
+    return 'Lo que queda, '+M(poli(r.resto))+', tiene grado '+r.g+', menor que el grado del divisor ('+r.q+'): ya no se puede seguir y eso es el resto.';
+  }
+};
+function elegir(st, sigue){
+  if(!comprobarNombre()) return;
+  const r=infoResto(st), ok = sigue===r.sigue;
+  if(!ok) penalizar(['decision']);
+  setFeedback(ok?'bien':'mal', (ok?'<b class="tit">Correcto.</b> ':'<b class="tit">No es así.</b> ')+H.decision.explicacion(st)+'<span class="regla">La división se detiene cuando el grado del resto es menor que el grado del divisor.</span>');
+  avanzar();
+}
+
+H.final = {
+  crear(st){
+    finalEl.innerHTML='';
+    const g=D.g; st.inC={}; st.inR={};
+    const lC=document.createElement('div'); lC.className='linea-res'; lC.innerHTML='<span class="lab">C(x) =</span>';
+    for(let k=g.dc;k>=0;k--){ const i=crearInput(); i.setAttribute('aria-label','cociente, coeficiente de '+(k?xp(k):'término independiente')); st.inC[k]=i; lC.appendChild(celda(k,i)); }
+    const lR=document.createElement('div'); lR.className='linea-res'; lR.innerHTML='<span class="lab">R(x) =</span>';
+    for(let k=g.q-1;k>=0;k--){ const i=crearInput(); i.dataset.vacioCero='1'; i.setAttribute('aria-label','resto, coeficiente de '+(k?xp(k):'término independiente')); st.inR[k]=i; lR.appendChild(celda(k,i)); }
+    finalEl.appendChild(lC); finalEl.appendChild(lR); st.lC=lC; st.lR=lR;
+    setPaso('Resultado.','Escribe el cociente C(x) y el resto R(x) de la división, coeficiente a coeficiente y con su signo. Si un coeficiente del resto es 0, puedes dejar la casilla vacía.');
+  },
+  comprobar(st){
+    const g=D.g, vC={}, vR={}; let vac=0;
+    for(let k=g.dc;k>=0;k--){ vC[k]=parse(st.inC[k].value); if(vC[k]===null) vac++; }
+    if(vac===g.dc+1) return {incompleto:'Escribe los coeficientes del cociente.'};
+    for(let k=g.q-1;k>=0;k--){ const v=parse(st.inR[k].value); vR[k]= v===null?0:v; }
+    const errs=[];
+    for(let k=g.dc;k>=0;k--) if(vC[k]!==g.C[k]) errs.push('En el cociente, el coeficiente de '+M(k?xp(k):'1')+' es '+M(num(g.C[k]))+'.');
+    for(let k=g.q-1;k>=0;k--) if(vR[k]!==g.R[k]) errs.push('En el resto, el coeficiente de '+M(k?xp(k):'1')+' es '+M(num(g.R[k]))+'.');
+    const ok=errs.length===0;
+    const html = ok
+      ? '<b class="tit">Correcto.</b> El cociente son los términos que has ido escribiendo bajo el divisor y el resto es lo último que queda bajo la raya: C(x) = '+M(poli(g.C))+', R(x) = '+M(poli(g.R))+'.'
+      : '<b class="tit">Revisa el resultado.</b><ul><li>'+errs.join('</li><li>')+'</li></ul>El cociente son los términos escritos bajo el divisor y el resto es lo último que queda bajo la raya: C(x) = '+M(poli(g.C))+', R(x) = '+M(poli(g.R))+'.';
+    return {ok, val:{vC,vR}, tipos: ok?[]:['resultado'], html};
+  },
+  fijar(st,modo,val){
+    const g=D.g, cC={}, cR={};
+    for(let k=g.dc;k>=0;k--) cC[k]=g.C[k];
+    for(let k=g.q-1;k>=0;k--) cR[k]=g.R[k];
+    marcarCasillas(st.inC, cC, val?val.vC:{}, modo);
+    marcarCasillas(st.inR, cR, val?val.vR:{}, modo);
+    // Una vez fijado, se reescribe como polinomio legible
+    const cls = modo==='corregir' ? ' corregida' : (modo==='revelar' ? ' revelada' : '');
+    [[st.lC,'C(x) =',g.C],[st.lR,'R(x) =',g.R]].forEach(([l,lab,arr])=>{
+      l.innerHTML='<span class="lab">'+lab+'</span><span class="poli-final'+cls+'">'+poli(arr)+'</span>';
+    });
+  }
+};
+
+/* ================= Flujo ================= */
+function nuevaDivision(){
+  if(S.cerrada) return;
+  const g=generar();
+  D={ n:S.divisiones.length+1, g, errores:0, revelada:false, terminada:false, seq:[], cur:0, cocTerminos:[], errTipos:{} };
+  S.divisiones.push(D);
+  D.seq.push({t:'dividendo'});
+  g.pasos.forEach((p,i)=>{ D.seq.push({t:'cociente',i},{t:'producto',i},{t:'suma',i},{t:'decision',i}); });
+  D.seq.push({t:'final'});
+  izq.innerHTML=''; coc.innerHTML='';
+  const fp=document.createElement('div'); fp.className='fila fila-pot'; fp.setAttribute('aria-hidden','true');
+  for(let k=4;k>=0;k--){ const sp=document.createElement('span'); sp.style.gridColumn=String(5-k); sp.textContent=xp(k); fp.appendChild(sp); }
+  izq.appendChild(fp); exps.hidden=true; exps.innerHTML=''; finalEl.innerHTML=''; cierreEl.innerHTML=''; setFeedback('','');
+  cajaDiv.textContent=poli(g.Q);
+  $('enunciado').innerHTML='<span class="valor-div" id="valor-div"></span><span class="num-div">DIVISIÓN '+D.n+' DE '+OBJETIVO+'</span>Divide '+M('P(x) = '+poli(g.P))+' entre '+M('Q(x) = '+poli(g.Q))+'.';
+  iniciarPaso();
+  actualizarMarcador();
+}
+function iniciarPaso(){
+  const st=D.seq[D.cur];
+  H[st.t].crear(st);
+  if(st.t==='decision') H.decision.controles(st); else botonComprobar();
+  enfocarPrimero();
+}
+function avanzar(){
+  D.cur++;
+  if(D.cur>=D.seq.length){ terminar(); return; }
+  iniciarPaso();
+}
+function penalizar(tipos){
+  S.fallos++; D.errores++;
+  tipos.forEach(t=>{ S.errTipos[t]=(S.errTipos[t]||0)+1; D.errTipos[t]=(D.errTipos[t]||0)+1; });
+  actualizarMarcador();
+}
+function comprobarNombre(){
+  const n=$('nombre');
+  if(n.value.trim()){ n.classList.remove('falta'); $('aviso-nombre').classList.remove('visible'); return true; }
+  n.classList.add('falta'); $('aviso-nombre').classList.add('visible'); n.focus(); return false;
+}
+function accionPrincipal(){
+  if(!D || D.terminada || S.cerrada) return;
+  const st=D.seq[D.cur];
+  if(st.t==='decision') return;
+  if(!comprobarNombre()) return;
+  const r=H[st.t].comprobar(st);
+  if(r.incompleto){ avisoPaso(r.incompleto); return; }
+  if(!r.ok) penalizar(r.tipos);
+  setFeedback(r.ok?'bien':'mal', r.html);
+  H[st.t].fijar(st, r.ok?'ok':'corregir', r.val);
+  ctrl.innerHTML='';
+  setTimeout(avanzar, 260);
+}
+function terminar(){
+  D.terminada=true;
+  const g=D.g;
+  let estado;
+  if(D.revelada) estado='revelada';
+  else if(D.errores===0){ estado='perfecta'; S.perfectas++; }
+  else estado='errores';
+  D.estado=estado; S.terminadas++;
+  pasoEl.innerHTML='<span class="etq">División terminada.</span>';
+  ctrl.innerHTML='';
+  const comp='<div class="comprobacion"><b>Comprobación</b> (dividendo = divisor · cociente + resto):<br>'+
+    M('('+poli(g.Q)+') · ('+poli(g.C)+')')+' + '+M(g.R.every(v=>v===0)?'0':'('+poli(g.R)+')')+' = '+M(poli(g.QC))+(g.R.every(v=>v===0)?'':' + '+M('('+poli(g.R)+')'))+' = '+M(poli(g.P))+' ✓</div>';
+  const txt = estado==='perfecta' ? '✔ División perfecta: +2,5 puntos.'
+            : estado==='errores' ? 'División terminada con '+D.errores+(D.errores===1?' paso fallado':' pasos fallados')+': +'+fmtNota(valorDiv(D))+' puntos (2,5 − '+D.errores+' × 0,25'+(valorDiv(D)===0?', no baja de 0':'')+').'
+            : 'Soluciones mostradas · esta división vale 0 puntos.';
+  const superada = S.terminadas>=OBJETIVO;
+  cierreEl.innerHTML = comp+'<div class="resultado-div '+estado+'"><span>'+txt+'</span>'+(superada?'':'<button class="btn-primario" id="btn-nueva">Nueva división</button>')+'</div>';
+  const bn=$('btn-nueva'); if(bn) bn.onclick=()=>{ nuevaDivision(); document.getElementById('zona').scrollIntoView({behavior:'smooth',block:'start'}); };
+  if(superada) cerrarFicha();
+  actualizarMarcador();
+  ocultarTeclado();
+}
+function cerrarFicha(){
+  S.cerrada=true; const n=calcularNota();
+  if(n>=10) document.body.classList.add('superada');
+  cierreEl.insertAdjacentHTML('beforeend','<div class="fb '+(n>=5?'bien':'mal')+'"><b class="tit">'+(n>=10?'¡Ficha perfecta!':'Ficha terminada.')+'</b> Has hecho las 4 divisiones; tu nota es '+fmtNota(n)+'. Pulsa «Finalizar y Calificar» para ver tu informe.</div>');
+}
+
+/* ================= Mostrar soluciones ================= */
+function revelar(){
+  if(!D || D.terminada || S.cerrada) return;
+  D.revelada=true;
+  let primero=true;
+  while(D.cur<D.seq.length){
+    const st=D.seq[D.cur];
+    if(!primero) H[st.t].crear(st);   // el paso en curso ya está creado
+    primero=false;
+    if(st.t==='cociente'){ st.inp.value=num(D.g.pasos[st.i].coef); st.exp=D.g.pasos[st.i].j; const r=H.cociente.comprobar(st); console.assert(r.ok,'validador cociente'); H.cociente.fijar(st,'revelar'); }
+    else if(st.t!=='decision'){
+      // rellenar con la solución y comprobar con el propio validador
+      if(st.t==='final'){ const g=D.g; Object.keys(st.inC).forEach(k=>st.inC[k].value=num(g.C[k])); Object.keys(st.inR).forEach(k=>st.inR[k].value=num(g.R[k])); }
+      else { const c=H[st.t].correctos(st); Object.keys(st.inputs).forEach(k=>st.inputs[k].value=num(c[k])); }
+      const r=H[st.t].comprobar(st); console.assert(r.ok,'validador '+st.t);
+      H[st.t].fijar(st,'revelar', r.val);
+    }
+    D.cur++;
+  }
+  setFeedback('sol','<b class="tit">Solución.</b> Se ha completado la división paso a paso (en gris). Repásala: cada término del cociente sale de dividir los primeros términos; el producto se escribe con el signo cambiado y se suma; se para cuando el resto tiene menor grado que el divisor. Esta división vale 0 puntos.');
+  terminar();
+}
+
+/* ================= Informe ================= */
+function colorNota(n){
+  if(n>=10) return ['#1a7a1a','#fff']; if(n>=9) return ['#6dbf6d','#fff']; if(n>=8) return ['#1a4f8a','#fff'];
+  if(n>=7) return ['#5b9bd5','#fff']; if(n>=6) return ['#c05c00','#fff']; if(n>=5) return ['#f5a623','#000']; return ['#c0392b','#fff'];
+}
+const dos = n => String(n).padStart(2,'0');
+function abrirInforme(){
+  if(!comprobarNombre()) return;
+  const nota=calcularNota(), [bg,fg]=colorNota(nota), ahora=new Date();
+  const mins=Math.ceil((Date.now()-S.inicio)/60000);
+  const titulo=document.querySelector('.titulo-ficha').textContent, sub=document.querySelector('.subtitulo').textContent;
+  const conErr=S.divisiones.filter(d=>d.estado==='errores').length, rev=S.divisiones.filter(d=>d.estado==='revelada').length;
+  const enCurso=S.divisiones.filter(d=>!d.terminada).length;
+  let filas='';
+  S.divisiones.forEach(d=>{
+    const res = !d.terminada ? 'Sin terminar' : d.estado==='perfecta' ? 'Sin errores' : d.estado==='revelada' ? 'Soluciones vistas' : 'Con errores';
+    filas+='<tr><td>'+d.n+'</td><td class="izq">('+poli(d.g.P)+') : ('+poli(d.g.Q)+')</td><td>'+d.errores+'</td><td>'+res+'</td><td>'+fmtNota(puntosDiv(d))+'</td></tr>';
+  });
+  let errs='';
+  const orden=Object.keys(S.errTipos).sort((a,b)=>S.errTipos[b]-S.errTipos[a]);
+  orden.forEach(t=>{ errs+='<tr><td class="izq">'+ETIQ_ERR[t]+'</td><td>'+S.errTipos[t]+'</td></tr>'; });
+  const html=
+    '<p class="inf-titulo">'+titulo+'</p><p class="inf-sub">'+sub+'</p><hr class="inf-sep">'+
+    '<p class="inf-h">Informe de la actividad</p>'+
+    '<div style="font-size:1.05rem">'+$('nombre').value.trim().replace(/</g,'&lt;')+'</div>'+
+    '<div class="inf-nota">'+fmtNota(nota)+'</div><div style="font-size:.85rem;opacity:.85">sobre 10</div>'+
+    '<div class="inf-datos"><span>Fecha:</span><span>'+dos(ahora.getDate())+'/'+dos(ahora.getMonth()+1)+'/'+ahora.getFullYear()+'</span>'+
+    '<span>Hora:</span><span>'+dos(ahora.getHours())+':'+dos(ahora.getMinutes())+':'+dos(ahora.getSeconds())+'</span>'+
+    '<span>Tiempo empleado:</span><span>'+dos(Math.floor(mins/60))+':'+dos(mins%60)+'</span>'+
+    '<span>Divisiones terminadas:</span><span>'+S.terminadas+' / '+OBJETIVO+'</span>'+
+    '<span>Sin errores:</span><span>'+S.perfectas+'</span>'+
+    '<span>Con errores:</span><span>'+conErr+'</span>'+
+    '<span>Soluciones vistas:</span><span>'+rev+'</span>'+
+    (enCurso?'<span>Sin terminar:</span><span>'+enCurso+'</span>':'')+
+    '<span>Pasos fallados:</span><span>'+S.fallos+'</span></div>'+
+    '<hr class="inf-sep"><p class="inf-h">Divisiones realizadas</p>'+
+    '<table class="inf-tabla"><tr><th>N.º</th><th>División</th><th>Pasos fallados</th><th>Resultado</th><th>Puntos</th></tr>'+(filas||'<tr><td colspan="5">Ninguna</td></tr>')+'</table>'+
+    (errs?'<hr class="inf-sep"><p class="inf-h">Dónde se equivoca</p><table class="inf-tabla"><tr><th>Tipo de error</th><th>Veces</th></tr>'+errs+'</table>'+
+      (()=>{ const mx=S.errTipos[orden[0]], top=orden.filter(t=>S.errTipos[t]===mx).map(t=>ETIQ_ERR[t]); return '<div style="font-family:Lato,sans-serif;font-size:.85rem;margin-top:6px">'+(top.length>1?'Errores más frecuentes: <b>':'Error más frecuente: <b>')+top.join(' · ')+'</b></div>'; })():'')+
+    '<button class="inf-cerrar" id="inf-cerrar">'+(S.cerrada?'Cerrar':'Cerrar y seguir')+'</button>';
+  const m=$('informe'); m.innerHTML=html; m.style.background=bg; m.style.color=fg;
+  m.classList.toggle('texto-oscuro', fg==='#000');
+  $('ov-inf').classList.add('abierto');
+  if(nota>=10) document.body.classList.add('superada');
+  $('inf-cerrar').onclick=()=>$('ov-inf').classList.remove('abierto');
+}
+
+/* ================= Modales ================= */
+function cerrarSol(){ $('ov-sol').classList.remove('abierto'); }
+$('btn-soluciones').onclick=()=>{ if(!D||D.terminada||S.cerrada) return; $('ov-sol').classList.add('abierto'); setTimeout(()=>$('sol-no').focus(),30); };
+$('sol-no').onclick=cerrarSol;
+$('sol-si').onclick=()=>{ cerrarSol(); revelar(); };
+$('btn-finalizar').onclick=abrirInforme;
+['ov-sol','ov-inf'].forEach(id=>$(id).addEventListener('click',e=>{ if(e.target.id===id) $(id).classList.remove('abierto'); }));
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ cerrarSol(); $('ov-inf').classList.remove('abierto'); } });
+$('nombre').addEventListener('input',()=>{ if($('nombre').value.trim()){ $('nombre').classList.remove('falta'); $('aviso-nombre').classList.remove('visible'); } });
+
+/* ================= Teclado propio ================= */
+const tec=$('teclado');
+function mostrarTeclado(){ if(!COARSE) return; tec.classList.add('visible'); document.body.classList.add('teclado-on'); }
+function ocultarTeclado(){ tec.classList.remove('visible'); document.body.classList.remove('teclado-on'); if(typeof casillaActiva!=='undefined' && casillaActiva){ casillaActiva.classList.remove('activa'); casillaActiva=null; } }
+/* La casilla activa se recuerda aparte: aunque el navegador del móvil le quite el foco al
+   pulsar una tecla, la tecla se escribe en la casilla donde estaba el alumno y el teclado
+   NO se cierra. El teclado solo se oculta con «Ocultar», al terminar la división o al tocar
+   fuera de las casillas y del propio teclado. */
+let casillaActiva=null;
+const esNum = el => el && el.classList && el.classList.contains('num');
+function marcarActiva(inp){
+  if(casillaActiva && casillaActiva!==inp) casillaActiva.classList.remove('activa');
+  casillaActiva=inp; if(inp) inp.classList.add('activa');
+}
+document.addEventListener('focusin',e=>{ if(esNum(e.target)){ marcarActiva(e.target); mostrarTeclado(); setTimeout(()=>e.target.scrollIntoView({block:'center',behavior:'smooth'}),60); } });
+document.addEventListener('pointerdown',e=>{
+  if(!tec.classList.contains('visible')) return;
+  if(tec.contains(e.target) || esNum(e.target) || e.target.closest('#exps,#controles,.overlay')) return;
+  ocultarTeclado();
+},true);
+function pulsarTecla(k){
+  const lista=[...document.querySelectorAll('input.num:not(:disabled)')];
+  let a = (casillaActiva && !casillaActiva.disabled && document.contains(casillaActiva)) ? casillaActiva : null;
+  if(k==='hide'){ if(document.activeElement) document.activeElement.blur(); ocultarTeclado(); return; }
+  if(k==='ok'){ accionPrincipal(); return; }
+  if(!a){ a=lista[0]; if(!a) return; }
+  if(k==='next'||k==='prev'){ const i=lista.indexOf(a), j=k==='next'?i+1:i-1; if(lista[j]) a=lista[j]; marcarActiva(a); a.focus({preventScroll:true}); return; }
+  let v=a.value;
+  if(k==='bs') v=v.slice(0,-1);
+  else if(k==='mas'||k==='menos') v = (k==='mas'?'+':'-') + v.replace(/^[+-]/,'');
+  else v = v + k;
+  a.value=v; a.dispatchEvent(new Event('input'));
+  marcarActiva(a);
+  if(document.activeElement!==a) a.focus({preventScroll:true});   // con inputmode="none" no abre el teclado del sistema
+}
+// Evitar que tocar el teclado propio robe el foco (touch, pointer y ratón)
+['touchstart','mousedown'].forEach(ev=>tec.addEventListener(ev,e=>{ if(e.target.closest('button')) e.preventDefault(); },{passive:false}));
+tec.addEventListener('pointerdown',e=>{ const b=e.target.closest('button'); if(!b) return; e.preventDefault(); pulsarTecla(b.dataset.k); });
+tec.querySelectorAll('button').forEach(b=>{ b.type='button'; b.tabIndex=-1; });
+
+/* ================= Arranque ================= */
+nuevaDivision();
+if(MODO_TEST){ window.__ficha = { S, get D(){ return D; }, H, accionPrincipal, elegir, revelar, calcularNota, generar }; }
+})();
+</script>
+</body>
+</html>
