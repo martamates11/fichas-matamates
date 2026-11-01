@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Probabilidad – Ficha interactiva</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f0e8;--surface:#fffdf7;--ink:#1a1008;--soft:#5c4a30;
+  --accent:#c8401a;--gold:#c8941a;--border:#d4c4a0;
+  --ok:#2a6b4f;--err:#c8401a;--blue:#1a3a6b;
+  --inp-bg:#fef9f0;--inp-b:#c8b48a;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);
+  background-image:repeating-linear-gradient(0deg,transparent,transparent 27px,rgba(180,160,120,.07) 28px),
+    repeating-linear-gradient(90deg,transparent,transparent 27px,rgba(180,160,120,.04) 28px);}
+.autoria{background:var(--ink);text-align:center;padding:5px 12px;font-size:10px;color:rgba(245,240,232,.55);letter-spacing:.4px;}
+.hdr{background:var(--ink);color:var(--bg);padding:22px 40px 20px;position:relative;overflow:hidden;border-top:1px solid rgba(255,255,255,.08);}
+.hdr::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(-45deg,transparent,transparent 10px,rgba(255,255,255,.02) 10px,rgba(255,255,255,.02) 11px);}
+.hdr-in{position:relative;z-index:1;max-width:860px;margin:0 auto;}
+.htag{display:inline-block;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);background:rgba(200,148,26,.15);border:1px solid rgba(200,148,26,.4);padding:3px 10px;border-radius:2px;}
+.hdr h1{font-family:'Playfair Display',serif;font-size:clamp(28px,5vw,48px);font-weight:900;line-height:1;margin-top:8px;letter-spacing:-1px;}
+.hdr h1 span{color:var(--gold);}
+.hmeta{font-size:11px;color:rgba(245,240,232,.5);margin-top:4px;}
+.nbar{background:var(--surface);border-bottom:2px solid var(--border);padding:13px 40px;transition:border-color .3s;}
+.nbar.nbar-error{border-bottom-color:var(--err);}
+.nbar-in{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.nlabel{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--soft);white-space:nowrap;}
+.ninp{flex:1;max-width:340px;border:none;border-bottom:2px solid var(--border);background:transparent;font-family:'DM Sans',sans-serif;font-size:16px;color:var(--ink);padding:3px 8px;outline:none;transition:border-color .2s;}
+.ninp:focus{border-color:var(--accent);}
+.ninp.ninp-error{border-color:var(--err)!important;animation:shake .35s ease;}
+.name-msg{font-size:11.5px;color:var(--err);font-weight:600;display:none;align-items:center;gap:5px;width:100%;padding-left:2px;}
+.name-msg.show{display:flex;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.sbar{background:var(--surface);border-bottom:1px solid var(--border);padding:9px 40px;}
+.sbar-in{max-width:860px;margin:0 auto;display:flex;gap:16px;align-items:center;flex-wrap:wrap;}
+.chip{font-family:'DM Mono',monospace;font-size:12px;padding:3px 11px;border-radius:20px;border:1.5px solid;}
+.chip.pts{border-color:var(--blue);color:var(--blue);background:rgba(26,58,107,.07);font-weight:700;}
+.chip.ok{border-color:var(--ok);color:var(--ok);background:rgba(42,107,79,.07);}
+.chip.err{border-color:var(--err);color:var(--err);background:rgba(200,64,26,.07);}
+main{max-width:860px;margin:0 auto;padding:28px 18px 60px;}
+.stitle{display:flex;align-items:center;gap:12px;margin-bottom:16px;margin-top:30px;}
+.snum{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:18px;font-weight:700;flex-shrink:0;}
+.s1 .snum{background:#2a6b4f;color:#fff;}
+.s2 .snum{background:#c8401a;color:#fff;}
+.s3 .snum{background:#1a3a6b;color:#fff;}
+.sinfo h2{font-family:'Playfair Display',serif;font-size:20px;}
+.sinfo p{font-size:12px;color:var(--soft);margin-top:2px;}
+.pts-pill{margin-left:auto;font-family:'DM Mono',monospace;font-size:11px;padding:4px 12px;border-radius:20px;border:1.5px solid;white-space:nowrap;}
+.pp-t{border-color:var(--ok);color:var(--ok);}
+.pp-a{border-color:var(--accent);color:var(--accent);}
+.pp-f{border-color:var(--blue);color:var(--blue);}
+.card{background:var(--surface);border:1.5px solid var(--border);border-radius:6px;padding:24px 28px;margin-bottom:20px;position:relative;overflow:hidden;transition:border-color .3s,background .3s;}
+.card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;}
+.cT::before{background:#2a6b4f;}
+.cA::before{background:#c8401a;}
+.cF::before{background:#1a3a6b;}
+.card.cor{border-color:var(--ok);background:rgba(42,107,79,.04);}
+.card.wrong{border-color:var(--err);background:rgba(200,64,26,.04);}
+.ctag{display:inline-block;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:2px 8px;border-radius:2px;margin-bottom:9px;}
+.tT{background:rgba(42,107,79,.12);color:#2a6b4f;}
+.tA{background:rgba(200,64,26,.12);color:#c8401a;}
+.tF{background:rgba(26,58,107,.12);color:#1a3a6b;}
+.qtext{font-size:14.5px;line-height:1.72;margin-bottom:16px;}
+.qtext strong{color:var(--blue);}
+.tlabel{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:2px;text-transform:uppercase;color:var(--soft);margin-bottom:7px;display:flex;align-items:center;gap:6px;}
+.tlabel::before{content:'';display:inline-block;width:14px;height:2px;background:currentColor;}
+.tree-box{background:var(--inp-bg);border:1.5px dashed var(--inp-b);border-radius:5px;padding:16px 14px;margin-bottom:14px;overflow-x:auto;}
+.htree{display:flex;flex-direction:column;gap:5px;font-family:'DM Mono',monospace;font-size:13px;}
+.hrow{display:grid;grid-template-columns:108px 30px 90px 30px 90px;align-items:center;gap:5px;}
+.hrow-sp{height:8px;}
+.root-lbl{font-size:11px;background:var(--bg);border:1.5px solid var(--border);border-radius:4px;padding:4px 7px;text-align:center;color:var(--soft);white-space:nowrap;}
+.arr{color:var(--border);font-size:16px;text-align:center;}
+.sub-lbl{font-size:10px;color:var(--soft);text-align:center;}
+.tbl-wrap{overflow-x:auto;margin-bottom:14px;}
+.ctbl{border-collapse:collapse;font-size:13px;min-width:440px;width:100%;}
+.ctbl th{background:var(--bg);font-family:'DM Mono',monospace;font-size:11px;font-weight:600;border:1.5px solid var(--border);padding:7px 11px;text-align:center;color:var(--soft);}
+.ctbl td{border:1.5px solid var(--border);padding:5px 7px;text-align:center;vertical-align:middle;}
+.ctbl td.rh{background:var(--bg);font-family:'DM Mono',monospace;font-size:11.5px;font-weight:600;text-align:left;padding:7px 11px;color:var(--soft);white-space:nowrap;}
+.ctbl td.fix-inp{background:rgba(200,148,26,.08);border:1.5px solid var(--gold);}
+.binp,.cinp{border:1.5px solid var(--inp-b);border-radius:3px;background:var(--inp-bg);font-family:'DM Mono',monospace;text-align:center;color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s;}
+.binp{width:88px;height:28px;font-size:13px;}
+.cinp{width:74px;height:30px;font-size:13px;}
+.tinp{width:74px;height:30px;font-size:13px;border:1.5px solid var(--gold);border-radius:3px;background:rgba(200,148,26,.08);font-family:'DM Mono',monospace;text-align:center;color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s;}
+.tinp:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,58,107,.1);}
+.binp:focus,.cinp:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,58,107,.1);}
+.binp.vok,.cinp.vok,.tinp.vok{border-color:var(--ok)!important;background:rgba(42,107,79,.07);}
+.binp.ver,.cinp.ver,.tinp.ver{border-color:var(--err)!important;background:rgba(200,64,26,.07);}
+.btn-v{display:inline-flex;align-items:center;gap:7px;border:1.5px solid var(--ink);background:transparent;color:var(--ink);padding:7px 16px;border-radius:3px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;margin-bottom:12px;}
+.btn-v:hover{background:var(--ink);color:var(--bg);}
+.btn-v:disabled{opacity:.5;cursor:default;}
+.hint{display:none;margin-bottom:12px;padding:9px 13px;border-radius:4px;font-size:13px;line-height:1.5;border:1.5px solid;}
+.hint.show{display:block;}
+.hint.ok{border-color:var(--ok);background:rgba(42,107,79,.07);color:var(--ok);}
+.hint.er{border-color:var(--err);background:rgba(200,64,26,.07);color:var(--err);}
+.hint .hd{margin-top:4px;font-family:'DM Mono',monospace;font-size:11px;color:var(--soft);}
+.fq{border-top:1.5px dashed var(--border);padding-top:14px;margin-top:6px;}
+.fq+.fq{border-top:1.5px dashed var(--border);padding-top:14px;margin-top:14px;}
+.fqlabel{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:2px;text-transform:uppercase;color:var(--soft);margin-bottom:9px;}
+.fqlabel.q2lbl{color:var(--blue);}
+.ans-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;position:relative;}
+.ans-label{font-family:'DM Mono',monospace;font-size:12px;color:var(--soft);white-space:nowrap;}
+.ans-inp{border:1.5px solid var(--inp-b);border-radius:3px;background:var(--inp-bg);font-family:'DM Mono',monospace;font-size:14px;color:var(--ink);padding:5px 10px;width:200px;outline:none;transition:border-color .2s;}
+.ans-inp:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,58,107,.1);}
+.ans-inp.vok{border-color:var(--ok)!important;background:rgba(42,107,79,.07);}
+.ans-inp.ver{border-color:var(--err)!important;background:rgba(200,64,26,.07);}
+.fmt-hint{font-size:11px;color:var(--soft);font-style:italic;margin-bottom:8px;}
+.inline-warn{width:100%;font-size:11.5px;color:var(--err);font-weight:600;margin-top:2px;}
+.opts{display:flex;flex-direction:column;gap:7px;margin-bottom:10px;}
+.opt{display:flex;align-items:center;gap:11px;padding:9px 13px;border:1.5px solid var(--border);border-radius:4px;cursor:pointer;font-size:13.5px;font-family:'DM Mono',monospace;background:var(--surface);transition:all .15s;user-select:none;}
+.opt:hover{border-color:var(--ink);}
+.opt.sel{border-color:var(--blue);background:rgba(26,58,107,.06);}
+.opt.cok{border-color:var(--ok)!important;background:rgba(42,107,79,.1)!important;color:var(--ok);}
+.opt.cer{border-color:var(--err)!important;background:rgba(200,64,26,.1)!important;color:var(--err);}
+.oltr{width:21px;height:21px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:600;flex-shrink:0;}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;align-items:center;}
+.btn-chk{display:inline-flex;align-items:center;gap:7px;background:var(--ink);color:var(--bg);border:none;padding:9px 20px;border-radius:3px;font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;transition:background .15s;}
+.btn-chk:hover{background:var(--accent);}
+.btn-chk:disabled{opacity:.38;cursor:default;background:var(--ink);}
+.btn-otro{display:none;align-items:center;gap:7px;background:var(--blue);color:#fff;border:none;padding:9px 20px;border-radius:3px;font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;transition:background .15s;}
+.btn-otro:hover{background:#0f2650;}
+.btn-otro:disabled{opacity:.5;cursor:default;background:#555;}
+.fb{display:none;margin-top:10px;padding:11px 14px;border-radius:4px;font-size:13.5px;line-height:1.5;border:1.5px solid;}
+.fb.show{display:block;}
+.fb.ok{border-color:var(--ok);background:rgba(42,107,79,.08);color:var(--ok);}
+.fb.er{border-color:var(--err);background:rgba(200,64,26,.08);color:var(--err);}
+.fb .why{margin-top:5px;font-family:'DM Mono',monospace;font-size:11.5px;color:var(--soft);}
+.q-sep{height:1px;background:var(--border);margin:18px 0;opacity:.5;}
+.submit-area{margin-top:40px;text-align:center;}
+.btn-sub{background:var(--accent);color:#fff;border:none;padding:15px 46px;font-family:'Playfair Display',serif;font-size:17px;font-weight:700;border-radius:4px;cursor:pointer;box-shadow:4px 4px 0 var(--ink);transition:background .2s,transform .1s;}
+.btn-sub:hover{background:#a83212;transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--ink);}
+.overlay-name,.overlay-incomplete{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;align-items:center;justify-content:center;padding:16px;}
+.overlay-name.show,.overlay-incomplete.show{display:flex;}
+.modal-name{background:var(--surface);border:2px solid var(--err);border-radius:8px;padding:32px 36px;max-width:400px;width:100%;text-align:center;box-shadow:6px 6px 0 var(--ink);}
+.modal-name h3{font-family:'Playfair Display',serif;font-size:22px;margin-bottom:8px;color:var(--err);}
+.modal-name p{font-size:13.5px;color:var(--soft);margin-bottom:20px;line-height:1.5;}
+.modal-name-inp{width:100%;border:1.5px solid var(--inp-b);border-radius:4px;background:var(--inp-bg);font-family:'DM Sans',sans-serif;font-size:16px;color:var(--ink);padding:9px 12px;outline:none;margin-bottom:16px;transition:border-color .2s;}
+.modal-name-inp:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,58,107,.1);}
+.modal-name-inp.mn-error{border-color:var(--err);animation:shake .35s ease;}
+.btn-name-ok{background:var(--accent);color:#fff;border:none;padding:10px 28px;border-radius:3px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:background .15s;width:100%;}
+.btn-name-ok:hover{background:#a83212;}
+.modal-incomplete{background:var(--surface);border:2px solid var(--gold);border-radius:8px;padding:30px 34px;max-width:440px;width:100%;text-align:left;box-shadow:6px 6px 0 var(--ink);}
+.modal-incomplete h3{font-family:'Playfair Display',serif;font-size:20px;margin-bottom:10px;color:var(--accent);text-align:center;}
+.modal-incomplete p{font-size:13px;color:var(--soft);margin-bottom:10px;}
+.modal-incomplete ul{margin:0 0 14px 20px;font-size:13px;}
+.modal-incomplete .curscore{font-family:'DM Mono',monospace;font-weight:700;color:var(--blue);text-align:center;margin-bottom:16px;font-size:15px;}
+.modal-incomplete .inc-actions{display:flex;gap:10px;}
+.btn-cancel-inc{flex:1;background:transparent;border:1.5px solid var(--ink);color:var(--ink);padding:10px 14px;border-radius:3px;font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;}
+.btn-cancel-inc:hover{background:var(--ink);color:var(--bg);}
+.btn-confirm-inc{flex:1;background:var(--accent);border:none;color:#fff;padding:10px 14px;border-radius:3px;font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;}
+.btn-confirm-inc:hover{background:#a83212;}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;align-items:center;justify-content:center;padding:16px;}
+.overlay.show{display:flex;}
+.modal{background:var(--surface);border:2px solid var(--ink);border-radius:8px;padding:36px 40px;max-width:480px;width:100%;text-align:center;box-shadow:8px 8px 0 var(--ink);position:relative;}
+.modal-close{position:absolute;top:12px;right:14px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--soft);}
+.modal-close:hover{color:var(--ink);}
+.rname{font-family:'DM Mono',monospace;font-size:12px;color:var(--soft);letter-spacing:2px;margin-bottom:4px;}
+.rgrade{font-family:'Playfair Display',serif;font-size:68px;font-weight:900;line-height:1;margin:8px 0;}
+.rlabel{font-size:14px;color:var(--soft);margin-bottom:18px;}
+.rstats{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+.sbox{padding:9px 18px;border:1.5px solid var(--border);border-radius:4px;font-family:'DM Mono',monospace;font-size:12px;text-align:center;}
+.rfooter{font-size:10.5px;color:var(--soft);margin-top:16px;border-top:1px solid var(--border);padding-top:11px;}
+.modal.n10{background:#1a7a1a;border-color:#0f4f0f;color:#fff;}
+.modal.n9 {background:#6dbf6d;border-color:#4a9f4a;color:#fff;}
+.modal.n8 {background:#1a4f8a;border-color:#0f3060;color:#fff;}
+.modal.n7 {background:#5b9bd5;border-color:#3a7ab5;color:#fff;}
+.modal.n6 {background:#c05c00;border-color:#7a3a00;color:#fff;}
+.modal.n5 {background:#f5a623;border-color:#d4881a;color:#1a1008;}
+.modal.n4,.modal.n3,.modal.n2,.modal.n1,.modal.n0{background:#c0392b;border-color:#7a1a10;color:#fff;}
+.modal.n10 .sbox,.modal.n9 .sbox,.modal.n8 .sbox,.modal.n7 .sbox,
+.modal.n6 .sbox,.modal.n4 .sbox,.modal.n3 .sbox,.modal.n2 .sbox,.modal.n1 .sbox,.modal.n0 .sbox{border-color:rgba(255,255,255,.3);color:inherit;}
+.modal.n10 .rfooter,.modal.n9 .rfooter,.modal.n8 .rfooter,.modal.n7 .rfooter,
+.modal.n6 .rfooter,.modal.n4 .rfooter,.modal.n3 .rfooter,.modal.n2 .rfooter,.modal.n1 .rfooter,.modal.n0 .rfooter{border-color:rgba(255,255,255,.3);color:rgba(255,255,255,.7);}
+.modal.n10 .rname,.modal.n9 .rname,.modal.n8 .rname,.modal.n7 .rname,
+.modal.n6 .rname,.modal.n4 .rname,.modal.n3 .rname,.modal.n2 .rname,.modal.n1 .rname,.modal.n0 .rname{color:rgba(255,255,255,.75);}
+.modal.n10 .rlabel,.modal.n9 .rlabel,.modal.n8 .rlabel,.modal.n7 .rlabel,
+.modal.n6 .rlabel,.modal.n4 .rlabel,.modal.n3 .rlabel,.modal.n2 .rlabel,.modal.n1 .rlabel,.modal.n0 .rlabel{color:rgba(255,255,255,.8);}
+.modal.n10 .modal-close,.modal.n9 .modal-close,.modal.n8 .modal-close,.modal.n7 .modal-close,
+.modal.n6 .modal-close,.modal.n4 .modal-close,.modal.n3 .modal-close,.modal.n2 .modal-close,.modal.n1 .modal-close,.modal.n0 .modal-close{color:rgba(255,255,255,.7);}
+body.all-green .card{background:#e8f5e9!important;border-color:#1a7a1a!important;}
+body.all-green{background:#f0faf0!important;}
+@media(max-width:620px){
+  .hdr,.nbar,.sbar{padding-left:14px;padding-right:14px;}
+  .card{padding:16px 13px;}
+  main{padding:18px 10px 50px;}
+  .hrow{grid-template-columns:80px 22px 80px 22px 80px;gap:3px;}
+  .modal,.modal-incomplete{padding:24px 20px;}
+}
+</style>
+</head>
+<body>
+
+<div class="autoria">Material elaborado por Marta L Letona S. Basado en el trabajo de Javier Cayetano</div>
+
+<header class="hdr">
+  <div class="hdr-in">
+    <span class="htag">Matemáticas CC.SS. II · PAU Extremadura</span>
+    <h1>Proba<span>bilidad</span></h1>
+    <p class="hmeta">Tabla de contingencia · Árbol de probabilidad · Álgebra de sucesos</p>
+  </div>
+</header>
+
+
+<div class="nbar" id="nbar">
+  <div class="nbar-in">
+    <label class="nlabel" for="sName">Alumno/a</label>
+    <input class="ninp" id="sName" type="text" placeholder="Escribe tu nombre…" autocomplete="off"
+      oninput="clearNameError()">
+    <span class="name-msg" id="nameMsg">⚠ Introduce tu nombre antes de entregar</span>
+  </div>
+</div>
+
+<div class="sbar">
+  <div class="sbar-in">
+    <span class="chip pts" id="cPts" aria-live="polite">Puntuación: 0 / 10</span>
+    <span class="chip ok"  id="cOk" aria-live="polite">✓ 0 apartados con puntos</span>
+    <span class="chip err" id="cErr" aria-live="polite">✗ 0 apartados a 0 pts</span>
+  </div>
+</div>
+
+<main>
+
+<div class="stitle s1">
+  <div class="snum">1</div>
+  <div class="sinfo"><h2>Tabla de contingencia</h2><p>Completa la tabla — incluido el total general — y responde</p></div>
+  <span class="pts-pill pp-t">3,5 puntos</span>
+</div>
+<div class="card cT" id="cardT"></div>
+
+<div class="stitle s2" style="margin-top:38px;">
+  <div class="snum">2</div>
+  <div class="sinfo"><h2>Árbol de probabilidad</h2><p>Rellena cada rama; luego escribe tu solución</p></div>
+  <span class="pts-pill pp-a">3,5 puntos</span>
+</div>
+<div class="card cA" id="cardA"></div>
+
+<div class="stitle s3" style="margin-top:38px;">
+  <div class="snum">3</div>
+  <div class="sinfo"><h2>Álgebra de sucesos</h2><p>De Morgan · Unión · Intersección · Prob. condicionada</p></div>
+  <span class="pts-pill pp-f">3 puntos</span>
+</div>
+<div class="card cF" id="cardF"></div>
+
+<div class="submit-area">
+  <button class="btn-sub" onclick="submitAll()">Finalizar y Calificar</button>
+</div>
+
+</main>
+
+<!-- MODAL PEDIR NOMBRE -->
+<div class="overlay-name" id="overlayName">
+  <div class="modal-name">
+    <h3>✏️ Falta tu nombre</h3>
+    <p>Para guardar el resultado necesitas identificarte. Escribe tu nombre completo.</p>
+    <label for="modalNameInp" class="name-msg" style="display:block;position:static;color:var(--soft);font-weight:400;margin-bottom:6px;">Nombre y apellidos</label>
+    <input class="modal-name-inp" id="modalNameInp" type="text" placeholder="Nombre y apellidos…"
+      autocomplete="off" onkeydown="if(event.key==='Enter')confirmName()" aria-label="Nombre y apellidos">
+    <button class="btn-name-ok" onclick="confirmName()">Continuar →</button>
+  </div>
+</div>
+
+<!-- MODAL AVISO: PROGRESO INCOMPLETO -->
+<div class="overlay-incomplete" id="overlayIncomplete">
+  <div class="modal-incomplete">
+    <h3>⚠ Aún quedan partes sin resolver</h3>
+    <p>Si finalizas ahora, estas partes se quedarán sin puntuar:</p>
+    <ul id="pendingList"></ul>
+    <p class="curscore">Nota actual si finalizas ya: <span id="pendingScore">0</span> / 10</p>
+    <div class="inc-actions">
+      <button class="btn-cancel-inc" onclick="cancelIncomplete()">Seguir trabajando</button>
+      <button class="btn-confirm-inc" onclick="confirmIncomplete()">Finalizar igualmente</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL RESULTADO -->
+<div class="overlay" id="overlay">
+  <div class="modal" id="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="rname"  id="rName"></div>
+    <div class="rgrade" id="rGrade"></div>
+    <div class="rlabel" id="rLabel"></div>
+    <div class="rstats">
+      <div class="sbox" id="rS1"></div>
+      <div class="sbox" id="rS2"></div>
+      <div class="sbox" id="rS3"></div>
+      <div class="sbox" id="rS4"></div>
+    </div>
+    <div class="rfooter">Material elaborado por Marta L Letona S. Basado en el trabajo de Javier Cayetano</div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════
+   MODELO DE PUNTUACIÓN (acordado con Marta, revisión de Probabilidad):
+   - "Construcción" de la tabla y del árbol (rellenar celdas / ramas):
+     apartado puntuable de 1,5 pts, con reintento. Cada fallo resta
+     DEDUCCION_POR_FALLO (0,75 pts) del potencial restante; cuando el
+     potencial restante llega a 0, el apartado se cierra en 0 puntos
+     de forma permanente (agotamiento).
+   - Las dos preguntas de la tabla, las dos preguntas del árbol y la
+     pregunta de fórmulas: su feedback de fallo revela el resultado
+     numérico exacto, así que van a intento único. Acierto = puntos
+     fijos; fallo = 0 puntos, sin reintento.
+   - El estado se guarda POR CATEGORÍA (T_construccion, T_q1, T_q2,
+     A_construccion, A_q1, A_q2, F), no por instancia de ejercicio,
+     así que "Hacer otro" nunca permite volver a puntuar un
+     sub-apartado ya resuelto (elimina el farming de puntos).
+══════════════════════════════════════════════════════ */
+const DEDUCCION_POR_FALLO = 0.75;
+const SLOT_MAX = { T_construccion:1.5, T_q1:1.0, T_q2:1.0, A_construccion:1.5, A_q1:1.0, A_q2:1.0, F:3 };
+const MAX_SCORE = 10;
+const startTime = Date.now();
+
+const state = {};
+Object.keys(SLOT_MAX).forEach(k=>{
+  state[k] = { resolved:false, ok:null, pts:0, feedbackHTML:'', failCount:0 };
+});
+
+function parseN(s){return parseFloat(String(s||'').trim().replace(',','.'))}
+function approx(a,b,t=0.005){return !isNaN(a)&&!isNaN(b)&&Math.abs(a-b)<t}
+function pick(arr){return arr[Math.floor(Math.random()*arr.length)]}
+
+function calcScore(){
+  let tot=0;
+  Object.values(state).forEach(s=>{tot+=s.pts;});
+  return Math.round(tot*100)/100;
+}
+function updateScoreUI(){
+  const vals=Object.values(state);
+  const correctas=vals.filter(v=>v.ok===true).length;
+  const erroneas=vals.filter(v=>v.ok===false).length;
+  const raw=calcScore();
+  const clamped=Math.max(0,Math.min(MAX_SCORE,raw));
+  document.getElementById('cPts').textContent='Puntuación: '+clamped+' / 10';
+  document.getElementById('cOk').textContent='✓ '+correctas+' apartados con puntos';
+  document.getElementById('cErr').textContent='✗ '+erroneas+' apartados a 0 pts';
+}
+
+function showInlineWarning(inputEl, msg){
+  if(!inputEl) return;
+  inputEl.classList.add('ver');
+  const row=inputEl.closest('.ans-row')||inputEl.parentElement;
+  let warn=row.querySelector('.inline-warn');
+  if(!warn){
+    warn=document.createElement('div');
+    warn.className='inline-warn';
+    warn.setAttribute('aria-live','polite');
+    row.appendChild(warn);
+  }
+  warn.textContent='⚠ '+msg;
+  setTimeout(()=>{inputEl.classList.remove('ver'); if(warn&&warn.parentElement) warn.remove();},2200);
+}
+function showInlineWarningNear(container, msg){
+  let warn=container.querySelector('.inline-warn');
+  if(!warn){
+    warn=document.createElement('div');
+    warn.className='inline-warn';
+    warn.setAttribute('aria-live','polite');
+    container.appendChild(warn);
+  }
+  warn.textContent='⚠ '+msg;
+  setTimeout(()=>{if(warn&&warn.parentElement) warn.remove();},2200);
+}
+
+function clearNameError(){
+  const inp=document.getElementById('sName');
+  inp.classList.remove('ninp-error');
+  document.getElementById('nbar').classList.remove('nbar-error');
+  document.getElementById('nameMsg').classList.remove('show');
+}
+function showNameError(){
+  const inp=document.getElementById('sName');
+  inp.classList.add('ninp-error');
+  document.getElementById('nbar').classList.add('nbar-error');
+  document.getElementById('nameMsg').classList.add('show');
+  setTimeout(()=>inp.classList.remove('ninp-error'),400);
+}
+function getPendingParts(){
+  const labels={T_construccion:'Tabla — completar la tabla',T_q1:'Tabla — Pregunta 1',T_q2:'Tabla — Pregunta 2',
+    A_construccion:'Árbol — completar el árbol',A_q1:'Árbol — Pregunta 1',A_q2:'Árbol — Pregunta 2',F:'Álgebra de sucesos'};
+  return Object.keys(labels).filter(k=>!state[k].resolved).map(k=>labels[k]);
+}
+function showIncompleteModal(name, pending){
+  document.getElementById('pendingList').innerHTML = pending.map(p=>'<li>'+p+'</li>').join('');
+  document.getElementById('pendingScore').textContent = Math.max(0,Math.min(MAX_SCORE,calcScore()));
+  document.getElementById('overlayIncomplete').dataset.name=name;
+  document.getElementById('overlayIncomplete').classList.add('show');
+}
+function cancelIncomplete(){document.getElementById('overlayIncomplete').classList.remove('show');}
+function confirmIncomplete(){
+  const name=document.getElementById('overlayIncomplete').dataset.name;
+  document.getElementById('overlayIncomplete').classList.remove('show');
+  showResult(name);
+}
+function confirmName(){
+  const inp=document.getElementById('modalNameInp');
+  const val=inp.value.trim();
+  if(!val){inp.classList.add('mn-error');setTimeout(()=>inp.classList.remove('mn-error'),400);inp.focus();return;}
+  document.getElementById('sName').value=val;
+  clearNameError();
+  document.getElementById('overlayName').classList.remove('show');
+  const pending=getPendingParts();
+  if(pending.length){showIncompleteModal(val,pending);return;}
+  showResult(val);
+}
+
+/* ══════════════════════════════════════════════════════
+   BANCO DE TABLAS — 7 ejercicios.
+══════════════════════════════════════════════════════ */
+const TABLES=[
+  {
+    id:'T1',slot:'T',tag:'Tabla · Intersección y condicionada',
+    text:`En un instituto se estudió si los alumnos practican deporte y si aprueban Matemáticas.
+    <strong>300 alumnos practican deporte</strong>, de los cuales <strong>210 aprueban Matemáticas</strong>.
+    En total, <strong>380 alumnos aprueban</strong> la asignatura y <strong>220 la suspenden</strong>.`,
+    cols:['Aprueba Mat.','Suspende Mat.','Total'],
+    rows:['Practica deporte','No practica deporte','<strong>Total</strong>'],
+    ids:[['T1_11','T1_12','T1_13'],['T1_21','T1_22','T1_23'],['T1_31','T1_32','T1_33']],
+    vals:[[210,90,300],[170,130,300],[380,220,600]],
+    q1text:'¿Cuál es la probabilidad de que un alumno elegido al azar <strong>practique deporte Y apruebe</strong> Matemáticas?',
+    q1val:210/600, q1str:'210/600 = 0,35',
+    q1expl:'P(Dep.∩Ap.) = 210/600 = 0,35. Se lee la celda de intersección (210) y se divide entre el total general (600).',
+    q2text:'¿Cuál es la probabilidad de que un alumno <strong>apruebe Matemáticas, sabiendo que NO practica deporte</strong>?',
+    q2val:170/300, q2str:'170/300 ≈ 0,567',
+    q2expl:'P(Ap.|¬Dep.) = 170/300 ≈ 0,567. El espacio muestral se restringe a los 300 alumnos que no practican deporte, de los cuales 170 aprueban.'
+  },
+  {
+    id:'T2',slot:'T',tag:'Tabla · Intersección y condicionada',
+    text:`En una empresa: <strong>200 son técnicos</strong> y el resto administrativos.
+    En total <strong>280 tienen formación</strong> universitaria. De los técnicos, <strong>140 tienen formación</strong>.
+    El número total de administrativos es <strong>300</strong>.`,
+    cols:['Con formación','Sin formación','Total'],
+    rows:['Técnicos','Administrativos','<strong>Total</strong>'],
+    ids:[['T2_11','T2_12','T2_13'],['T2_21','T2_22','T2_23'],['T2_31','T2_32','T2_33']],
+    vals:[[140,60,200],[140,160,300],[280,220,500]],
+    q1text:'¿Cuál es la probabilidad de que un empleado elegido al azar sea <strong>técnico CON formación</strong>?',
+    q1val:140/500, q1str:'140/500 = 0,28',
+    q1expl:'P(Téc.∩Form.) = 140/500 = 0,28. Se divide la celda de intersección (140) entre el total general (500).',
+    q2text:'¿Cuál es la probabilidad de que un empleado sea <strong>administrativo, sabiendo que NO tiene formación</strong>?',
+    q2val:160/220, q2str:'160/220 ≈ 0,727',
+    q2expl:'P(Adm.|¬Form.) = 160/220 ≈ 0,727. Se restringe el espacio a los 220 sin formación; de ellos, 160 son administrativos.'
+  },
+  {
+    id:'T3',slot:'T',tag:'Tabla · Intersección y condicionada',
+    text:`En una ciudad se encuestaron personas sobre su medio de transporte y puntualidad.
+    <strong>500 usan transporte público</strong>; de ellos <strong>420 son puntuales</strong>.
+    En total <strong>630 son puntuales</strong> y <strong>170 no lo son</strong>.`,
+    cols:['Puntual','No puntual','Total'],
+    rows:['Transp. público','Vehículo propio','<strong>Total</strong>'],
+    ids:[['T3_11','T3_12','T3_13'],['T3_21','T3_22','T3_23'],['T3_31','T3_32','T3_33']],
+    vals:[[420,80,500],[210,90,300],[630,170,800]],
+    q1text:'¿Cuál es la probabilidad de que una persona use <strong>transporte público Y no sea puntual</strong>?',
+    q1val:80/800, q1str:'80/800 = 0,10',
+    q1expl:'P(TP∩¬Punt.) = 80/800 = 0,10. Se lee la celda (80) y se divide entre el total general (800).',
+    q2text:'¿Cuál es la probabilidad de que una persona sea <strong>puntual, sabiendo que usa vehículo propio</strong>?',
+    q2val:210/300, q2str:'210/300 = 0,70',
+    q2expl:'P(Punt.|VP) = 210/300 = 0,70. Se restringe el espacio a los 300 usuarios de vehículo propio; 210 de ellos son puntuales.'
+  },
+  {
+    id:'T4',slot:'T',tag:'Tabla · Intersección y condicionada',
+    text:`En una clínica se analizaron pacientes según si fuman y si tienen hipertensión.
+    <strong>180 pacientes fuman</strong>, de los cuales <strong>120 tienen hipertensión</strong>.
+    De los que <strong>no fuman</strong>, <strong>80 tienen hipertensión</strong> y <strong>140 no la tienen</strong>.`,
+    cols:['Hipertensión','Sin hipert.','Total'],
+    rows:['Fuma','No fuma','<strong>Total</strong>'],
+    ids:[['T4_11','T4_12','T4_13'],['T4_21','T4_22','T4_23'],['T4_31','T4_32','T4_33']],
+    vals:[[120,60,180],[80,140,220],[200,200,400]],
+    q1text:'¿Cuál es la probabilidad de que un paciente elegido al azar <strong>fume Y tenga hipertensión</strong>?',
+    q1val:120/400, q1str:'120/400 = 0,30',
+    q1expl:'P(Fuma∩Hiper.) = 120/400 = 0,30. Se toma la celda de intersección (120) sobre el total general (400).',
+    q2text:'¿Cuál es la probabilidad de que un paciente <strong>tenga hipertensión, sabiendo que NO fuma</strong>?',
+    q2val:80/220, q2str:'80/220 ≈ 0,364',
+    q2expl:'P(Hiper.|¬Fuma) = 80/220 ≈ 0,364. El espacio se restringe a los 220 no fumadores; 80 de ellos tienen hipertensión.'
+  },
+  {
+    id:'T5',slot:'T',tag:'Tabla · Intersección y condicionada',
+    text:`En un municipio se encuestaron ciudadanos sobre si votaron y si están satisfechos con los servicios públicos.
+    <strong>350 votaron</strong>; de ellos <strong>280 están satisfechos</strong>.
+    De los que <strong>no votaron</strong>, <strong>60 están satisfechos</strong> y <strong>90 no lo están</strong>.`,
+    cols:['Satisfecho','No satisfecho','Total'],
+    rows:['Votó','No votó','<strong>Total</strong>'],
+    ids:[['T5_11','T5_12','T5_13'],['T5_21','T5_22','T5_23'],['T5_31','T5_32','T5_33']],
+    vals:[[280,70,350],[60,90,150],[340,160,500]],
+    q1text:'¿Cuál es la probabilidad de que un ciudadano elegido al azar <strong>haya votado Y esté satisfecho</strong>?',
+    q1val:280/500, q1str:'280/500 = 0,56',
+    q1expl:'P(Voto∩Satis.) = 280/500 = 0,56. Se toma la celda de intersección (280) sobre el total general (500).',
+    q2text:'¿Cuál es la probabilidad de que un ciudadano <strong>no esté satisfecho, sabiendo que votó</strong>?',
+    q2val:70/350, q2str:'70/350 = 0,20',
+    q2expl:'P(¬Satis.|Voto) = 70/350 = 0,20. El espacio se restringe a los 350 que votaron; 70 de ellos no están satisfechos.'
+  },
+  {
+    id:'T6',slot:'T',tag:'Tabla · Intersección y condicionada',
+    text:`En un centro de estudios se recogieron datos sobre si los alumnos asisten a tutorías y si superan el examen final.
+    <strong>240 alumnos asisten a tutorías</strong>; de ellos <strong>200 superan el examen</strong>.
+    En total <strong>80 alumnos no superan el examen</strong>, y hay <strong>120 que no asisten a tutorías</strong>.`,
+    cols:['Supera exam.','No supera','Total'],
+    rows:['Asiste tutorías','No asiste','<strong>Total</strong>'],
+    ids:[['T6_11','T6_12','T6_13'],['T6_21','T6_22','T6_23'],['T6_31','T6_32','T6_33']],
+    vals:[[200,40,240],[80,40,120],[280,80,360]],
+    q1text:'¿Cuál es la probabilidad de que un alumno elegido al azar <strong>asista a tutorías Y supere el examen</strong>?',
+    q1val:200/360, q1str:'200/360 ≈ 0,556',
+    q1expl:'P(Tut.∩Sup.) = 200/360 ≈ 0,556. Se toma la celda de intersección (200) sobre el total general (360).',
+    q2text:'¿Cuál es la probabilidad de que un alumno <strong>supere el examen, sabiendo que NO asiste a tutorías</strong>?',
+    q2val:80/120, q2str:'80/120 ≈ 0,667',
+    q2expl:'P(Sup.|¬Tut.) = 80/120 ≈ 0,667. El espacio se restringe a los 120 que no asisten a tutorías; 80 de ellos superan el examen.'
+  },
+  {
+    id:'T7',slot:'T',tag:'Tabla · Intersección y condicionada',
+    text:`En una fábrica se inspeccionaron piezas de dos turnos.
+    El <strong>turno de mañana produce 300 piezas</strong>, de las cuales <strong>15 son defectuosas</strong>.
+    El turno de tarde produce <strong>200 piezas</strong> y en total hay <strong>35 piezas defectuosas</strong>.`,
+    cols:['Defectuosa','Correcta','Total'],
+    rows:['Turno mañana','Turno tarde','<strong>Total</strong>'],
+    ids:[['T7_11','T7_12','T7_13'],['T7_21','T7_22','T7_23'],['T7_31','T7_32','T7_33']],
+    vals:[[15,285,300],[20,180,200],[35,465,500]],
+    q1text:'¿Cuál es la probabilidad de que una pieza elegida al azar sea <strong>del turno de tarde Y sea defectuosa</strong>?',
+    q1val:20/500, q1str:'20/500 = 0,04',
+    q1expl:'P(Tarde∩Def.) = 20/500 = 0,04. Se toma la celda de intersección (20) sobre el total general (500).',
+    q2text:'¿Cuál es la probabilidad de que una pieza sea <strong>defectuosa, sabiendo que es del turno de mañana</strong>?',
+    q2val:15/300, q2str:'15/300 = 0,05',
+    q2expl:'P(Def.|Mañana) = 15/300 = 0,05. El espacio se restringe a las 300 piezas del turno de mañana; 15 de ellas son defectuosas.'
+  }
+];
+
+/* ── BANCO ÁRBOLES ── */
+const TREES=[
+  {id:'A1',slot:'A',tag:'Árbol · Probabilidad Total',
+   text:`En un colegio, el <strong>60 % de los alumnos</strong> estudia inglés y el <strong>40 %</strong> francés.
+   De los de inglés, el <strong>75 %</strong> aprueba el examen; de los de francés, el <strong>50 %</strong>.
+   <br><br>Construye el árbol rellenando la probabilidad de cada rama.`,
+   roots:['Inglés','Francés'],subs:[['Aprueba','Suspende'],['Aprueba','Suspende']],
+   vals:[0.6,0.75,0.25,0.4,0.50,0.50],
+   q1text:'¿Cuál es la probabilidad de que un alumno elegido al azar <strong>apruebe el examen de idiomas</strong>?',
+   q1val:0.65,q1str:'0,65',
+   q1expl:'P(Ap.)=0,60×0,75+0,40×0,50=0,45+0,20=0,65. Se suman los caminos que llevan a Aprueba.',
+   q2text:'¿Cuál es la probabilidad de que un alumno <strong>estudie francés, sabiendo que ha suspendido</strong>?',
+   q2val:0.20/0.35,q2str:'0,20/0,35 ≈ 0,571',
+   q2expl:'P(Susp.)=0,60×0,25+0,40×0,50=0,15+0,20=0,35. Bayes: P(Fr|Susp.)=0,20/0,35≈0,571.'},
+
+  {id:'A2',slot:'A',tag:'Árbol · Teorema de Bayes',
+   text:`Una empresa compra piezas a dos proveedores: <strong>proveedor A suministra el 40 %</strong> y <strong>B el 60 %</strong>.
+   El <strong>3 %</strong> de las de A son defectuosas y el <strong>1 %</strong> de las de B.
+   <br><br>Construye el árbol rellenando todas las ramas.`,
+   roots:['Prov. A','Prov. B'],subs:[['Defect.','Correc.'],['Defect.','Correc.']],
+   vals:[0.4,0.03,0.97,0.6,0.01,0.99],
+   q1text:'¿Cuál es la probabilidad de que una pieza elegida al azar sea <strong>defectuosa</strong>?',
+   q1val:0.018,q1str:'0,018',
+   q1expl:'P(D)=0,40×0,03+0,60×0,01=0,012+0,006=0,018. Se suman los dos caminos que llevan a Defectuosa.',
+   q2text:'Una pieza resulta <strong>defectuosa</strong>. ¿Cuál es la probabilidad de que proceda del <strong>proveedor A</strong>?',
+   q2val:2/3,q2str:'2/3 ≈ 0,667',
+   q2expl:'Bayes: P(A|D)=P(A)·P(D|A)/P(D)=0,012/0,018=2/3≈0,667.'},
+
+  {id:'A3',slot:'A',tag:'Árbol · Tres ramas',
+   text:`En una ciudad: <strong>45 % usa coche</strong>, <strong>35 % transporte público</strong> y <strong>20 % va a pie</strong>.
+   Probabilidad de llegar tarde: <strong>0,10</strong> en coche, <strong>0,25</strong> en T.P. y <strong>0,05</strong> a pie.
+   <br><br>Construye el árbol completo con las tres ramas.`,
+   roots:['Coche','T.Público','A pie'],subs:[['Tarde','Puntual'],['Tarde','Puntual'],['Tarde','Puntual']],
+   vals:[0.45,0.10,0.90,0.35,0.25,0.75,0.20,0.05,0.95],
+   q1text:'¿Cuál es la probabilidad de que un habitante elegido al azar <strong>llegue tarde al trabajo</strong>?',
+   q1val:0.1425,q1str:'0,1425',
+   q1expl:'P(T)=0,45×0,10+0,35×0,25+0,20×0,05=0,045+0,0875+0,010=0,1425.',
+   q2text:'Un habitante <strong>llega tarde</strong>. ¿Cuál es la probabilidad de que haya ido <strong>en transporte público</strong>?',
+   q2val:0.35*0.25/0.1425,q2str:'0,0875/0,1425 ≈ 0,614',
+   q2expl:'Bayes: P(TP|T)=P(TP)·P(T|TP)/P(T)=0,35×0,25/0,1425=0,0875/0,1425≈0,614.'},
+
+  {id:'A4',slot:'A',tag:'Árbol · Prob. Total y Bayes',
+   text:`En una clínica, el <strong>30 % de los pacientes</strong> tiene antecedentes familiares de la enfermedad y el <strong>70 %</strong> no.
+   La probabilidad de dar positivo en la prueba es <strong>0,90</strong> si tiene antecedentes y <strong>0,20</strong> si no los tiene.
+   <br><br>Construye el árbol rellenando todas las ramas.`,
+   roots:['Antecedentes','Sin antec.'],subs:[['Positivo','Negativo'],['Positivo','Negativo']],
+   vals:[0.3,0.90,0.10,0.7,0.20,0.80],
+   q1text:'¿Cuál es la probabilidad de que un paciente elegido al azar <strong>dé positivo en la prueba</strong>?',
+   q1val:0.3*0.9+0.7*0.2,q1str:'0,41',
+   q1expl:'P(+)=0,30×0,90+0,70×0,20=0,27+0,14=0,41.',
+   q2text:'Un paciente <strong>da positivo</strong>. ¿Cuál es la probabilidad de que <strong>tenga antecedentes familiares</strong>?',
+   q2val:0.27/0.41,q2str:'0,27/0,41 ≈ 0,659',
+   q2expl:'Bayes: P(Ant.|+)=P(Ant.)·P(+|Ant.)/P(+)=0,27/0,41≈0,659.'},
+
+  {id:'A5',slot:'A',tag:'Árbol · Tres ramas y Bayes',
+   text:`Una fábrica tiene tres máquinas: <strong>A produce el 50 %</strong>, <strong>B el 30 %</strong> y <strong>C el 20 %</strong> de las piezas.
+   La tasa de defectos es <strong>2 %</strong> en A, <strong>4 %</strong> en B y <strong>5 %</strong> en C.
+   <br><br>Construye el árbol completo con las tres ramas.`,
+   roots:['Máq. A','Máq. B','Máq. C'],subs:[['Defect.','Correc.'],['Defect.','Correc.'],['Defect.','Correc.']],
+   vals:[0.50,0.02,0.98,0.30,0.04,0.96,0.20,0.05,0.95],
+   q1text:'¿Cuál es la probabilidad de que una pieza elegida al azar sea <strong>defectuosa</strong>?',
+   q1val:0.50*0.02+0.30*0.04+0.20*0.05,q1str:'0,032',
+   q1expl:'P(D)=0,50×0,02+0,30×0,04+0,20×0,05=0,010+0,012+0,010=0,032.',
+   q2text:'Una pieza resulta <strong>defectuosa</strong>. ¿Cuál es la probabilidad de que la haya fabricado la <strong>máquina B</strong>?',
+   q2val:0.012/0.032,q2str:'0,012/0,032 = 0,375',
+   q2expl:'Bayes: P(B|D)=P(B)·P(D|B)/P(D)=0,30×0,04/0,032=0,012/0,032=0,375.'}
+];
+
+/* ── BANCO FÓRMULAS — 12 ejercicios ── */
+const OL='<span style="text-decoration:overline">';const OLC='</span>';
+const FORMULAS=[
+  {id:'F1',slot:'F',tag:'Unión · De Morgan',
+   text:`Sean A y B dos sucesos con <strong>P(A) = 0,6</strong>, <strong>P(B) = 0,5</strong> y <strong>P(A ∩ B) = 0,3</strong>.`,
+   qtext:`¿Cuáles son P(A ∪ B) y P(${OL}A${OLC} ∩ ${OL}B${OLC})?`,
+   opts:[`P(A∪B)=0,80 y P(${OL}A${OLC}∩${OL}B${OLC})=0,20`,`P(A∪B)=0,70 y P(${OL}A${OLC}∩${OL}B${OLC})=0,30`,`P(A∪B)=0,80 y P(${OL}A${OLC}∩${OL}B${OLC})=0,30`,`P(A∪B)=0,90 y P(${OL}A${OLC}∩${OL}B${OLC})=0,10`],
+   correct:'A',
+   expl:`P(A∪B)=0,6+0,5−0,3=0,80. De Morgan: P(${OL}A${OLC}∩${OL}B${OLC})=1−P(A∪B)=0,20.`},
+
+  {id:'F2',slot:'F',tag:'Prob. condicionada → Unión',
+   text:`Sean A y B con <strong>P(A) = 0,4</strong>, <strong>P(B) = 0,3</strong> y <strong>P(A | B) = 0,5</strong>.`,
+   qtext:'¿Cuánto vale <strong>P(A ∪ B)</strong>?',
+   opts:['P(A∪B) = 0,55','P(A∪B) = 0,70','P(A∪B) = 0,85','P(A∪B) = 0,45'],
+   correct:'A',
+   expl:'P(A|B)=P(A∩B)/P(B) → P(A∩B)=0,5×0,3=0,15. P(A∪B)=0,4+0,3−0,15=0,55.'},
+
+  {id:'F3',slot:'F',tag:'Independientes · De Morgan',
+   text:`Sean A y B <strong>independientes</strong> con <strong>P(A) = 0,7</strong> y <strong>P(B) = 0,4</strong>.`,
+   qtext:`¿Cuánto vale P(${OL}A${OLC} ∪ ${OL}B${OLC})?`,
+   opts:[`P(${OL}A${OLC}∪${OL}B${OLC}) = 0,72`,`P(${OL}A${OLC}∪${OL}B${OLC}) = 0,28`,`P(${OL}A${OLC}∪${OL}B${OLC}) = 0,58`,`P(${OL}A${OLC}∪${OL}B${OLC}) = 0,88`],
+   correct:'A',
+   expl:`De Morgan: ${OL}A${OLC}∪${OL}B${OLC} = ${OL}A∩B${OLC}. Independ.: P(A∩B)=0,7×0,4=0,28. P(${OL}A${OLC}∪${OL}B${OLC})=1−0,28=0,72.`},
+
+  {id:'F4',slot:'F',tag:'De Morgan · desde complementario de unión',
+   text:`Sean A y B con <strong>P(A) = 0,5</strong>, <strong>P(B) = 0,4</strong> y <strong>P(${OL}A${OLC} ∩ ${OL}B${OLC}) = 0,25</strong>.`,
+   qtext:'¿Cuánto vale <strong>P(A ∩ B)</strong>?',
+   opts:['P(A∩B) = 0,15','P(A∩B) = 0,20','P(A∩B) = 0,25','P(A∩B) = 0,10'],
+   correct:'A',
+   expl:`De Morgan: P(${OL}A${OLC}∩${OL}B${OLC})=1−P(A∪B)=0,25, luego P(A∪B)=0,75. Despejando: P(A∩B)=P(A)+P(B)−P(A∪B)=0,5+0,4−0,75=0,15.`},
+
+  {id:'F5',slot:'F',tag:'Sucesos incompatibles',
+   text:`Sean A y B <strong>incompatibles</strong> con <strong>P(A) = 0,35</strong> y <strong>P(B) = 0,45</strong>.`,
+   qtext:`¿Cuáles son P(A ∪ B) y P(${OL}A${OLC} ∩ ${OL}B${OLC})?`,
+   opts:[`P(A∪B)=0,80 y P(${OL}A${OLC}∩${OL}B${OLC})=0,20`,`P(A∪B)=0,80 y P(${OL}A${OLC}∩${OL}B${OLC})=0,16`,`P(A∪B)=0,16 y P(${OL}A${OLC}∩${OL}B${OLC})=0,80`,`P(A∪B)=0,575 y P(${OL}A${OLC}∩${OL}B${OLC})=0,25`],
+   correct:'A',
+   expl:`Incompatibles: P(A∩B)=0. P(A∪B)=0,35+0,45=0,80. De Morgan: P(${OL}A${OLC}∩${OL}B${OLC})=1−0,80=0,20.`},
+
+  {id:'F6',slot:'F',tag:'Calcular prob. condicionada',
+   text:`Sean A y B con <strong>P(A) = 0,5</strong>, <strong>P(B) = 0,4</strong> y <strong>P(A ∩ B) = 0,2</strong>.`,
+   qtext:'¿Cuánto valen <strong>P(A | B)</strong> y <strong>P(B | A)</strong>?',
+   opts:['P(A|B)=0,50 y P(B|A)=0,40','P(A|B)=0,40 y P(B|A)=0,50','P(A|B)=0,20 y P(B|A)=0,20','P(A|B)=0,50 y P(B|A)=0,50'],
+   correct:'A',
+   expl:'P(A|B)=P(A∩B)/P(B)=0,2/0,4=0,50. P(B|A)=P(A∩B)/P(A)=0,2/0,5=0,40.'},
+
+  {id:'F7',slot:'F',tag:'Prob. condicionada P(B|A) → De Morgan',
+   text:`Sean A y B con <strong>P(A) = 0,6</strong>, <strong>P(B) = 0,5</strong> y <strong>P(B | A) = 0,4</strong>.`,
+   qtext:`¿Cuánto vale P(${OL}A${OLC} ∩ ${OL}B${OLC})?`,
+   opts:[`P(${OL}A${OLC}∩${OL}B${OLC}) = 0,14`,`P(${OL}A${OLC}∩${OL}B${OLC}) = 0,26`,`P(${OL}A${OLC}∩${OL}B${OLC}) = 0,50`,`P(${OL}A${OLC}∩${OL}B${OLC}) = 0,36`],
+   correct:'A',
+   expl:`P(B|A)=P(A∩B)/P(A) → P(A∩B)=0,4×0,6=0,24. P(A∪B)=0,6+0,5−0,24=0,86. De Morgan: P(${OL}A${OLC}∩${OL}B${OLC})=1−0,86=0,14.`},
+
+  {id:'F8',slot:'F',tag:'Independientes · Unión y complementario',
+   text:`Sean A y B <strong>independientes</strong> con <strong>P(A) = 0,3</strong> y <strong>P(B) = 0,5</strong>.`,
+   qtext:`¿Cuáles son P(A ∪ B) y P(${OL}A∪B${OLC})?`,
+   opts:[`P(A∪B)=0,65 y P(${OL}A∪B${OLC})=0,35`,`P(A∪B)=0,80 y P(${OL}A∪B${OLC})=0,20`,`P(A∪B)=0,15 y P(${OL}A∪B${OLC})=0,85`,`P(A∪B)=0,65 y P(${OL}A∪B${OLC})=0,15`],
+   correct:'A',
+   expl:`Independ.: P(A∩B)=0,3×0,5=0,15. P(A∪B)=0,3+0,5−0,15=0,65. P(${OL}A∪B${OLC})=1−0,65=0,35.`},
+
+  {id:'F9',slot:'F',tag:'Independientes · Deducir P(B)',
+   text:`Sean A y B <strong>independientes</strong> con <strong>P(A) = 0,4</strong> y <strong>P(A ∪ B) = 0,7</strong>.`,
+   qtext:'¿Cuánto vale <strong>P(B)</strong>?',
+   opts:['P(B) = 0,50','P(B) = 0,30','P(B) = 0,60','P(B) = 0,45'],
+   correct:'A',
+   expl:'Independ.: P(A∩B)=0,4·P(B). P(A∪B)=0,4+P(B)−0,4·P(B)=0,7 → 0,6·P(B)=0,3 → P(B)=0,50.'},
+
+  {id:'F10',slot:'F',tag:'¿Son independientes?',
+   text:`Sean A y B con <strong>P(A) = 0,6</strong>, <strong>P(B) = 0,5</strong> y <strong>P(A ∩ B) = 0,3</strong>.`,
+   qtext:'¿Son A y B independientes? ¿Y son incompatibles?',
+   opts:['Independientes: sí. Incompatibles: no.','Independientes: no. Incompatibles: sí.','Independientes: sí. Incompatibles: sí.','Independientes: no. Incompatibles: no.'],
+   correct:'A',
+   expl:'Independ.: P(A)·P(B)=0,6×0,5=0,30=P(A∩B) → sí son independientes. Incompatibles requiere P(A∩B)=0, pero P(A∩B)=0,30≠0 → no son incompatibles.'},
+
+  {id:'F11',slot:'F',tag:'Incompatibles · Deducir P(B)',
+   text:`A y B son <strong>incompatibles</strong>. Se sabe que <strong>P(A) = 0,25</strong> y <strong>P(A ∪ B) = 0,70</strong>.`,
+   qtext:`¿Cuánto valen P(B) y P(${OL}A${OLC} ∩ ${OL}B${OLC})?`,
+   opts:[`P(B)=0,45 y P(${OL}A${OLC}∩${OL}B${OLC})=0,30`,`P(B)=0,45 y P(${OL}A${OLC}∩${OL}B${OLC})=0,45`,`P(B)=0,70 y P(${OL}A${OLC}∩${OL}B${OLC})=0,30`,`P(B)=0,25 y P(${OL}A${OLC}∩${OL}B${OLC})=0,30`],
+   correct:'A',
+   expl:`Incompatibles: P(A∪B)=P(A)+P(B) → P(B)=0,70−0,25=0,45. De Morgan: P(${OL}A${OLC}∩${OL}B${OLC})=1−P(A∪B)=1−0,70=0,30.`},
+
+  {id:'F12',slot:'F',tag:'Condicionada + De Morgan (dos pasos)',
+   text:`Sean A y B con <strong>P(A) = 0,5</strong>, <strong>P(B) = 0,6</strong> y <strong>P(A | B) = 0,4</strong>.`,
+   qtext:`¿Cuánto vale P(${OL}A${OLC} ∩ ${OL}B${OLC})?`,
+   opts:[`P(${OL}A${OLC}∩${OL}B${OLC}) = 0,14`,`P(${OL}A${OLC}∩${OL}B${OLC}) = 0,26`,`P(${OL}A${OLC}∩${OL}B${OLC}) = 0,36`,`P(${OL}A${OLC}∩${OL}B${OLC}) = 0,40`],
+   correct:'A',
+   expl:`P(A|B)=P(A∩B)/P(B) → P(A∩B)=0,4×0,6=0,24. P(A∪B)=0,5+0,6−0,24=0,86. De Morgan: P(${OL}A${OLC}∩${OL}B${OLC})=1−0,86=0,14.`}
+];
+
+/* Baraja las opciones de cada fórmula al cargar, para que la posición
+   de la respuesta correcta no sea siempre la misma (antes, las 12
+   tenían correct:'A' fijo, un fallo grave detectado en revisión). */
+function shuffleFormulaOptions(ex){
+  const correctIdx = ex.correct.charCodeAt(0) - 65;
+  const correctText = ex.opts[correctIdx];
+  const arr = ex.opts.slice();
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  ex.opts = arr;
+  ex.correct = String.fromCharCode(65 + arr.indexOf(correctText));
+}
+FORMULAS.forEach(shuffleFormulaOptions);
+
+const usedIds = {T:new Set(), A:new Set(), F:new Set()};
+let currentT=pick(TABLES); usedIds.T.add(currentT.id);
+let currentA=pick(TREES); usedIds.A.add(currentA.id);
+let currentF=pick(FORMULAS); usedIds.F.add(currentF.id);
+
+/* ── Bloque cerrado para un sub-apartado ya resuelto en otra instancia ── */
+function closedBlockHTML(key,label){
+  const st=state[key];
+  return `<div class="fq"><p class="fqlabel">${label} — ${SLOT_MAX[key]} pts</p>
+    <div class="fb show ${st.ok?'ok':'er'}" aria-live="polite">${st.feedbackHTML}</div></div>`;
+}
+
+/* ══════════════════════
+   BUILD TABLA
+══════════════════════ */
+function buildTable(ex){
+  let rowsHTML='';
+  for(let r=0;r<3;r++){
+    rowsHTML+=`<tr><td class="rh">${ex.rows[r]}</td>`;
+    for(let c=0;c<3;c++){
+      const id=ex.ids[r][c];
+      const aria=`Celda ${ex.rows[r].replace(/<[^>]+>/g,'')} / ${ex.cols[c]}`;
+      if(r===2&&c===2){
+        rowsHTML+=`<td class="fix-inp"><input class="tinp" id="${id}" placeholder="?" autocomplete="off"
+          title="Deduce el total general del enunciado" aria-label="Total general (deducir)"></td>`;
+      } else {
+        rowsHTML+=`<td><input class="cinp" id="${id}" placeholder="?" autocomplete="off" aria-label="${aria}"></td>`;
+      }
+    }
+    rowsHTML+='</tr>';
+  }
+
+  const constrKey='T_construccion';
+  const constrSt=state[constrKey];
+  const constrBlock = `
+  <p class="tlabel">Completa la tabla — incluido el total general (celda dorada) · ${SLOT_MAX[constrKey]} pts</p>
+  <div class="tbl-wrap"><table class="ctbl">
+    <tr><th></th><th>${ex.cols[0]}</th><th>${ex.cols[1]}</th><th>${ex.cols[2]}</th></tr>${rowsHTML}
+  </table></div>
+  <button class="btn-v" onclick="verifyTable('${ex.id}')">✓ Comprobar tabla</button>
+  <div class="hint" id="hint_${ex.id}" aria-live="polite">${constrSt.resolved?('<strong>'+(constrSt.ok?'✓':'✗')+' Esta parte ya está resuelta ('+constrSt.pts+' pts). Puedes seguir practicando, sin efecto en la nota.</strong>'):''}</div>`;
+
+  const q1Block = state['T_q1'].resolved ? closedBlockHTML('T_q1','Pregunta 1 — Probabilidad de intersección') : `
+  <div class="fq">
+    <p class="fqlabel">Pregunta 1 — Probabilidad de intersección · ${SLOT_MAX.T_q1} pt</p>
+    <p class="qtext">${ex.q1text}</p>
+    <p class="fmt-hint">Escribe el resultado como fracción o decimal (usa coma decimal)</p>
+    <div class="ans-row">
+      <label class="ans-label" for="ans1_${ex.id}">R =</label>
+      <input class="ans-inp" id="ans1_${ex.id}" placeholder="Tu respuesta…" autocomplete="off" aria-label="Respuesta a la pregunta 1">
+    </div>
+    <div class="actions">
+      <button class="btn-chk" id="chk1_${ex.id}" onclick="checkTableAns('${ex.id}',1)">Comprobar</button>
+    </div>
+    <div class="fb" id="fb1_${ex.id}" aria-live="polite"></div>
+  </div>`;
+
+  const q2Block = state['T_q2'].resolved ? closedBlockHTML('T_q2','Pregunta 2 — Probabilidad condicionada') : `
+  <div class="fq">
+    <p class="fqlabel q2lbl">Pregunta 2 — Probabilidad condicionada · ${SLOT_MAX.T_q2} pt</p>
+    <p class="qtext">${ex.q2text}</p>
+    <p class="fmt-hint">Escribe el resultado como fracción o decimal (usa coma decimal)</p>
+    <div class="ans-row">
+      <label class="ans-label" for="ans2_${ex.id}">R =</label>
+      <input class="ans-inp" id="ans2_${ex.id}" placeholder="Tu respuesta…" autocomplete="off" aria-label="Respuesta a la pregunta 2">
+    </div>
+    <div class="actions">
+      <button class="btn-chk" id="chk2_${ex.id}" onclick="checkTableAns('${ex.id}',2)">Comprobar</button>
+    </div>
+    <div class="fb" id="fb2_${ex.id}" aria-live="polite"></div>
+  </div>`;
+
+  return `<span class="ctag tT">${ex.tag}</span>
+  <p class="qtext">${ex.text}</p>
+  ${constrBlock}
+  <div class="q-sep"></div>
+  ${q1Block}
+  <div class="q-sep"></div>
+  ${q2Block}
+  <div class="actions">
+    <button class="btn-otro" id="otro_${ex.id}" onclick="newEx('T')">Hacer otro</button>
+  </div>`;
+}
+
+/* ── Comprobar cada una de las dos respuestas de la tabla ── */
+function checkTableAns(exId,qNum){
+  const key='T_q'+qNum;
+  if(state[key].resolved)return;
+  const ex=TABLES.find(e=>e.id===exId);if(!ex)return;
+  const inp=document.getElementById('ans'+qNum+'_'+exId);
+  if(!inp||inp.value.trim()===''){showInlineWarning(inp,'Escribe tu respuesta antes de comprobar.');return;}
+
+  const raw=inp.value.trim().replace(',','.');
+  let val;
+  if(raw.includes('/')){
+    const parts=raw.split('/');
+    val=parseFloat(parts[0])/parseFloat(parts[1]);
+  } else {
+    const eqParts=raw.split('=');
+    val=parseFloat(eqParts[eqParts.length-1].trim());
+  }
+  const correctVal=qNum===1?ex.q1val:ex.q2val;
+  const correctStr=qNum===1?ex.q1str:ex.q2str;
+  const expl=qNum===1?ex.q1expl:ex.q2expl;
+  const isOk=approx(val,correctVal,0.006);
+
+  const st=state[key];
+  st.resolved=true; st.ok=isOk; st.pts=isOk?SLOT_MAX[key]:0;
+  st.feedbackHTML=(isOk?'<strong>✓ ¡Correcto! (+'+SLOT_MAX[key]+' pt)</strong>':
+    '<strong>✗ Incorrecto (0 pts, sin más intentos) — La respuesta correcta es '+correctStr+'.</strong><div class="why">'+expl+'</div>');
+
+  inp.classList.remove('vok','ver');inp.classList.add(isOk?'vok':'ver');
+  inp.disabled=true;
+
+  const fb=document.getElementById('fb'+qNum+'_'+exId);
+  fb.className='fb show '+(isOk?'ok':'er');
+  fb.innerHTML=st.feedbackHTML;
+  document.getElementById('chk'+qNum+'_'+exId).disabled=true;
+
+  const bothOk=state.T_q1.ok&&state.T_q2.ok;
+  const bothResolved=state.T_q1.resolved&&state.T_q2.resolved;
+  if(bothResolved){
+    const bothWrong=!state.T_q1.ok&&!state.T_q2.ok;
+    document.querySelectorAll('.card').forEach(c=>{
+      if(c.innerHTML.includes('ans1_'+exId)||c.innerHTML.includes('fb1_T')){
+        c.classList.remove('cor','wrong');
+        if(bothOk)c.classList.add('cor');
+        else if(bothWrong)c.classList.add('wrong');
+      }
+    });
+  }
+  refreshOtroVisibility();
+  updateScoreUI();
+}
+
+/* ── BUILD ÁRBOL ── */
+function buildTreeHTML(ex){
+  const is3=(ex.roots.length===3);
+  let rows='';
+  if(!is3){
+    const ids=['A_r0','A_r1','A_r2','A_r3','A_r4','A_r5'];
+    ex._ids=ids;
+    rows=`
+    <div class="hrow"><div class="root-lbl">Inicio</div><div class="arr">→</div>
+      <input class="binp" id="${ids[0]}" placeholder="P(${ex.roots[0]})" autocomplete="off" aria-label="Probabilidad de ${ex.roots[0]}">
+      <div class="arr">→</div>
+      <input class="binp" id="${ids[1]}" placeholder="P(${ex.subs[0][0]}|…)" autocomplete="off" aria-label="Probabilidad de ${ex.subs[0][0]} dado ${ex.roots[0]}">
+    </div>
+    <div class="hrow"><div></div><div></div><div class="sub-lbl">${ex.roots[0]}</div><div class="arr">→</div>
+      <input class="binp" id="${ids[2]}" placeholder="P(${ex.subs[0][1]}|…)" autocomplete="off" aria-label="Probabilidad de ${ex.subs[0][1]} dado ${ex.roots[0]}">
+    </div>
+    <div class="hrow-sp"></div>
+    <div class="hrow"><div></div><div class="arr">→</div>
+      <input class="binp" id="${ids[3]}" placeholder="P(${ex.roots[1]})" autocomplete="off" aria-label="Probabilidad de ${ex.roots[1]}">
+      <div class="arr">→</div>
+      <input class="binp" id="${ids[4]}" placeholder="P(${ex.subs[1][0]}|…)" autocomplete="off" aria-label="Probabilidad de ${ex.subs[1][0]} dado ${ex.roots[1]}">
+    </div>
+    <div class="hrow"><div></div><div></div><div class="sub-lbl">${ex.roots[1]}</div><div class="arr">→</div>
+      <input class="binp" id="${ids[5]}" placeholder="P(${ex.subs[1][1]}|…)" autocomplete="off" aria-label="Probabilidad de ${ex.subs[1][1]} dado ${ex.roots[1]}">
+    </div>`;
+  } else {
+    const ids=['A_r0','A_r1','A_r2','A_r3','A_r4','A_r5','A_r6','A_r7','A_r8'];
+    ex._ids=ids;
+    rows=`
+    <div class="hrow"><div class="root-lbl">Inicio</div><div class="arr">→</div>
+      <input class="binp" id="${ids[0]}" placeholder="P(${ex.roots[0]})" autocomplete="off" aria-label="Probabilidad de ${ex.roots[0]}">
+      <div class="arr">→</div>
+      <input class="binp" id="${ids[1]}" placeholder="P(${ex.subs[0][0]}|…)" autocomplete="off" aria-label="Probabilidad de ${ex.subs[0][0]} dado ${ex.roots[0]}">
+    </div>
+    <div class="hrow"><div></div><div></div><div class="sub-lbl">${ex.roots[0]}</div><div class="arr">→</div>
+      <input class="binp" id="${ids[2]}" placeholder="P(${ex.subs[0][1]}|…)" autocomplete="off" aria-label="Probabilidad de ${ex.subs[0][1]} dado ${ex.roots[0]}">
+    </div>
+    <div class="hrow-sp"></div>
+    <div class="hrow"><div></div><div class="arr">→</div>
+      <input class="binp" id="${ids[3]}" placeholder="P(${ex.roots[1]})" autocomplete="off" aria-label="Probabilidad de ${ex.roots[1]}">
+      <div class="arr">→</div>
+      <input class="binp" id="${ids[4]}" placeholder="P(${ex.subs[1][0]}|…)" autocomplete="off" aria-label="Probabilidad de ${ex.subs[1][0]} dado ${ex.roots[1]}">
+    </div>
+    <div class="hrow"><div></div><div></div><div class="sub-lbl">${ex.roots[1]}</div><div class="arr">→</div>
+      <input class="binp" id="${ids[5]}" placeholder="P(${ex.subs[1][1]}|…)" autocomplete="off" aria-label="Probabilidad de ${ex.subs[1][1]} dado ${ex.roots[1]}">
+    </div>
+    <div class="hrow-sp"></div>
+    <div class="hrow"><div></div><div class="arr">→</div>
+      <input class="binp" id="${ids[6]}" placeholder="P(${ex.roots[2]})" autocomplete="off" aria-label="Probabilidad de ${ex.roots[2]}">
+      <div class="arr">→</div>
+      <input class="binp" id="${ids[7]}" placeholder="P(${ex.subs[2][0]}|…)" autocomplete="off" aria-label="Probabilidad de ${ex.subs[2][0]} dado ${ex.roots[2]}">
+    </div>
+    <div class="hrow"><div></div><div></div><div class="sub-lbl">${ex.roots[2]}</div><div class="arr">→</div>
+      <input class="binp" id="${ids[8]}" placeholder="P(${ex.subs[2][1]}|…)" autocomplete="off" aria-label="Probabilidad de ${ex.subs[2][1]} dado ${ex.roots[2]}">
+    </div>`;
+  }
+
+  const constrKey='A_construccion';
+  const constrSt=state[constrKey];
+  const constrBlock=`
+  <p class="tlabel">Construye el árbol · ${SLOT_MAX[constrKey]} pts</p>
+  <div class="tree-box"><div class="htree">${rows}</div></div>
+  <button class="btn-v" onclick="verifyTree('${ex.id}')">✓ Comprobar árbol</button>
+  <div class="hint" id="hint_${ex.id}" aria-live="polite">${constrSt.resolved?('<strong>'+(constrSt.ok?'✓':'✗')+' Esta parte ya está resuelta ('+constrSt.pts+' pts). Puedes seguir practicando, sin efecto en la nota.</strong>'):''}</div>`;
+
+  const q1Block = state['A_q1'].resolved ? closedBlockHTML('A_q1','Pregunta 1 — Probabilidad total') : `
+  <div class="fq">
+    <p class="fqlabel">Pregunta 1 — Probabilidad total · ${SLOT_MAX.A_q1} pt</p>
+    <p class="qtext">${ex.q1text}</p>
+    <p class="fmt-hint">Escribe el resultado como fracción o decimal (usa coma decimal)</p>
+    <div class="ans-row">
+      <label class="ans-label" for="asol1_${ex.id}">R =</label>
+      <input class="ans-inp" id="asol1_${ex.id}" placeholder="Tu respuesta…" autocomplete="off" aria-label="Respuesta a la pregunta 1">
+    </div>
+    <div class="actions">
+      <button class="btn-chk" id="achk1_${ex.id}" onclick="checkTreeAns('${ex.id}',1)">Comprobar</button>
+    </div>
+    <div class="fb" id="afb1_${ex.id}" aria-live="polite"></div>
+  </div>`;
+
+  const q2Block = state['A_q2'].resolved ? closedBlockHTML('A_q2','Pregunta 2 — Teorema de Bayes') : `
+  <div class="fq">
+    <p class="fqlabel q2lbl">Pregunta 2 — Teorema de Bayes · ${SLOT_MAX.A_q2} pt</p>
+    <p class="qtext">${ex.q2text}</p>
+    <p class="fmt-hint">Escribe el resultado como fracción o decimal (usa coma decimal)</p>
+    <div class="ans-row">
+      <label class="ans-label" for="asol2_${ex.id}">R =</label>
+      <input class="ans-inp" id="asol2_${ex.id}" placeholder="Tu respuesta…" autocomplete="off" aria-label="Respuesta a la pregunta 2">
+    </div>
+    <div class="actions">
+      <button class="btn-chk" id="achk2_${ex.id}" onclick="checkTreeAns('${ex.id}',2)">Comprobar</button>
+    </div>
+    <div class="fb" id="afb2_${ex.id}" aria-live="polite"></div>
+  </div>`;
+
+  return `<span class="ctag tA">${ex.tag}</span>
+  <p class="qtext">${ex.text}</p>
+  ${constrBlock}
+  <div class="q-sep"></div>
+  ${q1Block}
+  <div class="q-sep"></div>
+  ${q2Block}
+  <div class="actions">
+    <button class="btn-otro" id="otro_${ex.id}" onclick="newEx('A')" style="display:none">Hacer otro</button>
+  </div>`;
+}
+
+function checkTreeAns(exId,qNum){
+  const key='A_q'+qNum;
+  if(state[key].resolved)return;
+  const ex=TREES.find(e=>e.id===exId);if(!ex)return;
+  const inp=document.getElementById('asol'+qNum+'_'+exId);
+  if(!inp||inp.value.trim()===''){showInlineWarning(inp,'Escribe tu respuesta antes de comprobar.');return;}
+  const raw=inp.value.trim().replace(',','.');
+  let val;
+  if(raw.includes('/')){const p=raw.split('/');val=parseFloat(p[0])/parseFloat(p[1]);}
+  else{const ep=raw.split('=');val=parseFloat(ep[ep.length-1].trim());}
+  const correctVal=qNum===1?ex.q1val:ex.q2val;
+  const correctStr=qNum===1?ex.q1str:ex.q2str;
+  const expl=qNum===1?ex.q1expl:ex.q2expl;
+  const isOk=approx(val,correctVal,0.006);
+
+  const st=state[key];
+  st.resolved=true; st.ok=isOk; st.pts=isOk?SLOT_MAX[key]:0;
+  st.feedbackHTML=(isOk?'<strong>✓ ¡Correcto! (+'+SLOT_MAX[key]+' pt)</strong>':
+    '<strong>✗ Incorrecto (0 pts, sin más intentos) — La respuesta correcta es '+correctStr+'.</strong><div class="why">'+expl+'</div>');
+
+  inp.classList.remove('vok','ver');inp.classList.add(isOk?'vok':'ver');
+  inp.disabled=true;
+  const fb=document.getElementById('afb'+qNum+'_'+exId);
+  fb.className='fb show '+(isOk?'ok':'er');
+  fb.innerHTML=st.feedbackHTML;
+  document.getElementById('achk'+qNum+'_'+exId).disabled=true;
+
+  const bothOk=state.A_q1.ok&&state.A_q2.ok;
+  const bothResolved=state.A_q1.resolved&&state.A_q2.resolved;
+  if(bothResolved){
+    const bothWrong=!state.A_q1.ok&&!state.A_q2.ok;
+    document.querySelectorAll('.card').forEach(c=>{
+      if(c.innerHTML.includes('asol1_'+exId)||c.innerHTML.includes('afb1_A')){
+        c.classList.remove('cor','wrong');
+        if(bothOk)c.classList.add('cor');
+        else if(bothWrong)c.classList.add('wrong');
+      }
+    });
+  }
+  refreshOtroVisibility();
+  updateScoreUI();
+}
+
+function buildFormula(ex){
+  if(state.F.resolved){
+    return `<span class="ctag tF">${ex.tag}</span><p class="qtext">${ex.text}</p>
+    <div class="fq"><p class="fqlabel">Álgebra de sucesos — ${SLOT_MAX.F} pts</p>
+    <div class="fb show ${state.F.ok?'ok':'er'}" aria-live="polite">${state.F.feedbackHTML}</div>
+    <div class="actions"><button class="btn-otro" id="otro_${ex.id}" onclick="newEx('F')">Hacer otro</button></div>
+    </div>`;
+  }
+  return `<span class="ctag tF">${ex.tag}</span>
+  <p class="qtext">${ex.text}</p>
+  <div class="fq" style="border-top:none;padding-top:0;">
+    <p class="fqlabel">Responde (${SLOT_MAX.F} pts):</p>
+    <p class="qtext">${ex.qtext}</p>
+    <div class="opts" id="opts_${ex.id}">${renderOpts(ex.id,ex.opts)}</div>
+    <div class="actions">
+      <button class="btn-chk" id="chk_${ex.id}" onclick="checkOpt('${ex.id}')">Comprobar</button>
+      <button class="btn-otro" id="otro_${ex.id}" onclick="newEx('F')" style="display:none">Hacer otro</button>
+    </div>
+    <div class="fb" id="fb_${ex.id}" aria-live="polite"></div>
+  </div>`;
+}
+
+function renderOpts(qid,opts){
+  return opts.map((o,i)=>{
+    const l=String.fromCharCode(65+i);
+    return `<div class="opt" data-q="${qid}" data-v="${l}" role="button" tabindex="0" aria-label="Opción ${l}"><span class="oltr">${l}</span>${o}</div>`;
+  }).join('');
+}
+function attachOpts(){
+  document.querySelectorAll('.opt').forEach(opt=>{
+    opt.addEventListener('click',()=>{
+      const q=opt.dataset.q;
+      if(state.F.resolved)return;
+      document.querySelectorAll('.opt[data-q="'+q+'"]').forEach(o=>o.classList.remove('sel'));
+      opt.classList.add('sel');
+    });
+  });
+}
+
+function refreshOtroVisibility(){
+  const boT=document.getElementById('otro_'+currentT.id);
+  if(boT&&!boT.disabled) boT.style.display = (state.T_q1.resolved && state.T_q2.resolved) ? 'inline-flex' : 'none';
+  const boA=document.getElementById('otro_'+currentA.id);
+  if(boA&&!boA.disabled) boA.style.display = (state.A_q1.resolved && state.A_q2.resolved) ? 'inline-flex' : 'none';
+  const boF=document.getElementById('otro_'+currentF.id);
+  if(boF&&!boF.disabled) boF.style.display = state.F.resolved ? 'inline-flex' : 'none';
+}
+
+function injectAll(){
+  document.getElementById('cardT').innerHTML=buildTable(currentT);
+  document.getElementById('cardA').innerHTML=buildTreeHTML(currentA);
+  document.getElementById('cardF').innerHTML=buildFormula(currentF);
+  attachOpts();
+  refreshOtroVisibility();
+}
+injectAll();
+
+/* ── VERIFICAR TABLA (apartado "construcción", con reintento y agotamiento) ── */
+function verifyTable(exId){
+  const ex=TABLES.find(e=>e.id===exId);if(!ex)return;
+  const key='T_construccion';
+  const st=state[key];
+  let all=true;
+  for(let r=0;r<3;r++){
+    for(let c=0;c<3;c++){
+      const el=document.getElementById(ex.ids[r][c]);if(!el)continue;
+      const ok=approx(parseN(el.value),ex.vals[r][c]);
+      el.classList.remove('vok','ver');el.classList.add(ok?'vok':'ver');
+      if(!ok)all=false;
+    }
+  }
+  const h=document.getElementById('hint_'+exId);
+  if(st.resolved){
+    h.className='hint show '+(all?'ok':'er');
+    h.innerHTML=(all?'<strong>✓ Correcto (repaso, sin efecto en la nota — esta parte ya se resolvió antes).</strong>':
+      '<strong>✗ Revisa las celdas en rojo (repaso, sin efecto en la nota — esta parte ya se resolvió antes).</strong>');
+    return;
+  }
+  if(all){
+    const potential=Math.max(0, SLOT_MAX[key]-st.failCount*DEDUCCION_POR_FALLO);
+    st.pts=potential; st.ok=potential>0; st.resolved=true;
+    st.feedbackHTML='<strong>✓ Tabla correcta. +'+potential+' puntos.</strong>';
+    h.className='hint show ok';
+    h.innerHTML=st.feedbackHTML;
+  } else {
+    st.failCount++;
+    const potentialRemaining=Math.max(0, SLOT_MAX[key]-st.failCount*DEDUCCION_POR_FALLO);
+    h.className='hint show er';
+    if(potentialRemaining<=0){
+      st.resolved=true; st.ok=false; st.pts=0;
+      st.feedbackHTML='<strong>✗ Se han agotado los puntos de esta parte (0 puntos).</strong>';
+      h.innerHTML=st.feedbackHTML+'<div class="hd">Puedes seguir corrigiendo por práctica, pero ya no puntúa.</div>';
+    } else {
+      h.innerHTML='<strong>✗ Revisa las celdas en rojo. (−'+DEDUCCION_POR_FALLO+' pts — quedan '+potentialRemaining+' pts en juego)</strong><div class="hd">Pista: deduce el total general del enunciado y usa los totales parciales para completar el resto.</div>';
+    }
+  }
+  refreshOtroVisibility();
+  updateScoreUI();
+}
+
+/* ── VERIFICAR ÁRBOL (apartado "construcción", con reintento y agotamiento) ── */
+function verifyTree(exId){
+  const ex=TREES.find(e=>e.id===exId);if(!ex)return;
+  const key='A_construccion';
+  const st=state[key];
+  const ids=ex._ids;
+  const n=ex.roots.length;
+  let all=true;
+  const errMsgs=[];
+  ids.forEach((id,i)=>{
+    const el=document.getElementById(id);if(!el)return;
+    const ok=approx(parseN(el.value),ex.vals[i]);
+    el.classList.remove('vok','ver');el.classList.add(ok?'vok':'ver');
+    if(!ok)all=false;
+  });
+  if(!all){
+    if(n===2){
+      const v0=parseN(document.getElementById(ids[0]).value);
+      const v3=parseN(document.getElementById(ids[3]).value);
+      if(!isNaN(v0)&&!isNaN(v3)&&!approx(v0+v3,1))errMsgs.push('Las dos ramas principales no suman 1.');
+      const v1=parseN(document.getElementById(ids[1]).value);
+      const v2=parseN(document.getElementById(ids[2]).value);
+      if(!isNaN(v1)&&!isNaN(v2)&&!approx(v1+v2,1))errMsgs.push('Las sub-ramas de "'+ex.roots[0]+'" no suman 1.');
+      const v4=parseN(document.getElementById(ids[4]).value);
+      const v5=parseN(document.getElementById(ids[5]).value);
+      if(!isNaN(v4)&&!isNaN(v5)&&!approx(v4+v5,1))errMsgs.push('Las sub-ramas de "'+ex.roots[1]+'" no suman 1.');
+    } else {
+      const v0=parseN(document.getElementById(ids[0]).value);
+      const v3=parseN(document.getElementById(ids[3]).value);
+      const v6=parseN(document.getElementById(ids[6]).value);
+      if(!isNaN(v0)&&!isNaN(v3)&&!isNaN(v6)&&!approx(v0+v3+v6,1))errMsgs.push('Las tres ramas principales no suman 1.');
+      [[1,2,0],[4,5,1],[7,8,2]].forEach(([ia,ib,ri])=>{
+        const va=parseN(document.getElementById(ids[ia]).value);
+        const vb=parseN(document.getElementById(ids[ib]).value);
+        if(!isNaN(va)&&!isNaN(vb)&&!approx(va+vb,1))errMsgs.push('Las sub-ramas de "'+ex.roots[ri]+'" no suman 1.');
+      });
+    }
+  }
+  const h=document.getElementById('hint_'+exId);
+  if(st.resolved){
+    h.className='hint show '+(all?'ok':'er');
+    h.innerHTML=(all?'<strong>✓ Correcto (repaso, sin efecto en la nota).</strong>':'<strong>✗ Revisa las casillas en rojo (repaso, sin efecto en la nota).</strong>');
+    return;
+  }
+  if(all){
+    const potential=Math.max(0, SLOT_MAX[key]-st.failCount*DEDUCCION_POR_FALLO);
+    st.pts=potential; st.ok=potential>0; st.resolved=true;
+    st.feedbackHTML='<strong>✓ Árbol correcto. +'+potential+' puntos.</strong>';
+    h.className='hint show ok';
+    h.innerHTML=st.feedbackHTML;
+  } else {
+    st.failCount++;
+    const potentialRemaining=Math.max(0, SLOT_MAX[key]-st.failCount*DEDUCCION_POR_FALLO);
+    h.className='hint show er';
+    if(potentialRemaining<=0){
+      st.resolved=true; st.ok=false; st.pts=0;
+      st.feedbackHTML='<strong>✗ Se han agotado los puntos de esta parte (0 puntos).</strong>';
+      h.innerHTML=st.feedbackHTML+'<div class="hd">Puedes seguir corrigiendo por práctica, pero ya no puntúa.</div>';
+    } else {
+      h.innerHTML='<strong>✗ Revisa las casillas en rojo. (−'+DEDUCCION_POR_FALLO+' pts — quedan '+potentialRemaining+' pts en juego)</strong>'+(errMsgs.length?'<div class="hd">'+errMsgs.join(' ')+'</div>':'<div class="hd">Recuerda: las ramas del mismo nodo deben sumar 1.</div>');
+    }
+  }
+  refreshOtroVisibility();
+  updateScoreUI();
+}
+
+/* ── CHECK OPCIÓN MÚLTIPLE (fórmulas) ── */
+function checkOpt(qid){
+  if(state.F.resolved)return;
+  const ex=FORMULAS.find(e=>e.id===qid);if(!ex)return;
+  const sel=document.querySelector('.opt.sel[data-q="'+qid+'"]');
+  if(!sel){showInlineWarningNear(document.getElementById('opts_'+qid).parentElement,'Selecciona una opción antes de comprobar.');return;}
+  const chosen=sel.dataset.v;
+  const correct=ex.correct;
+  const expl=ex.expl;
+  const isOk=chosen===correct;
+
+  state.F.resolved=true; state.F.ok=isOk; state.F.pts=isOk?SLOT_MAX.F:0;
+  state.F.feedbackHTML=(isOk?'<strong>✓ ¡Correcto! (+'+SLOT_MAX.F+' pts)</strong>':
+    '<strong>✗ Incorrecto (0 pts, sin más intentos) — La respuesta correcta es '+correct+'.</strong><div class="why">'+expl+'</div>');
+
+  document.querySelectorAll('.opt[data-q="'+qid+'"]').forEach(o=>{
+    if(o.dataset.v===correct)o.classList.add('cok');
+    else if(o.dataset.v===chosen&&!isOk)o.classList.add('cer');
+    o.style.cursor='default';o.style.pointerEvents='none';
+  });
+  const fb=document.getElementById('fb_'+qid);
+  fb.className='fb show '+(isOk?'ok':'er');
+  fb.innerHTML=state.F.feedbackHTML;
+  document.getElementById('chk_'+qid).disabled=true;
+  document.querySelectorAll('.card').forEach(c=>{
+    if(c.innerHTML.includes('fb_'+qid)){c.classList.remove('cor','wrong');c.classList.add(isOk?'cor':'wrong');}
+  });
+  refreshOtroVisibility();
+  updateScoreUI();
+}
+
+/* ── HACER OTRO — nunca repite un ejercicio ya mostrado antes ── */
+function newEx(type){
+  const map={T:{bank:TABLES,cardId:'cardT',builder:buildTable},A:{bank:TREES,cardId:'cardA',builder:buildTreeHTML},F:{bank:FORMULAS,cardId:'cardF',builder:buildFormula}};
+  const cfg=map[type];
+  const curId = type==='T'?currentT.id:type==='A'?currentA.id:currentF.id;
+  const usedSet=usedIds[type];
+  const pool=cfg.bank.filter(e=>!usedSet.has(e.id));
+  if(!pool.length){
+    const btn=document.getElementById('otro_'+curId);
+    if(btn){btn.disabled=true; btn.textContent='Ya has practicado todos los ejercicios de esta sección';}
+    return;
+  }
+  const next=pick(pool);
+  usedSet.add(next.id);
+  const card=document.getElementById(cfg.cardId);
+  card.classList.remove('cor','wrong');
+  if(type==='T'){currentT=next; card.innerHTML=buildTable(currentT);}
+  else if(type==='A'){currentA=next; card.innerHTML=buildTreeHTML(currentA);}
+  else {currentF=next; card.innerHTML=buildFormula(currentF);}
+  attachOpts();
+  refreshOtroVisibility();
+}
+
+/* ── Enter para enviar respuesta (tabla, árbol) por delegación de eventos ── */
+document.addEventListener('keydown', function(e){
+  if(e.key!=='Enter') return;
+  const t=e.target;
+  if(!t.classList) return;
+  if(t.id && t.id.startsWith('ans1_')) checkTableAns(t.id.replace('ans1_',''),1);
+  else if(t.id && t.id.startsWith('ans2_')) checkTableAns(t.id.replace('ans2_',''),2);
+  else if(t.id && t.id.startsWith('asol1_')) checkTreeAns(t.id.replace('asol1_',''),1);
+  else if(t.id && t.id.startsWith('asol2_')) checkTreeAns(t.id.replace('asol2_',''),2);
+  else if(t.classList.contains('cinp')||t.classList.contains('tinp')){
+    const exId=t.id.split('_')[0]; verifyTable(exId);
+  } else if(t.classList.contains('binp')){
+    verifyTree(currentA.id);
+  }
+});
+
+/* ── SUBMIT ── */
+function submitAll(){
+  const name=document.getElementById('sName').value.trim();
+  if(!name){
+    showNameError();
+    document.getElementById('modalNameInp').value='';
+    document.getElementById('overlayName').classList.add('show');
+    setTimeout(()=>document.getElementById('modalNameInp').focus(),100);
+    return;
+  }
+  const pending=getPendingParts();
+  if(pending.length){showIncompleteModal(name,pending);return;}
+  showResult(name);
+}
+
+/* ── MOSTRAR RESULTADO ── */
+function showResult(name){
+  const vals=Object.values(state);
+  const ok=vals.filter(v=>v.ok===true).length;
+  const err=vals.filter(v=>v.ok===false).length;
+  const done=vals.filter(v=>v.resolved).length;
+  const raw=calcScore();
+  const nota=Math.max(0,Math.min(MAX_SCORE,raw));
+  const now=new Date();
+  const fecha=now.toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const hora=now.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const elapsed=Math.floor((Date.now()-startTime)/1000);
+  const mm=Math.floor(elapsed/60).toString().padStart(2,'0');
+  const ss=(elapsed%60).toString().padStart(2,'0');
+  const modal=document.getElementById('modal');
+  modal.className='modal';
+  const cls=nota>=10?'n10':nota>=9?'n9':nota>=8?'n8':nota>=7?'n7':nota>=6?'n6':nota>=5?'n5':
+            nota>=4?'n4':nota>=3?'n3':nota>=2?'n2':nota>=1?'n1':'n0';
+  modal.classList.add(cls);
+  if(nota>=10)document.body.classList.add('all-green');
+  else document.body.classList.remove('all-green');
+  document.getElementById('rName').textContent=name.toUpperCase();
+  document.getElementById('rGrade').textContent=nota+' / '+MAX_SCORE;
+  document.getElementById('rLabel').textContent=
+    nota>=9?'¡Perfecto! Dominas todos los conceptos.':
+    nota>=7?'¡Muy bien! Repasa los pequeños errores.':
+    nota>=5?'Bien. Sigue practicando.':
+    nota>0?'Necesitas repasar los conceptos fundamentales.':
+    'Revisa desde el principio los fundamentos.';
+  document.getElementById('rS1').textContent='📅 '+fecha+'  🕐 '+hora;
+  document.getElementById('rS2').textContent='⏱ Tiempo: '+mm+':'+ss;
+  document.getElementById('rS3').textContent='✓ '+ok+' apartados con puntos  ✗ '+err+' apartados a 0 pts  Puntos: '+raw;
+  document.getElementById('rS4').textContent='Apartados resueltos: '+done+' / 7';
+  document.getElementById('overlay').classList.add('show');
+}
+
+function closeModal(){document.getElementById('overlay').classList.remove('show');}
+document.getElementById('overlay').addEventListener('click',function(e){if(e.target===this)closeModal();});
+</script>
+</body>
+</html>
