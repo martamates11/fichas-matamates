@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Ficha LaTeX: Estudio completo de Funciones Racionales</title>
+<!-- MathJax 3 -->
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script" async></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', 'Roboto', 'Georgia', serif; background: #f4efe5; padding: 1.2rem; transition: background 0.3s; }
+  .wrap { max-width: 980px; margin: 0 auto; transition: background 0.3s, padding 0.3s; border-radius: 28px; }
+  .wrap.fondo-verde { background: #1a7a1a !important; padding: 1rem; }
+
+  .cabecera { background: #fffbf5; border: 1px solid #e2d5be; border-radius: 28px; padding: 1rem 1.8rem; margin-bottom: 1.5rem; }
+  .cab-credit { font-size: 11px; color: #b48c4c; text-align: center; margin-bottom: 5px; }
+  .cab-title { font-size: 1.6rem; font-weight: 700; color: #5e3a1f; text-align: center; }
+  .cab-sub { font-size: 13px; color: #7e6a48; text-align: center; margin-bottom: 12px; }
+  .campo-nombre { display: flex; align-items: center; gap: 12px; background: #fef8ed; padding: 6px 16px; border-radius: 60px; margin-top: 6px; }
+  .campo-nombre label { font-size: 12px; font-weight: 700; color: #b48c4c; }
+  .campo-nombre input { flex: 1; border: none; border-bottom: 1.5px solid #d4bc8c; background: transparent; font-size: 14px; padding: 6px 2px; outline: none; }
+  .aviso-nombre { display: none; font-size: 12px; color: #a83232; text-align: center; margin-top: 6px; font-weight: 700; }
+  .aviso-nombre.show { display: block; }
+
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 0.8rem 0 1.4rem; }
+  .stat { background: #fffbf5; border-radius: 24px; padding: 0.6rem; text-align: center; border: 1px solid #e5d8c2; }
+  .stat-label { font-size: 10px; font-weight: 800; color: #b48c4c; }
+  .stat-val { font-size: 1.7rem; font-weight: 800; color: #5c401f; }
+
+  .ficha { background: #fffbf5; border: 1px solid #e2d5be; border-radius: 32px; padding: 1.6rem; margin-bottom: 1.5rem; }
+  .ficha-hdr { display: flex; align-items: center; gap: 14px; margin-bottom: 1.2rem; border-bottom: 1px solid #efe2ce; padding-bottom: 0.7rem; }
+  .ficha-num { background: #c8a96e; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.3rem; }
+  .ficha-title { font-size: 1.35rem; font-weight: 700; color: #2d2b26; }
+  .tag { background: #ede0cb; color: #7a571c; border-radius: 30px; font-size: 0.7rem; padding: 3px 12px; margin-left: 10px; }
+
+  .enunciado { background: #fdf8ed; border-left: 7px solid #c8a96e; padding: 1.2rem 1.6rem; border-radius: 24px; margin-bottom: 1.6rem; }
+  .funcion-box { background: #fff6e8; padding: 0.8rem 1.2rem; border-radius: 40px; display: inline-block; margin: 12px 0 6px; border: 1px solid #e6d8c2; }
+
+  .plabel { font-size: 11px; font-weight: 800; color: #b48c4c; text-transform: uppercase; letter-spacing: 1.2px; margin: 1.2rem 0 0.7rem 0; }
+  .paso { display: flex; gap: 12px; margin-bottom: 0.9rem; align-items: flex-start; }
+  .pnum { background: #ede0cb; width: 27px; height: 27px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; color: #6b4c2c; flex-shrink: 0; margin-top: 2px; }
+  .pcont { flex: 1; }
+  .plbl { font-size: 12px; font-weight: 600; color: #5f5b54; margin-bottom: 5px; display: block; cursor: default; }
+  .irow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+  input { border: 1px solid #e2cfb0; background: white; border-radius: 20px; padding: 7px 15px; font-size: 13px; outline: none; font-family: 'Courier New', monospace; min-width: 220px; transition: all 0.2s; }
+  input.correcto { background-color: #e3f5e0 !important; border: 2px solid #2e7d32 !important; }
+  input.incorrecto { background-color: #fbecec !important; border: 2px solid #c62828 !important; }
+  input.correcto:disabled { opacity: 0.85; cursor: not-allowed; }
+
+  .btn-sym { background: #ede0cb; border: 1px solid #d4bc8c; border-radius: 30px; padding: 5px 12px; font-size: 12px; font-weight: bold; cursor: pointer; font-family: monospace; transition: 0.1s; }
+  .btn-sym:hover { background: #e0cfb5; }
+  .btn-union { background: #c8a96e; color: white; border: none; }
+  .btn-union:hover { background: #b29054; }
+
+  .btns { display: flex; gap: 18px; margin: 1.2rem 0 0.8rem; flex-wrap: wrap; }
+  .btn-check { background: #c8a96e; border: none; padding: 9px 28px; border-radius: 44px; color: white; font-weight: 700; cursor: pointer; }
+  .btn-check:hover { background: #b29054; }
+  .btn-otro { background: transparent; border: 1.5px solid #c8a96e; padding: 8px 22px; border-radius: 44px; color: #7a571c; font-weight: 700; cursor: pointer; display: none; }
+
+  .fb { margin-top: 18px; padding: 14px; border-radius: 24px; font-size: 13px; line-height: 1.5; display: none; }
+  .fb.show { display: block; }
+  .fb.ok { background: #e3f5e0; border-left: 6px solid #3b7c2e; color: #1f4f15; }
+  .fb.fail { background: #fbecec; border-left: 6px solid #bc5a5a; color: #8b3c3c; }
+  .fb.info { background: #fef3e4; border-left: 6px solid #c8a96e; color: #7a571c; }
+
+  .calc-wrap { background: #fffbf5; border-radius: 28px; padding: 0.8rem 1rem; margin: 0.5rem 0 1rem; border: 1px solid #e2d5be; }
+  .calc-toggle { font-weight: 700; cursor: pointer; color: #b48c4c; display: flex; gap: 6px; align-items: center; }
+  .calc-body { display: none; margin-top: 12px; }
+  .calc-body.open { display: block; }
+  .calc-screen { background: #fef3e4; padding: 12px; text-align: right; border-radius: 28px; font-size: 1.4rem; margin-bottom: 10px; border: 1px solid #e0cfb5; }
+  .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .ck { background: #fff6e8; border: 1px solid #e2cfb0; border-radius: 60px; padding: 10px 0; text-align: center; font-weight: 600; cursor: pointer; }
+  .ck.op { background: #ede0cb; }
+  .ck.eq { background: #c8a96e; color: white; }
+
+  .btn-final { background: #7a5c2e; width: 100%; border: none; padding: 14px; border-radius: 60px; color: white; font-weight: bold; font-size: 1rem; cursor: pointer; margin-top: 10px; }
+
+  /* Modal calificación */
+  .modal-bg {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center;
+    z-index: 9999; backdrop-filter: blur(3px);
+  }
+  .modal-bg.show { display: flex; }
+  .modal {
+    border-radius: 48px; padding: 2rem 2rem 1.8rem; text-align: center; width: 90%; max-width: 420px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3); transition: all 0.2s;
+  }
+  .modal h3 { font-size: 1.2rem; margin-bottom: 0.3rem; font-weight: 600; opacity: 0.9; }
+  .modal h2 { font-size: 1.5rem; margin-bottom: 0.5rem; font-weight: 700; }
+  .nota-big { font-size: 3.5rem; font-weight: 800; margin: 0.5rem 0; line-height: 1.2; }
+  .meta { font-size: 14px; line-height: 1.6; margin: 0.8rem 0; opacity: 0.9; }
+  .captura { font-size: 13px; margin: 1rem 0 0.5rem; padding: 8px; border-radius: 30px; background: rgba(255,255,255,0.2); font-weight: 500; }
+  .btn-cerrar { background: rgba(255,255,255,0.25); border: 1px solid rgba(255,255,255,0.5); border-radius: 40px; padding: 10px 24px; font-size: 14px; font-weight: bold; cursor: pointer; margin-top: 12px; transition: 0.2s; }
+  .btn-cerrar:hover { background: rgba(255,255,255,0.4); }
+
+  @media (max-width: 600px) { .ficha { padding: 1rem; } input { min-width: 140px; font-size: 11px; } .btn-sym { padding: 3px 8px; font-size: 10px; } }
+</style>
+</head>
+<body>
+<div class="wrap" id="wrapGlobal">
+  <div class="cabecera">
+    <div class="cab-credit">📐 Material elaborado por Marta L Letona S. Basado en el trabajo de Javier Cayetano</div>
+    <div class="cab-title">📈 Funciones Racionales</div>
+    <div class="cab-sub">Dominio · Asíntotas · Cortes · Monotonía · Curvatura · Simetría</div>
+    <div class="campo-nombre">
+      <label for="nombre">👤 Alumno/a</label>
+      <input type="text" id="nombre" placeholder="Escribe tu nombre completo...">
+    </div>
+    <div class="aviso-nombre" id="avisoNombre" role="alert">⚠️ Escribe tu nombre antes de finalizar.</div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-label">Realizados</div><div class="stat-val" id="s-real">0</div></div>
+    <div class="stat"><div class="stat-label">Aciertos</div><div class="stat-val" id="s-ac" style="color:#3b7c2e;">0</div></div>
+    <div class="stat"><div class="stat-label">Fallos</div><div class="stat-val" id="s-fail" style="color:#bc5a5a;">0</div></div>
+    <div class="stat"><div class="stat-label">Nota</div><div class="stat-val" id="s-pts">0.0/10</div></div>
+  </div>
+
+  <div class="ficha">
+    <div class="ficha-hdr">
+      <div class="ficha-num">📐</div>
+      <div class="ficha-title">Estudio de función racional <span class="tag">paso a paso</span></div>
+    </div>
+
+    <div class="enunciado" id="enunciadoLatex">
+      <div>✏️ Función a estudiar:</div>
+      <div class="funcion-box" id="funcionDisplay">$$ f(x) = \frac{x^2 - 4}{x - 2} $$</div>
+      <div style="margin-top: 10px; font-size: 0.85rem;">🔍 Determina dominio, asíntotas, cortes, monotonía, curvatura y simetría. Puedes corregir un campo marcado en rojo y volver a comprobar cuando quieras: solo se bloquean los que ya están bien.</div>
+    </div>
+
+    <div class="plabel">📌 1. DOMINIO Y DISCONTINUIDADES</div>
+    <div class="paso"><div class="pnum">1</div><div class="pcont"><label class="plbl" for="dom_input">Dominio (intervalos)</label><div class="irow"><input type="text" id="dom_input" placeholder="Ej: (-∞,2)∪(2,∞)"><div class="btn-sym" onclick="insertarSimbolo('dom_input', '-∞')">-∞</div><div class="btn-sym" onclick="insertarSimbolo('dom_input', '∞')">∞</div><div class="btn-sym btn-union" onclick="insertarSimbolo('dom_input', '∪')">∪</div><div class="btn-sym" onclick="insertarSimbolo('dom_input', 'ninguno')">ninguno</div><div class="btn-sym" onclick="insertarSimbolo('dom_input', '(')">(</div><div class="btn-sym" onclick="insertarSimbolo('dom_input', ')')">)</div></div></div></div>
+    <div class="paso"><div class="pnum">2</div><div class="pcont"><label class="plbl" for="evitable_input">Discontinuidad evitable</label><div class="irow"><input type="text" id="evitable_input" placeholder="Ej: x=3  o  ninguno"><div class="btn-sym" onclick="insertarSimbolo('evitable_input', 'ninguno')">ninguno</div><div class="btn-sym" onclick="insertarSimbolo('evitable_input', 'x=')">x=</div></div></div></div>
+
+    <div class="plabel">📌 2. ASÍNTOTAS</div>
+    <div class="paso"><div class="pnum">3</div><div class="pcont"><label class="plbl" for="av_input">Asíntota(s) vertical(es)</label><div class="irow"><input type="text" id="av_input" placeholder="Ej: x=2 , x=-2"><div class="btn-sym" onclick="insertarSimbolo('av_input', 'x=')">x=</div><div class="btn-sym" onclick="insertarSimbolo('av_input', 'ninguna')">ninguna</div></div></div></div>
+    <div class="paso"><div class="pnum">4</div><div class="pcont"><label class="plbl" for="ah_input">Asíntota horizontal</label><div class="irow"><input type="text" id="ah_input" placeholder="Ej: y=2"><div class="btn-sym" onclick="insertarSimbolo('ah_input', 'y=')">y=</div><div class="btn-sym" onclick="insertarSimbolo('ah_input', 'ninguna')">ninguna</div></div></div></div>
+    <div class="paso"><div class="pnum">5</div><div class="pcont"><label class="plbl" for="ao_input">Asíntota oblicua</label><div class="irow"><input type="text" id="ao_input" placeholder="Ej: y=x+1"><div class="btn-sym" onclick="insertarSimbolo('ao_input', 'y=')">y=</div><div class="btn-sym" onclick="insertarSimbolo('ao_input', 'ninguna')">ninguna</div></div></div></div>
+
+    <div class="plabel">📌 3. CORTES CON EJES</div>
+    <div class="paso"><div class="pnum">6</div><div class="pcont"><label class="plbl" for="cortey_input">Corte eje Y: (0, f(0))</label><div class="irow"><input type="text" id="cortey_input" placeholder="(0, valor) o no existe"><div class="btn-sym" onclick="insertarSimbolo('cortey_input', '(')">(</div><div class="btn-sym" onclick="insertarSimbolo('cortey_input', '0,')">0,</div><div class="btn-sym" onclick="insertarSimbolo('cortey_input', ')')">)</div><div class="btn-sym" onclick="insertarSimbolo('cortey_input', 'no existe')">no existe</div><div class="btn-sym" onclick="convertirFraccionDecimal('cortey_input')">≈</div></div></div></div>
+    <div class="paso"><div class="pnum">7</div><div class="pcont"><label class="plbl" for="cortex_input">Corte(s) eje X (raíces)</label><div class="irow"><input type="text" id="cortex_input" placeholder="Ej: x=2 , x=-3"><div class="btn-sym" onclick="insertarSimbolo('cortex_input', 'x=')">x=</div><div class="btn-sym" onclick="insertarSimbolo('cortex_input', 'ninguna')">ninguna</div></div></div></div>
+
+    <div class="plabel">📌 4. MONOTONÍA Y EXTREMOS (Derivada)</div>
+    <div class="paso"><div class="pnum">8</div><div class="pcont"><label class="plbl" for="deriv_input">f'(x) simplificada</label><div class="irow"><input type="text" id="deriv_input" placeholder="Ej: (x²-4x-1)/(x-2)²"><div class="btn-sym" onclick="insertarSimbolo('deriv_input', 'x²')">x²</div><div class="btn-sym" onclick="insertarSimbolo('deriv_input', 'x³')">x³</div><div class="btn-sym" onclick="insertarSimbolo('deriv_input', '^')">^</div><div class="btn-sym" onclick="insertarSimbolo('deriv_input', '²')">²</div><div class="btn-sym" onclick="insertarSimbolo('deriv_input', '⁴')">⁴</div><div class="btn-sym" onclick="insertarSimbolo('deriv_input', '(')">(</div><div class="btn-sym" onclick="insertarSimbolo('deriv_input', ')')">)</div><div class="btn-sym" onclick="insertarSimbolo('deriv_input', '/')">/</div></div></div></div>
+    <div class="paso"><div class="pnum">9</div><div class="pcont"><label class="plbl" for="criticos_input">Puntos críticos</label><div class="irow"><input type="text" id="criticos_input" placeholder="x=..."><div class="btn-sym" onclick="insertarSimbolo('criticos_input', 'x=')">x=</div><div class="btn-sym" onclick="insertarSimbolo('criticos_input', 'ninguno')">ninguno</div></div></div></div>
+    <div class="paso"><div class="pnum">10</div><div class="pcont"><label class="plbl" for="crece_input">Intervalos de crecimiento</label><div class="irow"><input type="text" id="crece_input" placeholder="Ej: (-∞,2)∪(2,∞)"><div class="btn-sym" onclick="insertarSimbolo('crece_input', '-∞')">-∞</div><div class="btn-sym" onclick="insertarSimbolo('crece_input', '∞')">∞</div><div class="btn-sym btn-union" onclick="insertarSimbolo('crece_input', '∪')">∪</div><div class="btn-sym" onclick="insertarSimbolo('crece_input', 'ninguno')">ninguno</div></div></div></div>
+    <div class="paso"><div class="pnum">11</div><div class="pcont"><label class="plbl" for="decrece_input">Intervalos de decrecimiento</label><div class="irow"><input type="text" id="decrece_input" placeholder="Ej: (-2,2)"><div class="btn-sym" onclick="insertarSimbolo('decrece_input', '-∞')">-∞</div><div class="btn-sym" onclick="insertarSimbolo('decrece_input', '∞')">∞</div><div class="btn-sym btn-union" onclick="insertarSimbolo('decrece_input', '∪')">∪</div><div class="btn-sym" onclick="insertarSimbolo('decrece_input', 'ninguno')">ninguno</div></div></div></div>
+    <div class="paso"><div class="pnum">12</div><div class="pcont"><label class="plbl" for="maximo_input">Máximo local</label><div class="irow"><input type="text" id="maximo_input" placeholder="(x,y) o no"><div class="btn-sym" onclick="insertarSimbolo('maximo_input', 'no')">no</div></div></div></div>
+    <div class="paso"><div class="pnum">13</div><div class="pcont"><label class="plbl" for="minimo_input">Mínimo local</label><div class="irow"><input type="text" id="minimo_input" placeholder="(x,y) o no"><div class="btn-sym" onclick="insertarSimbolo('minimo_input', 'no')">no</div></div></div></div>
+
+    <div class="plabel">📌 5. CONCAVIDAD, CONVEXIDAD Y P.I.</div>
+    <div class="paso"><div class="pnum">14</div><div class="pcont"><label class="plbl" for="segunda_input">f''(x)</label><div class="irow"><input type="text" id="segunda_input" placeholder="Ej: -6/(x-2)³"><div class="btn-sym" onclick="insertarSimbolo('segunda_input', '³')">³</div><div class="btn-sym" onclick="insertarSimbolo('segunda_input', '²')">²</div></div></div></div>
+    <div class="paso"><div class="pnum">15</div><div class="pcont"><label class="plbl" for="concava_input">Cóncava (∪) en</label><div class="irow"><input type="text" id="concava_input" placeholder="Intervalo"><div class="btn-sym" onclick="insertarSimbolo('concava_input', '-∞')">-∞</div><div class="btn-sym" onclick="insertarSimbolo('concava_input', '∞')">∞</div><div class="btn-sym btn-union" onclick="insertarSimbolo('concava_input', '∪')">∪</div><div class="btn-sym" onclick="insertarSimbolo('concava_input', 'ninguno')">ninguno</div></div></div></div>
+    <div class="paso"><div class="pnum">16</div><div class="pcont"><label class="plbl" for="convexa_input">Convexa (∩) en</label><div class="irow"><input type="text" id="convexa_input" placeholder="Intervalo"><div class="btn-sym" onclick="insertarSimbolo('convexa_input', '-∞')">-∞</div><div class="btn-sym" onclick="insertarSimbolo('convexa_input', '∞')">∞</div><div class="btn-sym btn-union" onclick="insertarSimbolo('convexa_input', '∪')">∪</div><div class="btn-sym" onclick="insertarSimbolo('convexa_input', 'ninguno')">ninguno</div></div></div></div>
+    <div class="paso"><div class="pnum">17</div><div class="pcont"><label class="plbl" for="pi_input">Punto(s) inflexión</label><div class="irow"><input type="text" id="pi_input" placeholder="(x,y)"><div class="btn-sym" onclick="insertarSimbolo('pi_input', 'ninguno')">ninguno</div></div></div></div>
+
+    <div class="plabel">📌 6. SIMETRÍA</div>
+    <div class="paso"><div class="pnum">18</div><div class="pcont"><label class="plbl" for="simetria_par">Simetría par (f(-x)=f(x))</label><div class="irow"><input type="text" id="simetria_par" placeholder="sí / no" style="min-width:100px;"><div class="btn-sym" onclick="insertarSimbolo('simetria_par', 'sí')">sí</div><div class="btn-sym" onclick="insertarSimbolo('simetria_par', 'no')">no</div></div></div></div>
+    <div class="paso"><div class="pnum">19</div><div class="pcont"><label class="plbl" for="simetria_impar">Simetría impar (f(-x)=-f(x))</label><div class="irow"><input type="text" id="simetria_impar" placeholder="sí / no" style="min-width:100px;"><div class="btn-sym" onclick="insertarSimbolo('simetria_impar', 'sí')">sí</div><div class="btn-sym" onclick="insertarSimbolo('simetria_impar', 'no')">no</div></div></div></div>
+
+    <div class="btns">
+      <button class="btn-check" id="btnComprobar">✓ Comprobar análisis</button>
+      <button class="btn-otro" id="btnOtroEjercicio">🔄 Nueva función</button>
+    </div>
+    <div class="fb" id="feedbackRacional" role="status" aria-live="polite"></div>
+  </div>
+
+  <div class="calc-wrap"><div class="calc-toggle" onclick="toggleCalc()">🧮 Calculadora <span id="calc-arrow">▸</span></div><div class="calc-body" id="calc-body"><div class="calc-screen" id="cscreen">0</div><div class="calc-grid"><button class="ck ac" onclick="cc('AC')">AC</button><button class="ck op" onclick="cc('+/-')">+/-</button><button class="ck op" onclick="cc('%')">%</button><button class="ck op" onclick="cc('/')">÷</button><button class="ck" onclick="cc('7')">7</button><button class="ck" onclick="cc('8')">8</button><button class="ck" onclick="cc('9')">9</button><button class="ck op" onclick="cc('*')">×</button><button class="ck" onclick="cc('4')">4</button><button class="ck" onclick="cc('5')">5</button><button class="ck" onclick="cc('6')">6</button><button class="ck op" onclick="cc('-')">−</button><button class="ck" onclick="cc('1')">1</button><button class="ck" onclick="cc('2')">2</button><button class="ck" onclick="cc('3')">3</button><button class="ck op" onclick="cc('+')">+</button><button class="ck" style="grid-column:span 2" onclick="cc('0')">0</button><button class="ck" onclick="cc('.')">.</button><button class="ck eq" onclick="cc('=')">＝</button></div></div></div>
+  <button class="btn-final" id="btnFinalizarCalificar">🏆 Finalizar y Calificar</button>
+</div>
+
+<!-- Modal calificación -->
+<div class="modal-bg" id="modal-bg">
+  <div class="modal" id="modal">
+    <h3>📊 FICHA INTERACTIVA: Estudio de Funciones Racionales</h3>
+    <h2 id="m-nombre"></h2>
+    <div class="nota-big" id="m-nota"></div>
+    <div class="meta" id="m-meta"></div>
+    <div class="captura">📸 Haz una captura de pantalla y entrégala en Google Classroom.</div>
+    <button class="btn-cerrar" id="cerrarModalBtn">Cerrar</button>
+  </div>
+</div>
+
+<script>
+  // ---------------------------------------------------------------------
+  // BANCO DE 9 FUNCIONES ÚNICAS, VERIFICADAS SIMBÓLICAMENTE (sin duplicados)
+  // ---------------------------------------------------------------------
+  const FUNCIONES_COMPLETAS = [
+    { tex:"f(x)=\\frac{x^2-4}{x-2}", dominio:"(-∞,2)∪(2,∞)", evitable:"x=2", av:"ninguna", ah:"ninguna", ao:"y=x+2",
+      corteY:2, raices:["x=-2"], derivCanonica:"1", excl:[2], criticos:"ninguno",
+      crece:"(-∞,2)∪(2,∞)", decrece:"ninguno", maximo:"no", minimo:"no",
+      segundaCanonica:"0", concava:"ninguno", convexa:"ninguno", pi:"ninguno", simPar:"no", simImpar:"no" },
+
+    { tex:"f(x)=\\frac{x^2-9}{x-3}", dominio:"(-∞,3)∪(3,∞)", evitable:"x=3", av:"ninguna", ah:"ninguna", ao:"y=x+3",
+      corteY:3, raices:["x=-3"], derivCanonica:"1", excl:[3], criticos:"ninguno",
+      crece:"(-∞,3)∪(3,∞)", decrece:"ninguno", maximo:"no", minimo:"no",
+      segundaCanonica:"0", concava:"ninguno", convexa:"ninguno", pi:"ninguno", simPar:"no", simImpar:"no" },
+
+    { tex:"f(x)=\\frac{x^2}{x-1}", dominio:"(-∞,1)∪(1,∞)", evitable:"ninguno", av:"x=1", ah:"ninguna", ao:"y=x+1",
+      corteY:0, raices:["x=0"], derivCanonica:"(x^2-2x)/(x-1)^2", excl:[1], criticos:"x=0,x=2",
+      crece:"(-∞,0)∪(2,∞)", decrece:"(0,1)∪(1,2)", maximo:"(0,0)", minimo:"(2,4)",
+      segundaCanonica:"2/(x-1)^3", concava:"(1,∞)", convexa:"(-∞,1)", pi:"ninguno", simPar:"no", simImpar:"no" },
+
+    { tex:"f(x)=\\frac{x^2+2x}{x+1}", dominio:"(-∞,-1)∪(-1,∞)", evitable:"ninguno", av:"x=-1", ah:"ninguna", ao:"y=x+1",
+      corteY:0, raices:["x=-2","x=0"], derivCanonica:"(x^2+2x+2)/(x+1)^2", excl:[-1], criticos:"ninguno",
+      crece:"(-∞,-1)∪(-1,∞)", decrece:"ninguno", maximo:"no", minimo:"no",
+      segundaCanonica:"-2/(x+1)^3", concava:"(-∞,-1)", convexa:"(-1,∞)", pi:"ninguno", simPar:"no", simImpar:"no" },
+
+    { tex:"f(x)=\\frac{3x+3}{x-2}", dominio:"(-∞,2)∪(2,∞)", evitable:"ninguno", av:"x=2", ah:"y=3", ao:"ninguna",
+      corteY:-1.5, raices:["x=-1"], derivCanonica:"-9/(x-2)^2", excl:[2], criticos:"ninguno",
+      crece:"ninguno", decrece:"(-∞,2)∪(2,∞)", maximo:"no", minimo:"no",
+      segundaCanonica:"18/(x-2)^3", concava:"(2,∞)", convexa:"(-∞,2)", pi:"ninguno", simPar:"no", simImpar:"no" },
+
+    { tex:"f(x)=\\frac{2x^2}{x^2-1}", dominio:"(-∞,-1)∪(-1,1)∪(1,∞)", evitable:"ninguno", av:"x=-1,x=1", ah:"y=2", ao:"ninguna",
+      corteY:0, raices:["x=0"], derivCanonica:"-4x/(x^2-1)^2", excl:[-1,1], criticos:"x=0",
+      crece:"(-∞,-1)∪(-1,0)", decrece:"(0,1)∪(1,∞)", maximo:"(0,0)", minimo:"no",
+      segundaCanonica:"4(3x^2+1)/(x^2-1)^3", concava:"(-∞,-1)∪(1,∞)", convexa:"(-1,1)", pi:"ninguno", simPar:"sí", simImpar:"no" },
+
+    { tex:"f(x)=\\frac{x^2-1}{x}", dominio:"(-∞,0)∪(0,∞)", evitable:"ninguno", av:"x=0", ah:"ninguna", ao:"y=x",
+      corteY:null, raices:["x=-1","x=1"], derivCanonica:"1+1/x^2", excl:[0], criticos:"ninguno",
+      crece:"(-∞,0)∪(0,∞)", decrece:"ninguno", maximo:"no", minimo:"no",
+      segundaCanonica:"-2/x^3", concava:"(-∞,0)", convexa:"(0,∞)", pi:"ninguno", simPar:"no", simImpar:"sí" },
+
+    { tex:"f(x)=\\frac{x^2+4}{x}", dominio:"(-∞,0)∪(0,∞)", evitable:"ninguno", av:"x=0", ah:"ninguna", ao:"y=x",
+      corteY:null, raices:[], derivCanonica:"1-4/x^2", excl:[0], criticos:"x=-2,x=2",
+      crece:"(-∞,-2)∪(2,∞)", decrece:"(-2,0)∪(0,2)", maximo:"(-2,-4)", minimo:"(2,4)",
+      segundaCanonica:"8/x^3", concava:"(-∞,0)", convexa:"(0,∞)", pi:"ninguno", simPar:"no", simImpar:"sí" },
+
+    { tex:"f(x)=\\frac{x^2}{x^2+3}", dominio:"(-∞,∞)", evitable:"ninguno", av:"ninguna", ah:"y=1", ao:"ninguna",
+      corteY:0, raices:["x=0"], derivCanonica:"6x/(x^2+3)^2", excl:[], criticos:"x=0",
+      crece:"(0,∞)", decrece:"(-∞,0)", maximo:"no", minimo:"(0,0)",
+      segundaCanonica:"18(1-x^2)/(x^2+3)^3",
+      concava:"(-1,1)", convexa:"(-∞,-1)∪(1,∞)", pi:"(-1,0.25) y (1,0.25)", simPar:"sí", simImpar:"no" }
+  ];
+
+  const CAMPOS = ['dom_input','evitable_input','av_input','ah_input','ao_input','cortey_input','cortex_input',
+    'deriv_input','criticos_input','crece_input','decrece_input','maximo_input','minimo_input','segunda_input',
+    'concava_input','convexa_input','pi_input','simetria_par','simetria_impar'];
+  const totalCampos = CAMPOS.length; // 19
+
+  let currentFunc = null, real = 0, aciertos = 0, fallos = 0, ultimoIndice = -1;
+  let estadoCampo = {};   // true = ya correcto y bloqueado
+  let contadoFallo = {};  // true = su fallo actual ya está sumado a "fallos"
+  let yaIntentado = false;
+  const startTime = Date.now();
+
+  function redondear(num, decimales=2) { return Math.round(num * Math.pow(10, decimales)) / Math.pow(10, decimales); }
+
+  // Convierte "0,25" -> "0.25" sin tocar comas usadas como separador de listas (x=2,x=-3) o de coordenadas (0,valor)
+  function comaDecimalAPunto(s) { return s.replace(/(\d),(\d)/g, '$1.$2'); }
+
+  function normalizar(s) {
+    if(!s) return "";
+    let res = comaDecimalAPunto(s.toLowerCase().trim().replace(/\s+/g, ''));
+    res = res.replace(/∞/g, 'inf').replace(/\+inf/g, 'inf').replace(/-inf/g, '-inf');
+    res = res.replace(/∪/g, 'u');
+    if (res === 'no' ) res = 'ninguno';
+    if(res.includes('x=')) {
+      const valores = [];
+      const regex = /x=([+-]?\d+(?:\.\d+)?)/g;
+      let match;
+      while((match = regex.exec(res)) !== null) valores.push(parseFloat(match[1]));
+      if(valores.length > 0) {
+        valores.sort((a,b) => a - b);
+        return valores.map(v => `x=${v}`).join(',');
+      }
+    }
+    if(res.includes(',') && /[+-]?\d+(?:\.\d+)?/.test(res)) {
+      const nums = res.match(/[+-]?\d+(?:\.\d+)?/g);
+      if(nums && nums.length > 1) { nums.sort((a,b) => parseFloat(a) - parseFloat(b)); return nums.map(n => `x=${n}`).join(','); }
+    }
+    return res;
+  }
+
+  function compararIntervalos(inp, esp) {
+    if(!esp || esp === "ninguno") return normalizar(inp) === "ninguno" || inp.trim() === "";
+    return normalizar(inp) === normalizar(esp);
+  }
+  function compararRaices(inp, raicesEsp) {
+    let n = normalizar(inp);
+    if(raicesEsp.length === 0) return n === "ninguna" || n === "ninguno" || inp.trim() === "";
+    let esp = raicesEsp.map(r => r.replace(/x=/, '')).sort((a,b)=>parseFloat(a)-parseFloat(b)).map(v=>`x=${v}`).join(',');
+    return n === esp;
+  }
+  function compararEvitable(inp, esp) {
+    // Comparación SIMÉTRICA: se aplica la misma normalización a ambos lados (bug corregido).
+    let n = normalizar(inp).replace(/^x=/, '');
+    let e = normalizar(esp).replace(/^x=/, '');
+    return n === e;
+  }
+  function compararAV(inp, avEsp) { return normalizar(inp) === normalizar(avEsp); }
+
+  function extraerY(texto) {
+    let t = texto.replace(/\s+/g, '').replace(/[()]/g, '');
+    let idx = t.indexOf(',');
+    let yPart = idx === -1 ? t : comaDecimalAPunto(t.slice(idx + 1));
+    let m = yPart.match(/[+-]?\d+(?:\.\d+)?/);
+    return m ? parseFloat(m[0]) : null;
+  }
+  function compararCorteY(inp, esperado) {
+    if (esperado === null) {
+      let n = normalizar(inp);
+      return /noexiste|ninguno/.test(n);
+    }
+    let y = extraerY(inp);
+    if (y === null) return false;
+    return Math.abs(redondear(y) - redondear(esperado)) < 0.01;
+  }
+
+  function normalizarPunto(s) {
+    if(!s) return "";
+    let t = s.toLowerCase().trim().replace(/\s+/g, '');
+    if (t === 'no' || t === 'ninguno') return 'no';
+    t = t.replace(/[()]/g, '');
+    let idx = t.indexOf(',');
+    if (idx === -1) return t;
+    let xPart = t.slice(0, idx);
+    let yPart = comaDecimalAPunto(t.slice(idx + 1));
+    let xNum = parseFloat(xPart), yNum = parseFloat(yPart);
+    if (isNaN(xNum) || isNaN(yNum)) return t;
+    return `${redondear(xNum)},${redondear(yNum)}`;
+  }
+  function compararPunto(inp, esp) { return normalizarPunto(inp) === normalizarPunto(esp); }
+  function compararPI(inp, esp) {
+    if (esp === 'ninguno') { let n = normalizar(inp); return n === 'ninguno' || inp.trim() === ''; }
+    let espPuntos = esp.split(/\s*y\s*/i).map(normalizarPunto).sort();
+    let inpPuntos = inp.split(/\s*y\s*|;/i).map(normalizarPunto).filter(p => p && p !== 'no').sort();
+    if (espPuntos.length !== inpPuntos.length) return false;
+    return espPuntos.every((p,i) => p === inpPuntos[i]);
+  }
+
+  // Comprobación por EQUIVALENCIA NUMÉRICA: acepta cualquier forma algebraica equivalente
+  // (paréntesis distintos, denominador desarrollado, fracción partida, etc.), no solo
+  // las formas de texto que se nos ocurran de antemano.
+  function prepararExpresion(s) {
+    if (!s) return null;
+    let t = s.toLowerCase().trim();
+    t = t.replace(/²/g, '^2').replace(/³/g, '^3').replace(/⁴/g, '^4');
+    t = t.replace(/·/g, '*');
+    t = t.replace(/\s+/g, '');
+    t = t.replace(/(\d)(x)/gi, '$1*$2');
+    t = t.replace(/(\d)\(/g, '$1*(');
+    t = t.replace(/\)(\d)/g, ')*$1');
+    t = t.replace(/\)(x)/gi, ')*$1');
+    t = t.replace(/\)\(/g, ')*(');
+    t = t.replace(/(x)\(/gi, '$1*(');
+    t = t.replace(/\^/g, '**');
+    if (!/^[0-9x+\-*/().]+$/i.test(t)) return null;
+    return t;
+  }
+  function evaluarExpresion(expr, xVal) {
+    try {
+      const fn = new Function('x', 'return (' + expr + ');');
+      const v = fn(xVal);
+      if (typeof v !== 'number' || !isFinite(v)) return null;
+      return v;
+    } catch(e) { return null; }
+  }
+  function sonEquivalentes(inputStr, canonica, excluidos) {
+    const exprUser = prepararExpresion(inputStr);
+    if (!exprUser) return false;
+    const exprCan = prepararExpresion(canonica);
+    const puntos = [0.37, 1.53, -2.71, 4.19, -0.89, 2.63, -3.31, 0.71];
+    let comparaciones = 0;
+    for (const x0 of puntos) {
+      if (excluidos.some(e => Math.abs(e - x0) < 1e-6)) continue;
+      const vUser = evaluarExpresion(exprUser, x0);
+      const vCan = evaluarExpresion(exprCan, x0);
+      if (vUser === null || vCan === null) continue;
+      comparaciones++;
+      if (Math.abs(vUser - vCan) >= 1e-6 * Math.max(1, Math.abs(vCan))) return false;
+    }
+    return comparaciones >= 4;
+  }
+
+  function convertirFraccionDecimal(id) {
+    let inp = document.getElementById(id);
+    if(!inp) return;
+    let fracMatch = inp.value.match(/(\d+)\/(\d+)/);
+    if(fracMatch) {
+      let num = parseFloat(fracMatch[1]), den = parseFloat(fracMatch[2]);
+      if(!isNaN(num) && !isNaN(den) && den !== 0) inp.value = (num/den).toString();
+    }
+  }
+  window.convertirFraccionDecimal = convertirFraccionDecimal;
+  function insertarSimbolo(inputId, sym){ let inp = document.getElementById(inputId); if(inp){ inp.value += sym; inp.focus(); } }
+
+  function evaluarCampo(id, f) {
+    const val = document.getElementById(id).value;
+    switch(id) {
+      case 'dom_input': return normalizar(val) === normalizar(f.dominio);
+      case 'evitable_input': return compararEvitable(val, f.evitable);
+      case 'av_input': return compararAV(val, f.av);
+      case 'ah_input': return normalizar(val) === normalizar(f.ah);
+      case 'ao_input': return normalizar(val) === normalizar(f.ao);
+      case 'cortey_input': return compararCorteY(val, f.corteY);
+      case 'cortex_input': return compararRaices(val, f.raices);
+      case 'deriv_input': return sonEquivalentes(val, f.derivCanonica, f.excl);
+      case 'criticos_input': return normalizar(val) === normalizar(f.criticos);
+      case 'crece_input': return compararIntervalos(val, f.crece);
+      case 'decrece_input': return compararIntervalos(val, f.decrece);
+      case 'maximo_input': return compararPunto(val, f.maximo);
+      case 'minimo_input': return compararPunto(val, f.minimo);
+      case 'segunda_input': return sonEquivalentes(val, f.segundaCanonica, f.excl);
+      case 'concava_input': return compararIntervalos(val, f.concava);
+      case 'convexa_input': return compararIntervalos(val, f.convexa);
+      case 'pi_input': return compararPI(val, f.pi);
+      case 'simetria_par': return normalizar(val) === normalizar(f.simPar);
+      case 'simetria_impar': return normalizar(val) === normalizar(f.simImpar);
+    }
+  }
+
+  function resetEstadoCampos() {
+    estadoCampo = {}; contadoFallo = {};
+    CAMPOS.forEach(id => {
+      let inp = document.getElementById(id);
+      inp.value = ''; inp.classList.remove('correcto','incorrecto'); inp.disabled = false;
+      estadoCampo[id] = false; contadoFallo[id] = false;
+    });
+  }
+
+  function cargarNuevaFuncion() {
+    let nuevo;
+    do { nuevo = Math.floor(Math.random()*FUNCIONES_COMPLETAS.length); } while(nuevo === ultimoIndice && FUNCIONES_COMPLETAS.length > 1);
+    ultimoIndice = nuevo;
+    currentFunc = {...FUNCIONES_COMPLETAS[nuevo]};
+    document.getElementById('funcionDisplay').innerHTML = `$$ ${currentFunc.tex} $$`;
+    if(window.MathJax) MathJax.typesetPromise ? MathJax.typesetPromise() : MathJax.typeset();
+    resetEstadoCampos();
+    document.getElementById('feedbackRacional').className = 'fb';
+    document.getElementById('btnOtroEjercicio').style.display = 'none';
+    yaIntentado = false;
+  }
+
+  function comprobarEjercicio(){
+    const f = currentFunc; if(!f) return;
+    if (!yaIntentado) { real++; yaIntentado = true; }
+
+    CAMPOS.forEach(id => {
+      if (estadoCampo[id]) return; // ya correcto y bloqueado: no se reevalúa ni se recuenta
+      const inp = document.getElementById(id);
+      const ok = evaluarCampo(id, f);
+      if (ok) {
+        inp.classList.remove('incorrecto'); inp.classList.add('correcto'); inp.disabled = true;
+        estadoCampo[id] = true;
+        aciertos++;
+        if (contadoFallo[id]) { fallos--; contadoFallo[id] = false; } // corregido: se retira el fallo anterior
+      } else {
+        inp.classList.remove('correcto'); inp.classList.add('incorrecto');
+        if (!contadoFallo[id]) { fallos++; contadoFallo[id] = true; } // solo se cuenta la primera vez que falla
+      }
+    });
+
+    actualizarStats();
+    document.getElementById('btnOtroEjercicio').style.display = 'inline-block';
+
+    const correctos = CAMPOS.filter(id => estadoCampo[id]).length;
+    const fb = document.getElementById('feedbackRacional');
+    if (correctos === totalCampos) {
+      fb.className = 'fb show ok';
+      fb.innerHTML = `✅ ¡Análisis completo de \\( ${f.tex} \\)! Puedes seguir con "Nueva función" cuando quieras.`;
+    } else {
+      fb.className = 'fb show fail';
+      fb.innerHTML = `❌ Correctos ${correctos}/${totalCampos}. Corrige los campos en rojo y vuelve a pulsar "Comprobar" — no penaliza volver a intentarlo.`;
+    }
+    if(window.MathJax) MathJax.typesetPromise ? MathJax.typesetPromise() : MathJax.typeset();
+  }
+
+  function actualizarStats(){
+    let m = (real > 0) ? (aciertos/(real*totalCampos))*10 : 0;
+    m = Math.min(10, Math.max(0, m));
+    document.getElementById('s-real').innerText = real;
+    document.getElementById('s-ac').innerText = aciertos;
+    document.getElementById('s-fail').innerText = fallos;
+    document.getElementById('s-pts').innerText = m.toFixed(1)+'/10';
+  }
+
+  let cexpr=''; function toggleCalc(){ let b=document.getElementById('calc-body'); b.classList.toggle('open'); document.getElementById('calc-arrow').innerText=b.classList.contains('open')?'▾':'▸'; }
+  function cc(v){ let sc=document.getElementById('cscreen'); if(v==='AC'){ cexpr=''; sc.textContent='0'; return; } if(v==='='){ try{ cexpr=String(eval(cexpr.replace(/×/g,'*').replace(/÷/g,'/'))); sc.textContent=cexpr; }catch(e){ sc.textContent='Error'; cexpr=''; } return; } cexpr+=v; sc.textContent=cexpr; }
+
+  // Redondeo hacia ARRIBA del tiempo transcurrido (Math.ceil, no floor)
+  function formatTiempo(ms) {
+    let totalSeg = Math.ceil(ms / 1000);
+    let horas = Math.floor(totalSeg / 3600);
+    let minutos = Math.ceil((totalSeg % 3600) / 60);
+    if (minutos === 60) { minutos = 0; horas++; }
+    return `${horas.toString().padStart(2,'0')}:${minutos.toString().padStart(2,'0')}`;
+  }
+
+  function finalizarCalificar() {
+    const nombre = document.getElementById('nombre').value.trim();
+    const aviso = document.getElementById('avisoNombre');
+    if (!nombre) { aviso.classList.add('show'); document.getElementById('nombre').focus(); return; }
+    aviso.classList.remove('show');
+    let nota = (real > 0) ? (aciertos / (real * totalCampos)) * 10 : 0;
+    nota = Math.min(10, Math.max(0, nota));
+    const notaRedondeada = nota.toFixed(1);
+    const ahora = new Date();
+    const fecha = `${ahora.getDate().toString().padStart(2,'0')}/${(ahora.getMonth()+1).toString().padStart(2,'0')}/${ahora.getFullYear()}`;
+    const hora = `${ahora.getHours().toString().padStart(2,'0')}:${ahora.getMinutes().toString().padStart(2,'0')}:${ahora.getSeconds().toString().padStart(2,'0')}`;
+    const tiempoTranscurrido = formatTiempo(Date.now() - startTime);
+    const modalDiv = document.getElementById('modal'); const wrapDiv = document.getElementById('wrapGlobal');
+    let colorFondo = '';
+    if (nota >= 10) { colorFondo = '#1a7a1a'; wrapDiv.classList.add('fondo-verde'); } else wrapDiv.classList.remove('fondo-verde');
+    if (nota >= 9 && nota < 10) colorFondo = '#6dbf6d';
+    else if (nota >= 8 && nota < 9) colorFondo = '#1a4f8a';
+    else if (nota >= 7 && nota < 8) colorFondo = '#5b9bd5';
+    else if (nota >= 6 && nota < 7) colorFondo = '#c05c00';
+    else if (nota >= 5 && nota < 6) colorFondo = '#f5a623';
+    else if (nota < 5) colorFondo = '#c0392b';
+    if (nota === 10) colorFondo = '#1a7a1a';
+    modalDiv.style.backgroundColor = colorFondo; modalDiv.style.color = 'white';
+    document.getElementById('m-nombre').innerHTML = `📘 ${nombre}`;
+    document.getElementById('m-nota').innerHTML = `${notaRedondeada} / 10`;
+    document.getElementById('m-meta').innerHTML = `📅 ${fecha}<br>⏰ ${hora}<br>⏱️ Tiempo: ${tiempoTranscurrido}<br>✅ Aciertos: ${aciertos}  |  ❌ Fallos: ${fallos}  |  📝 Ejercicios: ${real}`;
+    document.getElementById('modal-bg').classList.add('show');
+  }
+  function cerrarModal() { document.getElementById('modal-bg').classList.remove('show'); }
+
+  function manejarEnter(e) {
+    if (e.key === 'Enter' && CAMPOS.includes(e.target.id)) { e.preventDefault(); comprobarEjercicio(); }
+  }
+
+  window.onload = () => {
+    cargarNuevaFuncion();
+    document.getElementById('btnComprobar').addEventListener('click', comprobarEjercicio);
+    document.getElementById('btnOtroEjercicio').addEventListener('click', () => cargarNuevaFuncion());
+    document.getElementById('btnFinalizarCalificar').addEventListener('click', finalizarCalificar);
+    document.getElementById('cerrarModalBtn').addEventListener('click', cerrarModal);
+    CAMPOS.forEach(id => document.getElementById(id).addEventListener('keydown', manejarEnter));
+    document.getElementById('nombre').addEventListener('input', () => document.getElementById('avisoNombre').classList.remove('show'));
+  };
+</script>
+</body>
+</html>
