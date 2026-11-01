@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aplicaciones de los límites · Asíntotas y continuidad</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+  chtml: { scale: 1.02 }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script" async></script>
+<style>
+:root {
+  --color-fondo: #F5F0E8;
+  --color-fondo-card: #FDFAF3;
+  --color-texto: #2C1F0E;
+  --color-texto-suave: #6B4F35;
+  --color-acento: #A0522D;
+  --color-acento-hover: #7B3B1E;
+  --color-borde: #C9A96E;
+  --color-borde-suave: #E0CEAA;
+  --color-cabecera: #3B2510;
+  --color-cabecera-txt: #F5EDD8;
+  --color-barra-alumno: #EFE4CC;
+  --color-correcto: #2E6B3E;
+  --color-incorrecto: #8B1A1A;
+  --color-neutro: #E8DFC8;
+  --color-apagado: #A8998A;
+  --color-apagado-fondo: #F3EFE6;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Lato',sans-serif;font-size:16px;color:var(--color-texto);background:var(--color-fondo);line-height:1.5;}
+
+/* ---------- Cabecera (solo autoría) ---------- */
+.cabecera{background:var(--color-cabecera);color:var(--color-cabecera-txt);font-family:'Libre Baskerville',serif;text-align:center;padding:12px 20px;border-bottom:3px solid var(--color-borde);font-size:.78rem;letter-spacing:.04em;}
+
+/* ---------- Contenedor ---------- */
+.ficha-container{max-width:820px;margin:28px auto;background:var(--color-fondo-card);border:2px solid var(--color-borde);border-radius:6px;box-shadow:0 3px 12px rgba(44,31,14,.15);padding:32px 36px;transition:background .5s;}
+.ficha-container.verde-total{background:#d4edda;}
+.titulo-ficha{font-family:'Libre Baskerville',serif;font-size:1.6rem;color:var(--color-texto);text-align:center;padding-bottom:10px;margin-bottom:6px;font-weight:700;}
+.titulo-ficha::after{content:'';display:block;width:60px;height:3px;background:var(--color-borde);margin:10px auto 0;border-radius:2px;}
+.subtitulo{text-align:center;font-family:'Libre Baskerville',serif;font-style:italic;color:var(--color-texto-suave);font-size:.95rem;margin-bottom:20px;}
+
+/* ---------- Barra del alumno ---------- */
+.barra{position:sticky;top:0;z-index:50;background:var(--color-barra-alumno);border:1.5px solid var(--color-borde);border-radius:6px;margin:0 0 22px;box-shadow:0 2px 6px rgba(44,31,14,.08);color:var(--color-texto);padding:9px 20px;display:flex;flex-wrap:wrap;gap:10px 24px;align-items:center;justify-content:center;font-size:.92rem;}
+.barra label{font-family:'Libre Baskerville',serif;font-size:.85rem;color:var(--color-texto-suave);}
+.barra input#nombre{background:var(--color-fondo-card);border:1.5px solid var(--color-borde);border-radius:4px;padding:6px 10px;font-family:'Lato',sans-serif;font-size:.95rem;color:var(--color-texto);width:230px;max-width:60vw;outline:none;}
+.barra input#nombre:focus{border-color:var(--color-acento);}
+.barra input#nombre.falta{border-color:var(--color-incorrecto);box-shadow:0 0 0 3px rgba(139,26,26,.18);}
+.barra .dato{color:var(--color-texto-suave);}
+.barra .dato b{color:var(--color-acento);font-family:'Libre Baskerville',serif;}
+.barra .dato b.verde{color:var(--color-correcto);}
+.barra .dato b.rojo{color:var(--color-incorrecto);}
+.aviso-nombre{color:var(--color-incorrecto);font-size:.82rem;font-weight:700;display:none;width:100%;text-align:center;}
+.aviso-nombre.visible{display:block;}
+
+/* ---------- Instrucciones ---------- */
+.instrucciones{background:var(--color-fondo);border:1px solid var(--color-borde-suave);border-radius:4px;padding:14px 20px;margin-bottom:24px;font-size:.9rem;color:var(--color-texto-suave);}
+.instrucciones h2{font-family:'Libre Baskerville',serif;font-size:.95rem;color:var(--color-texto);margin:0;}
+.instrucciones[open] ul{margin-top:8px;}
+.instrucciones ul{padding-left:20px;}
+.instrucciones li{margin:3px 0;}
+.instrucciones b{color:var(--color-texto);}
+
+/* ---------- Tarjeta de ejercicio ---------- */
+.ejercicio-card{background:var(--color-fondo);border:1.5px solid var(--color-borde-suave);border-left:4px solid var(--color-borde);border-radius:4px;padding:22px 26px;margin-bottom:22px;}
+.ej-hdr{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--color-borde-suave);flex-wrap:wrap;}
+.ej-num{background:var(--color-acento);color:#FDFAF3;border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-family:'Libre Baskerville',serif;font-weight:700;font-size:.9rem;flex-shrink:0;}
+.ej-title{font-family:'Libre Baskerville',serif;font-size:1.1rem;color:var(--color-texto);font-weight:700;}
+.ej-valor{margin-left:auto;font-size:.8rem;color:var(--color-texto-suave);font-family:'Libre Baskerville',serif;font-style:italic;}
+.enunciado{background:var(--color-fondo-card);border:1px solid var(--color-borde-suave);border-left:3px solid var(--color-borde);border-radius:0 4px 4px 0;padding:14px 18px;font-size:1rem;color:var(--color-texto);margin-bottom:16px;}
+.formula{display:block;text-align:center;margin:12px 0 6px;font-size:1.08rem;overflow-x:auto;}
+.punto-union{display:inline-block;margin-top:6px;background:var(--color-barra-alumno);border:1px solid var(--color-borde);border-radius:4px;padding:3px 10px;font-size:.9rem;color:var(--color-texto-suave);}
+.punto-union b{color:var(--color-acento);}
+
+/* Recuadro de la condición de continuidad */
+.condicion{background:#FBF3E6;border:2px solid var(--color-acento);border-radius:6px;padding:14px 18px;margin:0 0 18px;}
+.condicion h3{font-family:'Libre Baskerville',serif;font-size:.98rem;color:var(--color-acento);margin:0;}
+.condicion .sum-formula{display:block;margin-top:6px;font-size:1rem;color:var(--color-texto);overflow-x:auto;}
+.condicion[open] ol{margin-top:10px;}
+/* Desplegables (details/summary) */
+.desplegable > summary{cursor:pointer;list-style:none;display:flex;align-items:flex-start;gap:10px;user-select:none;}
+.desplegable > summary::-webkit-details-marker{display:none;}
+.desplegable > summary::before{content:'';flex-shrink:0;width:0;height:0;margin-top:5px;border-left:7px solid var(--color-acento);border-top:5px solid transparent;border-bottom:5px solid transparent;transition:transform .2s;}
+.desplegable[open] > summary::before{transform:rotate(90deg);}
+.desplegable > summary:focus-visible{outline:2px solid var(--color-acento);outline-offset:3px;border-radius:2px;}
+.desplegable > summary .sum-txt{flex:1;min-width:0;}
+.desplegable > summary::after{content:'Ver';margin-left:auto;flex-shrink:0;font-family:'Lato',sans-serif;font-size:.75rem;color:var(--color-apagado);border:1px solid var(--color-borde-suave);border-radius:10px;padding:1px 9px;}
+.desplegable[open] > summary::after{content:'Ocultar';}
+.condicion .formula{margin:8px 0;}
+.condicion ol{padding-left:22px;font-size:.92rem;color:var(--color-texto);}
+.condicion li{margin:3px 0;}
+.condicion .nota-cond{font-size:.85rem;color:var(--color-texto-suave);margin-top:6px;font-style:italic;}
+.teoria .sum-lineas{display:flex;flex-wrap:wrap;gap:4px 22px;margin-top:8px;font-size:.92rem;color:var(--color-texto);}
+.teoria .sum-lineas b{color:var(--color-acento);font-family:'Libre Baskerville',serif;font-size:.86rem;}
+.teoria-bloque{margin-top:14px;padding-top:12px;border-top:1px dashed var(--color-borde-suave);font-size:.92rem;color:var(--color-texto);}
+.teoria-bloque:first-of-type{margin-top:12px;}
+.teoria-bloque h4{font-family:'Libre Baskerville',serif;font-size:.92rem;color:var(--color-acento);margin-bottom:6px;}
+.teoria-bloque p{margin-bottom:6px;}
+.teoria-bloque ul{padding-left:20px;}
+.teoria-bloque li{margin:4px 0;}
+.teoria-bloque .formula{margin:6px 0 8px;}
+.formulas-mn{display:flex !important;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:4px 40px;}
+
+/* ---------- Apartados ---------- */
+.plabel{font-family:'Libre Baskerville',serif;font-size:.85rem;color:var(--color-texto-suave);margin-bottom:10px;}
+.paso{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;}
+.pnum{background:var(--color-barra-alumno);border:1px solid var(--color-borde);color:var(--color-acento);border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;flex-shrink:0;margin-top:4px;}
+.pcont{flex:1;min-width:0;}
+.plbl{display:block;font-size:.92rem;color:var(--color-texto);margin-bottom:5px;}
+.plbl .ihint{display:block;font-size:.78rem;color:var(--color-apagado);margin-top:1px;}
+input[type=text]{background:var(--color-fondo-card);border:1.5px solid var(--color-borde);border-radius:4px;padding:8px 12px;font-family:'Lato',sans-serif;font-size:1rem;color:var(--color-texto);outline:none;transition:border-color .2s;max-width:100%;}
+input[type=text]:focus{border-color:var(--color-acento);}
+input[type=text].ok{border-color:var(--color-correcto);background:#EAF4EC;}
+input[type=text].fail{border-color:var(--color-incorrecto);background:#F9EAEA;}
+input[type=text]:disabled{cursor:not-allowed;color:var(--color-texto);}
+.w-l{width:260px;}.w-m{width:200px;}.w-s{width:140px;}
+
+/* ---------- Botones ---------- */
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px;}
+.btn-primario{background:var(--color-acento);color:#FDFAF3;border:none;border-radius:4px;padding:10px 22px;font-family:'Lato',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;letter-spacing:.03em;transition:background-color .2s;}
+.btn-primario:hover:not(:disabled){background:var(--color-acento-hover);}
+.btn-primario:disabled{background:var(--color-neutro);color:var(--color-apagado);cursor:not-allowed;}
+.btn-secundario{background:transparent;color:var(--color-acento);border:2px solid var(--color-borde);border-radius:4px;padding:9px 20px;font-family:'Lato',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;transition:border-color .2s,color .2s;display:none;}
+.btn-secundario:hover{border-color:var(--color-acento);color:var(--color-acento-hover);}
+.btn-soluciones{margin-left:auto;align-self:center;background:transparent;color:var(--color-apagado);border:1px solid #DDD0B6;border-radius:4px;padding:5px 14px;font-family:'Lato',sans-serif;font-size:.78rem;font-weight:400;cursor:pointer;transition:color .2s,border-color .2s;}
+.btn-soluciones:hover:not(:disabled){color:var(--color-texto-suave);border-color:var(--color-borde);}
+.btn-soluciones:disabled{opacity:.4;cursor:default;}
+input[type=text].revelado{border:1.5px dashed var(--color-apagado);background:var(--color-apagado-fondo);color:var(--color-texto-suave);}
+.fb li .r-sol{color:var(--color-texto-suave);font-weight:700;font-family:'Libre Baskerville',serif;}
+.formula-trozos{margin:16px 0 10px;}
+/* La llave estirada sale un 25 % más gruesa que la original: se estrecha para igualar el trazo */
+.formula-trozos mjx-stretchy-v{transform:scaleX(.81);transform-origin:right center;}
+
+/* ---------- Feedback ---------- */
+.fb{margin-top:14px;font-size:.93rem;border-radius:4px;padding:12px 16px;display:none;line-height:1.6;}
+.fb.show{display:block;}
+.fb.ok{background:#EAF4EC;border:1.5px solid var(--color-correcto);color:var(--color-texto);}
+.fb.fail{background:#F9EAEA;border:1.5px solid var(--color-incorrecto);color:var(--color-texto);}
+.fb.neutro{background:var(--color-apagado-fondo);border:1.5px dashed var(--color-borde);color:var(--color-texto-suave);}
+.fb .fb-cab{font-family:'Libre Baskerville',serif;font-weight:700;margin-bottom:6px;}
+.fb.ok .fb-cab{color:var(--color-correcto);}
+.fb.fail .fb-cab{color:var(--color-incorrecto);}
+.fb ul{list-style:none;padding:0;}
+.fb li{padding:7px 0;border-top:1px dashed var(--color-borde-suave);}
+.fb li:first-child{border-top:none;}
+.fb li .r-ok{color:var(--color-correcto);font-weight:700;}
+.fb li .r-fail{color:var(--color-incorrecto);font-weight:700;}
+.fb .sol{color:var(--color-texto);}
+.fb .expl{display:block;color:var(--color-texto-suave);font-size:.88rem;margin-top:2px;}
+.cadena{margin-top:10px;background:var(--color-fondo-card);border:1.5px solid var(--color-borde);border-radius:4px;padding:10px 14px;}
+.cadena .cadena-tit{font-family:'Libre Baskerville',serif;font-size:.88rem;color:var(--color-acento);font-weight:700;}
+.cadena .formula{margin:8px 0 4px;}
+.cadena p{font-size:.86rem;color:var(--color-texto-suave);}
+
+
+/* ---------- Pie ---------- */
+.pie{display:flex;flex-direction:column;align-items:center;gap:16px;margin-top:8px;}
+.btn-finalizar{background:var(--color-cabecera);color:var(--color-cabecera-txt);border:2px solid var(--color-borde);border-radius:4px;padding:11px 28px;font-family:'Libre Baskerville',serif;font-size:.95rem;font-weight:700;cursor:pointer;letter-spacing:.04em;transition:background-color .2s;}
+.btn-finalizar:hover{background:#2C1A0A;}
+
+/* ---------- Modales ---------- */
+.modal-bg{position:fixed;inset:0;background:rgba(44,31,14,.55);display:none;align-items:center;justify-content:center;z-index:9999;padding:16px;}
+.modal-bg.show{display:flex;}
+.modal-calificacion{border:3px solid var(--color-borde);border-radius:8px;font-family:'Libre Baskerville',serif;box-shadow:0 6px 24px rgba(44,31,14,.35);padding:26px 30px;max-width:460px;width:100%;text-align:center;max-height:92vh;overflow-y:auto;}
+.modal-calificacion .m-titulo{font-size:1.15rem;font-weight:700;}
+.modal-calificacion .m-sub{font-size:.82rem;font-style:italic;opacity:.9;margin-top:2px;}
+.modal-calificacion hr{border:none;border-top:1px solid rgba(255,255,255,.45);margin:12px 0;}
+.modal-calificacion .m-informe{font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;opacity:.9;}
+.modal-calificacion .m-nombre{font-size:1.2rem;margin-top:6px;}
+.modal-calificacion .nota-big{font-size:3rem;font-weight:700;line-height:1.1;margin:8px 0;}
+.modal-calificacion .meta{font-family:'Lato',sans-serif;font-size:.9rem;line-height:1.7;}
+.modal-calificacion table{width:100%;border-collapse:collapse;margin:12px 0;font-family:'Lato',sans-serif;font-size:.82rem;}
+.modal-calificacion th,.modal-calificacion td{border:1px solid rgba(255,255,255,.4);padding:5px 6px;}
+.modal-calificacion th{font-weight:700;}
+.modal-calificacion .captura{font-family:'Lato',sans-serif;font-size:.88rem;border-radius:4px;padding:8px 10px;background:rgba(255,255,255,.18);margin:10px 0 14px;}
+.modal-calificacion .btn-cerrar{background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.55);border-radius:4px;padding:8px 20px;font-family:'Lato',sans-serif;font-size:.9rem;cursor:pointer;}
+.confirm-modal{background:var(--color-fondo-card);color:var(--color-texto);border:3px solid var(--color-borde);border-radius:8px;padding:24px 28px;max-width:400px;width:100%;text-align:center;box-shadow:0 6px 24px rgba(44,31,14,.35);}
+.confirm-modal h2{font-family:'Libre Baskerville',serif;color:var(--color-acento);font-size:1.15rem;margin-bottom:8px;}
+.confirm-modal .meta{font-size:.93rem;color:var(--color-texto-suave);margin-bottom:16px;}
+.confirm-botones{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.confirm-botones .btn-secundario{display:inline-block;}
+
+@media (max-width:600px){
+  .ficha-container{margin:12px 8px;padding:20px 16px;}
+  .ejercicio-card{padding:16px 14px;}
+  .titulo-ficha{font-size:1.3rem;}
+  .ej-valor{margin-left:0;width:100%;}
+  .w-l,.w-m{width:100%;}
+  .formula{font-size:.92rem;}
+}
+</style>
+</head>
+<body>
+
+<header class="cabecera">Material elaborado por Marta L Letona S. · Basado en el trabajo de Javier Cayetano</header>
+
+<main class="ficha-container" id="wrap">
+  <h1 class="titulo-ficha">Aplicaciones de los límites</h1>
+  <p class="subtitulo">2.º Bachillerato · Asíntotas y continuidad con parámetro</p>
+
+  <div class="barra">
+    <label for="nombre">Alumno/a:</label>
+    <input type="text" id="nombre" placeholder="Nombre y apellidos" autocomplete="off">
+    <span class="dato">Nota: <b id="s-pts">0,00</b> / 10</span>
+    <span class="dato">Aciertos: <b id="s-ac" class="verde">0</b></span>
+    <span class="dato">Fallos: <b id="s-fail" class="rojo">0</b></span>
+    <span class="dato">Ejercicios: <b id="s-real">0</b></span>
+    <div class="aviso-nombre" id="aviso-nombre">Escribe tu nombre antes de continuar.</div>
+  </div>
+
+  <details class="instrucciones desplegable">
+    <summary><h2>Cómo se puntúa</h2></summary>
+    <ul>
+      <li>Cada ejercicio vale <b>5 puntos</b>, repartidos a partes iguales entre sus apartados (ejercicio 1: 3 apartados de 1,67; ejercicio 2: 4 apartados de 1,25).</li>
+      <li>Puedes comprobar los apartados de uno en uno. Un apartado <b>fallado queda a 0</b> y ya no admite más intentos.</li>
+      <li>Para volver a intentarlo, pulsa <b>«Hacer otro ejercicio»</b>: se genera uno nuevo y se pierden los puntos del ejercicio actual.</li>
+      <li><b>«Mostrar soluciones»</b> resuelve, con su explicación, los apartados pendientes de ese ejercicio; esos apartados <b>no cuentan para la nota</b>.</li>
+      <li>Si hay varias asíntotas del mismo tipo, sepáralas con <b>punto y coma</b>: <i>x = 2; x = −2</i>. Los decimales pueden llevar coma o punto; también se admiten fracciones (<i>5/6</i>).</li>
+    </ul>
+  </details>
+
+  <!-- ===================== EJERCICIO 1 ===================== -->
+  <section class="ejercicio-card">
+    <div class="ej-hdr">
+      <div class="ej-num">1</div>
+      <div class="ej-title">Estudio completo de asíntotas</div>
+      <div class="ej-valor">5 puntos · 3 apartados</div>
+    </div>
+    <div class="enunciado" id="en1"></div>
+
+    <details class="condicion desplegable teoria" id="teoria1">
+      <summary><span class="sum-txt"><h3>Teoría: cómo se buscan las asíntotas</h3>
+        <span class="sum-lineas">
+          <span><b>Vertical</b> \(x=x_0\): &nbsp;\(\displaystyle\lim_{x\to x_0} f(x)=\pm\infty\)</span>
+          <span><b>Horizontal</b> \(y=k\): &nbsp;\(\displaystyle\lim_{x\to\pm\infty} f(x)=k\)</span>
+          <span><b>Oblicua</b> \(y=mx+n\)</span>
+        </span></span></summary>
+
+      <div class="teoria-bloque">
+        <h4>Asíntotas verticales</h4>
+        <p>La recta &nbsp;\(x=x_0\)&nbsp; es asíntota vertical si &nbsp;\(\displaystyle\lim_{x\to x_0^-} f(x)=\pm\infty\)&nbsp; o &nbsp;\(\displaystyle\lim_{x\to x_0^+} f(x)=\pm\infty\)&nbsp; (basta con uno de los dos laterales).</p>
+        <ul>
+          <li><b>Dónde buscar:</b> en los valores que <b>anulan el denominador</b>.</li>
+          <li>Si el numerador <b>no</b> se anula en &nbsp;\(x_0\), el límite es infinito: hay asíntota.</li>
+          <li>Si se anulan los dos, simplifica. Si el límite sale <b>finito</b>, es una <b>discontinuidad evitable</b>, no una asíntota.</li>
+          <li>Si el denominador nunca se anula (por ejemplo, &nbsp;\(x^2+4\)&nbsp; o &nbsp;\(e^x+1\)), no hay verticales.</li>
+        </ul>
+      </div>
+
+      <div class="teoria-bloque">
+        <h4>Asíntotas horizontales</h4>
+        <p>La recta &nbsp;\(y=k\)&nbsp; es asíntota horizontal si &nbsp;\(\displaystyle\lim_{x\to+\infty} f(x)=k\)&nbsp; o &nbsp;\(\displaystyle\lim_{x\to-\infty} f(x)=k\), con &nbsp;\(k\)&nbsp; finito.</p>
+        <ul>
+          <li><b>Cociente de polinomios:</b>
+            grado del numerador <b>menor</b> → \(y=0\);
+            grados <b>iguales</b> → \(y=\dfrac{a}{b}\), donde &nbsp;\(a\)&nbsp; y &nbsp;\(b\)&nbsp; son los coeficientes principales del numerador y del denominador;
+            grado del numerador <b>mayor</b> → no hay.</li>
+          <li><b>Con raíces o exponenciales</b>, estudia &nbsp;\(+\infty\)&nbsp; y &nbsp;\(-\infty\)&nbsp; por separado: &nbsp;\(\sqrt{x^2}=|x|\), que vale &nbsp;\(-x\)&nbsp; si &nbsp;\(x<0\), y &nbsp;\(e^{x}\to0\)&nbsp; cuando &nbsp;\(x\to-\infty\). Puede haber <b>dos</b> horizontales distintas.</li>
+        </ul>
+      </div>
+
+      <div class="teoria-bloque">
+        <h4>Asíntotas oblicuas</h4>
+        <p>La recta &nbsp;\(y=mx+n\)&nbsp; (con &nbsp;\(m\neq0\)) es asíntota oblicua si existen y son finitos</p>
+        <span class="formula formulas-mn"><span>\(\displaystyle m=\lim_{x\to\pm\infty}\frac{f(x)}{x}\)</span><span>\(\displaystyle n=\lim_{x\to\pm\infty}\big(f(x)-mx\big)\)</span></span>
+        <ul>
+          <li><b>Cociente de polinomios:</b> hay oblicua cuando el grado del numerador es <b>una unidad mayor</b> que el del denominador. También se obtiene dividiendo: el <b>cociente</b> de la división es la asíntota.</li>
+          <li>En un mismo lado (\(+\infty\)&nbsp; o &nbsp;\(-\infty\)) <b>no puede haber</b> horizontal y oblicua a la vez.</li>
+        </ul>
+      </div>
+    </details>
+    <div class="plabel">Asíntotas verticales, horizontales y oblicuas</div>
+
+    <div class="paso"><div class="pnum">1</div><div class="pcont">
+      <label class="plbl" for="e1_va">Asíntotas verticales
+        <span class="ihint">Escribe x = valor (varias separadas por «;») o «no tiene»</span></label>
+      <input type="text" id="e1_va" class="w-l" placeholder="x = 2; x = −1" autocomplete="off">
+    </div></div>
+    <div class="paso"><div class="pnum">2</div><div class="pcont">
+      <label class="plbl" for="e1_ha">Asíntotas horizontales
+        <span class="ihint">Escribe y = valor (varias separadas por «;») o «no tiene»</span></label>
+      <input type="text" id="e1_ha" class="w-l" placeholder="y = 3" autocomplete="off">
+    </div></div>
+    <div class="paso"><div class="pnum">3</div><div class="pcont">
+      <label class="plbl" for="e1_oa">Asíntota oblicua
+        <span class="ihint">Escribe y = mx + n o «no tiene»</span></label>
+      <input type="text" id="e1_oa" class="w-l" placeholder="y = 2x + 1" autocomplete="off">
+    </div></div>
+
+    <div class="btns">
+      <button class="btn-primario" id="btncheck1" onclick="check1()">Comprobar</button>
+      <button class="btn-secundario" id="otro1" onclick="nuevoEj1()">Hacer otro ejercicio</button>
+      <button class="btn-soluciones" id="sol1" onclick="pedirSoluciones(1)">Mostrar soluciones</button>
+    </div>
+    <div class="fb" id="fb1" aria-live="polite"></div>
+  </section>
+
+  <!-- ===================== EJERCICIO 2 ===================== -->
+  <section class="ejercicio-card">
+    <div class="ej-hdr">
+      <div class="ej-num">2</div>
+      <div class="ej-title">Continuidad con parámetro</div>
+      <div class="ej-valor">5 puntos · 4 apartados</div>
+    </div>
+    <div class="enunciado" id="en2"></div>
+
+    <details class="condicion desplegable" id="condicion2"></details>
+
+    <div class="plabel">Calcula las tres cantidades y obliga a que coincidan</div>
+
+    <div class="paso"><div class="pnum">1</div><div class="pcont">
+      <label class="plbl" for="e2_fc"><span id="lbl-fc">Valor de la función en el punto</span>
+        <span class="ihint">Fíjate en qué trozo incluye el punto (el que lleva ≤ o ≥). Expresión en función de a (o un número, si no depende de a).</span></label>
+      <input type="text" id="e2_fc" class="w-m" placeholder="Ej.: 4 + a" autocomplete="off">
+    </div></div>
+    <div class="paso"><div class="pnum">2</div><div class="pcont">
+      <label class="plbl" for="e2_limizq"><span id="lbl-izq">Límite lateral por la izquierda</span>
+        <span class="ihint">Expresión en función de a (o un número, si no depende de a)</span></label>
+      <input type="text" id="e2_limizq" class="w-m" placeholder="Ej.: 2a + 1" autocomplete="off">
+    </div></div>
+    <div class="paso"><div class="pnum">3</div><div class="pcont">
+      <label class="plbl" for="e2_limder"><span id="lbl-der">Límite lateral por la derecha</span>
+        <span class="ihint">Expresión en función de a (o un número, si no depende de a)</span></label>
+      <input type="text" id="e2_limder" class="w-m" placeholder="Ej.: 3a − 5" autocomplete="off">
+    </div></div>
+    <div class="paso"><div class="pnum">4</div><div class="pcont">
+      <label class="plbl" for="e2_valor_a">Valor del parámetro \(a\) para que \(f\) sea continua en \(\mathbb{R}\)
+        <span class="ihint">Número entero, decimal o fracción (por ejemplo, −3/4)</span></label>
+      <input type="text" id="e2_valor_a" class="w-s" placeholder="a =" autocomplete="off">
+    </div></div>
+
+    <div class="btns">
+      <button class="btn-primario" id="btncheck2" onclick="check2()">Comprobar</button>
+      <button class="btn-secundario" id="otro2" onclick="nuevoEj2()">Hacer otro ejercicio</button>
+      <button class="btn-soluciones" id="sol2" onclick="pedirSoluciones(2)">Mostrar soluciones</button>
+    </div>
+    <div class="fb" id="fb2" aria-live="polite"></div>
+  </section>
+
+  <div class="pie">
+    <button class="btn-finalizar" onclick="finalizar()">Finalizar y calificar</button>
+  </div>
+</main>
+
+<!-- MODAL DE CALIFICACIÓN -->
+<div class="modal-bg" id="modal-bg">
+  <div class="modal-calificacion" id="modal">
+    <div class="m-titulo" id="m-titulo"></div>
+    <div class="m-sub" id="m-sub"></div>
+    <hr>
+    <div class="m-informe">Informe de la actividad</div>
+    <div class="m-nombre" id="m-nombre">—</div>
+    <div class="nota-big" id="m-nota">—</div>
+    <div class="meta" id="m-meta"></div>
+    <div id="m-desglose"></div>
+    <div class="captura">📸 Haz una captura y entrégala en Google Classroom.</div>
+    <button class="btn-cerrar" onclick="cerrarModal()">Cerrar y seguir practicando</button>
+  </div>
+</div>
+
+<!-- MODAL DE CONFIRMACIÓN / AVISO -->
+<div class="modal-bg" id="confirm-bg">
+  <div class="confirm-modal" role="dialog" aria-modal="true">
+    <h2 id="confirm-title">¿Seguro?</h2>
+    <div class="meta" id="confirm-msg"></div>
+    <div class="confirm-botones">
+      <button class="btn-primario" id="confirm-cancel">Cancelar</button>
+      <button class="btn-secundario" id="confirm-ok">Sí, continuar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// =====================================================================
+// MODELO DE PUNTUACIÓN (proporcional por apartado)
+// · Cada ejercicio vale 5 puntos, repartidos a partes iguales entre sus apartados
+//   (Ej. 1: 3 apartados → 5/3; Ej. 2: 4 apartados → 5/4).
+// · Un apartado fallado queda cerrado a 0. Solo se recupera generando un
+//   ejercicio nuevo («Hacer otro ejercicio»), que reinicia todos sus apartados.
+// · Los apartados vacíos no se corrigen: siguen pendientes.
+// · «Mostrar soluciones»: los apartados pendientes del ejercicio se rellenan
+//   con la solución y quedan bloqueados sin puntos; los ya corregidos
+//   conservan su resultado. Nunca suma puntos.
+// =====================================================================
+const PUNTOS_POR_EJERCICIO = 5;
+const N_AP = { 1: 3, 2: 4 };
+// Altura de la llave del ejercicio 2 (≈80 px, algo más de 1,5 veces la original). MathJax la
+// construye por piezas; el CSS .formula-trozos mjx-stretchy-v ajusta el grosor.
+const SEP_TROZOS = '0.7em';   // hueco entre las dos filas
+const ALTO_SUP = '1.2em';      // margen invisible por encima de la primera fila
+const ALTO_INF = '0.6em';      // margen invisible por debajo de la segunda fila
+
+// ==================== UTILIDADES NUMÉRICAS ====================
+function rnd(a, b) { return a + Math.floor(Math.random() * (b - a + 1)); }
+function rndNZ(a, b) { let v; do { v = rnd(a, b); } while (v === 0); return v; }
+function elegir(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function mcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { [a, b] = [b, a % b]; } return a || 1; }
+function fraccion(n, d) {
+  if (d < 0) { n = -n; d = -d; }
+  const g = mcd(n, d);
+  return { n: n / g + 0, d: d / g };
+}
+function fracTex(f) {
+  if (f.d === 1) return String(f.n);
+  return (f.n < 0 ? '-' : '') + `\\frac{${Math.abs(f.n)}}{${f.d}}`;
+}
+function fmtDec(x, dec = 2) {
+  return (Math.round(x * 10 ** dec) / 10 ** dec).toFixed(dec).replace('.', ',');
+}
+function fracTexConDecimal(f) {
+  if (f.d === 1) return String(f.n);
+  const dec = f.n / f.d;
+  const exacto = Math.abs(dec * 100 - Math.round(dec * 100)) < 1e-9;
+  return fracTex(f) + (exacto ? ` = ${fmtDec(dec).replace(/,?0+$/, '')}` : ` \\approx ${fmtDec(dec)}`);
+}
+function normalizarComaDecimal(s) { return String(s).replace(/(\d),(\d)/g, '$1.$2'); }
+
+function terminoInicial(valor, sufijo = '') {
+  if (valor === 0) return sufijo === '' ? '0' : '';
+  const signo = valor < 0 ? '-' : '';
+  const mag = Math.abs(valor);
+  const magStr = (sufijo !== '' && mag === 1) ? '' : String(mag);
+  return `${signo}${magStr}${sufijo}`;
+}
+function terminoConSigno(valor, sufijo = '') {
+  if (valor === 0) return '';
+  const signo = valor < 0 ? ' - ' : ' + ';
+  const mag = Math.abs(valor);
+  const magStr = (sufijo !== '' && mag === 1) ? '' : String(mag);
+  return `${signo}${magStr}${sufijo}`;
+}
+// Expresión lineal p + q·a → texto («4 + a», «2a», «-3 - 2a»)
+function linExpr(L) {
+  if (L.p === 0 && L.q === 0) return '0';
+  if (L.p === 0) return terminoInicial(L.q, 'a');
+  return String(L.p) + terminoConSigno(L.q, 'a');
+}
+
+// ==================== POLINOMIOS (coeficientes de mayor a menor grado) ====================
+function polyTex(cs) {
+  const g = cs.length - 1;
+  let out = '';
+  cs.forEach((c, i) => {
+    if (c === 0) return;
+    const e = g - i;
+    const v = e === 0 ? '' : (e === 1 ? 'x' : `x^${e}`);
+    out += out === '' ? terminoInicial(c, v) : terminoConSigno(c, v);
+  });
+  return out === '' ? '0' : out;
+}
+function polyEval(cs, x) { return cs.reduce((acc, c) => acc * x + c, 0); }
+function polyMul(a, b) {
+  const r = new Array(a.length + b.length - 1).fill(0);
+  a.forEach((x, i) => b.forEach((y, j) => { r[i + j] += x * y; }));
+  return r;
+}
+const lin = r => [1, r === 0 ? 0 : -r]; // x − r
+
+// ==================== EVALUADOR SEGURO DE EXPRESIONES EN a ====================
+function limpiarExpr(input) {
+  let s = normalizarComaDecimal(input).toLowerCase()
+    .replace(/\s/g, '')
+    .replace(/[−–]/g, '-').replace(/[·×]/g, '*').replace(/÷/g, '/');
+  s = s.replace(/^f\([^)]*\)=/, '').replace(/^l[ií]m[^=]*=/, '').replace(/^a=/, '');
+  return s;
+}
+function evalEnA(input, aVal) {
+  let s = limpiarExpr(input);
+  if (s === '' || !/^[0-9a.+\-*/()^]+$/.test(s)) return NaN;
+  for (let k = 0; k < 2; k++) {
+    s = s.replace(/(\d|\))(a|\()/g, '$1*$2').replace(/a(\d|\(|a)/g, 'a*$1');
+  }
+  s = s.replace(/\^/g, '**').replace(/a/g, `(${aVal})`);
+  try {
+    const v = Function('"use strict";return (' + s + ');')();
+    return (typeof v === 'number' && isFinite(v)) ? v : NaN;
+  } catch (e) { return NaN; }
+}
+function igualLineal(input, L) {
+  const pruebas = [-3, -1, 0.5, 2, 7];
+  for (const a of pruebas) {
+    const v = evalEnA(input, a);
+    if (isNaN(v) || Math.abs(v - (L.p + L.q * a)) > 1e-6) return false;
+  }
+  return true;
+}
+function leerNumero(input) {
+  const s = limpiarExpr(input);
+  if (s === '' || /a/.test(s)) return NaN;
+  return evalEnA(s, 0);
+}
+
+// ==================== MODAL DE CONFIRMACIÓN / AVISO ====================
+let confirmCallback = null;
+function pedirConfirmacion(mensaje, callback, opts = {}) {
+  document.getElementById('confirm-title').textContent = opts.titulo || '¿Seguro?';
+  document.getElementById('confirm-msg').textContent = mensaje;
+  document.getElementById('confirm-cancel').textContent = opts.cancelar || 'Cancelar';
+  const ok = document.getElementById('confirm-ok');
+  ok.textContent = opts.aceptar || 'Sí, continuar';
+  ok.style.display = 'inline-block';
+  confirmCallback = callback;
+  document.getElementById('confirm-bg').classList.add('show');
+  document.getElementById('confirm-cancel').focus();
+}
+function mostrarAviso(mensaje) {
+  document.getElementById('confirm-title').textContent = 'Aviso';
+  document.getElementById('confirm-msg').textContent = mensaje;
+  document.getElementById('confirm-cancel').textContent = 'Entendido';
+  document.getElementById('confirm-ok').style.display = 'none';
+  confirmCallback = null;
+  document.getElementById('confirm-bg').classList.add('show');
+  document.getElementById('confirm-cancel').focus();
+}
+function cerrarConfirm() { document.getElementById('confirm-bg').classList.remove('show'); confirmCallback = null; }
+document.getElementById('confirm-ok').addEventListener('click', () => {
+  const cb = confirmCallback; cerrarConfirm(); if (cb) cb();
+});
+document.getElementById('confirm-cancel').addEventListener('click', cerrarConfirm);
+document.getElementById('confirm-bg').addEventListener('click', ev => { if (ev.target.id === 'confirm-bg') cerrarConfirm(); });
+document.addEventListener('keydown', ev => { if (ev.key === 'Escape') cerrarConfirm(); });
+
+// ==================== MATHJAX ====================
+function tipografiar(el) {
+  if (window.MathJax && MathJax.typesetPromise) {
+    if (MathJax.typesetClear) MathJax.typesetClear([el]);
+    MathJax.typesetPromise([el]).catch(() => {});
+  }
+}
+
+// ==================== ESTADO GLOBAL ====================
+let real = 0, aciertos = 0, fallos = 0, timerStart = Date.now();
+const tipoStats = {
+  1: { nombre: 'Asíntotas', instancias: 0, aciertos: 0, fallos: 0, solucionesVistas: 0 },
+  2: { nombre: 'Continuidad con parámetro', instancias: 0, aciertos: 0, fallos: 0, solucionesVistas: 0 }
+};
+function crearEstado(n) {
+  const estado = {};
+  for (let i = 0; i < n; i++) estado[i] = 'pendiente';
+  return { estado, puntos: 0, corregido: false, cerrado: false, revelado: false, historial: [] };
+}
+const est = { 1: crearEstado(N_AP[1]), 2: crearEstado(N_AP[2]) };
+const cur = { 1: null, 2: null };
+
+function recalcPuntos(n) {
+  const ex = est[n];
+  const correctos = Object.values(ex.estado).filter(s => s === 'correcto').length;
+  ex.puntos = correctos * PUNTOS_POR_EJERCICIO / N_AP[n];
+  return ex.puntos;
+}
+function todosDecididos(ex) { return Object.values(ex.estado).every(s => s !== 'pendiente'); }
+
+function exigirNombre() {
+  const el = document.getElementById('nombre');
+  if (el.value.trim()) return true;
+  el.classList.add('falta');
+  document.getElementById('aviso-nombre').classList.add('visible');
+  el.focus();
+  return false;
+}
+document.getElementById('nombre').addEventListener('input', () => {
+  document.getElementById('nombre').classList.remove('falta');
+  document.getElementById('aviso-nombre').classList.remove('visible');
+});
+
+function markField(id, clase) {
+  const el = document.getElementById(id);
+  el.classList.remove('ok', 'fail', 'revelado');
+  el.classList.add(clase);
+}
+function lineaFeedback(tipo, etiqueta, solucionTex, explicacion) {
+  if (tipo === 'ok') return `<li><span class="r-ok">✔ ${etiqueta}: correcto.</span><span class="expl">${explicacion}</span></li>`;
+  if (tipo === 'fail') return `<li><span class="r-fail">✘ ${etiqueta}: incorrecto.</span> <span class="sol">Solución: ${solucionTex}</span><span class="expl">${explicacion}</span></li>`;
+  return `<li><span class="r-sol">Solución.</span> <b>${etiqueta}:</b> <span class="sol">${solucionTex}</span><span class="expl">${explicacion}</span></li>`;
+}
+
+// ==================== EJERCICIO 1: ASÍNTOTAS (generación algorítmica) ====================
+const NO_OBL = 'Hay asíntota horizontal tanto en \\(+\\infty\\) como en \\(-\\infty\\), así que no puede haber oblicua.';
+const coefTex = m => (m === 1 ? '' : m === -1 ? '-' : String(m));
+
+// A · grado 2 / grado 2 con dos raíces en el denominador (a veces, un punto evitable)
+function genA() {
+  let r1, r2; do { r1 = rnd(-4, 4); r2 = rnd(-4, 4); } while (r1 === r2);
+  const p = elegir([1, 2, 3, -1, -2]);
+  const D = polyMul(lin(r1), lin(r2));
+  const hueco = Math.random() < 0.35;
+  let N, s = null;
+  if (hueco) {
+    do { s = rnd(-4, 4); } while (s === r1 || s === r2);
+    N = polyMul([p], polyMul(lin(r1), lin(s)));
+  } else {
+    do { N = [p, rnd(-6, 6), rnd(-6, 6)]; } while (polyEval(N, r1) === 0 || polyEval(N, r2) === 0);
+  }
+  const va = [], huecos = [], txt = [];
+  [r1, r2].forEach(r => {
+    const n = polyEval(N, r);
+    if (n !== 0) {
+      va.push(r);
+      txt.push(`En \\(x=${r}\\) se anula el denominador y el numerador vale \\(${n}\\neq0\\): asíntota vertical.`);
+    } else {
+      huecos.push(r);
+      const lim = fraccion(p * (r1 - s), r1 - r2);
+      txt.push(`En \\(x=${r}\\) se anulan numerador y denominador. Simplificando el factor \\((${polyTex(lin(r))})\\) queda \\(\\lim_{x\\to ${r}} f(x)=${fracTex(lim)}\\), finito: es una <b>discontinuidad evitable</b>, no una asíntota.`);
+    }
+  });
+  return {
+    latex: `\\frac{${polyTex(N)}}{${polyTex(D)}}`, va, huecos, ha: [p], oa: null,
+    eva: txt.join(' '),
+    eha: `Numerador y denominador tienen el mismo grado (2): \\(\\lim_{x\\to\\pm\\infty} f(x)=\\frac{${p}}{1}=${p}\\), el cociente de los coeficientes principales.`,
+    eoa: NO_OBL
+  };
+}
+// B · grado 2 / grado 1 → oblicua
+function genB() {
+  const m = elegir([1, 1, 2, -1, 3, -2]);
+  const r = rnd(-4, 4);
+  let b, c0, R;
+  do { b = rnd(-6, 6); c0 = rnd(-6, 6); R = m * r * r + b * r + c0; } while (R === 0);
+  const n = b + m * r;
+  return {
+    latex: `\\frac{${polyTex([m, b, c0])}}{${polyTex(lin(r))}}`, va: [r], huecos: [], ha: [], oa: { m, n },
+    eva: `El denominador se anula en \\(x=${r}\\) y el numerador vale \\(${R}\\neq0\\): asíntota vertical.`,
+    eha: 'El grado del numerador (2) es mayor que el del denominador (1): el límite en \\(\\pm\\infty\\) es infinito, no hay horizontal.',
+    eoa: `El grado del numerador supera en 1 al del denominador. Dividiendo: \\(f(x)=${polyTex([m, n])}+\\frac{${R}}{${polyTex(lin(r))}}\\) y esa fracción tiende a 0. Con límites: \\(m=\\lim\\frac{f(x)}{x}=${m}\\), \\(n=\\lim\\big(f(x)-(${polyTex([m, 0])})\\big)=${n}\\).`
+  };
+}
+// C · grado 3 / (x² − r²) → oblicua y dos verticales
+function genC() {
+  const m = elegir([1, 1, 2, -1]);
+  const r = rnd(1, 3);
+  let b, c1, d, N;
+  do { b = rnd(-3, 3); c1 = rnd(-5, 5); d = rnd(-6, 6); N = [m, b, c1, d]; }
+  while (polyEval(N, r) === 0 || polyEval(N, -r) === 0);
+  const D = [1, 0, -r * r];
+  const R = [c1 + m * r * r, d + b * r * r];
+  return {
+    latex: `\\frac{${polyTex(N)}}{${polyTex(D)}}`, va: [r, -r], huecos: [], ha: [], oa: { m, n: b },
+    eva: `\\(${polyTex(D)}\\) se anula en \\(x=\\pm${r}\\) y el numerador vale \\(${polyEval(N, r)}\\) y \\(${polyEval(N, -r)}\\), ambos distintos de 0: dos asíntotas verticales.`,
+    eha: 'Grado 3 frente a grado 2: el límite en \\(\\pm\\infty\\) es infinito, no hay horizontal.',
+    eoa: `Grado del numerador = grado del denominador + 1. Dividiendo: \\(f(x)=${polyTex([m, b])}+\\frac{${polyTex(R)}}{${polyTex(D)}}\\) y la fracción tiende a 0.`
+  };
+}
+// D · grado 1 / grado 1 → horizontal y una vertical
+function genD() {
+  const p = rndNZ(-4, 4), r = rnd(-4, 4);
+  let q; do { q = rnd(-6, 6); } while (p * r + q === 0);
+  return {
+    latex: `\\frac{${polyTex([p, q])}}{${polyTex(lin(r))}}`, va: [r], huecos: [], ha: [p], oa: null,
+    eva: `El denominador se anula en \\(x=${r}\\) y el numerador vale \\(${p * r + q}\\neq0\\): asíntota vertical.`,
+    eha: `Mismo grado (1): \\(\\lim_{x\\to\\pm\\infty} f(x)=\\frac{${p}}{1}=${p}\\).`,
+    eoa: NO_OBL
+  };
+}
+// E · grado 1 / (x² + m) → y = 0, sin verticales
+function genE() {
+  const nn = rndNZ(-4, 4), k = rnd(-6, 6), m = rnd(1, 9);
+  return {
+    latex: `\\frac{${polyTex([nn, k])}}{x^2 + ${m}}`, va: [], huecos: [], ha: [0], oa: null,
+    eva: `\\(x^2+${m}>0\\) para todo \\(x\\): el denominador nunca se anula, no hay verticales.`,
+    eha: 'El grado del numerador (1) es menor que el del denominador (2): \\(\\lim_{x\\to\\pm\\infty} f(x)=0\\), asíntota \\(y=0\\).',
+    eoa: NO_OBL
+  };
+}
+// E2 · grado 1 / (x² − r²) → y = 0 y dos verticales
+function genE2() {
+  const r = rnd(1, 4);
+  let nn, k; do { nn = rndNZ(-4, 4); k = rnd(-6, 6); } while (nn * r + k === 0 || -nn * r + k === 0);
+  return {
+    latex: `\\frac{${polyTex([nn, k])}}{x^2 - ${r * r}}`, va: [r, -r], huecos: [], ha: [0], oa: null,
+    eva: `\\(x^2-${r * r}\\) se anula en \\(x=\\pm${r}\\); el numerador vale \\(${nn * r + k}\\) y \\(${-nn * r + k}\\), distintos de 0: dos asíntotas verticales.`,
+    eha: 'El grado del numerador (1) es menor que el del denominador (2): \\(\\lim_{x\\to\\pm\\infty} f(x)=0\\), asíntota \\(y=0\\).',
+    eoa: NO_OBL
+  };
+}
+// F · grado 2 / (x² + m) → horizontal, sin verticales
+function genF() {
+  const p = rndNZ(-3, 4), b = rnd(-6, 6), c0 = rnd(-6, 6), m = rnd(1, 9);
+  return {
+    latex: `\\frac{${polyTex([p, b, c0])}}{x^2 + ${m}}`, va: [], huecos: [], ha: [p], oa: null,
+    eva: `\\(x^2+${m}>0\\) para todo \\(x\\): el denominador nunca se anula.`,
+    eha: `Mismo grado (2): \\(\\lim_{x\\to\\pm\\infty} f(x)=\\frac{${p}}{1}=${p}\\).`,
+    eoa: NO_OBL
+  };
+}
+// G1 · k√(x² + m)/(x − r) → dos horizontales distintas
+function genG1() {
+  const k = rnd(1, 3), m = rnd(1, 9), r = rnd(-3, 3);
+  return {
+    latex: `\\frac{${k === 1 ? '' : k}\\sqrt{x^2 + ${m}}}{${polyTex(lin(r))}}`, va: [r], huecos: [], ha: [k, -k], oa: null,
+    eva: `El denominador se anula en \\(x=${r}\\) y el numerador, \\(${k === 1 ? '' : k}\\sqrt{${r * r + m}}\\), es positivo: asíntota vertical.`,
+    eha: `¡Cuidado con el signo! Si \\(x\\to+\\infty\\), \\(\\sqrt{x^2+${m}}\\approx x\\) y \\(f(x)\\to${k}\\). Si \\(x\\to-\\infty\\), \\(\\sqrt{x^2+${m}}\\approx|x|=-x\\) y \\(f(x)\\to${-k}\\). Hay dos: \\(y=${k}\\) en \\(+\\infty\\) e \\(y=${-k}\\) en \\(-\\infty\\).`,
+    eoa: NO_OBL
+  };
+}
+// G2 · √(k²x² + m)/√(x² + n) → una horizontal, sin verticales
+function genG2() {
+  const k = rnd(1, 3), m = rnd(1, 9), n = rnd(1, 9);
+  return {
+    latex: `\\frac{\\sqrt{${k === 1 ? '' : k * k}x^2 + ${m}}}{\\sqrt{x^2 + ${n}}}`, va: [], huecos: [], ha: [k], oa: null,
+    eva: `\\(\\sqrt{x^2+${n}}\\geq\\sqrt{${n}}>0\\): el denominador nunca se anula.`,
+    eha: `\\(\\frac{\\sqrt{${k === 1 ? '' : k * k}x^2+${m}}}{\\sqrt{x^2+${n}}}\\approx\\frac{${k === 1 ? '' : k}|x|}{|x|}=${k}\\) tanto en \\(+\\infty\\) como en \\(-\\infty\\).`,
+    eoa: NO_OBL
+  };
+}
+// H · k·eˣ/(eˣ + m) → dos horizontales (k y 0)
+function genH() {
+  const k = rndNZ(-4, 4), m = rnd(1, 3);
+  return {
+    latex: `\\frac{${coefTex(k)}e^{x}}{e^{x} + ${m}}`, va: [], huecos: [], ha: [k, 0], oa: null,
+    eva: `\\(e^{x}+${m}>0\\) siempre: el denominador nunca se anula.`,
+    eha: `Si \\(x\\to+\\infty\\), dividiendo entre \\(e^{x}\\): \\(f(x)=\\frac{${k}}{1+${m}e^{-x}}\\to${k}\\). Si \\(x\\to-\\infty\\), \\(e^{x}\\to0\\) y \\(f(x)\\to\\frac{0}{${m}}=0\\). Hay dos: \\(y=${k}\\) en \\(+\\infty\\) e \\(y=0\\) en \\(-\\infty\\).`,
+    eoa: NO_OBL
+  };
+}
+const GENERADORES_EJ1 = [genA, genA, genB, genB, genC, genD, genE, genE2, genF, genG1, genG2, genH];
+let ultimoGen1 = null;
+function generarEj1() {
+  let g; do { g = elegir(GENERADORES_EJ1); } while (g === ultimoGen1);
+  ultimoGen1 = g;
+  return g();
+}
+function buildEn1(e) {
+  const el = document.getElementById('en1');
+  el.innerHTML = `Estudia las asíntotas de la función:<span class="formula">\\(\\displaystyle f(x) = ${e.latex}\\)</span>`;
+  tipografiar(el);
+}
+
+function esNoTiene(s) {
+  const t = s.toLowerCase().replace(/\s/g, '');
+  return /notiene|ninguna|nohay|^no$|^∅$/.test(t);
+}
+function leerValores(input, letra) {
+  let s = String(input).replace(/[−–]/g, '-');
+  s = s.replace(new RegExp(',(?=\\s*' + letra + '\\s*=)', 'gi'), ';');
+  s = normalizarComaDecimal(s).toLowerCase().replace(/\s/g, '');
+  s = s.replace(new RegExp(letra + '=', 'g'), '');
+  const trozos = s.split(/[;,]/).filter(t => t !== '');
+  const vals = trozos.map(t => evalEnA(t, 0)).filter(v => !isNaN(v));
+  return trozos.length === vals.length ? vals : null;
+}
+const tieneValor = (arr, v) => arr.some(x => Math.abs(x - v) < 0.01);
+function mismoConjunto(a, b) {
+  return a.length === b.length && a.every(v => tieneValor(b, v)) && b.every(v => tieneValor(a, v));
+}
+function compararLista(input, esperados, letra) {
+  if (esperados.length === 0) return esNoTiene(input);
+  if (esNoTiene(input)) return false;
+  const vals = leerValores(input, letra);
+  return vals !== null && mismoConjunto(vals, esperados);
+}
+function compararOA(input, e) {
+  if (e.oa === null) return esNoTiene(input);
+  if (esNoTiene(input)) return false;
+  const s = normalizarComaDecimal(input).toLowerCase().replace(/\s/g, '').replace(/[−–]/g, '-').replace(/^y=/, '');
+  if (!/x/.test(s) || !/^[0-9x.+\-*/()]+$/.test(s)) return false;
+  const evalX = x => evalEnA(s.replace(/x/g, 'a'), x);
+  const n = evalX(0), m = evalX(1) - n;
+  if (isNaN(n) || isNaN(m)) return false;
+  if (Math.abs(evalX(5) - (m * 5 + n)) > 1e-6) return false;
+  return Math.abs(m - e.oa.m) < 0.01 && Math.abs(n - e.oa.n) < 0.01;
+}
+function textoLista(vals, letra) {
+  return vals.length === 0 ? 'no tiene' : vals.map(v => `\\(${letra}=${v}\\)`).join('; ');
+}
+function inputLista(vals, letra) {
+  return vals.length === 0 ? 'no tiene' : vals.map(v => `${letra} = ${v}`).join('; ');
+}
+function textoOA(oa) { return oa === null ? 'no tiene' : `\\(y=${polyTex([oa.m, oa.n])}\\)`; }
+function inputOA(oa) { return oa === null ? 'no tiene' : `y = ${polyTex([oa.m, oa.n])}`; }
+
+function camposEj1(e) {
+  return [
+    { id: 'e1_va', key: 0, label: 'Asíntotas verticales',
+      ok: v => compararLista(v, e.va, 'x'), sol: textoLista(e.va, 'x'), solInput: inputLista(e.va, 'x'),
+      expl: v => {
+        const vals = v === undefined ? null : leerValores(v, 'x');
+        const metioHueco = vals && e.huecos.some(h => tieneValor(vals, h));
+        return (metioHueco ? 'Has incluido un punto donde el límite es finito: ahí no hay asíntota. ' : '') + e.eva;
+      } },
+    { id: 'e1_ha', key: 1, label: 'Asíntotas horizontales',
+      ok: v => compararLista(v, e.ha, 'y'), sol: textoLista(e.ha, 'y'), solInput: inputLista(e.ha, 'y'),
+      expl: v => {
+        const vals = v === undefined ? null : leerValores(v, 'y');
+        const falta = vals && e.ha.length === 2 && vals.length === 1 && tieneValor(e.ha, vals[0]);
+        return (falta ? 'Te falta una: estudia \\(+\\infty\\) y \\(-\\infty\\) por separado, porque los límites son distintos. ' : '') + e.eha;
+      } },
+    { id: 'e1_oa', key: 2, label: 'Asíntota oblicua',
+      ok: v => compararOA(v, e), sol: textoOA(e.oa), solInput: inputOA(e.oa),
+      expl: () => e.eoa }
+  ];
+}
+
+// ==================== EJERCICIO 2: CONTINUIDAD CON PARÁMETRO ====================
+// Plantillas de trozo: tex(c, k) y su valor en x = c como p + q·a.
+// lado 'der': solo en el trozo derecho (dominio garantizado para x > c).
+const TROZOS = [
+  { id: 'p1', lado: 'any', f: (c, k) => ({ tex: `x^2${terminoConSigno(k, 'a')}`, p: c * c, q: k }) },
+  { id: 'p2', lado: 'any', f: (c, k) => ({ tex: `ax${terminoConSigno(k)}`, p: k, q: c }) },
+  { id: 'p3', lado: 'any', f: (c, k) => ({ tex: `${terminoInicial(k, 'x')} - a`, p: k * c, q: -1 }) },
+  { id: 'p4', lado: 'any', f: (c, k) => ({ tex: `ax^2${terminoConSigno(k, 'x')}`, p: k * c, q: c * c }) },
+  { id: 'p5', lado: 'any', f: (c, k) => ({ tex: `x${terminoConSigno(k, 'a')}`, p: c, q: k }) },
+  { id: 'p6', lado: 'any', f: (c, k) => ({ tex: `${terminoInicial(k, 'x^2')} - ax`, p: k * c * c, q: -c }) },
+  { id: 'p7', lado: 'any', f: (c, k) => ({ tex: `a(x${terminoConSigno(k)})`, p: 0, q: c + k }) },
+  { id: 'p8', lado: 'any', f: (c, k) => ({ tex: `x^3${terminoConSigno(k, 'a')}`, p: c * c * c, q: k }) },
+  { id: 'p9', lado: 'any', f: (c, k) => ({ tex: `${k} - ax`, p: k, q: -c }) },
+  { id: 'e1', lado: 'any', tipo: 'exp', f: (c, k) => ({ tex: `e^{x${terminoConSigno(-c)}}${terminoConSigno(k, 'a')}`, p: 1, q: k, pista: 'Recuerda que \\(e^{0}=1\\).' }) },
+  { id: 'e2', lado: 'any', tipo: 'exp', f: (c, k) => ({ tex: `a\\,e^{x${terminoConSigno(-c)}}${terminoConSigno(k)}`, p: k, q: 1, pista: 'Recuerda que \\(e^{0}=1\\).' }) },
+  { id: 'r1', lado: 'der', tipo: 'raiz', f: (c, k) => {
+      const s = (Math.abs(k) % 3) + 1, d = s * s - c;
+      return { tex: `\\sqrt{x${terminoConSigno(d)}}${terminoConSigno(k, 'a')}`, p: s, q: k, pista: `\\(\\sqrt{${s * s}}=${s}\\).` };
+    } },
+  { id: 'l1', lado: 'der', tipo: 'ln', f: (c, k) => ({ tex: `\\ln(x${terminoConSigno(1 - c)})${terminoConSigno(k, 'a')}`, p: 0, q: k, pista: 'Recuerda que \\(\\ln 1=0\\).' }) }
+];
+
+function genContinuidad() {
+  for (let intento = 0; intento < 1000; intento++) {
+    const c = rnd(-3, 3);
+    const ti = elegir(TROZOS.filter(T => T.lado === 'any'));
+    const td = elegir(TROZOS);
+    if (ti.id === td.id) continue;
+    const I = ti.f(c, rndNZ(-4, 4)), D = td.f(c, rndNZ(-4, 4));
+    if (I.q === D.q) continue;                         // sin solución o infinitas
+    const sol = fraccion(D.p - I.p, I.q - D.q);        // I.p + I.q·a = D.p + D.q·a
+    if (sol.n === 0 || sol.d > 6 || Math.abs(sol.n) > 24) continue;
+    const lado = Math.random() < 0.5 ? 'izq' : 'der';  // trozo que contiene x = c
+    const condI = lado === 'izq' ? `x \\le ${c}` : `x < ${c}`;
+    const condD = lado === 'izq' ? `x > ${c}` : `x \\ge ${c}`;
+    const valor = fraccion(I.p * sol.d + I.q * sol.n, sol.d);
+    return {
+      c, lado, sol, valor,
+      L: { p: I.p, q: I.q }, R: { p: D.p, q: D.q },
+      FC: lado === 'izq' ? { p: I.p, q: I.q } : { p: D.p, q: D.q },
+      pistaI: I.pista || '', pistaD: D.pista || '',
+      tipos: [ti.tipo, td.tipo].filter(Boolean),
+      texDisplay: `f(x) = \\begin{cases} \\rule{0pt}{${ALTO_SUP}}${I.tex} & \\text{si } ${condI} \\\\[${SEP_TROZOS}] ${D.tex}\\rule[-${ALTO_INF}]{0pt}{${ALTO_INF}} & \\text{si } ${condD} \\end{cases}`
+    };
+  }
+}
+
+function notaContinuidadTrozos(e) {
+  const c = e.c;
+  if (e.tipos.length === 0) return `Fuera de \\(x=${c}\\) cada trozo es un polinomio y, por tanto, continuo: el único punto que hay que estudiar es \\(x=${c}\\).`;
+  const partes = ['los polinomios'];
+  if (e.tipos.includes('exp')) partes.push('las exponenciales');
+  if (e.tipos.includes('raiz')) partes.push(`la raíz (su radicando es positivo para \\(x>${c}\\))`);
+  if (e.tipos.includes('ln')) partes.push(`el logaritmo (su argumento es positivo para \\(x>${c}\\))`);
+  return `Fuera de \\(x=${c}\\) cada trozo es continuo en su intervalo: ${partes.join(', ')}. El único punto que hay que estudiar es \\(x=${c}\\).`;
+}
+
+function buildEn2(e) {
+  const c = e.c;
+  const en = document.getElementById('en2');
+  en.innerHTML = `Dada la función definida a trozos:
+    <span class="formula formula-trozos">\\(${e.texDisplay}\\)</span>
+    <span class="punto-union">Punto de unión: <b>x = ${c}</b></span>
+    <div style="margin-top:10px">Halla el valor del parámetro \\(a\\) para que \\(f\\) sea continua en todo \\(\\mathbb{R}\\).</div>`;
+  const cond = document.getElementById('condicion2');
+  cond.innerHTML = `<summary><span class="sum-txt"><h3>Condición de continuidad en \\(x = ${c}\\)</h3>
+      <span class="sum-formula">\\(\\displaystyle \\lim_{x\\to ${c}^-} f(x) \\;=\\; \\lim_{x\\to ${c}^+} f(x) \\;=\\; f(${c})\\)</span></span></summary>
+    <ol>
+      <li><b>Existe \\(f(${c})\\)</b>: se calcula con el trozo cuya condición <b>incluye</b> el punto.</li>
+      <li><b>Existen los límites laterales y coinciden</b> entre sí.</li>
+      <li><b>Ese límite coincide con \\(f(${c})\\)</b>. Si falla esta condición, aunque los laterales coincidan, \\(f\\) <b>no</b> es continua.</li>
+    </ol>
+    <div class="nota-cond">${notaContinuidadTrozos(e)}</div>`;
+  document.getElementById('lbl-fc').innerHTML = `Valor de la función en el punto: \\(f(${c})\\)`;
+  document.getElementById('lbl-izq').innerHTML = `Límite lateral por la izquierda: \\(\\displaystyle\\lim_{x\\to ${c}^-} f(x)\\)`;
+  document.getElementById('lbl-der').innerHTML = `Límite lateral por la derecha: \\(\\displaystyle\\lim_{x\\to ${c}^+} f(x)\\)`;
+  [en, cond, document.getElementById('lbl-fc'), document.getElementById('lbl-izq'), document.getElementById('lbl-der')].forEach(tipografiar);
+}
+
+function camposEj2(e) {
+  const c = e.c;
+  const trozoFC = e.lado === 'izq' ? 'izquierdo' : 'derecho';
+  const signoFC = e.lado === 'izq' ? '\\le' : '\\ge';
+  const pistaFC = e.lado === 'izq' ? e.pistaI : e.pistaD;
+  const solA = e.sol.n / e.sol.d;
+  const solAInput = e.sol.d === 1 ? String(e.sol.n) : `${e.sol.n}/${e.sol.d}`;
+  return [
+    { id: 'e2_fc', key: 0, label: `\\(f(${c})\\)`,
+      ok: v => igualLineal(v, e.FC), sol: `\\(f(${c}) = ${linExpr(e.FC)}\\)`, solInput: linExpr(e.FC),
+      expl: v => {
+        const otro = e.lado === 'izq' ? e.R : e.L;
+        const base = `\\(x=${c}\\) pertenece al trozo ${trozoFC}, el que lleva \\(${signoFC}\\). Sustituyendo \\(x=${c}\\) en ese trozo: \\(f(${c})=${linExpr(e.FC)}\\). ${pistaFC}`;
+        return (v !== undefined && igualLineal(v, otro)) ? `Has usado el trozo equivocado. ${base}` : base;
+      } },
+    { id: 'e2_limizq', key: 1, label: 'Límite por la izquierda',
+      ok: v => igualLineal(v, e.L), sol: `\\(\\lim_{x\\to ${c}^-} f(x) = ${linExpr(e.L)}\\)`, solInput: linExpr(e.L),
+      expl: v => (v !== undefined && igualLineal(v, e.R) ? 'Has intercambiado los trozos. ' : '') +
+        `Para \\(x\\to ${c}^-\\) tomamos valores <b>menores</b> que ${c}: se usa el trozo izquierdo. Es continuo en \\(x=${c}\\), así que basta sustituir. ${e.pistaI}` },
+    { id: 'e2_limder', key: 2, label: 'Límite por la derecha',
+      ok: v => igualLineal(v, e.R), sol: `\\(\\lim_{x\\to ${c}^+} f(x) = ${linExpr(e.R)}\\)`, solInput: linExpr(e.R),
+      expl: v => (v !== undefined && igualLineal(v, e.L) ? 'Has intercambiado los trozos. ' : '') +
+        `Para \\(x\\to ${c}^+\\) tomamos valores <b>mayores</b> que ${c}: se usa el trozo derecho. Es continuo en \\(x=${c}\\), así que basta sustituir. ${e.pistaD}` },
+    { id: 'e2_valor_a', key: 3, label: 'Valor de \\(a\\)',
+      ok: v => { const x = leerNumero(v); return !isNaN(x) && Math.abs(x - solA) < 0.006; },
+      sol: `\\(a = ${fracTexConDecimal(e.sol)}\\)`, solInput: solAInput,
+      expl: v => {
+        const x = v === undefined ? NaN : leerNumero(v);
+        const signo = (!isNaN(x) && Math.abs(x + solA) < 0.006) ? 'Revisa el signo al despejar. ' : '';
+        return signo + `Imponemos que los límites laterales coincidan: \\(${linExpr(e.L)} = ${linExpr(e.R)}\\Rightarrow a=${fracTex(e.sol)}\\).`;
+      } }
+  ];
+}
+
+function cadenaContinuidad(e) {
+  const c = e.c, V = fracTex(e.valor);
+  return `<div class="cadena">
+    <div class="cadena-tit">Comprobación de la continuidad con \\(a = ${fracTex(e.sol)}\\)</div>
+    <span class="formula">\\(\\displaystyle \\lim_{x\\to ${c}^-} f(x) = ${V}, \\quad \\lim_{x\\to ${c}^+} f(x) = ${V}, \\quad f(${c}) = ${V}\\)</span>
+    <p>Las <b>tres</b> cantidades valen lo mismo, así que \\(f\\) es continua en \\(x=${c}\\) y, por tanto, en todo \\(\\mathbb{R}\\). Si los límites laterales coincidieran pero \\(f(${c})\\) fuera otro valor (o no existiera), habría una discontinuidad evitable.</p>
+  </div>`;
+}
+
+// ==================== LÓGICA COMÚN A LOS DOS EJERCICIOS ====================
+const CAMPOS = { 1: () => camposEj1(cur[1]), 2: () => camposEj2(cur[2]) };
+const IDS = {
+  1: { fb: 'fb1', check: 'btncheck1', otro: 'otro1', sol: 'sol1' },
+  2: { fb: 'fb2', check: 'btncheck2', otro: 'otro2', sol: 'sol2' }
+};
+
+function pintar(n) {
+  const ex = est[n], ids = IDS[n];
+  const huboFallo = Object.values(ex.estado).includes('fallido');
+  let cab, clase, extra = '';
+  if (todosDecididos(ex)) {
+    ex.cerrado = true;
+    document.getElementById(ids.check).disabled = true;
+    document.getElementById(ids.sol).disabled = true;
+    document.getElementById(ids.otro).style.display = 'inline-block';
+    if (ex.revelado) {
+      cab = `Soluciones mostradas · los apartados revelados no puntúan. Ejercicio: ${fmtDec(ex.puntos)} / 5 puntos.`;
+      clase = 'neutro';
+    } else if (huboFallo) {
+      cab = `Ejercicio cerrado: ${fmtDec(ex.puntos)} / 5 puntos. Puedes intentarlo con otro ejercicio.`;
+      clase = 'fail';
+    } else {
+      cab = `¡Ejercicio superado! ${fmtDec(ex.puntos)} / 5 puntos.`;
+      clase = 'ok';
+    }
+    if (n === 2) extra = cadenaContinuidad(cur[2]);
+  } else {
+    cab = `Puntuación provisional: ${fmtDec(ex.puntos)} / 5. Completa los apartados pendientes.`;
+    clase = huboFallo ? 'fail' : 'ok';
+  }
+  const fb = document.getElementById(ids.fb);
+  fb.className = 'fb show ' + clase;
+  fb.innerHTML = `<div class="fb-cab">${cab}</div><ul>${ex.historial.join('')}</ul>${extra}`;
+  tipografiar(fb);
+}
+
+function corregir(n) {
+  const ex = est[n];
+  if (ex.cerrado) return;
+  if (!exigirNombre()) return;
+  const aCorregir = CAMPOS[n]().filter(f => ex.estado[f.key] === 'pendiente' && document.getElementById(f.id).value.trim() !== '');
+  if (aCorregir.length === 0) { mostrarAviso('Escribe al menos una respuesta antes de comprobar.'); return; }
+  if (!ex.corregido) { ex.corregido = true; real++; tipoStats[n].instancias++; }
+  aCorregir.forEach(f => {
+    const inputEl = document.getElementById(f.id);
+    const v = inputEl.value;
+    const ok = f.ok(v);
+    ex.estado[f.key] = ok ? 'correcto' : 'fallido';
+    if (ok) { aciertos++; tipoStats[n].aciertos++; } else { fallos++; tipoStats[n].fallos++; }
+    markField(f.id, ok ? 'ok' : 'fail');
+    inputEl.disabled = true;
+    ex.historial.push(lineaFeedback(ok ? 'ok' : 'fail', f.label, f.sol, f.expl(ok ? undefined : v)));
+  });
+  recalcPuntos(n);
+  pintar(n);
+  updateStats();
+}
+function check1() { corregir(1); }
+function check2() { corregir(2); }
+
+// ---------- «Mostrar soluciones» ----------
+function pedirSoluciones(n) {
+  if (est[n].cerrado) return;
+  pedirConfirmacion(
+    `Verás resueltos, con su explicación, los apartados que te quedan del ejercicio ${n}. Esos apartados no contarán para la nota; los que ya hayas corregido conservan su resultado. Después podrás seguir con un ejercicio nuevo.`,
+    () => revelarSoluciones(n),
+    { titulo: '¿Mostrar las soluciones?', cancelar: 'Volver al ejercicio', aceptar: 'Sí, mostrar soluciones' }
+  );
+}
+function revelarSoluciones(n) {
+  const ex = est[n];
+  if (ex.cerrado) return;
+  CAMPOS[n]().filter(f => ex.estado[f.key] === 'pendiente').forEach(f => {
+    const el = document.getElementById(f.id);
+    el.value = f.solInput;
+    // Autocomprobación: el validador debe aceptar la solución que se muestra.
+    if (!f.ok(el.value)) console.error('El validador no acepta su propia solución', n, f.id, f.solInput);
+    ex.estado[f.key] = 'revelado';           // no suma: recalcPuntos solo cuenta 'correcto'
+    markField(f.id, 'revelado');
+    el.disabled = true;
+    ex.historial.push(lineaFeedback('sol', f.label, f.sol, f.expl(undefined)));
+  });
+  ex.revelado = true;                          // no se llama a nada que registre aciertos o fallos
+  tipoStats[n].solucionesVistas++;
+  recalcPuntos(n);
+  pintar(n);
+  updateStats();
+}
+
+// ---------- Nuevo ejercicio ----------
+function nuevoEj(n) {
+  if (est[n].puntos > 0) {
+    pedirConfirmacion(`Vas a generar un ejercicio nuevo. Perderás los ${fmtDec(est[n].puntos)} puntos conseguidos en el ejercicio ${n}. ¿Quieres continuar?`, () => reiniciarEj(n));
+  } else reiniciarEj(n);
+}
+function nuevoEj1() { nuevoEj(1); }
+function nuevoEj2() { nuevoEj(2); }
+function reiniciarEj(n) {
+  est[n] = crearEstado(N_AP[n]);
+  if (n === 1) { cur[1] = generarEj1(); buildEn1(cur[1]); }
+  else { cur[2] = genContinuidad(); buildEn2(cur[2]); }
+  CAMPOS[n]().forEach(f => {
+    const el = document.getElementById(f.id);
+    el.value = ''; el.disabled = false; el.classList.remove('ok', 'fail', 'revelado');
+  });
+  const ids = IDS[n];
+  document.getElementById(ids.check).disabled = false;
+  document.getElementById(ids.sol).disabled = false;
+  document.getElementById(ids.fb).className = 'fb';
+  document.getElementById(ids.otro).style.display = 'none';
+  updateStats();
+}
+
+// ==================== NOTA Y MARCADOR ====================
+function calcNota() {
+  const nota = Math.min(10, Math.max(0, est[1].puntos + est[2].puntos));
+  return Math.round(nota * 100) / 100;
+}
+function updateStats() {
+  document.getElementById('s-real').textContent = real;
+  document.getElementById('s-ac').textContent = aciertos;
+  document.getElementById('s-fail').textContent = fallos;
+  document.getElementById('s-pts').textContent = fmtDec(calcNota());
+}
+
+// ==================== FINALIZAR ====================
+function elapsedHHMM() {
+  const s = Math.floor((Date.now() - timerStart) / 1000);
+  return String(Math.floor(s / 3600)).padStart(2, '0') + ':' + String(Math.floor((s % 3600) / 60)).padStart(2, '0');
+}
+function finalizar() {
+  if (!exigirNombre()) return;
+  if (real === 0 && tipoStats[1].solucionesVistas + tipoStats[2].solucionesVistas === 0) {
+    mostrarAviso('Debes corregir al menos un ejercicio antes de finalizar.');
+    return;
+  }
+  const nombre = document.getElementById('nombre').value.trim();
+  const nota = calcNota();
+  const now = new Date();
+  const p2 = n => String(n).padStart(2, '0');
+  const fecha = `${p2(now.getDate())}/${p2(now.getMonth() + 1)}/${now.getFullYear()}`;
+  const hora = `${p2(now.getHours())}:${p2(now.getMinutes())}:${p2(now.getSeconds())}`;
+
+  const colores = { 10: ['#1a7a1a', '#fff'], 9: ['#6dbf6d', '#fff'], 8: ['#1a4f8a', '#fff'], 7: ['#5b9bd5', '#fff'], 6: ['#c05c00', '#fff'], 5: ['#f5a623', '#000'] };
+  const k = nota >= 10 ? 10 : nota >= 9 ? 9 : nota >= 8 ? 8 : nota >= 7 ? 7 : nota >= 6 ? 6 : nota >= 5 ? 5 : -1;
+  const [bg, txt] = colores[k] || ['#c0392b', '#fff'];
+  const modal = document.getElementById('modal');
+  modal.style.background = bg; modal.style.color = txt;
+  modal.querySelector('.btn-cerrar').style.color = txt;
+  const bordeTabla = txt === '#000' ? 'rgba(0,0,0,.3)' : 'rgba(255,255,255,.4)';
+  modal.querySelector('hr').style.borderTopColor = bordeTabla;
+
+  document.getElementById('m-titulo').textContent = document.querySelector('.titulo-ficha').textContent;
+  document.getElementById('m-sub').textContent = document.querySelector('.subtitulo').textContent;
+  document.getElementById('m-nombre').textContent = nombre;
+  document.getElementById('m-nota').textContent = fmtDec(nota) + ' / 10';
+  document.getElementById('m-meta').innerHTML = `Fecha: ${fecha} · Hora: ${hora}<br>Tiempo empleado: ${elapsedHHMM()}<br>Apartados acertados: ${aciertos} · fallados: ${fallos}`;
+
+  const fila = (t, ex) => `<tr><td style="text-align:left">${t.nombre}</td><td>${t.instancias}</td><td>${t.aciertos}</td><td>${t.fallos}</td><td>${t.solucionesVistas}</td><td>${fmtDec(ex.puntos)} / 5</td></tr>`;
+  document.getElementById('m-desglose').innerHTML = `<table>
+    <tr><th style="text-align:left">Ejercicio</th><th>Realizados</th><th>Aciertos</th><th>Fallos</th><th>Soluciones vistas</th><th>Puntos</th></tr>
+    ${fila(tipoStats[1], est[1])}${fila(tipoStats[2], est[2])}</table>`;
+  document.querySelectorAll('#m-desglose th, #m-desglose td').forEach(td => td.style.borderColor = bordeTabla);
+
+  document.getElementById('modal-bg').classList.add('show');
+  if (k === 10) document.getElementById('wrap').classList.add('verde-total');
+}
+function cerrarModal() {
+  document.getElementById('modal-bg').classList.remove('show');
+  document.getElementById('wrap').classList.remove('verde-total');
+}
+
+// ==================== TECLA ENTER ====================
+['e1_va', 'e1_ha', 'e1_oa'].forEach(id => document.getElementById(id).addEventListener('keydown', ev => {
+  if (ev.key === 'Enter') { ev.preventDefault(); corregir(1); }
+}));
+['e2_fc', 'e2_limizq', 'e2_limder', 'e2_valor_a'].forEach(id => document.getElementById(id).addEventListener('keydown', ev => {
+  if (ev.key === 'Enter') { ev.preventDefault(); corregir(2); }
+}));
+
+// ==================== INICIALIZACIÓN ====================
+reiniciarEj(1);
+reiniciarEj(2);
+</script>
+</body>
+</html>
