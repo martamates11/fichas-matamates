@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Derivadas EBAU - Ejercicios Interactivos con Ayuda</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    background: #f0ebe0;
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    padding: 1.5rem;
+  }
+
+  .wrap {
+    max-width: 860px;
+    margin: 0 auto;
+    transition: background 0.3s ease;
+    border-radius: 28px;
+    padding: 0.2rem;
+  }
+
+  .wrap.fondo-verde-total {
+    background: #c8e6c9 !important;
+    padding: 1rem;
+    border-radius: 28px;
+  }
+
+  .cabecera {
+    background: #fdf8f0;
+    border: 1px solid #e0d5be;
+    border-radius: 24px;
+    padding: 1.2rem 1.5rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .cab-credit {
+    font-size: 10px;
+    color: #b59864;
+    text-align: center;
+    margin-bottom: 0.4rem;
+  }
+
+  .cab-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #7a5c2e;
+    text-align: center;
+  }
+
+  .cab-sub {
+    font-size: 0.75rem;
+    color: #9c814b;
+    text-align: center;
+    margin-top: 4px;
+  }
+
+  .campo-nombre {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-top: 0.8rem;
+    flex-wrap: wrap;
+  }
+
+  .campo-nombre label {
+    font-weight: 600;
+    color: #9a7a45;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+  }
+
+  .campo-nombre input {
+    flex: 1;
+    border: none;
+    border-bottom: 2px solid #dccfae;
+    background: transparent;
+    font-size: 1rem;
+    padding: 6px 4px;
+    outline: none;
+    transition: 0.2s;
+  }
+
+  .campo-nombre input:focus {
+    border-bottom-color: #c8a96e;
+  }
+
+  .aviso-nombre {
+    color: #c0392b;
+    font-size: 0.7rem;
+    margin-top: 5px;
+    display: none;
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin: 1rem 0;
+  }
+
+  .stat {
+    background: #fffaf0;
+    border-radius: 20px;
+    padding: 0.7rem;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    border: 1px solid #e9dec8;
+  }
+
+  .stat-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: #b69b63;
+    font-weight: 600;
+  }
+
+  .stat-val {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #7a5c2e;
+  }
+
+  .ficha {
+    background: #fdf8f0;
+    border: 1px solid #e0d5be;
+    border-radius: 24px;
+    padding: 1.3rem;
+    margin-bottom: 1.3rem;
+  }
+
+  .ficha-hdr {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #e8dfcb;
+    padding-bottom: 0.6rem;
+  }
+
+  .ficha-num {
+    background: #c8a96e;
+    color: white;
+    border-radius: 30px;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+  }
+
+  .ficha-title {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #4a3a22;
+  }
+
+  .tag {
+    background: #ede2cc;
+    color: #7a5c2e;
+    border-radius: 30px;
+    font-size: 0.7rem;
+    padding: 2px 10px;
+    margin-left: 8px;
+  }
+
+  .enunciado {
+    background: #f5eedf;
+    border-left: 4px solid #c8a96e;
+    border-radius: 16px;
+    padding: 0.9rem 1rem;
+    font-size: 0.85rem;
+    color: #4a3e2c;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+  }
+
+  .enunciado small {
+    display: block;
+    margin-top: 6px;
+    color: #8a7a5a;
+    font-size: 0.75rem;
+  }
+
+  .plabel {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #c8a96e;
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+    letter-spacing: 0.5px;
+  }
+
+  .paso {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 1rem;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .pnum {
+    background: #ede2cc;
+    color: #7a5c2e;
+    border-radius: 40px;
+    width: 24px;
+    height: 24px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .pcont {
+    flex: 1;
+    min-width: 180px;
+  }
+
+  .plbl {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #6b5a3e;
+    margin-bottom: 4px;
+  }
+
+  .irow {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  input[type="text"] {
+    border: 1px solid #ddd0b6;
+    border-radius: 14px;
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    background: white;
+    transition: 0.2s;
+    font-family: monospace;
+    width: auto;
+    min-width: 130px;
+  }
+
+  input[type="text"]:focus {
+    border-color: #c8a96e;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(200,169,110,0.2);
+  }
+
+  input.campo-correcto {
+    background: #e0f2dd;
+    border-color: #3b6d11;
+    color: #1e4a06;
+  }
+
+  input.campo-incorrecto {
+    background: #ffe6e6;
+    border-color: #c0392b;
+    color: #a12216;
+  }
+
+  input.campo-quemado {
+    background: #f3e9d7;
+    border-color: #b59864;
+    color: #6b5a3e;
+  }
+
+  /* Botones de ayuda */
+  .btn-ayuda {
+    background: #e8dfd1;
+    border: 1px solid #c8b28b;
+    border-radius: 30px;
+    padding: 5px 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #5c4a2a;
+    cursor: pointer;
+    transition: 0.1s;
+    font-family: monospace;
+  }
+  .btn-ayuda:hover {
+    background: #dacba8;
+    transform: scale(0.96);
+  }
+  .grupo-botones {
+    display: inline-flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-left: 6px;
+  }
+
+  .btns {
+    display: flex;
+    gap: 12px;
+    margin-top: 1rem;
+  }
+
+  .btn-check {
+    background: #c8a96e;
+    border: none;
+    border-radius: 40px;
+    padding: 8px 22px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  .btn-check:hover {
+    background: #ad8b48;
+  }
+
+  .btn-otro {
+    background: transparent;
+    border: 1px solid #c8a96e;
+    border-radius: 40px;
+    padding: 7px 18px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    color: #7a5c2e;
+    display: none;
+  }
+
+  .btn-otro:hover {
+    background: #f5eedf;
+  }
+
+  .fb {
+    margin-top: 0.9rem;
+    font-size: 0.8rem;
+    border-radius: 16px;
+    padding: 0.9rem 1.2rem;
+    display: none;
+    line-height: 1.6;
+    border-left: 5px solid transparent;
+  }
+
+  .fb.show {
+    display: block;
+  }
+
+  .fb.ok {
+    background: #dff0d8;
+    border-left-color: #2c6e2c;
+    color: #1d521d;
+  }
+
+  .fb.fail {
+    background: #fbe9e9;
+    border-left-color: #c0392b;
+    color: #7a2a1f;
+  }
+
+  .fb .solucion {
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: rgba(255,255,255,0.6);
+    border-radius: 8px;
+    font-family: monospace;
+    font-size: 0.85rem;
+    color: #2c3e50;
+  }
+
+  .fb .solucion strong {
+    color: #7a5c2e;
+  }
+
+  .fb .consejo {
+    margin-top: 6px;
+    font-style: italic;
+    color: #5a6a7a;
+    font-size: 0.75rem;
+  }
+
+  .calc-wrap {
+    background: #fdf8f0;
+    border-radius: 24px;
+    border: 1px solid #e0d5be;
+    padding: 1rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .calc-toggle {
+    font-weight: 500;
+    color: #9a7a45;
+    cursor: pointer;
+    display: flex;
+    gap: 5px;
+    font-size: 0.8rem;
+  }
+
+  .calc-body {
+    display: none;
+    margin-top: 0.8rem;
+  }
+
+  .calc-body.open {
+    display: block;
+  }
+
+  .calc-screen {
+    background: white;
+    border: 1px solid #e0d5be;
+    border-radius: 20px;
+    padding: 8px 14px;
+    text-align: right;
+    font-size: 1.3rem;
+    font-family: monospace;
+    min-height: 48px;
+    margin-bottom: 12px;
+  }
+
+  .calc-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+
+  .ck {
+    background: white;
+    border: 0.5px solid #d4c4a0;
+    border-radius: 40px;
+    padding: 10px 0;
+    cursor: pointer;
+    font-size: 0.85rem;
+    text-align: center;
+    transition: 0.1s;
+  }
+
+  .ck.op {
+    background: #ede2cc;
+    color: #7a5c2e;
+  }
+
+  .ck.eq {
+    background: #c8a96e;
+    color: white;
+  }
+
+  .ck.ac {
+    background: #f0e5d4;
+    color: #a23b2a;
+  }
+
+  .btn-final {
+    background: #7a5c2e;
+    color: white;
+    border: none;
+    border-radius: 60px;
+    padding: 14px 20px;
+    width: 100%;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.2s;
+    margin-top: 0.2rem;
+  }
+
+  .btn-final:hover {
+    background: #5a401f;
+  }
+
+  .modal-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+  }
+
+  .modal-bg.show {
+    display: flex;
+  }
+
+  .modal-card {
+    border-radius: 40px;
+    padding: 1.8rem 1.5rem;
+    max-width: 380px;
+    width: 90%;
+    text-align: center;
+    transition: background 0.2s, color 0.2s;
+    box-shadow: 0 20px 35px rgba(0, 0, 0, 0.3);
+  }
+
+  .modal-card h2 {
+    font-size: 1.5rem;
+    margin-bottom: 0.2rem;
+    font-weight: 700;
+  }
+
+  .modal-ficha {
+    font-size: 0.8rem;
+    opacity: 0.85;
+    margin-bottom: 12px;
+    font-weight: 500;
+  }
+
+  .nota-big {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin: 0.5rem 0;
+  }
+
+  .detalle-info {
+    font-size: 0.75rem;
+    margin: 0.8rem 0;
+    opacity: 0.9;
+    line-height: 1.5;
+  }
+
+  .recordatorio {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50px;
+    padding: 8px 12px;
+    margin: 1rem 0;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+
+  .btn-cerrar-modal {
+    background: rgba(255, 255, 255, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 60px;
+    padding: 8px 24px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.2s;
+  }
+
+  .btn-cerrar-modal:hover {
+    background: rgba(255, 255, 255, 0.4);
+  }
+
+  /* Mejoras de accesibilidad */
+  input:focus-visible {
+    outline: 2px solid #c8a96e;
+    outline-offset: 2px;
+  }
+
+  button:focus-visible {
+    outline: 2px solid #7a5c2e;
+    outline-offset: 2px;
+  }
+
+  /* Responsive mejorado */
+  @media (max-width: 600px) {
+    body { padding: 0.8rem; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    input[type="text"] { min-width: 100px; }
+    .cab-title { font-size: 1.2rem; }
+  }
+
+  @media (max-width: 400px) {
+    input[type="text"] { min-width: 80px; font-size: 0.7rem; padding: 6px 8px; }
+    .btn-ayuda { font-size: 0.6rem; padding: 3px 8px; }
+    .ficha { padding: 0.8rem; }
+  }
+
+  /* Animación de carga */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .ficha { animation: fadeIn 0.3s ease; }
+</style>
+</head>
+<body>
+<div class="wrap" id="wrapGlobal">
+  <div class="cabecera">
+    <div class="cab-credit">Material elaborado por Marta L Letona S. Basado en el trabajo de Javier Cayetano</div>
+    <div class="cab-title">Aplicaciones de las Derivadas</div>
+    <div class="cab-sub">Ejercicios prácticos paso a paso</div>
+    <div class="campo-nombre">
+      <label for="nombreInput">Nombre del alumno</label>
+      <input type="text" id="nombreInput" placeholder="Escribe tu nombre completo..." aria-required="true">
+    </div>
+    <div class="aviso-nombre" id="avisoNombre" role="alert">⚠️ Por favor, introduce tu nombre antes de finalizar</div>
+  </div>
+
+  <div class="stats" role="status" aria-live="polite">
+    <div class="stat"><div class="stat-label">Realizados</div><div class="stat-val" id="statReal">0</div></div>
+    <div class="stat"><div class="stat-label">Aciertos</div><div class="stat-val" id="statAciertos">0</div></div>
+    <div class="stat"><div class="stat-label">Fallos</div><div class="stat-val" id="statFallos">0</div></div>
+    <div class="stat"><div class="stat-label">Puntuación</div><div class="stat-val" id="statNota">0.0/10</div></div>
+  </div>
+
+  <!-- EJERCICIO 1 -->
+  <div class="ficha" role="article" aria-label="Ejercicio 1: Máximos y mínimos">
+    <div class="ficha-hdr"><div class="ficha-num">1</div><div class="ficha-title">Máximos y mínimos <span class="tag">Optimización</span></div></div>
+    <div class="enunciado" id="enunciado1"></div>
+    <div class="plabel">Resuelve paso a paso</div>
+    <div class="paso"><div class="pnum">1</div><div class="pcont"><div class="plbl"><label for="e1_gp">Calcula G'(t)</label></div><div class="irow"><input type="text" id="e1_gp" placeholder="ej: 6t²-54t+84" aria-label="Derivada de G(t)"><button class="btn-ayuda" onclick="insertarAyuda('e1_gp', '^2')" aria-label="Insertar elevado al cuadrado">elevar a 2</button></div></div></div>
+    <div class="paso"><div class="pnum">2</div><div class="pcont"><div class="plbl"><label>Puntos críticos: G'(t)=0 → t₁, t₂</label></div><div class="irow"><input type="text" id="e1_t1" placeholder="t₁" style="width:85px" aria-label="Primer punto crítico"><input type="text" id="e1_t2" placeholder="t₂" style="width:85px" aria-label="Segundo punto crítico"></div></div></div>
+    <div class="paso"><div class="pnum">3</div><div class="pcont"><div class="plbl"><label>Valor en extremos: G(0) y G(8)</label></div><div class="irow"><input type="text" id="e1_g0" placeholder="G(0)" style="width:100px" aria-label="G de 0"> <input type="text" id="e1_g8" placeholder="G(8)" style="width:100px" aria-label="G de 8"></div></div></div>
+    <div class="paso"><div class="pnum">4</div><div class="pcont"><div class="plbl"><label for="e1_max">Máximo: hora y valor</label></div><div class="irow"><input type="text" id="e1_max" placeholder="ej: t=2, G=160€" aria-label="Máximo"><div class="grupo-botones"><button class="btn-ayuda" onclick="insertarAyuda('e1_max', '(')" aria-label="Insertar paréntesis izquierdo">(</button><button class="btn-ayuda" onclick="insertarAyuda('e1_max', ')')" aria-label="Insertar paréntesis derecho">)</button><button class="btn-ayuda" onclick="insertarAyuda('e1_max', ',')" aria-label="Insertar coma">,</button></div></div></div></div>
+    <div class="paso"><div class="pnum">5</div><div class="pcont"><div class="plbl"><label for="e1_min">Mínimo: hora y valor</label></div><div class="irow"><input type="text" id="e1_min" placeholder="ej: t=7, G=260€" aria-label="Mínimo"><div class="grupo-botones"><button class="btn-ayuda" onclick="insertarAyuda('e1_min', '(')" aria-label="Insertar paréntesis izquierdo">(</button><button class="btn-ayuda" onclick="insertarAyuda('e1_min', ')')" aria-label="Insertar paréntesis derecho">)</button><button class="btn-ayuda" onclick="insertarAyuda('e1_min', ',')" aria-label="Insertar coma">,</button></div></div></div></div>
+    <div class="btns"><button class="btn-check" id="btnComprobar1" onclick="checkEjercicio(1)" aria-label="Comprobar ejercicio 1">Comprobar</button><button class="btn-otro" id="otro1" onclick="solicitarOtroEjercicio(1)" aria-label="Generar otro ejercicio 1">Otro ejercicio</button></div>
+    <div class="fb" id="fb1" role="alert" aria-live="polite"></div>
+  </div>
+
+  <!-- EJERCICIO 2 -->
+  <div class="ficha" role="article" aria-label="Ejercicio 2: Recta tangente">
+    <div class="ficha-hdr"><div class="ficha-num">2</div><div class="ficha-title">Recta tangente <span class="tag">Derivada</span></div></div>
+    <div class="enunciado" id="enunciado2"></div>
+    <div class="plabel">Resuelve paso a paso</div>
+    <div class="paso"><div class="pnum">1</div><div class="pcont"><div class="plbl"><label for="e2_fp">Calcula f'(x)</label></div><div class="irow"><input type="text" id="e2_fp" placeholder="ej: 3x²-6x+2" aria-label="Derivada de f(x)"><button class="btn-ayuda" onclick="insertarAyuda('e2_fp', '^2')" aria-label="Insertar elevado al cuadrado">elevar a 2</button></div></div></div>
+    <div class="paso"><div class="pnum">2</div><div class="pcont"><div class="plbl"><label for="e2_m">Pendiente: m = f'(x₀)</label></div><div class="irow"><input type="text" id="e2_m" placeholder="ej: 2" aria-label="Pendiente"></div></div></div>
+    <div class="paso"><div class="pnum">3</div><div class="pcont"><div class="plbl"><label for="e2_fx0">Ordenada: y₀ = f(x₀)</label></div><div class="irow"><input type="text" id="e2_fx0" placeholder="ej: 5" aria-label="Ordenada en el origen"></div></div></div>
+    <div class="paso"><div class="pnum">4</div><div class="pcont"><div class="plbl"><label for="e2_rect">Recta tangente: y = mx + n</label></div><div class="irow"><input type="text" id="e2_rect" placeholder="ej: y=2x+1" aria-label="Ecuación de la recta tangente"></div></div></div>
+    <div class="btns"><button class="btn-check" id="btnComprobar2" onclick="checkEjercicio(2)" aria-label="Comprobar ejercicio 2">Comprobar</button><button class="btn-otro" id="otro2" onclick="solicitarOtroEjercicio(2)" aria-label="Generar otro ejercicio 2">Otro ejercicio</button></div>
+    <div class="fb" id="fb2" role="alert" aria-live="polite"></div>
+  </div>
+
+  <!-- EJERCICIO 3 -->
+  <div class="ficha" role="article" aria-label="Ejercicio 3: Estudio completo">
+    <div class="ficha-hdr"><div class="ficha-num">3</div><div class="ficha-title">Estudio completo <span class="tag">Monotonía·Curvatura</span></div></div>
+    <div class="enunciado" id="enunciado3"></div>
+    <div class="plabel">Resuelve paso a paso</div>
+    <div class="paso"><div class="pnum">1</div><div class="pcont"><div class="plbl"><label for="e3_fp">f'(x) =</label></div><div class="irow"><input type="text" id="e3_fp" placeholder="ej: 3x²-12x+9" aria-label="Derivada primera"><button class="btn-ayuda" onclick="insertarAyuda('e3_fp', '^2')" aria-label="Insertar elevado al cuadrado">elevar a 2</button></div></div></div>
+    <div class="paso"><div class="pnum">2</div><div class="pcont"><div class="plbl"><label>Puntos críticos: x₁, x₂</label></div><div class="irow"><input type="text" id="e3_x1" placeholder="x₁" style="width:85px" aria-label="Primer punto crítico"><input type="text" id="e3_x2" placeholder="x₂" style="width:85px" aria-label="Segundo punto crítico"></div></div></div>
+    <div class="paso"><div class="pnum">3</div><div class="pcont"><div class="plbl"><label>Intervalos de crecimiento y decrecimiento</label></div><div class="irow"><input type="text" id="e3_crec" placeholder="ej: (-∞,1)∪(3,+∞)" aria-label="Intervalos de crecimiento"><input type="text" id="e3_dec" placeholder="ej: (1,3)" aria-label="Intervalos de decrecimiento"><div class="grupo-botones"><button class="btn-ayuda" onclick="insertarAyuda('e3_crec', '(')" aria-label="Insertar paréntesis izquierdo">(</button><button class="btn-ayuda" onclick="insertarAyuda('e3_crec', ')')" aria-label="Insertar paréntesis derecho">)</button><button class="btn-ayuda" onclick="insertarAyuda('e3_crec', ',')" aria-label="Insertar coma">,</button><button class="btn-ayuda" onclick="insertarAyuda('e3_crec', '∞')" aria-label="Insertar infinito">∞</button><button class="btn-ayuda" onclick="insertarAyuda('e3_crec', '-∞')" aria-label="Insertar menos infinito">-∞</button></div></div></div></div>
+    <div class="paso"><div class="pnum">4</div><div class="pcont"><div class="plbl"><label>Máximo y mínimo local</label></div><div class="irow"><input type="text" id="e3_max" placeholder="(x,y) máx" aria-label="Coordenadas del máximo"><input type="text" id="e3_min" placeholder="(x,y) mín" aria-label="Coordenadas del mínimo"></div></div></div>
+    <div class="paso"><div class="pnum">5</div><div class="pcont"><div class="plbl"><label for="e3_fpp">f''(x) =</label></div><div class="irow"><input type="text" id="e3_fpp" placeholder="ej: 6x-12" aria-label="Derivada segunda"></div></div></div>
+    <div class="paso"><div class="pnum">6</div><div class="pcont"><div class="plbl"><label>Concavidad y convexidad</label></div><div class="irow"><input type="text" id="e3_conc" placeholder="cóncava ∪ en: ej: (-∞,2)" aria-label="Intervalo de concavidad"><input type="text" id="e3_conv" placeholder="convexa ∩ en: ej: (2,+∞)" aria-label="Intervalo de convexidad"><div class="grupo-botones"><button class="btn-ayuda" onclick="insertarAyuda('e3_conc', '(')" aria-label="Insertar paréntesis izquierdo">(</button><button class="btn-ayuda" onclick="insertarAyuda('e3_conc', ')')" aria-label="Insertar paréntesis derecho">)</button><button class="btn-ayuda" onclick="insertarAyuda('e3_conc', ',')" aria-label="Insertar coma">,</button><button class="btn-ayuda" onclick="insertarAyuda('e3_conc', '∞')" aria-label="Insertar infinito">∞</button><button class="btn-ayuda" onclick="insertarAyuda('e3_conc', '-∞')" aria-label="Insertar menos infinito">-∞</button></div></div></div></div>
+    <div class="paso"><div class="pnum">7</div><div class="pcont"><div class="plbl"><label for="e3_pi">Punto de inflexión</label></div><div class="irow"><input type="text" id="e3_pi" placeholder="ej: (2,1)" aria-label="Punto de inflexión"><div class="grupo-botones"><button class="btn-ayuda" onclick="insertarAyuda('e3_pi', '(')" aria-label="Insertar paréntesis izquierdo">(</button><button class="btn-ayuda" onclick="insertarAyuda('e3_pi', ')')" aria-label="Insertar paréntesis derecho">)</button><button class="btn-ayuda" onclick="insertarAyuda('e3_pi', ',')" aria-label="Insertar coma">,</button></div></div></div></div>
+    <div class="btns"><button class="btn-check" id="btnComprobar3" onclick="checkEjercicio(3)" aria-label="Comprobar ejercicio 3">Comprobar</button><button class="btn-otro" id="otro3" onclick="solicitarOtroEjercicio(3)" aria-label="Generar otro ejercicio 3">Otro ejercicio</button></div>
+    <div class="fb" id="fb3" role="alert" aria-live="polite"></div>
+  </div>
+
+  <div class="calc-wrap">
+    <div class="calc-toggle" onclick="toggleCalc()" role="button" aria-expanded="false" aria-label="Abrir o cerrar calculadora">🧮 Calculadora <span id="calcArrow">▸</span></div>
+    <div class="calc-body" id="calcBody" role="application" aria-label="Calculadora">
+      <div class="calc-screen" id="calcScreen" aria-label="Pantalla de la calculadora">0</div>
+      <div class="calc-grid">
+        <button class="ck ac" onclick="calcAction('AC')" aria-label="Borrar todo">AC</button><button class="ck op" onclick="calcAction('+/-')" aria-label="Cambiar signo">+/−</button><button class="ck op" onclick="calcAction('%')" aria-label="Porcentaje">%</button><button class="ck op" onclick="calcAction('/')" aria-label="Dividir">÷</button>
+        <button class="ck" onclick="calcAction('7')" aria-label="7">7</button><button class="ck" onclick="calcAction('8')" aria-label="8">8</button><button class="ck" onclick="calcAction('9')" aria-label="9">9</button><button class="ck op" onclick="calcAction('*')" aria-label="Multiplicar">×</button>
+        <button class="ck" onclick="calcAction('4')" aria-label="4">4</button><button class="ck" onclick="calcAction('5')" aria-label="5">5</button><button class="ck" onclick="calcAction('6')" aria-label="6">6</button><button class="ck op" onclick="calcAction('-')" aria-label="Restar">−</button>
+        <button class="ck" onclick="calcAction('1')" aria-label="1">1</button><button class="ck" onclick="calcAction('2')" aria-label="2">2</button><button class="ck" onclick="calcAction('3')" aria-label="3">3</button><button class="ck op" onclick="calcAction('+')" aria-label="Sumar">+</button>
+        <button class="ck" style="grid-column:span 2" onclick="calcAction('0')" aria-label="0">0</button><button class="ck" onclick="calcAction('.')" aria-label="Punto decimal">.</button><button class="ck eq" onclick="calcAction('=')" aria-label="Calcular resultado">=</button>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-final" onclick="finalizarExamen()" aria-label="Finalizar y calificar examen">Finalizar y Calificar</button>
+</div>
+
+<div class="modal-bg" id="modalConfirmar" role="dialog" aria-modal="true" aria-labelledby="modalConfirmarTitulo">
+  <div class="modal-card" style="background:#fdf8f0;color:#4a3a22;">
+    <h2 id="modalConfirmarTitulo" style="font-size:1.15rem;">⚠️ Vas a perder tu progreso</h2>
+    <div id="modalConfirmarTexto" style="font-size:0.85rem;margin:0.8rem 0 1.2rem;line-height:1.6;"></div>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+      <button class="btn-otro" id="btnCancelarConfirmar" style="display:inline-block;">Cancelar</button>
+      <button class="btn-check" id="btnAceptarConfirmar">Continuar de todos modos</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modalFinal" role="dialog" aria-modal="true" aria-labelledby="modalTitulo">
+  <div class="modal-card" id="modalCard">
+    <h2 id="modalNombre">---</h2>
+    <div class="modal-ficha">📘 Aplicaciones de las Derivadas</div>
+    <div class="nota-big" id="modalNota">--/10</div>
+    <div class="detalle-info" id="modalInfo"></div>
+    <div class="recordatorio">📸 Haz una captura de pantalla y entrégala en Google Classroom.</div>
+    <button class="btn-cerrar-modal" onclick="cerrarModal()" aria-label="Cerrar modal y seguir practicando">Cerrar · Seguir practicando</button>
+  </div>
+</div>
+
+<script>
+  // ---------- FUNCIONES DE AYUDA ----------
+  function insertarAyuda(id, texto) {
+    let input = document.getElementById(id);
+    if (!input) return;
+    input.value = input.value + texto;
+    input.focus();
+  }
+
+  // Formatea un polinomio a partir de una lista de [coeficiente, variable] en orden descendente
+  // de grado. Omite términos con coeficiente 0, omite el "1" delante de una variable (x, x², t³...)
+  // y siempre muestra el signo correcto de cada término (incluidos los negativos), evitando que un
+  // coeficiente negativo desaparezca por completo en vez de mostrarse con su signo.
+  function formatearPolinomio(terminos){
+    let resultado = '';
+    let primero = true;
+    for(let [coef, variable] of terminos){
+      if(coef === 0) continue;
+      let abs = Math.abs(coef);
+      let cuerpo = (variable !== '' && abs === 1) ? variable : `${abs}${variable}`;
+      if(primero){ resultado += (coef < 0 ? '-' : '') + cuerpo; primero = false; }
+      else { resultado += (coef >= 0 ? '+' : '-') + cuerpo; }
+    }
+    return resultado === '' ? '0' : resultado;
+  }
+
+  // ---------- GENERADORES ALEATORIOS ----------
+  function aleatorio(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  // ---------- EJERCICIO 1: GENERADOR ----------
+  function generarEj1() {
+    let t1 = aleatorio(1, 4);
+    let t2 = aleatorio(t1 + 1, 7);
+    let aInt = 2;
+    let bInt = -3 * (t1 + t2);
+    let cInt = 6 * t1 * t2;
+    let d = aleatorio(80, 200);
+    let dInt = Math.round(d / 10) * 10;
+    let g0 = dInt;
+    let g8 = aInt * 512 + bInt * 64 + cInt * 8 + dInt;
+    let g1 = aInt * Math.pow(t1, 3) + bInt * Math.pow(t1, 2) + cInt * t1 + dInt;
+    let g2 = aInt * Math.pow(t2, 3) + bInt * Math.pow(t2, 2) + cInt * t2 + dInt;
+    let maxT, maxG, minT, minG;
+    if (g1 > g2) { maxT = t1; maxG = g1; minT = t2; minG = g2; }
+    else { maxT = t2; maxG = g2; minT = t1; minG = g1; }
+
+    return {
+      a: aInt, b: bInt, c: cInt, d: dInt, t1: t1, t2: t2, g0: g0, g8: g8,
+      coefsGp: [aInt*3, bInt*2, cInt],
+      funcion: formatearPolinomio([[aInt,'t³'],[bInt,'t²'],[cInt,'t'],[dInt,'']]),
+      maximoEsperado: `t=${maxT},G=${maxG}`,
+      minimoEsperado: `t=${minT},G=${minG}`,
+      soluciones: {
+        gp: `G'(t) = ${formatearPolinomio([[aInt*3,'t²'],[bInt*2,'t'],[cInt,'']])}`,
+        t1: `t₁ = ${t1}`,
+        t2: `t₂ = ${t2}`,
+        g0: `G(0) = ${g0}`,
+        g8: `G(8) = ${g8}`,
+        max: `Máximo en t=${maxT} con G=${maxG}`,
+        min: `Mínimo en t=${minT} con G=${minG}`
+      },
+      maxT: maxT, maxG: maxG, minT: minT, minG: minG
+    };
+  }
+
+  // ---------- EJERCICIO 2: GENERADOR ----------
+  function generarEj2() {
+    let x0 = aleatorio(0, 3);
+    let a = aleatorio(1, 2);
+    let b = aleatorio(-3, 3);
+    let c = aleatorio(-5, 5);
+    let d = aleatorio(-10, 15);
+    let y0 = a * Math.pow(x0, 3) + b * Math.pow(x0, 2) + c * x0 + d;
+    let m = 3 * a * Math.pow(x0, 2) + 2 * b * x0 + c;
+    let n = y0 - m * x0;
+    let rectaStr = `y=${formatearPolinomio([[m,'x'],[n,'']])}`;
+    let funcionStr = `f(x)=${formatearPolinomio([[a,'x³'],[b,'x²'],[c,'x'],[d,'']])}`;
+
+    return {
+      x0: x0, y0: y0, m: m, n: n, a: a, b: b, c: c, d: d,
+      coefsFp: [3*a, 2*b, c],
+      funcion: funcionStr, recta: rectaStr,
+      soluciones: {
+        fp: `f'(x) = ${formatearPolinomio([[3*a,'x²'],[2*b,'x'],[c,'']])}`,
+        m: `m = f'(${x0}) = ${m}`,
+        fx0: `f(${x0}) = ${y0}`,
+        recta: `y = ${formatearPolinomio([[m,'x'],[n,'']])}`
+      }
+    };
+  }
+
+  // ---------- EJERCICIO 3: GENERADOR ----------
+  function generarEj3() {
+    let x1 = aleatorio(-2, 2);
+    let x2 = aleatorio(x1 + 2, 5);
+    let suma = x1 + x2;
+    if (suma % 2 !== 0) {
+      if (x1 % 2 === 0) x1 = x1 + 1; else x1 = x1 - 1;
+      x2 = aleatorio(x1 + 2, 5);
+      suma = x1 + x2;
+      if (suma % 2 !== 0) {
+        x1 = aleatorio(-2, 2) * 2;
+        x2 = aleatorio(x1 + 2, 5);
+        if (x2 % 2 !== 0) x2 = x2 + 1;
+        suma = x1 + x2;
+      }
+    }
+    let a = 1;
+    let b = -3 * (x1 + x2) / 2;
+    let c = 3 * x1 * x2;
+    let d = aleatorio(-5, 10);
+    let fx1 = a * Math.pow(x1, 3) + b * Math.pow(x1, 2) + c * x1 + d;
+    let fx2 = a * Math.pow(x2, 3) + b * Math.pow(x2, 2) + c * x2 + d;
+    let maxX, maxY, minX, minY;
+    if (fx1 > fx2) { maxX = x1; maxY = fx1; minX = x2; minY = fx2; }
+    else { maxX = x2; maxY = fx2; minX = x1; minY = fx1; }
+    let piX = -b / 3;
+    let piY = a * Math.pow(piX, 3) + b * Math.pow(piX, 2) + c * piX + d;
+    piX = Math.round(piX * 100) / 100;
+    piY = Math.round(piY * 100) / 100;
+    let minXval = Math.min(x1, x2), maxXval = Math.max(x1, x2);
+    let crec = `(-∞,${minXval})U(${maxXval},+∞)`;
+    let dec = `(${minXval},${maxXval})`;
+    let conc = `(-∞,${piX})`;
+    let conv = `(${piX},+∞)`;
+
+    return {
+      x1: minXval, x2: maxXval, a: a, b: b, c: c, d: d,
+      coefsFp: [3*a, 2*b, c],
+      coefsFpp: [6*a, 2*b],
+      funcion: `f(x)=${formatearPolinomio([[a,'x³'],[b,'x²'],[c,'x'],[d,'']])}`,
+      crec: crec, dec: dec,
+      max: `(${maxX},${maxY})`, min: `(${minX},${minY})`,
+      fpp: formatearPolinomio([[6*a,'x'],[2*b,'']]),
+      conc: conc, conv: conv, pi: `(${piX},${piY})`,
+      soluciones: {
+        fp: `f'(x) = ${formatearPolinomio([[3*a,'x²'],[2*b,'x'],[c,'']])}`,
+        x1: `x₁ = ${minXval}`,
+        x2: `x₂ = ${maxXval}`,
+        crec: `Crece: ${crec}`,
+        dec: `Decrece: ${dec}`,
+        max: `Máximo en (${maxX},${maxY})`,
+        min: `Mínimo en (${minX},${minY})`,
+        fpp: `f''(x) = ${formatearPolinomio([[6*a,'x'],[2*b,'']])}`,
+        conc: `Cóncava ∪ en ${conc}`,
+        conv: `Convexa ∩ en ${conv}`,
+        pi: `Punto de inflexión en (${piX},${piY})`
+      }
+    };
+  }
+
+  // ================= CONSTANTES DE PUNTUACIÓN (estándar del proyecto) =================
+  const TOTAL_EJERCICIOS = 3;
+  const PUNTOS_POR_EJERCICIO = 10 / TOTAL_EJERCICIOS;
+  // Se incrementa cada vez que cambia la lógica de generación o puntuación, para que un progreso
+  // guardado de una versión anterior nunca se muestre como si fuera válido en la versión nueva.
+  const VERSION_MOTOR = 'v3.0';
+
+  // ---------- DATOS DE EJERCICIOS Y ESTADO ----------
+  let ejercicios = {1: null, 2: null, 3: null};
+  let startTime = new Date();
+
+  function nuevoEstadoEjercicio(){
+    return {
+      pasosQuemados: [],   // ids de pasos que han fallado alguna vez: 0 puntos PERMANENTES para ese paso
+                            // en este intento, porque el feedback de fallo revela el resultado exacto.
+      corregidos: [],       // ids de pasos actualmente marcados como correctos (a efectos visuales)
+      cerrado: false,        // true = todos los pasos ya evaluados (agotado o completo); no se sigue puntuando
+      puntuado: false,       // true = la puntuación de este ejercicio ya está fijada
+      puntosFinal: 0,
+      nPasos: 0,
+      puntosPorPaso: 0,
+      modoPractica: false    // true = intentos posteriores tras cerrar, no cuentan para la nota
+    };
+  }
+  let exerciseState = { 1: nuevoEstadoEjercicio(), 2: nuevoEstadoEjercicio(), 3: nuevoEstadoEjercicio() };
+
+  // Persistencia con sessionStorage
+  function guardarEstado() {
+    try {
+      const estado = { version: VERSION_MOTOR, ejercicios: ejercicios, exerciseState: exerciseState, startTime: startTime.getTime() };
+      sessionStorage.setItem('derivadas_estado', JSON.stringify(estado));
+    } catch(e) { console.log('No se pudo guardar el estado'); }
+  }
+
+  function cargarEstado() {
+    try {
+      const guardado = sessionStorage.getItem('derivadas_estado');
+      if (guardado) {
+        const estado = JSON.parse(guardado);
+        if (estado.version === VERSION_MOTOR && estado.ejercicios && estado.ejercicios[1]) {
+          ejercicios = estado.ejercicios;
+          exerciseState = estado.exerciseState || { 1: nuevoEstadoEjercicio(), 2: nuevoEstadoEjercicio(), 3: nuevoEstadoEjercicio() };
+          if (estado.startTime) startTime = new Date(estado.startTime);
+          return true;
+        }
+        // Estado de una versión anterior de la ficha: se descarta y se generan ejercicios nuevos.
+      }
+    } catch(e) { console.log('No se pudo cargar el estado'); }
+    return false;
+  }
+
+  // ---------- UTILIDADES DE VALIDACIÓN ----------
+  function normalizarNumero(s){
+    if(s === null || s === undefined) return NaN;
+    let t = String(s).trim().replace(/\s+/g,'').replace(/,/g,'.');
+    if(t === '') return NaN;
+    return parseFloat(t);
+  }
+  function validarNumero(user, esperado){
+    let nu = normalizarNumero(user);
+    let ne = (typeof esperado === 'number') ? esperado : normalizarNumero(esperado);
+    if(isNaN(nu) || isNaN(ne)) return false;
+    return Math.abs(nu - ne) < 0.01;
+  }
+  function normalizarTexto(s){
+    if(!s) return '';
+    return String(s).toLowerCase()
+      .replace(/\s+/g,'')
+      .replace(/−/g,'-')
+      .replace(/,/g,'.')
+      .replace(/∞/g,'inf')
+      .replace(/∪/g,'u')
+      .replace(/[“”"]/g,'')
+      .replace(/á/g,'a').replace(/é/g,'e').replace(/í/g,'i').replace(/ó/g,'o').replace(/ú/g,'u')
+      .replace(/€/g,'')
+      .replace(/[()]/g,'')
+      .trim();
+  }
+  function extraerNumeros(s){
+    if(!s) return [];
+    let m = normalizarTexto(s).match(/[+-]?\d+(?:\.\d+)?/g) || [];
+    return m.map(Number).filter(n=>!isNaN(n));
+  }
+  // Comparación de respuestas compuestas (intervalos, coordenadas, "t=2,G=160"...).
+  // Sin fallback laxo de subcadena: evita falsos positivos (p.ej. "1" no vale como intervalo completo).
+  function validarCompuesto(user, esperado){
+    if(!user || !esperado) return false;
+    let nu = normalizarTexto(user), ne = normalizarTexto(esperado);
+    if(nu === '' || ne === '') return false;
+    let numsUser = extraerNumeros(user), numsEsp = extraerNumeros(esperado);
+    if(numsUser.length > 0 && numsEsp.length > 0 && numsUser.length === numsEsp.length){
+      for(let i=0;i<numsUser.length;i++){
+        if(Math.abs(numsUser[i]-numsEsp[i]) > 0.01) return false;
+      }
+      return true;
+    }
+    return nu === ne;
+  }
+
+  // ---------- COMPARADOR ALGEBRAICO (equivalencia real, no comparación de texto) ----------
+  function evaluarPoli(coefs, v){
+    let grado = coefs.length - 1, total = 0;
+    for(let i=0;i<coefs.length;i++){ total += coefs[i]*Math.pow(v, grado-i); }
+    return total;
+  }
+  function evaluarExpresionAlumno(expr, variable, valor){
+    if(!expr) return NaN;
+    let s = String(expr).toLowerCase().replace(/\s+/g,'');
+    s = s.replace(/−/g,'-').replace(/,/g,'.').replace(/·/g,'*');
+    s = s.replace(/²/g,'**2').replace(/³/g,'**3').replace(/\^/g,'**');
+    let reNumVar = new RegExp('(\\d)(' + variable + ')', 'g');
+    s = s.replace(reNumVar, '$1*$2');
+    s = s.replace(/(\d|[a-z])\(/g, '$1*(');
+    s = s.replace(/\)(\d|[a-z(])/g, ')*$1');
+    let reVar = new RegExp(variable, 'g');
+    s = s.replace(reVar, `(${valor})`);
+    if(!/^[0-9+\-*/.() ]+$/.test(s)) return NaN;
+    try { return Function('"use strict"; return (' + s + ');')(); }
+    catch(err){ return NaN; }
+  }
+  function compararPolinomio(userStr, funcionEsperada, variable){
+    if(!userStr) return false;
+    const puntosPrueba = [-6,-3,-1,0,1,2,3,5,8];
+    for(let v of puntosPrueba){
+      let valUser = evaluarExpresionAlumno(userStr, variable, v);
+      let valEsp = funcionEsperada(v);
+      if(isNaN(valUser) || Math.abs(valUser - valEsp) > 0.05) return false;
+    }
+    return true;
+  }
+  function compararRectaTangente(userStr, m, n){
+    if(!userStr) return false;
+    let s = String(userStr).toLowerCase().replace(/\s+/g,'').replace(/,/g,'.');
+    if(!s.startsWith('y=')) return false;
+    let expr = s.slice(2);
+    return compararPolinomio(expr, (x)=> m*x+n, 'x');
+  }
+
+  // ---------- DEFINICIÓN DE PASOS EVALUABLES POR EJERCICIO ----------
+  function val(id){ return document.getElementById(id).value; }
+
+  function definirPasosEj1(e){
+    return [
+      { id:'gp',   eval: () => compararPolinomio(val('e1_gp'), (t)=> evaluarPoli(e.coefsGp, t), 't') },
+      { id:'t1t2', eval: () => validarNumero(val('e1_t1'), e.t1) && validarNumero(val('e1_t2'), e.t2) },
+      { id:'g0g8', eval: () => validarNumero(val('e1_g0'), e.g0) && validarNumero(val('e1_g8'), e.g8) },
+      { id:'max',  eval: () => validarCompuesto(val('e1_max'), e.maximoEsperado) },
+      { id:'min',  eval: () => validarCompuesto(val('e1_min'), e.minimoEsperado) }
+    ];
+  }
+  function definirPasosEj2(e){
+    return [
+      { id:'fp',   eval: () => compararPolinomio(val('e2_fp'), (x)=> evaluarPoli(e.coefsFp, x), 'x') },
+      { id:'m',    eval: () => validarNumero(val('e2_m'), e.m) },
+      { id:'fx0',  eval: () => validarNumero(val('e2_fx0'), e.y0) },
+      { id:'rect', eval: () => compararRectaTangente(val('e2_rect'), e.m, e.n) }
+    ];
+  }
+  function definirPasosEj3(e){
+    return [
+      { id:'fp',   eval: () => compararPolinomio(val('e3_fp'), (x)=> evaluarPoli(e.coefsFp, x), 'x') },
+      { id:'x1',   eval: () => validarNumero(val('e3_x1'), e.x1) },
+      { id:'x2',   eval: () => validarNumero(val('e3_x2'), e.x2) },
+      { id:'crec', eval: () => validarCompuesto(val('e3_crec'), e.crec) },
+      { id:'dec',  eval: () => validarCompuesto(val('e3_dec'), e.dec) },
+      { id:'max',  eval: () => validarCompuesto(val('e3_max'), e.max) },
+      { id:'min',  eval: () => validarCompuesto(val('e3_min'), e.min) },
+      { id:'fpp',  eval: () => compararPolinomio(val('e3_fpp'), (x)=> evaluarPoli(e.coefsFpp, x), 'x') },
+      { id:'conc', eval: () => validarCompuesto(val('e3_conc'), e.conc) },
+      { id:'conv', eval: () => validarCompuesto(val('e3_conv'), e.conv) },
+      { id:'pi',   eval: () => validarCompuesto(val('e3_pi'), e.pi) }
+    ];
+  }
+  function pasosDe(num, e){
+    if(num===1) return definirPasosEj1(e);
+    if(num===2) return definirPasosEj2(e);
+    return definirPasosEj3(e);
+  }
+
+  const PASOS_INPUTS = {
+    1: { gp:['e1_gp'], t1t2:['e1_t1','e1_t2'], g0g8:['e1_g0','e1_g8'], max:['e1_max'], min:['e1_min'] },
+    2: { fp:['e2_fp'], m:['e2_m'], fx0:['e2_fx0'], rect:['e2_rect'] },
+    3: { fp:['e3_fp'], x1:['e3_x1'], x2:['e3_x2'], crec:['e3_crec'], dec:['e3_dec'], max:['e3_max'], min:['e3_min'], fpp:['e3_fpp'], conc:['e3_conc'], conv:['e3_conv'], pi:['e3_pi'] }
+  };
+  const SOLUCION_TEXTO = {
+    1: { gp:e=>e.soluciones.gp, t1t2:e=>`${e.soluciones.t1}, ${e.soluciones.t2}`, g0g8:e=>`${e.soluciones.g0}, ${e.soluciones.g8}`, max:e=>e.soluciones.max, min:e=>e.soluciones.min },
+    2: { fp:e=>e.soluciones.fp, m:e=>e.soluciones.m, fx0:e=>e.soluciones.fx0, rect:e=>e.soluciones.recta },
+    3: { fp:e=>e.soluciones.fp, x1:e=>e.soluciones.x1, x2:e=>e.soluciones.x2, crec:e=>e.soluciones.crec, dec:e=>e.soluciones.dec, max:e=>e.soluciones.max, min:e=>e.soluciones.min, fpp:e=>e.soluciones.fpp, conc:e=>e.soluciones.conc, conv:e=>e.soluciones.conv, pi:e=>e.soluciones.pi }
+  };
+  const ETIQUETA_PASO = {
+    1: { gp:"G'(t)", t1t2:"puntos críticos", g0g8:"G(0) y G(8)", max:"máximo", min:"mínimo" },
+    2: { fp:"f'(x)", m:"pendiente", fx0:"f(x₀)", rect:"recta tangente" },
+    3: { fp:"f'(x)", x1:"x₁", x2:"x₂", crec:"crecimiento", dec:"decrecimiento", max:"máximo", min:"mínimo", fpp:"f''(x)", conc:"concavidad", conv:"convexidad", pi:"punto de inflexión" }
+  };
+
+  // ---------- CARGAR / LIMPIAR EJERCICIOS ----------
+  function textoEnunciado(num, e){
+    if(num===1) return `El consumo eléctrico sigue: <strong>G(t)=${e.funcion}</strong>, 0≤t≤8. Halla máx, mín y valores en extremos.<br><small>💡 Recuerda: G'(t) = ${e.soluciones.gp.replace("G'(t) = ","")}</small>`;
+    if(num===2) return `${e.funcion}<br>Halla la recta tangente en x₀ = ${e.x0}.<br><small>💡 f'(${e.x0}) = ${e.m} y f(${e.x0}) = ${e.y0}</small>`;
+    return `${e.funcion}<br>Estudio completo (monotonía, extremos, curvatura, P.I.).<br><small>💡 Puntos críticos: x₁=${e.x1}, x₂=${e.x2}</small>`;
+  }
+
+  function cargarEjercicio(num){
+    if(num===1) ejercicios[1] = generarEj1();
+    if(num===2) ejercicios[2] = generarEj2();
+    if(num===3) ejercicios[3] = generarEj3();
+    document.getElementById('enunciado'+num).innerHTML = textoEnunciado(num, ejercicios[num]);
+    let st = exerciseState[num];
+    st.nPasos = pasosDe(num, ejercicios[num]).length;
+    st.puntosPorPaso = PUNTOS_POR_EJERCICIO / st.nPasos;
+    guardarEstado();
+  }
+
+  function desbloquearInputsEjercicio(num){
+    for(let pasoId in PASOS_INPUTS[num]){
+      for(let id of PASOS_INPUTS[num][pasoId]){
+        let el = document.getElementById(id);
+        el.disabled = false;
+        el.value = '';
+        el.classList.remove('campo-correcto','campo-incorrecto','campo-quemado');
+      }
+    }
+    document.getElementById('btnComprobar'+num).disabled = false;
+  }
+  function bloquearInputsEjercicio(num){
+    for(let pasoId in PASOS_INPUTS[num]){
+      for(let id of PASOS_INPUTS[num][pasoId]){
+        document.getElementById(id).disabled = true;
+      }
+    }
+    document.getElementById('btnComprobar'+num).disabled = true;
+  }
+
+  function marcarColorPaso(num, pasoId, ok, quemado){
+    for(let id of PASOS_INPUTS[num][pasoId]){
+      colorear(id, ok, quemado);
+    }
+  }
+  function colorear(id, ok, quemado){
+    let el = document.getElementById(id);
+    if(!el) return;
+    el.classList.remove('campo-correcto','campo-incorrecto','campo-quemado');
+    if(ok && quemado) el.classList.add('campo-quemado');       // correcto mostrado, pero no puntúa
+    else if(ok) el.classList.add('campo-correcto');
+    else el.classList.add('campo-incorrecto');
+  }
+
+  // Potencial máximo que TODAVÍA se podría llegar a ganar en este ejercicio: puntos de los pasos
+  // que no han sido "quemados" (fallados alguna vez). Un paso quemado no puede volver a sumar en
+  // este intento, aunque el alumno acabe escribiendo el valor correcto (ya revelado en el feedback).
+  function potencialMaximoRestante(num){
+    let st = exerciseState[num];
+    if(st.puntuado) return st.puntosFinal;
+    let pasosVivos = st.nPasos - st.pasosQuemados.length;
+    return Math.max(0, pasosVivos * st.puntosPorPaso);
+  }
+  // Puntos que este ejercicio aporta realmente a la nota, EN TIEMPO REAL: cada apartado acertado
+  // (y no quemado por un fallo previo) suma sus puntos en cuanto se marca correcto, sin esperar a
+  // que el ejercicio entero se complete. Un apartado quemado nunca cuenta, ni antes ni después del cierre.
+  function contribucionNota(num){
+    let st = exerciseState[num];
+    let ganados = st.corregidos.filter(id => !st.pasosQuemados.includes(id)).length;
+    return ganados * st.puntosPorPaso;
+  }
+
+  // ---------- COMPROBAR EJERCICIO (con corrección in-situ y bloqueo de pasos quemados) ----------
+  function checkEjercicio(num){
+    let e = ejercicios[num];
+    if (!e) {
+      let fb = document.getElementById(`fb${num}`);
+      fb.className = 'fb show fail';
+      fb.innerHTML = '❌ Error: No hay ejercicio cargado. Intenta con "Otro ejercicio".';
+      return;
+    }
+    let st = exerciseState[num];
+    if(st.cerrado && !st.modoPractica) return; // ya puntuado y cerrado: no se admite más evaluación puntuable
+
+    let pasos = pasosDe(num, e);
+    let feedbacksSolucion = [];
+    let pasosGanadosAhora = []; // apartados que suman puntos en ESTA comprobación (no quemados)
+
+    for(let paso of pasos){
+      if(st.corregidos.includes(paso.id)) continue; // ya marcado correcto, no se reevalúa
+      let ok = paso.eval();
+      let yaQuemado = st.pasosQuemados.includes(paso.id);
+      if(ok){
+        st.corregidos.push(paso.id);
+        marcarColorPaso(num, paso.id, true, yaQuemado && !st.modoPractica);
+        if(yaQuemado && !st.modoPractica){
+          // El feedback de un fallo anterior reveló el resultado exacto de este paso: se muestra
+          // como correcto (para que el alumno vea que ya lo tiene bien) pero no suma puntos.
+          feedbacksSolucion.push(`🔒 <strong>${ETIQUETA_PASO[num][paso.id]}:</strong> ahora está bien, pero no puntúa porque ya viste la solución tras el fallo anterior.`);
+        } else if(!st.modoPractica){
+          pasosGanadosAhora.push(paso.id);
+        }
+      } else {
+        marcarColorPaso(num, paso.id, false, false);
+        if(!st.modoPractica && !yaQuemado){
+          st.pasosQuemados.push(paso.id); // 0 puntos permanentes para este paso en este intento
+        }
+        feedbacksSolucion.push(`📌 <strong>${ETIQUETA_PASO[num][paso.id]} correcto:</strong> ${SOLUCION_TEXTO[num][paso.id](e)}`);
+      }
+    }
+
+    let todosCorrectos = pasos.every(p => st.corregidos.includes(p.id));
+
+    if(!st.modoPractica && todosCorrectos){
+      st.cerrado = true;
+      st.puntuado = true;
+      st.puntosFinal = contribucionNota(num);
+    }
+
+    actualizarStats();
+    guardarEstado();
+    renderFeedback(num, st, todosCorrectos, feedbacksSolucion, pasosGanadosAhora);
+    if(st.cerrado && !st.modoPractica) bloquearInputsEjercicio(num);
+    document.getElementById(`otro${num}`).style.display = (st.pasosQuemados.length>0 || st.cerrado) ? 'inline-block' : 'none';
+  }
+
+  function renderFeedback(num, st, todosCorrectos, feedbacksSolucion, pasosGanadosAhora){
+    let fb = document.getElementById(`fb${num}`);
+    if(st.modoPractica){
+      fb.className = todosCorrectos ? 'fb show ok' : 'fb show fail';
+      fb.innerHTML = todosCorrectos
+        ? '🧪 ¡Bien resuelto! (modo práctica: no cuenta para la nota, ese ejercicio ya está puntuado)'
+        : `🧪 Modo práctica (no cuenta para la nota, ya puntuaste este ejercicio). Revisa:<div class="solucion">${feedbacksSolucion.join('<br>')}</div>`;
+      return;
+    }
+
+    let acumulado = contribucionNota(num);
+    let lineaAcumulado = `📊 Llevas <strong>${acumulado.toFixed(2)} / ${PUNTOS_POR_EJERCICIO.toFixed(2)}</strong> puntos en este ejercicio.`;
+    let lineaGanados = (pasosGanadosAhora && pasosGanadosAhora.length > 0)
+      ? `➕ Sumas <strong>${(pasosGanadosAhora.length * st.puntosPorPaso).toFixed(2)}</strong> puntos ahora mismo (${pasosGanadosAhora.map(id=>ETIQUETA_PASO[num][id]).join(', ')}). `
+      : '';
+
+    if(todosCorrectos && st.puntuado && st.puntosFinal === PUNTOS_POR_EJERCICIO){
+      fb.className = 'fb show ok';
+      fb.innerHTML = `🎉 ${lineaGanados}¡Ejercicio completado sin ningún fallo! Puntuación final: <strong>${PUNTOS_POR_EJERCICIO.toFixed(2)}</strong> puntos.`;
+    } else if(todosCorrectos && st.puntuado && st.puntosFinal > 0){
+      fb.className = 'fb show ok';
+      fb.innerHTML = `✅ ${lineaGanados}Ejercicio terminado. Puntuación final: <strong>${st.puntosFinal.toFixed(2)} / ${PUNTOS_POR_EJERCICIO.toFixed(2)}</strong> (${st.pasosQuemados.length} de ${st.nPasos} pasos quedaron a 0 puntos por haberse fallado).${feedbacksSolucion.length? '<div class="solucion">'+feedbacksSolucion.join('<br>')+'</div>' : ''}`;
+    } else if(todosCorrectos && st.puntuado && st.puntosFinal === 0){
+      fb.className = 'fb show fail';
+      fb.innerHTML = `⚠️ Ejercicio completado, pero todos los pasos se fallaron al menos una vez, así que no suma puntos en este intento. Pulsa "Otro ejercicio" para tener una oportunidad nueva.`;
+    } else {
+      fb.className = 'fb show fail';
+      fb.innerHTML = `${lineaGanados}${lineaAcumulado} Tienes <strong>${st.pasosQuemados.length}</strong> paso(s) que ya no puntúan en este intento (el feedback te mostró su resultado exacto). Corrige los campos marcados en rojo y vuelve a pulsar "Comprobar".<div class="solucion">${feedbacksSolucion.join('<br>')}</div>`;
+    }
+  }
+
+  // ---------- MODAL DE CONFIRMACIÓN (propio, nunca confirm() nativo) ----------
+  let confirmacionCallback = null;
+  function mostrarConfirmacion(texto, onAceptar){
+    document.getElementById('modalConfirmarTexto').innerText = texto;
+    confirmacionCallback = onAceptar;
+    document.getElementById('modalConfirmar').classList.add('show');
+  }
+  document.getElementById('btnAceptarConfirmar').addEventListener('click', ()=>{
+    document.getElementById('modalConfirmar').classList.remove('show');
+    if(confirmacionCallback) confirmacionCallback();
+    confirmacionCallback = null;
+  });
+  document.getElementById('btnCancelarConfirmar').addEventListener('click', ()=>{
+    document.getElementById('modalConfirmar').classList.remove('show');
+    confirmacionCallback = null;
+  });
+
+  // ---------- OTRO EJERCICIO ----------
+  function solicitarOtroEjercicio(num){
+    let st = exerciseState[num];
+    let hayProgresoEnJuego = !st.cerrado && (st.pasosQuemados.length > 0 || st.corregidos.length > 0);
+    if(hayProgresoEnJuego){
+      mostrarConfirmacion(
+        `Todavía no has terminado este ejercicio. Si generas uno nuevo ahora, perderás el progreso de este intento (hasta ${potencialMaximoRestante(num).toFixed(2)} puntos en juego). ¿Quieres continuar de todos modos?`,
+        () => ejecutarOtroEjercicio(num)
+      );
+    } else {
+      ejecutarOtroEjercicio(num);
+    }
+  }
+  function ejecutarOtroEjercicio(num){
+    let st = exerciseState[num];
+    if(st.cerrado){
+      // El ejercicio ya está puntuado (agotado o completo): lo siguiente es un enunciado nuevo, con
+      // una oportunidad real de puntuar de nuevo — no es el mismo resultado ya visto.
+      exerciseState[num] = nuevoEstadoEjercicio();
+    } else {
+      exerciseState[num] = nuevoEstadoEjercicio();
+    }
+    cargarEjercicio(num);
+    desbloquearInputsEjercicio(num);
+    let fb = document.getElementById(`fb${num}`);
+    fb.className = 'fb'; fb.innerHTML = '';
+    document.getElementById(`otro${num}`).style.display = 'none';
+    actualizarStats();
+    guardarEstado();
+  }
+
+  // ---------- ESTADÍSTICAS Y NOTA ----------
+  function actualizarStats(){
+    let totalAciertos = 0, totalFallos = 0, notaTotal = 0, cerrados = 0;
+    for(let n=1;n<=3;n++){
+      let st = exerciseState[n];
+      totalAciertos += st.corregidos.length;
+      totalFallos += st.pasosQuemados.length;
+      notaTotal += contribucionNota(n);
+      if(st.cerrado) cerrados++;
+    }
+    document.getElementById('statReal').innerText = cerrados;
+    document.getElementById('statAciertos').innerText = totalAciertos;
+    document.getElementById('statFallos').innerText = totalFallos;
+    document.getElementById('statNota').innerText = notaTotal.toFixed(1)+'/10';
+  }
+
+  function notaActualExacta(){
+    let total = 0;
+    for(let n=1;n<=3;n++) total += contribucionNota(n);
+    return total;
+  }
+
+  // ---------- TIEMPO Y FECHA ----------
+  function tiempoTranscurrido(){
+    let totalMs = Date.now() - startTime.getTime();
+    let totalMinutos = Math.ceil(totalMs / 60000); // redondeo hacia arriba, según estándar del proyecto
+    if(totalMinutos < 0) totalMinutos = 0;
+    let horas = Math.floor(totalMinutos / 60);
+    let minutos = totalMinutos % 60;
+    return `${horas.toString().padStart(2,'0')}:${minutos.toString().padStart(2,'0')}`;
+  }
+  function fechaActual(){
+    let d = new Date();
+    return `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear()}`;
+  }
+  function horaActual(){ return new Date().toLocaleTimeString('es-ES',{hour12:false}); }
+
+  // ---------- FINALIZAR Y CALIFICAR ----------
+  function finalizarExamen(){
+    let nombre = document.getElementById('nombreInput').value.trim();
+    let aviso = document.getElementById('avisoNombre');
+    if(nombre === ""){
+      aviso.style.display = "block";
+      document.getElementById('nombreInput').style.borderBottomColor = "#c0392b";
+      setTimeout(()=>{ aviso.style.display = "none"; document.getElementById('nombreInput').style.borderBottomColor = "#dccfae"; }, 2500);
+      return;
+    }
+    aviso.style.display = "none";
+
+    let nota = Math.round(notaActualExacta() * 10) / 10;
+
+    let modalCard = document.getElementById('modalCard');
+    let wrap = document.getElementById('wrapGlobal');
+
+    if(nota>=10){ modalCard.style.backgroundColor="#1a7a1a"; modalCard.style.color="white"; wrap.classList.add('fondo-verde-total'); }
+    else if(nota>=9){ modalCard.style.backgroundColor="#6dbf6d"; modalCard.style.color="white"; wrap.classList.remove('fondo-verde-total'); }
+    else if(nota>=8){ modalCard.style.backgroundColor="#1a4f8a"; modalCard.style.color="white"; wrap.classList.remove('fondo-verde-total'); }
+    else if(nota>=7){ modalCard.style.backgroundColor="#5b9bd5"; modalCard.style.color="white"; wrap.classList.remove('fondo-verde-total'); }
+    else if(nota>=6){ modalCard.style.backgroundColor="#c05c00"; modalCard.style.color="white"; wrap.classList.remove('fondo-verde-total'); }
+    else if(nota>=5){ modalCard.style.backgroundColor="#f5a623"; modalCard.style.color="black"; wrap.classList.remove('fondo-verde-total'); }
+    else { modalCard.style.backgroundColor="#c0392b"; modalCard.style.color="white"; wrap.classList.remove('fondo-verde-total'); }
+
+    let totalAciertos = 0, totalFallos = 0;
+    for(let n=1;n<=3;n++){ totalAciertos += exerciseState[n].corregidos.length; totalFallos += exerciseState[n].pasosQuemados.length; }
+
+    document.getElementById('modalNombre').innerHTML = `👤 ${nombre}`;
+    document.getElementById('modalNota').innerHTML = nota.toFixed(1) + " / 10";
+    document.getElementById('modalInfo').innerHTML =
+      `📅 ${fechaActual()} &nbsp;|&nbsp; ⏰ ${horaActual()}<br>⏱️ Tiempo: ${tiempoTranscurrido()}<br>✅ Aciertos: ${totalAciertos} &nbsp; ❌ Fallos: ${totalFallos}`;
+    document.getElementById('modalFinal').classList.add('show');
+  }
+
+  function cerrarModal(){ document.getElementById('modalFinal').classList.remove('show'); }
+
+  function toggleCalc(){
+    let b = document.getElementById('calcBody');
+    b.classList.toggle('open');
+    document.getElementById('calcArrow').innerHTML = b.classList.contains('open')?'▾':'▸';
+    document.querySelector('.calc-toggle').setAttribute('aria-expanded', b.classList.contains('open'));
+  }
+
+  let calcExpr = '';
+  function calcAction(v){
+    let s = document.getElementById('calcScreen');
+    if(v==='AC'){ calcExpr=''; s.innerText='0'; return; }
+    if(v==='+/-'){
+      try{ let val = eval(calcExpr); if(typeof val === 'number'){ calcExpr = String(-val); s.innerText = calcExpr; } } catch(e){}
+      return;
+    }
+    if(v==='%'){
+      try{ let val = eval(calcExpr); if(typeof val === 'number'){ calcExpr = String(val/100); s.innerText = calcExpr; } } catch(e){}
+      return;
+    }
+    if(v==='='){
+      try{ calcExpr = String(eval(calcExpr)); s.innerText = calcExpr; } catch(e){ s.innerText = 'Error'; calcExpr=''; }
+      return;
+    }
+    let lastChar = calcExpr.slice(-1);
+    if('+-*/'.includes(lastChar) && '+-*/'.includes(v)) calcExpr = calcExpr.slice(0,-1) + v;
+    else calcExpr += v;
+    s.innerText = calcExpr;
+  }
+
+  // ---------- SOPORTE DE TECLA ENTER ----------
+  function activarEnterParaComprobar(){
+    document.querySelectorAll('input[type="text"]').forEach(inp => {
+      inp.addEventListener('keydown', function(ev){
+        if(ev.key === 'Enter'){
+          ev.preventDefault();
+          let m = inp.id.match(/^e(\d)_/);
+          if(m) checkEjercicio(parseInt(m[1]));
+        }
+      });
+    });
+    document.getElementById('nombreInput').addEventListener('keydown', function(ev){
+      if(ev.key === 'Enter'){ ev.preventDefault(); finalizarExamen(); }
+    });
+  }
+
+  // ---------- INICIALIZACIÓN ----------
+  let estadoCargado = cargarEstado();
+
+  if (estadoCargado) {
+    for(let i=1;i<=3;i++){
+      if (ejercicios[i]) {
+        document.getElementById('enunciado'+i).innerHTML = textoEnunciado(i, ejercicios[i]);
+        if(!exerciseState[i].nPasos){
+          exerciseState[i].nPasos = pasosDe(i, ejercicios[i]).length;
+          exerciseState[i].puntosPorPaso = PUNTOS_POR_EJERCICIO / exerciseState[i].nPasos;
+        }
+        if(exerciseState[i].cerrado && !exerciseState[i].modoPractica){
+          bloquearInputsEjercicio(i);
+          document.getElementById(`otro${i}`).style.display = 'inline-block';
+        }
+      }
+    }
+    actualizarStats();
+  } else {
+    for(let i=1;i<=3;i++){ cargarEjercicio(i); }
+    actualizarStats();
+  }
+
+  activarEnterParaComprobar();
+
+  setInterval(guardarEstado, 30000);
+  window.addEventListener('beforeunload', guardarEstado);
+  document.addEventListener('keydown', function(e) {
+    if(e.key === 'Escape') { cerrarModal(); }
+  });
+</script>
+</body>
+</html>
