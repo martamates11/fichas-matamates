@@ -1,0 +1,1642 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ficha Dominio - Estudio de Funciones</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script>
+        window.MathJax = {
+            chtml: {
+                scale: 1.25,
+                minScale: 1
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --color-fondo: #F5F0E8;
+            --color-fondo-card: #FDFAF3;
+            --color-texto: #2C1F0E;
+            --color-texto-suave: #6B4F35;
+            --color-acento: #A0522D;
+            --color-acento-hover: #7B3B1E;
+            --color-borde: #C9A96E;
+            --color-borde-suave: #E0CEAA;
+            --color-cabecera: #3B2510;
+            --color-cabecera-txt: #F5EDD8;
+            --color-correcto: #2E6B3E;
+            --color-incorrecto: #8B1A1A;
+            --color-neutro: #E8DFC8;
+            --verde-perfecta: #1a7a1a;
+            --verde-light: #6dbf6d;
+            --azul-dark: #1a4f8a;
+            --azul-light: #5b9bd5;
+            --naranja-dark: #c05c00;
+            --naranja-light: #f5a623;
+            --rojo-fallo: #c0392b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: var(--color-fondo);
+            color: var(--color-texto);
+            line-height: 1.6;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap');
+
+        /* ─────────────────────────── CABECERA ─────────────────────────── */
+        .cabecera {
+            background-color: var(--color-cabecera);
+            color: var(--color-cabecera-txt);
+            font-family: 'Libre Baskerville', serif;
+            text-align: center;
+            padding: 12px 20px;
+            border-bottom: 3px solid var(--color-borde);
+            font-size: 0.78rem;
+            letter-spacing: 0.04em;
+        }
+
+        /* ─────────────────────────── CONTAINER ─────────────────────────── */
+        .ficha-container {
+            max-width: 880px;
+            margin: 28px auto;
+            background: var(--color-fondo-card);
+            border: 2px solid var(--color-borde);
+            border-radius: 6px;
+            box-shadow: 0 3px 12px rgba(44, 31, 14, 0.15);
+            padding: 32px 36px;
+        }
+
+        body.nota-perfecta .ficha-container {
+            background: rgba(26, 122, 26, 0.05);
+            border-color: var(--verde-perfecta);
+        }
+
+        /* ─────────────────────────── TÍTULO ─────────────────────────── */
+        .titulo-ficha {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.6rem;
+            color: var(--color-texto);
+            text-align: center;
+            border-bottom: 2px solid var(--color-borde);
+            padding-bottom: 10px;
+            margin-bottom: 24px;
+            display: block !important;
+        }
+
+        .titulo-ficha::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 3px;
+            background: var(--color-borde);
+            margin: 8px auto 0;
+            border-radius: 2px;
+        }
+
+        /* ─────────────────────────── TOPBAR ─────────────────────────── */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--color-borde-suave);
+        }
+
+        .nombre-alumno {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 0.95rem;
+            color: var(--color-texto-suave);
+            display: flex;
+            align-items: center;
+        }
+
+        .nombre-campo {
+            font-family: 'Lato', sans-serif;
+            font-size: 0.9rem;
+            padding: 6px 10px;
+            border: 1.5px solid var(--color-borde);
+            border-radius: 4px;
+            background: var(--color-fondo);
+            color: var(--color-texto);
+            min-width: 160px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .nombre-campo:focus {
+            outline: none;
+            border-color: var(--color-acento);
+        }
+
+        .nombre-campo.campo-error {
+            border-color: var(--color-incorrecto);
+            background: #F9EAEA;
+            box-shadow: 0 0 0 2px rgba(139, 26, 26, 0.2);
+            animation: sacudir 0.4s;
+        }
+
+        @keyframes sacudir {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .score-box {
+            display: flex;
+            gap: 20px;
+            font-size: 0.9rem;
+            color: var(--color-texto-suave);
+        }
+
+        .score-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .score-item .pos, .score-item .neg, .score-item .total {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.1rem;
+            color: var(--color-acento);
+            font-weight: 700;
+        }
+
+        /* ─────────────────────────── BADGES DE TIPOS ─────────────────────────── */
+        .tipos-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 24px;
+            padding: 16px;
+            background: rgba(201, 169, 110, 0.08);
+            border-radius: 6px;
+            border: 1px solid var(--color-borde-suave);
+        }
+
+        .tipo-badge {
+            padding: 8px 16px;
+            border: 2px solid var(--color-borde);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            background: transparent;
+            color: var(--color-texto-suave);
+            transition: all 0.2s ease;
+            font-family: 'Lato', sans-serif;
+        }
+
+        .tipo-badge:hover {
+            border-color: var(--color-acento);
+            color: var(--color-acento);
+        }
+
+        .tipo-badge.activo {
+            background: var(--color-acento);
+            color: white;
+            border-color: var(--color-acento);
+        }
+
+        .tipo-badge.completado {
+            background: var(--color-correcto);
+            color: white;
+            border-color: var(--color-correcto);
+        }
+
+        /* ─────────────────────────── TARJETA DE EJERCICIO ─────────────────────────── */
+        .ejercicio-card {
+            background: var(--color-fondo);
+            border: 1.5px solid var(--color-borde-suave);
+            border-left: 4px solid var(--color-borde);
+            border-radius: 4px;
+            padding: 20px 24px;
+            margin-bottom: 20px;
+        }
+
+        .enunciado {
+            font-size: 1rem;
+            color: var(--color-texto);
+            margin-bottom: 16px;
+            line-height: 1.8;
+            padding-top: 10px;
+        }
+
+        /* ─────────────────────────── OPCIONES ─────────────────────────── */
+        .opciones {
+            display: flex;
+            flex-direction: row;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .opcion-btn {
+            padding: 10px 14px;
+            border: 2px solid var(--color-borde);
+            border-radius: 4px;
+            background: var(--color-fondo-card);
+            color: var(--color-texto);
+            font-size: 0.85rem;
+            cursor: pointer;
+            text-align: center;
+            font-family: 'Lato', sans-serif;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .opcion-btn:hover:not(:disabled) {
+            border-color: var(--color-acento);
+            background: rgba(160, 82, 45, 0.05);
+        }
+
+        .opcion-btn.seleccionada {
+            background: rgba(160, 82, 45, 0.15);
+            border-color: var(--color-acento);
+            color: var(--color-acento);
+            font-weight: 700;
+        }
+
+        .opcion-btn.correcta {
+            background: rgba(46, 107, 62, 0.15);
+            border-color: var(--color-correcto);
+            color: var(--color-correcto);
+            font-weight: 700;
+        }
+
+        .opcion-btn.incorrecta {
+            background: rgba(139, 26, 26, 0.15);
+            border-color: var(--color-incorrecto);
+            color: var(--color-incorrecto);
+            font-weight: 700;
+        }
+
+        .opcion-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        /* ─────────────────────────── FEEDBACK ─────────────────────────── */
+        .feedback {
+            margin: 20px 0;
+            padding: 16px;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            border: 1.5px solid;
+            display: none;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .feedback.correcto {
+            background-color: #EAF4EC;
+            border-color: var(--color-correcto);
+            color: var(--color-correcto);
+        }
+
+        .feedback.incorrecto {
+            background-color: #F9EAEA;
+            border-color: var(--color-incorrecto);
+            color: var(--color-incorrecto);
+        }
+
+        .feedback .solucion {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid currentColor;
+            font-style: italic;
+            color: var(--color-texto);
+        }
+
+        /* ─────────────────────────── BOTONES DE ACCIÓN ─────────────────────────── */
+        .botones-accion {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primario {
+            background-color: var(--color-acento);
+            color: #FDFAF3;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 22px;
+            font-family: 'Lato', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            letter-spacing: 0.03em;
+            transition: background-color 0.2s ease;
+        }
+
+        .btn-primario:hover:not(:disabled) {
+            background-color: var(--color-acento-hover);
+        }
+
+        .btn-primario:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-finalizar {
+            background-color: var(--color-cabecera);
+            color: var(--color-cabecera-txt);
+            border: 2px solid var(--color-borde);
+            border-radius: 4px;
+            padding: 10px 24px;
+            font-family: 'Libre Baskerville', serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            letter-spacing: 0.04em;
+            transition: background-color 0.2s;
+            margin-left: auto;
+        }
+
+        .btn-finalizar:hover {
+            background-color: #2C1A0A;
+        }
+
+        .btn-desafio {
+            background-color: #D4AF37;
+            color: #2C1F0E;
+            border: 2px solid #C9A96E;
+            border-radius: 4px;
+            padding: 8px 16px;
+            font-family: 'Lato', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            letter-spacing: 0.03em;
+        }
+
+        .btn-desafio:hover {
+            background-color: #E6C200;
+            border-color: #A0522D;
+        }
+
+        .btn-desafio.activo {
+            background-color: #A0522D;
+            color: white;
+            border-color: #7B3B1E;
+        }
+
+        /* ─────────────────────────── FOOTER CON BOTÓN FINALIZAR ─────────────────────────── */
+        .footer-fijo {
+            margin-top: 32px;
+            padding-top: 16px;
+            border-top: 1px solid var(--color-borde-suave);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* ─────────────────────────── MODAL ─────────────────────────── */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(44, 31, 14, 0.55);
+            z-index: 999;
+        }
+
+        .overlay.show {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-calificacion {
+            background: white;
+            border: 3px solid var(--color-borde);
+            border-radius: 8px;
+            font-family: 'Libre Baskerville', serif;
+            box-shadow: 0 6px 24px rgba(44, 31, 14, 0.35);
+            padding: 32px 36px;
+            min-width: 320px;
+            text-align: center;
+            color: white;
+        }
+
+        .modal-calificacion h2 {
+            font-size: 1.2rem;
+            margin-bottom: 16px;
+            font-weight: 700;
+        }
+
+        .modal-calificacion .info-alumno {
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+            color: currentColor;
+        }
+
+        .modal-calificacion .info-alumno strong {
+            font-weight: 700;
+        }
+
+        .modal-calificacion .nota-grande {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 20px 0;
+        }
+
+        .modal-calificacion .detalles {
+            font-size: 0.85rem;
+            margin-top: 16px;
+            line-height: 1.6;
+        }
+
+        .modal-cerrar-btn {
+            background: transparent;
+            border: 2px solid currentColor;
+            color: inherit;
+            padding: 8px 20px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.2s;
+        }
+
+        .modal-cerrar-btn:hover {
+            opacity: 0.8;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Estados de nota */
+        .modal-calificacion.nota-10 {
+            background: var(--verde-perfecta);
+        }
+        .modal-calificacion.nota-9 {
+            background: var(--verde-light);
+        }
+        .modal-calificacion.nota-8 {
+            background: var(--azul-dark);
+        }
+        .modal-calificacion.nota-7 {
+            background: var(--azul-light);
+        }
+        .modal-calificacion.nota-6 {
+            background: var(--naranja-dark);
+        }
+        .modal-calificacion.nota-5 {
+            background: var(--naranja-light);
+            color: #333;
+        }
+        .modal-calificacion.nota-bajo {
+            background: var(--rojo-fallo);
+        }
+
+        /* Hidden */
+        .hidden {
+            display: none !important;
+        }
+
+        /* ─────────────────────────── RESPONSIVE ─────────────────────────── */
+        @media (max-width: 600px) {
+            .ficha-container {
+                padding: 20px;
+            }
+            .titulo-ficha {
+                font-size: 1.3rem;
+            }
+            .tipos-bar {
+                flex-direction: column;
+            }
+            .tipo-badge {
+                width: 100%;
+                text-align: center;
+            }
+            .topbar {
+                flex-direction: column;
+                gap: 16px;
+            }
+            .score-box {
+                justify-content: center;
+            }
+            .footer-fijo {
+                flex-direction: column;
+                gap: 12px;
+            }
+            .btn-finalizar {
+                width: 100%;
+                margin-left: 0;
+            }
+        }
+
+        /* MathJax */
+        .mjx-container {
+            display: inline-block;
+            margin: 0 2px;
+            overflow: visible;
+        }
+    </style>
+</head>
+<body>
+    <div class="cabecera">
+        Material elaborado por <strong>Marta L Letona S.</strong> — Basado en el trabajo de <strong>Javier Cayetano</strong>
+    </div>
+
+    <div class="ficha-container">
+        <!-- TÍTULO PRINCIPAL -->
+        <h1 class="titulo-ficha">Dominio de Funciones</h1>
+
+        <!-- TOPBAR Y BADGES (se muestran después de iniciar) -->
+        <div id="topbar" class="topbar">
+            <div class="nombre-alumno">
+                <label for="nombre-input" style="font-weight: 700; margin-right: 6px;">Alumno:</label>
+                <input type="text" id="nombre-input" class="nombre-campo" placeholder="Escribe tu nombre" oninput="actualizarNombre()">
+            </div>
+            <div class="score-box">
+                <div class="score-item">
+                    <span class="pos" id="pts-pos">0</span>
+                    <span style="font-size: 0.75rem;">Tipos completados</span>
+                </div>
+                <div class="score-item">
+                    <span class="pos" id="pts-total">0.00</span>
+                    <span style="font-size: 0.75rem;">Puntos</span>
+                </div>
+            </div>
+            <button class="btn-desafio" id="btn-desafio-toggle" onclick="toggleDesafio()">🎯 Desafío</button>
+        </div>
+
+        <div id="tipos-bar" class="tipos-bar">
+            <div class="tipo-badge" id="badge-polinomicas" onclick="elegirTipo('polinomicas')">Polinómicas</div>
+            <div class="tipo-badge" id="badge-racionales" onclick="elegirTipo('racionales')">Racionales</div>
+            <div class="tipo-badge" id="badge-logaritmicas" onclick="elegirTipo('logaritmicas')">Logarítmicas</div>
+            <div class="tipo-badge" id="badge-raices" onclick="elegirTipo('raices')">Raíces (Orden Par)</div>
+            <div class="tipo-badge" id="badge-exponenciales" onclick="elegirTipo('exponenciales')">Exponenciales</div>
+        </div>
+
+        <!-- SECCIÓN DE DESAFÍO (oculta por defecto) -->
+        <div id="seccion-desafio" class="hidden" style="margin-bottom: 20px;">
+            <div style="background: #fff9e6; border: 2px solid #D4AF37; border-radius: 6px; padding: 16px; margin-bottom: 16px;">
+                <h3 style="color: #A0522D; margin-bottom: 8px; font-family: 'Libre Baskerville', serif;">⭐ Modo Desafío</h3>
+                <p style="color: var(--color-texto-suave); font-size: 0.9rem; margin: 0;">
+                    Ejercicios avanzados que combinan varios tipos de funciones. Completa 5 desafíos correctamente para obtener el distintivo <strong>"Nivel Experto"</strong>.
+                </p>
+            </div>
+            <div class="progreso-desafio" style="text-align: center; margin-bottom: 16px;">
+                <span id="desafio-contador" style="font-size: 1.1rem; font-weight: 700; color: var(--color-acento);">0 / 5</span>
+            </div>
+        </div>
+
+        <!-- ZONA DE EJERCICIO -->
+        <div id="zona-ejercicio">
+            <div class="ejercicio-card">
+                <div class="enunciado" id="enunciado"></div>
+                <div class="opciones" id="opciones"></div>
+            </div>
+
+            <div class="feedback" id="feedback" aria-live="polite"></div>
+
+            <div class="botones-accion">
+                <button class="btn-primario" id="btn-corregir" onclick="corregir()">Comprobar →</button>
+                <button class="btn-primario" id="btn-siguiente" style="display: none;" onclick="siguienteEjercicio()">Siguiente →</button>
+            </div>
+        </div>
+
+        <!-- FOOTER CON BOTÓN FINALIZAR -->
+        <div id="footer" class="footer-fijo">
+            <div></div>
+            <button class="btn-finalizar" onclick="mostrarModalCalificacion()">Finalizar y Calificar</button>
+        </div>
+    </div>
+
+    <!-- MODAL DE CALIFICACIÓN -->
+    <div id="overlay" class="overlay">
+        <div class="modal-calificacion" id="modal-calificacion">
+            <h2>📊 Resumen de Actividad</h2>
+            <div class="info-alumno">
+                <strong id="modal-nombre"></strong>
+            </div>
+            <div class="nota-grande" id="modal-nota">10</div>
+            <div class="info-alumno" id="modal-fecha"></div>
+            <div class="info-alumno" id="modal-hora"></div>
+            <div class="info-alumno" id="modal-tiempo"></div>
+            <div class="detalles" id="modal-detalles"></div>
+            <button class="modal-cerrar-btn" onclick="cerrarModal()">Cerrar</button>
+        </div>
+    </div>
+
+    <script>
+        // ─────────────────────────── DEFINICIONES DE TIPOS ─────────────────────────── 
+        const TIPOS = ['polinomicas', 'racionales', 'logaritmicas', 'raices', 'exponenciales'];
+        const NOMBRE_TIPO = {
+            polinomicas: 'Polinómicas',
+            racionales: 'Racionales',
+            logaritmicas: 'Logarítmicas',
+            raices: 'Raíces (Orden Par)',
+            exponenciales: 'Exponenciales'
+        };
+
+        // ─────────────────────────── ESTADO ─────────────────────────── 
+        const state = {
+            nombreAlumno: '',
+            puntos: 0,
+            fallos: 0,
+            tiposCompletados: new Set(),
+            tipoActual: null,
+            inicio: null,
+            respondido: false,
+            seleccionada: null,
+            ejerciciosMostrados: {}, // para contar cuántos de cada tipo se han visto
+            modoDesafio: false,
+            desafiosCompletados: 0,
+            nivelExperto: false
+        };
+
+        // Inicializar contador de ejercicios por tipo
+        TIPOS.forEach(t => {
+            state.ejerciciosMostrados[t] = 0;
+        });
+
+        // ─────────────────────────── GENERADOR DE EJERCICIOS ─────────────────────────── 
+        // Formatea coeficiente: si es 1 lo omite, si es -1 deja solo el signo
+        function coef(n) {
+            if (n === 1) return '';
+            if (n === -1) return '-';
+            return n.toString();
+        }
+        // Construye el término lineal "ax - b" con signos correctos (sin 1x, sin - -)
+        function lineal(a, b) {
+            let s = coef(a) + 'x';
+            if (b > 0) s += ' - ' + b;
+            else if (b < 0) s += ' + ' + (-b);
+            return s; // si b===0 no añade nada
+        }
+        // Construye "b - ax" con signos correctos
+        function linealInv(b, a) {
+            return b + ' - ' + coef(a) + 'x';
+        }
+        // Función auxiliar: genera coeficientes que dan solución entera para ax + b = 0
+        function raizEntera() {
+            // Elegimos primero la raíz (entera), luego construimos los coeficientes
+            const raiz = [-3, -2, -1, 1, 2, 3, 4, 5][Math.floor(Math.random() * 8)];
+            const a = [1, 2, 3][Math.floor(Math.random() * 3)];
+            const b = a * raiz; // Así ax - b = 0 => x = raiz
+            return { raiz, a, b };
+        }
+        // Construye el LaTeX de una raíz de índice par: si es 2, raíz cuadrada normal
+        // (sin mostrar el índice, como es habitual); si es otro índice (4, 6...), lo
+        // muestra desplazado bien arriba con \uproot (y \leftroot para separarlo un
+        // poco a la izquierda) y así no choque visualmente con el símbolo de la raíz.
+        function raizLatex(indice, contenido) {
+            if (indice === 2) {
+                return `\\sqrt{${contenido}}`;
+            }
+            return `\\sqrt[\\leftroot{2}\\uproot{10}${indice}]{${contenido}}`;
+        }
+
+        const generadores = {
+            polinomicas: () => {
+                const variantes = [
+                    () => {
+                        const a = Math.floor(Math.random() * 4) + 1;
+                        const b = Math.floor(Math.random() * 8) + 1;
+                        const c = Math.floor(Math.random() * 9) + 1;
+                        return {
+                            enunciado: `Halla el dominio de \\(f(x) = ${coef(a)}x^2 + ${coef(b)}x + ${c}\\).`,
+                            correcta: 'ℝ',
+                            opciones: ['ℝ', '[0, +∞)', 'ℝ - {0}', '(-∞, 0) ∪ (0, +∞)'],
+                            explicacion: `Las funciones polinómicas están definidas para todos los números reales. Su dominio es \\(\\mathbb{R}\\).`
+                        };
+                    },
+                    () => {
+                        const a = Math.floor(Math.random() * 3) + 1;
+                        const b = Math.floor(Math.random() * 8) + 1;
+                        const c = Math.floor(Math.random() * 8) + 1;
+                        const d = Math.floor(Math.random() * 8) + 1;
+                        return {
+                            enunciado: `Halla el dominio de \\(f(x) = ${coef(a)}x^3 + ${coef(b)}x^2 + ${coef(c)}x + ${d}\\).`,
+                            correcta: 'ℝ',
+                            opciones: ['ℝ', '[0, +∞)', 'ℝ - {0}', '(-∞, 0)'],
+                            explicacion: `Las funciones polinómicas (de cualquier grado) están definidas para todos los reales. Dominio: \\(\\mathbb{R}\\).`
+                        };
+                    },
+                    () => {
+                        const a = Math.floor(Math.random() * 5) + 2;
+                        const b = Math.floor(Math.random() * 6) + 1;
+                        return {
+                            enunciado: `Halla el dominio de \\(f(x) = ${coef(a)}x^4 - ${coef(b)}x^2 + 1\\).`,
+                            correcta: 'ℝ',
+                            opciones: ['ℝ', '[0, +∞)', '[1, +∞)', 'ℝ - {0, 1}'],
+                            explicacion: `Toda función polinómica tiene dominio \\(\\mathbb{R}\\), sin importar su grado.`
+                        };
+                    },
+                    () => {
+                        const b = Math.floor(Math.random() * 7) + 2;
+                        return {
+                            enunciado: `Halla el dominio de \\(f(x) = (x - ${b})^2 + ${Math.floor(Math.random()*5)+1}\\).`,
+                            correcta: 'ℝ',
+                            opciones: ['ℝ', `[${b}, +∞)`, `(${b}, +∞)`, `ℝ - {${b}}`],
+                            explicacion: `Aunque está escrita en forma de vértice, sigue siendo un polinomio. Dominio: \\(\\mathbb{R}\\).`
+                        };
+                    }
+                ];
+                return variantes[Math.floor(Math.random() * variantes.length)]();
+            },
+
+            racionales: () => {
+                const variantes = [
+                    () => {
+                        const { raiz, a, b } = raizEntera();
+                        const c = Math.floor(Math.random() * 5) + 1;
+                        return {
+                            enunciado: `Halla el dominio de \\(f(x) = \\dfrac{${coef(c)}x + ${Math.floor(Math.random()*5)+1}}{${lineal(a, b)}}\\).`,
+                            correcta: `ℝ - {${raiz}}`,
+                            opciones: [`ℝ - {${raiz}}`, `ℝ - {${-raiz}}`, `(${raiz}, +∞)`, '[0, +∞)'],
+                            explicacion: `El denominador se anula cuando \\(${lineal(a, b)} = 0 \\Rightarrow x = ${raiz}\\). Dominio: \\(\\mathbb{R} - \\{${raiz}\\}\\).`
+                        };
+                    },
+                    () => {
+                        // Denominador cuadrático con dos raíces: x^2 - (p+q)x + pq
+                        let p = [1, 2, 3][Math.floor(Math.random()*3)];
+                        let q = [-1, -2, -3, 4, 5][Math.floor(Math.random()*5)];
+                        if (p === q) q = q + 1;
+                        const suma = p + q;
+                        const prod = p * q;
+                        const signoSuma = suma >= 0 ? `- ${coef(suma)}x` : `+ ${coef(-suma)}x`;
+                        const signoProd = prod >= 0 ? `+ ${prod}` : `- ${-prod}`;
+                        const menor = Math.min(p, q), mayor = Math.max(p, q);
+                        return {
+                            enunciado: `Halla el dominio de \\(f(x) = \\dfrac{1}{x^2 ${signoSuma} ${signoProd}}\\).`,
+                            correcta: `ℝ - {${menor}, ${mayor}}`,
+                            opciones: [`ℝ - {${menor}, ${mayor}}`, `ℝ - {${menor}}`, `ℝ - {${mayor}}`, 'ℝ'],
+                            explicacion: `Factorizamos el denominador: \\((x - ${p})(x - ${q})\\). Se anula en \\(x = ${p}\\) y \\(x = ${q}\\). Dominio: \\(\\mathbb{R} - \\{${menor}, ${mayor}\\}\\).`
+                        };
+                    },
+                    () => {
+                        const r = [2, 3, 4, 5][Math.floor(Math.random()*4)];
+                        return {
+                            enunciado: `Halla el dominio de \\(f(x) = \\dfrac{x + 1}{x - ${r}}\\).`,
+                            correcta: `ℝ - {${r}}`,
+                            opciones: [`ℝ - {${r}}`, `ℝ - {${-r}}`, `ℝ - {-1}`, '[0, +∞)'],
+                            explicacion: `El denominador se anula en \\(x = ${r}\\). Dominio: \\(\\mathbb{R} - \\{${r}\\}\\).`
+                        };
+                    },
+                    () => {
+                        // Denominador x^2 + k (sin raíces reales) => dominio R
+                        const k = Math.floor(Math.random() * 5) + 1;
+                        return {
+                            enunciado: `Halla el dominio de \\(f(x) = \\dfrac{2x}{x^2 + ${k}}\\).`,
+                            correcta: 'ℝ',
+                            opciones: ['ℝ', `ℝ - {${k}}`, `ℝ - {0}`, `[${k}, +∞)`],
+                            explicacion: `El denominador \\(x^2 + ${k}\\) nunca se anula (siempre es ≥ ${k} > 0). Dominio: \\(\\mathbb{R}\\).`
+                        };
+                    }
+                ];
+                return variantes[Math.floor(Math.random() * variantes.length)]();
+            },
+
+            logaritmicas: () => {
+                const variantes = [
+                    () => {
+                        const { raiz, a, b } = raizEntera();
+                        // Símbolo del logaritmo a mostrar (log en base 2 o ln neperiano);
+                        // el dominio no depende de la base, así que ambos son válidos aquí.
+                        const simbolos = ['\\log_{2}', '\\ln'];
+                        const baseName = simbolos[Math.floor(Math.random() * simbolos.length)];
+                        return {
+                            enunciado: `Halla el dominio de \\(f(x) = ${baseName}(${lineal(a, b)})\\).`,
+                            correcta: `(${raiz}, +∞)`,
+                            opciones: [`(${raiz}, +∞)`, `[${raiz}, +∞)`, `(${-raiz}, +∞)`, 'ℝ'],
+                            explicacion: `El argumento del logaritmo debe ser positivo: \\(${lineal(a, b)} > 0 \\Rightarrow x > ${raiz}\\). Dominio: \\((${raiz}, +\\infty)\\).`
+                        };
+                    },
+                    () => {
+                        // log(b - ax) => dominio (-inf, raiz)
+                        const raiz = [1, 2, 3, 4][Math.floor(Math.random()*4)];
+                        const a = [1, 2][Math.floor(Math.random()*2)];
+                        const b = a * raiz;
+                        return {
+                            enunciado: `Halla el dominio de \\(f(x) = \\log(${linealInv(b, a)})\\).`,
+                            correcta: `(-∞, ${raiz})`,
+                            opciones: [`(-∞, ${raiz})`, `(${raiz}, +∞)`, `(-∞, ${raiz}]`, 'ℝ'],
+                            explicacion: `El argumento debe ser positivo: \\(${linealInv(b, a)} > 0 \\Rightarrow x < ${raiz}\\). Dominio: \\((-\\infty, ${raiz})\\).`
+                        };
+                    },
+                    () => {
+                        // ln(x^2 + k) con k>0 => dominio R
+                        const k = Math.floor(Math.random()*4)+1;
+                        return {
+                            enunciado: `Halla el dominio de \\(f(x) = \\ln(x^2 + ${k})\\).`,
+                            correcta: 'ℝ',
+                            opciones: ['ℝ', `(${k}, +∞)`, '(0, +∞)', `ℝ - {0}`],
+                            explicacion: `El argumento \\(x^2 + ${k}\\) siempre es positivo (≥ ${k}). Por tanto el dominio es \\(\\mathbb{R}\\).`
+                        };
+                    },
+                    () => {
+                        // log(x) simple
+                        return {
+                            enunciado: `Halla el dominio de \\(f(x) = \\log(x)\\).`,
+                            correcta: '(0, +∞)',
+                            opciones: ['(0, +∞)', '[0, +∞)', 'ℝ', 'ℝ - {0}'],
+                            explicacion: `El logaritmo solo admite argumentos positivos: \\(x > 0\\). Dominio: \\((0, +\\infty)\\).`
+                        };
+                    }
+                ];
+                return variantes[Math.floor(Math.random() * variantes.length)]();
+            },
+
+            raices: () => {
+                const variantes = [
+                    () => {
+                        // raíz par de (ax - b)  => [raiz, +inf)
+                        const { raiz, a, b } = raizEntera();
+                        const indice = [2, 4][Math.floor(Math.random()*2)];
+                        return {
+                            enunciado: `Halla el dominio de \\(f(x) = ${raizLatex(indice, lineal(a, b))}\\).`,
+                            correcta: `[${raiz}, +∞)`,
+                            opciones: [`[${raiz}, +∞)`, `(${raiz}, +∞)`, `[${-raiz}, +∞)`, 'ℝ'],
+                            explicacion: `En una raíz de índice par el radicando debe ser ≥ 0: \\(${lineal(a, b)} \\geq 0 \\Rightarrow x \\geq ${raiz}\\). Dominio: \\([${raiz}, +\\infty)\\).`
+                        };
+                    },
+                    () => {
+                        // raíz par de (b - ax) => (-inf, raiz]
+                        const raiz = [1, 2, 3, 4][Math.floor(Math.random()*4)];
+                        const a = [1, 2][Math.floor(Math.random()*2)];
+                        const b = a * raiz;
+                        const indice = [2, 4][Math.floor(Math.random()*2)];
+                        return {
+                            enunciado: `Halla el dominio de \\(f(x) = ${raizLatex(indice, linealInv(b, a))}\\).`,
+                            correcta: `(-∞, ${raiz}]`,
+                            opciones: [`(-∞, ${raiz}]`, `(-∞, ${raiz})`, `[${raiz}, +∞)`, 'ℝ'],
+                            explicacion: `El radicando (índice par) debe ser ≥ 0: \\(${linealInv(b, a)} \\geq 0 \\Rightarrow x \\leq ${raiz}\\). Dominio: \\((-\\infty, ${raiz}]\\).`
+                        };
+                    },
+                    () => {
+                        // raíz par de (x^2 + k) => R (siempre positivo)
+                        const k = Math.floor(Math.random()*4)+1;
+                        return {
+                            enunciado: `Halla el dominio de \\(f(x) = \\sqrt{x^2 + ${k}}\\).`,
+                            correcta: 'ℝ',
+                            opciones: ['ℝ', `[${k}, +∞)`, '[0, +∞)', `ℝ - {0}`],
+                            explicacion: `El radicando \\(x^2 + ${k}\\) siempre es positivo. Dominio: \\(\\mathbb{R}\\).`
+                        };
+                    },
+                    () => {
+                        // raíz cuadrada de x^2 - k^2 => (-inf,-k] U [k,+inf)
+                        const k = [1, 2, 3][Math.floor(Math.random()*3)];
+                        return {
+                            enunciado: `Halla el dominio de \\(f(x) = \\sqrt{x^2 - ${k*k}}\\).`,
+                            correcta: `(-∞, -${k}] ∪ [${k}, +∞)`,
+                            opciones: [`(-∞, -${k}] ∪ [${k}, +∞)`, `[${k}, +∞)`, `[-${k}, ${k}]`, 'ℝ'],
+                            explicacion: `Necesitamos \\(x^2 - ${k*k} \\geq 0 \\Rightarrow x^2 \\geq ${k*k} \\Rightarrow x \\leq -${k}\\) o \\(x \\geq ${k}\\). Dominio: \\((-\\infty, -${k}] \\cup [${k}, +\\infty)\\).`
+                        };
+                    }
+                ];
+                return variantes[Math.floor(Math.random() * variantes.length)]();
+            },
+
+            exponenciales: () => {
+                const variantes = [
+                    () => {
+                        const base = [2, 3, 5][Math.floor(Math.random()*3)];
+                        const a = Math.floor(Math.random()*4)+1;
+                        return {
+                            enunciado: `Halla el dominio de \\(f(x) = ${base}^{${coef(a)}x}\\).`,
+                            correcta: 'ℝ',
+                            opciones: ['ℝ', '[0, +∞)', '(0, +∞)', `ℝ - {0}`],
+                            explicacion: `Las funciones exponenciales \\(a^x\\) están definidas para todos los reales. Dominio: \\(\\mathbb{R}\\).`
+                        };
+                    },
+                    () => {
+                        const a = Math.floor(Math.random()*3)+1;
+                        const b = Math.floor(Math.random()*5)+1;
+                        return {
+                            enunciado: `Halla el dominio de \\(f(x) = ${"e"}^{${coef(a)}x + ${b}}\\).`,
+                            correcta: 'ℝ',
+                            opciones: ['ℝ', '(0, +∞)', `[-${b}, +∞)`, '[0, +∞)'],
+                            explicacion: `El exponente \\(${coef(a)}x + ${b}\\) está definido para todo \\(x\\), y la exponencial nunca tiene restricciones. Dominio: \\(\\mathbb{R}\\).`
+                        };
+                    },
+                    () => {
+                        const base = [2, 3][Math.floor(Math.random()*2)];
+                        const k = Math.floor(Math.random()*4)+1;
+                        return {
+                            enunciado: `Halla el dominio de \\(f(x) = ${base}^{x^2 - ${k}}\\).`,
+                            correcta: 'ℝ',
+                            opciones: ['ℝ', `[${k}, +∞)`, '[0, +∞)', `ℝ - {${k}}`],
+                            explicacion: `El exponente \\(x^2 - ${k}\\) es un polinomio definido para todo \\(x\\). La exponencial no añade restricciones. Dominio: \\(\\mathbb{R}\\).`
+                        };
+                    },
+                    () => {
+                        const base = [2, 3][Math.floor(Math.random()*2)];
+                        const c = Math.floor(Math.random()*5)+1;
+                        return {
+                            enunciado: `Halla el dominio de \\(f(x) = ${c} \\cdot ${base}^{-x}\\).`,
+                            correcta: 'ℝ',
+                            opciones: ['ℝ', '(0, +∞)', '[0, +∞)', `ℝ - {0}`],
+                            explicacion: `La función exponencial está definida para todos los reales, incluido el exponente negativo. Dominio: \\(\\mathbb{R}\\).`
+                        };
+                    }
+                ];
+                return variantes[Math.floor(Math.random() * variantes.length)]();
+            }
+        };
+
+        let ejActual = null;
+
+        // ─────────────────────────── GENERADOR DE DESAFÍOS ─────────────────────────── 
+        const generadoresDesafio = {
+            exponencial_fraccional: () => {
+                const base = [2, 3][Math.floor(Math.random() * 2)];
+                const num = Math.floor(Math.random() * 3) + 1;
+                const denom = [1, 2, 3, 4][Math.floor(Math.random() * 4)];
+                
+                return {
+                    enunciado: `Halla el dominio de \\(f(x) = ${base}^{\\frac{${coef(num)}x + 1}{x - ${denom}}}\\).`,
+                    correcta: `ℝ - {${denom}}`,
+                    opciones: [
+                        `ℝ - {${denom}}`,
+                        `ℝ - {-${denom}}`,
+                        `(${denom}, +∞)`,
+                        '(0, +∞)'
+                    ],
+                    explicacion: `La exponencial está definida para todo real, pero la fracción del exponente no existe cuando el denominador es cero: \\(x - ${denom} = 0 \\Rightarrow x = ${denom}\\). Dominio: \\(\\mathbb{R} - \\{${denom}\\}\\).`
+                };
+            },
+            raiz_logaritmo: () => {
+                // sqrt(log(ax-b)) >= 0 requiere log(ax-b) >= 0 => ax-b >= 1 => x >= (b+1)/a
+                // Construimos para que (b+1)/a sea entero
+                const raiz = [2, 3, 4, 5][Math.floor(Math.random() * 4)];
+                const a = [1, 2][Math.floor(Math.random() * 2)];
+                const b = a * raiz - 1; // así (b+1)/a = raiz
+                
+                return {
+                    enunciado: `Halla el dominio de \\(f(x) = \\sqrt{\\log(${lineal(a, b)})}\\).`,
+                    correcta: `[${raiz}, +∞)`,
+                    opciones: [
+                        `[${raiz}, +∞)`,
+                        `(${raiz}, +∞)`,
+                        `[1, +∞)`,
+                        '(0, +∞)'
+                    ],
+                    explicacion: `Para la raíz cuadrada necesitamos \\(\\log(${lineal(a, b)}) \\geq 0\\), es decir \\(${lineal(a, b)} \\geq 1 \\Rightarrow x \\geq ${raiz}\\). Dominio: \\([${raiz}, +\\infty)\\).`
+                };
+            },
+            fraccional_raiz: () => {
+                // 1/sqrt(ax-b): radicando > 0 (estricto, está en denominador) => x > b/a
+                const raiz = [1, 2, 3, 4][Math.floor(Math.random() * 4)];
+                const a = [1, 2][Math.floor(Math.random() * 2)];
+                const b = a * raiz;
+                
+                return {
+                    enunciado: `Halla el dominio de \\(f(x) = \\frac{1}{\\sqrt{${lineal(a, b)}}}\\).`,
+                    correcta: `(${raiz}, +∞)`,
+                    opciones: [
+                        `(${raiz}, +∞)`,
+                        `[${raiz}, +∞)`,
+                        `(0, +∞)`,
+                        `ℝ - {${raiz}}`
+                    ],
+                    explicacion: `La raíz está en el denominador, así que el radicando debe ser estrictamente positivo: \\(${lineal(a, b)} > 0 \\Rightarrow x > ${raiz}\\). Dominio: \\((${raiz}, +\\infty)\\).`
+                };
+            },
+            logaritmo_cociente: () => {
+                // log(ax/(x-b)) con b>0: argumento>0 cuando x<0 o x>b
+                const a = Math.floor(Math.random() * 2) + 1;
+                const b = [2, 3, 4][Math.floor(Math.random() * 3)];
+                
+                return {
+                    enunciado: `Halla el dominio de \\(f(x) = \\log\\left(\\frac{${coef(a)}x}{x - ${b}}\\right)\\).`,
+                    correcta: `(-∞, 0) ∪ (${b}, +∞)`,
+                    opciones: [
+                        `(-∞, 0) ∪ (${b}, +∞)`,
+                        `(${b}, +∞)`,
+                        `(0, ${b})`,
+                        `ℝ - {0, ${b}}`
+                    ],
+                    explicacion: `El cociente \\(\\frac{${coef(a)}x}{x - ${b}}\\) debe ser positivo. Estudiando signos: es positivo cuando \\(x < 0\\) o cuando \\(x > ${b}\\). Dominio: \\((-\\infty, 0) \\cup (${b}, +\\infty)\\).`
+                };
+            },
+            exponencial_raiz_par: () => {
+                // base^(raiz par de (ax-b)): radicando >= 0 => x >= b/a
+                const raiz = [1, 2, 3][Math.floor(Math.random() * 3)];
+                const a = [1, 2][Math.floor(Math.random() * 2)];
+                const b = a * raiz;
+                const base = [2, 3][Math.floor(Math.random() * 2)];
+                const indice = [2, 4][Math.floor(Math.random() * 2)];
+                
+                return {
+                    enunciado: `Halla el dominio de \\(f(x) = ${base}^{${raizLatex(indice, lineal(a, b))}}\\).`,
+                    correcta: `[${raiz}, +∞)`,
+                    opciones: [
+                        `[${raiz}, +∞)`,
+                        `(${raiz}, +∞)`,
+                        `[0, +∞)`,
+                        'ℝ'
+                    ],
+                    explicacion: `La raíz de índice par exige radicando ≥ 0: \\(${lineal(a, b)} \\geq 0 \\Rightarrow x \\geq ${raiz}\\). La exponencial no añade restricciones. Dominio: \\([${raiz}, +\\infty)\\).`
+                };
+            },
+            log_raiz_cuadrada: () => {
+                // log(sqrt(x-a)): necesita x-a > 0 (porque sqrt debe ser >0 para el log) => x > a
+                const a = [1, 2, 3, 4][Math.floor(Math.random() * 4)];
+                
+                return {
+                    enunciado: `Halla el dominio de \\(f(x) = \\ln\\left(\\sqrt{x - ${a}}\\right)\\).`,
+                    correcta: `(${a}, +∞)`,
+                    opciones: [
+                        `(${a}, +∞)`,
+                        `[${a}, +∞)`,
+                        `(0, +∞)`,
+                        'ℝ'
+                    ],
+                    explicacion: `La raíz exige \\(x - ${a} \\geq 0\\), pero el logaritmo exige que su argumento (la raíz) sea estrictamente positivo, lo que requiere \\(x - ${a} > 0 \\Rightarrow x > ${a}\\). Dominio: \\((${a}, +\\infty)\\).`
+                };
+            },
+            racional_raiz_denominador: () => {
+                // (x+1)/sqrt(b-ax): radicando > 0 => x < b/a
+                const raiz = [1, 2, 3, 4][Math.floor(Math.random() * 4)];
+                const a = [1, 2][Math.floor(Math.random() * 2)];
+                const b = a * raiz;
+                
+                return {
+                    enunciado: `Halla el dominio de \\(f(x) = \\frac{x + 1}{\\sqrt{${linealInv(b, a)}}}\\).`,
+                    correcta: `(-∞, ${raiz})`,
+                    opciones: [
+                        `(-∞, ${raiz})`,
+                        `(-∞, ${raiz}]`,
+                        `(${raiz}, +∞)`,
+                        'ℝ'
+                    ],
+                    explicacion: `La raíz en el denominador debe tener radicando estrictamente positivo: \\(${linealInv(b, a)} > 0 \\Rightarrow x < ${raiz}\\). Dominio: \\((-\\infty, ${raiz})\\).`
+                };
+            },
+            suma_log_raiz: () => {
+                // sqrt(x-a) + log(x): necesita x-a>=0 Y x>0 => x >= a (si a>=1)
+                const a = [1, 2, 3][Math.floor(Math.random() * 3)];
+                
+                return {
+                    enunciado: `Halla el dominio de \\(f(x) = \\sqrt{x - ${a}} + \\log(x)\\).`,
+                    correcta: `[${a}, +∞)`,
+                    opciones: [
+                        `[${a}, +∞)`,
+                        `(${a}, +∞)`,
+                        `(0, +∞)`,
+                        'ℝ'
+                    ],
+                    explicacion: `Necesitamos ambas condiciones: la raíz exige \\(x \\geq ${a}\\) y el logaritmo \\(x > 0\\). La intersección es \\(x \\geq ${a}\\). Dominio: \\([${a}, +\\infty)\\).`
+                };
+            }
+        };
+
+        // ─────────────────────────── FUNCIONES AUXILIARES ─────────────────────────── 
+        function mezclar(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function pick(array) {
+            return array[Math.floor(Math.random() * array.length)];
+        }
+
+        // ─────────────────────────── INICIAR FICHA ─────────────────────────── 
+        // Se inicia automáticamente al cargar la página (ver window.addEventListener('load', ...) más abajo)
+        function iniciarAutomatico() {
+            state.nombreAlumno = '';
+            state.inicio = Date.now();
+            const ordenInicial = mezclar([...TIPOS]);
+            generarEjercicio(ordenInicial[0]);
+        }
+
+        // Actualiza el nombre del alumno desde el campo de la topbar
+        function actualizarNombre() {
+            const campo = document.getElementById('nombre-input');
+            state.nombreAlumno = campo.value.trim();
+            // Quitar marca de error en cuanto escriba algo
+            if (state.nombreAlumno) {
+                campo.classList.remove('campo-error');
+            }
+        }
+
+        // ─────────────────────────── GENERAR EJERCICIO ─────────────────────────── 
+        function generarEjercicio(tipo = null) {
+            if (!tipo) {
+                tipo = pick(TIPOS);
+            }
+
+            state.tipoActual = tipo;
+            state.respondido = false;
+            state.seleccionada = null;
+
+            ejActual = generadores[tipo]();
+            state.ejerciciosMostrados[tipo]++;
+
+            // Mezclar opciones
+            ejActual.opciones = mezclar(ejActual.opciones);
+
+            // Renderizar
+            document.getElementById('enunciado').innerHTML = ejActual.enunciado;
+            const opcionesDiv = document.getElementById('opciones');
+            opcionesDiv.innerHTML = '';
+
+            ejActual.opciones.forEach((opcion, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'opcion-btn';
+                btn.textContent = opcion;
+                btn.onclick = () => seleccionar(idx);
+                btn.id = `opcion-${idx}`;
+                opcionesDiv.appendChild(btn);
+            });
+
+            // Limpiar feedback
+            const feedbackDiv = document.getElementById('feedback');
+            feedbackDiv.classList.remove('show', 'correcto', 'incorrecto');
+            feedbackDiv.innerHTML = '';
+
+            // Habilitar botones
+            document.getElementById('btn-corregir').disabled = false;
+            document.getElementById('btn-corregir').style.display = 'inline-block';
+            document.getElementById('btn-siguiente').style.display = 'none';
+
+            // Actualizar badges
+            actualizarBadges();
+
+            // Re-render MathJax
+            if (window.MathJax && typeof MathJax.typesetPromise === 'function') {
+                MathJax.typesetPromise().catch(err => console.log(err));
+            }
+        }
+
+        // ─────────────────────────── SELECCIONAR OPCIÓN ─────────────────────────── 
+        function seleccionar(idx) {
+            if (state.respondido) return;
+
+            // Limpiar selección anterior
+            document.querySelectorAll('.opcion-btn').forEach(b => b.classList.remove('seleccionada'));
+
+            // Marcar nueva selección
+            state.seleccionada = idx;
+            document.getElementById(`opcion-${idx}`).classList.add('seleccionada');
+        }
+
+        // ─────────────────────────── CORREGIR RESPUESTA ─────────────────────────── 
+        function corregir() {
+            if (state.modoDesafio) {
+                corregirConDesafio();
+            } else {
+                corregirNormal();
+            }
+        }
+
+        function corregirNormal() {
+
+            state.respondido = true;
+
+            const btns = document.querySelectorAll('.opcion-btn');
+            btns.forEach(b => b.disabled = true);
+
+            const tipo = state.tipoActual;
+            const puntoPorTipo = 10 / TIPOS.length; // 2 puntos cada uno
+
+            // ── Caso: no se eligió ninguna opción → cuenta como error ──
+            if (state.seleccionada === null) {
+                btns.forEach(b => {
+                    if (b.textContent.trim() === ejActual.correcta) {
+                        b.classList.add('correcta');
+                    }
+                });
+
+                state.fallos += 1;
+                state.puntos = Math.max(0, state.puntos - 1);
+
+                mostrarFeedback(false,
+                    `❌ <strong>No has seleccionado ninguna opción.</strong> Se cuenta como error (−1 punto).<br><br>` +
+                    `<div class="solucion">${ejActual.explicacion}</div>`
+                );
+
+                actualizarPuntuacion();
+                actualizarBadges();
+                document.getElementById('btn-corregir').disabled = true;
+                const btnSig0 = document.getElementById('btn-siguiente');
+                btnSig0.textContent = 'Hacer otro ejercicio →';
+                btnSig0.style.display = 'inline-block';
+                return;
+            }
+
+            const elegida = ejActual.opciones[state.seleccionada];
+            const ok = elegida === ejActual.correcta;
+
+            btns[state.seleccionada].classList.remove('seleccionada');
+
+            if (ok) {
+                btns[state.seleccionada].classList.add('correcta');
+                const yaCompletado = state.tiposCompletados.has(tipo);
+
+                state.tiposCompletados.add(tipo);
+
+                if (!yaCompletado) {
+                    state.puntos += puntoPorTipo;
+                    const pendientes = TIPOS.filter(t => !state.tiposCompletados.has(t));
+
+                    if (pendientes.length > 0) {
+                        mostrarFeedback(true,
+                            `✅ <strong>¡Correcto!</strong> <strong style="color: var(--color-correcto);">+${puntoPorTipo} puntos</strong> — Tipo <strong>${NOMBRE_TIPO[tipo]}</strong> completado 🎉<br><br>` +
+                            `<div class="solucion">${ejActual.explicacion}</div><br>` +
+                            `<em>Siguiente: practica <strong>${NOMBRE_TIPO[pendientes[0]]}</strong> para seguir sumando puntos.</em>`
+                        );
+                    } else {
+                        mostrarFeedback(true,
+                            `✅ <strong>¡Correcto!</strong> <strong style="color: var(--color-correcto);">+${puntoPorTipo} puntos</strong> — ¡Has completado todos los tipos! 🏆<br><br>` +
+                            `<div class="solucion">${ejActual.explicacion}</div>`
+                        );
+                    }
+                } else {
+                    mostrarFeedback(true,
+                        `✅ <strong>¡Correcto!</strong> — Este tipo ya estaba completado, <strong>no suma puntos adicionales</strong>.<br><br>` +
+                        `<div class="solucion">${ejActual.explicacion}</div>`
+                    );
+                }
+            } else {
+                btns[state.seleccionada].classList.add('incorrecta');
+                btns.forEach(b => {
+                    if (b.textContent.trim() === ejActual.correcta) {
+                        b.classList.add('correcta');
+                    }
+                });
+
+                state.fallos += 1;
+                const tipoYaCompletado = state.tiposCompletados.has(tipo);
+
+                if (!tipoYaCompletado) {
+                    state.puntos = Math.max(0, state.puntos - 1); // Penalización de -1
+
+                    mostrarFeedback(false,
+                        `❌ <strong>Incorrecto.</strong> Se resta 1 punto de tu puntuación.<br><br>` +
+                        `<div class="solucion">${ejActual.explicacion}</div>`
+                    );
+                } else {
+                    // Guard simétrico al de los aciertos: si el tipo ya estaba superado,
+                    // fallar en una práctica voluntaria posterior no debe erosionar la nota ya ganada.
+                    mostrarFeedback(false,
+                        `❌ <strong>Incorrecto.</strong> — Este tipo ya estaba completado, <strong>no se resta puntuación adicional</strong>.<br><br>` +
+                        `<div class="solucion">${ejActual.explicacion}</div>`
+                    );
+                }
+            }
+
+            actualizarPuntuacion();
+            actualizarBadges();
+            document.getElementById('btn-corregir').disabled = true;
+
+            const pendientes = TIPOS.filter(t => !state.tiposCompletados.has(t));
+            const btnSig = document.getElementById('btn-siguiente');
+            if (ok && pendientes.length > 0) {
+                btnSig.textContent = `Practicar ${NOMBRE_TIPO[pendientes[0]]} →`;
+            } else {
+                btnSig.textContent = 'Hacer otro ejercicio →';
+            }
+            btnSig.style.display = 'inline-block';
+        }
+
+        // ─────────────────────────── MOSTRAR FEEDBACK ─────────────────────────── 
+        function mostrarFeedback(esCorrect, texto) {
+            const feedbackDiv = document.getElementById('feedback');
+            feedbackDiv.innerHTML = texto;
+            feedbackDiv.className = 'feedback show ' + (esCorrect ? 'correcto' : 'incorrecto');
+
+            if (window.MathJax && typeof MathJax.typesetPromise === 'function') {
+                MathJax.typesetPromise().catch(err => console.log(err));
+            }
+        }
+
+        // ─────────────────────────── MOSTRAR LOGRO EXPERTO ─────────────────────────── 
+        function mostrarLogro() {
+            const logroDiv = document.getElementById('feedback');
+            logroDiv.innerHTML = `
+                <div style="text-align: center; padding: 24px; background: linear-gradient(135deg, #D4AF37 0%, #FFD700 100%); border-radius: 8px; border: 3px solid #8B7500;">
+                    <h2 style="color: #8B4513; font-size: 2rem; margin: 0; font-family: 'Libre Baskerville', serif;">🏆 NIVEL EXPERTO 🏆</h2>
+                    <p style="color: #654321; font-size: 1.1rem; margin: 12px 0; font-weight: 700;">Has completado los 5 Desafíos Avanzados</p>
+                    <p style="color: #654321; font-size: 0.95rem; margin: 8px 0;">¡Demostraste total dominio de las funciones complejas!</p>
+                </div>
+            `;
+            logroDiv.className = 'feedback show correcto';
+            
+            document.getElementById('btn-siguiente').style.display = 'none';
+            document.getElementById('btn-corregir').style.display = 'none';
+        }
+
+        // ─────────────────────────── SIGUIENTE EJERCICIO ─────────────────────────── 
+        function siguienteEjercicio() {
+            if (state.modoDesafio) {
+                if (state.desafiosCompletados === 5) {
+                    mostrarLogro();
+                } else {
+                    generarDesafio();
+                }
+            } else {
+                const pendientes = TIPOS.filter(t => !state.tiposCompletados.has(t));
+                if (pendientes.length > 0) {
+                    generarEjercicio(pendientes[0]);
+                } else {
+                    generarEjercicio();
+                }
+            }
+        }
+
+        // ─────────────────────────── ELEGIR TIPO ─────────────────────────── 
+        function elegirTipo(tipo) {
+            generarEjercicio(tipo);
+        }
+
+        // ─────────────────────────── ACTUALIZAR PUNTUACIÓN ─────────────────────────── 
+        function actualizarPuntuacion() {
+            document.getElementById('pts-pos').textContent = state.tiposCompletados.size;
+            document.getElementById('pts-total').textContent = state.puntos.toFixed(2);
+        }
+
+        // ─────────────────────────── ACTUALIZAR BADGES ─────────────────────────── 
+        function actualizarBadges() {
+            TIPOS.forEach(t => {
+                const el = document.getElementById('badge-' + t);
+                if (!el) return;
+
+                if (state.tiposCompletados.has(t)) {
+                    el.classList.add('completado');
+                    el.classList.remove('activo');
+                } else {
+                    el.classList.toggle('activo', t === state.tipoActual);
+                }
+            });
+        }
+
+        // ─────────────────────────── MODAL DE CALIFICACIÓN ─────────────────────────── 
+        function mostrarModalCalificacion() {
+            // Sincronizar y validar el nombre del alumno
+            const campo = document.getElementById('nombre-input');
+            state.nombreAlumno = campo.value.trim();
+
+            if (!state.nombreAlumno) {
+                // Recordar al alumno que introduzca su nombre
+                campo.classList.add('campo-error');
+                campo.focus();
+                // Reiniciar la animación de sacudida si se vuelve a pulsar
+                campo.style.animation = 'none';
+                void campo.offsetWidth; // forzar reflujo
+                campo.style.animation = '';
+
+                const aviso = document.getElementById('feedback');
+                aviso.innerHTML = `⚠️ <strong>Antes de calificar, escribe tu nombre</strong> en el campo superior "Alumno".`;
+                aviso.className = 'feedback show incorrecto';
+                return;
+            }
+
+            const nota = Math.min(10, Math.max(0, state.puntos));
+            const ahora = new Date();
+            const fecha = `${String(ahora.getDate()).padStart(2, '0')}/${String(ahora.getMonth() + 1).padStart(2, '0')}/${ahora.getFullYear()}`;
+            const hora = `${String(ahora.getHours()).padStart(2, '0')}:${String(ahora.getMinutes()).padStart(2, '0')}:${String(ahora.getSeconds()).padStart(2, '0')}`;
+            
+            const tiempoMs = Date.now() - state.inicio;
+            const minutos = Math.floor(tiempoMs / 60000);
+            const segundos = Math.floor((tiempoMs % 60000) / 1000);
+            const tiempo = `${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`;
+
+            document.getElementById('modal-nombre').textContent = state.nombreAlumno;
+            document.getElementById('modal-nota').textContent = nota.toFixed(1);
+            document.getElementById('modal-fecha').innerHTML = `<strong>Fecha:</strong> ${fecha}`;
+            document.getElementById('modal-hora').innerHTML = `<strong>Hora:</strong> ${hora}`;
+            document.getElementById('modal-tiempo').innerHTML = `<strong>Tiempo:</strong> ${tiempo}`;
+            
+            const detallesHTML = `
+                <strong>Tipos completados:</strong> ${state.tiposCompletados.size}/${TIPOS.length}<br>
+                <strong>Fallos:</strong> ${state.fallos}
+                ${state.nivelExperto ? '<br><strong style="color: #FFD700;">⭐ Logro Desbloqueado: Nivel Experto</strong>' : ''}
+            `;
+            document.getElementById('modal-detalles').innerHTML = detallesHTML;
+
+            // Determinar clase de color
+            const modal = document.getElementById('modal-calificacion');
+            modal.className = 'modal-calificacion';
+            
+            if (nota === 10) {
+                modal.classList.add('nota-10');
+                document.body.classList.add('nota-perfecta');
+            } else if (nota >= 9) {
+                modal.classList.add('nota-9');
+            } else if (nota >= 8) {
+                modal.classList.add('nota-8');
+            } else if (nota >= 7) {
+                modal.classList.add('nota-7');
+            } else if (nota >= 6) {
+                modal.classList.add('nota-6');
+            } else if (nota >= 5) {
+                modal.classList.add('nota-5');
+            } else {
+                modal.classList.add('nota-bajo');
+            }
+
+            document.getElementById('overlay').classList.add('show');
+        }
+
+        // ─────────────────────────── CERRAR MODAL ─────────────────────────── 
+        function cerrarModal() {
+            document.getElementById('overlay').classList.remove('show');
+            document.body.classList.remove('nota-perfecta');
+
+            // Reset completo
+            state.puntos = 0;
+            state.fallos = 0;
+            state.tiposCompletados = new Set();
+            state.tipoActual = null;
+            state.inicio = Date.now();
+            state.respondido = false;
+            state.seleccionada = null;
+
+            TIPOS.forEach(t => {
+                state.ejerciciosMostrados[t] = 0;
+            });
+
+            actualizarPuntuacion();
+
+            TIPOS.forEach(t => {
+                const el = document.getElementById('badge-' + t);
+                if (el) {
+                    el.classList.remove('completado', 'activo');
+                }
+            });
+
+            // Si se estaba en Modo Desafío, seguir generando desafíos (coherente con la
+            // interfaz, que sigue mostrando la sección de Desafío); si no, un tipo aleatorio.
+            if (state.modoDesafio) {
+                generarDesafio();
+            } else {
+                const ordenInicial = mezclar([...TIPOS]);
+                generarEjercicio(ordenInicial[0]);
+            }
+        }
+
+        // Iniciar automáticamente cuando carga la página
+        window.addEventListener('load', iniciarAutomatico);
+
+        // ─────────────────────────── TOGGLE DESAFÍO ─────────────────────────── 
+        function toggleDesafio() {
+            state.modoDesafio = !state.modoDesafio;
+            
+            if (state.modoDesafio) {
+                document.getElementById('btn-desafio-toggle').classList.add('activo');
+                document.getElementById('tipos-bar').classList.add('hidden');
+                document.getElementById('seccion-desafio').classList.remove('hidden');
+                state.desafiosCompletados = 0;
+                state.nivelExperto = false;
+                generarDesafio();
+            } else {
+                document.getElementById('btn-desafio-toggle').classList.remove('activo');
+                document.getElementById('tipos-bar').classList.remove('hidden');
+                document.getElementById('seccion-desafio').classList.add('hidden');
+                const ordenInicial = mezclar([...TIPOS]);
+                generarEjercicio(ordenInicial[0]);
+            }
+        }
+
+        // ─────────────────────────── GENERAR DESAFÍO ─────────────────────────── 
+        function generarDesafio() {
+            state.respondido = false;
+            state.seleccionada = null;
+
+            const tiposDesafio = Object.keys(generadoresDesafio);
+            const tipoDesafio = tiposDesafio[Math.floor(Math.random() * tiposDesafio.length)];
+
+            ejActual = generadoresDesafio[tipoDesafio]();
+
+            // Mezclar opciones
+            ejActual.opciones = mezclar(ejActual.opciones);
+
+            // Renderizar
+            document.getElementById('enunciado').innerHTML = ejActual.enunciado;
+            const opcionesDiv = document.getElementById('opciones');
+            opcionesDiv.innerHTML = '';
+
+            ejActual.opciones.forEach((opcion, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'opcion-btn';
+                btn.textContent = opcion;
+                btn.onclick = () => seleccionar(idx);
+                btn.id = `opcion-${idx}`;
+                opcionesDiv.appendChild(btn);
+            });
+
+            // Limpiar feedback
+            const feedbackDiv = document.getElementById('feedback');
+            feedbackDiv.classList.remove('show', 'correcto', 'incorrecto');
+            feedbackDiv.innerHTML = '';
+
+            // Habilitar botones
+            document.getElementById('btn-corregir').disabled = false;
+            document.getElementById('btn-corregir').style.display = 'inline-block';
+            document.getElementById('btn-siguiente').style.display = 'none';
+
+            // Re-render MathJax
+            if (window.MathJax && typeof MathJax.typesetPromise === 'function') {
+                MathJax.typesetPromise().catch(err => console.log(err));
+            }
+        }
+
+        // ─────────────────────────── CORREGIR CON DESAFÍO ─────────────────────────── 
+        function corregirConDesafio() {
+            if (state.respondido) return;
+
+            state.respondido = true;
+
+            const btns = document.querySelectorAll('.opcion-btn');
+            btns.forEach(b => b.disabled = true);
+
+            // ── Caso: no se eligió ninguna opción → cuenta como error ──
+            if (state.seleccionada === null) {
+                btns.forEach(b => {
+                    if (b.textContent.trim() === ejActual.correcta) {
+                        b.classList.add('correcta');
+                    }
+                });
+
+                mostrarFeedback(false,
+                    `❌ <strong>No has seleccionado ninguna opción.</strong> Se cuenta como error.<br><br>` +
+                    `<div class="solucion">${ejActual.explicacion}</div>`
+                );
+
+                document.getElementById('btn-corregir').disabled = true;
+                const btnSig0 = document.getElementById('btn-siguiente');
+                btnSig0.textContent = 'Reintentar →';
+                btnSig0.style.display = 'inline-block';
+                return;
+            }
+
+            const elegida = ejActual.opciones[state.seleccionada];
+            const ok = elegida === ejActual.correcta;
+
+            btns[state.seleccionada].classList.remove('seleccionada');
+
+            if (ok) {
+                btns[state.seleccionada].classList.add('correcta');
+                state.desafiosCompletados += 1;
+                
+                const mensaje = state.desafiosCompletados === 5
+                    ? `✅ <strong>¡Correcto!</strong> <strong style="color: var(--color-correcto);">+1 Desafío</strong> — ¡Completaste el Modo Desafío! 🏆 ¡Nivel Experto Alcanzado!<br><br><div class="solucion">${ejActual.explicacion}</div>`
+                    : `✅ <strong>¡Correcto!</strong> <strong style="color: var(--color-correcto);">+1 Desafío</strong> (${state.desafiosCompletados}/5)<br><br><div class="solucion">${ejActual.explicacion}</div>`;
+                
+                mostrarFeedback(true, mensaje);
+
+                document.getElementById('desafio-contador').textContent = `${state.desafiosCompletados} / 5`;
+
+                if (state.desafiosCompletados === 5) {
+                    state.nivelExperto = true;
+                }
+            } else {
+                btns[state.seleccionada].classList.add('incorrecta');
+                btns.forEach(b => {
+                    if (b.textContent.trim() === ejActual.correcta) {
+                        b.classList.add('correcta');
+                    }
+                });
+
+                mostrarFeedback(false,
+                    `❌ <strong>Incorrecto.</strong><br><br>` +
+                    `<div class="solucion">${ejActual.explicacion}</div>`
+                );
+            }
+
+            document.getElementById('btn-corregir').disabled = true;
+            
+            const btnSig = document.getElementById('btn-siguiente');
+            if (ok) {
+                if (state.desafiosCompletados === 5) {
+                    btnSig.textContent = '🏆 Ver Logro →';
+                } else {
+                    btnSig.textContent = 'Siguiente Desafío →';
+                }
+            } else {
+                btnSig.textContent = 'Reintentar →';
+            }
+            btnSig.style.display = 'inline-block';
+        }
+    </script>
+</body>
+</html>
