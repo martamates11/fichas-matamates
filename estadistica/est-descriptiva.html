@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Estadística Descriptiva</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;600;700;900&display=swap" rel="stylesheet">
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(', '\\)']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="mathjax-script" defer></script>
+<style>
+:root{
+  --color-fondo:#F5F0E8;
+  --color-fondo-card:#FDFAF3;
+  --color-texto:#2C1F0E;
+  --color-texto-suave:#6B4F35;
+  --color-acento:#A0522D;
+  --color-acento-hover:#7B3B1E;
+  --color-borde:#C9A96E;
+  --color-borde-suave:#E0CEAA;
+  --color-cabecera:#3B2510;
+  --color-cabecera-txt:#F5EDD8;
+  --color-correcto:#2E6B3E;
+  --color-incorrecto:#8B1A1A;
+  --color-neutro:#E8DFC8;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Lato',sans-serif;font-size:16px;background:var(--color-fondo);color:var(--color-texto);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:0 0 60px;transition:background-color .6s;}
+body.nota-perfecta{background:#EAF3EA;}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+.w{width:100%;max-width:800px;padding:0 16px;}
+
+/* CABECERA */
+.cabecera{width:100%;background:var(--color-cabecera);color:var(--color-cabecera-txt);text-align:center;padding:10px 20px;border-bottom:3px solid var(--color-borde);font-size:.78rem;letter-spacing:.05em;font-weight:700;}
+.cabecera small{display:block;font-weight:400;opacity:.85;font-size:.72rem;margin-top:2px;letter-spacing:.02em;}
+
+.ficha-container{max-width:800px;width:100%;margin:26px auto 0;padding:0 16px;}
+
+.alumno-banner{background:var(--color-neutro);border:1.5px solid var(--color-borde);border-radius:6px;padding:12px 20px;margin-bottom:18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.alumno-banner label{font-family:'Libre Baskerville',serif;font-size:.85rem;font-weight:700;color:var(--color-texto-suave);white-space:nowrap;}
+.alumno-banner input{flex:1;min-width:180px;border:1.5px solid var(--color-borde);border-radius:4px;padding:8px 12px;font-size:.95rem;font-family:'Lato',sans-serif;font-weight:700;background:var(--color-fondo-card);color:var(--color-texto);outline:none;}
+.alumno-banner input:focus{border-color:var(--color-acento);}
+.alumno-banner.asignado{background:var(--color-cabecera);border-color:var(--color-borde);}
+.alumno-banner.asignado .avatar{width:40px;height:40px;border-radius:50%;background:rgba(245,237,216,.18);display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;color:var(--color-cabecera-txt);flex-shrink:0;font-family:'Libre Baskerville',serif;}
+.alumno-banner.asignado .nombre{font-family:'Libre Baskerville',serif;font-weight:700;color:var(--color-cabecera-txt);font-size:1rem;}
+.alumno-banner.asignado .sub{font-size:.75rem;color:rgba(245,237,216,.65);}
+.nombre-aviso{width:100%;font-size:.8rem;font-weight:700;color:var(--color-incorrecto);margin-top:2px;display:none;}
+.nombre-aviso.vis{display:block;}
+
+.titulo-ficha{font-family:'Libre Baskerville',serif;font-size:1.7rem;text-align:center;color:var(--color-texto);margin-bottom:2px;}
+.titulo-ficha::after{content:'';display:block;width:70px;height:3px;background:var(--color-borde);margin:10px auto 0;border-radius:2px;}
+.subtitulo-ficha{text-align:center;color:var(--color-texto-suave);font-size:.92rem;font-weight:600;margin:10px 0 20px;}
+.creditos{text-align:center;font-size:.72rem;color:var(--color-texto-suave);opacity:.85;margin-bottom:14px;font-style:italic;}
+
+/* TABS */
+.modo-tabs{display:flex;background:var(--color-fondo-card);border:1.5px solid var(--color-borde);border-radius:6px;overflow:hidden;margin-bottom:16px;}
+.modo-tab{flex:1;padding:11px 8px;text-align:center;font-size:.82rem;font-weight:700;font-family:'Lato',sans-serif;cursor:pointer;border:none;background:transparent;color:var(--color-texto-suave);transition:.2s;}
+.modo-tab+.modo-tab{border-left:1.5px solid var(--color-borde-suave);}
+.modo-tab.active{background:var(--color-acento);color:#FDFAF3;}
+.modo-tab:hover:not(.active){background:var(--color-neutro);}
+
+.formula-strip{background:var(--color-neutro);border:1px solid var(--color-borde-suave);border-radius:6px;padding:10px 18px;margin-bottom:16px;display:flex;flex-wrap:wrap;align-items:center;gap:5px 18px;font-size:.85rem;color:var(--color-texto-suave);}
+.formula-strip .ftag{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;width:100%;opacity:.7;margin-bottom:1px;font-weight:700;}
+
+/* MARCADOR EN UNA LÍNEA */
+.marcador-linea{display:flex;align-items:center;gap:12px;background:var(--color-fondo-card);border:1.5px solid var(--color-borde);border-radius:30px;padding:8px 18px;margin-bottom:10px;flex-wrap:wrap;}
+.marcador-linea .m-label{font-family:'Libre Baskerville',serif;font-size:.82rem;font-weight:700;color:var(--color-texto-suave);white-space:nowrap;}
+.marcador-linea .m-barra{flex:1;min-width:90px;height:9px;background:var(--color-neutro);border-radius:6px;overflow:hidden;}
+.marcador-linea .m-barra-fill{height:100%;background:var(--color-acento);border-radius:6px;transition:width .5s;width:0%;}
+.marcador-linea .m-valor{font-weight:900;font-size:.95rem;color:var(--color-acento);white-space:nowrap;min-width:70px;text-align:right;}
+.marcador-linea.maximo .m-valor{color:var(--color-correcto);}
+.marcador-linea.maximo .m-barra-fill{background:var(--color-correcto);}
+
+.sesion-linea{text-align:center;font-size:.76rem;color:var(--color-texto-suave);margin-bottom:16px;}
+
+/* TIPOS BADGES */
+.tipos-wrap{background:var(--color-fondo-card);border:1.5px solid var(--color-borde);border-radius:6px;padding:16px 18px;margin-bottom:16px;}
+.tipos-titulo{font-family:'Libre Baskerville',serif;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--color-texto-suave);margin-bottom:10px;}
+.tipos-grupo-lbl{font-size:.78rem;font-weight:700;color:var(--color-acento);margin:10px 0 6px;font-family:'Libre Baskerville',serif;}
+.tipos-grupo-lbl:first-of-type{margin-top:0;}
+.tipos-grid{display:flex;flex-wrap:wrap;gap:7px;}
+.tipo-badge{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;font-size:.76rem;font-weight:700;border:1.5px solid var(--color-borde-suave);background:var(--color-fondo);color:var(--color-texto-suave);cursor:pointer;transition:.2s;font-family:'Lato',sans-serif;}
+.tipo-badge:hover{border-color:var(--color-acento);color:var(--color-acento);}
+.tipo-badge.activo{background:var(--color-acento);color:#FDFAF3;border-color:var(--color-acento);}
+.tipo-badge.completado{background:var(--color-correcto);color:#fff;border-color:var(--color-correcto);}
+.tipo-badge.completado:hover{color:#fff;}
+
+/* TARJETA EJERCICIO */
+.ejercicio-card{background:var(--color-fondo-card);border:1.5px solid var(--color-borde);border-left:4px solid var(--color-acento);border-radius:6px;padding:24px 24px 20px;margin-bottom:16px;box-shadow:0 3px 12px rgba(44,31,14,.10);}
+.ejercicio-num{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--color-texto-suave);margin-bottom:12px;}
+.enunciado{background:var(--color-fondo);border:1.5px solid var(--color-borde-suave);border-radius:6px;padding:16px 18px;margin-bottom:16px;font-size:1rem;font-weight:600;line-height:1.8;color:var(--color-texto);}
+.enunciado .datos{color:var(--color-acento);font-weight:900;font-family:'Lato',sans-serif;}
+
+.pista-box{background:var(--color-neutro);border-left:4px solid var(--color-acento);border-radius:4px;padding:10px 16px;margin-bottom:14px;font-size:.88rem;font-weight:600;color:var(--color-texto-suave);display:none;line-height:1.7;}
+.pista-box.vis{display:block;}
+
+.resp-row{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin-bottom:8px;}
+.resp-label{font-family:'Libre Baskerville',serif;font-size:.95rem;font-weight:700;color:var(--color-texto-suave);}
+.resp-input{font-family:'Lato',sans-serif;font-size:1.4rem;font-weight:700;width:160px;text-align:center;padding:9px 8px;border:2px solid var(--color-borde);border-radius:6px;outline:none;color:var(--color-texto);background:var(--color-fondo-card);transition:.2s;}
+.resp-input:focus{border-color:var(--color-acento);background:#fff;}
+.resp-input.correcto{border-color:var(--color-correcto);background:#EAF4EC;color:var(--color-correcto);}
+.resp-input.incorrecto{border-color:var(--color-incorrecto);background:#F9EAEA;color:var(--color-incorrecto);animation:shake .3s;}
+.resp-input:disabled{opacity:.75;cursor:not-allowed;}
+.resp-hint{font-size:.74rem;font-weight:600;color:var(--color-texto-suave);text-align:center;margin-bottom:10px;}
+
+.feedback{min-height:20px;text-align:center;font-size:.98rem;font-weight:700;padding:0;border-radius:4px;margin-bottom:8px;opacity:0;transition:opacity .25s;}
+.feedback.vis{opacity:1;padding:9px 16px;}
+.feedback.ok{background:#EAF4EC;border:1.5px solid var(--color-correcto);color:var(--color-correcto);}
+.feedback.mal{background:#F9EAEA;border:1.5px solid var(--color-incorrecto);color:var(--color-incorrecto);}
+
+.resolucion{background:var(--color-neutro);border-left:4px solid var(--color-acento);border-radius:4px;padding:16px 18px;font-size:.9rem;color:var(--color-texto);margin-top:8px;display:none;line-height:1.9;}
+.resolucion.vis{display:block;}
+.res-titulo{font-family:'Libre Baskerville',serif;font-weight:700;color:var(--color-acento-hover);font-size:.92rem;margin-bottom:8px;}
+.step{margin-bottom:5px;display:flex;align-items:flex-start;gap:8px;}
+.step-num{display:inline-flex;align-items:center;justify-content:center;background:var(--color-acento);color:#fff;border-radius:50%;min-width:20px;height:20px;font-size:.68rem;font-weight:900;margin-top:2px;flex-shrink:0;}
+.formula-box{background:var(--color-fondo-card);border:1.5px solid var(--color-borde);border-radius:4px;padding:6px 12px;font-size:.85rem;margin:4px 0;display:inline-block;color:var(--color-texto);}
+.res-final{margin-top:8px;background:#EAF4EC;border-radius:4px;padding:8px 14px;font-weight:900;color:var(--color-correcto);font-size:.92rem;text-align:center;}
+
+.btns{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin-top:16px;}
+.btn{font-family:'Lato',sans-serif;font-size:.85rem;font-weight:700;border:none;border-radius:4px;padding:10px 20px;cursor:pointer;transition:.15s;letter-spacing:.02em;}
+.btn:active{transform:scale(.97);}
+.btn-primario{background:var(--color-acento);color:#FDFAF3;}
+.btn-primario:hover{background:var(--color-acento-hover);}
+.btn-secundario{background:transparent;color:var(--color-acento);border:2px solid var(--color-borde);}
+.btn-secundario:hover{border-color:var(--color-acento);color:var(--color-acento-hover);}
+.btn-siguiente{background:var(--color-correcto);color:#fff;border:none;display:none;}
+.btn-siguiente.show{display:inline-block;}
+.btn-siguiente:hover{background:#234f2d;}
+
+/* TABLA VARIANZA */
+.aviso-enter{display:inline-flex;align-items:center;gap:8px;background:var(--color-neutro);border:1.5px solid var(--color-borde);border-radius:6px;padding:7px 14px;margin-bottom:12px;font-size:.78rem;font-weight:700;color:var(--color-texto-suave);}
+.aviso-enter kbd{background:#fff;border:1.5px solid var(--color-borde);border-radius:4px;padding:2px 7px;font-size:.72rem;}
+.var-progress{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.var-step-dot{width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:900;border:2px solid var(--color-borde-suave);color:var(--color-texto-suave);background:var(--color-fondo-card);transition:.3s;}
+.var-step-dot.active{border-color:var(--color-acento);color:var(--color-acento);background:var(--color-neutro);}
+.var-step-dot.done{border-color:var(--color-correcto);color:#fff;background:var(--color-correcto);}
+.var-step-info{background:var(--color-neutro);border-radius:6px;padding:9px 14px;font-size:.82rem;font-weight:700;color:var(--color-texto-suave);margin-bottom:10px;}
+.var-tabla-wrap{overflow-x:auto;margin:14px 0;}
+.var-tabla{border-collapse:collapse;width:100%;font-size:.82rem;}
+.var-tabla th{background:var(--color-cabecera);color:var(--color-cabecera-txt);padding:8px 8px;text-align:center;font-size:.7rem;white-space:nowrap;font-weight:700;}
+.var-tabla th small{display:block;font-size:.6rem;opacity:.8;font-family:'Lato',sans-serif;font-weight:400;margin-top:1px;}
+.var-tabla td{padding:5px 5px;text-align:center;border:1px solid var(--color-borde-suave);background:var(--color-fondo);}
+.var-tabla td.fixed{background:var(--color-neutro);color:var(--color-acento-hover);font-weight:700;}
+.var-tabla tr.total-row td{background:var(--color-cabecera);color:var(--color-cabecera-txt);font-weight:900;}
+.var-tabla tr.total-row td.inp-total{background:#fff;padding:2px;}
+.var-cell{font-family:'Lato',sans-serif;font-size:.82rem;font-weight:700;text-align:center;padding:5px 4px;border:2px solid var(--color-borde);border-radius:4px;outline:none;color:var(--color-texto);background:#fff;width:100%;}
+.var-cell:focus{border-color:var(--color-acento);background:var(--color-neutro);}
+.var-cell.ok{border-color:var(--color-correcto);background:#EAF4EC;color:var(--color-correcto);}
+.var-cell.err{border-color:var(--color-incorrecto);background:#F9EAEA;animation:shake .3s;}
+.var-cell.solved{border-color:var(--color-correcto);background:#EAF4EC;color:var(--color-correcto);opacity:.85;cursor:not-allowed;}
+.zona-resultado{margin-top:10px;padding:12px 16px;background:var(--color-fondo);border:2px solid var(--color-borde-suave);border-radius:6px;display:none;}
+.zona-resultado.vis{display:block;}
+
+/* HISTORIAL */
+.historial{margin-bottom:16px;}
+.hist-tit{font-family:'Libre Baskerville',serif;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--color-texto-suave);margin-bottom:8px;text-align:center;}
+.hist-grid{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;}
+.hitem{background:var(--color-fondo-card);border-radius:4px;padding:5px 12px;font-size:.72rem;font-weight:700;border:1.5px solid;display:flex;align-items:center;gap:6px;}
+.hitem.ok{border-color:var(--color-correcto);color:var(--color-correcto);}
+.hitem.mal{border-color:var(--color-incorrecto);color:var(--color-incorrecto);}
+
+.btn-finalizar-wrap{display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:24px;}
+.btn-finalizar{font-family:'Libre Baskerville',serif;font-size:1rem;font-weight:700;background:var(--color-cabecera);color:var(--color-cabecera-txt);border:2px solid var(--color-borde);border-radius:6px;padding:13px 40px;cursor:pointer;letter-spacing:.04em;transition:.2s;}
+.btn-finalizar:hover{background:#2C1A0A;}
+.tipos-estado{font-size:.78rem;font-weight:700;color:var(--color-texto-suave);}
+
+/* OVERLAYS / MODALES */
+.overlay{position:fixed;inset:0;background:rgba(44,31,14,.55);display:none;align-items:center;justify-content:center;z-index:999;padding:20px;}
+.overlay.show{display:flex;}
+.modal-caja{border:3px solid var(--color-borde);border-radius:8px;font-family:'Libre Baskerville',serif;box-shadow:0 6px 24px rgba(44,31,14,.35);padding:28px 32px;max-width:420px;width:100%;text-align:center;background:var(--color-fondo-card);color:var(--color-texto);}
+.modal-caja h3{font-size:1.15rem;margin-bottom:12px;}
+.modal-caja p{font-family:'Lato',sans-serif;font-size:.92rem;line-height:1.7;margin-bottom:10px;color:var(--color-texto);}
+.modal-caja ul{font-family:'Lato',sans-serif;font-size:.88rem;text-align:left;margin:10px auto 14px;max-width:280px;color:var(--color-texto-suave);line-height:1.8;}
+.modal-botones{display:flex;gap:10px;justify-content:center;margin-top:16px;flex-wrap:wrap;}
+
+.modal-calificacion{border:3px solid var(--color-borde);border-radius:8px;font-family:'Libre Baskerville',serif;box-shadow:0 6px 24px rgba(44,31,14,.35);padding:32px 36px;min-width:300px;max-width:440px;width:100%;text-align:center;position:relative;overflow:hidden;}
+.rep-cerrar{position:absolute;top:10px;right:14px;background:none;border:none;font-size:1.3rem;cursor:pointer;color:inherit;opacity:.7;font-family:'Lato',sans-serif;}
+.rep-cerrar:hover{opacity:1;}
+.rep-titulo{font-size:1.3rem;font-weight:700;margin-bottom:.3rem;}
+.rep-nota{font-family:'Lato',sans-serif;font-size:3.2rem;font-weight:900;line-height:1;}
+.rep-letra{font-size:1.05rem;font-weight:700;margin-bottom:1.1rem;font-family:'Lato',sans-serif;}
+.rep-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px 18px;margin-bottom:1.1rem;font-family:'Lato',sans-serif;text-align:left;}
+.rep-grid dt{font-size:.66rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;opacity:.75;}
+.rep-grid dd{font-size:.88rem;font-weight:700;margin-top:1px;}
+.rep-sep{border-top:1.5px solid rgba(0,0,0,.15);padding-top:.9rem;margin-top:.4rem;font-family:'Lato',sans-serif;}
+.rep-int-tit{font-size:.66rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;opacity:.75;margin-bottom:6px;}
+.rep-fila{display:flex;align-items:center;gap:7px;margin-bottom:4px;flex-wrap:wrap;}
+.rep-fila-lbl{min-width:80px;font-size:.78rem;font-weight:700;}
+.pip{width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.66rem;font-weight:900;flex-shrink:0;}
+.rep-resumen{font-size:.72rem;font-weight:600;margin-top:5px;opacity:.85;}
+.rep-aviso{font-size:.72rem;font-weight:700;font-style:italic;border-top:1px solid rgba(0,0,0,.12);padding-top:.7rem;margin-top:.9rem;opacity:.85;font-family:'Lato',sans-serif;}
+.confetti-wrap{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:hidden;}
+
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes caer{to{top:110%;opacity:0;transform:rotate(720deg);}}
+@media(max-width:540px){.ejercicio-card{padding:18px 14px 16px;}.resp-input{width:130px;font-size:1.2rem;}.enunciado{font-size:.92rem;}.modo-tab{font-size:.72rem;padding:9px 4px;}.rep-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<div class="cabecera">Material elaborado por Marta L Letona S. Basado en el trabajo de Javier Cayetano</div>
+
+<div class="ficha-container">
+
+  <h1 class="titulo-ficha">Estadística Descriptiva</h1>
+  <p class="subtitulo-ficha">Media · Mediana · Moda · Desviación · Varianza · Cuartiles · CV</p>
+
+  <div id="banner-alumno"></div>
+
+  <div class="modo-tabs" role="tablist">
+    <button class="modo-tab active" id="tab-central" role="tab" aria-selected="true" onclick="irAModo('central')">📊 Tendencia Central</button>
+    <button class="modo-tab" id="tab-dispersion" role="tab" aria-selected="false" onclick="irAModo('dispersion')">📐 Dispersión</button>
+    <button class="modo-tab" id="tab-posicion" role="tab" aria-selected="false" onclick="irAModo('posicion')">📍 Posición</button>
+  </div>
+
+  <div class="formula-strip" id="formula-strip"></div>
+
+  <div class="marcador-linea" id="marcador-linea">
+    <span class="m-label">🏆 Puntuación</span>
+    <div class="m-barra"><div class="m-barra-fill" id="m-barra-fill"></div></div>
+    <span class="m-valor" id="m-valor">0,00 / 10</span>
+  </div>
+  <p class="sesion-linea" id="sesion-linea">Ejercicios: 0 · Aciertos: 0 · Fallos: 0</p>
+
+  <div class="ejercicio-card">
+    <div id="tipo-badge-actual" class="ejercicio-num">Ejercicio <span id="num-ej">1</span></div>
+    <div id="enunciado" class="enunciado" aria-live="polite">…</div>
+    <div class="pista-box" id="pista-box" aria-live="polite"></div>
+
+    <div id="zona-tabla" style="display:none;">
+      <div class="aviso-enter">⌨️ Escribe tu resultado y pulsa <kbd>Enter</kbd> para validar cada celda</div>
+      <div class="var-progress" id="var-dots"></div>
+      <div class="var-step-info" id="var-step-info" aria-live="polite"></div>
+      <div class="var-tabla-wrap" id="var-tabla-wrap"></div>
+      <div class="zona-resultado" id="zona-var2">
+        <div class="resp-row">
+          <label class="resp-label" for="inp-var2" id="lbl-var2">σ² =</label>
+          <input class="resp-input" id="inp-var2" type="text" inputmode="decimal" aria-labelledby="lbl-var2" placeholder="0,00" autocomplete="off">
+        </div>
+        <div class="resp-hint">Introduce σ² con 2 decimales (admite coma o punto)</div>
+        <div class="feedback" id="fb-var2" aria-live="polite"></div>
+      </div>
+      <div class="zona-resultado" id="zona-desv">
+        <div class="resp-row">
+          <label class="resp-label" for="inp-desv" id="lbl-desv">σ =</label>
+          <input class="resp-input" id="inp-desv" type="text" inputmode="decimal" aria-labelledby="lbl-desv" placeholder="0,00" autocomplete="off">
+        </div>
+        <div class="resp-hint">Introduce σ = √σ² con 2 decimales (admite coma o punto)</div>
+      </div>
+    </div>
+
+    <div id="zona-normal">
+      <div class="resp-row">
+        <label class="resp-label" id="resp-label" for="resp">Resultado =</label>
+        <input class="resp-input" id="resp" type="text" inputmode="decimal" aria-labelledby="resp-label" placeholder="0,00" autocomplete="off">
+      </div>
+      <div class="resp-hint" id="resp-hint">Introduce el resultado con 2 decimales (admite coma o punto)</div>
+    </div>
+
+    <div class="feedback" id="fb" aria-live="polite"></div>
+    <div class="resolucion" id="res" aria-live="polite"></div>
+
+    <div class="btns">
+      <button class="btn btn-primario" id="btn-check" onclick="comprobar()">✔ Comprobar</button>
+      <button class="btn btn-secundario" id="btn-pista" onclick="mostrarPista()">💡 Pista</button>
+      <button class="btn btn-siguiente" id="btn-next" onclick="siguienteEjercicio()">Siguiente →</button>
+      <button class="btn btn-secundario" onclick="nuevoEjercicio()">↺ Nuevo ejercicio</button>
+    </div>
+  </div>
+
+  <div class="tipos-wrap">
+    <div class="tipos-titulo" id="tipos-panel-titulo">Progreso — tipos practicados</div>
+    <div class="tipos-grupo-lbl">📊 Tendencia central</div>
+    <div class="tipos-grid" id="tipos-central"></div>
+    <div class="tipos-grupo-lbl">📐 Dispersión</div>
+    <div class="tipos-grid" id="tipos-dispersion"></div>
+    <div class="tipos-grupo-lbl">📍 Posición</div>
+    <div class="tipos-grid" id="tipos-posicion"></div>
+  </div>
+
+  <div class="historial">
+    <div class="hist-tit">Historial</div>
+    <div class="hist-grid" id="hist"></div>
+  </div>
+
+  <div class="btn-finalizar-wrap">
+    <button class="btn-finalizar" id="btn-terminar">🏁 Finalizar y Calificar</button>
+    <span id="estado-tipos" class="tipos-estado">0/9 tipos completados</span>
+  </div>
+
+</div>
+
+<!-- MODAL: aviso de tipos incompletos -->
+<div class="overlay" id="overlay-aviso">
+  <div class="modal-caja">
+    <h3>⚠ Aún faltan tipos por practicar</h3>
+    <p>Para conseguir la puntuación máxima hace falta completar con éxito al menos una vez cada tipo. Te faltan:</p>
+    <ul id="lista-faltantes"></ul>
+    <p>Puedes seguir practicando o finalizar ahora con la nota actual.</p>
+    <div class="modal-botones">
+      <button class="btn btn-secundario" onclick="cerrarAviso()">Seguir practicando</button>
+      <button class="btn btn-primario" onclick="confirmarFinalizarIncompleto()">Finalizar de todas formas</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: calificación final -->
+<div class="overlay" id="overlay-modal">
+  <div class="modal-calificacion" id="modal-calificacion"></div>
+</div>
+
+<script>
+/* ==================== CONFIGURACIÓN DE TIPOS ==================== */
+var TIPOS = ['media','mediana','moda','rango','varianza','desv','cv','cuartil','percentil'];
+var TIPOS_MODO = {central:['media','mediana','moda'],dispersion:['rango','varianza','desv','cv'],posicion:['cuartil','percentil']};
+var NOMBRE_TIPO = {
+  media:'Media aritmética', mediana:'Mediana', moda:'Moda', rango:'Rango',
+  varianza:'Varianza', desv:'Desv. típica', cv:'Coeficiente variación',
+  cuartil:'Cuartiles Q1·Q2·Q3', percentil:'Percentil'
+};
+var PUNTOS_POR_TIPO = 10 / TIPOS.length;   // ≈1,11 — constante, un tipo = un pago único
+var DEDUCCION_PISTA = 0.1;                  // constante nombrada, descuento fijo por pista
+
+var state = {
+  puntos: 0,
+  tiposCompletados: new Set(),
+  pistasUsadas: 0,
+  inicio: Date.now(),
+  respondido: false,
+  nombreAlumno: ''
+};
+var nCor=0, nErr=0, nTot=0;
+var logItems=[];
+var modoActual='central';
+var ej=null, vtd=null;
+
+/* ==================== UTILIDADES NUMÉRICAS ==================== */
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+function r2(x){return Math.round(x*100)/100;}
+function r2s(x){return r2(x).toFixed(2).replace('.', ',');}
+function shuffle(a){var b=a.slice();for(var i=b.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=b[i];b[i]=b[j];b[j]=t;}return b;}
+function genDatos(n,mn,mx){var p=[],v=mn;while(v<=mx){p.push(v);v++;}return shuffle(p).slice(0,n).sort(function(a,b){return a-b;});}
+// Parsea la entrada del alumno admitiendo coma o punto decimal
+function parseNum(str){
+  if(str===null||str===undefined)return NaN;
+  var s=String(str).trim().replace(',', '.');
+  if(s==='')return NaN;
+  return parseFloat(s);
+}
+function typeset(el){
+  if(typeof MathJax!=='undefined'&&MathJax.typesetPromise){
+    MathJax.typesetPromise([el]).catch(function(){});
+  }
+}
+
+/* ==================== GENERADORES DE DATOS (verificados con fuzzing) ==================== */
+function moda(a){
+  var f={};a.forEach(function(v){f[v]=(f[v]||0)+1;});
+  var mx=Math.max.apply(null,Object.values(f));
+  var modas=Object.keys(f).filter(function(k){return f[k]===mx;}).map(Number).sort(function(a,b){return a-b;});
+  return modas[0];
+}
+// n-1 valores distintos + 1 duplicado de uno de ellos = longitud siempre n, moda siempre única
+function genDatosModa(n){
+  var base=genDatos(n-1,1,25);
+  var mo=pick(base);
+  var datos=base.concat([mo]);
+  datos.sort(function(a,b){return a-b;});
+  return datos;
+}
+function media(a){return a.reduce(function(s,v){return s+v;},0)/a.length;}
+function mediana(a){var s=a.slice().sort(function(a,b){return a-b;});var n=s.length;return n%2===0?(s[n/2-1]+s[n/2])/2:s[Math.floor(n/2)];}
+function varianza(a){var m=media(a);return a.reduce(function(s,v){return s+(v-m)*(v-m);},0)/a.length;}
+function desvTipica(a){return Math.sqrt(varianza(a));}
+function mediaFreq(t){var n=t.reduce(function(s,r){return s+r.f;},0);return t.reduce(function(s,r){return s+r.x*r.f;},0)/n;}
+function varianzaFreq(t){var m=mediaFreq(t);var n=t.reduce(function(s,r){return s+r.f;},0);return t.reduce(function(s,r){return s+r.f*(r.x-m)*(r.x-m);},0)/n;}
+function expandirTabla(t){var a=[];t.forEach(function(r){for(var i=0;i<r.f;i++)a.push(r.x);});return a;}
+function genTablaFrecuencias(){
+  for(var k=0;k<200;k++){
+    var nv=pick([4,5,6]),base=pick([2,3,4,5,6,7,8,9,10]),paso=pick([2,3,4,5]),vals=[],fqs=[];
+    for(var i=0;i<nv;i++)vals.push(base+i*paso);
+    for(var j=0;j<nv;j++)fqs.push(pick([2,3,4,5,6]));
+    var n=fqs.reduce(function(s,f){return s+f;},0);
+    var sxf=vals.reduce(function(s,x,i){return s+x*fqs[i];},0);
+    if(sxf%n===0)return vals.map(function(x,i){return{x:x,f:fqs[i]};});
+  }
+  return [{x:4,f:3},{x:6,f:5},{x:8,f:5},{x:10,f:3}];
+}
+function cuartilInfo(arr,q){
+  var s=arr.slice().sort(function(a,b){return a-b;});var n=s.length,mid=Math.floor(n/2);
+  var inf=s.slice(0,mid),sup=s.slice(n%2===0?mid:mid+1);
+  if(q===1){var v=mediana(inf);return{val:r2(v),med:inf.length%2===0?'Media '+inf[inf.length/2-1]+' y '+inf[inf.length/2]+'='+r2s(v):'Central: '+inf[Math.floor(inf.length/2)],inf:inf,sup:sup};}
+  if(q===3){var v=mediana(sup);return{val:r2(v),med:sup.length%2===0?'Media '+sup[sup.length/2-1]+' y '+sup[sup.length/2]+'='+r2s(v):'Central: '+sup[Math.floor(sup.length/2)],inf:inf,sup:sup};}
+  var v=mediana(s);return{val:r2(v),med:n%2===0?'Media '+s[n/2-1]+' y '+s[n/2]+'='+r2s(v):'Pos.'+(Math.floor(n/2)+1)+': '+s[Math.floor(n/2)],inf:inf,sup:sup};
+}
+
+/* ==================== FÓRMULAS (con MathJax) ==================== */
+function actualizarFormulas(){
+  var fs=document.getElementById('formula-strip');
+  if(modoActual==='central')fs.innerHTML='<div class="ftag">Fórmulas · Tendencia central</div>\\(\\bar{x}=\\dfrac{\\sum x_i}{n}\\)&nbsp; &nbsp; \\(Me=\\text{Mediana}\\)&nbsp; &nbsp; \\(Mo=\\text{Moda}\\)';
+  else if(modoActual==='dispersion')fs.innerHTML='<div class="ftag">Fórmulas · Dispersión</div>\\(R=x_{max}-x_{min}\\)&nbsp; \\(\\sigma^2=\\dfrac{\\sum f_i(x_i-\\bar{x})^2}{n}\\)&nbsp; \\(\\sigma=\\sqrt{\\sigma^2}\\)&nbsp; \\(CV=\\dfrac{\\sigma}{\\bar{x}}\\)';
+  else fs.innerHTML='<div class="ftag">Fórmulas · Posición</div>\\(Q_1=\\text{primer cuartil}\\)&nbsp; \\(Q_2=\\text{segundo cuartil}\\)&nbsp; \\(Q_3=\\text{tercer cuartil}\\)';
+  typeset(fs);
+}
+
+var VMSGS=['📌 Paso 1: Completa la columna \\(x_i\\cdot f_i\\).','📌 Paso 2: Escribe el total \\(\\sum x_i f_i\\). \\(\\bar{x}=\\sum xf/n\\).','📌 Paso 3: Completa la columna \\(x_i-\\bar{x}\\).','📌 Paso 4: Completa la columna \\((x_i-\\bar{x})^2\\).','📌 Paso 5: Completa la columna \\(f_i\\cdot(x_i-\\bar{x})^2\\).','📌 Paso 6: Escribe el total \\(\\sum f_i(x_i-\\bar{x})^2\\).','📌 Paso 7: Calcula \\(\\sigma^2=\\sum f_i(x_i-\\bar{x})^2/n\\).','📌 Paso 8: Calcula \\(\\sigma=\\sqrt{\\sigma^2}\\).'];
+
+function initVtd(tabla){
+  var m=mediaFreq(tabla);
+  var filas=tabla.map(function(r){var xmf=r2(r.x-m);return{x:r.x,f:r.f,xf:r.x*r.f,xmf:xmf,xmf2:r2(xmf*xmf),fxmf2:r2(r.f*xmf*xmf)};});
+  var n=tabla.reduce(function(s,r){return s+r.f;},0);
+  var totXF=filas.reduce(function(s,r){return s+r.xf;},0);
+  var totFXMF2=r2(filas.reduce(function(s,r){return s+r.fxmf2;},0));
+  vtd={tabla:tabla,filas:filas,media:m,n:n,totXF:totXF,totFXMF2:totFXMF2,vRes:r2(varianzaFreq(tabla)),paso:0,ok:{}};
+}
+
+function renderVtd(locked){
+  var p=vtd.paso;
+  var CP={xf:0,xmf:2,xmf2:3,fxmf2:4};
+  var th='<tr><th>\\(x_i\\)</th><th>\\(f_i\\)</th><th>\\(x_i f_i\\)<small>frec. acumulada</small></th><th>\\(x_i-\\bar{x}\\)<small>desviación</small></th><th>\\((x_i-\\bar{x})^2\\)<small>desv. al cuadrado</small></th><th>\\(f_i(x_i-\\bar{x})^2\\)<small>desv. ponderada</small></th></tr>';
+  var rows='';
+  vtd.filas.forEach(function(row,ri){
+    rows+='<tr><td class="fixed">'+row.x+'</td><td class="fixed">'+row.f+'</td>';
+    ['xf','xmf','xmf2','fxmf2'].forEach(function(col){
+      var k=col+'-'+ri,cp=CP[col];
+      var etiquetaCol={xf:'x·f',xmf:'x menos media',xmf2:'x menos media al cuadrado',fxmf2:'f por x menos media al cuadrado'}[col];
+      if(vtd.ok[k])rows+='<td><input class="var-cell solved" type="text" value="'+String(row[col]).replace('.',',')+'" disabled aria-label="'+etiquetaCol+' fila '+(ri+1)+', resuelto"></td>';
+      else if(cp===p&&!locked)rows+='<td><input class="var-cell" id="vc-'+k+'" type="text" inputmode="decimal" placeholder="?" autocomplete="off" aria-label="'+etiquetaCol+' fila '+(ri+1)+'" onkeydown="vcKey(event,\''+k+'\','+ri+',\''+col+'\')"></td>';
+      else rows+='<td><input class="var-cell" type="text" placeholder="—" disabled style="opacity:.35" aria-hidden="true"></td>';
+    });
+    rows+='</tr>';
+  });
+  rows+='<tr class="total-row"><td>Σ</td><td>n='+vtd.n+'</td>';
+  if(vtd.ok['total-xf'])rows+='<td><input class="var-cell solved" type="text" value="'+String(vtd.totXF).replace('.',',')+'" disabled aria-label="total x por f, resuelto"></td>';
+  else if(p===1&&!locked)rows+='<td class="inp-total"><input class="var-cell" id="vc-total-xf" type="text" inputmode="decimal" placeholder="Σxf" aria-label="total x por f" onkeydown="vcTot(event,\'xf\')"></td>';
+  else rows+='<td><input class="var-cell" type="text" placeholder="—" disabled style="opacity:.35" aria-hidden="true"></td>';
+  rows+='<td></td><td></td>';
+  if(vtd.ok['total-fxmf2'])rows+='<td><input class="var-cell solved" type="text" value="'+String(vtd.totFXMF2).replace('.',',')+'" disabled aria-label="total ponderado, resuelto"></td>';
+  else if(p===5&&!locked)rows+='<td class="inp-total"><input class="var-cell" id="vc-total-fxmf2" type="text" inputmode="decimal" placeholder="Σf(x−x̄)²" aria-label="total ponderado" onkeydown="vcTot(event,\'fxmf2\')"></td>';
+  else rows+='<td><input class="var-cell" type="text" placeholder="—" disabled style="opacity:.35" aria-hidden="true"></td>';
+  rows+='</tr>';
+  var wrap=document.getElementById('var-tabla-wrap');
+  wrap.innerHTML='<table class="var-tabla"><thead>'+th+'</thead><tbody>'+rows+'</tbody></table>';
+  typeset(wrap);
+  var total=ej&&ej.tipo==='desv'?8:7,html='';
+  for(var i=0;i<total;i++){var cls=i<vtd.paso?'done':i===vtd.paso?'active':'';html+='<div class="var-step-dot '+cls+'">'+(i<vtd.paso?'✓':(i+1))+'</div>';}
+  document.getElementById('var-dots').innerHTML=html;
+  var info=document.getElementById('var-step-info');
+  info.innerHTML=VMSGS[Math.min(p,VMSGS.length-1)];
+  typeset(info);
+}
+
+function vcKey(e,k,ri,col){
+  if(e.key!=='Enter'&&e.key!=='Tab')return;e.preventDefault();
+  var inp=document.getElementById('vc-'+k);if(!inp)return;
+  var val=parseNum(inp.value),exp=vtd.filas[ri][col];
+  if(isNaN(val)){inp.focus();return;}
+  if(Math.abs(val-exp)<=0.05){
+    vtd.ok[k]=true;inp.className='var-cell ok';inp.disabled=true;
+    var done=vtd.filas.every(function(_,i){return vtd.ok[col+'-'+i];});
+    if(done){vtd.paso={xf:1,xmf:3,xmf2:4,fxmf2:5}[col];renderVtd(false);setTimeout(function(){var f=document.querySelector('.var-cell:not([disabled])');if(f)f.focus();},80);}
+    else{var nx=document.getElementById('vc-'+col+'-'+(ri+1));if(nx)setTimeout(function(){nx.focus();},60);}
+  }else{inp.className='var-cell err';setTimeout(function(){inp.className='var-cell';inp.value='';inp.focus();},600);}
+}
+function vcTot(e,col){
+  if(e.key!=='Enter'&&e.key!=='Tab')return;e.preventDefault();
+  var inp=document.getElementById('vc-total-'+col);if(!inp)return;
+  var val=parseNum(inp.value),exp=col==='xf'?vtd.totXF:vtd.totFXMF2;
+  if(isNaN(val)){inp.focus();return;}
+  if(Math.abs(val-exp)<=0.05){
+    vtd.ok['total-'+col]=true;inp.className='var-cell ok';inp.disabled=true;
+    if(col==='xf'){vtd.paso=2;renderVtd(false);setTimeout(function(){var f=document.querySelector('.var-cell:not([disabled])');if(f)f.focus();},80);}
+    else{vtd.paso=6;renderVtd(false);document.getElementById('zona-var2').classList.add('vis');var info=document.getElementById('var-step-info');info.innerHTML=VMSGS[6];typeset(info);setTimeout(function(){document.getElementById('inp-var2').focus();},80);}
+  }else{inp.className='var-cell err';setTimeout(function(){inp.className='var-cell';inp.value='';inp.focus();},600);}
+}
+function comprobarVar2(){
+  var inp=document.getElementById('inp-var2');
+  var val=parseNum(inp.value);if(isNaN(val)){inp.focus();return false;}
+  var ok=Math.abs(val-vtd.vRes)<=0.05;
+  var fb=document.getElementById('fb-var2');
+  if(ok){
+    inp.className='resp-input correcto';inp.disabled=true;
+    fb.textContent='✓ σ² = '+r2s(vtd.vRes)+' ¡Correcto!';fb.className='feedback vis ok';
+    if(ej.tipo==='desv'){vtd.paso=7;renderVtd(false);var info=document.getElementById('var-step-info');info.innerHTML=VMSGS[7];typeset(info);document.getElementById('zona-desv').classList.add('vis');setTimeout(function(){document.getElementById('inp-desv').focus();},80);}
+    return true;
+  }else{
+    inp.className='resp-input incorrecto';fb.textContent='✗ No es correcto. Revisa la tabla: σ² = Σf(x−x̄)² ÷ n.';fb.className='feedback vis mal';
+    setTimeout(function(){inp.className='resp-input';inp.value='';inp.disabled=false;inp.focus();fb.className='feedback';},1400);
+    return false;
+  }
+}
+
+function esTabla(){return ej&&(ej.tipo==='varianza'||ej.tipo==='desv');}
+
+/* ==================== GENERACIÓN DE EJERCICIOS POR TIPO ==================== */
+function generarDeTipo(tipo){
+  var n=pick([6,7,8,9]),datos,res,enun,label,pista,hint,pasos;
+  var sp='<span class="datos">';
+  if(tipo==='media'){
+    datos=genDatos(n,2,30);var m=media(datos),suma=datos.reduce(function(s,v){return s+v;},0);res=r2(m);
+    enun='Calcula la media aritmética \\(\\bar{x}\\):<br><br><small>Datos: </small>'+sp+'{'+datos.join(', ')+'}</span>';
+    label='\\(\\bar{x}=\\)';hint='Introduce el resultado con 2 decimales (admite coma o punto)';pista='<b>Pista:</b> Σx='+suma+', n='+n+'.';
+    pasos=['Σxᵢ = '+suma,'÷ n='+n+' → '+r2s(m),'<div class="formula-box">x̄ = '+r2s(res)+'</div>'];
+  }else if(tipo==='mediana'){
+    datos=genDatos(n,1,25);var me=mediana(datos),so=datos.slice().sort(function(a,b){return a-b;});res=r2(me);
+    enun='Calcula la mediana \\(Me\\):<br><br><small>Datos: </small>'+sp+'{'+datos.join(', ')+'}</span>';
+    label='\\(Me=\\)';hint='Introduce el resultado con 2 decimales (admite coma o punto)';pista='<b>Pista:</b> n='+n+(n%2===0?', par: media de pos.'+n/2+' y '+(n/2+1)+'.':' impar: pos.'+(Math.floor(n/2)+1)+'.');
+    var mt=n%2===0?'('+so[n/2-1]+'+'+so[n/2]+')/2='+r2s(me):'Valor: '+so[Math.floor(n/2)];
+    pasos=['Ordenados: '+so.join(', '),'n='+n+(n%2===0?' → par':' → impar'),mt,'<div class="formula-box">Me = '+r2s(res)+'</div>'];
+  }else if(tipo==='moda'){
+    datos=genDatosModa(n);var mo=moda(datos);res=mo;
+    enun='Calcula la moda \\(Mo\\):<br><br><small>Datos: </small>'+sp+'{'+datos.join(', ')+'}</span>';
+    label='\\(Mo=\\)';hint='Introduce el valor de la moda';pista='<b>Pista:</b> Cuenta cuántas veces aparece cada valor.';
+    var fq={};datos.forEach(function(v){fq[v]=(fq[v]||0)+1;});
+    var maxFreq=Math.max.apply(null,Object.values(fq));
+    var modaVal=Object.keys(fq).find(function(k){return fq[k]===maxFreq;});
+    pasos=['Frecuencias: '+Object.entries(fq).map(function(kv){return kv[0]+'(×'+kv[1]+')';}).join(', '),'Más repetido: '+modaVal,'<div class="formula-box">Mo = '+modaVal+'</div>'];
+  }else if(tipo==='rango'){
+    datos=genDatos(n,1,30);var rng=datos[datos.length-1]-datos[0];res=r2(rng);
+    enun='Calcula el rango \\(R\\):<br><br><small>Datos: </small>'+sp+'{'+datos.join(', ')+'}</span>';
+    label='\\(R=\\)';hint='Introduce el resultado';pista='<b>Pista:</b> R = '+datos[datos.length-1]+' − '+datos[0]+'.';
+    pasos=['Mín='+datos[0]+', Máx='+datos[datos.length-1],'<div class="formula-box">R = '+rng+'</div>'];
+  }else if(tipo==='varianza'){
+    var tabla=genTablaFrecuencias();datos=expandirTabla(tabla);initVtd(tabla);res=vtd.vRes;
+    enun='Calcula la varianza \\(\\sigma^2\\) completando la tabla paso a paso.<br><small>Datos: </small><span class="datos">{'+datos.join(', ')+'}</span>';
+    label='\\(\\sigma^2=\\)';hint='Introduce σ² con 2 decimales';pista=null;
+    pasos=['Tabla completada','σ² = '+r2s(vtd.totFXMF2)+' / '+vtd.n,'<div class="formula-box">σ² = '+r2s(vtd.vRes)+'</div>'];
+  }else if(tipo==='desv'){
+    var tabla=genTablaFrecuencias();datos=expandirTabla(tabla);initVtd(tabla);var sd=r2(Math.sqrt(vtd.vRes));res=sd;
+    enun='Calcula la desviación típica \\(\\sigma\\) completando la tabla paso a paso.<br><small>Datos: </small><span class="datos">{'+datos.join(', ')+'}</span>';
+    label='\\(\\sigma=\\)';hint='Introduce σ con 2 decimales';pista=null;
+    pasos=['Tabla completada','σ² = '+r2s(vtd.vRes),'<div class="formula-box">σ = √'+r2s(vtd.vRes)+' = '+r2s(sd)+'</div>'];
+  }else if(tipo==='cv'){
+    datos=genDatos(n,5,30);var mc=media(datos),sc=desvTipica(datos),cv=r2(sc/mc);res=cv;
+    enun='Calcula el coeficiente de variación \\(CV=\\sigma/\\bar{x}\\):<br><br><small>Datos: </small>'+sp+'{'+datos.join(', ')+'}</span>';
+    label='\\(CV=\\)';hint='Sin %: p.ej. 0,18';pista='<b>Pista:</b> x̄='+r2s(mc)+', σ='+r2s(sc)+'.';
+    pasos=['x̄='+r2s(mc),'σ='+r2s(sc),'<div class="formula-box">CV = '+r2s(sc)+'/'+r2s(mc)+' = '+r2s(cv)+'</div>'];
+  }else if(tipo==='cuartil'){
+    datos=genDatos(n,1,30);var qn=pick([1,2,3]),info=cuartilInfo(datos,qn);res=info.val;
+    var s=datos.slice().sort(function(a,b){return a-b;});var mid=Math.floor(n/2);
+    enun='Calcula el cuartil \\(Q_{'+qn+'}\\):<br><br><small>Datos: </small>'+sp+'{'+datos.join(', ')+'}</span>';
+    label='\\(Q_{'+qn+'}=\\)';hint='Puede ser decimal';
+    pista='<b>Pista:</b> '+(qn===2?'Q2=mediana total.':'Mitad '+(qn===1?'inferior ['+info.inf.join(', ')+']':'superior ['+info.sup.join(', ')+']')+'.');
+    pasos=['Ordenados: '+s.join(', '),n%2===0?'Inf:['+info.inf.join(', ')+'] Sup:['+info.sup.join(', ')+']':'Central='+s[mid]+' (excluido). Inf:['+info.inf.join(', ')+'] Sup:['+info.sup.join(', ')+']','Q'+qn+'='+info.med,'<div class="formula-box">Q'+qn+' = '+r2s(res)+'</div>'];
+  }else{
+    datos=genDatos(n,1,30);var pp=pick([25,50,75]),qEq=pp===25?1:pp===75?3:2;
+    var infoP=cuartilInfo(datos,qEq);res=infoP.val;
+    var s=datos.slice().sort(function(a,b){return a-b;});var mid=Math.floor(n/2);
+    enun='Calcula el percentil \\(P_{'+pp+'}\\):<br><small>(P25=Q1, P50=Mediana, P75=Q3)</small><br><br><small>Datos: </small>'+sp+'{'+datos.join(', ')+'}</span>';
+    label='\\(P_{'+pp+'}=\\)';hint='Puede ser decimal';
+    pista='<b>Pista:</b> P'+pp+'=Q'+qEq+'. '+(qEq===2?'Mediana total.':'Mitad '+(qEq===1?'inferior ['+infoP.inf.join(', ')+']':'superior ['+infoP.sup.join(', ')+']')+'.');
+    pasos=['P'+pp+'=Q'+qEq,'Ordenados: '+s.join(', '),qEq===2?'Mediana: '+infoP.med:'Mitad → '+infoP.med,'<div class="formula-box">P'+pp+' = '+r2s(res)+'</div>'];
+  }
+  ej={tipo:tipo,datos:datos,res:res,enun:enun,label:label,pista:pista,hint:hint,pasos:pasos};
+  return ej;
+}
+function generarDesvDesdeTd(){
+  vtd.paso=6;
+  vtd.filas.forEach(function(_,ri){['xf','xmf','xmf2','fxmf2'].forEach(function(col){vtd.ok[col+'-'+ri]=true;});});
+  vtd.ok['total-xf']=true;vtd.ok['total-fxmf2']=true;
+  var sd=r2(Math.sqrt(vtd.vRes));
+  ej={tipo:'desv',datos:expandirTabla(vtd.tabla),res:sd,
+    enun:'Usando la varianza que acabas de calcular, obtén la desviación típica \\(\\sigma=\\sqrt{\\sigma^2}\\).',
+    label:'\\(\\sigma=\\)',hint:'Introduce σ con 2 decimales',pista:null,
+    pasos:['σ² = '+r2s(vtd.vRes),'<div class="formula-box">σ = √'+r2s(vtd.vRes)+' = '+r2s(sd)+'</div>']};
+  return ej;
+}
+
+/* ==================== LÓGICA DE TIPOS PENDIENTES ==================== */
+function pendientes(){return TIPOS.filter(function(t){return !state.tiposCompletados.has(t);});}
+function todosOk(){return state.tiposCompletados.size>=TIPOS.length;}
+function elegirTipo(tipo){
+  if(tipo==='varianza'||tipo==='desv'){generarDeTipo(tipo);}else{generarDeTipo(tipo);}
+  renderEjercicio();
+}
+function siguienteEjercicio(){
+  if(ej&&ej.tipo==='varianza'&&!state.tiposCompletados.has('desv')){generarDesvDesdeTd();renderEjercicio();return;}
+  var p=pendientes();
+  if(p.length>0)generarDeTipo(p[0]);else generarDeTipo(pick(TIPOS));
+  renderEjercicio();
+}
+function nuevoEjercicio(){
+  if(ej&&ej.tipo==='varianza'&&!state.tiposCompletados.has('desv')){generarDesvDesdeTd();renderEjercicio();return;}
+  if(ej&&!state.tiposCompletados.has(ej.tipo)){generarDeTipo(ej.tipo);}else{siguienteEjercicio();return;}
+  renderEjercicio();
+}
+
+/* ==================== RENDER ==================== */
+function renderEjercicio(){
+  document.getElementById('num-ej').textContent=nTot+1;
+  var en=document.getElementById('enunciado');en.innerHTML=ej.enun;typeset(en);
+  document.getElementById('fb').className='feedback';document.getElementById('fb').textContent='';
+  document.getElementById('res').className='resolucion';document.getElementById('res').innerHTML='';
+  document.getElementById('pista-box').className='pista-box';
+  document.getElementById('btn-check').style.display='';
+  document.getElementById('btn-next').classList.remove('show');
+  var bp=document.getElementById('btn-pista');bp.disabled=false;bp.style.display=esTabla()||!ej.pista?'none':'';
+  state.respondido=false;
+  var usaTabla=esTabla();
+  document.getElementById('zona-tabla').style.display=usaTabla?'':'none';
+  document.getElementById('zona-normal').style.display=usaTabla?'none':'';
+  if(usaTabla){
+    document.getElementById('zona-var2').classList.remove('vis');
+    document.getElementById('zona-desv').classList.remove('vis');
+    var iv=document.getElementById('inp-var2');iv.value='';iv.className='resp-input';iv.disabled=false;
+    document.getElementById('fb-var2').className='feedback';document.getElementById('fb-var2').textContent='';
+    var idv=document.getElementById('inp-desv');idv.value='';idv.className='resp-input';idv.disabled=false;
+    renderVtd(false);
+    if(ej.tipo==='desv'&&vtd.paso===6){
+      document.getElementById('zona-var2').classList.add('vis');
+      var info=document.getElementById('var-step-info');info.innerHTML=VMSGS[6];typeset(info);
+      setTimeout(function(){document.getElementById('inp-var2').focus();},80);
+    }else{setTimeout(function(){var f=document.querySelector('.var-cell:not([disabled])');if(f)f.focus();},80);}
+  }else{
+    var inp=document.getElementById('resp');inp.value='';inp.className='resp-input';inp.disabled=false;
+    var lbl=document.getElementById('resp-label');lbl.innerHTML=ej.label;typeset(lbl);
+    document.getElementById('resp-hint').textContent=ej.hint||'Introduce el resultado con 2 decimales';
+    inp.focus();
+  }
+  var mdMap={media:'central',mediana:'central',moda:'central',rango:'dispersion',varianza:'dispersion',desv:'dispersion',cv:'dispersion',cuartil:'posicion',percentil:'posicion'};
+  if(mdMap[ej.tipo]!==modoActual){cambiarModo(mdMap[ej.tipo],true);return;}
+  actualizarBadges();
+}
+
+function mostrarPista(){
+  var pb=document.getElementById('pista-box');pb.innerHTML=ej.pista;pb.className='pista-box vis';
+  document.getElementById('btn-pista').disabled=true;
+  state.pistasUsadas++;
+  actualizarPuntuacion();
+}
+
+function comprobar(){
+  if(state.respondido)return;
+  var dado,ok;
+  if(esTabla()){
+    if(!document.getElementById('zona-var2').classList.contains('vis')){
+      document.getElementById('fb').textContent='⚠ Completa la tabla primero.';document.getElementById('fb').className='feedback vis mal';return;
+    }
+    var iv=document.getElementById('inp-var2');
+    if(!iv.disabled){var r=comprobarVar2();if(!r)return;if(ej.tipo==='desv')return;}
+    if(ej.tipo==='desv'){
+      if(!document.getElementById('zona-desv').classList.contains('vis'))return;
+      var idv=document.getElementById('inp-desv');dado=parseNum(idv.value);if(isNaN(dado)){idv.focus();return;}
+      ok=Math.abs(dado-ej.res)<=0.05;idv.className='resp-input '+(ok?'correcto':'incorrecto');idv.disabled=true;
+    }else{dado=parseNum(iv.value);ok=Math.abs(dado-ej.res)<=0.05;}
+  }else{
+    var inp=document.getElementById('resp');var raw=(inp.value||'').trim();if(!raw){inp.focus();return;}
+    dado=parseNum(raw);if(isNaN(dado))return;
+    ok=Math.abs(dado-ej.res)<=0.05;inp.className='resp-input '+(ok?'correcto':'incorrecto');inp.disabled=true;
+  }
+  state.respondido=true;nTot++;
+  var fb=document.getElementById('fb');
+  var tipo=ej.tipo;
+  var yaCompletado=state.tiposCompletados.has(tipo);
+  if(ok){
+    nCor++;
+    if(!yaCompletado){
+      state.tiposCompletados.add(tipo);
+      var pend=pendientes();
+      var msg='¡Correcto! 🎉 '+NOMBRE_TIPO[tipo]+' + '+PUNTOS_POR_TIPO.toFixed(2).replace('.',',')+' puntos.';
+      msg+= pend.length>0 ? ' Siguiente: practica <b>'+NOMBRE_TIPO[pend[0]]+'</b>.' : ' ¡Has completado los 9 tipos!';
+      fb.innerHTML=msg;
+    }else{
+      fb.innerHTML='¡Correcto! Este tipo ya estaba completado — no suma puntos adicionales, pero sigue siendo buena práctica.';
+    }
+    fb.className='feedback vis ok';
+  }else{
+    nErr++;
+    fb.textContent='Incorrecto. La respuesta era '+r2s(ej.res)+'.';fb.className='feedback vis mal';
+    var res=document.getElementById('res');res.innerHTML=construirRes();res.className='resolucion vis';typeset(res);
+    if(esTabla())renderVtd(true);
+  }
+  logItems.push({ok:ok, tipo:tipo});
+  actualizarPuntuacion();
+  actualizarBadges();
+  actualizarEstado();
+  addHist(ok);
+  document.getElementById('sesion-linea').textContent='Ejercicios: '+nTot+' · Aciertos: '+nCor+' · Fallos: '+nErr;
+  document.getElementById('btn-check').style.display='none';
+  var bn=document.getElementById('btn-next');bn.classList.add('show');bn.focus();
+}
+
+function construirRes(){
+  var h='<div class="res-titulo">📐 Resolución — '+NOMBRE_TIPO[ej.tipo]+'</div>';
+  ej.pasos.forEach(function(p,i){h+='<div class="step"><span class="step-num">'+(i+1)+'</span><div class="step-body">'+p+'</div></div>';});
+  h+='<div class="res-final">✅ Resultado: <b>'+r2s(ej.res)+'</b></div>';
+  return h;
+}
+
+/* ==================== PUNTUACIÓN Y PROGRESO ==================== */
+function actualizarPuntuacion(){
+  var bruto=state.tiposCompletados.size*PUNTOS_POR_TIPO - state.pistasUsadas*DEDUCCION_PISTA;
+  state.puntos=Math.max(0,Math.min(10,bruto));
+  var ml=document.getElementById('marcador-linea');
+  document.getElementById('m-barra-fill').style.width=(state.puntos/10*100)+'%';
+  document.getElementById('m-valor').textContent=state.puntos.toFixed(2).replace('.',',')+' / 10';
+  if(state.puntos>=10){ml.classList.add('maximo');}else{ml.classList.remove('maximo');}
+}
+function actualizarBadges(){
+  ['central','dispersion','posicion'].forEach(function(m){
+    var h='';
+    TIPOS_MODO[m].forEach(function(t){
+      var completado=state.tiposCompletados.has(t);
+      var activo=ej&&ej.tipo===t;
+      var cls=completado?'completado':(activo?'activo':'');
+      h+='<button type="button" class="tipo-badge '+cls+'" onclick="elegirTipo(\''+t+'\')">'+(completado?'✓ ':'')+NOMBRE_TIPO[t]+'</button>';
+    });
+    document.getElementById('tipos-'+m).innerHTML=h;
+  });
+  var tit=document.getElementById('tipos-panel-titulo');
+  var nc=state.tiposCompletados.size;
+  tit.textContent = todosOk() ? '✅ Los 9 tipos completados' : 'Progreso — '+nc+'/9 tipos practicados';
+}
+function actualizarEstado(){
+  var n=state.tiposCompletados.size,el=document.getElementById('estado-tipos');
+  el.textContent = n>=TIPOS.length ? '✅ Todos los tipos completados' : n+'/9 tipos completados';
+}
+function addHist(ok){
+  var el=document.createElement('div');el.className='hitem '+(ok?'ok':'mal');
+  el.innerHTML='<span>'+(ok?'✓':'✗')+'</span>'+NOMBRE_TIPO[ej.tipo]+' → '+r2s(ej.res);
+  var hist=document.getElementById('hist');
+  hist.prepend(el);
+  while(hist.children.length>18)hist.removeChild(hist.lastChild);
+}
+
+/* ==================== MODOS ==================== */
+// Sincroniza visualmente la pestaña activa (usado al avanzar automáticamente
+// de ejercicio, para que la pestaña siga mostrando el modo del tipo generado).
+// No decide qué ejercicio generar: eso lo hace quien la llama.
+function cambiarModo(nm,sil){
+  if(modoActual===nm&&!sil)return;modoActual=nm;
+  ['central','dispersion','posicion'].forEach(function(m){
+    var t=document.getElementById('tab-'+m);
+    t.classList.toggle('active',m===nm);
+    t.setAttribute('aria-selected', m===nm ? 'true':'false');
+  });
+  actualizarFormulas();
+}
+// Clic manual del alumno en una pestaña: cambia de bloque en cualquier momento,
+// generando un ejercicio DE ESE MISMO BLOQUE (pendiente si lo hay, o de práctica
+// libre si ya están los tres tipos completados), en vez de seguir el orden
+// global de tipos pendientes.
+function irAModo(nm){
+  cambiarModo(nm,true);
+  var pend=TIPOS_MODO[nm].filter(function(t){return !state.tiposCompletados.has(t);});
+  var tipo=pend.length>0?pend[0]:pick(TIPOS_MODO[nm]);
+  generarDeTipo(tipo);
+  renderEjercicio();
+}
+
+/* ==================== CRONÓMETRO Y CALIFICACIÓN ==================== */
+function tiempoTranscurridoHHMM(){
+  var ms=Date.now()-state.inicio;
+  var minutos=Math.ceil(ms/60000);
+  var hh=Math.floor(minutos/60), mm=minutos%60;
+  return String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0');
+}
+function letras(p){if(p>=10)return 'Sobresaliente 🏆';if(p>=9)return '¡Sobresaliente!';if(p>=7)return 'Notable';if(p>=6)return 'Bien';if(p>=5)return 'Suficiente';return 'Insuficiente';}
+function colorPorNota(p){
+  if(p>=10)return {bg:'#1a7a1a',txt:'#fff'};
+  if(p>=9)return {bg:'#6dbf6d',txt:'#fff'};
+  if(p>=8)return {bg:'#1a4f8a',txt:'#fff'};
+  if(p>=7)return {bg:'#5b9bd5',txt:'#fff'};
+  if(p>=6)return {bg:'#c05c00',txt:'#fff'};
+  if(p>=5)return {bg:'#f5a623',txt:'#000'};
+  return {bg:'#c0392b',txt:'#fff'};
+}
+function mkPips(arr,t){
+  if(!arr.length)return '<span style="font-size:.7rem;opacity:.75">ninguno</span>';
+  return arr.map(function(){return '<span class="pip" style="background:'+(t==='ok'?'#16a34a':'#dc2626')+';color:#fff;">'+(t==='ok'?'✓':'✗')+'</span>';}).join(' ');
+}
+function obtenerNombre(){
+  var nombre=state.nombreAlumno;
+  if(!nombre){var el=document.getElementById('input-nombre-manual');if(el)nombre=el.value.trim();}
+  return nombre;
+}
+function pedirNombreSiFalta(){
+  var nombre=obtenerNombre();
+  if(!nombre){
+    var el=document.getElementById('input-nombre-manual');
+    if(el){el.style.borderColor='var(--color-incorrecto)';el.focus();setTimeout(function(){el.style.borderColor='';},1500);}
+    var av=document.getElementById('nombre-aviso');if(av)av.classList.add('vis');
+    window.scrollTo({top:0,behavior:'smooth'});
+    return null;
+  }
+  state.nombreAlumno=nombre;
+  return nombre;
+}
+function renderModalCalificacion(){
+  var nombre=state.nombreAlumno;
+  var ahora=new Date();
+  var pct=nTot===0?0:Math.round(nCor/nTot*100);
+  var nota=state.puntos;
+  var notaStr=nota.toFixed(2).replace('.',',');
+  var col=colorPorNota(nota);
+  var titArr=['Inténtalo de nuevo','Necesitas repasar','Necesitas repasar','Sigue practicando','Sigue practicando','Suficiente','Bien, aprobado','¡Notable!','¡Muy bien!','¡Excelente trabajo!','¡Puntuación máxima! 🏆'];
+  var tit=titArr[Math.min(Math.floor(Math.max(0,nota)),10)];
+
+  var html='<div class="confetti-wrap" id="confetti-wrap"></div>'
+    +'<button class="rep-cerrar" onclick="cerrarModalCalificacion()" aria-label="Cerrar">✕</button>'
+    +'<div class="rep-titulo">'+tit+'</div>'
+    +'<div class="rep-nota">'+notaStr+'/10</div>'
+    +'<div class="rep-letra">'+letras(nota)+'</div>'
+    +'<dl class="rep-grid">'
+    +'<div><dt>Alumno/a</dt><dd>'+nombre+'</dd></div>'
+    +'<div><dt>Ficha</dt><dd>Estadística Descriptiva</dd></div>'
+    +'<div><dt>Tipos completados</dt><dd>'+state.tiposCompletados.size+'/9</dd></div>'
+    +'<div><dt>Fecha</dt><dd>'+ahora.toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'})+'</dd></div>'
+    +'<div><dt>Hora</dt><dd>'+ahora.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit',second:'2-digit'})+'</dd></div>'
+    +'<div><dt>Tiempo</dt><dd>'+tiempoTranscurridoHHMM()+'</dd></div>'
+    +'<div><dt>Ejercicios</dt><dd>'+nTot+'</dd></div>'
+    +'<div><dt>% aciertos</dt><dd>'+pct+' %</dd></div>'
+    +'</dl>'
+    +'<div class="rep-sep">'
+    +'<div class="rep-int-tit">Historial de intentos</div>'
+    +'<div class="rep-fila"><span class="rep-fila-lbl">Correctos</span>'+mkPips(logItems.filter(function(l){return l.ok;}),'ok')+'</div>'
+    +'<div class="rep-fila"><span class="rep-fila-lbl">Incorrectos</span>'+mkPips(logItems.filter(function(l){return !l.ok;}),'ko')+'</div>'
+    +'<div class="rep-resumen">'+nTot+' ejercicios · '+nCor+' correctos · '+nErr+' incorrectos</div>'
+    +'</div>'
+    +'<div class="rep-aviso">📸 Haz una captura de pantalla y entrégala en Google Classroom.</div>';
+
+  var modal=document.getElementById('modal-calificacion');
+  modal.innerHTML=html;
+  modal.style.background=col.bg;modal.style.color=col.txt;modal.style.borderColor=col.bg;
+  document.getElementById('overlay-modal').classList.add('show');
+  if(nota>=10){document.body.classList.add('nota-perfecta');lanzarConfetti();}
+}
+function cerrarModalCalificacion(){document.getElementById('overlay-modal').classList.remove('show');}
+function cerrarAviso(){document.getElementById('overlay-aviso').classList.remove('show');}
+function confirmarFinalizarIncompleto(){cerrarAviso();renderModalCalificacion();}
+
+function lanzarConfetti(){
+  var wrap=document.getElementById('confetti-wrap');if(!wrap)return;
+  var colors=['#A0522D','#C9A96E','#2E6B3E','#3B2510','#F5EDD8'];
+  for(var i=0;i<50;i++){var el=document.createElement('div');var sz=(Math.random()*7+5)+'px';
+    el.style.cssText='position:absolute;width:'+sz+';height:'+sz+';background:'+colors[Math.floor(Math.random()*colors.length)]+';border-radius:'+(Math.random()>.5?'50%':'3px')+';left:'+(Math.random()*100)+'%;top:-12px;opacity:.9;animation:caer '+(1.5+Math.random()*2)+'s '+(Math.random())+'s linear forwards';
+    wrap.appendChild(el);}
+}
+
+document.getElementById('btn-terminar').addEventListener('click', function(){
+  var nombre=pedirNombreSiFalta();
+  if(!nombre)return;
+  if(!todosOk()){
+    var lista=document.getElementById('lista-faltantes');
+    lista.innerHTML=pendientes().map(function(t){return '<li>'+NOMBRE_TIPO[t]+'</li>';}).join('');
+    document.getElementById('overlay-aviso').classList.add('show');
+    return;
+  }
+  renderModalCalificacion();
+});
+
+/* ==================== ENTER EN INPUTS ==================== */
+document.addEventListener('keydown',function(e){
+  if(e.key==='Enter'){
+    if(e.target.id==='resp'&&!state.respondido)comprobar();
+    else if(e.target.id==='inp-desv'&&!state.respondido)comprobar();
+    else if(e.target.id==='inp-var2')comprobarVar2();
+  }
+});
+
+/* ==================== INICIALIZACIÓN / BANNER ALUMNO ==================== */
+(function(){
+  var params=new URLSearchParams(window.location.search);
+  var raw=params.get('alumno')||params.get('nombre')||'';
+  var banner=document.getElementById('banner-alumno');
+  if(raw){
+    state.nombreAlumno=decodeURIComponent(raw.replace(/\+/g,' ')).trim();
+    var ini=state.nombreAlumno.split(' ').filter(Boolean).map(function(p){return p[0].toUpperCase();}).slice(0,2).join('');
+    banner.innerHTML='<div class="alumno-banner asignado"><span class="avatar">'+ini+'</span><div><div class="nombre">'+state.nombreAlumno+'</div><div class="sub">Esta ficha está asignada a ti</div></div></div>';
+  }else{
+    banner.innerHTML='<div class="alumno-banner"><label for="input-nombre-manual">Tu nombre completo</label><input id="input-nombre-manual" type="text" placeholder="Escribe nombre y apellidos" autocomplete="name"><span class="nombre-aviso" id="nombre-aviso">⚠ Escribe tu nombre antes de entregar.</span></div>';
+    setTimeout(function(){
+      var inp=document.getElementById('input-nombre-manual'),av=document.getElementById('nombre-aviso');
+      if(inp&&av)inp.addEventListener('input',function(){if(inp.value.trim())av.classList.remove('vis');});
+    },0);
+  }
+})();
+
+actualizarFormulas();
+siguienteEjercicio();
+actualizarPuntuacion();
+document.getElementById('sesion-linea').textContent='Ejercicios: 0 · Aciertos: 0 · Fallos: 0';
+</script>
+</body>
+</html>
