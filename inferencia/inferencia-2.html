@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Inferencia Estadística – EBAU Extremadura</title>
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['\\(', '\\)']],
+      displayMath: [['\\[', '\\]']]
+    },
+    options: {
+      skipHtmlTags: ['script','noscript','style','textarea','pre']
+    }
+  };
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap');
+  :root {
+    --color-fondo:#F5F0E8;--color-fondo-card:#FDFAF3;
+    --color-texto:#2C1F0E;--color-texto-suave:#6B4F35;
+    --color-acento:#A0522D;--color-acento-hover:#7B3B1E;
+    --color-borde:#C9A96E;--color-borde-suave:#E0CEAA;
+    --color-cabecera:#3B2510;--color-cabecera-txt:#F5EDD8;
+    --color-correcto:#2E6B3E;--color-incorrecto:#8B1A1A;
+    --color-neutro:#E8DFC8;
+    --verde:#2e7d32;--azul:#1a4f8a;
+    --naranja:#E67E22;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Lato',sans-serif;background:var(--color-fondo);color:var(--color-texto);min-height:100vh;}
+
+  .cabecera{background:var(--color-cabecera);color:var(--color-cabecera-txt);text-align:center;padding:14px 20px 10px;border-bottom:3px solid var(--color-borde);}
+  .cabecera .autoria{font-size:.72rem;letter-spacing:.04em;opacity:.85;margin-bottom:4px;}
+  .cabecera h1{font-family:'Libre Baskerville',serif;font-size:1.45rem;}
+  .cabecera .subtitulo{font-size:.8rem;opacity:.8;margin-top:3px;}
+
+  .top-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;background:var(--color-fondo-card);border-bottom:2px solid var(--color-borde-suave);padding:10px 20px;}
+  .nombre-box{display:flex;align-items:center;gap:8px;}
+  .nombre-box label{font-weight:700;font-size:.85rem;color:var(--color-texto-suave);}
+  .nombre-box input{border:1.5px solid var(--color-borde);border-radius:4px;padding:6px 10px;font-size:.9rem;background:var(--color-fondo);color:var(--color-texto);font-family:'Lato',sans-serif;width:180px;}
+  .nombre-box input:focus{outline:2px solid var(--color-acento);}
+  .nombre-box input.campo-error{border-color:var(--color-incorrecto);outline:2px solid var(--color-incorrecto);}
+  .nombre-error{font-size:.75rem;color:var(--color-incorrecto);font-weight:700;}
+  .score-box{display:flex;align-items:center;gap:14px;}
+  .score-item{text-align:center;font-size:.8rem;color:var(--color-texto-suave);}
+  .score-item span{display:block;font-size:1.3rem;font-weight:700;}
+  .score-item .pos{color:var(--verde);}
+
+  .main{max-width:1100px;margin:0 auto;padding:22px 18px 40px;}
+
+  .tabla-z-wrap{background:var(--color-fondo-card);border:2px solid var(--color-borde);border-radius:6px;padding:18px 20px;margin-bottom:22px;box-shadow:0 2px 8px rgba(44,31,14,.1);}
+  .tabla-z-titulo{font-family:'Libre Baskerville',serif;font-size:.95rem;color:var(--color-texto);margin-bottom:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .tabla-z-titulo span{font-size:.8rem;color:var(--color-acento);}
+  .tabla-z-layout{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-start;}
+  
+  .ztable-wrapper{overflow-x:auto;max-width:100%;}
+  .ztable{border-collapse:collapse;font-size:.75rem;min-width:500px;}
+  .ztable thead tr{background:var(--color-cabecera);color:var(--color-cabecera-txt);}
+  .ztable th{padding:6px 10px;font-family:'Libre Baskerville',serif;font-weight:700;text-align:center;border:1px solid var(--color-borde);}
+  .ztable td{padding:5px 10px;text-align:center;border:1px solid var(--color-borde-suave);cursor:pointer;transition:background .15s;}
+  .ztable tbody tr:hover td{background:var(--color-neutro);}
+  .ztable tbody td.z-selected{background:#f0e6d0;font-weight:700;color:var(--color-acento);border:2px solid var(--color-acento);}
+  .ztable tbody td.click-correcto{background:#a5d6a7;border:2px solid var(--color-correcto);}
+  .ztable .columna-cabecera{background:var(--color-neutro);font-weight:700;}
+
+  .campana-wrap{flex:1;min-width:260px;display:flex;flex-direction:column;align-items:center;gap:10px;}
+  .normal-canvas-wrap{position:relative;width:100%;max-width:350px;}
+  .normal-canvas-wrap canvas{display:block;width:100%;height:auto;border-radius:4px;background:var(--color-fondo-card);}
+  .z-resultado{text-align:center;font-family:'Libre Baskerville',serif;font-size:1rem;color:var(--color-texto);min-height:60px;background:var(--color-neutro);padding:8px 12px;border-radius:8px;}
+  .z-resultado .z-val{font-size:1.3rem;font-weight:700;color:var(--color-acento);}
+  .z-instruccion{font-size:.72rem;color:var(--color-texto-suave);text-align:center;font-style:italic;}
+
+  .proceso-z-panel{background:var(--color-neutro);border-radius:12px;padding:16px;margin-top:15px;}
+  .proceso-z-panel h4{font-family:'Libre Baskerville',serif;color:var(--color-acento);margin-bottom:12px;font-size:1rem;text-align:center;}
+  .pasos-container{display:flex;flex-wrap:wrap;gap:15px;justify-content:center;}
+  .paso-card{flex:1;min-width:150px;background:var(--color-fondo-card);border-radius:10px;padding:12px;text-align:center;border:2px solid var(--color-borde-suave);transition:all .3s;}
+  .paso-card.completado{border-color:var(--color-correcto);background:#e8f4ea;}
+  .paso-label{font-weight:700;font-size:.75rem;color:var(--color-texto-suave);margin-bottom:5px;}
+  .paso-valor{font-size:1.2rem;font-weight:700;color:var(--color-acento);margin:8px 0;}
+  .paso-input input{width:100px;padding:6px 8px;border:1.5px solid var(--color-borde);border-radius:6px;text-align:center;font-size:.85rem;}
+  .paso-input input:focus{outline:2px solid var(--color-acento);}
+  .paso-status{font-size:.7rem;margin-top:6px;min-height:32px;}
+  .paso-status.ok{color:var(--color-correcto);font-weight:700;}
+  .paso-status.ko{color:var(--color-incorrecto);}
+  .paso-boton{margin-top:8px;}
+  .btn-verificar-paso{background:var(--color-acento);color:white;border:none;padding:4px 12px;border-radius:4px;font-size:.7rem;cursor:pointer;}
+  .btn-verificar-paso:hover{background:var(--color-acento-hover);}
+  .btn-verificar-paso:disabled{opacity:0.5;cursor:default;}
+
+  .tipos-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;}
+  .tipo-badge{font-size:.72rem;padding:4px 10px;border-radius:20px;border:1.5px solid var(--color-borde-suave);background:var(--color-fondo);color:var(--color-texto-suave);font-weight:700;transition:all .3s;cursor:pointer;user-select:none;}
+  .tipo-badge:hover{border-color:var(--color-acento);color:var(--color-acento);}
+  .tipo-badge.activo{border-color:var(--color-acento);background:var(--color-acento);color:white;}
+  .tipo-badge.completado{background:var(--verde);color:white;border-color:var(--verde);cursor:default;opacity:0.7;}
+  .tipo-badge.fallido{background:var(--color-incorrecto);color:white;border-color:var(--color-incorrecto);}
+
+  .progreso-label{font-size:.75rem;color:var(--color-texto-suave);margin-bottom:4px;}
+  .barra-wrap{height:6px;background:var(--color-borde-suave);border-radius:10px;margin-bottom:18px;overflow:hidden;}
+  .barra-fill{height:100%;background:linear-gradient(90deg,var(--color-acento),var(--color-acento-hover));border-radius:10px;transition:width .4s;}
+
+  .card{background:var(--color-fondo-card);border:1.5px solid var(--color-borde-suave);border-left:4px solid var(--color-borde);border-radius:6px;padding:22px 24px;box-shadow:0 2px 10px rgba(44,31,14,.08);margin-bottom:18px;}
+  .card-tipo{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--color-acento);margin-bottom:6px;font-family:'Libre Baskerville',serif;}
+  .card-enunciado{font-size:.95rem;line-height:1.7;color:var(--color-texto);margin-bottom:16px;}
+  .card-enunciado strong{color:var(--color-acento-hover);}
+
+  .apartado{background:#f7f2e8;border:1.5px solid var(--color-borde-suave);border-left:4px solid var(--color-borde);border-radius:5px;padding:13px 16px;margin-top:12px;}
+  .apartado-label{font-family:'Libre Baskerville',serif;font-size:.8rem;font-weight:700;color:var(--color-acento);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;}
+  .apartado-pregunta{font-size:.9rem;line-height:1.55;color:var(--color-texto);margin-bottom:10px;}
+  .opciones-ap{display:flex;flex-direction:column;gap:8px;}
+  .opcion-ap-btn{text-align:left;background:var(--color-fondo);border:1.5px solid var(--color-borde-suave);border-radius:4px;padding:9px 13px;font-size:.87rem;cursor:pointer;transition:all .2s;color:var(--color-texto);font-family:'Lato',sans-serif;line-height:1.4;}
+  .opcion-ap-btn:hover:not(:disabled):not(.seleccionada){background:var(--color-neutro);border-color:var(--color-borde);transform:translateX(3px);}
+  .opcion-ap-btn.seleccionada{background:#f0e6d0;border-color:var(--color-acento);border-width:2px;font-weight:700;}
+  .opcion-ap-btn.correcta{background:#e8f4ea;border-color:var(--color-correcto);color:var(--color-correcto);font-weight:700;}
+  .opcion-ap-btn.incorrecta{background:#f9eaea;border-color:var(--color-incorrecto);color:var(--color-incorrecto);}
+  .opcion-ap-btn:disabled{cursor:default;}
+  .feedback-ap{display:none;border-radius:5px;padding:10px 14px;font-size:.86rem;line-height:1.6;margin-top:8px;}
+  .feedback-ap.ok{display:block;background:#e8f4ea;border-left:4px solid var(--color-correcto);color:#1b5e20;}
+  .feedback-ap.ko{display:block;background:#f9eaea;border-left:4px solid var(--color-incorrecto);color:#7f1d1d;}
+  .btn-corregir-ap{margin-top:10px;padding:7px 16px;border-radius:4px;border:none;font-size:.82rem;font-weight:700;cursor:pointer;font-family:'Lato',sans-serif;background:var(--azul);color:white;transition:all .2s;}
+  .btn-corregir-ap:disabled{opacity:.4;cursor:default;}
+  .btn-corregir-ap:hover:not(:disabled){background:#0d3460;}
+
+  .acciones{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px;}
+  .btn{padding:9px 18px;border-radius:4px;border:none;font-size:.85rem;font-weight:700;cursor:pointer;font-family:'Lato',sans-serif;transition:all .2s;}
+  .btn:disabled{opacity:.45;cursor:default;}
+  .btn-siguiente{background:var(--color-acento);color:var(--color-cabecera-txt);}
+  .btn-siguiente:hover{background:var(--color-acento-hover);}
+  .btn-reintentar{background:var(--naranja);color:white;}
+  .btn-reintentar:hover{background:#D35400;}
+
+  .mensaje-fallo{background:#f9eaea;border-left:4px solid var(--color-incorrecto);padding:12px 16px;margin-top:12px;border-radius:5px;color:#7f1d1d;font-size:.85rem;}
+  .mensaje-exito{background:#e8f4ea;border-left:4px solid var(--color-correcto);padding:12px 16px;margin-top:12px;border-radius:5px;color:#1b5e20;font-size:.85rem;}
+
+  .btn-finalizar-wrap{text-align:center;margin-top:10px;}
+  .btn-finalizar{background:var(--color-cabecera);color:var(--color-cabecera-txt);border:2px solid var(--color-borde);padding:11px 28px;font-size:.95rem;font-family:'Libre Baskerville',serif;border-radius:4px;cursor:pointer;transition:all .2s;}
+  .btn-finalizar:hover{background:#2C1A0A;}
+
+  .overlay{display:none;position:fixed;inset:0;background:rgba(44,31,14,.75);z-index:100;align-items:center;justify-content:center;}
+  .overlay.show{display:flex;}
+  .modal{border-radius:16px;padding:28px 32px;min-width:320px;max-width:450px;text-align:center;box-shadow:0 20px 40px rgba(0,0,0,.4);border:2px solid rgba(255,255,255,0.3);}
+  .modal h2{font-size:1.8rem;margin-bottom:8px;font-family:'Libre Baskerville',serif;}
+  .modal .alumno-modal{font-size:1.1rem;margin-bottom:16px;opacity:.95;font-weight:500;}
+  .modal .nota-grande{font-size:3.5rem;font-weight:900;margin-bottom:8px;line-height:1;}
+  .modal .meta-modal{font-size:.9rem;opacity:.9;margin-bottom:16px;line-height:1.6;font-family:'Lato',sans-serif;text-align:left;background:rgba(0,0,0,0.1);padding:12px;border-radius:12px;}
+  .modal .recordatorio{font-size:.85rem;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.3);font-family:'Lato',sans-serif;font-weight:bold;}
+  .modal .btn-cerrar{padding:10px 24px;border-radius:40px;border:2px solid rgba(255,255,255,.6);background:rgba(0,0,0,0.2);font-size:.9rem;font-weight:700;cursor:pointer;font-family:'Lato',sans-serif;transition:all .2s;margin-top:8px;}
+  .modal .btn-cerrar:hover{background:rgba(255,255,255,.2);transform:scale(1.02);}
+  
+  body.nota-perfecta{background:#c8e6c9!important;}
+
+  .modal-aviso{background:var(--color-fondo-card);color:var(--color-texto);border:2px solid var(--color-borde);}
+  .modal-aviso h2{color:var(--color-acento-hover);}
+  .modal-aviso .meta-modal{background:var(--color-neutro);color:var(--color-texto);}
+  .modal-aviso .btn-cerrar{background:var(--color-acento);color:white;border-color:var(--color-acento);}
+  .modal-aviso .btn-cerrar:hover{background:var(--color-acento-hover);}
+</style>
+</head>
+<body>
+
+<div class="cabecera">
+  <div class="autoria">Material elaborado por Marta L Letona S. Basado en trabajo de J. Cayetano</div>
+  <h1>Inferencia Estadística II</h1>
+  <div class="subtitulo">EBAU · Matemáticas CCSS · Extremadura</div>
+</div>
+
+<div class="top-bar">
+  <div class="nombre-box">
+    <label for="nombreAlumno">👤 Alumno/a:</label>
+    <input type="text" id="nombreAlumno" placeholder="Escribe tu nombre…"/>
+    <span id="nombre-error" class="nombre-error" style="display:none;" aria-live="polite">✏️ Escribe tu nombre antes de finalizar</span>
+  </div>
+  <div class="score-box">
+    <div class="score-item"><span class="pos" id="pts-pos">0</span>Tipos superados</div>
+    <div class="score-item"><span id="pts-tipos-total">/ 4</span>Total tipos</div>
+    <div class="score-item"><span id="pts-total">0.00</span>Puntos</div>
+  </div>
+</div>
+
+<div class="main">
+
+  <div class="tipos-bar">
+    <div class="tipo-badge" id="badge-proporcion" onclick="seleccionarTipo('proporcion')">📊 Proporción (2.5 pt)</div>
+    <div class="tipo-badge" id="badge-media" onclick="seleccionarTipo('media')">📈 Media (2.5 pt)</div>
+    <div class="tipo-badge" id="badge-tamano" onclick="seleccionarTipo('tamano')">🔢 Tamaño Muestral (2.5 pt)</div>
+    <div class="tipo-badge" id="badge-longitud" onclick="seleccionarTipo('longitud')">📏 Longitud del IC (2.5 pt)</div>
+  </div>
+
+  <div class="progreso-label" id="progreso-label">Progreso</div>
+  <div class="barra-wrap"><div class="barra-fill" id="barra-fill" style="width:0%"></div></div>
+
+  <div class="card" id="card-principal">
+    <div class="card-tipo" id="ej-tipo"></div>
+    <div class="card-enunciado" id="ej-enunciado"></div>
+    <div id="apartados-container"></div>
+    <div id="mensaje-resultado" aria-live="polite"></div>
+    <div class="acciones">
+      <button class="btn btn-reintentar" id="btn-reintentar" style="display:none" onclick="reintentarMismoTipo()">🔄 Reintentar este tipo (con otros números)</button>
+      <button class="btn btn-siguiente" id="btn-siguiente" style="display:none" onclick="siguienteEjercicio()">➡️ Siguiente tipo</button>
+    </div>
+  </div>
+
+  <div class="tabla-z-wrap">
+    <div class="tabla-z-titulo">
+      📊 Tabla de la distribución Normal Estándar \(N(0,1)\) — \(\Phi(z) = P(Z \le z)\)
+      <span>Encuentra el valor crítico \(z_{\alpha/2}\) siguiendo los pasos</span>
+    </div>
+
+    <div class="campana-wrap">
+      <div class="normal-canvas-wrap">
+        <canvas id="normalCanvas" width="320" height="180"></canvas>
+      </div>
+      <div class="z-resultado" id="z-resultado">
+        <span style="font-size:.85rem;">Completa los pasos y haz clic en la tabla</span>
+      </div>
+      <div class="z-instruccion">📊 Curva Normal Estándar</div>
+    </div>
+
+    <div class="proceso-z-panel">
+      <h4>🔍 PROCESO PARA ENCONTRAR \(z_{\alpha/2}\)</h4>
+      <div class="pasos-container">
+        <div class="paso-card" id="paso1-card">
+          <div class="paso-label">PASO 1: Nivel de significación</div>
+          <div class="paso-valor">\(\alpha = ?\)</div>
+          <div class="paso-input">
+            <input type="text" inputmode="decimal" id="alfaInput" placeholder="Ej: 0.05 o 0,05" aria-label="Valor de alfa">
+          </div>
+          <div class="paso-status" id="alfaStatus" aria-live="polite"></div>
+          <div class="paso-boton">
+            <button class="btn-verificar-paso" onclick="verificarAlfa()">✓ Verificar α</button>
+          </div>
+        </div>
+        
+        <div class="paso-card" id="paso2-card">
+          <div class="paso-label">PASO 2: α/2</div>
+          <div class="paso-valor" id="alfaMedioValor">\(\alpha/2 = ?\)</div>
+          <div class="paso-input">
+            <input type="text" inputmode="decimal" id="alfaMedioInput" placeholder="Ej: 0.025 o 0,025" aria-label="Valor de alfa medios" disabled>
+          </div>
+          <div class="paso-status" id="alfaMedioStatus" aria-live="polite"></div>
+          <div class="paso-boton">
+            <button class="btn-verificar-paso" id="btnVerificarAlfaMedio" onclick="verificarAlfaMedio()" disabled>✓ Verificar α/2</button>
+          </div>
+        </div>
+        
+        <div class="paso-card" id="paso3-card">
+          <div class="paso-label">PASO 3: 1 - α/2</div>
+          <div class="paso-valor" id="unoMenosAlfaMedioValor">\(1 - \alpha/2 = ?\)</div>
+          <div class="paso-input">
+            <input type="text" inputmode="decimal" id="unoMenosInput" placeholder="Ej: 0.975 o 0,975" aria-label="Valor de uno menos alfa medios" disabled>
+          </div>
+          <div class="paso-status" id="unoMenosStatus" aria-live="polite"></div>
+          <div class="paso-boton">
+            <button class="btn-verificar-paso" id="btnVerificarUnoMenos" onclick="verificarUnoMenos()" disabled>✓ Verificar 1 - α/2</button>
+          </div>
+        </div>
+        
+        <div class="paso-card" id="paso4-card">
+          <div class="paso-label">PASO 4: Buscar en la tabla</div>
+          <div class="paso-valor">\(\Phi(z) = 1 - \alpha/2\)</div>
+          <div class="paso-input">
+            <span style="font-size:.75rem;">🎯 Haz clic en la celda de la tabla que tenga el valor más cercano a <span id="valorBuscar">---</span></span>
+          </div>
+          <div class="paso-status" id="tablaStatus" aria-live="polite"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ztable-wrapper">
+      <table class="ztable" id="ztable">
+        <thead id="ztable-head"></thead>
+        <tbody id="ztable-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="btn-finalizar-wrap">
+    <button class="btn btn-finalizar" onclick="finalizarYCalificar()">📋 Finalizar y Calificar</button>
+  </div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal" id="modal">
+    <h2 id="modal-titulo">Resultado</h2>
+    <div class="alumno-modal" id="modal-alumno"></div>
+    <div class="nota-grande" id="modal-nota"></div>
+    <div class="meta-modal" id="modal-meta"></div>
+    <div class="recordatorio">📸 Haz una captura de pantalla y entrégala en Google Classroom.</div>
+    <button class="btn-cerrar" onclick="cerrarModal()">Cerrar y seguir practicando</button>
+  </div>
+</div>
+
+<div class="overlay" id="overlay-aviso">
+  <div class="modal modal-aviso">
+    <h2>⚠️ Todavía te faltan tipos</h2>
+    <div class="meta-modal" style="text-align:center;">
+      Aún no has superado: <strong id="aviso-faltan-lista"></strong>.<br><br>
+      Si finalizas ahora, tu nota quedará en <strong id="aviso-nota-actual"></strong>/10 y no podrás volver a intentar los tipos pendientes en este intento.
+    </div>
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:10px;flex-wrap:wrap;">
+      <button class="btn-cerrar" onclick="cancelarAvisoFinalizar()">Seguir practicando</button>
+      <button class="btn-cerrar" onclick="confirmarFinalizarIncompleto()">Finalizar de todas formas</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ========== FUNCIÓN PHI ==========
+function phi(z) {
+  let t = 1 / (1 + 0.2316419 * Math.abs(z));
+  let d = 0.3989423 * Math.exp(-z * z / 2);
+  let p = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
+  return z > 0 ? 1 - p : p;
+}
+
+// Vuelve a renderizar las fórmulas LaTeX insertadas dinámicamente. Si MathJax no ha
+// cargado (CDN bloqueado, iframe restringido), no hace nada y el LaTeX en crudo
+// queda visible como texto plano en vez de un contenedor vacío.
+function refrescarMathJax() {
+  if (typeof MathJax !== 'undefined' && MathJax.typesetPromise) {
+    MathJax.typesetPromise().catch(() => {});
+  }
+}
+
+const columnas = [0.00, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09];
+let tablaDatos = [];
+
+// Estado del proceso
+let procesoState = {
+  nivelConfianza: null,
+  alfaCorrecto: null,
+  alfaMedioCorrecto: null,
+  unoMenosCorrecto: null,
+  paso1Ok: false,
+  paso2Ok: false,
+  paso3Ok: false,
+  paso4Ok: false,
+  zEncontrado: null
+};
+
+// Dibujar curva vacía
+function drawEmptyNormalCurve() {
+  const canvas = document.getElementById('normalCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  const padL = 35, padR = 35, padT = 20, padB = 35;
+  const plotW = W - padL - padR, plotH = H - padT - padB;
+  const xMin = -3.5, xMax = 3.5;
+  
+  function gauss(x) { return Math.exp(-0.5 * x * x) / Math.sqrt(2 * Math.PI); }
+  const yMax = gauss(0) * 1.1;
+  
+  function toX(x) { return padL + (x - xMin) / (xMax - xMin) * plotW; }
+  function toY(y) { return padT + plotH - (y / yMax) * plotH; }
+  
+  ctx.fillStyle = '#FDFAF3';
+  ctx.fillRect(0, 0, W, H);
+  
+  ctx.beginPath();
+  for (let i = 0; i <= 300; i++) {
+    let xv = xMin + (xMax - xMin) * i / 300;
+    if (i === 0) ctx.moveTo(toX(xv), toY(gauss(xv)));
+    else ctx.lineTo(toX(xv), toY(gauss(xv)));
+  }
+  ctx.strokeStyle = '#2C1F0E';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  
+  ctx.beginPath();
+  ctx.moveTo(padL, padT + plotH);
+  ctx.lineTo(padL + plotW, padT + plotH);
+  ctx.strokeStyle = '#C9A96E';
+  ctx.stroke();
+  
+  ctx.fillStyle = '#6B4F35';
+  ctx.font = '9px Lato';
+  ctx.textAlign = 'center';
+  [-3, -2, -1, 0, 1, 2, 3].forEach(v => {
+    let px = toX(v);
+    ctx.fillText(v, px, padT + plotH + 12);
+    ctx.beginPath();
+    ctx.moveTo(px, padT + plotH);
+    ctx.lineTo(px, padT + plotH + 3);
+    ctx.stroke();
+  });
+  
+  ctx.fillStyle = '#A0522D';
+  ctx.font = 'italic 9px Lato';
+  ctx.fillText('N(0,1)', W/2, padT + 10);
+}
+
+// Dibujar curva con resultado
+function drawResultCurve(selectedZ, conf) {
+  const canvas = document.getElementById('normalCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  const padL = 35, padR = 35, padT = 20, padB = 35;
+  const plotW = W - padL - padR, plotH = H - padT - padB;
+  const xMin = -3.5, xMax = 3.5;
+  
+  function gauss(x) { return Math.exp(-0.5 * x * x) / Math.sqrt(2 * Math.PI); }
+  const yMax = gauss(0) * 1.1;
+  
+  function toX(x) { return padL + (x - xMin) / (xMax - xMin) * plotW; }
+  function toY(y) { return padT + plotH - (y / yMax) * plotH; }
+  
+  ctx.fillStyle = '#FDFAF3';
+  ctx.fillRect(0, 0, W, H);
+  
+  ctx.beginPath();
+  for (let i = 0; i <= 300; i++) {
+    let xv = xMin + (xMax - xMin) * i / 300;
+    if (i === 0) ctx.moveTo(toX(xv), toY(gauss(xv)));
+    else ctx.lineTo(toX(xv), toY(gauss(xv)));
+  }
+  ctx.strokeStyle = '#2C1F0E';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  
+  ctx.beginPath();
+  ctx.moveTo(padL, padT + plotH);
+  ctx.lineTo(padL + plotW, padT + plotH);
+  ctx.strokeStyle = '#C9A96E';
+  ctx.stroke();
+  
+  ctx.fillStyle = '#6B4F35';
+  ctx.font = '9px Lato';
+  ctx.textAlign = 'center';
+  [-3, -2, -1, 0, 1, 2, 3].forEach(v => {
+    let px = toX(v);
+    ctx.fillText(v, px, padT + plotH + 12);
+    ctx.beginPath();
+    ctx.moveTo(px, padT + plotH);
+    ctx.lineTo(px, padT + plotH + 3);
+    ctx.stroke();
+  });
+  
+  if (selectedZ !== null && selectedZ > 0 && selectedZ < 3.5) {
+    ctx.beginPath();
+    ctx.moveTo(toX(-selectedZ), toY(0));
+    for (let i = 0; i <= 200; i++) {
+      let xv = -selectedZ + (2 * selectedZ) * i / 200;
+      ctx.lineTo(toX(xv), toY(gauss(xv)));
+    }
+    ctx.lineTo(toX(selectedZ), toY(0));
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(160,82,45,0.2)';
+    ctx.fill();
+    
+    [[-3.5, -selectedZ], [selectedZ, 3.5]].forEach(([a, b]) => {
+      ctx.beginPath();
+      ctx.moveTo(toX(a), toY(0));
+      for (let i = 0; i <= 60; i++) {
+        let xv = a + (b - a) * i / 60;
+        ctx.lineTo(toX(xv), toY(gauss(xv)));
+      }
+      ctx.lineTo(toX(b), toY(0));
+      ctx.fillStyle = 'rgba(139,26,26,0.12)';
+      ctx.fill();
+    });
+    
+    ctx.beginPath();
+    ctx.moveTo(toX(-selectedZ), padT);
+    ctx.lineTo(toX(-selectedZ), padT + plotH);
+    ctx.moveTo(toX(selectedZ), padT);
+    ctx.lineTo(toX(selectedZ), padT + plotH);
+    ctx.strokeStyle = '#A0522D';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([4, 4]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    
+    ctx.fillStyle = '#A0522D';
+    ctx.font = 'bold 9px Lato';
+    ctx.fillText(`-z`, toX(-selectedZ), padT + plotH + 22);
+    ctx.fillText(`+z`, toX(selectedZ), padT + plotH + 22);
+    
+    if (conf !== null) {
+      ctx.fillStyle = '#7B3B1E';
+      ctx.font = 'bold 10px Libre Baskerville';
+      ctx.fillText(`Nivel de confianza: ${conf.toFixed(0)}%`, toX(0), padT + 15);
+    }
+  }
+}
+
+// Función para manejar clic en tabla
+function handleTableCellClick(z, prob) {
+  if (!procesoState.paso3Ok) {
+    document.getElementById('tablaStatus').innerHTML = '❌ Completa primero los pasos 1, 2 y 3';
+    document.getElementById('tablaStatus').className = 'paso-status ko';
+    return;
+  }
+  
+  const valorBuscado = procesoState.unoMenosCorrecto;
+  
+  let masCercano = null;
+  let menorDif = Infinity;
+  for (let dato of tablaDatos) {
+    let dif = Math.abs(dato.prob - valorBuscado);
+    if (dif < menorDif) {
+      menorDif = dif;
+      masCercano = dato;
+    }
+  }
+  
+  const esCorrecto = Math.abs(prob - valorBuscado) < 0.001;
+  
+  if (esCorrecto) {
+    procesoState.paso4Ok = true;
+    procesoState.zEncontrado = z;
+    document.getElementById('tablaStatus').innerHTML = `✅ ¡Correcto! \\(\\Phi(z) = ${prob.toFixed(4)}\\) corresponde a \\(z = ${z.toFixed(2)}\\)`;
+    document.getElementById('tablaStatus').className = 'paso-status ok';
+    document.getElementById('paso4-card').classList.add('completado');
+    
+    const confianza = (1 - procesoState.alfaCorrecto) * 100;
+    document.getElementById('z-resultado').innerHTML = `
+      <strong>✅ VALOR CRÍTICO ENCONTRADO</strong><br>
+      Nivel de confianza = ${confianza.toFixed(1)}%<br>
+      \\(\\alpha = ${procesoState.alfaCorrecto.toFixed(4)}\\)<br>
+      \\(\\alpha/2 = ${procesoState.alfaMedioCorrecto.toFixed(4)}\\)<br>
+      \\(1 - \\alpha/2 = ${procesoState.unoMenosCorrecto.toFixed(4)}\\)<br>
+      <span class="z-val">\\(z_{\\alpha/2} = ${z.toFixed(2)}\\)</span>
+    `;
+    refrescarMathJax();
+    
+    drawResultCurve(z, confianza);
+    
+    document.querySelectorAll('#ztable-body td').forEach(td => td.classList.remove('z-selected', 'click-correcto'));
+    const cells = document.querySelectorAll('#ztable-body td');
+    for (let cell of cells) {
+      if (!cell.classList.contains('columna-cabecera')) {
+        let cellProb = parseFloat(cell.getAttribute('data-prob'));
+        if (Math.abs(cellProb - prob) < 0.0001) {
+          cell.classList.add('z-selected', 'click-correcto');
+          break;
+        }
+      }
+    }
+  } else {
+    document.getElementById('tablaStatus').innerHTML = `❌ Incorrecto. El valor más cercano a ${valorBuscado.toFixed(4)} es ${masCercano.prob.toFixed(4)} (z = ${masCercano.z.toFixed(2)}). Vuelve a intentarlo.`;
+    document.getElementById('tablaStatus').className = 'paso-status ko';
+  }
+}
+
+function construirTablaNormal() {
+  const thead = document.getElementById('ztable-head');
+  const tbody = document.getElementById('ztable-body');
+  let hr = '<tr><th style="min-width:50px;">z\\0.00</th>';
+  for (let c of columnas) hr += `<th>${c.toFixed(2)}</th>`;
+  thead.innerHTML = hr + '</tr>';
+  let bh = '';
+  tablaDatos = [];
+  for (let i = 0; i <= 34; i++) {
+    let zBase = i / 10;
+    let rh = `<tr><td class="columna-cabecera"><strong>${zBase.toFixed(1)}</strong></td>`;
+    for (let c of columnas) {
+      let z = zBase + c;
+      let p = phi(z);
+      let pFormatted = p.toFixed(4);
+      rh += `<td data-z="${z.toFixed(2)}" data-prob="${pFormatted}">${pFormatted}</td>`;
+      tablaDatos.push({z: parseFloat(z.toFixed(2)), prob: p});
+    }
+    bh += rh + '</tr>';
+  }
+  tbody.innerHTML = bh;
+  
+  document.querySelectorAll('#ztable-body td').forEach(cell => {
+    if (!cell.classList.contains('columna-cabecera')) {
+      cell.addEventListener('click', function() {
+        const z = parseFloat(this.getAttribute('data-z'));
+        const prob = parseFloat(this.getAttribute('data-prob'));
+        handleTableCellClick(z, prob);
+      });
+    }
+  });
+}
+
+function verificarAlfa() {
+  const input = document.getElementById('alfaInput').value.trim().replace(',', '.');
+  let alfa = parseFloat(input);
+  
+  if (isNaN(alfa) || procesoState.nivelConfianza === null) {
+    document.getElementById('alfaStatus').innerHTML = '❌ Primero, responde al ejercicio para definir el nivel de confianza.';
+    document.getElementById('alfaStatus').className = 'paso-status ko';
+    return;
+  }
+  
+  const alfaCorrecto = 1 - procesoState.nivelConfianza;
+  const esCorrecto = Math.abs(alfa - alfaCorrecto) < 0.001;
+  
+  const statusSpan = document.getElementById('alfaStatus');
+  if (esCorrecto) {
+    procesoState.alfaCorrecto = alfaCorrecto;
+    procesoState.paso1Ok = true;
+    statusSpan.innerHTML = `✅ Correcto! \\(\\alpha = ${alfaCorrecto.toFixed(4)}\\)`;
+    statusSpan.className = 'paso-status ok';
+    document.getElementById('paso1-card').classList.add('completado');
+    
+    document.getElementById('alfaMedioInput').disabled = false;
+    document.getElementById('btnVerificarAlfaMedio').disabled = false;
+    document.getElementById('alfaMedioInput').focus();
+  } else {
+    statusSpan.innerHTML = `❌ Incorrecto. \\(\\alpha = 1 - ${(procesoState.nivelConfianza*100).toFixed(0)}\\% = ${alfaCorrecto.toFixed(4)}\\)`;
+    statusSpan.className = 'paso-status ko';
+  }
+  refrescarMathJax();
+}
+
+function verificarAlfaMedio() {
+  const input = document.getElementById('alfaMedioInput').value.trim().replace(',', '.');
+  let alfaMedio = parseFloat(input);
+  
+  if (isNaN(alfaMedio) || !procesoState.paso1Ok) return;
+  
+  const alfaMedioCorrecto = procesoState.alfaCorrecto / 2;
+  const esCorrecto = Math.abs(alfaMedio - alfaMedioCorrecto) < 0.001;
+  
+  const statusSpan = document.getElementById('alfaMedioStatus');
+  if (esCorrecto) {
+    procesoState.alfaMedioCorrecto = alfaMedioCorrecto;
+    procesoState.paso2Ok = true;
+    statusSpan.innerHTML = `✅ Correcto! \\(\\alpha/2 = ${alfaMedioCorrecto.toFixed(4)}\\)`;
+    statusSpan.className = 'paso-status ok';
+    document.getElementById('paso2-card').classList.add('completado');
+    document.getElementById('alfaMedioValor').innerHTML = `\\(\\alpha/2 = ${alfaMedioCorrecto.toFixed(4)}\\)`;
+    
+    document.getElementById('unoMenosInput').disabled = false;
+    document.getElementById('btnVerificarUnoMenos').disabled = false;
+    document.getElementById('unoMenosInput').focus();
+  } else {
+    statusSpan.innerHTML = `❌ Incorrecto. \\(\\alpha/2 = ${procesoState.alfaCorrecto.toFixed(4)} / 2 = ${alfaMedioCorrecto.toFixed(4)}\\)`;
+    statusSpan.className = 'paso-status ko';
+  }
+  refrescarMathJax();
+}
+
+function verificarUnoMenos() {
+  const input = document.getElementById('unoMenosInput').value.trim().replace(',', '.');
+  let unoMenos = parseFloat(input);
+  
+  if (isNaN(unoMenos) || !procesoState.paso2Ok) return;
+  
+  const unoMenosCorrecto = 1 - procesoState.alfaMedioCorrecto;
+  const esCorrecto = Math.abs(unoMenos - unoMenosCorrecto) < 0.001;
+  
+  const statusSpan = document.getElementById('unoMenosStatus');
+  if (esCorrecto) {
+    procesoState.unoMenosCorrecto = unoMenosCorrecto;
+    procesoState.paso3Ok = true;
+    statusSpan.innerHTML = `✅ Correcto! \\(1 - \\alpha/2 = ${unoMenosCorrecto.toFixed(4)}\\)`;
+    statusSpan.className = 'paso-status ok';
+    document.getElementById('paso3-card').classList.add('completado');
+    document.getElementById('unoMenosAlfaMedioValor').innerHTML = `\\(1 - \\alpha/2 = ${unoMenosCorrecto.toFixed(4)}\\)`;
+    
+    document.getElementById('valorBuscar').innerHTML = unoMenosCorrecto.toFixed(4);
+    document.getElementById('tablaStatus').innerHTML = `🎯 Busca en la tabla el valor más cercano a ${unoMenosCorrecto.toFixed(4)} y haz clic en esa celda.`;
+    document.getElementById('tablaStatus').className = 'paso-status';
+  } else {
+    statusSpan.innerHTML = `❌ Incorrecto. \\(1 - \\alpha/2 = 1 - ${procesoState.alfaMedioCorrecto.toFixed(4)} = ${unoMenosCorrecto.toFixed(4)}\\)`;
+    statusSpan.className = 'paso-status ko';
+  }
+  refrescarMathJax();
+}
+
+function resetearProceso() {
+  procesoState = {
+    nivelConfianza: null,
+    alfaCorrecto: null,
+    alfaMedioCorrecto: null,
+    unoMenosCorrecto: null,
+    paso1Ok: false,
+    paso2Ok: false,
+    paso3Ok: false,
+    paso4Ok: false,
+    zEncontrado: null
+  };
+  
+  document.getElementById('alfaInput').value = '';
+  document.getElementById('alfaMedioInput').value = '';
+  document.getElementById('unoMenosInput').value = '';
+  document.getElementById('alfaMedioInput').disabled = true;
+  document.getElementById('unoMenosInput').disabled = true;
+  document.getElementById('btnVerificarAlfaMedio').disabled = true;
+  document.getElementById('btnVerificarUnoMenos').disabled = true;
+  
+  document.getElementById('alfaStatus').innerHTML = '';
+  document.getElementById('alfaMedioStatus').innerHTML = '';
+  document.getElementById('unoMenosStatus').innerHTML = '';
+  document.getElementById('tablaStatus').innerHTML = '';
+  document.getElementById('alfaMedioValor').innerHTML = '\\(\\alpha/2 = ?\\)';
+  document.getElementById('unoMenosAlfaMedioValor').innerHTML = '\\(1 - \\alpha/2 = ?\\)';
+  document.getElementById('valorBuscar').innerHTML = '---';
+  document.getElementById('z-resultado').innerHTML = '<span style="font-size:.85rem;">Completa los pasos y haz clic en la tabla</span>';
+  
+  document.querySelectorAll('.paso-card').forEach(card => card.classList.remove('completado'));
+  document.querySelectorAll('#ztable-body td').forEach(td => td.classList.remove('z-selected', 'click-correcto'));
+  
+  drawEmptyNormalCurve();
+  refrescarMathJax();
+}
+
+function establecerNivelConfianza(confianza) {
+  resetearProceso();
+  procesoState.nivelConfianza = confianza / 100;
+  document.getElementById('z-resultado').innerHTML = `
+    <strong>🎯 Nivel de confianza: ${confianza}%</strong><br>
+    Completa los pasos para encontrar \\(z_{\\alpha/2}\\)
+  `;
+  refrescarMathJax();
+}
+
+// ========== GENERADORES ==========
+const TIPOS = ['proporcion', 'media', 'tamano', 'longitud'];
+const PUNTOS_POR_TIPO = 2.5;
+
+function r(min, max, dec = 0) { return +(Math.random() * (max - min) + min).toFixed(dec); }
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function fmt(n, d = 4) { return n.toFixed(d); }
+function mezclar(arr) { return arr.sort(() => Math.random() - 0.5); }
+
+// Genera las opciones de un ejercicio garantizando que no haya dos textos idénticos
+// (bug real detectado por fuzzing: distractores con offset fijo podían coincidir entre
+// sí o con la propia respuesta correcta, p.ej. Math.max(10, n-50) == n cuando n es pequeño).
+// candidatos: array de funciones (intento) => valor candidato; formatFn: valor => texto final.
+function generarOpcionesUnicas(valorCorrecto, formatFn, candidatos) {
+  const usados = new Set([formatFn(valorCorrecto)]);
+  const opciones = [formatFn(valorCorrecto)];
+  candidatos.forEach(fn => {
+    let intento = 0;
+    let texto = formatFn(fn(intento));
+    while (usados.has(texto) && intento < 40) {
+      intento++;
+      texto = formatFn(fn(intento));
+    }
+    usados.add(texto);
+    opciones.push(texto);
+  });
+  return mezclar(opciones);
+}
+
+const Z_EJ = { 90: 1.645, 95: 1.96, 99: 2.576 };
+
+function genICProporcion() {
+  const cultivos = ['tomate', 'pimiento', 'fresa', 'maíz', 'trigo'];
+  const cultivo = pick(cultivos);
+  const zona = pick(['Vegas del Guadiana', 'Tierra de Barros', 'La Vera', 'Valle del Alagón']);
+  const n = pick([80, 120, 150, 200]);
+  const pctExito = r(20, 80);
+  const exitos = Math.round(n * pctExito / 100);
+  const p_hat = exitos / n;
+  const conf = pick([90, 95, 99]);
+  const z = Z_EJ[conf];
+  const e = z * Math.sqrt(p_hat * (1 - p_hat) / n);
+  const li = Math.max(0, p_hat - e);
+  const ls = Math.min(1, p_hat + e);
+  
+  establecerNivelConfianza(conf);
+  
+  return {
+    tipoKey: 'proporcion',
+    enunciado: `En la comarca extremeña de <strong>${zona}</strong>, un estudio sobre cultivo ecológico de ${cultivo} selecciona una muestra aleatoria de <strong>${n}</strong> parcelas. De ellas, <strong>${exitos}</strong> superan el rendimiento estándar exigido por la certificación de calidad extremeña.`,
+    nivelConfianza: conf,
+    apartados: [
+      {
+        label: `Estimación puntual`,
+        pregunta: `¿Cuál es la proporción muestral (\\(\\hat{p}\\)) de parcelas con rendimiento superior en la comarca?`,
+        correcta: `p̂ = ${fmt(p_hat, 4)}`,
+        opciones: generarOpcionesUnicas(
+          p_hat,
+          v => `p̂ = ${fmt(Math.max(0, Math.min(1, v)), 4)}`,
+          [
+            (intento) => p_hat + 0.05 + intento * 0.011,
+            (intento) => Math.abs(p_hat - 0.05) - intento * 0.013,
+            (intento) => exitos / (n + 10) + intento * 0.017
+          ]
+        ),
+        explicacion: `\\(\\hat{p} = \\dfrac{${exitos}}{${n}} = ${fmt(p_hat, 4)}\\)`
+      },
+      {
+        label: `Intervalo de confianza al ${conf}%`,
+        pregunta: `Construye el intervalo de confianza al ${conf}% para la proporción real de parcelas extremeñas que superan el rendimiento.`,
+        correcta: `(${fmt(li, 4)} ; ${fmt(ls, 4)})`,
+        opciones: generarOpcionesUnicas(
+          { li, ls },
+          v => `(${fmt(v.li, 4)} ; ${fmt(v.ls, 4)})`,
+          [
+            (intento) => ({ li: li + 0.05 + intento * 0.011, ls: ls - 0.05 - intento * 0.011 }),
+            (intento) => ({ li: li - 0.05 - intento * 0.013, ls: ls + 0.05 + intento * 0.013 }),
+            (intento) => ({ li: li + 0.1 + intento * 0.017, ls: ls - 0.1 - intento * 0.017 })
+          ]
+        ),
+        explicacion: `\\(E = ${z} \\cdot \\sqrt{\\dfrac{${fmt(p_hat,4)} \\cdot ${fmt(1-p_hat,4)}}{${n}}} = ${fmt(e,4)}\\)<br>\\(IC = ${fmt(p_hat,4)} \\pm ${fmt(e,4)} = (${fmt(li,4)} ; ${fmt(ls,4)})\\)`
+      }
+    ]
+  };
+}
+
+function genICMedia() {
+  const cultivos = ['tomate', 'pimiento', 'fresa', 'maíz'];
+  const cultivo = pick(cultivos);
+  const zona = pick(['Vegas del Guadiana', 'Tierra de Barros', 'La Vera']);
+  const n = pick([25, 36, 40, 49]);
+  const xbar = r(45, 120, 1);
+  const sigma = r(4, 15, 1);
+  const conf = pick([90, 95, 99]);
+  const z = Z_EJ[conf];
+  const e = z * sigma / Math.sqrt(n);
+  const li = xbar - e, ls = xbar + e;
+  
+  establecerNivelConfianza(conf);
+  
+  return {
+    tipoKey: 'media',
+    enunciado: `En la región extremeña de <strong>${zona}</strong>, especializada en ${cultivo} ecológico, se toma una muestra de <strong>${n}</strong> hectáreas de regadío. La producción media muestral es de <strong>${xbar}</strong> toneladas por hectárea, con una desviación típica poblacional conocida \\(\\sigma\\) = <strong>${sigma}</strong> tn/ha.`,
+    nivelConfianza: conf,
+    apartados: [{
+      label: `Intervalo de confianza al ${conf}%`,
+      pregunta: `Calcula el intervalo de confianza para la producción media real de ${cultivo} en dicha zona extremeña.`,
+      correcta: `(${fmt(li, 2)} ; ${fmt(ls, 2)})`,
+      opciones: generarOpcionesUnicas(
+        { li, ls },
+        v => `(${fmt(v.li, 2)} ; ${fmt(v.ls, 2)})`,
+        [
+          (intento) => ({ li: li + 5 + intento * 1.3, ls: ls - 5 - intento * 1.3 }),
+          (intento) => ({ li: li - 5 - intento * 1.7, ls: ls + 5 + intento * 1.7 }),
+          (intento) => ({ li: li + 10 + intento * 2.1, ls: ls - 10 - intento * 2.1 })
+        ]
+      ),
+      explicacion: `\\(E = \\dfrac{${z} \\cdot ${sigma}}{\\sqrt{${n}}} = ${fmt(e,2)}\\)<br>\\(IC = ${xbar} \\pm ${fmt(e,2)} = (${fmt(li,2)} ; ${fmt(ls,2)})\\)`
+    }]
+  };
+}
+
+function genTamanoMuestral() {
+  const cultivos = ['tomate', 'pimiento', 'maíz', 'trigo'];
+  const cultivo = pick(cultivos);
+  const esProp = Math.random() < 0.5;
+  const zona = pick(['Vegas del Guadiana', 'Tierra de Barros', 'La Vera', 'Valle del Alagón']);
+  
+  if (esProp) {
+    const pPct = r(15, 85);
+    const p = pPct / 100;
+    const conf = pick([90, 95, 99]);
+    const z = Z_EJ[conf];
+    const ePct = pick([2, 3, 4, 5]);
+    const e = ePct / 100;
+    const n = Math.ceil((z * z * p * (1 - p)) / (e * e));
+    
+    establecerNivelConfianza(conf);
+    
+    return {
+      tipoKey: 'tamano',
+      enunciado: `La Consejería de Agricultura de Extremadura desea estimar la proporción de parcelas de ${cultivo} en la comarca de ${zona} que superan el rendimiento habitual. Según un estudio previo, se estima que dicha proporción es aproximadamente del <strong>${pPct}%</strong>. Se requiere un nivel de confianza del <strong>${conf}%</strong> y un error máximo de estimación del <strong>${ePct}%</strong>.`,
+      nivelConfianza: conf,
+      apartados: [{
+        label: `Tamaño muestral mínimo`,
+        pregunta: `¿Cuántas parcelas extremeñas deben muestrearse para cumplir esas condiciones?`,
+        correcta: `n = ${n}`,
+        opciones: generarOpcionesUnicas(
+          n,
+          v => `n = ${Math.round(v)}`,
+          [
+            (intento) => n + 50 + intento * 7,
+            (intento) => Math.max(10, n - 50) + intento * 7,
+            (intento) => n + 100 + intento * 11
+          ]
+        ),
+        explicacion: `\\(n = \\dfrac{z^2 \\cdot p \\cdot (1-p)}{E^2} = \\dfrac{${z}^2 \\cdot ${fmt(p, 3)} \\cdot ${fmt(1 - p, 3)}}{${fmt(e, 3)}^2} = ${n}\\)`
+      }]
+    };
+  } else {
+    const sigma = r(4, 15, 1);
+    const conf = pick([90, 95, 99]);
+    const z = Z_EJ[conf];
+    const e = r(0.8, 3.5, 1);
+    const n = Math.ceil((z * z * sigma * sigma) / (e * e));
+    
+    establecerNivelConfianza(conf);
+    
+    return {
+      tipoKey: 'tamano',
+      enunciado: `La Junta de Extremadura quiere estimar la producción media de ${cultivo} (en tn/ha) en la zona de ${zona}. Se sabe por campañas anteriores que la desviación típica poblacional es \\(\\sigma\\) = <strong>${sigma}</strong> tn/ha. Se desea un nivel de confianza del <strong>${conf}%</strong> y un error máximo admisible de <strong>${e}</strong> tn/ha.`,
+      nivelConfianza: conf,
+      apartados: [{
+        label: `Tamaño muestral mínimo`,
+        pregunta: `¿Cuántas hectáreas extremeñas deben incluirse en la muestra?`,
+        correcta: `n = ${n}`,
+        opciones: generarOpcionesUnicas(
+          n,
+          v => `n = ${Math.round(v)}`,
+          [
+            (intento) => n + 30 + intento * 5,
+            (intento) => Math.max(10, n - 30) + intento * 5,
+            (intento) => n + 60 + intento * 9
+          ]
+        ),
+        explicacion: `\\(n = \\left(\\dfrac{z \\cdot \\sigma}{E}\\right)^2 = \\left(\\dfrac{${z} \\cdot ${sigma}}{${e}}\\right)^2 = ${n}\\)`
+      }]
+    };
+  }
+}
+
+function genLongitud() {
+  const cultivos = ['tomate', 'pimiento', 'fresa', 'maíz'];
+  const cultivo = pick(cultivos);
+  const esProp = Math.random() < 0.5;
+  const zona = pick(['Vegas del Guadiana', 'Tierra de Barros', 'La Vera']);
+  
+  if (esProp) {
+    const pPct = r(15, 85);
+    const p = pPct / 100;
+    const conf = pick([90, 95, 99]);
+    const z = Z_EJ[conf];
+    const longObjetivo = r(0.06, 0.20, 3);
+    const errorObjetivo = longObjetivo / 2;
+    const nMin = Math.ceil((z * z * p * (1 - p)) / (errorObjetivo * errorObjetivo));
+    
+    establecerNivelConfianza(conf);
+    
+    return {
+      tipoKey: 'longitud',
+      enunciado: `En la comarca extremeña de ${zona}, se quiere estimar la proporción de fincas de ${cultivo} que aplican técnicas de riego sostenible. Un estudio piloto indica que dicha proporción ronda el <strong>${pPct}%</strong>. Se desea un intervalo de confianza al <strong>${conf}%</strong> cuya longitud total no supere <strong>${fmt(longObjetivo, 3)}</strong>.`,
+      nivelConfianza: conf,
+      apartados: [{
+        label: `Tamaño muestral por longitud`,
+        pregunta: `¿Cuál debe ser el tamaño muestral mínimo para lograr esa precisión?`,
+        correcta: `n = ${nMin}`,
+        opciones: generarOpcionesUnicas(
+          nMin,
+          v => `n = ${Math.round(v)}`,
+          [
+            (intento) => Math.ceil((z * z * 0.5 * 0.5) / (errorObjetivo * errorObjetivo)) + intento * 6,
+            (intento) => Math.max(10, nMin - 50) + intento * 6,
+            (intento) => nMin + 80 + intento * 13
+          ]
+        ),
+        explicacion: `\\(E = \\dfrac{Longitud}{2} = \\dfrac{${fmt(longObjetivo,3)}}{2} = ${fmt(errorObjetivo,3)}\\)<br>\\(n = \\dfrac{z^2 \\cdot p \\cdot (1-p)}{E^2} = \\dfrac{${z}^2 \\cdot ${fmt(p, 3)} \\cdot ${fmt(1 - p, 3)}}{${fmt(errorObjetivo, 3)}^2} = ${nMin}\\)`
+      }]
+    };
+  } else {
+    const sigma = r(3, 12, 1);
+    const conf = pick([90, 95, 99]);
+    const z = Z_EJ[conf];
+    const longObjetivo = r(1.2, 4.0, 1);
+    const errorObjetivo = longObjetivo / 2;
+    const nMin = Math.ceil((z * z * sigma * sigma) / (errorObjetivo * errorObjetivo));
+    
+    establecerNivelConfianza(conf);
+    
+    return {
+      tipoKey: 'longitud',
+      enunciado: `En una explotación agraria de ${zona} (Extremadura), se desea estimar la producción media de ${cultivo} (tn/ha) con un intervalo de confianza al <strong>${conf}%</strong>. La desviación típica poblacional histórica es \\(\\sigma\\) = <strong>${sigma}</strong> tn/ha. Se requiere que la longitud total del intervalo sea como máximo <strong>${fmt(longObjetivo, 1)}</strong> toneladas por hectárea.`,
+      nivelConfianza: conf,
+      apartados: [{
+        label: `Tamaño muestral por longitud`,
+        pregunta: `¿Cuántas hectáreas extremeñas deben muestrearse para cumplir esa especificación de longitud?`,
+        correcta: `n = ${nMin}`,
+        opciones: generarOpcionesUnicas(
+          nMin,
+          v => `n = ${Math.round(v)}`,
+          [
+            (intento) => Math.ceil((z * sigma) / (errorObjetivo * errorObjetivo)) + intento * 5,
+            (intento) => Math.max(10, nMin - 40) + intento * 5,
+            (intento) => nMin + 60 + intento * 9
+          ]
+        ),
+        explicacion: `\\(E = \\dfrac{Longitud}{2} = \\dfrac{${fmt(longObjetivo,1)}}{2} = ${fmt(errorObjetivo,1)}\\)<br>\\(n = \\left(\\dfrac{z \\cdot \\sigma}{E}\\right)^2 = \\left(\\dfrac{${z} \\cdot ${sigma}}{${fmt(errorObjetivo, 1)}}\\right)^2 = ${nMin}\\)`
+      }]
+    };
+  }
+}
+
+// ========== ESTADO PRINCIPAL ==========
+// GUARDAMOS EL MOMENTO DE INICIO DEL INTENTO ACTUAL (se reinicia en cada intento nuevo, ver cerrarModal)
+let globalStartTime = Date.now();
+
+let state = {
+  puntos: 0,
+  tiposCompletados: new Set(),
+  tipoActual: null,
+  haFallado: false
+};
+let ejActual = null;
+let progApartados = [];
+let respuestasContestadas = [];
+
+function generarEjercicio(tipo) {
+  if (tipo === 'proporcion') ejActual = genICProporcion();
+  else if (tipo === 'media') ejActual = genICMedia();
+  else if (tipo === 'tamano') ejActual = genTamanoMuestral();
+  else ejActual = genLongitud();
+
+  state.tipoActual = ejActual.tipoKey;
+  state.haFallado = false;
+  progApartados = ejActual.apartados.map(() => ({ respondido: false, ok: false }));
+  respuestasContestadas = ejActual.apartados.map(() => false);
+
+  document.getElementById('ej-tipo').innerHTML = `📌 ${state.tipoActual.toUpperCase()} - Valor: ${PUNTOS_POR_TIPO} puntos`;
+  document.getElementById('ej-enunciado').innerHTML = ejActual.enunciado;
+  document.getElementById('btn-siguiente').style.display = 'none';
+  document.getElementById('btn-reintentar').style.display = 'none';
+  document.getElementById('mensaje-resultado').innerHTML = '';
+
+  renderApartados();
+  actualizarBadges();
+  actualizarPuntuacion();
+  refrescarMathJax();
+}
+
+function renderApartados() {
+  const cont = document.getElementById('apartados-container');
+  cont.innerHTML = ejActual.apartados.map((ap, ai) => {
+    const bloqueado = ai > 0 && !respuestasContestadas[ai - 1];
+    return `
+      <div class="apartado" id="apartado-${ai}">
+        <div class="apartado-label">${ap.label}</div>
+        <div class="apartado-pregunta">${ap.pregunta}</div>
+        <div class="opciones-ap" id="opciones-${ai}">
+          ${ap.opciones.map((op, oi) => `
+            <button class="opcion-ap-btn" id="opt-${ai}-${oi}"
+              onclick="seleccionarAp(${ai},${oi})"
+              ${bloqueado ? 'disabled' : ''}>
+              ${op}
+            </button>`).join('')}
+        </div>
+        <div class="feedback-ap" id="feedback-${ai}" aria-live="polite"></div>
+        <button class="btn-corregir-ap" id="btn-corregir-${ai}"
+          onclick="corregirAp(${ai})" disabled ${bloqueado ? 'style="display:none"' : ''}>
+          ✅ Corregir apartado
+        </button>
+      </div>`;
+  }).join('');
+}
+
+function seleccionarAp(ai, oi) {
+  if (progApartados[ai].respondido) return;
+  document.querySelectorAll(`#opciones-${ai} .opcion-ap-btn`).forEach((b, i) => b.classList.toggle('seleccionada', i === oi));
+  document.getElementById(`btn-corregir-${ai}`).disabled = false;
+  document.getElementById(`btn-corregir-${ai}`)._seleccionada = oi;
+}
+
+function corregirAp(ai) {
+  if (progApartados[ai].respondido) return;
+  const ap = ejActual.apartados[ai];
+  const btns = document.querySelectorAll(`#opciones-${ai} .opcion-ap-btn`);
+  const btnCorr = document.getElementById(`btn-corregir-${ai}`);
+  const selIdx = btnCorr._seleccionada;
+  if (selIdx === undefined) return;
+
+  progApartados[ai].respondido = true;
+  respuestasContestadas[ai] = true;
+  btns.forEach(b => b.disabled = true);
+  btnCorr.disabled = true;
+
+  const elegida = ap.opciones[selIdx];
+  const ok = elegida === ap.correcta;
+  progApartados[ai].ok = ok;
+
+  if (!ok) state.haFallado = true;
+
+  btns[selIdx].classList.remove('seleccionada');
+  btns[selIdx].classList.add(ok ? 'correcta' : 'incorrecta');
+  if (!ok) btns.forEach(b => { if (b.textContent.trim() === ap.correcta) b.classList.add('correcta'); });
+
+  const fb = document.getElementById(`feedback-${ai}`);
+  fb.className = 'feedback-ap ' + (ok ? 'ok' : 'ko');
+  fb.innerHTML = (ok ? '✅ Correcto.<br>' : '❌ Incorrecto.<br>') + ap.explicacion;
+  refrescarMathJax();
+
+  const siguiente = ai + 1;
+  if (siguiente < ejActual.apartados.length) {
+    document.querySelectorAll(`#opciones-${siguiente} .opcion-ap-btn`).forEach(b => b.disabled = false);
+    const btnSig = document.getElementById(`btn-corregir-${siguiente}`);
+    btnSig.style.display = '';
+    btnSig.disabled = true;
+    document.getElementById(`apartado-${siguiente}`).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  const todosRespondidos = progApartados.every(p => p.respondido);
+  if (todosRespondidos) {
+    const todosOk = progApartados.every(p => p.ok);
+    const yaCompletado = state.tiposCompletados.has(state.tipoActual);
+
+    if (todosOk && !yaCompletado) {
+      state.puntos += PUNTOS_POR_TIPO;
+      state.tiposCompletados.add(state.tipoActual);
+      document.getElementById('mensaje-resultado').innerHTML = `<div class="mensaje-exito">🎉 ¡Correcto! Has superado este tipo extremeño. Has ganado ${PUNTOS_POR_TIPO} puntos.</div>`;
+      document.getElementById('btn-siguiente').style.display = 'inline-block';
+      document.getElementById('btn-reintentar').style.display = 'none';
+    } else if (!todosOk) {
+      document.getElementById('mensaje-resultado').innerHTML = `<div class="mensaje-fallo">❌ Has fallado algún apartado. No sumas puntos. Puedes reintentar este tipo con otros datos de Extremadura.</div>`;
+      document.getElementById('btn-reintentar').style.display = 'inline-block';
+      document.getElementById('btn-siguiente').style.display = 'none';
+    }
+
+    actualizarPuntuacion();
+    actualizarBadges();
+  }
+}
+
+function reintentarMismoTipo() { generarEjercicio(state.tipoActual); }
+function seleccionarTipo(tipo) {
+  if (state.tiposCompletados.has(tipo)) {
+    document.getElementById('mensaje-resultado').innerHTML = `<div class="mensaje-exito">✅ Ya superaste este tipo. ¡Sigue con los demás!</div>`;
+    return;
+  }
+  generarEjercicio(tipo);
+}
+function siguienteEjercicio() {
+  const pendientes = TIPOS.filter(t => !state.tiposCompletados.has(t));
+  if (pendientes.length > 0) generarEjercicio(pendientes[0]);
+  else document.getElementById('mensaje-resultado').innerHTML = `<div class="mensaje-exito">🏆 ¡Felicidades! Has superado todos los tipos extremeños. Finaliza para ver tu nota.</div>`;
+}
+function actualizarPuntuacion() {
+  document.getElementById('pts-pos').textContent = state.tiposCompletados.size;
+  document.getElementById('pts-total').textContent = state.puntos.toFixed(2);
+  const pct = (state.puntos / 10) * 100;
+  document.getElementById('barra-fill').style.width = Math.min(100, pct) + '%';
+  document.getElementById('progreso-label').innerHTML = `Tipos superados: ${state.tiposCompletados.size}/${TIPOS.length} · Puntos: ${state.puntos.toFixed(2)}/10`;
+}
+function actualizarBadges() {
+  TIPOS.forEach(t => {
+    const el = document.getElementById(`badge-${t}`);
+    if (!el) return;
+    if (state.tiposCompletados.has(t)) { el.classList.add('completado'); el.classList.remove('activo', 'fallido'); }
+    else if (state.tipoActual === t && state.haFallado) { el.classList.add('fallido'); el.classList.remove('activo', 'completado'); }
+    else if (state.tipoActual === t) { el.classList.add('activo'); el.classList.remove('completado', 'fallido'); }
+    else { el.classList.remove('activo', 'completado', 'fallido'); }
+  });
+}
+function finalizarYCalificar() {
+  const nombreInput = document.getElementById('nombreAlumno');
+  const nombre = nombreInput.value.trim();
+  const errorNombre = document.getElementById('nombre-error');
+  if (!nombre) {
+    nombreInput.classList.add('campo-error');
+    errorNombre.style.display = 'inline';
+    nombreInput.focus();
+    return;
+  }
+  nombreInput.classList.remove('campo-error');
+  errorNombre.style.display = 'none';
+
+  const faltan = TIPOS.filter(t => !state.tiposCompletados.has(t));
+  if (faltan.length > 0) {
+    mostrarAvisoIncompleto(faltan);
+    return;
+  }
+  procederFinalizar();
+}
+
+function mostrarAvisoIncompleto(faltan) {
+  const nombresFaltan = faltan.map(t => {
+    if (t === 'proporcion') return 'Proporción';
+    if (t === 'media') return 'Media';
+    if (t === 'tamano') return 'Tamaño Muestral';
+    return 'Longitud del IC';
+  }).join(', ');
+  document.getElementById('aviso-faltan-lista').textContent = nombresFaltan;
+  document.getElementById('aviso-nota-actual').textContent = state.puntos.toFixed(2);
+  document.getElementById('overlay-aviso').classList.add('show');
+}
+
+function cancelarAvisoFinalizar() {
+  document.getElementById('overlay-aviso').classList.remove('show');
+}
+
+function confirmarFinalizarIncompleto() {
+  document.getElementById('overlay-aviso').classList.remove('show');
+  procederFinalizar();
+}
+
+function procederFinalizar() {
+  const nombre = document.getElementById('nombreAlumno').value.trim();
+  const nota = state.puntos;
+  const ahora = new Date();
+  // ✅ Tiempo transcurrido DESDE QUE SE CARGÓ LA PÁGINA
+  const elapsed = Math.floor((Date.now() - globalStartTime) / 1000);
+  const h = String(Math.floor(elapsed / 3600)).padStart(2, '0');
+  const m = String(Math.floor((elapsed % 3600) / 60)).padStart(2, '0');
+  const s = String(elapsed % 60).padStart(2, '0');
+  document.getElementById('modal-alumno').innerHTML = `<strong>${nombre}</strong>`;
+  document.getElementById('modal-nota').textContent = nota.toFixed(2) + ' / 10';
+  document.getElementById('modal-meta').innerHTML =
+    `📅 Fecha: ${ahora.toLocaleDateString('es-ES')}<br>🕐 Hora: ${ahora.toTimeString().slice(0, 8)}<br>⏱ Tiempo total: ${h}:${m}:${s}<br>✅ Tipos superados: ${state.tiposCompletados.size}/${TIPOS.length}<br>🎯 Puntuación final: ${nota.toFixed(2)}/10<br>💡 Cada tipo superado suma ${PUNTOS_POR_TIPO} puntos.`;
+  const modal = document.getElementById('modal');
+  const body = document.body;
+  let bg, tc;
+  body.classList.remove('nota-perfecta');
+  if (nota >= 9.5) { bg = '#1a7a1a'; tc = 'white'; body.classList.add('nota-perfecta'); document.getElementById('modal-titulo').textContent = '🏆 ¡Perfecto!'; }
+  else if (nota >= 8.5) { bg = '#6dbf6d'; tc = 'white'; document.getElementById('modal-titulo').textContent = '🌟 ¡Excelente!'; }
+  else if (nota >= 7) { bg = '#1a4f8a'; tc = 'white'; document.getElementById('modal-titulo').textContent = '👍 Muy bien'; }
+  else if (nota >= 5) { bg = '#f5a623'; tc = '#222'; document.getElementById('modal-titulo').textContent = '📕 Suficiente'; }
+  else { bg = '#c0392b'; tc = 'white'; document.getElementById('modal-titulo').textContent = '📖 Puedes mejorar'; }
+  modal.style.backgroundColor = bg; modal.style.color = tc;
+  const bc = modal.querySelector('.btn-cerrar');
+  if (bc) { bc.style.color = tc; bc.style.borderColor = tc; }
+  document.getElementById('overlay').classList.add('show');
+}
+function cerrarModal() {
+  document.getElementById('overlay').classList.remove('show');
+  document.body.classList.remove('nota-perfecta');
+  // El cronómetro mide desde el inicio de la sesión (no se reinicia entre intentos)
+  // Reiniciamos el estado principal (puntos, tipos completados, etc.)
+  state = {
+    puntos: 0,
+    tiposCompletados: new Set(),
+    tipoActual: null,
+    haFallado: false
+  };
+  actualizarPuntuacion();
+  TIPOS.forEach(t => { const el = document.getElementById(`badge-${t}`); if (el) el.classList.remove('completado', 'activo', 'fallido'); });
+  generarEjercicio('proporcion');
+}
+
+// Soporte de tecla Enter en el panel de proceso (no toca la lógica de la tabla)
+document.getElementById('alfaInput').addEventListener('keypress', e => { if (e.key === 'Enter') verificarAlfa(); });
+document.getElementById('alfaMedioInput').addEventListener('keypress', e => { if (e.key === 'Enter' && !e.target.disabled) verificarAlfaMedio(); });
+document.getElementById('unoMenosInput').addEventListener('keypress', e => { if (e.key === 'Enter' && !e.target.disabled) verificarUnoMenos(); });
+document.getElementById('nombreAlumno').addEventListener('keypress', e => { if (e.key === 'Enter') finalizarYCalificar(); });
+
+// Inicialización
+construirTablaNormal();
+drawEmptyNormalCurve();
+generarEjercicio('proporcion');
+</script>
+</body>
+</html>
