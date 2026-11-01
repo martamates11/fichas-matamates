@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Semejanza de triángulos – Ficha interactiva</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f0e8;--surface:#fffdf7;--ink:#1a1008;--soft:#5c4a30;
+  --accent:#1a6b4f;--border:#c4d4c0;--ok:#2a6b4f;--err:#c8401a;--blue:#1a3a6b;
+  --inp-bg:#fef9f0;--inp-b:#a8c4a0;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);
+  background-image:repeating-linear-gradient(0deg,transparent,transparent 27px,rgba(140,110,70,.05) 28px);
+  transition: background 0.3s;}
+body.all-green{background:#e8f5e9;}
+.autoria{background:var(--ink);text-align:center;padding:5px 12px;font-size:10px;color:rgba(245,240,232,.55);letter-spacing:.4px;}
+.hdr{background:var(--ink);color:var(--bg);padding:12px 40px 10px;position:relative;overflow:hidden;}
+.hdr::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(-45deg,transparent,transparent 10px,rgba(255,255,255,.02) 10px,rgba(255,255,255,.02) 11px);}
+.hdr-in{position:relative;z-index:1;max-width:860px;margin:0 auto;}
+.htag{display:inline-block;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#7ec9a5;background:rgba(42,107,79,.15);border:1px solid rgba(42,107,79,.4);padding:2px 8px;border-radius:2px;}
+.hdr h1{font-family:'Playfair Display',serif;font-size:clamp(24px,4vw,36px);font-weight:900;line-height:1;margin-top:6px;}
+.hdr h1 span{color:#7ec9a5;}
+.hmeta{font-size:10px;color:rgba(245,240,232,.5);margin-top:2px;}
+.nbar{background:var(--surface);border-bottom:2px solid var(--border);padding:10px 40px;}
+.nbar-in{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.nlabel{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--soft);cursor:default;}
+.ninp{flex:1;max-width:300px;border:none;border-bottom:2px solid var(--border);background:transparent;font-size:15px;padding:3px 8px;outline:none;}
+.ninp:focus{border-color:var(--accent);}
+.sbar{background:var(--surface);border-bottom:1px solid var(--border);padding:6px 40px;}
+.sbar-in{max-width:860px;margin:0 auto;display:flex;gap:16px;flex-wrap:wrap;}
+.chip{font-family:'DM Mono',monospace;font-size:11px;padding:2px 10px;border-radius:20px;border:1.5px solid;}
+.chip.pts{border-color:var(--blue);color:var(--blue);background:rgba(26,58,107,.07);}
+.chip.ok{border-color:var(--ok);color:var(--ok);background:rgba(42,107,79,.07);}
+.chip.err{border-color:var(--err);color:var(--err);background:rgba(200,64,26,.07);}
+main{max-width:860px;margin:0 auto;padding:20px 18px 50px;}
+.stitle{display:flex;align-items:center;gap:12px;margin-bottom:14px;margin-top:20px;}
+.snum{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:17px;font-weight:700;background:#1a6b4f;color:#fff;}
+.sinfo h2{font-family:'Playfair Display',serif;font-size:18px;}
+.sinfo p{font-size:11px;color:var(--soft);}
+.pts-pill{margin-left:auto;font-family:'DM Mono',monospace;font-size:10px;padding:3px 10px;border-radius:20px;border:1.5px solid var(--ok);color:var(--ok);}
+.card{background:var(--surface);border:1.5px solid var(--border);border-radius:6px;padding:18px 22px;margin-bottom:20px;position:relative;transition:border-color .3s;}
+.card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:#1a6b4f;}
+.card.cor{border-color:var(--ok);background:rgba(42,107,79,.04);}
+.card.wrong{border-color:var(--err);background:rgba(200,64,26,.04);}
+.ctag{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;background:rgba(26,107,79,.12);color:#1a6b4f;padding:2px 8px;border-radius:2px;display:inline-block;margin-bottom:8px;}
+.image-area{background:#ede7db;border-radius:12px;padding:10px;text-align:center;margin:10px 0;border:1px solid var(--border);}
+.image-area img{max-width:100%;max-height:200px;border-radius:6px;object-fit:contain;}
+.image-area .img-note{font-size:9px;color:#5c4a30;margin-top:4px;}
+.data-panel{background:var(--inp-bg);border:1.5px dashed var(--inp-b);border-radius:5px;padding:12px;margin:10px 0;}
+.var-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px;}
+.var-label{font-family:'DM Mono',monospace;font-size:11px;font-weight:600;color:var(--blue);min-width:130px;}
+.var-value{font-family:'DM Mono',monospace;font-size:13px;background:var(--surface);border:1px solid var(--border);padding:3px 10px;border-radius:12px;}
+.qtext{font-size:13.5px;line-height:1.5;margin-bottom:12px;background:#faf6ea;padding:10px 14px;border-radius:10px;}
+.ans-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px;}
+.ans-label{font-family:'DM Mono',monospace;font-size:11px;cursor:default;}
+.ans-inp{border:1.5px solid var(--inp-b);border-radius:3px;background:var(--inp-bg);font-family:'DM Mono',monospace;font-size:13px;padding:5px 10px;width:180px;outline:none;}
+.ans-inp:focus{border-color:var(--blue);}
+.ans-inp.vok{border-color:var(--ok)!important;background:rgba(42,107,79,.07);}
+.ans-inp.ver{border-color:var(--err)!important;background:rgba(200,64,26,.07);}
+.input-err{color:var(--err);font-size:11px;font-weight:600;min-height:15px;margin-bottom:8px;}
+.actions{display:flex;gap:8px;margin-top:5px;}
+.btn-chk{background:var(--ink);color:var(--bg);border:none;padding:5px 14px;border-radius:3px;font-size:12px;font-weight:600;cursor:pointer;}
+.btn-chk:hover{background:var(--accent);}
+.btn-chk:disabled{opacity:.5;cursor:default;}
+.btn-otro{display:none;background:var(--blue);color:#fff;border:none;padding:5px 14px;border-radius:3px;font-size:12px;cursor:pointer;}
+.btn-otro:hover{background:#0f2650;}
+.fb{display:none;margin-top:8px;padding:7px 12px;border-radius:4px;font-size:12px;border:1.5px solid;}
+.fb.show{display:block;}
+.fb.ok{border-color:var(--ok);background:rgba(42,107,79,.08);color:var(--ok);}
+.fb.er{border-color:var(--err);background:rgba(200,64,26,.08);color:var(--err);}
+.fb .why{margin-top:6px;font-size:10.5px;font-family:'DM Mono',monospace;line-height:1.4;}
+.fb .penal-note{margin-top:6px;font-size:11px;font-weight:600;}
+.submit-area{margin-top:30px;text-align:center;}
+.btn-sub{background:var(--accent);color:#fff;border:none;padding:12px 36px;font-family:'Playfair Display',serif;font-size:16px;font-weight:700;border-radius:4px;cursor:pointer;box-shadow:3px 3px 0 var(--ink);transition:all .2s;}
+.btn-sub:hover{background:#0f4f3a;transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink);}
+.btn-sub:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
+.overlay-name,.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;align-items:center;justify-content:center;padding:16px;}
+.overlay-name.show,.overlay.show{display:flex;}
+.modal-name{background:var(--surface);border:2px solid var(--err);border-radius:8px;padding:24px 28px;max-width:380px;width:100%;text-align:center;}
+.modal-name h3{font-family:'Playfair Display',serif;font-size:20px;margin-bottom:6px;color:var(--err);}
+.modal-name p{font-size:13px;margin-bottom:16px;}
+.modal-name-inp{width:100%;border:1.5px solid var(--inp-b);border-radius:4px;padding:8px;margin-bottom:6px;font-size:14px;}
+.btn-name-ok{background:var(--accent);color:#fff;border:none;padding:8px;border-radius:3px;font-weight:700;width:100%;cursor:pointer;}
+.btn-row{display:flex;gap:10px;}
+.btn-row .btn-name-ok{flex:1;}
+.btn-cancel{background:#8a8a8a!important;}
+.modal{background:var(--surface);border-radius:8px;padding:24px 28px;max-width:420px;width:100%;text-align:center;box-shadow:6px 6px 0 var(--ink);position:relative;transition:all 0.2s;}
+.modal-close{position:absolute;top:8px;right:12px;background:none;border:none;font-size:18px;cursor:pointer;color:var(--soft);}
+.modal-close:hover{color:var(--ink);}
+.rname{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;margin-bottom:4px;}
+.rgrade{font-family:'Playfair Display',serif;font-size:52px;font-weight:900;line-height:1;margin:6px 0;}
+.rlabel{font-size:13px;margin-bottom:14px;}
+.rstats{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
+.sbox{padding:6px 12px;border:1px solid rgba(255,255,255,.3);border-radius:4px;font-size:11px;background:rgba(0,0,0,0.2);}
+.screenshot-note{font-size:10px;margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.3);}
+.modal.n10{background:#1a7a1a;color:#fff;}
+.modal.n9{background:#6dbf6d;color:#fff;}
+.modal.n8{background:#1a4f8a;color:#fff;}
+.modal.n7{background:#5b9bd5;color:#fff;}
+.modal.n6{background:#c05c00;color:#fff;}
+.modal.n5{background:#f5a623;color:#1a1008;}
+.modal.n4,.modal.n3,.modal.n2,.modal.n1,.modal.n0{background:#c0392b;color:#fff;}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+</style>
+</head>
+<body>
+<div class="autoria">Material elaborado por Marta L Letona S. Basado en el trabajo de Javier Cayetano</div>
+<header class="hdr">
+  <div class="hdr-in">
+    <span class="htag">Geometría · Semejanza</span>
+    <h1>Triángulos <span>semejantes</span></h1>
+    <p class="hmeta">Aplica la proporcionalidad: altura / sombra = altura / sombra</p>
+  </div>
+</header>
+
+<div class="nbar" id="nbar">
+  <div class="nbar-in">
+    <label class="nlabel" for="sName">Alumno/a</label>
+    <input class="ninp" id="sName" type="text" placeholder="Escribe tu nombre…" autocomplete="off">
+  </div>
+</div>
+
+<div class="sbar" aria-live="polite">
+  <div class="sbar-in">
+    <span class="chip pts" id="cPts">Puntuación: 0 / 10</span>
+    <span class="chip ok" id="cOk">✓ 0 correctas</span>
+    <span class="chip err" id="cErr">✗ 0 fallos registrados</span>
+  </div>
+</div>
+
+<main>
+  <div class="stitle"><div class="snum">1</div><div class="sinfo"><h2>Altura del edificio</h2><p>Sombra · Hombre · Semejanza</p></div><span class="pts-pill">5 ptos</span></div>
+  <div class="card" id="cardEdificio"></div>
+  <div class="stitle"><div class="snum">2</div><div class="sinfo"><h2>Altura de la farola</h2><p>Poste, persona y sombra</p></div><span class="pts-pill">5 ptos</span></div>
+  <div class="card" id="cardFarola"></div>
+  <div class="submit-area"><button class="btn-sub" id="finalizarBtn">Finalizar y Calificar</button></div>
+</main>
+
+<!-- Modal: pedir nombre -->
+<div class="overlay-name" id="overlayName">
+  <div class="modal-name">
+    <h3>✏️ Tu nombre</h3>
+    <p>Escribe tu nombre para continuar</p>
+    <label class="sr-only" for="modalNameInp">Nombre y apellidos</label>
+    <input class="modal-name-inp" id="modalNameInp" type="text" placeholder="Nombre y apellidos">
+    <div class="input-err" id="modalNameErr" aria-live="assertive"></div>
+    <button class="btn-name-ok" id="confirmNameBtn">Continuar</button>
+  </div>
+</div>
+
+<!-- Modal: confirmar finalización (sustituye a confirm() nativo) -->
+<div class="overlay" id="overlayConfirmFinal">
+  <div class="modal-name" style="border-color:var(--blue)">
+    <h3 style="color:var(--blue)">⚠️ Finalizar ficha</h3>
+    <p>Si finalizas la ficha, ya no podrás seguir sumando puntos. ¿Deseas continuar?</p>
+    <div class="btn-row">
+      <button class="btn-name-ok btn-cancel" id="cancelFinalBtn">Cancelar</button>
+      <button class="btn-name-ok" id="okFinalBtn">Sí, finalizar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: confirmar pérdida de puntos al pulsar "Otro" (sustituye a confirm() nativo) -->
+<div class="overlay" id="overlayConfirmOtro">
+  <div class="modal-name" style="border-color:var(--blue)">
+    <h3 style="color:var(--blue)">⚠️ Vas a perder puntos</h3>
+    <p id="confirmOtroMsg"></p>
+    <div class="btn-row">
+      <button class="btn-name-ok btn-cancel" id="cancelOtroBtn">Cancelar</button>
+      <button class="btn-name-ok" id="okOtroBtn">Sí, continuar</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay"><div class="modal" id="modal"><button class="modal-close" id="closeModalBtn">✕</button><div class="rname" id="rName"></div><div class="rgrade" id="rGrade"></div><div class="rlabel" id="rLabel"></div><div class="rstats"><div class="sbox" id="rS1"></div><div class="sbox" id="rS2"></div><div class="sbox" id="rS3"></div><div class="sbox" id="rS4"></div></div><div class="screenshot-note">📸 Haz una captura de pantalla y entrégala en Google Classroom.</div></div></div>
+
+<script>
+// ========== ENLACES DIRECTOS DE IMÁGENES (ImgBB) ==========
+const IMG_EDIFICIO = "https://i.ibb.co/N60sNMsV/edif.png";
+const IMG_FAROLA = "https://i.ibb.co/qLBgPQRS/Sin-t-tulo.png";
+
+// ========== CONSTANTES DE PUNTUACIÓN ==========
+const PUNTOS_POR_EJERCICIO = 5;              // 10 / 2 ejercicios
+const DEDUCCION_POR_FALLO_EJERCICIO = 2;     // se resta una vez por ejercicio que haya tenido algún fallo, aunque luego se acierte una instancia nueva
+
+// ========== BANCO DE 10 EJERCICIOS PARA EDIFICIO ==========
+const bancoEdificio = [
+  { alturaHombre: 1.65, sombraHombre: 2.10, distanciaEdificio: 11.2 },
+  { alturaHombre: 1.72, sombraHombre: 1.95, distanciaEdificio: 14.5 },
+  { alturaHombre: 1.80, sombraHombre: 2.45, distanciaEdificio: 9.8 },
+  { alturaHombre: 1.58, sombraHombre: 1.80, distanciaEdificio: 15.3 },
+  { alturaHombre: 1.90, sombraHombre: 2.60, distanciaEdificio: 12.0 },
+  { alturaHombre: 1.68, sombraHombre: 2.00, distanciaEdificio: 13.7 },
+  { alturaHombre: 1.75, sombraHombre: 2.30, distanciaEdificio: 10.5 },
+  { alturaHombre: 1.82, sombraHombre: 2.15, distanciaEdificio: 16.2 },
+  { alturaHombre: 1.60, sombraHombre: 1.85, distanciaEdificio: 12.8 },
+  { alturaHombre: 1.88, sombraHombre: 2.50, distanciaEdificio: 11.9 }
+];
+
+// ========== BANCO DE 10 EJERCICIOS PARA FAROLA ==========
+const bancoFarola = [
+  { alturaPersona: 1.65, sombraPersona: 1.90, distanciaFarola: 5.2 },
+  { alturaPersona: 1.72, sombraPersona: 2.05, distanciaFarola: 4.5 },
+  { alturaPersona: 1.80, sombraPersona: 2.20, distanciaFarola: 6.1 },
+  { alturaPersona: 1.58, sombraPersona: 1.75, distanciaFarola: 4.8 },
+  { alturaPersona: 1.90, sombraPersona: 2.40, distanciaFarola: 5.5 },
+  { alturaPersona: 1.68, sombraPersona: 1.95, distanciaFarola: 6.8 },
+  { alturaPersona: 1.75, sombraPersona: 2.10, distanciaFarola: 5.0 },
+  { alturaPersona: 1.82, sombraPersona: 2.25, distanciaFarola: 4.2 },
+  { alturaPersona: 1.60, sombraPersona: 1.80, distanciaFarola: 5.9 },
+  { alturaPersona: 1.88, sombraPersona: 2.35, distanciaFarola: 6.5 }
+];
+
+let edificioData = {...bancoEdificio[0]};
+let farolaData = {...bancoFarola[0]};
+let indiceEdificio = 0, indiceFarola = 0;
+let indicesUsadosEdificio = [0], indicesUsadosFarola = [0];
+
+// Estado de cada ejercicio: 'pendiente' | 'correcto' | 'incorrecto'
+let estado = { edificio: 'pendiente', farola: 'pendiente' };
+// Marca PERMANENTE: una vez true, no se borra aunque luego se acierte una instancia nueva
+let fallado = { edificio: false, farola: false };
+
+let finalized = false;
+let finalizando = false;
+let pendingOtroTipo = null; // 'edificio' | 'farola' mientras el modal de confirmación está abierto
+const startTime = Date.now();
+
+function sombraTotalEdif(){ return edificioData.distanciaEdificio + edificioData.sombraHombre; }
+function alturaEdif(){ return (edificioData.alturaHombre * sombraTotalEdif()) / edificioData.sombraHombre; }
+function sombraTotalFar(){ return farolaData.distanciaFarola + farolaData.sombraPersona; }
+function alturaFar(){ return (farolaData.alturaPersona * sombraTotalFar()) / farolaData.sombraPersona; }
+
+function selecNoUsado(banco, usados){
+  if(usados.length >= banco.length) return Math.floor(Math.random() * banco.length);
+  let disp = banco.map((_,i)=>i).filter(i=>!usados.includes(i));
+  return disp[Math.floor(Math.random() * disp.length)];
+}
+
+// ---------- Mensajes de error accesibles (sustituyen a alert()) ----------
+function showInlineError(id, mensaje){
+  const el = document.getElementById(id);
+  if(el) el.textContent = mensaje;
+}
+function clearInlineError(id){
+  const el = document.getElementById(id);
+  if(el) el.textContent = '';
+}
+
+// ---------- Cálculo de la puntuación ----------
+function actualizarPuntuacion(){
+  let aciertos = (estado.edificio === 'correcto' ? 1 : 0) + (estado.farola === 'correcto' ? 1 : 0);
+  let base = aciertos * PUNTOS_POR_EJERCICIO;
+  let numFallos = (fallado.edificio ? 1 : 0) + (fallado.farola ? 1 : 0);
+  // La deducción solo se aplica si hay puntos que perder (regla acordada con Marta)
+  let penalizacion = base > 0 ? numFallos * DEDUCCION_POR_FALLO_EJERCICIO : 0;
+  let nota = Math.max(0, base - penalizacion);
+
+  const cPts = document.getElementById('cPts');
+  const cOk = document.getElementById('cOk');
+  const cErr = document.getElementById('cErr');
+  if(cPts) cPts.innerHTML = `Puntuación: ${nota} / 10`;
+  if(cOk) cOk.innerHTML = `✓ ${aciertos} correctas`;
+  if(cErr) cErr.innerHTML = `✗ ${numFallos} fallo${numFallos===1?'':'s'} registrado${numFallos===1?'':'s'}`;
+  return nota;
+}
+
+function comprobarEdificio(){
+  if(finalized || estado.edificio !== 'pendiente') return;
+  let input = document.getElementById('edifResp');
+  if(!input){ console.error("Input edifResp no encontrado"); return; }
+  clearInlineError('edifErr');
+  let raw = input.value.trim();
+  let val = parseFloat(raw.replace(',', '.'));
+  if(raw === '' || isNaN(val)){
+    showInlineError('edifErr', 'Introduce un número válido (puedes usar coma o punto decimal).');
+    return;
+  }
+  let correcto = alturaEdif();
+  let ok = Math.abs(val - correcto) <= 0.05;
+  estado.edificio = ok ? 'correcto' : 'incorrecto';
+  if(!ok) fallado.edificio = true;
+
+  input.classList.add(ok ? 'vok' : 'ver');
+  input.disabled = true;
+
+  let fb = document.getElementById('fbEdificio');
+  if(fb){
+    fb.classList.add('show', ok ? 'ok' : 'er');
+
+    let sombraTotal = sombraTotalEdif().toFixed(2);
+    let procedimiento = `📐 Procedimiento: Altura edificio / Sombra edificio = Altura hombre / Sombra hombre<br>`;
+    procedimiento += `→ X / ${sombraTotal} = ${edificioData.alturaHombre} / ${edificioData.sombraHombre}<br>`;
+    procedimiento += `→ X = ${sombraTotal} × ${edificioData.alturaHombre} / ${edificioData.sombraHombre}<br>`;
+    procedimiento += `→ X = ${sombraTotal} × ${edificioData.alturaHombre} ÷ ${edificioData.sombraHombre} = ${correcto.toFixed(2)} m`;
+
+    let notaNota = actualizarPuntuacion();
+    let penalNota = '';
+    if(ok && fallado.edificio){
+      penalNota = `<div class="penal-note">⚠ Este ejercicio tuvo un fallo antes de acertarlo: se mantiene la resta de ${DEDUCCION_POR_FALLO_EJERCICIO} puntos sobre el total.</div>`;
+    } else if(!ok){
+      penalNota = `<div class="penal-note">⚠ Este fallo resta ${DEDUCCION_POR_FALLO_EJERCICIO} puntos del total en cuanto tengas puntos en la ficha.</div>`;
+    }
+
+    if(ok){
+      fb.innerHTML = `<strong>✓ ¡Correcto! (+${PUNTOS_POR_EJERCICIO} puntos)</strong><div class="why">${procedimiento}</div>${penalNota}`;
+    } else {
+      fb.innerHTML = `<strong>✗ Incorrecto (0 puntos)</strong><div class="why">La respuesta correcta es ${correcto.toFixed(2)} m.<br><br>${procedimiento}</div>${penalNota}`;
+    }
+  } else {
+    actualizarPuntuacion();
+  }
+
+  let btn = document.getElementById('checkEdifBtn');
+  if(btn) btn.disabled = true;
+  let btnOtro = document.getElementById('otroEdifBtn');
+  if(btnOtro) btnOtro.style.display = 'inline-flex';
+  let card = document.getElementById('cardEdificio');
+  if(card) card.classList.add(ok ? 'cor' : 'wrong');
+}
+
+function comprobarFarola(){
+  if(finalized || estado.farola !== 'pendiente') return;
+  let input = document.getElementById('farolResp');
+  if(!input){ console.error("Input farolResp no encontrado"); return; }
+  clearInlineError('farolErr');
+  let raw = input.value.trim();
+  let val = parseFloat(raw.replace(',', '.'));
+  if(raw === '' || isNaN(val)){
+    showInlineError('farolErr', 'Introduce un número válido (puedes usar coma o punto decimal).');
+    return;
+  }
+  let correcto = alturaFar();
+  let ok = Math.abs(val - correcto) <= 0.05;
+  estado.farola = ok ? 'correcto' : 'incorrecto';
+  if(!ok) fallado.farola = true;
+
+  input.classList.add(ok ? 'vok' : 'ver');
+  input.disabled = true;
+
+  let fb = document.getElementById('fbFarola');
+  if(fb){
+    fb.classList.add('show', ok ? 'ok' : 'er');
+
+    let sombraTotal = sombraTotalFar().toFixed(2);
+    let procedimiento = `📐 Procedimiento: Altura farola / Sombra farola = Altura persona / Sombra persona<br>`;
+    procedimiento += `→ X / ${sombraTotal} = ${farolaData.alturaPersona} / ${farolaData.sombraPersona}<br>`;
+    procedimiento += `→ X = ${sombraTotal} × ${farolaData.alturaPersona} / ${farolaData.sombraPersona}<br>`;
+    procedimiento += `→ X = ${sombraTotal} × ${farolaData.alturaPersona} ÷ ${farolaData.sombraPersona} = ${correcto.toFixed(2)} m`;
+
+    let notaNota = actualizarPuntuacion();
+    let penalNota = '';
+    if(ok && fallado.farola){
+      penalNota = `<div class="penal-note">⚠ Este ejercicio tuvo un fallo antes de acertarlo: se mantiene la resta de ${DEDUCCION_POR_FALLO_EJERCICIO} puntos sobre el total.</div>`;
+    } else if(!ok){
+      penalNota = `<div class="penal-note">⚠ Este fallo resta ${DEDUCCION_POR_FALLO_EJERCICIO} puntos del total en cuanto tengas puntos en la ficha.</div>`;
+    }
+
+    if(ok){
+      fb.innerHTML = `<strong>✓ ¡Correcto! (+${PUNTOS_POR_EJERCICIO} puntos)</strong><div class="why">${procedimiento}</div>${penalNota}`;
+    } else {
+      fb.innerHTML = `<strong>✗ Incorrecto (0 puntos)</strong><div class="why">La respuesta correcta es ${correcto.toFixed(2)} m.<br><br>${procedimiento}</div>${penalNota}`;
+    }
+  } else {
+    actualizarPuntuacion();
+  }
+
+  let btn = document.getElementById('checkFarolBtn');
+  if(btn) btn.disabled = true;
+  let btnOtro = document.getElementById('otroFarolBtn');
+  if(btnOtro) btnOtro.style.display = 'inline-flex';
+  let card = document.getElementById('cardFarola');
+  if(card) card.classList.add(ok ? 'cor' : 'wrong');
+}
+
+// ---------- "Otro ejercicio": con confirmación si hay puntos en juego ----------
+function nuevoEdificio(){
+  if(finalized) return;
+  if(estado.edificio === 'correcto'){
+    abrirConfirmOtro('edificio');
+    return;
+  }
+  reallyNuevoEdificio();
+}
+
+function nuevoFarola(){
+  if(finalized) return;
+  if(estado.farola === 'correcto'){
+    abrirConfirmOtro('farola');
+    return;
+  }
+  reallyNuevoFarola();
+}
+
+function reallyNuevoEdificio(){
+  let nuevo = selecNoUsado(bancoEdificio, indicesUsadosEdificio);
+  indicesUsadosEdificio.push(nuevo);
+  if(indicesUsadosEdificio.length > bancoEdificio.length) indicesUsadosEdificio = [nuevo];
+  indiceEdificio = nuevo;
+  edificioData = {...bancoEdificio[indiceEdificio]};
+  estado.edificio = 'pendiente'; // fallado.edificio NO se resetea: queda registrado permanentemente
+  renderEdificio();
+  actualizarPuntuacion();
+}
+
+function reallyNuevoFarola(){
+  let nuevo = selecNoUsado(bancoFarola, indicesUsadosFarola);
+  indicesUsadosFarola.push(nuevo);
+  if(indicesUsadosFarola.length > bancoFarola.length) indicesUsadosFarola = [nuevo];
+  indiceFarola = nuevo;
+  farolaData = {...bancoFarola[indiceFarola]};
+  estado.farola = 'pendiente'; // fallado.farola NO se resetea: queda registrado permanentemente
+  renderFarola();
+  actualizarPuntuacion();
+}
+
+function abrirConfirmOtro(tipo){
+  pendingOtroTipo = tipo;
+  const nombre = tipo === 'edificio' ? 'del edificio' : 'de la farola';
+  document.getElementById('confirmOtroMsg').textContent =
+    `Ya tienes los ${PUNTOS_POR_EJERCICIO} puntos del ejercicio ${nombre} conseguidos. Si generas uno nuevo, perderás esos puntos. ¿Quieres continuar?`;
+  document.getElementById('overlayConfirmOtro').classList.add('show');
+}
+function cancelarConfirmOtro(){
+  pendingOtroTipo = null;
+  document.getElementById('overlayConfirmOtro').classList.remove('show');
+}
+function aceptarConfirmOtro(){
+  const t = pendingOtroTipo;
+  pendingOtroTipo = null;
+  document.getElementById('overlayConfirmOtro').classList.remove('show');
+  if(t === 'edificio') reallyNuevoEdificio();
+  else if(t === 'farola') reallyNuevoFarola();
+}
+
+function renderEdificio(){
+  let st = sombraTotalEdif().toFixed(2);
+  let html = `
+    <span class="ctag">🏢 Edificio</span>
+    <div class="image-area">
+      <img src="${IMG_EDIFICIO}" alt="Esquema edificio y hombre">
+      <div class="img-note">📐 Triángulos semejantes: el hombre y el edificio con sus sombras</div>
+    </div>
+    <div class="data-panel">
+      <div class="var-row"><span class="var-label">👤 Altura del hombre:</span><span class="var-value">${edificioData.alturaHombre} m</span></div>
+      <div class="var-row"><span class="var-label">📏 Sombra del hombre:</span><span class="var-value">${edificioData.sombraHombre} m</span></div>
+      <div class="var-row"><span class="var-label">📐 Distancia hombre → edificio:</span><span class="var-value">${edificioData.distanciaEdificio} m</span></div>
+      <div class="var-row"><span class="var-label">🏙️ Sombra total del edificio:</span><span class="var-value">${st} m</span></div>
+    </div>
+    <p class="qtext"><strong>✏️ Enunciado:</strong> Un hombre de altura <strong>${edificioData.alturaHombre} m</strong> proyecta una sombra de <strong>${edificioData.sombraHombre} m</strong>. La distancia desde la posición del hombre hasta la base del edificio es de <strong>${edificioData.distanciaEdificio} m</strong>. La sombra del edificio mide <strong>${st} m</strong> (distancia al hombre + sombra del hombre).<br><br>Calcula la <strong>altura del edificio</strong> (en metros).</p>
+    <div class="ans-row"><label class="ans-label" for="edifResp">Altura del edificio (m) →</label><input class="ans-inp" id="edifResp" placeholder="Ej: 12.35" autocomplete="off"></div>
+    <div class="input-err" id="edifErr" aria-live="assertive"></div>
+    <div class="actions"><button class="btn-chk" id="checkEdifBtn">✓ Comprobar</button><button class="btn-otro" id="otroEdifBtn" style="display:none">🔄 Otro edificio</button></div>
+    <div class="fb" id="fbEdificio" aria-live="polite"></div>
+  `;
+  const cardEdificio = document.getElementById('cardEdificio');
+  if(cardEdificio) cardEdificio.innerHTML = html;
+
+  if(estado.edificio !== 'pendiente'){
+    let inp = document.getElementById('edifResp');
+    if(inp) inp.disabled = true;
+    let btn = document.getElementById('checkEdifBtn');
+    if(btn) btn.disabled = true;
+    let btnOtro = document.getElementById('otroEdifBtn');
+    if(btnOtro) btnOtro.style.display = 'inline-flex';
+  }
+  let btn = document.getElementById('checkEdifBtn');
+  if(btn) btn.onclick = comprobarEdificio;
+  let btnOtro = document.getElementById('otroEdifBtn');
+  if(btnOtro) btnOtro.onclick = nuevoEdificio;
+}
+
+function renderFarola(){
+  let st = sombraTotalFar().toFixed(2);
+  let html = `
+    <span class="ctag">💡 Farola</span>
+    <div class="image-area">
+      <img src="${IMG_FAROLA}" alt="Esquema farola y persona">
+      <div class="img-note">📐 Triángulos semejantes: farola y persona con sus sombras</div>
+    </div>
+    <div class="data-panel">
+      <div class="var-row"><span class="var-label">🚶 Altura de la persona:</span><span class="var-value">${farolaData.alturaPersona} m</span></div>
+      <div class="var-row"><span class="var-label">🌑 Sombra de la persona:</span><span class="var-value">${farolaData.sombraPersona} m</span></div>
+      <div class="var-row"><span class="var-label">📏 Distancia farola → persona:</span><span class="var-value">${farolaData.distanciaFarola} m</span></div>
+      <div class="var-row"><span class="var-label">💡 Sombra total farola:</span><span class="var-value">${st} m</span></div>
+    </div>
+    <p class="qtext"><strong>✏️ Enunciado:</strong> Una persona de altura <strong>${farolaData.alturaPersona} m</strong> proyecta una sombra de <strong>${farolaData.sombraPersona} m</strong>. La distancia desde la base de la farola hasta la persona es <strong>${farolaData.distanciaFarola} m</strong>. La sombra total de la farola mide <strong>${st} m</strong>.<br><br>Calcula la <strong>altura de la farola</strong> (en metros).</p>
+    <div class="ans-row"><label class="ans-label" for="farolResp">Altura de la farola (m) →</label><input class="ans-inp" id="farolResp" placeholder="Ej: 6.24" autocomplete="off"></div>
+    <div class="input-err" id="farolErr" aria-live="assertive"></div>
+    <div class="actions"><button class="btn-chk" id="checkFarolBtn">✓ Comprobar</button><button class="btn-otro" id="otroFarolBtn" style="display:none">🔄 Otra farola</button></div>
+    <div class="fb" id="fbFarola" aria-live="polite"></div>
+  `;
+  const cardFarola = document.getElementById('cardFarola');
+  if(cardFarola) cardFarola.innerHTML = html;
+
+  if(estado.farola !== 'pendiente'){
+    let inp = document.getElementById('farolResp');
+    if(inp) inp.disabled = true;
+    let btn = document.getElementById('checkFarolBtn');
+    if(btn) btn.disabled = true;
+    let btnOtro = document.getElementById('otroFarolBtn');
+    if(btnOtro) btnOtro.style.display = 'inline-flex';
+  }
+  let btn = document.getElementById('checkFarolBtn');
+  if(btn) btn.onclick = comprobarFarola;
+  let btnOtro = document.getElementById('otroFarolBtn');
+  if(btnOtro) btnOtro.onclick = nuevoFarola;
+}
+
+// Función para mostrar el modal de resultados
+function mostrarResultado(nombre){
+  if (!nombre) {
+    console.error("mostrarResultado llamado sin nombre");
+    return;
+  }
+
+  let nota = actualizarPuntuacion();
+  let now = new Date();
+  let fecha = `${now.getDate().toString().padStart(2,'0')}/${(now.getMonth()+1).toString().padStart(2,'0')}/${now.getFullYear()}`;
+  let hora = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
+
+  // Tiempo transcurrido redondeado SIEMPRE hacia arriba (Math.ceil), no truncado
+  let elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
+  let totalMinutos = Math.ceil(elapsedSeconds / 60);
+  let horas = Math.floor(totalMinutos / 60);
+  let mins = totalMinutos % 60;
+  let tiempoFormateado = `${horas.toString().padStart(2,'0')}:${mins.toString().padStart(2,'0')}`;
+
+  let modal = document.getElementById('modal');
+  if (!modal) {
+    console.error("Modal no encontrado");
+    return;
+  }
+
+  modal.className = 'modal';
+  let cls = nota >= 10 ? 'n10' : nota >= 9 ? 'n9' : nota >= 8 ? 'n8' : nota >= 7 ? 'n7' : nota >= 6 ? 'n6' : nota >= 5 ? 'n5' : 'n4';
+  modal.classList.add(cls);
+  if(nota >= 10) document.body.classList.add('all-green');
+  else document.body.classList.remove('all-green');
+
+  const rName = document.getElementById('rName');
+  const rGrade = document.getElementById('rGrade');
+  const rLabel = document.getElementById('rLabel');
+  const rS1 = document.getElementById('rS1');
+  const rS2 = document.getElementById('rS2');
+  const rS3 = document.getElementById('rS3');
+  const rS4 = document.getElementById('rS4');
+
+  if(rName) rName.innerHTML = nombre.toUpperCase();
+  if(rGrade) rGrade.innerHTML = `${nota} / 10`;
+  let mensaje = nota >= 10 ? "¡Excelente! Dominas la semejanza." : nota >= 8 ? "Muy bien. Sigue así." : nota >= 5 ? "Aprobado, repasa los cálculos." : "Necesitas practicar más la proporcionalidad.";
+  if(rLabel) rLabel.innerHTML = mensaje;
+  if(rS1) rS1.innerHTML = `📋 Ficha: Semejanza de triángulos`;
+  if(rS2) rS2.innerHTML = `📅 Fecha: ${fecha}  🕐 Hora: ${hora}`;
+  if(rS3) rS3.innerHTML = `⏱ Tiempo transcurrido: ${tiempoFormateado}`;
+  if(rS4) rS4.innerHTML = `🎯 Nota final: ${nota}/10`;
+
+  const overlay = document.getElementById('overlay');
+  if(overlay) overlay.classList.add('show');
+}
+
+function closeModal(){
+  const overlay = document.getElementById('overlay');
+  if(overlay) overlay.classList.remove('show');
+}
+
+function completarFinalizacion(nombre){
+  finalized = true;
+  let btns = document.querySelectorAll('.btn-chk');
+  btns.forEach(btn => { if(btn) btn.disabled = true; });
+  let inputs = document.querySelectorAll('.ans-inp');
+  inputs.forEach(inp => { if(inp) inp.disabled = true; });
+  mostrarResultado(nombre);
+}
+
+function confirmName(){
+  clearInlineError('modalNameErr');
+  let val = document.getElementById('modalNameInp').value.trim();
+  if(!val){
+    showInlineError('modalNameErr', 'Por favor, introduce tu nombre.');
+    return;
+  }
+  document.getElementById('sName').value = val;
+  document.getElementById('overlayName').classList.remove('show');
+  completarFinalizacion(val);
+}
+
+function reactivarBotonFinalizar(){
+  const finalizarBtn = document.getElementById('finalizarBtn');
+  if (finalizarBtn && !finalized) {
+    finalizarBtn.disabled = false;
+    finalizarBtn.style.opacity = '';
+    finalizarBtn.style.cursor = '';
+  }
+  finalizando = false;
+}
+
+// Función principal para finalizar: abre modal propio en vez de confirm() nativo
+function preFinalizar() {
+  if (finalized) return;
+  if (finalizando) return;
+
+  const finalizarBtn = document.getElementById('finalizarBtn');
+  if (finalizarBtn) {
+    finalizarBtn.disabled = true;
+    finalizarBtn.style.opacity = '0.6';
+    finalizarBtn.style.cursor = 'not-allowed';
+  }
+  finalizando = true;
+  document.getElementById('overlayConfirmFinal').classList.add('show');
+}
+
+function cancelarFinal(){
+  document.getElementById('overlayConfirmFinal').classList.remove('show');
+  reactivarBotonFinalizar();
+}
+
+function aceptarFinal(){
+  document.getElementById('overlayConfirmFinal').classList.remove('show');
+  let name = document.getElementById('sName').value.trim();
+  if (!name) {
+    document.getElementById('overlayName').classList.add('show');
+    // La finalización todavía no se ha completado; se resuelve en confirmName()
+    return;
+  }
+  completarFinalizacion(name);
+}
+
+function inicializar(){
+  indiceEdificio = Math.floor(Math.random() * bancoEdificio.length);
+  indiceFarola = Math.floor(Math.random() * bancoFarola.length);
+  indicesUsadosEdificio = [indiceEdificio];
+  indicesUsadosFarola = [indiceFarola];
+  edificioData = {...bancoEdificio[indiceEdificio]};
+  farolaData = {...bancoFarola[indiceFarola]};
+  renderEdificio();
+  renderFarola();
+  actualizarPuntuacion();
+
+  const finalizarBtn = document.getElementById('finalizarBtn');
+  if (finalizarBtn) finalizarBtn.addEventListener('click', preFinalizar);
+
+  const confirmBtn = document.getElementById('confirmNameBtn');
+  if (confirmBtn) confirmBtn.addEventListener('click', confirmName);
+
+  const closeBtn = document.getElementById('closeModalBtn');
+  if (closeBtn) closeBtn.addEventListener('click', closeModal);
+
+  const cancelFinalBtn = document.getElementById('cancelFinalBtn');
+  if (cancelFinalBtn) cancelFinalBtn.addEventListener('click', cancelarFinal);
+  const okFinalBtn = document.getElementById('okFinalBtn');
+  if (okFinalBtn) okFinalBtn.addEventListener('click', aceptarFinal);
+
+  const cancelOtroBtn = document.getElementById('cancelOtroBtn');
+  if (cancelOtroBtn) cancelOtroBtn.addEventListener('click', cancelarConfirmOtro);
+  const okOtroBtn = document.getElementById('okOtroBtn');
+  if (okOtroBtn) okOtroBtn.addEventListener('click', aceptarConfirmOtro);
+
+  const overlay = document.getElementById('overlay');
+  if(overlay){
+    overlay.addEventListener('click', function(e){
+      if(e.target === overlay) closeModal();
+    });
+  }
+
+  const overlayName = document.getElementById('overlayName');
+  if(overlayName){
+    overlayName.addEventListener('click', function(e){
+      if(e.target === overlayName) {
+        overlayName.classList.remove('show');
+        reactivarBotonFinalizar();
+      }
+    });
+  }
+
+  // Tecla Enter: funciona también en los inputs generados dinámicamente (delegación de eventos)
+  document.addEventListener('keydown', function(e){
+    if(e.key !== 'Enter') return;
+    if(e.target.id === 'edifResp') comprobarEdificio();
+    else if(e.target.id === 'farolResp') comprobarFarola();
+    else if(e.target.id === 'modalNameInp') confirmName();
+  });
+}
+
+document.addEventListener('DOMContentLoaded', inicializar);
+</script>
+</body>
+</html>
