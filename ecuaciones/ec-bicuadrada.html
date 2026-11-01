@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ecuaciones Bicuadradas</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap');
+
+:root {
+  --color-fondo: #F5F0E8;
+  --color-fondo-card: #FDFAF3;
+  --color-texto: #2C1F0E;
+  --color-texto-suave: #6B4F35;
+  --color-acento: #A0522D;
+  --color-acento-hover: #7B3B1E;
+  --color-borde: #C9A96E;
+  --color-borde-suave: #E0CEAA;
+  --color-cabecera: #3B2510;
+  --color-cabecera-txt: #F5EDD8;
+  --color-correcto: #2E6B3E;
+  --color-incorrecto: #8B1A1A;
+  --color-neutro: #E8DFC8;
+  --color-barra-alumno: #EFE6CE;
+}
+
+* { box-sizing: border-box; }
+
+body, .ficha {
+  font-family: 'Lato', sans-serif;
+  font-size: 16px;
+  color: var(--color-texto);
+  background-color: var(--color-fondo);
+  margin: 0;
+}
+
+h1, h2, h3, .titulo-ficha { font-family: 'Libre Baskerville', serif; color: var(--color-texto); }
+
+.cabecera {
+  background-color: var(--color-cabecera);
+  color: var(--color-cabecera-txt);
+  font-family: 'Libre Baskerville', serif;
+  text-align: center;
+  padding: 12px 20px;
+  border-bottom: 3px solid var(--color-borde);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+}
+
+.ficha-container {
+  max-width: 760px;
+  margin: 28px auto;
+  background: var(--color-fondo-card);
+  border: 2px solid var(--color-borde);
+  border-radius: 6px;
+  box-shadow: 0 3px 12px rgba(44, 31, 14, 0.15);
+  padding: 32px 36px 40px;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+.ficha-container.nota-maxima {
+  background: #EFF8F0;
+  border-color: var(--color-correcto);
+}
+
+.header-ficha {
+  border-bottom: 2px solid var(--color-borde);
+  padding-bottom: 16px;
+  margin-bottom: 20px;
+}
+.titulo-ficha {
+  font-size: 1.5rem;
+  text-align: center;
+  margin: 0 0 6px;
+}
+.titulo-ficha::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 3px;
+  background: var(--color-borde);
+  margin: 8px auto 0;
+  border-radius: 2px;
+}
+.subtitulo { text-align: center; color: var(--color-texto-suave); font-size: 0.9rem; margin-bottom: 10px; }
+.instrucciones-modelo {
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--color-texto-suave);
+  margin: 0 0 16px;
+  line-height: 1.5;
+}
+
+.barra-alumno {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--color-barra-alumno);
+  border: 1.5px solid var(--color-borde);
+  border-radius: 6px;
+  padding: 10px 16px;
+  margin-bottom: 6px;
+}
+.fila-header-datos {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.bloque-nombre { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.bloque-nombre label { font-size: 0.9rem; color: var(--color-texto-suave); white-space: nowrap; }
+.bloque-nombre input { width: 190px; min-width: 0; }
+
+.marcador {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 0.95rem;
+  color: var(--color-texto-suave);
+  text-align: right;
+  white-space: nowrap;
+}
+.marcador span { color: var(--color-acento); font-weight: 700; }
+
+.aviso-nombre-ausente {
+  display: none;
+  font-size: 0.82rem;
+  color: var(--color-incorrecto);
+  margin-top: 6px;
+}
+.aviso-nombre-ausente.mostrar { display: block; }
+
+.fila-acciones-ronda {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 14px;
+}
+
+.aviso-ficha-completada {
+  background: #EAF4EC;
+  border: 1.5px solid var(--color-correcto);
+  border-radius: 6px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  text-align: center;
+  color: var(--color-correcto);
+  font-size: 0.9rem;
+}
+
+.ejercicio-card {
+  background: var(--color-fondo);
+  border: 1.5px solid var(--color-borde-suave);
+  border-left: 4px solid var(--color-borde);
+  border-radius: 4px;
+  padding: 20px 24px;
+  margin-bottom: 18px;
+}
+.ejercicio-card.resuelto { border-left-color: var(--color-correcto); }
+.ejercicio-card.superado { border: 1.5px solid var(--color-correcto); border-left: 4px solid var(--color-correcto); background: #F3FAF4; }
+
+.etiqueta-superado {
+  display: inline-block;
+  background: var(--color-correcto);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  padding: 2px 9px;
+  border-radius: 10px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+.paso-titulo { font-family: 'Libre Baskerville', serif; font-size: 1.02rem; margin: 0 0 12px; }
+.paso-numero {
+  display: inline-block; background: var(--color-acento); color: #FDFAF3;
+  width: 22px; height: 22px; border-radius: 50%; text-align: center; line-height: 22px;
+  font-size: 0.85rem; margin-right: 8px;
+}
+.ejercicio-card.superado .paso-numero { background: var(--color-correcto); }
+
+.ecuacion-grande { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 14px 0; font-size: 1.25rem; font-family: 'Libre Baskerville', serif; flex-wrap: wrap; text-align: center; }
+
+.feedback { border-radius: 4px; padding: 9px 14px; margin-top: 10px; font-size: 0.9rem; display: none; }
+.feedback.mostrar { display: block; }
+.feedback-correcto { background-color: #EAF4EC; border: 1.5px solid var(--color-correcto); color: var(--color-correcto); font-weight: 700; }
+.feedback-incorrecto { background-color: #F9EAEA; border: 1.5px solid var(--color-incorrecto); color: var(--color-incorrecto); }
+.feedback-formato { background-color: var(--color-neutro); border: 1.5px solid var(--color-borde); color: var(--color-texto-suave); }
+
+.fila-input { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 10px; justify-content: center; }
+label.etiqueta-campo { font-size: 0.9rem; color: var(--color-texto-suave); }
+label.etiqueta-igual { font-size: 1.05rem; color: var(--color-texto); font-family: 'Libre Baskerville', serif; }
+input[type="text"], input[type="number"] {
+  background-color: var(--color-fondo-card); border: 1.5px solid var(--color-borde); border-radius: 4px;
+  padding: 8px 12px; font-family: 'Lato', sans-serif; font-size: 1rem; color: var(--color-texto); outline: none;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+input[type="text"]:focus, input[type="number"]:focus { border-color: var(--color-acento); }
+input[type="number"] { width: 90px; }
+input[type="text"] { width: 220px; }
+input.correcta { background-color: #EAF4EC; border-color: var(--color-correcto); }
+input.incorrecta { background-color: #F9EAEA; border-color: var(--color-incorrecto); }
+input:disabled { opacity: 1; }
+
+.btn-primario, .btn-secundario, .btn-finalizar {
+  border-radius: 4px; font-family: 'Lato', sans-serif; font-size: 0.95rem; font-weight: 700; cursor: pointer;
+  letter-spacing: 0.03em; padding: 10px 22px; transition: background-color 0.2s ease, border-color 0.2s, color 0.2s;
+}
+.btn-primario { background-color: var(--color-acento); color: #FDFAF3; border: none; }
+.btn-primario:hover { background-color: var(--color-acento-hover); }
+.btn-primario:disabled { background-color: var(--color-neutro); color: var(--color-texto-suave); cursor: not-allowed; }
+.btn-secundario { background-color: transparent; color: var(--color-acento); border: 2px solid var(--color-borde); padding: 9px 20px; }
+.btn-secundario:hover { border-color: var(--color-acento); color: var(--color-acento-hover); }
+.btn-finalizar {
+  background-color: var(--color-cabecera); color: var(--color-cabecera-txt); border: 2px solid var(--color-borde);
+  font-family: 'Libre Baskerville', serif; padding: 10px 24px; letter-spacing: 0.04em; display: block; margin: 26px auto 0;
+}
+.btn-finalizar:hover { background-color: #2C1A0A; }
+
+.btn-simbolo {
+  background-color: var(--color-fondo-card);
+  color: var(--color-acento);
+  border: 1.5px solid var(--color-borde);
+  border-radius: 4px;
+  font-family: 'Libre Baskerville', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 8px 12px;
+  min-width: 42px;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+.btn-simbolo:hover {
+  background-color: var(--color-neutro);
+  border-color: var(--color-acento);
+  color: var(--color-acento-hover);
+}
+.btn-simbolo:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.texto-auxiliar {
+  font-size: 0.88rem;
+  color: var(--color-texto-suave);
+  text-align: center;
+  margin: 0 0 4px;
+}
+
+.aviso-ficha-completada-nota { margin-top: 24px; }
+
+.overlay { position: fixed; inset: 0; background: rgba(44, 31, 14, 0.55); display: flex; align-items: center; justify-content: center; z-index: 50; padding: 16px; }
+.overlay.oculto { display: none; }
+.modal-calificacion {
+  border: 3px solid var(--color-borde); border-radius: 8px; font-family: 'Libre Baskerville', serif;
+  box-shadow: 0 6px 24px rgba(44, 31, 14, 0.35); padding: 32px 36px; min-width: 320px; max-width: 90vw;
+  text-align: center; background: var(--color-fondo-card); color: var(--color-texto);
+}
+.modal-calificacion .titulo-ficha-modal { font-size: 1.15rem; margin: 0 0 2px; color: inherit; }
+.modal-calificacion .subtitulo-modal { font-size: 0.85rem; font-family: 'Lato', sans-serif; opacity: 0.85; margin: 0 0 14px; color: inherit; }
+.modal-calificacion .separador-modal { border: none; border-top: 1.5px solid currentColor; opacity: 0.35; margin: 0 0 14px; }
+.modal-calificacion .encabezado-informe { font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.85; margin: 0 0 6px; color: inherit; }
+.modal-calificacion #modalAlumno { color: inherit; margin: 0 0 4px; }
+.modal-calificacion .nota-grande { font-size: 2.6rem; font-weight: 700; margin: 10px 0; color: inherit; }
+.modal-calificacion table { width: 100%; margin-top: 16px; border-collapse: collapse; font-family: 'Lato', sans-serif; font-size: 0.85rem; color: inherit; }
+.modal-calificacion th, .modal-calificacion td { border-bottom: 1px solid rgba(255,255,255,0.3); padding: 5px 6px; text-align: left; color: inherit; }
+.modal-calificacion .meta { font-family: 'Lato', sans-serif; font-size: 0.85rem; margin-top: 6px; color: inherit; }
+.modal-calificacion .cerrar-modal {
+  margin-top: 20px;
+  background-color: rgba(255,255,255,0.92);
+  color: #2C1F0E;
+  border: 2px solid rgba(255,255,255,0.6);
+}
+.modal-calificacion .cerrar-modal:hover { background-color: #fff; border-color: #fff; color: #000; }
+
+.modal-confirmacion {
+  border: 2px solid var(--color-borde); border-radius: 8px; background: var(--color-fondo-card);
+  padding: 26px 30px; max-width: 380px; text-align: center; box-shadow: 0 6px 24px rgba(44, 31, 14, 0.35);
+}
+.modal-confirmacion p { margin: 0 0 18px; font-size: 0.95rem; color: var(--color-texto); }
+.modal-confirmacion .botones-confirmacion { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+@media (max-width: 480px) {
+  .ficha-container { padding: 20px 16px; margin: 12px; }
+  .ecuacion-grande { font-size: 1.05rem; gap: 6px; }
+  .fila-header-datos { gap: 6px; }
+  .bloque-nombre input { width: 120px; padding: 6px 8px; }
+  .bloque-nombre label { font-size: 0.78rem; }
+  .marcador { font-size: 0.78rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="cabecera">Material elaborado por Marta L Letona S. Basado en el trabajo de Javier Cayetano</div>
+
+<div class="ficha-container" id="fichaContainer">
+
+  <div class="header-ficha">
+    <h1 class="titulo-ficha">Ecuaciones Bicuadradas</h1>
+    <p class="subtitulo">Cambio de variable t = x²</p>
+    <p class="instrucciones-modelo">
+      Cada ecuación tiene 4 apartados: cambio de variable, resolución en t, número de soluciones reales
+      y soluciones en x. Cada ecuación resuelta entera suma 5 puntos y cada fallo resta 0,5 puntos.
+      Con dos ecuaciones bien resueltas consigues el 10, que es la nota máxima. Si has fallado,
+      puedes hacer tantas ecuaciones como necesites para subir de nota.
+    </p>
+
+    <div class="barra-alumno">
+      <div class="fila-header-datos">
+        <div class="bloque-nombre">
+          <label for="inputNombre">Nombre:</label>
+          <input type="text" id="inputNombre" autocomplete="off">
+        </div>
+        <div class="marcador" aria-live="polite">
+          Nota: <span id="marcadorNota">0</span>/10 &nbsp;·&nbsp;
+          Ecuaciones correctas: <span id="marcadorEcuaciones">0</span>
+        </div>
+      </div>
+      <p class="aviso-nombre-ausente" id="avisoNombreAusente">Escribe tu nombre antes de corregir el primer ejercicio.</p>
+    </div>
+  </div>
+
+  <div class="fila-acciones-ronda">
+    <button class="btn-secundario" id="btnCambiarEcuacion" type="button">Cambiar de ecuación</button>
+  </div>
+
+  <div id="avisoFichaCompletada" class="aviso-ficha-completada" style="display:none;"></div>
+
+  <div id="contenedorPasos"></div>
+
+  <button class="btn-finalizar" id="btnFinalizar">Finalizar y calificar</button>
+</div>
+
+<div class="overlay oculto" id="overlayConfirmacion">
+  <div class="modal-confirmacion">
+    <p>Ya has registrado algún intento con esta ecuación. Si cambias, esta ecuación no sumará puntos, pero los fallos ya cometidos siguen contando. ¿Quieres continuar?</p>
+    <div class="botones-confirmacion">
+      <button class="btn-primario" id="btnConfirmarCambio">Sí, cambiar</button>
+      <button class="btn-secundario" id="btnCancelarCambio">No, seguir aquí</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay oculto" id="overlayCalificacion">
+  <div class="modal-calificacion" id="modalCalificacion">
+    <p class="titulo-ficha-modal" id="modalTituloFicha"></p>
+    <p class="subtitulo-modal" id="modalSubtituloFicha"></p>
+    <hr class="separador-modal">
+    <p class="encabezado-informe">Informe de la actividad</p>
+    <h2 id="modalAlumno"></h2>
+    <div class="nota-grande" id="modalNota"></div>
+    <div class="meta" id="modalMeta"></div>
+    <table>
+      <thead><tr><th>Apartado</th><th>Intentos</th><th>Aciertos</th><th>Fallos</th></tr></thead>
+      <tbody id="modalDesglose"></tbody>
+    </table>
+    <button class="btn-secundario cerrar-modal" id="btnCerrarModal">Seguir practicando</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ================= Utilidades generales =================
+
+  function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+  function redondear(n) { return Math.round(n * 100) / 100; }
+
+  function formatearNumero(n) {
+    const r = Math.round(n * 10) / 10;
+    const txt = Number.isInteger(r) ? String(r) : r.toFixed(1);
+    return txt.replace(".", ",");
+  }
+
+  function mismosValores(listaA, listaB) {
+    const a = [...new Set(listaA.map(Number))].filter(Number.isFinite).sort((x, y) => x - y);
+    const b = [...new Set(listaB.map(Number))].filter(Number.isFinite).sort((x, y) => x - y);
+    if (a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i++) {
+      if (Math.abs(a[i] - b[i]) > 1e-9) return false;
+    }
+    return true;
+  }
+
+  function insertarEnInput(input, texto) {
+    const inicio = input.selectionStart !== null ? input.selectionStart : input.value.length;
+    const fin = input.selectionEnd !== null ? input.selectionEnd : input.value.length;
+    const antes = input.value.slice(0, inicio);
+    const despues = input.value.slice(fin);
+    input.value = antes + texto + despues;
+    const nuevaPos = inicio + texto.length;
+    input.setSelectionRange(nuevaPos, nuevaPos);
+    input.focus();
+  }
+
+  // Construye la representación en texto de una suma de términos, en el
+  // orden recibido, con el signo correcto entre términos. simbolo: "x⁴",
+  // "x²", "t²", "t" o "" (término independiente). Los coeficientes 0 se
+  // omiten; si todos son 0, devuelve "0".
+  function textoTerminos(terminos) {
+    const partes = [];
+    terminos.forEach(({ coef, simbolo }) => {
+      if (coef === 0) return;
+      const abs = Math.abs(coef);
+      const cuerpo = simbolo === "" ? String(abs) : (abs === 1 ? "" : String(abs)) + simbolo;
+      partes.push({ coef, cuerpo });
+    });
+    if (partes.length === 0) return "0";
+    let out = "";
+    partes.forEach((p, i) => {
+      if (i === 0) out += (p.coef < 0 ? "-" : "") + p.cuerpo;
+      else out += (p.coef < 0 ? " - " : " + ") + p.cuerpo;
+    });
+    return out;
+  }
+
+  // ================= Parser genérico de un polinomio de 2º grado =================
+  // Acepta el término cuadrático como <letra>², <letra>^2, <letra>2 o
+  // <letra><letra> (p. ej. "tt"); el término lineal como <letra> solo.
+  // Devuelve [a, b, c] o null si no se reconoce la expresión.
+  function parsearCuadraticoVar(texto, letra) {
+    if (typeof texto !== "string") return null;
+
+    let t = texto.toLowerCase()
+      .replace(/\s+/g, "")
+      .replace(/²/g, "^2")
+      .replace(/³/g, "^3")
+      .replace(/\*/g, "");
+
+    if (t === "") return null;
+
+    t = t.split(letra + "^2").join("Q");
+    // <letra>2 (no seguido de otra cifra) también cuenta como cuadrático
+    t = t.replace(new RegExp(letra + "2(?!\\d)", "g"), "Q");
+    t = t.split(letra + letra).join("Q");
+
+    const patronValido = new RegExp("^[Q" + letra + "0-9+\\-.,]+$");
+    if (!patronValido.test(t)) return null;
+
+    if (!/^[+\-]/.test(t)) t = "+" + t;
+
+    const regex = new RegExp("([+\\-])(\\d+(?:[.,]\\d+)?)?(Q|" + letra + ")?", "g");
+    let match;
+    let a = 0, b = 0, c = 0;
+    let reconocidos = 0;
+    let pos = 0;
+
+    while ((match = regex.exec(t)) !== null) {
+      if (match.index !== pos) return null;
+      pos = regex.lastIndex;
+
+      const signo = match[1] === "-" ? -1 : 1;
+      const numTxt = match[2];
+      const tipo = match[3];
+
+      let coef;
+      if (numTxt === undefined || numTxt === "") {
+        coef = 1;
+      } else {
+        coef = parseFloat(numTxt.replace(",", "."));
+        if (!Number.isFinite(coef)) return null;
+      }
+      coef *= signo;
+
+      if (tipo === "Q") {
+        a += coef;
+      } else if (tipo === letra) {
+        b += coef;
+      } else {
+        if (numTxt === undefined || numTxt === "") return null;
+        c += coef;
+      }
+      reconocidos++;
+    }
+
+    if (reconocidos === 0 || pos !== t.length) return null;
+
+    return [a, b, c];
+  }
+
+  // ================= Parser de un conjunto de soluciones enteras =================
+  // Acepta enteros separados por comas/espacios y "±n" (se expande a n y -n).
+  function parsearConjuntoEnteros(raw) {
+    let t = raw.trim();
+    if (t === "") return { estado: "vacio" };
+    t = t.replace(/±\s*(\d+)/g, "$1,-$1");
+    t = t.replace(/([+\-])\s+/g, "$1");
+    const tokens = t.split(/[,;\s]+/).filter(s => s !== "");
+    if (tokens.length === 0) return { estado: "vacio" };
+    const nums = [];
+    let huboInvalido = false;
+    tokens.forEach(tok => {
+      if (/^[+\-]?\d+$/.test(tok)) nums.push(parseInt(tok, 10));
+      else huboInvalido = true;
+    });
+    if (huboInvalido) return { estado: "invalido" };
+    if (nums.length === 0) return { estado: "vacio" };
+    return { estado: "ok", valores: [...new Set(nums)] };
+  }
+
+  // Comprueba si (aE,bE,cE) es un múltiplo escalar no nulo de (aC,bC,cC),
+  // con aC != 0. Usa productos cruzados para admitir cualquier escalar,
+  // incluido negativo, sin dividir.
+  function esProporcional(aE, bE, cE, aC, bC, cC) {
+    if (Math.abs(aE) < 1e-9) return false;
+    const cruzB = aE * bC - bE * aC;
+    const cruzC = aE * cC - cE * aC;
+    return Math.abs(cruzB) < 1e-6 && Math.abs(cruzC) < 1e-6;
+  }
+
+  // ================= Generación de la ecuación =================
+  // Ecuación en x: A x⁴ + B x² + C = 0, con cambio t = x².
+  // La ecuación en t, A t² + B t + C = 0, tiene raíces t1 y t2 (enteras,
+  // no nulas, elegidas de antemano según el caso: ambas positivas, una de
+  // cada signo, o ambas negativas).
+
+  const POSITIVOS = [1, 4, 9, 16, 25];
+  const NEGATIVOS = [-1, -2, -3, -4, -5, -6, -7, -8, -9];
+  const LIMITE_C = 150;
+
+  function elegirDosDistintos(lista) {
+    const a = lista[randInt(0, lista.length - 1)];
+    let b;
+    do { b = lista[randInt(0, lista.length - 1)]; } while (b === a);
+    return [a, b];
+  }
+
+  function generarParT(caso) {
+    if (caso === "ambosPositivos") return elegirDosDistintos(POSITIVOS);
+    if (caso === "ambosNegativos") return elegirDosDistintos(NEGATIVOS);
+    const p = POSITIVOS[randInt(0, POSITIVOS.length - 1)];
+    const n = NEGATIVOS[randInt(0, NEGATIVOS.length - 1)];
+    return Math.random() < 0.5 ? [p, n] : [n, p];
+  }
+
+  function generarEcuacion() {
+    const casos = ["ambosPositivos", "mixto", "ambosNegativos"];
+    let t1, t2, k, A, B, C;
+    let intento = 0;
+    do {
+      intento++;
+      const caso = casos[randInt(0, casos.length - 1)];
+      [t1, t2] = generarParT(caso);
+      const r = Math.random();
+      k = r < 0.6 ? 1 : (r < 0.85 ? 2 : 3);
+      A = k;
+      B = -k * (t1 + t2);
+      C = k * t1 * t2;
+    } while (intento < 300 && Math.abs(C) > LIMITE_C);
+
+    if (Math.abs(C) > LIMITE_C) {
+      // Combinación de reserva, siempre válida.
+      t1 = 1; t2 = -4; k = 1;
+      A = k; B = -k * (t1 + t2); C = k * t1 * t2;
+    }
+
+    return { A, B, C, t1, t2 };
+  }
+
+  // Presenta la ecuación en x siempre "desordenada" (nunca en la forma
+  // estándar Ax⁴+Bx²+C=0 tal cual), para que el alumno tenga que
+  // reordenarla antes de identificar los coeficientes.
+  function presentarEcuacionX(A, B, C) {
+    const plantillas = [
+      () => [ [{ coef: A, simbolo: "x⁴" }, { coef: B, simbolo: "x²" }], [{ coef: -C, simbolo: "" }] ],
+      () => [ [{ coef: A, simbolo: "x⁴" }], [{ coef: -B, simbolo: "x²" }, { coef: -C, simbolo: "" }] ],
+      () => [ [{ coef: -C, simbolo: "" }], [{ coef: A, simbolo: "x⁴" }, { coef: B, simbolo: "x²" }] ],
+      () => [ [{ coef: B, simbolo: "x²" }, { coef: A, simbolo: "x⁴" }], [{ coef: -C, simbolo: "" }] ],
+      () => [ [{ coef: A, simbolo: "x⁴" }, { coef: C, simbolo: "" }], [{ coef: -B, simbolo: "x²" }] ],
+      () => [ [{ coef: -B, simbolo: "x²" }], [{ coef: A, simbolo: "x⁴" }, { coef: C, simbolo: "" }] ]
+    ];
+    const [izq, der] = plantillas[randInt(0, plantillas.length - 1)]();
+    return textoTerminos(izq) + " = " + textoTerminos(der);
+  }
+
+  function textoEcuacionT(A, B, C) {
+    return textoTerminos([{ coef: A, simbolo: "t²" }, { coef: B, simbolo: "t" }, { coef: C, simbolo: "" }]) + " = 0";
+  }
+
+  // ================= Modelo de puntuación: ventana móvil 2 de 3 =================
+
+  const TIPOS = ["cambio", "resolverT", "numSoluciones", "solucionesX"];
+  const NOMBRE_APARTADO = {
+    cambio: "Cambio de variable",
+    resolverT: "Resolver la ecuación en t",
+    numSoluciones: "Número de soluciones reales",
+    solucionesX: "Soluciones en x"
+  };
+  const PUNTOS_POR_ECUACION = 5;
+  const PENALIZACION_FALLO = 0.5;
+
+  function crearTipo() { return { intentos: [], superado: false, cerrado: false, aciertos: 0, fallos: 0 }; }
+
+  const state = {
+    alumno: "",
+    inicio: Date.now(),
+    penalizacion: 0,
+    tipos: {
+      cambio: crearTipo(),
+      resolverT: crearTipo(),
+      numSoluciones: crearTipo(),
+      solucionesX: crearTipo()
+    },
+    ecuacionesCorrectas: 0,
+    rondaActual: null
+  };
+
+  // Modelo por ecuación completa: cada ecuación resuelta entera suma 5
+  // puntos; cada fallo resta 0,5. La nota se calcula siempre a partir de
+  // estos dos contadores (sin acumular redondeos) y tiene tope en 10.
+  function notaActual() {
+    const base = state.ecuacionesCorrectas * PUNTOS_POR_ECUACION;
+    return Math.max(0, Math.min(10, redondear(base - state.penalizacion)));
+  }
+
+  function registrarIntento(tipo, correcto) {
+    // Los apartados ya no se cierran: se registran intentos, aciertos y
+    // fallos por apartado solo para el informe final.
+    const t = state.tipos[tipo];
+    state.rondaActual.huboIntento = true;
+    if (correcto) {
+      t.aciertos++;
+    } else {
+      t.fallos++;
+      state.penalizacion = redondear(state.penalizacion + PENALIZACION_FALLO);
+    }
+    actualizarMarcador();
+  }
+
+  // Mensaje de ánimo tras acertar un apartado intermedio.
+  function notaProgreso(tipo) {
+    if (tipo === "solucionesX") return "";
+    return " ¡Vas bien! Termina los cuatro apartados de esta ecuación para sumar 5 puntos.";
+  }
+
+  function actualizarMarcador() {
+    const nota = notaActual();
+    document.getElementById("marcadorNota").textContent = formatearNumero(nota);
+    document.getElementById("marcadorEcuaciones").textContent = state.ecuacionesCorrectas;
+    document.getElementById("fichaContainer").classList.toggle("nota-maxima", nota >= 10);
+  }
+
+  function mostrarFeedback(el, tipo, html) {
+    el.classList.remove("feedback-correcto", "feedback-incorrecto", "feedback-formato");
+    const clase = tipo === "ok" ? "feedback-correcto" : (tipo === "formato" ? "feedback-formato" : "feedback-incorrecto");
+    el.classList.add("mostrar", clase);
+    el.innerHTML = html;
+  }
+
+  const contenedor = document.getElementById("contenedorPasos");
+
+  // ================= Nombre del alumno =================
+
+  function nombreEstablecido() {
+    return document.getElementById("inputNombre").value.trim() !== "";
+  }
+
+  function exigirNombre() {
+    if (nombreEstablecido()) {
+      document.getElementById("avisoNombreAusente").classList.remove("mostrar");
+      return true;
+    }
+    document.getElementById("avisoNombreAusente").classList.add("mostrar");
+    document.getElementById("inputNombre").focus();
+    return false;
+  }
+
+  document.getElementById("inputNombre").addEventListener("input", function () {
+    if (nombreEstablecido()) document.getElementById("avisoNombreAusente").classList.remove("mostrar");
+  });
+
+  // ================= Ronda =================
+
+  function iniciarRonda() {
+    const ec = generarEcuacion();
+    state.rondaActual = {
+      ec,
+      huboIntento: false,
+      presentacionX: presentarEcuacionX(ec.A, ec.B, ec.C),
+      resueltoCambio: false,
+      resueltoResolverT: false,
+      resueltoNumSoluciones: false,
+      pasoNumSolucionesCreado: false,
+      pasoSolucionesXCreado: false
+    };
+    contenedor.innerHTML = "";
+    actualizarAvisoFichaCompletada();
+    construirPasoCambio();
+  }
+
+  function actualizarAvisoFichaCompletada() {
+    const aviso = document.getElementById("avisoFichaCompletada");
+    if (notaActual() >= 10) {
+      aviso.style.display = "block";
+      aviso.textContent = "Has conseguido la nota máxima: 10/10. Puedes seguir practicando si quieres.";
+    } else {
+      aviso.style.display = "none";
+    }
+  }
+
+  function nuevoBloque(id, extraClass) {
+    const div = document.createElement("div");
+    div.className = "ejercicio-card" + (extraClass ? " " + extraClass : "");
+    div.id = id;
+    contenedor.appendChild(div);
+    return div;
+  }
+
+  // ---------- Paso 1: cambio de variable ----------
+
+  function construirPasoCambio() {
+    const ec = state.rondaActual.ec;
+
+    if (state.tipos.cambio.cerrado) {
+      const bloque = nuevoBloque("bloqueCambio", "superado");
+      bloque.innerHTML = `
+        <p class="paso-titulo"><span class="paso-numero">1</span>Cambio de variable<span class="etiqueta-superado">Superado</span></p>
+        <div class="ecuacion-grande">${state.rondaActual.presentacionX} = 0</div>
+        <p class="texto-auxiliar">Con t = x², la ecuación queda: <strong>${textoEcuacionT(ec.A, ec.B, ec.C)}</strong></p>
+      `;
+      state.rondaActual.resueltoCambio = true;
+      construirPasoResolverT();
+      return;
+    }
+
+    const bloque = nuevoBloque("bloqueCambio");
+    bloque.innerHTML = `
+      <p class="paso-titulo"><span class="paso-numero">1</span>Ordena la ecuación y haz el cambio t = x²</p>
+      <div class="ecuacion-grande">${state.rondaActual.presentacionX}</div>
+      <p class="texto-auxiliar">
+        Ordena primero la ecuación en la forma habitual y sustituye x⁴ por t² y x² por t.
+        Escribe la ecuación resultante en t (se admite cualquier ecuación equivalente, aunque hayas
+        cambiado todos los signos o multiplicado por un número).
+      </p>
+      <div class="fila-input">
+        <input type="text" id="inputCambio" autocomplete="off" style="width:260px" placeholder="Ej: 2t² - 13t + 36" aria-label="Ecuación en t">
+        <label class="etiqueta-igual">= 0</label>
+        <button type="button" class="btn-simbolo" id="btnCuadradoT" title="Insertar t al cuadrado" aria-label="Insertar t al cuadrado">t²</button>
+        <button class="btn-primario" id="btnComprobarCambio">Comprobar</button>
+      </div>
+      <div class="feedback feedback-incorrecto" id="feedbackCambio" aria-live="polite"></div>
+    `;
+
+    const input = bloque.querySelector("#inputCambio");
+    const btnCuadrado = bloque.querySelector("#btnCuadradoT");
+    btnCuadrado.addEventListener("click", () => insertarEnInput(input, "t²"));
+
+    const comprobar = () => comprobarCambio(ec, input);
+    bloque.querySelector("#btnComprobarCambio").addEventListener("click", comprobar);
+    input.addEventListener("keydown", e => { if (e.key === "Enter") comprobar(); });
+  }
+
+  function comprobarCambio(ec, input) {
+    if (!exigirNombre()) return;
+    const feedback = document.getElementById("feedbackCambio");
+    const raw = input.value;
+
+    if (raw.trim() === "") {
+      mostrarFeedback(feedback, "formato", "Escribe la ecuación en t antes de comprobar.");
+      return;
+    }
+    if (/x/i.test(raw)) {
+      mostrarFeedback(feedback, "formato",
+        "La ecuación ya no debe contener x: recuerda que el cambio sustituye x⁴ por t² y x² por t. Escríbela solo con t.");
+      return;
+    }
+
+    const coefs = parsearCuadraticoVar(raw, "t");
+    if (!coefs) {
+      mostrarFeedback(feedback, "formato",
+        "No he entendido la expresión. Escribe un polinomio de segundo grado en t, por ejemplo «2t² - 13t + 36» (también vale «t2» o «t^2»).");
+      return;
+    }
+
+    const [a, b, c] = coefs;
+    const correcto = esProporcional(a, b, c, ec.A, ec.B, ec.C);
+
+    registrarIntento("cambio", correcto);
+
+    if (correcto) {
+      input.disabled = true; input.classList.add("correcta");
+      document.getElementById("btnCuadradoT").disabled = true;
+      document.getElementById("bloqueCambio").classList.add("resuelto");
+      document.getElementById("btnComprobarCambio").disabled = true;
+      mostrarFeedback(feedback, "ok",
+        "Correcto: " + textoEcuacionT(a, b, c) + " es (una forma equivalente de) la ecuación en t." + notaProgreso("cambio"));
+      state.rondaActual.resueltoCambio = true;
+      construirPasoResolverT();
+      return;
+    }
+
+    if (Math.abs(a) < 1e-9) {
+      mostrarFeedback(feedback, "error",
+        "No puede faltar el término en t²: recuerda que x⁴ = (x²)² se convierte en t² con el cambio t = x².");
+      return;
+    }
+
+    const m = a / ec.A;
+    const bOk = Math.abs(b - m * ec.B) < 1e-6;
+    const cOk = Math.abs(c - m * ec.C) < 1e-6;
+
+    if (!bOk && cOk) {
+      mostrarFeedback(feedback, "error",
+        "El término independiente es correcto, pero revisa el coeficiente de t: comprueba el signo al pasar ese término de un lado a otro de la igualdad.");
+    } else if (bOk && !cOk) {
+      mostrarFeedback(feedback, "error",
+        "El coeficiente de t es correcto, pero revisa el término independiente: puede que se te haya colado un error de signo al reordenar la ecuación.");
+    } else {
+      mostrarFeedback(feedback, "error",
+        "No es una ecuación equivalente a la que resulta del cambio. Primero ordena la ecuación original (todos los términos a un lado, igualada a 0) y después sustituye x⁴ por t² y x² por t.");
+    }
+  }
+
+  // ---------- Paso 2: resolver la ecuación en t ----------
+
+  function construirPasoResolverT() {
+    const ec = state.rondaActual.ec;
+
+    if (state.tipos.resolverT.cerrado) {
+      const bloque = nuevoBloque("bloqueResolverT", "superado");
+      bloque.innerHTML = `
+        <p class="paso-titulo"><span class="paso-numero">2</span>Resolver la ecuación en t<span class="etiqueta-superado">Superado</span></p>
+        <p class="texto-auxiliar">${textoEcuacionT(ec.A, ec.B, ec.C)}</p>
+        <p style="text-align:center; font-size:1.05rem; font-family:'Libre Baskerville',serif; color:var(--color-acento);">t = ${ec.t1} &nbsp;·&nbsp; t = ${ec.t2}</p>
+      `;
+      state.rondaActual.resueltoResolverT = true;
+      construirPasoNumSoluciones();
+      return;
+    }
+
+    const bloque = nuevoBloque("bloqueResolverT");
+    bloque.innerHTML = `
+      <p class="paso-titulo"><span class="paso-numero">2</span>Resuelve la ecuación de segundo grado en t</p>
+      <p class="texto-auxiliar">${textoEcuacionT(ec.A, ec.B, ec.C)}</p>
+      <p class="texto-auxiliar" style="font-size:0.82rem;">Escribe las dos soluciones en cualquier orden.</p>
+      <div class="fila-input">
+        <label class="etiqueta-campo">t₁ =</label>
+        <input type="number" step="any" id="inputT1" aria-label="Primera solución en t">
+        <label class="etiqueta-campo">t₂ =</label>
+        <input type="number" step="any" id="inputT2" aria-label="Segunda solución en t">
+        <button class="btn-primario" id="btnComprobarResolverT">Comprobar</button>
+      </div>
+      <div class="feedback feedback-incorrecto" id="feedbackResolverT" aria-live="polite"></div>
+    `;
+    const inputA = bloque.querySelector("#inputT1");
+    const inputB = bloque.querySelector("#inputT2");
+    const comprobar = () => comprobarResolverT(ec, inputA, inputB);
+    bloque.querySelector("#btnComprobarResolverT").addEventListener("click", comprobar);
+    [inputA, inputB].forEach(inp => inp.addEventListener("keydown", e => { if (e.key === "Enter") comprobar(); }));
+  }
+
+  function comprobarResolverT(ec, inputA, inputB) {
+    if (!exigirNombre()) return;
+    const feedback = document.getElementById("feedbackResolverT");
+    const vA = parseFloat(inputA.value.replace(",", "."));
+    const vB = parseFloat(inputB.value.replace(",", "."));
+
+    if (!Number.isFinite(vA) || !Number.isFinite(vB)) {
+      mostrarFeedback(feedback, "formato", "Rellena los dos campos con números antes de comprobar.");
+      return;
+    }
+
+    const alumno = [vA, vB];
+    const correctas = [ec.t1, ec.t2];
+    const correcto = mismosValores(alumno, correctas);
+
+    registrarIntento("resolverT", correcto);
+
+    if (correcto) {
+      inputA.disabled = true; inputB.disabled = true;
+      inputA.classList.add("correcta"); inputB.classList.add("correcta");
+      document.getElementById("bloqueResolverT").classList.add("resuelto");
+      document.getElementById("btnComprobarResolverT").disabled = true;
+      mostrarFeedback(feedback, "ok", "Correcto. Esas son las dos soluciones de la ecuación en t." + notaProgreso("resolverT"));
+      state.rondaActual.resueltoResolverT = true;
+      construirPasoNumSoluciones();
+      return;
+    }
+
+    if (mismosValores(alumno, correctas.map(x => -x))) {
+      mostrarFeedback(feedback, "error", "Revisa los signos: parece que has cambiado el signo de las dos soluciones.");
+    } else if (alumno.some(v => correctas.some(c => Math.abs(v - c) < 1e-9))) {
+      mostrarFeedback(feedback, "error", "Una de las dos soluciones es correcta; revisa la otra aplicando de nuevo la fórmula general o factorizando.");
+    } else {
+      mostrarFeedback(feedback, "error",
+        "No es correcto. Aplica la fórmula general (o factoriza) a la ecuación de segundo grado en t. El orden de las dos soluciones no importa.");
+    }
+  }
+
+  // ---------- Paso 3: número de soluciones reales ----------
+
+  function construirPasoNumSoluciones() {
+    if (state.rondaActual.pasoNumSolucionesCreado) return;
+    state.rondaActual.pasoNumSolucionesCreado = true;
+    const ec = state.rondaActual.ec;
+    const correcto = numSolucionesCorrecto(ec);
+
+    if (state.tipos.numSoluciones.cerrado) {
+      const bloque = nuevoBloque("bloqueNumSoluciones", "superado");
+      bloque.innerHTML = `
+        <p class="paso-titulo"><span class="paso-numero">3</span>Número de soluciones reales<span class="etiqueta-superado">Superado</span></p>
+        <p class="texto-auxiliar">t₁ = ${ec.t1} &nbsp;·&nbsp; t₂ = ${ec.t2}</p>
+        <p style="text-align:center; font-size:1.05rem; font-family:'Libre Baskerville',serif; color:var(--color-acento);">La ecuación tiene ${correcto} soluciones reales en x.</p>
+        <p class="texto-auxiliar">${explicacionNumSoluciones(ec)}</p>
+      `;
+      state.rondaActual.resueltoNumSoluciones = true;
+      construirPasoSolucionesX();
+      return;
+    }
+
+    const bloque = nuevoBloque("bloqueNumSoluciones");
+    bloque.innerHTML = `
+      <p class="paso-titulo"><span class="paso-numero">3</span>¿Cuántas soluciones reales tiene la ecuación en x?</p>
+      <p class="texto-auxiliar">Ya sabes que t₁ = ${ec.t1} y t₂ = ${ec.t2}. Antes de deshacer el cambio, anticipa cuántas soluciones reales tendrá la ecuación en x.</p>
+      <div class="fila-input">
+        <label class="etiqueta-campo">Número de soluciones reales:</label>
+        <input type="number" step="1" min="0" max="4" id="inputNumSoluciones" aria-label="Número de soluciones reales">
+        <button class="btn-primario" id="btnComprobarNumSoluciones">Comprobar</button>
+      </div>
+      <div class="feedback feedback-incorrecto" id="feedbackNumSoluciones" aria-live="polite"></div>
+    `;
+    const input = bloque.querySelector("#inputNumSoluciones");
+    const comprobar = () => comprobarNumSoluciones(ec, input);
+    bloque.querySelector("#btnComprobarNumSoluciones").addEventListener("click", comprobar);
+    input.addEventListener("keydown", e => { if (e.key === "Enter") comprobar(); });
+  }
+
+  function numSolucionesCorrecto(ec) {
+    return ([ec.t1, ec.t2].filter(t => t > 0).length) * 2;
+  }
+
+  function explicacionNumSoluciones(ec) {
+    const partes = [ec.t1, ec.t2].map(t => {
+      if (t > 0) return `t = ${t} es positivo: x² = ${t} da dos soluciones reales (x = √${t} y x = -√${t})`;
+      return `t = ${t} es negativo: x² = ${t} no tiene solución real, porque un cuadrado nunca es negativo`;
+    });
+    return partes.join("; ") + ".";
+  }
+
+  function comprobarNumSoluciones(ec, input) {
+    if (!exigirNombre()) return;
+    const feedback = document.getElementById("feedbackNumSoluciones");
+    const val = parseFloat(input.value.replace(",", "."));
+
+    if (!Number.isFinite(val)) {
+      mostrarFeedback(feedback, "formato", "Escribe un número (0, 2 o 4) antes de comprobar.");
+      return;
+    }
+
+    const correcto = numSolucionesCorrecto(ec);
+    const acierto = Math.abs(val - correcto) < 1e-9;
+
+    registrarIntento("numSoluciones", acierto);
+
+    if (acierto) {
+      input.disabled = true; input.classList.add("correcta");
+      document.getElementById("bloqueNumSoluciones").classList.add("resuelto");
+      document.getElementById("btnComprobarNumSoluciones").disabled = true;
+      mostrarFeedback(feedback, "ok", "Correcto. " + explicacionNumSoluciones(ec) + notaProgreso("numSoluciones"));
+      state.rondaActual.resueltoNumSoluciones = true;
+      construirPasoSolucionesX();
+      return;
+    }
+
+    mostrarFeedback(feedback, "error",
+      "No es correcto. Recuerda: cada valor de t positivo da dos soluciones reales en x (x = ±√t), y cada valor de t negativo no da ninguna, porque x² nunca puede ser negativo. Revisa el signo de t₁ y t₂ y vuelve a contar.");
+  }
+
+  // ---------- Paso 4: soluciones en x ----------
+
+  function solucionesXCorrectas(ec) {
+    const sols = [];
+    [ec.t1, ec.t2].forEach(t => {
+      if (t > 0) {
+        const r = Math.sqrt(t);
+        sols.push(r, -r);
+      }
+    });
+    return sols;
+  }
+
+  function construirPasoSolucionesX() {
+    if (state.rondaActual.pasoSolucionesXCreado) return;
+    state.rondaActual.pasoSolucionesXCreado = true;
+    const ec = state.rondaActual.ec;
+    const correctas = solucionesXCorrectas(ec);
+
+    if (state.tipos.solucionesX.cerrado) {
+      const bloque = nuevoBloque("bloqueSolucionesX", "superado");
+      const textoSol = correctas.length === 0
+        ? "No tiene solución real."
+        : "x = " + correctas.slice().sort((a, b) => a - b).join(" &nbsp;·&nbsp; x = ");
+      bloque.innerHTML = `
+        <p class="paso-titulo"><span class="paso-numero">4</span>Soluciones en x<span class="etiqueta-superado">Superado</span></p>
+        <p style="text-align:center; font-size:1.05rem; font-family:'Libre Baskerville',serif; color:var(--color-acento);">${textoSol}</p>
+      `;
+      mostrarResumenRonda(ec);
+      return;
+    }
+
+    const bloque = nuevoBloque("bloqueSolucionesX");
+    bloque.innerHTML = `
+      <p class="paso-titulo"><span class="paso-numero">4</span>Deshaz el cambio: calcula las soluciones en x</p>
+      <p class="texto-auxiliar">Recuerda: t = x², así que si t es una solución válida, x = ±√t.</p>
+      <div class="fila-input">
+        <input type="text" id="inputSolucionesX" autocomplete="off" style="width:260px" placeholder="Ej: 2, -2, 3, -3 (o «no tiene»)" aria-label="Soluciones en x">
+        <button class="btn-primario" id="btnComprobarSolucionesX">Comprobar</button>
+      </div>
+      <div class="fila-input" style="margin-top:4px;">
+        <button type="button" class="btn-secundario" id="btnNoSolucion">No tiene solución real</button>
+      </div>
+      <div class="feedback feedback-incorrecto" id="feedbackSolucionesX" aria-live="polite"></div>
+    `;
+    const input = bloque.querySelector("#inputSolucionesX");
+    const comprobar = () => comprobarSolucionesX(ec, input, correctas, false);
+    bloque.querySelector("#btnComprobarSolucionesX").addEventListener("click", comprobar);
+    input.addEventListener("keydown", e => { if (e.key === "Enter") comprobar(); });
+    bloque.querySelector("#btnNoSolucion").addEventListener("click", () => comprobarSolucionesX(ec, input, correctas, true));
+  }
+
+  function comprobarSolucionesX(ec, input, correctas, respuestaSinSolucion) {
+    if (!exigirNombre()) return;
+    const feedback = document.getElementById("feedbackSolucionesX");
+
+    if (respuestaSinSolucion) {
+      const acierto = correctas.length === 0;
+      registrarIntento("solucionesX", acierto);
+      if (acierto) {
+        finalizarSolucionesX(ec, "No tiene solución real.");
+      } else {
+        mostrarFeedback(feedback, "error",
+          "Sí hay soluciones reales: al menos uno de los dos valores de t es positivo, y eso da soluciones reales en x. Escríbelas en el campo de texto.");
+      }
+      return;
+    }
+
+    const parsed = parsearConjuntoEnteros(input.value);
+    if (parsed.estado === "vacio") {
+      mostrarFeedback(feedback, "formato", "Escribe las soluciones, o pulsa «No tiene solución real» si es el caso.");
+      return;
+    }
+    if (parsed.estado === "invalido") {
+      mostrarFeedback(feedback, "formato",
+        "No he entendido alguno de los valores escritos. Usa números enteros separados por comas (también se admite «±», como «±2»).");
+      return;
+    }
+
+    if (correctas.length === 0) {
+      registrarIntento("solucionesX", false);
+      mostrarFeedback(feedback, "error",
+        "Los dos valores de t son negativos, así que ningún valor de x al cuadrado puede dar ese resultado: la ecuación no tiene solución real. Pulsa el botón «No tiene solución real».");
+      return;
+    }
+
+    const alumno = parsed.valores;
+    const correcto = mismosValores(alumno, correctas);
+
+    registrarIntento("solucionesX", correcto);
+
+    if (correcto) {
+      finalizarSolucionesX(ec, "x = " + correctas.slice().sort((a, b) => a - b).join(", "));
+      return;
+    }
+
+    // Diagnóstico sin revelar directamente la lista completa correcta.
+    if (mismosValores(alumno, [ec.t1, ec.t2].filter(t => t > 0))) {
+      mostrarFeedback(feedback, "error",
+        "Esos son los valores de t (o parte de ellos), no las soluciones en x. Deshaz el cambio: si t es una solución positiva, entonces x = √t y x = -√t.");
+      return;
+    }
+    const soloPositivas = correctas.filter(v => v > 0);
+    if (mismosValores(alumno, soloPositivas) && soloPositivas.length > 0) {
+      mostrarFeedback(feedback, "error",
+        "Te falta la parte negativa: si x² = t con t > 0, hay dos soluciones, √t y -√t. Añade las que faltan.");
+      return;
+    }
+    const negativoUsado = [ec.t1, ec.t2].find(t => t < 0 && alumno.some(v => Math.abs(Math.abs(v) - Math.sqrt(-t)) < 1e-9));
+    if (negativoUsado !== undefined) {
+      mostrarFeedback(feedback, "error",
+        `No se puede obtener x de t = ${negativoUsado}: al ser negativo, x² = ${negativoUsado} no tiene solución real, así que no debes incluir esa raíz.`);
+      return;
+    }
+    mostrarFeedback(feedback, "error",
+      "No es correcto. Revisa qué valores de t son positivos y, para cada uno, calcula sus dos raíces cuadradas (positiva y negativa).");
+  }
+
+  function finalizarSolucionesX(ec, textoResultado) {
+    const bloque = document.getElementById("bloqueSolucionesX");
+    bloque.querySelectorAll("input, button").forEach(el => el.disabled = true);
+    bloque.classList.add("resuelto");
+    const feedback = document.getElementById("feedbackSolucionesX");
+    state.ecuacionesCorrectas++;
+    actualizarMarcador();
+    actualizarAvisoFichaCompletada();
+    mostrarFeedback(feedback, "ok", "Correcto. " + textoResultado + " Ecuación completada: +5 puntos.");
+    mostrarResumenRonda(ec);
+  }
+
+  // ---------- Resumen de la ronda ----------
+
+  function mostrarResumenRonda(ec) {
+    if (document.getElementById("bloqueResumenRonda")) return;
+    const bloque = nuevoBloque("bloqueResumenRonda", "resuelto");
+    const correctas = solucionesXCorrectas(ec);
+    const textoSol = correctas.length === 0
+      ? "no tiene solución real"
+      : "x = " + correctas.slice().sort((a, b) => a - b).join(", ");
+    bloque.innerHTML = `
+      <p class="paso-titulo">Ecuación resuelta</p>
+      <p style="text-align:center; font-size:0.95rem;">La ecuación <strong>${state.rondaActual.presentacionX} = 0</strong>: <strong>${textoSol}</strong>.</p>
+      <div class="fila-input">
+        <button class="btn-primario" id="btnOtraEcuacion">Practicar con otra ecuación</button>
+      </div>
+    `;
+    bloque.querySelector("#btnOtraEcuacion").addEventListener("click", iniciarRonda);
+  }
+
+  // ================= Cambiar de ecuación (con confirmación) =================
+
+  document.getElementById("btnCambiarEcuacion").addEventListener("click", function () {
+    if (state.rondaActual.huboIntento) {
+      document.getElementById("overlayConfirmacion").classList.remove("oculto");
+    } else {
+      iniciarRonda();
+    }
+  });
+  document.getElementById("btnConfirmarCambio").addEventListener("click", function () {
+    document.getElementById("overlayConfirmacion").classList.add("oculto");
+    iniciarRonda();
+  });
+  document.getElementById("btnCancelarCambio").addEventListener("click", function () {
+    document.getElementById("overlayConfirmacion").classList.add("oculto");
+  });
+
+  // ================= Modal de calificación final =================
+
+  const COLORES_NOTA = [
+    { min: 10, fondo: "#1a7a1a", texto: "#fff" },
+    { min: 9, fondo: "#6dbf6d", texto: "#fff" },
+    { min: 8, fondo: "#1a4f8a", texto: "#fff" },
+    { min: 7, fondo: "#5b9bd5", texto: "#fff" },
+    { min: 6, fondo: "#c05c00", texto: "#fff" },
+    { min: 5, fondo: "#f5a623", texto: "#000" },
+    { min: -1, fondo: "#c0392b", texto: "#fff" }
+  ];
+
+  document.getElementById("btnFinalizar").addEventListener("click", function () {
+    if (!exigirNombre()) return;
+    state.alumno = document.getElementById("inputNombre").value.trim();
+
+    const nota = notaActual();
+    const color = COLORES_NOTA.find(c => nota >= c.min) || COLORES_NOTA[COLORES_NOTA.length - 1];
+    const modal = document.getElementById("modalCalificacion");
+    modal.style.backgroundColor = color.fondo; modal.style.color = color.texto;
+
+    document.getElementById("modalTituloFicha").textContent = document.querySelector(".titulo-ficha").textContent;
+    document.getElementById("modalSubtituloFicha").textContent = document.querySelector(".subtitulo").textContent;
+    document.getElementById("modalAlumno").textContent = state.alumno;
+    document.getElementById("modalNota").textContent = formatearNumero(nota) + " / 10";
+
+    const ahora = new Date();
+    const fecha = `${String(ahora.getDate()).padStart(2,"0")}/${String(ahora.getMonth()+1).padStart(2,"0")}/${ahora.getFullYear()}`;
+    const hora = ahora.toTimeString().slice(0,8);
+    const segundosTotales = Math.ceil((Date.now() - state.inicio) / 1000);
+    const horasEmpleadas = String(Math.floor(segundosTotales / 3600)).padStart(2, "0");
+    const minutosEmpleados = String(Math.floor((segundosTotales % 3600) / 60)).padStart(2, "0");
+    document.getElementById("modalMeta").innerHTML =
+      `Fecha: ${fecha} &nbsp;·&nbsp; Hora: ${hora} &nbsp;·&nbsp; Tiempo empleado: ${horasEmpleadas}:${minutosEmpleados}<br>Ecuaciones resueltas correctamente: ${state.ecuacionesCorrectas}`;
+
+    const tbody = document.getElementById("modalDesglose");
+    tbody.innerHTML = "";
+    TIPOS.forEach(t => {
+      const info = state.tipos[t];
+      const intentos = info.aciertos + info.fallos;
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>${NOMBRE_APARTADO[t]}</td><td>${intentos}</td><td>${info.aciertos}</td><td>${info.fallos}</td>`;
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById("overlayCalificacion").classList.remove("oculto");
+  });
+
+  document.getElementById("btnCerrarModal").addEventListener("click", function () {
+    document.getElementById("overlayCalificacion").classList.add("oculto");
+  });
+
+  // ================= Arranque =================
+  actualizarMarcador();
+  iniciarRonda();
+
+})();
+</script>
+</body>
+</html>
