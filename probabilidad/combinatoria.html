@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Combinatoria · Ficha interactiva</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+      background: #f2efe6;
+      padding: 20px;
+      transition: background-color 0.5s ease;
+    }
+
+    body.nota-10 {
+      background: #c8e6c9;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: #fffef7;
+      border-radius: 28px;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      border: 1px solid #e2dccd;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #8b6f47 0%, #6b5638 100%);
+      color: #f3f0e2;
+      padding: 20px;
+      text-align: center;
+      border-bottom: 3px solid #d4a574;
+    }
+
+    .autor-arriba {
+      font-size: 11px;
+      opacity: 0.85;
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      margin-bottom: 6px;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    .alumno-section {
+      background: #f9f6f2;
+      padding: 20px;
+      border-bottom: 1px solid #e8ddd5;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .alumno-section label {
+      font-weight: 600;
+      color: #6b5638;
+    }
+
+    .alumno-section input {
+      padding: 10px 15px;
+      border: 2px solid #d4a574;
+      border-radius: 6px;
+      font-size: 14px;
+      flex: 1;
+      max-width: 300px;
+      background: white;
+    }
+
+    .top-bar {
+      background: #f9f6f2;
+      padding: 15px 20px 0 20px;
+      border-bottom: 2px solid #e8ddd5;
+    }
+
+    .score-line {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 30px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+      background: #f0e6db;
+      padding: 10px 20px;
+      border-radius: 50px;
+    }
+
+    .score-item {
+      display: flex;
+      align-items: baseline;
+      gap: 5px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #6b5638;
+    }
+
+    .score-item .numero {
+      font-size: 22px;
+      font-weight: 700;
+      color: #8b6f47;
+    }
+
+    .score-item .penalizacion-num {
+      font-size: 22px;
+      font-weight: 700;
+      color: #c62828;
+    }
+
+    .score-item .label {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .separador {
+      font-size: 18px;
+      color: #d4a574;
+      font-weight: 600;
+    }
+
+    .progress-bar {
+      background: #e8ddd5;
+      height: 20px;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .progress-fill {
+      background: linear-gradient(90deg, #8b6f47 0%, #a68a5e 100%);
+      height: 100%;
+      transition: width 0.3s ease;
+      width: 0%;
+    }
+
+    .progress-label {
+      font-size: 12px;
+      color: #6b5638;
+      font-weight: 500;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .bloques-bar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 0;
+    }
+
+    .bloque-badge {
+      padding: 8px 14px;
+      border: 2px solid #d4a574;
+      border-radius: 20px;
+      background: white;
+      color: #6b5638;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .bloque-badge:hover {
+      border-color: #8b6f47;
+      transform: translateY(-2px);
+    }
+
+    .bloque-badge.activo {
+      background: #8b6f47;
+      color: white;
+      border-color: #8b6f47;
+    }
+
+    .bloque-badge.completado {
+      background: #2e7d32;
+      color: white;
+      border-color: #2e7d32;
+    }
+
+    .main-content {
+      padding: 40px;
+      min-height: 450px;
+    }
+
+    .bloque-actual {
+      display: inline-block;
+      background: #f0e6db;
+      color: #6b5638;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      border-left: 4px solid #8b6f47;
+    }
+
+    .ejercicio-card {
+      background: #faf8f5;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 25px;
+      border: 1px solid #e8ddd5;
+      transition: all 0.2s;
+    }
+
+    .ejercicio-card.completado {
+      background: #e8f5e9;
+      border-color: #a5d6a7;
+    }
+
+    .ejercicio-card.agotado {
+      background: #fdeceb;
+      border-color: #f3b3ac;
+    }
+
+    .enunciado {
+      font-size: 16px;
+      line-height: 1.6;
+      color: #1e2a2e;
+      margin-bottom: 18px;
+      padding-left: 12px;
+      border-left: 4px solid #d4a574;
+    }
+
+    .input-ejercicio {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .input-ejercicio label {
+      font-weight: 600;
+      color: #6b5638;
+    }
+
+    .input-ejercicio input {
+      padding: 8px 12px;
+      border: 2px solid #d4a574;
+      border-radius: 8px;
+      font-size: 14px;
+      width: 150px;
+    }
+
+    .input-ejercicio input:disabled {
+      background: #e8ddd5;
+    }
+
+    .btn-ejercicio {
+      background: #8b6f47;
+      color: white;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-ejercicio:hover:not(:disabled) {
+      background: #6b5638;
+    }
+
+    .btn-ejercicio:disabled {
+      background: #bcab88;
+      cursor: not-allowed;
+    }
+
+    .puntos-ejercicio {
+      font-size: 12px;
+      color: #8b6f47;
+      font-weight: 600;
+      margin-top: 6px;
+    }
+
+    .feedback-ejercicio {
+      margin-top: 12px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      display: none;
+    }
+
+    .feedback-ejercicio.mostrar {
+      display: block;
+    }
+
+    .feedback-ejercicio.correcto {
+      background: #d4edda;
+      color: #1b5e20;
+      border-left: 4px solid #2e7d32;
+    }
+
+    .feedback-ejercicio.agotado {
+      background: #fdeceb;
+      color: #8a1f14;
+      border-left: 4px solid #c0392b;
+    }
+
+    .feedback-ejercicio.aviso {
+      background: #fff6e0;
+      color: #7a5b00;
+      border-left: 4px solid #d4a574;
+    }
+
+    .bloque-status {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f0e6db;
+      border-radius: 12px;
+      text-align: center;
+      font-weight: 600;
+      color: #6b5638;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 40px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: #8b6f47;
+      color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: #6b5638;
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: #f0e6db;
+      color: #6b5638;
+      border: 2px solid #d4a574;
+    }
+
+    .bottom-bar {
+      background: #f9f6f2;
+      padding: 20px;
+      border-top: 1px solid #e8ddd5;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .btn-finalizar-lateral {
+      background: #8b6f47;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 40px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-finalizar-lateral:hover {
+      background: #6b5638;
+      transform: scale(0.98);
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      z-index: 1000;
+    }
+
+    .overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal {
+      background: white;
+      border-radius: 24px;
+      padding: 30px;
+      max-width: 460px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 20px 35px rgba(0, 0, 0, 0.3);
+      animation: popIn 0.3s ease;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 20px 0;
+      text-align: left;
+    }
+
+    .modal-item {
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+    }
+
+    .modal-item-label {
+      font-size: 10px;
+      opacity: 0.8;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .modal-item-value {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .full-width {
+      grid-column: 1 / -1;
+    }
+
+    .recordatorio {
+      font-size: 13px;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.08);
+      border-radius: 12px;
+      margin: 15px 0;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 15px;
+    }
+
+    .modal-buttons button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 40px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-cerrar {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+
+    .btn-descargar {
+      background: white;
+      color: #1e2a2e;
+    }
+
+    /* Modal genérico de confirmación / nombre (siempre en tema neutro claro, propio de la ficha) */
+    .modal-neutro {
+      background: #fffef7;
+      color: #3a2f1f;
+    }
+
+    .modal-neutro h2 {
+      color: #6b5638;
+      margin-bottom: 10px;
+    }
+
+    .modal-neutro p {
+      font-size: 14px;
+      line-height: 1.5;
+      color: #4a3f2f;
+      margin-bottom: 16px;
+    }
+
+    .modal-neutro input[type="text"] {
+      width: 100%;
+      padding: 10px 14px;
+      border: 2px solid #d4a574;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+
+    .modal-neutro .modal-buttons .btn-cerrar {
+      background: #f0e6db;
+      color: #6b5638;
+    }
+
+    .modal-neutro .modal-buttons .btn-descargar {
+      background: #8b6f47;
+      color: white;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 30px;
+      transform: translateX(-50%) translateY(20px);
+      background: #3a2f1f;
+      color: #fdf9ee;
+      padding: 14px 22px;
+      border-radius: 40px;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+      opacity: 0;
+      transition: all 0.3s ease;
+      pointer-events: none;
+      z-index: 1100;
+      max-width: 90%;
+      text-align: center;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (max-width: 700px) {
+      .main-content { padding: 20px; }
+      .modal-grid { grid-template-columns: 1fr; }
+      .input-ejercicio { flex-direction: column; align-items: flex-start; }
+      .score-line { gap: 15px; }
+      .score-item { font-size: 13px; }
+      .score-item .numero, .score-item .penalizacion-num { font-size: 18px; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="autor-arriba">Material elaborado por Marta L Letona S. · Basado en trabajo de J. Cayetano</div>
+    <h1>COMBINATORIA</h1>
+  </div>
+
+  <div class="alumno-section">
+    <label for="nombreAlumno">👩‍🎓 Alumno/a:</label>
+    <input type="text" id="nombreAlumno" placeholder="Escribe tu nombre">
+  </div>
+
+  <div class="top-bar">
+    <div class="score-line">
+      <div class="score-item">
+        <span class="numero" id="pts-pos">0</span>
+        <span class="label">Ejercicios acertados</span>
+      </div>
+      <span class="separador">/</span>
+      <div class="score-item">
+        <span class="numero" id="pts-neg">10</span>
+        <span class="label">Total ejercicios</span>
+      </div>
+      <span class="separador">·</span>
+      <div class="score-item">
+        <span class="numero" id="pts-total">0.00</span>
+        <span class="label">Puntos</span>
+      </div>
+      <span class="separador">·</span>
+      <div class="score-item">
+        <span class="penalizacion-num" id="penalizacion">0</span>
+        <span class="label">Fallos</span>
+      </div>
+    </div>
+
+    <div class="progress-bar"><div class="progress-fill" id="barra-fill"></div></div>
+    <div class="progress-label" id="progreso-label" aria-live="polite">Bloques terminados: 0/5 · Puntos: 0.00/10</div>
+    <div class="bloques-bar">
+      <div class="bloque-badge" id="badge-0">📌 Bloque 1</div>
+      <div class="bloque-badge" id="badge-1">📌 Bloque 2</div>
+      <div class="bloque-badge" id="badge-2">📌 Bloque 3</div>
+      <div class="bloque-badge" id="badge-3">📌 Bloque 4</div>
+      <div class="bloque-badge" id="badge-4">📌 Bloque 5</div>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <div class="bloque-actual" id="bloque-label">📚 Ejercicios</div>
+    <div id="ejercicios-container"></div>
+    <div class="button-group" id="nav-buttons" style="display: none;">
+      <button class="btn btn-secondary" id="btn-reintentar">🔄 Reintentar este bloque</button>
+      <button class="btn btn-primary" id="btn-siguiente-bloque">➡️ Siguiente bloque</button>
+    </div>
+  </div>
+
+  <div class="bottom-bar">
+    <button class="btn-finalizar-lateral" id="btnFinalizar">📋 Finalizar y Calificar</button>
+  </div>
+</div>
+
+<!-- Modal de resultado final -->
+<div class="overlay" id="overlay">
+  <div class="modal" id="modal">
+    <h2 id="modalTitulo">Resultado</h2>
+    <div class="modal-grid">
+      <div class="modal-item"><div class="modal-item-label">Alumno</div><div class="modal-item-value" id="modalNombre">—</div></div>
+      <div class="modal-item"><div class="modal-item-label">Nota</div><div class="modal-item-value" id="modalNota">—</div></div>
+      <div class="modal-item"><div class="modal-item-label">Fecha</div><div class="modal-item-value" id="modalFecha">—</div></div>
+      <div class="modal-item"><div class="modal-item-label">Hora</div><div class="modal-item-value" id="modalHora">—</div></div>
+      <div class="modal-item full-width"><div class="modal-item-label">Tiempo transcurrido</div><div class="modal-item-value" id="modalTiempo">—</div></div>
+    </div>
+    <div class="recordatorio">📸 Haz una captura de pantalla y entrégala en Google Classroom.</div>
+    <div class="modal-buttons">
+      <button class="btn-cerrar" id="btnCerrarModal">Seguir practicando</button>
+      <button class="btn-descargar" id="btnDescargarReporte">Descargar reporte</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal propio para pedir el nombre (sustituye a prompt()) -->
+<div class="overlay" id="overlayNombre">
+  <div class="modal modal-neutro" id="modalNombreFaltante">
+    <h2>Antes de calificar…</h2>
+    <p>Escribe tu nombre para poder generar el informe.</p>
+    <input type="text" id="inputNombreModal" placeholder="Tu nombre y apellidos">
+    <div class="modal-buttons">
+      <button class="btn-cerrar" id="btnCancelarNombre">Cancelar</button>
+      <button class="btn-descargar" id="btnConfirmarNombre">Continuar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal propio de confirmación antes de reiniciar un bloque con progreso (sustituye a confirm()) -->
+<div class="overlay" id="overlayConfirmacion">
+  <div class="modal modal-neutro" id="modalConfirmacion">
+    <h2>¿Reiniciar este bloque?</h2>
+    <p id="textoConfirmacion">Vas a perder el progreso ya conseguido en este bloque.</p>
+    <div class="modal-buttons">
+      <button class="btn-cerrar" id="btnCancelarReinicio">Cancelar</button>
+      <button class="btn-descargar" id="btnConfirmarReinicio">Sí, reiniciar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // ======================== UTILIDADES ========================
+  function factorial(n) {
+    if (n <= 1) return 1;
+    let r = 1;
+    for (let i = 2; i <= n; i++) r *= i;
+    return r;
+  }
+  function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+  let toastTimeoutId = null;
+  function mostrarToast(mensaje) {
+    const toast = document.getElementById('toast');
+    toast.textContent = mensaje;
+    toast.classList.add('show');
+    if (toastTimeoutId) clearTimeout(toastTimeoutId);
+    toastTimeoutId = setTimeout(() => toast.classList.remove('show'), 3500);
+  }
+
+  // ======================== GENERADORES DE EJERCICIOS ========================
+  function generarBloque1() {
+    const n1 = randInt(8, 15);
+    const n2 = randInt(10, 18);
+    return [
+      {
+        enunciado: `En un grupo de ${n1} alumnos se va a elegir presidente, vicepresidente y secretario. ¿De cuántas formas distintas se puede realizar la asignación?`,
+        correcta: factorial(n1) / factorial(n1 - 3),
+        explicacion: `V(${n1},3) = ${n1} × ${n1-1} × ${n1-2} = ${factorial(n1) / factorial(n1 - 3)}. Se trata de VARIACIONES porque importa el orden y no se repiten los cargos.`
+      },
+      {
+        enunciado: `En una carrera participan ${n2} atletas. ¿De cuántas formas se pueden repartir las medallas de oro, plata y bronce?`,
+        correcta: factorial(n2) / factorial(n2 - 3),
+        explicacion: `V(${n2},3) = ${n2} × ${n2-1} × ${n2-2} = ${factorial(n2) / factorial(n2 - 3)}. Son VARIACIONES porque importa el orden (oro≠plata≠bronce).`
+      }
+    ];
+  }
+
+  function generarBloque2() {
+    const n1 = randInt(3, 6);
+    const k1 = randInt(3, 4);
+    const n2 = randInt(4, 7);
+    const k2 = randInt(2, 5);
+    let digitos1 = [], digitos2 = [];
+    for (let i = 1; i <= n1; i++) digitos1.push(i);
+    for (let i = 0; i <= n2-1; i++) digitos2.push(i);
+    return [
+      {
+        enunciado: `¿Cuántos números diferentes de ${k1} cifras se pueden formar usando los dígitos {${digitos1.join(', ')}}? (se permiten repeticiones)`,
+        correcta: Math.pow(n1, k1),
+        explicacion: `VR(${n1},${k1}) = ${n1}^${k1} = ${Math.pow(n1, k1)}. Son VARIACIONES CON REPETICIÓN porque importa el orden y se pueden repetir dígitos.`
+      },
+      {
+        enunciado: `Un sistema de seguridad usa contraseñas de ${k2} dígitos formadas con los números {${digitos2.join(', ')}}. ¿Cuántas contraseñas diferentes se pueden crear?`,
+        correcta: Math.pow(n2, k2),
+        explicacion: `VR(${n2},${k2}) = ${n2}^${k2} = ${Math.pow(n2, k2)}. Son VARIACIONES CON REPETICIÓN porque importa el orden y se pueden repetir dígitos.`
+      }
+    ];
+  }
+
+  function generarBloque3() {
+    const n1 = randInt(8, 15);
+    const n2 = randInt(12, 20);
+    return [
+      {
+        enunciado: `En una clase de ${n1} estudiantes se van a elegir 2 delegados para una reunión (los dos con la misma responsabilidad). ¿De cuántas formas se puede hacer?`,
+        correcta: factorial(n1) / (factorial(2) * factorial(n1 - 2)),
+        explicacion: `C(${n1},2) = ${n1}×${n1-1}/2 = ${factorial(n1) / (factorial(2) * factorial(n1 - 2))}. Son COMBINACIONES porque NO importa el orden (los delegados son iguales).`
+      },
+      {
+        enunciado: `Se van a entregar dos premios IGUALES (dos entradas de cine) a un grupo de ${n2} personas. ¿De cuántas formas se puede elegir a los ganadores?`,
+        correcta: factorial(n2) / (factorial(2) * factorial(n2 - 2)),
+        explicacion: `C(${n2},2) = ${n2}×${n2-1}/2 = ${factorial(n2) / (factorial(2) * factorial(n2 - 2))}. Son COMBINACIONES porque los premios son iguales, no importa el orden.`
+      }
+    ];
+  }
+
+  function generarBloque4() {
+    const n1 = randInt(4, 7);
+    const k1 = randInt(2, 4);
+    const n2 = randInt(5, 8);
+    const k2 = randInt(3, 5);
+    return [
+      {
+        enunciado: `¿De cuántas formas se pueden repartir ${k1} bombones IDÉNTICOS entre ${n1} niños? (puede haber niños sin bombón)`,
+        correcta: factorial(n1 + k1 - 1) / (factorial(k1) * factorial(n1 - 1)),
+        explicacion: `CR(${n1},${k1}) = C(${n1+k1-1},${k1}) = ${factorial(n1 + k1 - 1) / (factorial(k1) * factorial(n1 - 1))}. Son COMBINACIONES CON REPETICIÓN porque los bombones son iguales y se pueden repetir.`
+      },
+      {
+        enunciado: `En una frutería hay ${n2} tipos de frutas. ¿De cuántas formas se pueden comprar ${k2} piezas (pueden ser del mismo tipo)?`,
+        correcta: factorial(n2 + k2 - 1) / (factorial(k2) * factorial(n2 - 1)),
+        explicacion: `CR(${n2},${k2}) = C(${n2+k2-1},${k2}) = ${factorial(n2 + k2 - 1) / (factorial(k2) * factorial(n2 - 1))}. Son COMBINACIONES CON REPETICIÓN porque no importa el orden y se pueden repetir frutas.`
+      }
+    ];
+  }
+
+  function generarBloque5() {
+    const n1 = randInt(4, 7);
+    const n2 = randInt(5, 8);
+    return [
+      {
+        enunciado: `¿De cuántas formas diferentes se pueden ordenar ${n1} libros en una estantería?`,
+        correcta: factorial(n1),
+        explicacion: `P(${n1}) = ${n1}! = ${factorial(n1)}. Son PERMUTACIONES porque se usan TODOS los elementos y importa el orden.`
+      },
+      {
+        enunciado: `En una carrera de relevos, ${n2} corredores se colocan en fila para salir. ¿De cuántas formas se pueden ordenar?`,
+        correcta: factorial(n2),
+        explicacion: `P(${n2}) = ${n2}! = ${factorial(n2)}. Son PERMUTACIONES porque se usan TODOS los elementos y importa el orden.`
+      }
+    ];
+  }
+
+  const GENERADORES = [generarBloque1, generarBloque2, generarBloque3, generarBloque4, generarBloque5];
+
+  // ======================== CONFIGURACIÓN DE PUNTUACIÓN ========================
+  const TOTAL_BLOQUES = 5;
+  const TOTAL_EJERCICIOS = 10; // 5 bloques x 2 ejercicios
+  const PUNTAJE_MAXIMO = 10;
+  const PUNTOS_POR_EJERCICIO = PUNTAJE_MAXIMO / TOTAL_EJERCICIOS; // 1
+  // Un único intento por ejercicio: como el feedback revela la solución numérica completa,
+  // no existe crédito parcial. Acierto = PUNTOS_POR_EJERCICIO, fallo = 0.
+
+  const tiempoInicioGlobal = Date.now();
+
+  // state.bloques[i] = null hasta que se visita por primera vez. Una vez generado, se conserva
+  // (no se regenera solo por navegar entre badges) para no perder progreso silenciosamente.
+  let state = {
+    bloques: [null, null, null, null, null],
+    bloqueActual: 0,
+    nombreAlumno: ''
+  };
+
+  function nuevoEjercicioState(ej) {
+    return {
+      enunciado: ej.enunciado,
+      correcta: ej.correcta,
+      explicacion: ej.explicacion,
+      fallos: 0,
+      resuelto: false,   // true = ya no admite más intentos (acertado o agotado)
+      acierto: false,
+      puntosGanados: 0,
+      respuestaUsuario: '',
+      // El feedback (incluida la explicación pedagógica) se guarda en el propio estado
+      // del ejercicio para que sobreviva a cualquier re-render de renderEjercicios().
+      feedbackHtml: '',
+      feedbackTipo: ''   // 'correcto' | 'incorrecto' | 'agotado' | 'aviso'
+    };
+  }
+
+  function generarNuevoBloque(bloqueId) {
+    const ejerciciosBase = GENERADORES[bloqueId]();
+    return {
+      ejercicios: ejerciciosBase.map(nuevoEjercicioState)
+    };
+  }
+
+  function bloqueTerminado(bloqueId) {
+    const b = state.bloques[bloqueId];
+    if (!b) return false;
+    return b.ejercicios.every(e => e.resuelto);
+  }
+
+  function hayProgresoEnBloque(bloqueId) {
+    const b = state.bloques[bloqueId];
+    if (!b) return false;
+    return b.ejercicios.some(e => e.fallos > 0 || e.acierto);
+  }
+
+  // ======================== NAVEGACIÓN ========================
+  function cargarBloque(bloqueId) {
+    if (!state.bloques[bloqueId]) {
+      state.bloques[bloqueId] = generarNuevoBloque(bloqueId);
+    }
+    state.bloqueActual = bloqueId;
+    renderEjercicios();
+    actualizarBadges();
+    document.getElementById('nav-buttons').style.display = 'flex';
+  }
+
+  function elegirBloque(bloqueId) {
+    cargarBloque(bloqueId);
+  }
+
+  function reintentarBloque() {
+    const bloqueId = state.bloqueActual;
+    if (bloqueTerminado(bloqueId)) return; // botón oculto en este caso, por seguridad no hace nada
+
+    if (hayProgresoEnBloque(bloqueId)) {
+      const b = state.bloques[bloqueId];
+      const puntosEnJuego = b.ejercicios.reduce((acc, e) => acc + e.puntosGanados, 0);
+      const fallosEnJuego = b.ejercicios.reduce((acc, e) => acc + e.fallos, 0);
+      document.getElementById('textoConfirmacion').textContent =
+        `Vas a perder el progreso de este bloque: ${puntosEnJuego.toFixed(2)} puntos ganados y ${fallosEnJuego} fallo(s) registrados. Se generarán ejercicios nuevos. ¿Continuar?`;
+      document.getElementById('overlayConfirmacion').classList.add('show');
+    } else {
+      state.bloques[bloqueId] = generarNuevoBloque(bloqueId);
+      renderEjercicios();
+    }
+  }
+
+  document.getElementById('btnCancelarReinicio').onclick = () => {
+    document.getElementById('overlayConfirmacion').classList.remove('show');
+  };
+  document.getElementById('btnConfirmarReinicio').onclick = () => {
+    document.getElementById('overlayConfirmacion').classList.remove('show');
+    state.bloques[state.bloqueActual] = generarNuevoBloque(state.bloqueActual);
+    renderEjercicios();
+    actualizarBadges();
+  };
+
+  function siguienteBloque() {
+    const pendientes = [];
+    for (let i = 0; i < TOTAL_BLOQUES; i++) {
+      if (!bloqueTerminado(i)) pendientes.push(i);
+    }
+    if (pendientes.length === 0) {
+      mostrarToast('🏆 Has terminado todos los bloques. Pulsa "Finalizar y Calificar" para ver tu nota.');
+      return;
+    }
+    cargarBloque(pendientes[0]);
+  }
+
+  // ======================== RENDER ========================
+  function renderEjercicios() {
+    const bloqueId = state.bloqueActual;
+    const bloque = state.bloques[bloqueId];
+    const container = document.getElementById('ejercicios-container');
+    document.getElementById('bloque-label').innerHTML = `📚 Ejercicios - Bloque ${bloqueId + 1}`;
+
+    let html = '';
+    bloque.ejercicios.forEach((ej, idx) => {
+      let cardClass = 'ejercicio-card';
+      if (ej.resuelto && ej.acierto) cardClass += ' completado';
+      else if (ej.resuelto && !ej.acierto) cardClass += ' agotado';
+
+      html += `
+        <div class="${cardClass}" id="card-ej-${idx}">
+          <div class="enunciado">${idx+1}. ${ej.enunciado}</div>
+          <div class="input-ejercicio">
+            <label for="input-ej-${idx}">Respuesta:</label>
+            <input type="number" id="input-ej-${idx}" placeholder="Número" value="${ej.respuestaUsuario}" ${ej.resuelto ? 'disabled' : ''}>
+            <button class="btn-ejercicio" id="btn-ej-${idx}" ${ej.resuelto ? 'disabled' : ''}>✅ Comprobar</button>
+          </div>
+          ${ej.resuelto ? `<div class="puntos-ejercicio">Puntos obtenidos en este ejercicio: ${ej.puntosGanados.toFixed(2)} / ${PUNTOS_POR_EJERCICIO.toFixed(2)}</div>` : ''}
+          <div class="feedback-ejercicio${ej.feedbackHtml ? ' mostrar ' + ej.feedbackTipo : ''}" id="feedback-ej-${idx}" aria-live="polite">${ej.feedbackHtml}</div>
+        </div>
+      `;
+    });
+
+    const terminado = bloqueTerminado(bloqueId);
+    let estadoHtml = '';
+    if (terminado) {
+      const aciertos = bloque.ejercicios.filter(e => e.acierto).length;
+      const puntos = bloque.ejercicios.reduce((acc, e) => acc + e.puntosGanados, 0);
+      estadoHtml = `<div class="bloque-status" aria-live="polite">✅ Bloque terminado — ${aciertos}/2 acertados · +${puntos.toFixed(2)} puntos</div>`;
+    } else {
+      estadoHtml = `<div class="bloque-status" aria-live="polite">📌 Un único intento por ejercicio (vale ${PUNTOS_POR_EJERCICIO.toFixed(2)} punto). El feedback muestra la solución completa, así que un fallo cierra el ejercicio con 0 puntos.</div>`;
+    }
+    container.innerHTML = html + estadoHtml;
+
+    // Botón "Reintentar" solo tiene sentido si el bloque no está terminado
+    document.getElementById('btn-reintentar').style.display = terminado ? 'none' : 'inline-block';
+
+    bloque.ejercicios.forEach((ej, idx) => {
+      const btn = document.getElementById(`btn-ej-${idx}`);
+      const input = document.getElementById(`input-ej-${idx}`);
+      if (btn && !ej.resuelto) {
+        btn.onclick = () => corregirEjercicio(idx);
+      }
+      if (input && !ej.resuelto) {
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            corregirEjercicio(idx);
+          }
+        });
+      }
+    });
+  }
+
+  function corregirEjercicio(idx) {
+    const bloque = state.bloques[state.bloqueActual];
+    const ej = bloque.ejercicios[idx];
+    if (ej.resuelto) return; // guard: ya no admite más intentos
+
+    const input = document.getElementById(`input-ej-${idx}`);
+    const valorTexto = input.value;
+    const respuesta = parseInt(valorTexto, 10);
+    ej.respuestaUsuario = valorTexto;
+
+    // El feedback se escribe en el ESTADO del ejercicio (no directamente en el DOM):
+    // renderEjercicios() reconstruye el contenedor entero en cada llamada, así que cualquier
+    // texto escrito solo en el DOM se pierde en el mismo instante en que se vuelve a renderizar.
+    if (valorTexto === '' || isNaN(respuesta)) {
+      ej.feedbackTipo = 'aviso';
+      ej.feedbackHtml = '⚠️ Introduce un número antes de comprobar.';
+      renderEjercicios();
+      return; // no cuenta como intento: no hay nada que corregir todavía
+    }
+
+    const esCorrecto = respuesta === ej.correcta;
+
+    // Un único intento por ejercicio: el feedback revela la explicación con la solución
+    // numérica completa (p. ej. "V(13,3) = ... = 1716"), así que permitir reintentar después
+    // de verla premiaría simplemente copiar el resultado ya mostrado. Por eso, acierte o
+    // falle, el ejercicio se cierra en este mismo intento.
+    ej.resuelto = true;
+
+    if (esCorrecto) {
+      ej.acierto = true;
+      ej.puntosGanados = PUNTOS_POR_EJERCICIO;
+      ej.feedbackTipo = 'correcto';
+      ej.feedbackHtml = `✅ Correcto. ${ej.explicacion}<br><strong>+${PUNTOS_POR_EJERCICIO.toFixed(2)} puntos.</strong>`;
+    } else {
+      ej.fallos = 1;
+      ej.acierto = false;
+      ej.puntosGanados = 0;
+      ej.feedbackTipo = 'agotado';
+      ej.feedbackHtml = `❌ Incorrecto. Tu respuesta: ${respuesta}. Este ejercicio no admite más intentos.<br>La respuesta correcta era ${ej.correcta}.<br>${ej.explicacion}<br><strong>Se cierra con 0 puntos.</strong>`;
+    }
+
+    renderEjercicios();
+    actualizarPuntuacion();
+    actualizarBadges();
+  }
+
+  // ======================== TOTALES Y CONTADORES ========================
+  function calcularTotales() {
+    let aciertos = 0, puntos = 0, fallos = 0;
+    for (const b of state.bloques) {
+      if (!b) continue;
+      for (const ej of b.ejercicios) {
+        if (ej.acierto) aciertos++;
+        puntos += ej.puntosGanados;
+        fallos += ej.fallos;
+      }
+    }
+    const bloquesTerminados = state.bloques.reduce((acc, _, i) => acc + (bloqueTerminado(i) ? 1 : 0), 0);
+    return { aciertos, puntos, fallos, bloquesTerminados };
+  }
+
+  function actualizarPuntuacion() {
+    const { aciertos, puntos, fallos, bloquesTerminados } = calcularTotales();
+    document.getElementById('pts-pos').innerText = aciertos;
+    document.getElementById('pts-total').innerText = puntos.toFixed(2);
+    document.getElementById('penalizacion').innerText = fallos;
+    let pct = (puntos / PUNTAJE_MAXIMO) * 100;
+    document.getElementById('barra-fill').style.width = Math.min(100, pct) + '%';
+    document.getElementById('progreso-label').innerHTML =
+      `Bloques terminados: ${bloquesTerminados}/${TOTAL_BLOQUES} · Puntos: ${puntos.toFixed(2)}/${PUNTAJE_MAXIMO}`;
+  }
+
+  function actualizarBadges() {
+    for (let i = 0; i < TOTAL_BLOQUES; i++) {
+      const el = document.getElementById(`badge-${i}`);
+      if (!el) continue;
+      el.classList.remove('activo', 'completado');
+      if (bloqueTerminado(i)) {
+        el.classList.add('completado');
+      } else if (i === state.bloqueActual) {
+        el.classList.add('activo');
+      }
+    }
+  }
+
+  for (let i = 0; i < TOTAL_BLOQUES; i++) {
+    document.getElementById(`badge-${i}`).onclick = () => elegirBloque(i);
+  }
+  document.getElementById('btn-reintentar').onclick = () => reintentarBloque();
+  document.getElementById('btn-siguiente-bloque').onclick = () => siguienteBloque();
+
+  // ======================== MODAL DE RESULTADO ========================
+  function formatearTiempoTranscurrido() {
+    const tiempoMs = Date.now() - tiempoInicioGlobal;
+    const totalMinutos = Math.ceil(tiempoMs / 60000); // redondeo hacia arriba, según criterio del proyecto
+    const horas = Math.floor(totalMinutos / 60);
+    const mins = totalMinutos % 60;
+    return `${horas.toString().padStart(2,'0')}:${mins.toString().padStart(2,'0')}`;
+  }
+
+  function intentarFinalizar() {
+    const nombreActual = document.getElementById('nombreAlumno').value.trim();
+    if (nombreActual === '') {
+      document.getElementById('inputNombreModal').value = '';
+      document.getElementById('overlayNombre').classList.add('show');
+      document.getElementById('inputNombreModal').focus();
+      return;
+    }
+    abrirModalResultado(nombreActual);
+  }
+
+  document.getElementById('btnCancelarNombre').onclick = () => {
+    document.getElementById('overlayNombre').classList.remove('show');
+  };
+  document.getElementById('btnConfirmarNombre').onclick = () => {
+    const val = document.getElementById('inputNombreModal').value.trim();
+    if (val === '') {
+      document.getElementById('inputNombreModal').focus();
+      return;
+    }
+    document.getElementById('nombreAlumno').value = val;
+    document.getElementById('overlayNombre').classList.remove('show');
+    abrirModalResultado(val);
+  };
+  document.getElementById('inputNombreModal').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      document.getElementById('btnConfirmarNombre').click();
+    }
+  });
+
+  function abrirModalResultado(nombre) {
+    state.nombreAlumno = nombre;
+    const { puntos } = calcularTotales();
+    const nota = puntos;
+    const ahora = new Date();
+
+    const fechaStr = ahora.toLocaleDateString('es-ES');
+    const horaStr = ahora.toLocaleTimeString('es-ES');
+    const tiempoStr = formatearTiempoTranscurrido();
+
+    document.getElementById('modalNombre').innerText = nombre;
+    document.getElementById('modalNota').innerText = nota.toFixed(2);
+    document.getElementById('modalFecha').innerText = fechaStr;
+    document.getElementById('modalHora').innerText = horaStr;
+    document.getElementById('modalTiempo').innerText = tiempoStr;
+
+    const modal = document.getElementById('modal');
+    const body = document.body;
+    body.classList.remove('nota-10');
+
+    if (nota === 10) {
+      modal.style.background = '#1a7a1a'; modal.style.color = 'white'; body.classList.add('nota-10');
+    } else if (nota >= 9) { modal.style.background = '#6dbf6d'; modal.style.color = 'white'; }
+    else if (nota >= 8) { modal.style.background = '#1a4f8a'; modal.style.color = 'white'; }
+    else if (nota >= 7) { modal.style.background = '#5b9bd5'; modal.style.color = 'white'; }
+    else if (nota >= 6) { modal.style.background = '#c05c00'; modal.style.color = 'white'; }
+    else if (nota >= 5) { modal.style.background = '#f5a623'; modal.style.color = 'black'; }
+    else { modal.style.background = '#c0392b'; modal.style.color = 'white'; }
+
+    document.getElementById('modalTitulo').style.color = modal.style.color;
+    document.getElementById('overlay').classList.add('show');
+  }
+
+  document.getElementById('btnCerrarModal').onclick = () => {
+    document.getElementById('overlay').classList.remove('show');
+  };
+
+  function descargarReporte() {
+    const { aciertos, puntos, fallos, bloquesTerminados } = calcularTotales();
+    const nombre = state.nombreAlumno || document.getElementById('nombreAlumno').value.trim() || 'Alumno';
+    const nota = puntos.toFixed(2);
+    const ahora = new Date();
+    const fecha = ahora.toLocaleDateString('es-ES');
+    const hora = ahora.toLocaleTimeString('es-ES');
+    const tiempoTxt = formatearTiempoTranscurrido();
+
+    let lista = '';
+    for (let i = 0; i < TOTAL_BLOQUES; i++) {
+      if (bloqueTerminado(i)) {
+        const b = state.bloques[i];
+        const ac = b.ejercicios.filter(e => e.acierto).length;
+        lista += `✓ Bloque ${i+1}: ${ac}/2 acertados\n`;
+      }
+    }
+    const contenido = `REPORTE DE COMBINATORIA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Alumno/a: ${nombre}
+Fecha: ${fecha}
+Hora: ${hora}
+Tiempo transcurrido: ${tiempoTxt}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Puntuación final: ${nota}/10
+Ejercicios acertados: ${aciertos}/${TOTAL_EJERCICIOS}
+Fallos totales: ${fallos}
+Bloques terminados: ${bloquesTerminados}/${TOTAL_BLOQUES}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Detalle por bloque:
+${lista || 'Ningún bloque terminado todavía'}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Material elaborado por Marta L Letona S.
+Basado en trabajo de J. Cayetano`;
+    const blob = new Blob([contenido], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `reporte_combinatoria_${nombre.replace(/\s/g, '_')}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+  document.getElementById('btnDescargarReporte').onclick = descargarReporte;
+
+  document.getElementById('btnFinalizar').onclick = intentarFinalizar;
+
+  // ======================== ARRANQUE ========================
+  cargarBloque(0);
+  actualizarPuntuacion();
+</script>
+</body>
+</html>
