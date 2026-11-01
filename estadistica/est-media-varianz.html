@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ficha — Estadística Unidimensional</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap');
+:root{
+  --cf:#F5F0E8;--cc:#FDFAF3;--ct:#2C1F0E;--cs:#6B4F35;
+  --ca:#A0522D;--cah:#7B3B1E;--cb:#C9A96E;--cbs:#E0CEAA;
+  --ch:#3B2510;--cht:#F5EDD8;--cok:#2E6B3E;--cko:#8B1A1A;--cn:#E8DFC8;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Lato',sans-serif;font-size:15px;color:var(--ct);background:var(--cf);padding:0 0 2rem;}
+.top-bar{background:var(--ch);color:var(--cht);font-family:'Libre Baskerville',serif;text-align:center;padding:10px 20px;border-bottom:3px solid var(--cb);font-size:0.75rem;letter-spacing:0.05em;}
+.wrap{max-width:1100px;margin:20px auto;padding:0 12px;}
+.cabecera{background:var(--cc);border:2px solid var(--cb);border-radius:6px;padding:18px 22px;margin-bottom:14px;box-shadow:0 2px 8px rgba(44,31,14,.10);}
+.cab-title{font-family:'Libre Baskerville',serif;font-size:1.35rem;color:var(--ct);text-align:center;margin-bottom:4px;}
+.cab-title::after{content:'';display:block;width:50px;height:3px;background:var(--cb);margin:6px auto 0;border-radius:2px;}
+.cab-sub{font-size:0.82rem;color:var(--cs);text-align:center;margin:10px 0 14px;}
+.campo-nombre{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.campo-nombre label{font-size:0.78rem;color:var(--cs);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;}
+.campo-nombre input{flex:1;min-width:160px;border:none;border-bottom:1.5px solid var(--cb);background:transparent;font-family:'Lato',sans-serif;font-size:.95rem;color:var(--ct);padding:4px 2px;outline:none;}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+.stat{background:var(--cc);border:1.5px solid var(--cbs);border-radius:6px;padding:8px;text-align:center;}
+.stat-label{font-size:.68rem;color:var(--cs);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;}
+.stat-val{font-family:'Libre Baskerville',serif;font-size:1.35rem;color:var(--ca);}
+.ficha{background:var(--cc);border:2px solid var(--cb);border-radius:6px;padding:20px 24px;margin-bottom:14px;box-shadow:0 2px 8px rgba(44,31,14,.08);}
+.ficha-hdr{font-family:'Libre Baskerville',serif;font-size:1rem;color:var(--ct);border-bottom:1.5px solid var(--cbs);padding-bottom:10px;margin-bottom:16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.tag{background:var(--cn);color:var(--ca);border-radius:4px;font-size:.7rem;font-family:'Lato',sans-serif;padding:2px 8px;font-weight:700;}
+.sec-titulo{font-size:.7rem;font-weight:700;color:var(--cs);text-transform:uppercase;letter-spacing:.06em;margin:14px 0 10px;padding-bottom:4px;border-bottom:1px solid var(--cbs);}
+.tabla-wrap{overflow-x:auto;margin:12px 0;}
+.tabla{width:100%;border-collapse:collapse;font-size:0.85rem;}
+.tabla th,.tabla td{border:1px solid var(--cbs);padding:8px 6px;text-align:center;background:var(--cc);}
+.tabla th{background:var(--cn);font-weight:700;color:var(--ch);}
+.tabla input{width:80px;padding:4px;border:1.5px solid var(--cb);border-radius:4px;font-family:'Lato',sans-serif;text-align:center;background:var(--cc);}
+.tabla input.ok{border-color:var(--cok);background:#EAF4EC;}
+.tabla input.fail{border-color:var(--cko);background:#F9EAEA;}
+.sum-row{background:var(--cn);font-weight:700;}
+.cajas-estadisticos{display:flex;flex-wrap:wrap;gap:15px;margin:16px 0;padding:12px 16px;background:var(--cf);border:1.5px solid var(--cbs);border-radius:6px;}
+.caja-individual{flex:1;min-width:160px;display:flex;flex-direction:column;gap:6px;}
+.caja-individual label{font-family:'Libre Baskerville',serif;font-size:.8rem;color:var(--cs);font-weight:700;}
+.caja-individual input{padding:6px 10px;border:1.5px solid var(--cb);border-radius:4px;font-family:'Lato',sans-serif;font-size:.9rem;background:var(--cc);}
+.caja-individual input:disabled{background:var(--cn);opacity:0.7;}
+.caja-individual .btn-mini{background:var(--ch);color:var(--cht);border:none;border-radius:4px;padding:5px 12px;font-size:.75rem;cursor:pointer;margin-top:4px;transition:background .2s;}
+.caja-individual .btn-mini:hover{background:#2C1A0A;}
+.btn-check{background:var(--ch);color:var(--cht);border:2px solid var(--cb);border-radius:4px;padding:8px 20px;font-family:'Libre Baskerville',serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:background .2s;}
+.btn-check:hover{background:#2C1A0A;}
+.btn-check:disabled{opacity:0.5;cursor:not-allowed;}
+.fb-global{margin-top:10px;font-size:.85rem;border-radius:4px;padding:10px 14px;display:none;line-height:1.65;}
+.fb-global.show{display:block;}
+.fb-global.ok{background:#EAF4EC;color:var(--cok);border:1.5px solid var(--cok);font-weight:700;}
+.fb-global.fail{background:#F9EAEA;color:var(--cko);border:1.5px solid var(--cko);}
+.fb-global.warn{background:#FBF2DF;color:#7B3B1E;border:1.5px solid var(--cb);}
+.btn-final{background:var(--ch);color:var(--cht);border:2px solid var(--cb);border-radius:4px;padding:11px 24px;font-family:'Libre Baskerville',serif;font-size:.95rem;font-weight:700;cursor:pointer;width:100%;margin-top:4px;}
+.btn-final:hover{background:#2C1A0A;}
+.modal-bg{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(44,31,14,.55);display:none;align-items:center;justify-content:center;z-index:9999;padding:16px;}
+.modal-bg.show{display:flex;}
+.modal{border:3px solid var(--cb);border-radius:8px;padding:32px 36px;max-width:380px;width:90%;text-align:center;font-family:'Libre Baskerville',serif;box-shadow:0 6px 24px rgba(44,31,14,.35);}
+.modal h2{font-size:1.2rem;font-weight:700;margin-bottom:4px;}
+.modal .nota-big{font-size:3.2rem;font-weight:700;line-height:1.1;margin:8px 0;}
+.modal .meta{font-size:.82rem;opacity:.9;line-height:1.9;margin-bottom:12px;font-family:'Lato',sans-serif;}
+.modal .captura{font-size:.85rem;border-radius:6px;padding:8px 12px;background:rgba(255,255,255,.2);margin-bottom:12px;}
+.modal .btn-cerrar{background:rgba(255,255,255,.25);border:1.5px solid rgba(255,255,255,.55);border-radius:4px;padding:8px 20px;font-size:.85rem;cursor:pointer;font-family:'Lato',sans-serif;color:inherit;}
+#modal-confirm{background:var(--ch);color:var(--cht);}
+#modal-confirm .meta{color:var(--cht);opacity:1;}
+.botones-confirm{display:flex;gap:10px;justify-content:center;margin-top:6px;flex-wrap:wrap;}
+.btn-confirm{border-radius:4px;padding:9px 18px;font-family:'Lato',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;border:1.5px solid var(--cb);}
+.btn-confirm.cancelar{background:transparent;color:var(--cht);}
+.btn-confirm.aceptar{background:var(--cko);color:#fff;border-color:var(--cko);}
+.resultados{background:var(--cn);border-radius:6px;padding:10px 16px;margin:12px 0;display:flex;gap:20px;flex-wrap:wrap;font-size:0.85rem;}
+.resultados span{font-weight:700;color:var(--ca);}
+.boton-reinicio{background:transparent;color:var(--ca);border:1.5px solid var(--cb);border-radius:4px;padding:6px 14px;font-family:'Lato',sans-serif;font-size:.8rem;cursor:pointer;margin-left:10px;}
+.boton-reinicio:hover{border-color:var(--ca);}
+@media(max-width:600px){
+  .stats{grid-template-columns:repeat(2,1fr);}
+  .tabla input{width:60px;}
+  .cajas-estadisticos{flex-direction:column;}
+}
+</style>
+</head>
+<body>
+<div class="top-bar">Material elaborado por Marta L. Letona S. · Basado en el trabajo de J.Cayetano</div>
+<div class="wrap" id="wrap">
+
+  <div class="cabecera">
+    <div class="cab-title">📊 Estadística Unidimensional</div>
+    <div class="cab-sub">Media · Varianza · Desviación típica · Coeficiente de variación</div>
+    <div class="campo-nombre">
+      <label for="nombre">Nombre del alumno</label>
+      <input type="text" id="nombre" placeholder="Escribe tu nombre completo..." oninput="startTimer()">
+      <button class="boton-reinicio" onclick="pedirNuevaTabla()">🔄 Nueva tabla</button>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-label">Apartados</div><div class="stat-val" id="s-real">0</div></div>
+    <div class="stat"><div class="stat-label">Correctos</div><div class="stat-val" id="s-ac" style="color:#2E6B3E">0</div></div>
+    <div class="stat"><div class="stat-label">Errores</div><div class="stat-val" id="s-fail" style="color:#8B1A1A">0</div></div>
+    <div class="stat"><div class="stat-label">Puntuación</div><div class="stat-val" id="s-pts">0/10</div></div>
+  </div>
+
+  <!-- Ficha principal: tabla de frecuencias -->
+  <div class="ficha" id="ficha-unidim">
+    <div class="ficha-hdr">📋 Tabla de frecuencias <span class="tag">Rellena paso a paso</span></div>
+    <div class="sec-titulo">Distribución de frecuencias (x = valor, f = frecuencia absoluta)</div>
+    <div class="tabla-wrap">
+      <table class="tabla" id="tabla-main">
+        <thead>
+          <tr><th>x</th><th>f</th><th style="min-width:80px">x·f</th><th style="min-width:100px">x - media</th><th style="min-width:120px">(x - media)²</th><th style="min-width:140px">f·(x - media)²</th></tr>
+        </thead>
+        <tbody id="tabla-body"></tbody>
+        <tfoot>
+          <tr class="sum-row"><td><strong>Σ</strong></td><td id="sum-f">0</td><td id="sum-xf">0</td><td>—</td><td>—</td><td id="sum-fdx2">0</td></tr>
+        </tfoot>
+       </table>
+    </div>
+
+    <div class="cajas-estadisticos">
+      <div class="caja-individual">
+        <label for="input-media">📌 MEDIA (μ)</label>
+        <input type="text" inputmode="decimal" id="input-media" placeholder="Ej: 5,25 o 5.25">
+        <button class="btn-mini" onclick="comprobarMedia()">✓ Comprobar Media</button>
+      </div>
+      <div class="caja-individual">
+        <label for="input-varianza">📐 VARIANZA (σ²)</label>
+        <input type="text" inputmode="decimal" id="input-varianza" placeholder="Ej: 3,45 o 3.45" disabled>
+        <button class="btn-mini" id="btn-var" onclick="comprobarVarianza()" disabled>✓ Comprobar Varianza</button>
+      </div>
+      <div class="caja-individual">
+        <label for="input-sigma">📏 Desviación típica (σ)</label>
+        <input type="text" inputmode="decimal" id="input-sigma" placeholder="Ej: 1,86 o 1.86" disabled>
+        <button class="btn-mini" id="btn-sigma" onclick="comprobarSigma()" disabled>✓ Comprobar σ</button>
+      </div>
+      <div class="caja-individual">
+        <label for="input-cv">📊 Coef. Variación (CV)</label>
+        <input type="text" inputmode="decimal" id="input-cv" placeholder="Ej: 0,35 o 0.35" disabled>
+        <button class="btn-mini" id="btn-cv" onclick="comprobarCV()" disabled>✓ Comprobar CV</button>
+      </div>
+    </div>
+
+    <div class="resultados" id="resultados-parciales">
+      <div>📌 N = <span id="N-val">?</span></div>
+      <div>📌 Σ(x·f) = <span id="sumxf-val">?</span></div>
+      <div>📌 Media = <span id="media-val">—</span></div>
+      <div>📌 Varianza = <span id="var-val">—</span></div>
+      <div>📌 Desviación típica = <span id="desv-val">—</span></div>
+      <div>📌 CV = <span id="cv-val">—</span></div>
+    </div>
+
+    <div class="fb-global" id="fb-global" aria-live="polite"></div>
+  </div>
+
+  <button class="btn-final" onclick="finalizar()">Finalizar y Calificar</button>
+</div>
+
+<!-- Modal de calificación final -->
+<div class="modal-bg" id="modal-bg">
+  <div class="modal" id="modal">
+    <h2 id="m-nombre">—</h2>
+    <div class="nota-big" id="m-nota">—</div>
+    <div class="meta" id="m-meta"></div>
+    <div class="captura">Haz una captura de pantalla y entrégala en Google Classroom.</div>
+    <button class="btn-cerrar" onclick="cerrarModal()">Cerrar y seguir practicando</button>
+  </div>
+</div>
+
+<!-- Modal genérico de confirmación (sustituye a confirm() nativo) -->
+<div class="modal-bg" id="modal-confirm-bg">
+  <div class="modal" id="modal-confirm" role="alertdialog" aria-live="assertive">
+    <h2 id="mc-titulo">—</h2>
+    <div class="meta" id="mc-mensaje"></div>
+    <div class="botones-confirm">
+      <button class="btn-confirm cancelar" id="mc-cancelar">Cancelar</button>
+      <button class="btn-confirm aceptar" id="mc-confirmar">Sí, continuar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===================== CONSTANTES DEL MODELO DE PUNTUACIÓN =====================
+const PUNTOS_POR_APARTADO = 2.5;       // 10 / 4 apartados (media, varianza, sigma, CV)
+const DEDUCCION_POR_FALLO = 0.75;      // pts descontados por cada fallo DISTINTO dentro de un mismo apartado
+const MAX_FALLOS_APARTADO = Math.ceil(PUNTOS_POR_APARTADO / DEDUCCION_POR_FALLO); // agotamiento
+
+const TABLAS_POSIBLES = [
+  { nombre: "Tabla 1", datos: [{x:2,f:3},{x:4,f:5},{x:6,f:8},{x:8,f:4}] },
+  { nombre: "Tabla 2", datos: [{x:1,f:2},{x:3,f:7},{x:5,f:6},{x:7,f:3},{x:9,f:2}] },
+  { nombre: "Tabla 3", datos: [{x:0,f:4},{x:2,f:6},{x:4,f:9},{x:6,f:5},{x:8,f:2}] },
+  { nombre: "Tabla 4", datos: [{x:3,f:2},{x:5,f:4},{x:7,f:7},{x:9,f:3},{x:11,f:1}] },
+  { nombre: "Tabla 5", datos: [{x:10,f:3},{x:12,f:5},{x:14,f:8},{x:16,f:4},{x:18,f:2}] }
+];
+
+let tablaActual = null;
+let datos = [];
+let sumaFReal = 0, sumaXFReal = 0, mediaReal = 0, varianzaReal = 0, sigmaReal = 0, cvReal = 0;
+
+// Estado de "desbloqueo" (se usa para habilitar el siguiente campo, tanto si se acertó como si se agotó)
+let mediaOk = false, varianzaOk = false, sigmaOk = false, cvOk = false;
+
+// Estado detallado por apartado: fallos distintos, última respuesta fallida, puntos ganados, si está agotado
+function estadoInicial() {
+  return { fallos: 0, ultimoFallo: null, puntos: 0, resuelto: false, agotado: false };
+}
+let estado = { media: estadoInicial(), varianza: estadoInicial(), sigma: estadoInicial(), cv: estadoInicial() };
+
+let apartadosTotales = 0, apartadosCorrectos = 0, fallosAcumulados = 0;
+let timerStart = null;
+let accionPendienteConfirmacion = null;
+
+// ===================== UTILIDADES =====================
+
+// Acepta coma o punto decimal (formato español y anglosajón)
+function parseDecimalEs(str) {
+  if (str === null || str === undefined) return null;
+  const limpio = String(str).trim().replace(',', '.');
+  if (limpio === '') return null;
+  const val = parseFloat(limpio);
+  return isNaN(val) ? null : val;
+}
+
+function elegirTablaAleatoria() {
+  const indice = Math.floor(Math.random() * TABLAS_POSIBLES.length);
+  tablaActual = JSON.parse(JSON.stringify(TABLAS_POSIBLES[indice].datos));
+  datos = tablaActual.map(item => ({
+    x: item.x, f: item.f, xf: null, xmedia: null, xmedia2: null, fxmedia2: null
+  }));
+  calcularValoresReales();
+}
+
+function calcularValoresReales() {
+  sumaFReal = 0; sumaXFReal = 0;
+  for (let d of datos) { sumaFReal += d.f; sumaXFReal += d.x * d.f; }
+  mediaReal = sumaXFReal / sumaFReal;
+  let sumaFx2 = 0;
+  for (let d of datos) { let dif = d.x - mediaReal; sumaFx2 += d.f * (dif * dif); }
+  varianzaReal = sumaFx2 / sumaFReal;
+  sigmaReal = Math.sqrt(varianzaReal);
+  cvReal = mediaReal !== 0 ? sigmaReal / Math.abs(mediaReal) : 0;
+}
+
+function startTimer() { if (!timerStart) timerStart = Date.now(); }
+function elapsed() {
+  if (!timerStart) return '00:00';
+  const s = Math.floor((Date.now() - timerStart) / 1000);
+  return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+}
+
+function calcNota() {
+  const total = estado.media.puntos + estado.varianza.puntos + estado.sigma.puntos + estado.cv.puntos;
+  return Math.max(0, Math.min(10, parseFloat(total.toFixed(1))));
+}
+
+function updateStats() {
+  document.getElementById('s-real').textContent = apartadosTotales;
+  document.getElementById('s-ac').textContent = apartadosCorrectos;
+  document.getElementById('s-fail').textContent = fallosAcumulados;
+  document.getElementById('s-pts').textContent = calcNota().toFixed(1) + '/10';
+}
+
+function mostrarFeedback(tipo, mensaje) {
+  let fb = document.getElementById('fb-global');
+  fb.className = `fb-global show ${tipo}`;
+  fb.innerHTML = mensaje;
+}
+
+function colorearCelda(inputEl, valorEstudiante, valorCorrecto) {
+  inputEl.classList.remove('ok', 'fail');
+  if (valorEstudiante === null || isNaN(valorEstudiante)) return; // celda vacía: sin color
+  if (Math.abs(valorEstudiante - valorCorrecto) <= 0.01) {
+    inputEl.classList.add('ok');
+  } else {
+    inputEl.classList.add('fail');
+  }
+}
+
+// ===================== MODAL DE CONFIRMACIÓN GENÉRICO =====================
+
+function pedirConfirmacion(titulo, mensaje, accionSiConfirma) {
+  document.getElementById('mc-titulo').textContent = titulo;
+  document.getElementById('mc-mensaje').innerHTML = mensaje;
+  accionPendienteConfirmacion = accionSiConfirma;
+  document.getElementById('modal-confirm-bg').classList.add('show');
+}
+
+document.getElementById('mc-cancelar').addEventListener('click', () => {
+  document.getElementById('modal-confirm-bg').classList.remove('show');
+  accionPendienteConfirmacion = null;
+});
+document.getElementById('mc-confirmar').addEventListener('click', () => {
+  document.getElementById('modal-confirm-bg').classList.remove('show');
+  const accion = accionPendienteConfirmacion;
+  accionPendienteConfirmacion = null;
+  if (accion) accion();
+});
+
+// ===================== RENDER DE LA TABLA =====================
+
+function renderTabla() {
+  let tbody = document.getElementById('tabla-body');
+  tbody.innerHTML = '';
+  let sumF = 0, sumXf = 0, sumFx2 = 0;
+  for (let i = 0; i < datos.length; i++) {
+    let d = datos[i];
+    sumF += d.f;
+    if (d.xf !== null && !isNaN(d.xf)) sumXf += d.xf;
+    if (d.fxmedia2 !== null && !isNaN(d.fxmedia2)) sumFx2 += d.fxmedia2;
+    let row = tbody.insertRow();
+    row.insertCell(0).innerText = d.x;
+    row.insertCell(1).innerText = d.f;
+    let cellXf = row.insertCell(2);
+    let inputXf = document.createElement('input');
+    inputXf.type = 'text'; inputXf.inputMode = 'decimal';
+    inputXf.value = d.xf !== null ? d.xf : '';
+    inputXf.placeholder = 'x·f';
+    inputXf.setAttribute('aria-label', 'Producto x por f, para x = ' + d.x);
+    inputXf.oninput = function() {
+      const val = parseDecimalEs(this.value);
+      actualizarXf(i, val);
+      colorearCelda(this, val, d.x * d.f);
+    };
+    if (mediaOk) inputXf.disabled = true;
+    colorearCelda(inputXf, d.xf, d.x * d.f);
+    cellXf.appendChild(inputXf);
+    let cellXm = row.insertCell(3);
+    let spanXm = document.createElement('span');
+    spanXm.innerText = (d.xmedia !== null && !isNaN(d.xmedia)) ? d.xmedia.toFixed(4) : '—';
+    cellXm.appendChild(spanXm);
+    let cellXm2 = row.insertCell(4);
+    let spanXm2 = document.createElement('span');
+    spanXm2.innerText = (d.xmedia2 !== null && !isNaN(d.xmedia2)) ? d.xmedia2.toFixed(4) : '—';
+    cellXm2.appendChild(spanXm2);
+    let cellFx2 = row.insertCell(5);
+    let inputFx2 = document.createElement('input');
+    inputFx2.type = 'text'; inputFx2.inputMode = 'decimal';
+    inputFx2.value = d.fxmedia2 !== null ? d.fxmedia2 : '';
+    inputFx2.placeholder = 'f·(x-μ)²';
+    inputFx2.setAttribute('aria-label', 'f multiplicado por (x menos media) al cuadrado, para x = ' + d.x);
+    inputFx2.oninput = function() {
+      const val = parseDecimalEs(this.value);
+      actualizarFx2(i, val);
+      if (mediaOk) colorearCelda(this, val, d.f * Math.pow(d.x - mediaReal, 2));
+    };
+    if (varianzaOk) inputFx2.disabled = true;
+    if (mediaOk) colorearCelda(inputFx2, d.fxmedia2, d.f * Math.pow(d.x - mediaReal, 2));
+    cellFx2.appendChild(inputFx2);
+  }
+  document.getElementById('sum-f').innerText = sumF;
+  document.getElementById('sum-xf').innerText = sumXf;
+  document.getElementById('sum-fdx2').innerText = sumFx2;
+  document.getElementById('N-val').innerText = sumF;
+  document.getElementById('sumxf-val').innerText = sumXf;
+  if (mediaOk) document.getElementById('media-val').innerText = mediaReal.toFixed(4);
+  if (varianzaOk) document.getElementById('var-val').innerText = varianzaReal.toFixed(4);
+  if (sigmaOk) document.getElementById('desv-val').innerText = sigmaReal.toFixed(4);
+  if (cvOk) document.getElementById('cv-val').innerText = (cvReal * 100).toFixed(2) + '%';
+}
+
+function actualizarXf(idx, valor) {
+  if (mediaOk) return;
+  datos[idx].xf = valor;
+  let suma = 0;
+  for (let d of datos) if (d.xf !== null) suma += d.xf;
+  document.getElementById('sum-xf').innerText = suma;
+  document.getElementById('sumxf-val').innerText = suma;
+}
+
+function actualizarFx2(idx, valor) {
+  if (varianzaOk) return;
+  datos[idx].fxmedia2 = valor;
+  let suma = 0;
+  for (let d of datos) if (d.fxmedia2 !== null) suma += d.fxmedia2;
+  document.getElementById('sum-fdx2').innerText = suma;
+}
+
+// ===================== DESBLOQUEO DE CAMPOS =====================
+
+function desbloquearVarianza() {
+  document.getElementById('input-media').disabled = true;
+  document.getElementById('input-varianza').disabled = false;
+  document.getElementById('btn-var').disabled = false;
+}
+function desbloquearSigma() {
+  document.getElementById('input-varianza').disabled = true;
+  document.getElementById('input-sigma').disabled = false;
+  document.getElementById('btn-sigma').disabled = false;
+}
+function desbloquearCV() {
+  document.getElementById('input-sigma').disabled = true;
+  document.getElementById('input-cv').disabled = false;
+  document.getElementById('btn-cv').disabled = false;
+}
+
+// ===================== REGISTRO DE FALLOS Y AGOTAMIENTO =====================
+
+// Devuelve true si el fallo se penaliza (era distinto del último); false si es un reenvío idéntico.
+function registrarFallo(apartado, firmaIntento) {
+  const st = estado[apartado];
+  if (st.ultimoFallo !== null && st.ultimoFallo === firmaIntento) {
+    return false; // reenvío exacto del mismo error: no se penaliza de nuevo
+  }
+  st.ultimoFallo = firmaIntento;
+  st.fallos++;
+  fallosAcumulados++;
+  return true;
+}
+
+function potencialRestante(apartado) {
+  return PUNTOS_POR_APARTADO - estado[apartado].fallos * DEDUCCION_POR_FALLO;
+}
+
+const ETIQUETAS = { media: 'la media', varianza: 'la varianza', sigma: 'la desviación típica', cv: 'el coeficiente de variación' };
+
+function cerrarApartadoPorAgotamiento(apartado) {
+  const st = estado[apartado];
+  st.agotado = true;
+  st.puntos = 0;
+  const valorReal = { media: mediaReal, varianza: varianzaReal, sigma: sigmaReal, cv: cvReal }[apartado];
+
+  if (apartado === 'media') {
+    mediaOk = true;
+    for (let d of datos) { d.xmedia = d.x - mediaReal; d.xmedia2 = Math.pow(d.x - mediaReal, 2); }
+    renderTabla();
+    document.getElementById('input-media').disabled = true;
+    desbloquearVarianza();
+  } else if (apartado === 'varianza') {
+    varianzaOk = true;
+    desbloquearSigma();
+  } else if (apartado === 'sigma') {
+    sigmaOk = true;
+    desbloquearCV();
+  } else if (apartado === 'cv') {
+    cvOk = true;
+    document.getElementById('input-cv').disabled = true;
+  }
+  document.getElementById(apartado === 'media' ? 'media-val' : apartado === 'varianza' ? 'var-val' : apartado === 'sigma' ? 'desv-val' : 'cv-val').innerText =
+    apartado === 'cv' ? (valorReal * 100).toFixed(2) + '%' : valorReal.toFixed(4);
+
+  apartadosTotales++;
+  updateStats();
+  mostrarFeedback('warn', `⚠️ Has agotado los intentos con puntuación de este apartado (0 puntos). El valor correcto de ${ETIQUETAS[apartado]} era <strong>${apartado === 'cv' ? (valorReal*100).toFixed(2)+'%' : valorReal.toFixed(4)}</strong>. Puedes continuar con el siguiente apartado.`);
+}
+
+// ===================== COMPROBACIONES =====================
+
+function comprobarMedia() {
+  if (mediaOk) { mostrarFeedback('ok', '✅ Media ya validada.'); return; }
+  startTimer();
+
+  let allXfFilled = true;
+  let userSumXF = 0;
+  for (let d of datos) {
+    if (d.xf === null || isNaN(d.xf)) { allXfFilled = false; break; }
+    userSumXF += d.xf;
+  }
+  if (!allXfFilled) {
+    mostrarFeedback('fail', '❌ Rellena todos los valores de la columna x·f antes de comprobar la media.');
+    return;
+  }
+
+  const userMedia = parseDecimalEs(document.getElementById('input-media').value);
+  if (userMedia === null) {
+    mostrarFeedback('fail', '❌ Introduce un valor numérico para la media (admite coma o punto decimal).');
+    return;
+  }
+
+  const sumaXfCorrecta = Math.abs(userSumXF - sumaXFReal) <= 0.01;
+  const mediaCorrecta = Math.abs(userMedia - mediaReal) <= 0.01;
+
+  if (!sumaXfCorrecta || !mediaCorrecta) {
+    const firma = 'xf:' + userSumXF.toFixed(4) + '|m:' + userMedia.toFixed(4);
+    registrarFallo('media', firma);
+    if (potencialRestante('media') <= 0) { cerrarApartadoPorAgotamiento('media'); return; }
+    if (!sumaXfCorrecta) {
+      mostrarFeedback('fail', '❌ La suma Σ(x·f) no es correcta. Revisa cada producto x·f de la tabla y vuelve a sumar.');
+    } else {
+      mostrarFeedback('fail', '❌ Media incorrecta. Recuerda: media = Σ(x·f) / N. Revisa la división.');
+    }
+    updateStats();
+    return;
+  }
+
+  estado.media.resuelto = true;
+  estado.media.puntos = Math.max(0, PUNTOS_POR_APARTADO - estado.media.fallos * DEDUCCION_POR_FALLO);
+  mediaOk = true;
+  for (let d of datos) { d.xmedia = d.x - mediaReal; d.xmedia2 = Math.pow(d.x - mediaReal, 2); }
+  document.getElementById('input-media').disabled = true;
+  desbloquearVarianza();
+  renderTabla();
+  apartadosTotales++; apartadosCorrectos++; updateStats();
+  mostrarFeedback('ok', '✅ Media correcta. Ahora rellena la columna f·(x-media)² y calcula la varianza.');
+}
+
+function comprobarVarianza() {
+  if (!mediaOk) { mostrarFeedback('fail', '⚠️ Primero debes comprobar la media.'); return; }
+  if (varianzaOk) { mostrarFeedback('ok', '✅ Varianza ya validada.'); return; }
+  startTimer();
+
+  let allFx2Filled = true;
+  let userSumFx2 = 0;
+  for (let d of datos) {
+    if (d.fxmedia2 === null || isNaN(d.fxmedia2)) { allFx2Filled = false; break; }
+    userSumFx2 += d.fxmedia2;
+  }
+  if (!allFx2Filled) {
+    mostrarFeedback('fail', '❌ Rellena todas las celdas f·(x-media)² antes de comprobar la varianza.');
+    return;
+  }
+
+  const userVarianza = parseDecimalEs(document.getElementById('input-varianza').value);
+  if (userVarianza === null) {
+    mostrarFeedback('fail', '❌ Introduce el valor de la varianza en su recuadro (admite coma o punto decimal).');
+    return;
+  }
+
+  const varianzaCalculada = userSumFx2 / sumaFReal;
+  const correcta = Math.abs(varianzaCalculada - varianzaReal) <= 0.01 && Math.abs(userVarianza - varianzaReal) <= 0.01;
+
+  if (!correcta) {
+    const firma = 'v:' + userSumFx2.toFixed(4) + '|' + userVarianza.toFixed(4);
+    registrarFallo('varianza', firma);
+    if (potencialRestante('varianza') <= 0) { cerrarApartadoPorAgotamiento('varianza'); return; }
+    mostrarFeedback('fail', '❌ Varianza incorrecta. Recuerda: varianza = Σ[f·(x-media)²] / N. Revisa la suma y la división.');
+    updateStats();
+    return;
+  }
+
+  estado.varianza.resuelto = true;
+  estado.varianza.puntos = Math.max(0, PUNTOS_POR_APARTADO - estado.varianza.fallos * DEDUCCION_POR_FALLO);
+  varianzaOk = true;
+  document.getElementById('var-val').innerText = varianzaReal.toFixed(4);
+  desbloquearSigma();
+  apartadosTotales++; apartadosCorrectos++; updateStats();
+  mostrarFeedback('ok', '✅ Varianza correcta. Ahora calcula la desviación típica.');
+}
+
+function comprobarSigma() {
+  if (!varianzaOk) { mostrarFeedback('fail', '⚠️ Primero debes comprobar la varianza.'); return; }
+  if (sigmaOk) { mostrarFeedback('ok', '✅ Desviación típica ya validada.'); return; }
+  startTimer();
+
+  const userSigma = parseDecimalEs(document.getElementById('input-sigma').value);
+  if (userSigma === null) {
+    mostrarFeedback('fail', '❌ Introduce el valor de la desviación típica (admite coma o punto decimal).');
+    return;
+  }
+
+  if (Math.abs(userSigma - sigmaReal) > 0.05) {
+    registrarFallo('sigma', userSigma.toFixed(4));
+    if (potencialRestante('sigma') <= 0) { cerrarApartadoPorAgotamiento('sigma'); return; }
+    mostrarFeedback('fail', '❌ Desviación típica incorrecta. Recuerda: σ = √varianza.');
+    updateStats();
+    return;
+  }
+
+  estado.sigma.resuelto = true;
+  estado.sigma.puntos = Math.max(0, PUNTOS_POR_APARTADO - estado.sigma.fallos * DEDUCCION_POR_FALLO);
+  sigmaOk = true;
+  document.getElementById('desv-val').innerText = sigmaReal.toFixed(4);
+  desbloquearCV();
+  apartadosTotales++; apartadosCorrectos++; updateStats();
+  mostrarFeedback('ok', '✅ Desviación típica correcta. Ahora calcula el coeficiente de variación.');
+}
+
+function comprobarCV() {
+  if (!sigmaOk) { mostrarFeedback('fail', '⚠️ Primero debes comprobar la desviación típica.'); return; }
+  if (cvOk) { mostrarFeedback('ok', '✅ Coeficiente de variación ya validado. ¡Ficha completa!'); return; }
+  startTimer();
+
+  const userCV = parseDecimalEs(document.getElementById('input-cv').value);
+  if (userCV === null) {
+    mostrarFeedback('fail', '❌ Introduce el coeficiente de variación en tanto por uno (admite coma o punto decimal).');
+    return;
+  }
+
+  if (Math.abs(userCV - cvReal) > 0.005) {
+    registrarFallo('cv', userCV.toFixed(4));
+    if (potencialRestante('cv') <= 0) { cerrarApartadoPorAgotamiento('cv'); return; }
+    mostrarFeedback('fail', '❌ Coeficiente de variación incorrecto. Recuerda: CV = σ / |media| (en tanto por uno).');
+    updateStats();
+    return;
+  }
+
+  estado.cv.resuelto = true;
+  estado.cv.puntos = Math.max(0, PUNTOS_POR_APARTADO - estado.cv.fallos * DEDUCCION_POR_FALLO);
+  cvOk = true;
+  document.getElementById('input-cv').disabled = true;
+  document.getElementById('cv-val').innerText = (cvReal * 100).toFixed(2) + '%';
+  apartadosTotales++; apartadosCorrectos++; updateStats();
+  mostrarFeedback('ok', '🎉 ¡Excelente! Has completado toda la ficha de estadística unidimensional.');
+}
+
+// Enter para validar en los 4 campos principales
+['input-media', 'input-varianza', 'input-sigma', 'input-cv'].forEach((id, i) => {
+  const fn = [comprobarMedia, comprobarVarianza, comprobarSigma, comprobarCV][i];
+  document.getElementById(id).addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); fn(); }
+  });
+});
+
+// ===================== REINICIO =====================
+
+function pedirNuevaTabla() {
+  const hayProgreso = apartadosTotales > 0 || fallosAcumulados > 0;
+  if (!hayProgreso) { reiniciarCompleto(); return; }
+  pedirConfirmacion(
+    '¿Empezar una tabla nueva?',
+    `Vas a perder la puntuación actual (<strong>${calcNota().toFixed(1)}/10</strong>) y los apartados ya resueltos. Esta acción no se puede deshacer.`,
+    reiniciarCompleto
+  );
+}
+
+function reiniciarCompleto() {
+  elegirTablaAleatoria();
+  mediaOk = false; varianzaOk = false; sigmaOk = false; cvOk = false;
+  estado = { media: estadoInicial(), varianza: estadoInicial(), sigma: estadoInicial(), cv: estadoInicial() };
+  apartadosTotales = 0; apartadosCorrectos = 0; fallosAcumulados = 0;
+  timerStart = null;
+
+  document.getElementById('input-media').disabled = false;
+  document.getElementById('input-media').value = '';
+  document.getElementById('input-varianza').disabled = true;
+  document.getElementById('input-varianza').value = '';
+  document.getElementById('input-sigma').disabled = true;
+  document.getElementById('input-sigma').value = '';
+  document.getElementById('input-cv').disabled = true;
+  document.getElementById('input-cv').value = '';
+  document.getElementById('btn-var').disabled = true;
+  document.getElementById('btn-sigma').disabled = true;
+  document.getElementById('btn-cv').disabled = true;
+  document.getElementById('media-val').innerText = '—';
+  document.getElementById('var-val').innerText = '—';
+  document.getElementById('desv-val').innerText = '—';
+  document.getElementById('cv-val').innerText = '—';
+  document.getElementById('fb-global').className = 'fb-global';
+  renderTabla();
+  updateStats();
+}
+
+// ===================== FINALIZAR Y CALIFICAR =====================
+
+function finalizar() {
+  let nomEl = document.getElementById('nombre');
+  if (!nomEl.value.trim()) {
+    nomEl.style.borderBottom = '2px solid #8B1A1A';
+    nomEl.placeholder = '⚠ Escribe tu nombre antes de finalizar';
+    nomEl.focus();
+    return;
+  }
+
+  if (apartadosTotales < 4) {
+    const nombresApartado = { media: 'Media', varianza: 'Varianza', sigma: 'Desviación típica', cv: 'Coeficiente de variación' };
+    const faltan = Object.keys(estado).filter(k => !estado[k].resuelto && !estado[k].agotado).map(k => nombresApartado[k]);
+    pedirConfirmacion(
+      'Todavía no has terminado',
+      `Te falta por completar: <strong>${faltan.join(', ')}</strong>.<br>Si finalizas ahora, tu nota sería <strong>${calcNota().toFixed(1)}/10</strong>.<br>Puedes cancelar y seguir trabajando sin perder nada de lo ya hecho.`,
+      ejecutarFinalizacion
+    );
+    return;
+  }
+  ejecutarFinalizacion();
+}
+
+function ejecutarFinalizacion() {
+  const nomEl = document.getElementById('nombre');
+  const nombre = nomEl.value.trim();
+  const nota = calcNota();
+  const now = new Date();
+  const fecha = String(now.getDate()).padStart(2,'0')+'/'+String(now.getMonth()+1).padStart(2,'0')+'/'+now.getFullYear();
+  const hora = String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')+':'+String(now.getSeconds()).padStart(2,'0');
+  const colores = {10:{bg:'#1a7a1a',txt:'#fff'},9:{bg:'#6dbf6d',txt:'#fff'},8:{bg:'#1a4f8a',txt:'#fff'},
+    7:{bg:'#5b9bd5',txt:'#fff'},6:{bg:'#c05c00',txt:'#fff'},5:{bg:'#f5a623',txt:'#000'}};
+  let k = nota>=10?10:nota>=9?9:nota>=8?8:nota>=7?7:nota>=6?6:nota>=5?5:-1;
+  let col = colores[k] || {bg:'#8B1A1A',txt:'#fff'};
+  const modal = document.getElementById('modal');
+  modal.style.background = col.bg;
+  modal.style.color = col.txt;
+  modal.querySelector('.btn-cerrar').style.color = col.txt;
+  document.getElementById('m-nombre').textContent = nombre;
+  document.getElementById('m-nota').textContent = nota.toFixed(1)+' / 10';
+  document.getElementById('m-meta').innerHTML = 'Fecha: '+fecha+'<br>Hora: '+hora+'<br>Tiempo: '+elapsed()+'<br>Apartados correctos: '+apartadosCorrectos+'/'+apartadosTotales+' · Errores: '+fallosAcumulados;
+  document.getElementById('modal-bg').classList.add('show');
+}
+
+function cerrarModal() {
+  document.getElementById('modal-bg').classList.remove('show');
+  reiniciarCompleto();
+}
+
+window.addEventListener('load', () => {
+  elegirTablaAleatoria();
+  renderTabla();
+  updateStats();
+});
+</script>
+</body>
+</html>
