@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Probabilidad – Árbol de probabilidad · Extremadura</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f0e8;--surface:#fffdf7;--ink:#1a1008;--soft:#5c4a30;
+  --accent:#c8401a;--gold:#c8941a;--border:#d4c4a0;
+  --ok:#2a6b4f;--err:#c8401a;--blue:#1a3a6b;
+  --inp-bg:#fef9f0;--inp-b:#c8b48a;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);
+  background-image:repeating-linear-gradient(0deg,transparent,transparent 27px,rgba(180,160,120,.07) 28px),
+    repeating-linear-gradient(90deg,transparent,transparent 27px,rgba(180,160,120,.04) 28px);}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+.autoria{background:var(--ink);text-align:center;padding:5px 12px;font-size:10px;color:rgba(245,240,232,.55);letter-spacing:.4px;}
+.hdr{background:var(--ink);color:var(--bg);padding:22px 40px 20px;position:relative;overflow:hidden;}
+.hdr-in{position:relative;z-index:1;max-width:860px;margin:0 auto;}
+.htag{display:inline-block;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);background:rgba(200,148,26,.15);border:1px solid rgba(200,148,26,.4);padding:3px 10px;border-radius:2px;}
+.hdr h1{font-family:'Playfair Display',serif;font-size:clamp(28px,5vw,48px);font-weight:900;line-height:1;margin-top:8px;letter-spacing:-1px;}
+.hdr h1 span{color:var(--gold);}
+.hmeta{font-size:11px;color:rgba(245,240,232,.5);margin-top:4px;}
+.pts-info{background:rgba(255,255,255,.05);border-top:1px dashed rgba(200,148,26,.3);margin-top:12px;padding-top:10px;display:flex;gap:14px;flex-wrap:wrap;}
+.pts-badge{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;padding:3px 9px;border-radius:2px;border:1px solid;}
+.pts-badge.a{border-color:rgba(200,148,26,.5);color:var(--gold);}
+.pts-badge.e{border-color:rgba(200,64,26,.4);color:#f09070;}
+.nbar{background:var(--surface);border-bottom:2px solid var(--border);padding:13px 40px;transition:border-color .3s;}
+.nbar.nbar-error{border-bottom-color:var(--err);}
+.nbar-in{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.nlabel{font-size:11px;font-family:'DM Mono',monospace;letter-spacing:2px;text-transform:uppercase;color:var(--soft);white-space:nowrap;}
+.ninp{flex:1;max-width:340px;border:none;border-bottom:2px solid var(--border);background:transparent;font-family:'DM Sans',sans-serif;font-size:16px;color:var(--ink);padding:3px 8px;outline:none;transition:border-color .2s;}
+.ninp:focus{border-color:var(--accent);}
+.ninp.ninp-error{border-color:var(--err)!important;animation:shake .35s ease;}
+.name-msg{font-size:11.5px;color:var(--err);font-weight:600;display:none;align-items:center;gap:5px;width:100%;padding-left:2px;}
+.name-msg.show{display:flex;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.sbar{background:var(--surface);border-bottom:1px solid var(--border);padding:9px 40px;}
+.sbar-in{max-width:860px;margin:0 auto;display:flex;gap:16px;align-items:center;flex-wrap:wrap;}
+.chip{font-family:'DM Mono',monospace;font-size:12px;padding:3px 11px;border-radius:20px;border:1.5px solid;}
+.chip.pts{border-color:var(--blue);color:var(--blue);background:rgba(26,58,107,.07);font-weight:700;}
+.chip.ok{border-color:var(--ok);color:var(--ok);background:rgba(42,107,79,.07);}
+.chip.err{border-color:var(--err);color:var(--err);background:rgba(200,64,26,.07);}
+main{max-width:860px;margin:0 auto;padding:28px 18px 60px;}
+.stitle{display:flex;align-items:center;gap:12px;margin-bottom:16px;margin-top:30px;}
+.snum{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:18px;font-weight:700;flex-shrink:0;background:#c8401a;color:#fff;}
+.sinfo h2{font-family:'Playfair Display',serif;font-size:20px;}
+.sinfo p{font-size:12px;color:var(--soft);margin-top:2px;}
+.pts-pill{margin-left:auto;font-family:'DM Mono',monospace;font-size:11px;padding:4px 12px;border-radius:20px;border:1.5px solid;white-space:nowrap;border-color:var(--accent);color:var(--accent);}
+.card{background:var(--surface);border:1.5px solid var(--border);border-radius:6px;padding:24px 28px;margin-bottom:20px;position:relative;overflow:hidden;transition:border-color .3s,background .3s;}
+.card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:#c8401a;}
+.card.cor{border-color:var(--ok);background:rgba(42,107,79,.04);}
+.card.wrong{border-color:var(--err);background:rgba(200,64,26,.04);}
+.ctag{display:inline-block;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:2px 8px;border-radius:2px;margin-bottom:9px;background:rgba(200,64,26,.12);color:#c8401a;}
+.qtext{font-size:14.5px;line-height:1.72;margin-bottom:16px;}
+.qtext strong{color:var(--blue);}
+.tlabel{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:2px;text-transform:uppercase;color:var(--soft);margin-bottom:7px;display:flex;align-items:center;gap:6px;}
+.tlabel::before{content:'';display:inline-block;width:14px;height:2px;background:currentColor;}
+.tree-box{background:var(--inp-bg);border:1.5px dashed var(--inp-b);border-radius:5px;padding:16px 14px;margin-bottom:14px;overflow-x:auto;}
+.htree{display:flex;flex-direction:column;gap:5px;font-family:'DM Mono',monospace;font-size:13px;}
+.hrow{display:grid;grid-template-columns:108px 30px 90px 30px 90px;align-items:center;gap:5px;}
+.hrow-sp{height:8px;}
+.root-lbl{font-size:11px;background:var(--bg);border:1.5px solid var(--border);border-radius:4px;padding:4px 7px;text-align:center;color:var(--soft);white-space:nowrap;}
+.arr{color:var(--border);font-size:16px;text-align:center;}
+.sub-lbl{font-size:10px;color:var(--soft);text-align:center;}
+.binp{border:1.5px solid var(--inp-b);border-radius:3px;background:var(--inp-bg);font-family:'DM Mono',monospace;text-align:center;color:var(--ink);outline:none;width:88px;height:28px;font-size:13px;}
+.binp:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,58,107,.1);}
+.binp.vok{border-color:var(--ok)!important;background:rgba(42,107,79,.07);}
+.binp.ver{border-color:var(--err)!important;background:rgba(200,64,26,.07);}
+.btn-v{display:inline-flex;align-items:center;gap:7px;border:1.5px solid var(--ink);background:transparent;color:var(--ink);padding:7px 16px;border-radius:3px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;margin-bottom:12px;}
+.btn-v:hover{background:var(--ink);color:var(--bg);}
+.hint{display:none;margin-bottom:16px;padding:9px 13px;border-radius:4px;font-size:13px;line-height:1.5;border:1.5px solid;}
+.hint.show{display:block;}
+.hint.ok{border-color:var(--ok);background:rgba(42,107,79,.07);color:var(--ok);}
+.hint.er{border-color:var(--err);background:rgba(200,64,26,.07);color:var(--err);}
+.hint .hd{margin-top:4px;font-family:'DM Mono',monospace;font-size:11px;color:var(--soft);}
+.fq{border-top:1.5px solid var(--border);padding-top:18px;margin-top:18px;}
+.fqlabel{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:2px;text-transform:uppercase;color:var(--soft);margin-bottom:9px;}
+.ans-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;}
+.ans-label{font-family:'DM Mono',monospace;font-size:12px;color:var(--soft);white-space:nowrap;}
+.ans-inp{border:1.5px solid var(--inp-b);border-radius:3px;background:var(--inp-bg);font-family:'DM Mono',monospace;font-size:14px;color:var(--ink);padding:5px 10px;width:250px;outline:none;transition:border-color .2s;}
+.ans-inp:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,58,107,.1);}
+.ans-inp.vok{border-color:var(--ok)!important;background:rgba(42,107,79,.07);}
+.ans-inp.ver{border-color:var(--err)!important;background:rgba(200,64,26,.07);}
+.fmt-hint{font-size:11px;color:var(--soft);font-style:italic;margin-bottom:8px;}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;}
+.btn-chk{display:inline-flex;align-items:center;gap:7px;background:var(--ink);color:var(--bg);border:none;padding:9px 20px;border-radius:3px;font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;transition:background .15s;}
+.btn-chk:hover{background:var(--accent);}
+.btn-chk:disabled{opacity:.38;cursor:default;background:var(--ink);}
+.btn-otro{display:inline-flex;align-items:center;gap:7px;background:var(--blue);color:#fff;border:none;padding:9px 20px;border-radius:3px;font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;transition:background .15s;}
+.btn-otro:hover{background:#0f2650;}
+.fb{display:none;margin-top:10px;padding:11px 14px;border-radius:4px;font-size:13.5px;line-height:1.5;border:1.5px solid;}
+.fb.show{display:block;}
+.fb.ok{border-color:var(--ok);background:rgba(42,107,79,.08);color:var(--ok);}
+.fb.er{border-color:var(--err);background:rgba(200,64,26,.08);color:var(--err);}
+.fb .why{margin-top:5px;font-family:'DM Mono',monospace;font-size:11.5px;color:var(--soft);}
+.submit-area{margin-top:40px;text-align:center;}
+.btn-sub{background:var(--accent);color:#fff;border:none;padding:15px 46px;font-family:'Playfair Display',serif;font-size:17px;font-weight:700;border-radius:4px;cursor:pointer;box-shadow:4px 4px 0 var(--ink);transition:background .2s,transform .1s;}
+.btn-sub:hover{background:#a83212;transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--ink);}
+.overlay-name{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;align-items:center;justify-content:center;padding:16px;}
+.overlay-name.show{display:flex;}
+.modal-name{background:var(--surface);border:2px solid var(--err);border-radius:8px;padding:32px 36px;max-width:400px;width:100%;text-align:center;box-shadow:6px 6px 0 var(--ink);}
+.modal-name h3{font-family:'Playfair Display',serif;font-size:22px;margin-bottom:8px;color:var(--err);}
+.modal-name p{font-size:13.5px;color:var(--soft);margin-bottom:20px;line-height:1.5;}
+.modal-name-inp{width:100%;border:1.5px solid var(--inp-b);border-radius:4px;background:var(--inp-bg);font-family:'DM Sans',sans-serif;font-size:16px;color:var(--ink);padding:9px 12px;outline:none;margin-bottom:16px;}
+.modal-name-inp:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,58,107,.1);}
+.modal-name-inp.mn-error{border-color:var(--err);animation:shake .35s ease;}
+.btn-name-ok{background:var(--accent);color:#fff;border:none;padding:10px 28px;border-radius:3px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;width:100%;}
+.btn-name-ok:hover{background:#a83212;}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;align-items:center;justify-content:center;padding:16px;}
+.overlay.show{display:flex;}
+.modal{background:var(--surface);border:2px solid var(--ink);border-radius:8px;padding:36px 40px;max-width:480px;width:100%;text-align:center;box-shadow:8px 8px 0 var(--ink);position:relative;}
+.modal-close{position:absolute;top:12px;right:14px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--soft);}
+.modal-close:hover{color:var(--ink);}
+.rname{font-family:'DM Mono',monospace;font-size:12px;color:var(--soft);letter-spacing:2px;margin-bottom:4px;}
+.rgrade{font-family:'Playfair Display',serif;font-size:68px;font-weight:900;line-height:1;margin:8px 0;}
+.rlabel{font-size:14px;color:var(--soft);margin-bottom:18px;}
+.rstats{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+.sbox{padding:9px 18px;border:1.5px solid var(--border);border-radius:4px;font-family:'DM Mono',monospace;font-size:12px;text-align:center;}
+.rfooter{font-size:10.5px;color:var(--soft);margin-top:16px;border-top:1px solid var(--border);padding-top:11px;}
+.modal.n10{background:#1a7a1a;border-color:#0f4f0f;color:#fff;}
+.modal.n9 {background:#6dbf6d;border-color:#4a9f4a;color:#fff;}
+.modal.n8 {background:#1a4f8a;border-color:#0f3060;color:#fff;}
+.modal.n7 {background:#5b9bd5;border-color:#3a7ab5;color:#fff;}
+.modal.n6 {background:#c05c00;border-color:#7a3a00;color:#fff;}
+.modal.n5 {background:#f5a623;border-color:#d4881a;color:#1a1008;}
+.modal.n0{background:#c0392b;border-color:#7a1a10;color:#fff;}
+.modal-confirm{max-width:440px;}
+.modal-confirm h3{font-family:'Playfair Display',serif;font-size:20px;margin-bottom:10px;}
+.modal-confirm p{font-size:13.5px;color:var(--soft);margin-bottom:22px;line-height:1.55;text-align:left;}
+.modal-confirm p strong{color:var(--ink);}
+.modal-confirm .row{display:flex;gap:10px;justify-content:center;}
+@media(max-width:620px){
+  .hdr,.nbar,.sbar{padding-left:14px;padding-right:14px;}
+  .card{padding:16px 13px;}
+  main{padding:18px 10px 50px;}
+  .hrow{grid-template-columns:80px 22px 80px 22px 80px;gap:3px;}
+  .modal{padding:24px 20px;}
+  .ans-inp{width:180px;}
+}
+</style>
+</head>
+<body>
+
+<div class="autoria">Material elaborado por Marta L Letona S. Basado en el trabajo de Javier Cayetano</div>
+
+<header class="hdr">
+  <div class="hdr-in">
+    <span class="htag">Matemáticas CC.SS. II · PAU Extremadura</span>
+    <h1>Árbol de <span>probabilidad</span></h1>
+    <p class="hmeta">Intersección · Condicionada · Prob. Total · Teorema de Bayes</p>
+    <div class="pts-info">
+      <span class="pts-badge a">Árbol (2 pts) + 4 preguntas (2 pts c/u) → 10 puntos totales</span>
+      <span class="pts-badge e">Árbol: fallo −0,75 pts (puedes seguir intentando) · Preguntas: fallo → 0 pts, se bloquea</span>
+    </div>
+  </div>
+</header>
+
+<div class="nbar" id="nbar">
+  <div class="nbar-in">
+    <span class="nlabel" id="nameLbl">Alumno/a</span>
+    <input class="ninp" id="sName" type="text" placeholder="Escribe tu nombre…" autocomplete="off" oninput="clearNameError()" aria-label="Nombre y apellidos del alumno o alumna">
+    <span class="name-msg" id="nameMsg" role="alert">⚠ Introduce tu nombre antes de entregar</span>
+  </div>
+</div>
+
+<div class="sbar">
+  <div class="sbar-in">
+    <span class="chip pts" id="cPts" aria-live="polite">Puntuación: 0 / 10</span>
+    <span class="chip ok"  id="cOk" aria-live="polite">✓ 0 correctas</span>
+    <span class="chip err" id="cErr" aria-live="polite">✗ 0 sin puntos</span>
+  </div>
+</div>
+
+<main>
+
+<div class="stitle">
+  <div class="snum">1</div>
+  <div class="sinfo"><h2>Árbol de probabilidad · Caso extremeño</h2><p>Rellena cada rama (2 puntos) y responde las cuatro preguntas (2 puntos cada una)</p></div>
+  <span class="pts-pill">10 puntos totales</span>
+</div>
+<div class="card" id="cardTree"></div>
+
+<div class="submit-area" style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+  <button class="btn-sub" onclick="submitAll()">Finalizar y Calificar</button>
+  <button class="btn-otro" style="padding:15px 28px;font-family:'DM Sans',sans-serif;font-size:14.5px;" onclick="tryNewProblem()">🎲 Otra ficha</button>
+</div>
+
+</main>
+
+<!-- MODALES -->
+<div class="overlay-name" id="overlayName">
+  <div class="modal-name">
+    <h3>✏️ Falta tu nombre</h3>
+    <p>Para guardar el resultado necesitas identificarte.</p>
+    <input class="modal-name-inp" id="modalNameInp" type="text" placeholder="Nombre y apellidos…" autocomplete="off" aria-label="Nombre y apellidos del alumno o alumna" onkeydown="if(event.key==='Enter')confirmName()">
+    <button class="btn-name-ok" onclick="confirmName()">Continuar →</button>
+  </div>
+</div>
+
+<div class="overlay" id="overlayConfirm">
+  <div class="modal modal-confirm" id="modalConfirm">
+    <h3 id="confirmTitle"></h3>
+    <p id="confirmMsg"></p>
+    <div class="row">
+      <button class="btn-v" onclick="cancelConfirm()">Cancelar</button>
+      <button class="btn-chk" onclick="acceptConfirm()">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal" id="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="rname" id="rName"></div>
+    <div class="rgrade" id="rGrade"></div>
+    <div class="rlabel" id="rLabel"></div>
+    <div class="rstats">
+      <div class="sbox" id="rS1"></div>
+      <div class="sbox" id="rS2"></div>
+      <div class="sbox" id="rS3"></div>
+      <div class="sbox" id="rS4"></div>
+    </div>
+    <div class="rfooter">Material elaborado por Marta L Letona S. Basado en el trabajo de Javier Cayetano</div>
+  </div>
+</div>
+
+<script>
+/* ==================== BIBLIOTECA DE ENUNCIADOS EXTREMEÑOS ====================
+   A_pred / noA_pred: predicado gramatical completo para la Pregunta 2
+   ("Si sabemos que ${art} ${s} ${A_pred}, ..."), para evitar frases del tipo
+   "es de traumatólogo" o "es de ADE", que no son correctas en español.
+*/
+const SCENARIOS = [
+  {
+    id: 1, titulo: "🍒 Cerezas de La Vera (Cáceres)",
+    sujeto: "cereza",
+    articulo: "una",
+    texto: `En la <strong>Comarca de La Vera (Cáceres)</strong>, una empresa comercializa cerezas. 
+    El <strong>55% de las cerezas provienen de la variedad "Picota"</strong> y el <strong>45% de la variedad "Ambrunés"</strong>.
+    La probabilidad de que una cereza <strong>Picota esté en estado óptimo</strong> es del <strong>85%</strong>, 
+    mientras que para la variedad <strong>Ambrunés</strong> es del <strong>75%</strong>.`,
+    A: "Picota", noA: "Ambrunés",
+    B: "esté en estado óptimo", noB: "no esté en estado óptimo",
+    A_desc: "de la variedad Picota", noA_desc: "de la variedad Ambrunés",
+    A_pred: "es de la variedad Picota", noA_pred: "es de la variedad Ambrunés",
+    pA: 0.55, pB_given_A: 0.85, pB_given_noA: 0.75
+  },
+  {
+    id: 2, titulo: "🩺 Especialistas médicos en Badajoz",
+    sujeto: "especialista",
+    articulo: "un",
+    texto: `En el <strong>Hospital Universitario de Badajoz</strong>, el <strong>40% de los especialistas son traumatólogos</strong> 
+    y el <strong>60% son cardiólogos</strong>. La probabilidad de <strong>acertar un diagnóstico</strong> es del <strong>90%</strong> 
+    para los traumatólogos y del <strong>80%</strong> para los cardiólogos.`,
+    A: "traumatólogo", noA: "cardiólogo",
+    B: "acierte el diagnóstico", noB: "no acierte el diagnóstico",
+    A_desc: "sea traumatólogo", noA_desc: "sea cardiólogo",
+    A_pred: "es traumatólogo", noA_pred: "es cardiólogo",
+    pA: 0.40, pB_given_A: 0.90, pB_given_noA: 0.80
+  },
+  {
+    id: 3, titulo: "🎓 Carreras universitarias en Badajoz",
+    sujeto: "estudiante",
+    articulo: "un",
+    texto: `En la <strong>Universidad de Extremadura (Badajoz)</strong>, el <strong>65% de los estudiantes cursan ADE</strong> 
+    y el <strong>35% Ingeniería Informática</strong>. La probabilidad de <strong>aprobar el proyecto fin de estudios</strong> 
+    es del <strong>70%</strong> para los estudiantes de ADE y del <strong>85%</strong> para los de Ingeniería Informática.`,
+    A: "ADE", noA: "Ingeniería Informática",
+    B: "apruebe el proyecto", noB: "suspenda el proyecto",
+    A_desc: "estudie ADE", noA_desc: "estudie Ingeniería Informática",
+    A_pred: "estudia ADE", noA_pred: "estudia Ingeniería Informática",
+    pA: 0.65, pB_given_A: 0.70, pB_given_noA: 0.85
+  },
+  {
+    id: 4, titulo: "🧀 Torta del Casar (Cáceres)",
+    sujeto: "queso",
+    articulo: "un",
+    texto: `En una cooperativa de la <strong>Denominación de Origen Torta del Casar</strong>, el <strong>64% de los quesos son de leche cruda</strong> 
+    y el <strong>36% de leche pasteurizada</strong>. La probabilidad de obtener la <strong>calificación "Extra"</strong> 
+    es del <strong>87.5%</strong> para los de leche cruda y del <strong>33.3%</strong> para los de leche pasteurizada.`,
+    A: "leche cruda", noA: "leche pasteurizada",
+    B: "tenga calificación Extra", noB: "no tenga calificación Extra",
+    A_desc: "sea de leche cruda", noA_desc: "sea de leche pasteurizada",
+    A_pred: "es de leche cruda", noA_pred: "es de leche pasteurizada",
+    pA: 0.64, pB_given_A: 0.875, pB_given_noA: 1/3
+  },
+  {
+    id: 5, titulo: "🐖 Jamón de Dehesa en Cáceres",
+    sujeto: "jamón",
+    articulo: "un",
+    texto: `En una <strong>dehesa extremeña de Cáceres</strong>, el <strong>70% de los jamones son de cebo</strong> 
+    y el <strong>30% de bellota</strong>. La probabilidad de obtener la <strong>calificación "Premium"</strong> 
+    es del <strong>60%</strong> para los de cebo y del <strong>95%</strong> para los de bellota.`,
+    A: "cebo", noA: "bellota",
+    B: "tenga calificación Premium", noB: "no tenga calificación Premium",
+    A_desc: "sea de jamón de cebo", noA_desc: "sea de jamón de bellota",
+    A_pred: "es de cebo", noA_pred: "es de bellota",
+    pA: 0.70, pB_given_A: 0.60, pB_given_noA: 0.95
+  }
+];
+
+function randomVar() {
+  return Math.floor(Math.random() * 4);
+}
+
+/* Genera preguntas contextualizadas en lenguaje natural */
+function getQuestionText(scenario, qNum, variant) {
+  const s = scenario.sujeto;
+  const art = scenario.articulo;
+  const A = scenario.A;
+  const noA = scenario.noA;
+  const A_desc = scenario.A_desc;
+  const noA_desc = scenario.noA_desc;
+  const A_pred = scenario.A_pred;
+  const noA_pred = scenario.noA_pred;
+  const B = scenario.B;
+  const noB = scenario.noB;
+
+  // Pregunta 1: Intersección (A∩B, A∩B', A'∩B, A'∩B')
+  const interMap = [
+    `¿Cuál es la probabilidad de que ${art} ${s} ${A_desc} <strong>Y</strong> ${B}?`,
+    `¿Cuál es la probabilidad de que ${art} ${s} ${A_desc} <strong>Y</strong> ${noB}?`,
+    `¿Cuál es la probabilidad de que ${art} ${s} ${noA_desc} <strong>Y</strong> ${B}?`,
+    `¿Cuál es la probabilidad de que ${art} ${s} ${noA_desc} <strong>Y</strong> ${noB}?`
+  ];
+
+  // Pregunta 2: Condicionada P(B|A), P(B|A'), P(B'|A), P(B'|A')
+  // Usa A_pred/noA_pred (predicado gramaticalmente correcto por escenario)
+  const condMap = [
+    `Si sabemos que ${art} ${s} ${A_pred}, ¿qué probabilidad hay de que ${B.toLowerCase()}?`,
+    `Si sabemos que ${art} ${s} ${noA_pred}, ¿qué probabilidad hay de que ${B.toLowerCase()}?`,
+    `Si sabemos que ${art} ${s} ${A_pred}, ¿qué probabilidad hay de que ${noB.toLowerCase()}?`,
+    `Si sabemos que ${art} ${s} ${noA_pred}, ¿qué probabilidad hay de que ${noB.toLowerCase()}?`
+  ];
+
+  // Pregunta 3: Probabilidad total P(B) o P(B')
+  const totalMap = [
+    `¿Cuál es la probabilidad de que ${art} ${s} ${B.toLowerCase()}?`,
+    `¿Cuál es la probabilidad de que ${art} ${s} ${noB.toLowerCase()}?`
+  ];
+
+  // Pregunta 4: Teorema de Bayes P(A|B), P(A|B'), P(A'|B), P(A'|B')
+  const bayesMap = [
+    `Si se comprueba que ${art} ${s} ${B.toLowerCase()}, ¿qué probabilidad hay de que sea de ${A}?`,
+    `Si se comprueba que ${art} ${s} ${noB.toLowerCase()}, ¿qué probabilidad hay de que sea de ${A}?`,
+    `Si se comprueba que ${art} ${s} ${B.toLowerCase()}, ¿qué probabilidad hay de que sea de ${noA}?`,
+    `Si se comprueba que ${art} ${s} ${noB.toLowerCase()}, ¿qué probabilidad hay de que sea de ${noA}?`
+  ];
+
+  if (qNum === 1) return interMap[variant % 4];
+  if (qNum === 2) return condMap[variant % 4];
+  if (qNum === 3) return totalMap[variant % 2];
+  return bayesMap[variant % 4];
+}
+
+function computeAnswer(scenario, qNum, variant) {
+  const pA = scenario.pA;
+  const pB_given_A = scenario.pB_given_A;
+  const pB_given_noA = scenario.pB_given_noA;
+  const pnoB_given_A = 1 - pB_given_A;
+  const pnoB_given_noA = 1 - pB_given_noA;
+  const pB = pA * pB_given_A + (1-pA) * pB_given_noA;
+  const pnoB = 1 - pB;
+  const pA_given_B = (pA * pB_given_A) / pB;
+  const pA_given_noB = (pA * pnoB_given_A) / pnoB;
+  const pnoA_given_B = ((1-pA) * pB_given_noA) / pB;
+  const pnoA_given_noB = ((1-pA) * pnoB_given_noA) / pnoB;
+
+  if (qNum === 1) {
+    const vals = [pA * pB_given_A, pA * pnoB_given_A, (1-pA) * pB_given_noA, (1-pA) * pnoB_given_noA];
+    return vals[variant % 4];
+  }
+  if (qNum === 2) {
+    const vals = [pB_given_A, pB_given_noA, pnoB_given_A, pnoB_given_noA];
+    return vals[variant % 4];
+  }
+  if (qNum === 3) {
+    return (variant % 2 === 0) ? pB : pnoB;
+  }
+  const vals = [pA_given_B, pA_given_noB, pnoA_given_B, pnoA_given_noB];
+  return vals[variant % 4];
+}
+
+/* Formatea un número con coma decimal española, hasta 4 decimales, sin ceros sobrantes */
+function fmtEs(n) {
+  const v = Math.round(n * 10000) / 10000;
+  return String(v).replace('.', ',');
+}
+
+/* Explicación pedagógica del procedimiento, además del resultado numérico revelado */
+function getPedagogicalExplanation(sc, qNum, variant) {
+  const pA = sc.pA, pB_A = sc.pB_given_A, pnoB_A = 1 - sc.pB_given_A;
+  const pnoA = 1 - sc.pA, pB_noA = sc.pB_given_noA, pnoB_noA = 1 - sc.pB_given_noA;
+  const pB = pA * pB_A + pnoA * pB_noA;
+  const pnoB = 1 - pB;
+
+  if (qNum === 1) {
+    const branches = [
+      { p1: pA, p2: pB_A, l1: `P(${sc.A})`, l2: `P(${sc.B}|${sc.A})` },
+      { p1: pA, p2: pnoB_A, l1: `P(${sc.A})`, l2: `P(${sc.noB}|${sc.A})` },
+      { p1: pnoA, p2: pB_noA, l1: `P(${sc.noA})`, l2: `P(${sc.B}|${sc.noA})` },
+      { p1: pnoA, p2: pnoB_noA, l1: `P(${sc.noA})`, l2: `P(${sc.noB}|${sc.noA})` }
+    ][variant % 4];
+    return `Se multiplican las dos probabilidades de la rama del árbol que lleva a este resultado: ${branches.l1} × ${branches.l2} = ${fmtEs(branches.p1)} × ${fmtEs(branches.p2)} = ${fmtEs(branches.p1 * branches.p2)}.`;
+  }
+  if (qNum === 2) {
+    return `Este valor aparece directamente en una rama del árbol: no hace falta calcular nada, solo localizar esa rama y leer su probabilidad.`;
+  }
+  if (qNum === 3) {
+    if (variant % 2 === 0) {
+      return `Se suman las dos ramas que terminan en "${sc.B}": P(${sc.B}) = ${fmtEs(pA)}×${fmtEs(pB_A)} + ${fmtEs(pnoA)}×${fmtEs(pB_noA)} = ${fmtEs(pA*pB_A)} + ${fmtEs(pnoA*pB_noA)} = ${fmtEs(pB)}.`;
+    }
+    return `Se suman las dos ramas que terminan en "${sc.noB}": P(${sc.noB}) = ${fmtEs(pA)}×${fmtEs(pnoB_A)} + ${fmtEs(pnoA)}×${fmtEs(pnoB_noA)} = ${fmtEs(pA*pnoB_A)} + ${fmtEs(pnoA*pnoB_noA)} = ${fmtEs(pnoB)}.`;
+  }
+  const bcases = [
+    { num: pA*pB_A, den: pB, lblNum: `P(${sc.A})×P(${sc.B}|${sc.A})`, lblDen: `P(${sc.B})` },
+    { num: pA*pnoB_A, den: pnoB, lblNum: `P(${sc.A})×P(${sc.noB}|${sc.A})`, lblDen: `P(${sc.noB})` },
+    { num: pnoA*pB_noA, den: pB, lblNum: `P(${sc.noA})×P(${sc.B}|${sc.noA})`, lblDen: `P(${sc.B})` },
+    { num: pnoA*pnoB_noA, den: pnoB, lblNum: `P(${sc.noA})×P(${sc.noB}|${sc.noA})`, lblDen: `P(${sc.noB})` }
+  ][variant % 4];
+  return `Teorema de Bayes: se divide la rama concreta entre la suma de todas las ramas que llevan al mismo resultado final. ${bcases.lblNum} ÷ ${bcases.lblDen} = ${fmtEs(bcases.num)} ÷ ${fmtEs(bcases.den)} = ${fmtEs(bcases.num/bcases.den)}.`;
+}
+
+let currentScenario = null;
+let currentVariants = [0,0,0,0];
+let answered = {};
+let results = {};
+let startTime = Date.now();
+let treeFails = 0;
+let treeTried = new Set();
+let pendingConfirmAction = null;
+
+const SLOT_PTS = { TREE: 2, Q1: 2, Q2: 2, Q3: 2, Q4: 2 };
+const TREE_MAX = 2;
+const DEDUCCION_POR_FALLO = 0.75;
+const MAX_SCORE = 10;
+
+function parseN(s){ return parseFloat(String(s||'').trim().replace(',','.')); }
+function approx(a,b,t=0.005){ return !isNaN(a)&&!isNaN(b)&&Math.abs(a-b)<t; }
+
+function randomScenario() {
+  const idx = Math.floor(Math.random() * SCENARIOS.length);
+  return { ...SCENARIOS[idx] };
+}
+
+function computeStats() {
+  let total = 0, okCount = 0, errCount = 0;
+  Object.values(results).forEach(r => {
+    total += r.pts;
+    if (r.ok) okCount++; else errCount++;
+  });
+  const nota = Math.max(0, Math.min(MAX_SCORE, Math.round(total * 100) / 100));
+  return { total, okCount, errCount, nota };
+}
+
+function generateNewProblem() {
+  currentScenario = randomScenario();
+  for (let i = 0; i < 4; i++) {
+    currentVariants[i] = randomVar();
+  }
+  answered = {};
+  results = {};
+  treeFails = 0;
+  treeTried = new Set();
+  updateScoreUI();
+  renderTree();
+}
+
+/* Botón "Otra ficha": reinicia la ficha entera (árbol + 4 preguntas) con un
+   enunciado nuevo. Pide confirmación solo si hay puntos que perder. */
+function tryNewProblem() {
+  const { total } = computeStats();
+  if (total > 0) {
+    openConfirm(
+      '¿Empezar una ficha nueva?',
+      `Llevas <strong>${fmtEs(total)} puntos</strong> ganados. Si generas una ficha nueva, el árbol y las 4 preguntas se reiniciarán por completo y esos puntos se perderán, empezando desde 0. ¿Quieres continuar?`,
+      generateNewProblem
+    );
+  } else {
+    generateNewProblem();
+  }
+}
+
+function renderTree() {
+  const sc = currentScenario;
+
+  const html = `
+    <span class="ctag">🌳 Árbol · ${sc.titulo}</span>
+    <p class="qtext">${sc.texto}</p>
+    <p class="tlabel">Construye el árbol (rellena todas las ramas) — 2 puntos</p>
+    <div class="tree-box"><div class="htree">
+      <div class="hrow"><div class="root-lbl">Inicio</div><div class="arr">→</div>
+        <input class="binp" id="r0" placeholder="P(${sc.A})" aria-label="Probabilidad de ${sc.A}">
+        <div class="arr">→</div><input class="binp" id="r1" placeholder="P(${sc.B}|${sc.A})" aria-label="Probabilidad de ${sc.B} dado ${sc.A}">
+      </div>
+      <div class="hrow"><div></div><div></div><div class="sub-lbl">${sc.A}</div><div class="arr">→</div>
+        <input class="binp" id="r2" placeholder="P(${sc.noB}|${sc.A})" aria-label="Probabilidad de ${sc.noB} dado ${sc.A}">
+      </div>
+      <div class="hrow-sp"></div>
+      <div class="hrow"><div></div><div class="arr">→</div>
+        <input class="binp" id="r3" placeholder="P(${sc.noA})" aria-label="Probabilidad de ${sc.noA}">
+        <div class="arr">→</div><input class="binp" id="r4" placeholder="P(${sc.B}|${sc.noA})" aria-label="Probabilidad de ${sc.B} dado ${sc.noA}">
+      </div>
+      <div class="hrow"><div></div><div></div><div class="sub-lbl">${sc.noA}</div><div class="arr">→</div>
+        <input class="binp" id="r5" placeholder="P(${sc.noB}|${sc.noA})" aria-label="Probabilidad de ${sc.noB} dado ${sc.noA}">
+      </div>
+    </div></div>
+    <button class="btn-v" onclick="verifyTree()">✓ Comprobar árbol (2 puntos)</button>
+    <div class="hint" id="hintTree" aria-live="polite"></div>
+
+    <div class="fq">
+      <p class="fqlabel">Pregunta 1 — (2 puntos)</p>
+      <p class="qtext"><strong>${getQuestionText(sc, 1, currentVariants[0])}</strong></p>
+      <p class="fmt-hint">Escribe el resultado como fracción o decimal (usa coma decimal)</p>
+      <div class="ans-row"><label class="ans-label" for="ans1">R =</label><input class="ans-inp" id="ans1" placeholder="Ej: 0,35  o  35/100" aria-label="Respuesta a la pregunta 1" oninput="clearEmptyWarning(this)"></div>
+      <div class="actions"><button class="btn-chk" onclick="checkAnswer(1)">Comprobar</button></div>
+      <div class="fb" id="fb1" aria-live="polite"></div>
+    </div>
+
+    <div class="fq">
+      <p class="fqlabel">Pregunta 2 — (2 puntos)</p>
+      <p class="qtext"><strong>${getQuestionText(sc, 2, currentVariants[1])}</strong></p>
+      <p class="fmt-hint">Escribe el resultado como fracción o decimal (usa coma decimal)</p>
+      <div class="ans-row"><label class="ans-label" for="ans2">R =</label><input class="ans-inp" id="ans2" placeholder="Ej: 0,35  o  35/100" aria-label="Respuesta a la pregunta 2" oninput="clearEmptyWarning(this)"></div>
+      <div class="actions"><button class="btn-chk" onclick="checkAnswer(2)">Comprobar</button></div>
+      <div class="fb" id="fb2" aria-live="polite"></div>
+    </div>
+
+    <div class="fq">
+      <p class="fqlabel">Pregunta 3 — (2 puntos)</p>
+      <p class="qtext"><strong>${getQuestionText(sc, 3, currentVariants[2])}</strong></p>
+      <p class="fmt-hint">Escribe el resultado como fracción o decimal (usa coma decimal)</p>
+      <div class="ans-row"><label class="ans-label" for="ans3">R =</label><input class="ans-inp" id="ans3" placeholder="Ej: 0,35  o  35/100" aria-label="Respuesta a la pregunta 3" oninput="clearEmptyWarning(this)"></div>
+      <div class="actions"><button class="btn-chk" onclick="checkAnswer(3)">Comprobar</button></div>
+      <div class="fb" id="fb3" aria-live="polite"></div>
+    </div>
+
+    <div class="fq">
+      <p class="fqlabel">Pregunta 4 — (2 puntos)</p>
+      <p class="qtext"><strong>${getQuestionText(sc, 4, currentVariants[3])}</strong></p>
+      <p class="fmt-hint">Escribe el resultado como fracción o decimal (usa coma decimal)</p>
+      <div class="ans-row"><label class="ans-label" for="ans4">R =</label><input class="ans-inp" id="ans4" placeholder="Ej: 0,35  o  35/100" aria-label="Respuesta a la pregunta 4" oninput="clearEmptyWarning(this)"></div>
+      <div class="actions"><button class="btn-chk" onclick="checkAnswer(4)">Comprobar</button></div>
+      <div class="fb" id="fb4" aria-live="polite"></div>
+    </div>
+
+  `;
+
+  document.getElementById('cardTree').innerHTML = html;
+  document.querySelector('.card').classList.remove('cor','wrong');
+}
+
+/* Verificación del árbol: fallo pedagógico (sin revelar el resultado numérico) ->
+   deducción graduada de 0,75 pts y reintento permitido sobre el mismo apartado,
+   hasta agotar el potencial máximo restante. */
+function verifyTree() {
+  const sc = currentScenario;
+  const ids = ['r0','r1','r2','r3','r4','r5'];
+  const correctVals = [sc.pA, sc.pB_given_A, 1-sc.pB_given_A, 1-sc.pA, sc.pB_given_noA, 1-sc.pB_given_noA];
+  let allOk = true;
+  const rawVals = [];
+  ids.forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (el) {
+      rawVals.push(el.value.trim());
+      const ok = approx(parseN(el.value), correctVals[i]);
+      el.classList.remove('vok','ver');
+      el.classList.add(ok ? 'vok' : 'ver');
+      if (!ok) allOk = false;
+    }
+  });
+
+  const hint = document.getElementById('hintTree');
+
+  if (answered['TREE']) {
+    hint.className = 'hint show ' + (allOk ? 'ok' : 'er');
+    hint.innerHTML = allOk
+      ? '<strong>✓ Árbol correcto.</strong> Este apartado ya está cerrado: no se pueden ganar más puntos en él.'
+      : '<strong>✗ Revisa las casillas en rojo.</strong><div class="hd">Este apartado ya está cerrado: no se pueden ganar más puntos en él.</div>';
+    return;
+  }
+
+  if (allOk) {
+    const potencial = Math.max(0, Math.round((TREE_MAX - treeFails * DEDUCCION_POR_FALLO) * 100) / 100);
+    answered['TREE'] = true;
+    results['TREE'] = { ok: true, pts: potencial };
+    updateScoreUI();
+    hint.className = 'hint show ok';
+    hint.innerHTML = potencial > 0
+      ? `<strong>✓ Árbol correcto. Has ganado ${fmtEs(potencial)} puntos.</strong> Ahora responde las preguntas.`
+      : `<strong>✓ Árbol correcto, pero ya habías agotado los puntos de este apartado</strong> tras ${treeFails} fallos (−${fmtEs(DEDUCCION_POR_FALLO)} pts cada uno). Se queda en 0 puntos. Ahora responde las preguntas.`;
+    return;
+  }
+
+  // Fallo: solo cuenta como uno nuevo si la combinación introducida es distinta de las ya probadas
+  const signature = rawVals.join('|');
+  if (!treeTried.has(signature)) {
+    treeTried.add(signature);
+    treeFails++;
+  }
+  const potencialRestante = Math.max(0, Math.round((TREE_MAX - treeFails * DEDUCCION_POR_FALLO) * 100) / 100);
+  hint.className = 'hint show er';
+  if (potencialRestante > 0) {
+    hint.innerHTML = `<strong>✗ Revisa las casillas en rojo (−${fmtEs(DEDUCCION_POR_FALLO)} pts).</strong><div class="hd">Las ramas de cada nodo deben sumar 1. Puedes seguir intentándolo — potencial restante: ${fmtEs(potencialRestante)} / ${TREE_MAX} pts.</div>`;
+  } else {
+    hint.innerHTML = `<strong>✗ Revisa las casillas en rojo.</strong><div class="hd">Has agotado los ${TREE_MAX} puntos de este apartado tras demasiados fallos. Puedes seguir corrigiéndolo para aprenderlo, pero ya no sumará puntos.</div>`;
+  }
+}
+
+/* Limpia el aviso de "campo vacío" en cuanto el alumno empieza a escribir */
+function clearEmptyWarning(inp) {
+  const qNum = inp.id.replace('ans', '');
+  if (answered[`Q${qNum}`]) return; // ya cerrado, no tocar
+  inp.classList.remove('ver');
+  const fb = document.getElementById(`fb${qNum}`);
+  if (fb) fb.classList.remove('show');
+}
+
+/* Pregunta cerrada tras el primer intento: si el feedback revela el resultado numérico
+   exacto, no se puede volver a puntuar reintroduciendo ese valor -> 0 pts permanentes. */
+function checkAnswer(qNum) {
+  const key = `Q${qNum}`;
+  if (answered[key]) return;
+
+  const inp = document.getElementById(`ans${qNum}`);
+  const fb = document.getElementById(`fb${qNum}`);
+
+  if (!inp.value.trim()) {
+    inp.classList.add('ver');
+    fb.className = 'fb show er';
+    fb.innerHTML = '<strong>✗ Escribe una respuesta antes de comprobar.</strong>';
+    return;
+  }
+
+  const raw = inp.value.trim().replace(',', '.');
+  let val;
+  if (raw.includes('/')) {
+    const parts = raw.split('/');
+    val = parseFloat(parts[0]) / parseFloat(parts[1]);
+  } else {
+    val = parseFloat(raw.split('=').pop().trim());
+  }
+
+  const correctVal = computeAnswer(currentScenario, qNum, currentVariants[qNum-1]);
+  const correctFmt = fmtEs(correctVal);
+  const isOk = approx(val, correctVal, 0.006);
+
+  answered[key] = true;
+  results[key] = { ok: isOk, pts: isOk ? SLOT_PTS[`Q${qNum}`] : 0 };
+
+  inp.classList.remove('ver','vok');
+  inp.classList.add(isOk ? 'vok' : 'ver');
+  inp.disabled = true;
+
+  fb.className = `fb show ${isOk ? 'ok' : 'er'}`;
+  if (isOk) {
+    fb.innerHTML = `<strong>✓ ¡Correcto! (+${SLOT_PTS[`Q${qNum}`]} pts)</strong>`;
+  } else {
+    const explicacion = getPedagogicalExplanation(currentScenario, qNum, currentVariants[qNum-1]);
+    fb.innerHTML = `<strong>✗ Incorrecto — este apartado se cierra en 0 puntos.</strong><div class="why">La respuesta correcta es ${correctFmt}.<br>${explicacion}</div>`;
+  }
+
+  const btn = document.querySelector(`#ans${qNum}`).parentElement.parentElement.querySelector('.btn-chk');
+  if (btn) btn.disabled = true;
+
+  const allAnswered = answered.Q1 && answered.Q2 && answered.Q3 && answered.Q4;
+  if (allAnswered) {
+    const allOk = results.Q1?.ok && results.Q2?.ok && results.Q3?.ok && results.Q4?.ok;
+    document.querySelector('.card').classList.toggle('cor', !!allOk);
+    document.querySelector('.card').classList.toggle('wrong', !allOk);
+  }
+
+  updateScoreUI();
+}
+
+function updateScoreUI() {
+  const { okCount, errCount, nota } = computeStats();
+  document.getElementById('cPts').textContent = `Puntuación: ${fmtEs(nota)} / 10`;
+  document.getElementById('cOk').textContent = `✓ ${okCount} correctas`;
+  document.getElementById('cErr').textContent = `✗ ${errCount} sin puntos`;
+}
+
+function clearNameError() {
+  document.getElementById('sName').classList.remove('ninp-error');
+  document.getElementById('nbar').classList.remove('nbar-error');
+  document.getElementById('nameMsg').classList.remove('show');
+}
+
+function showNameError() {
+  document.getElementById('sName').classList.add('ninp-error');
+  document.getElementById('nbar').classList.add('nbar-error');
+  document.getElementById('nameMsg').classList.add('show');
+}
+
+function confirmName() {
+  const val = document.getElementById('modalNameInp').value.trim();
+  if (!val) {
+    document.getElementById('modalNameInp').classList.add('mn-error');
+    setTimeout(() => document.getElementById('modalNameInp').classList.remove('mn-error'), 400);
+    return;
+  }
+  document.getElementById('sName').value = val;
+  clearNameError();
+  document.getElementById('overlayName').classList.remove('show');
+  showResult(val);
+}
+
+/* Modal de confirmación genérico (sustituye a confirm() nativo en toda la ficha) */
+function openConfirm(title, msg, onAccept) {
+  document.getElementById('confirmTitle').textContent = title;
+  document.getElementById('confirmMsg').innerHTML = msg;
+  pendingConfirmAction = onAccept;
+  document.getElementById('overlayConfirm').classList.add('show');
+}
+function cancelConfirm() {
+  pendingConfirmAction = null;
+  document.getElementById('overlayConfirm').classList.remove('show');
+}
+function acceptConfirm() {
+  const fn = pendingConfirmAction;
+  pendingConfirmAction = null;
+  document.getElementById('overlayConfirm').classList.remove('show');
+  if (fn) fn();
+}
+
+function getMissingParts() {
+  const labels = { TREE: 'el árbol', Q1: 'la pregunta 1', Q2: 'la pregunta 2', Q3: 'la pregunta 3', Q4: 'la pregunta 4' };
+  const missing = [];
+  ['TREE','Q1','Q2','Q3','Q4'].forEach(k => { if (!answered[k]) missing.push(labels[k]); });
+  return missing;
+}
+
+function submitAll() {
+  const name = document.getElementById('sName').value.trim();
+  if (!name) {
+    showNameError();
+    document.getElementById('modalNameInp').value = '';
+    document.getElementById('overlayName').classList.add('show');
+    return;
+  }
+  const missing = getMissingParts();
+  if (missing.length > 0) {
+    const { nota } = computeStats();
+    openConfirm(
+      'Ficha incompleta',
+      `Todavía falta por responder: <strong>${missing.join(', ')}</strong>.<br><br>Si finalizas ahora, tu nota sería <strong>${fmtEs(nota)} / 10</strong>. Puedes cancelar para seguir trabajando sin perder nada, o confirmar para finalizar con la nota actual.`,
+      () => showResult(name)
+    );
+    return;
+  }
+  showResult(name);
+}
+
+function showResult(name) {
+  const { okCount, errCount, nota, total } = computeStats();
+  const now = new Date();
+  const fecha = now.toLocaleDateString('es-ES');
+  const hora = now.toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'});
+  const elapsedSec = Math.ceil((Date.now() - startTime) / 1000);
+  const mm = String(Math.floor(elapsedSec / 60)).padStart(2,'0');
+  const ss = String(elapsedSec % 60).padStart(2,'0');
+
+  const modal = document.getElementById('modal');
+  modal.className = 'modal';
+  const cls = nota>=10?'n10': nota>=9?'n9': nota>=8?'n8': nota>=7?'n7': nota>=6?'n6': nota>=5?'n5':'n0';
+  modal.classList.add(cls);
+
+  document.getElementById('rName').textContent = name.toUpperCase();
+  document.getElementById('rGrade').textContent = fmtEs(nota) + ' / ' + MAX_SCORE;
+  document.getElementById('rLabel').textContent = nota>=8?'¡Excelente! Dominas el árbol de probabilidad.' : nota>=6?'Muy bien. Sigue practicando.' : nota>=5?'Aprobado, pero repasa.' : 'Repasa los conceptos fundamentales.';
+  document.getElementById('rS1').textContent = `📅 ${fecha}  🕐 ${hora}`;
+  document.getElementById('rS2').textContent = `⏱ Tiempo: ${mm}:${ss}`;
+  document.getElementById('rS3').textContent = `✓ ${okCount} correctas  ✗ ${errCount} sin puntos`;
+  document.getElementById('rS4').textContent = `Puntuación bruta: ${fmtEs(total)} pts`;
+
+  document.getElementById('overlay').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('overlay').classList.remove('show');
+}
+document.getElementById('overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+document.getElementById('overlayConfirm').addEventListener('click', function(e) {
+  if (e.target === this) cancelConfirm();
+});
+
+/* Soporte de tecla Enter por delegación de eventos (funciona también en inputs
+   creados dinámicamente dentro de renderTree, sin tener que reengancharlos). */
+document.addEventListener('keydown', function(e) {
+  if (e.key !== 'Enter') return;
+  const t = e.target;
+  if (t.classList && t.classList.contains('ans-inp')) {
+    const qNum = parseInt(t.id.replace('ans',''), 10);
+    if (!isNaN(qNum)) checkAnswer(qNum);
+  } else if (t.classList && t.classList.contains('binp')) {
+    verifyTree();
+  }
+});
+
+generateNewProblem();
+</script>
+</body>
+</html>
