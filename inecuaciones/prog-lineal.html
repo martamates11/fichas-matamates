@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Programación lineal · Optimización</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap');
+:root {
+  --color-fondo: #F5F0E8;
+  --color-fondo-card: #FDFAF3;
+  --color-texto: #2C1F0E;
+  --color-texto-suave: #6B4F35;
+  --color-acento: #A0522D;
+  --color-acento-hover: #7B3B1E;
+  --color-borde: #C9A96E;
+  --color-borde-suave: #E0CEAA;
+  --color-cabecera: #3B2510;
+  --color-cabecera-txt: #F5EDD8;
+  --color-barra-alumno: #EFE4CC;
+  --color-correcto: #2E6B3E;
+  --color-incorrecto: #8B1A1A;
+  --color-neutro: #E8DFC8;
+  --color-r1: #A0522D;
+  --color-r2: #3F6E8C;
+  --color-min: #8A6D2F;
+}
+* { box-sizing: border-box; }
+body { margin: 0; font-family: 'Lato', sans-serif; font-size: 16px; color: var(--color-texto); background: var(--color-fondo); }
+h1, h2, h3, .titulo-ficha { font-family: 'Libre Baskerville', serif; color: var(--color-texto); }
+.cabecera { background: var(--color-cabecera); color: var(--color-cabecera-txt); font-family: 'Libre Baskerville', serif; text-align: center; padding: 12px 20px; border-bottom: 3px solid var(--color-borde); font-size: .78rem; letter-spacing: .04em; }
+.ficha-container { max-width: 1020px; margin: 28px auto; background: var(--color-fondo-card); border: 2px solid var(--color-borde); border-radius: 6px; box-shadow: 0 3px 12px rgba(44,31,14,.15); padding: 32px 36px; transition: background .6s, border-color .6s; }
+.ficha-container.completa { background: #EEF6EE; border-color: #1a7a1a; }
+.titulo-ficha { font-size: 1.6rem; text-align: center; margin: 0 0 6px; }
+.titulo-ficha::after { content: ''; display: block; width: 60px; height: 3px; background: var(--color-borde); margin: 10px auto 0; border-radius: 2px; }
+.subtitulo { text-align: center; color: var(--color-texto-suave); font-family: 'Libre Baskerville', serif; font-style: italic; font-size: 1rem; margin: 8px 0 20px; }
+
+.barra { position: sticky; top: 0; z-index: 50; background: var(--color-barra-alumno); border: 1.5px solid var(--color-borde); border-radius: 6px; margin: 0 0 22px; box-shadow: 0 2px 6px rgba(44,31,14,.08); padding: 9px 20px; display: flex; flex-wrap: wrap; gap: 10px 26px; align-items: center; justify-content: center; font-size: .92rem; }
+.barra label { font-family: 'Libre Baskerville', serif; font-size: .85rem; color: var(--color-texto-suave); }
+.barra input#nombre { background: var(--color-fondo-card); border: 1.5px solid var(--color-borde); border-radius: 4px; padding: 6px 10px; font-family: 'Lato', sans-serif; font-size: .95rem; color: var(--color-texto); width: 230px; max-width: 60vw; outline: none; }
+.barra input#nombre:focus { border-color: var(--color-acento); }
+.barra input#nombre.falta { border-color: var(--color-incorrecto); box-shadow: 0 0 0 3px rgba(139,26,26,.18); }
+.barra .dato { color: var(--color-texto-suave); }
+.barra .dato b { color: var(--color-acento); font-family: 'Libre Baskerville', serif; }
+.aviso-nombre { color: var(--color-incorrecto); font-size: .82rem; font-weight: 700; display: none; width: 100%; text-align: center; }
+.aviso-nombre.visible { display: block; }
+
+details.metodo { background: var(--color-fondo); border: 1.5px solid var(--color-borde-suave); border-radius: 4px; padding: 12px 20px; margin-bottom: 20px; font-size: .92rem; color: var(--color-texto-suave); }
+details.metodo summary { cursor: pointer; font-family: 'Libre Baskerville', serif; color: var(--color-texto); font-size: .95rem; }
+details.metodo ol { margin: 10px 0 6px; padding-left: 22px; line-height: 1.55; }
+details.metodo .puntuacion { margin: 8px 0 0; padding-top: 8px; border-top: 1px dashed var(--color-borde-suave); }
+
+.enunciado { background: var(--color-fondo); border: 1.5px solid var(--color-borde-suave); border-left: 4px solid var(--color-borde); border-radius: 4px; padding: 18px 24px; margin-bottom: 20px; line-height: 1.7; font-size: .97rem; }
+.enunciado .contexto { display: inline-block; font-size: .75rem; font-weight: 700; color: var(--color-acento); border: 1.5px solid var(--color-borde); border-radius: 20px; padding: 2px 12px; margin-bottom: 8px; background: var(--color-fondo-card); letter-spacing: .04em; }
+.enunciado p { margin: 6px 0; }
+.enunciado .pregunta { font-weight: 700; color: var(--color-texto); }
+.enunciado .variables { font-size: .9rem; color: var(--color-texto-suave); border-top: 1px dashed var(--color-borde-suave); padding-top: 8px; margin-top: 10px; }
+.mat { font-family: 'Libre Baskerville', serif; white-space: nowrap; }
+.mat i, .fila-forma i { font-style: italic; font-family: 'Libre Baskerville', serif; }
+sub { font-size: .7em; }
+
+.zona { display: grid; grid-template-columns: minmax(0,1fr) 440px; gap: 24px; align-items: start; }
+.columna-grafica { position: sticky; top: 74px; }
+@media (max-width: 960px) {
+  .zona { grid-template-columns: minmax(0,1fr); }
+  .columna-grafica { position: static; order: -1; }
+  .ficha-container { padding: 20px 12px; margin: 12px 4px; }
+  .paso { padding: 12px 12px; }
+}
+
+.paso { background: var(--color-fondo); border: 1.5px solid var(--color-borde-suave); border-left: 4px solid var(--color-borde-suave); border-radius: 4px; padding: 14px 18px; margin-bottom: 14px; transition: opacity .3s; }
+.paso.bloqueado { opacity: .45; }
+.paso.activo { border-left-color: var(--color-acento); box-shadow: 0 2px 8px rgba(160,82,45,.10); }
+.paso.hecho { border-left-color: var(--color-correcto); }
+.paso.fallado { border-left-color: var(--color-incorrecto); }
+.paso h3 { font-size: 1rem; margin: 0 0 8px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.paso h3 .n { display: inline-flex; width: 26px; height: 26px; border-radius: 50%; align-items: center; justify-content: center; background: var(--color-borde-suave); color: var(--color-texto); font-size: .82rem; flex: none; }
+.paso.activo h3 .n { background: var(--color-acento); color: #FDFAF3; }
+.paso.hecho h3 .n { background: var(--color-correcto); color: #FDFAF3; }
+.paso.fallado h3 .n { background: var(--color-incorrecto); color: #FDFAF3; }
+.paso h3 .pts { margin-left: auto; font-family: 'Lato', sans-serif; font-size: .78rem; font-weight: 700; color: var(--color-texto-suave); background: var(--color-fondo-card); border: 1px solid var(--color-borde-suave); border-radius: 20px; padding: 2px 10px; }
+.paso h3 .pts.ganado { color: var(--color-correcto); border-color: var(--color-correcto); }
+.paso h3 .pts.perdido { color: var(--color-incorrecto); border-color: var(--color-incorrecto); }
+.instr { font-size: .9rem; color: var(--color-texto-suave); margin: 0 0 10px; line-height: 1.5; }
+.nota-in { font-size: .8rem; color: var(--color-texto-suave); margin: 6px 0 10px; font-style: italic; }
+
+input.num { width: 64px; text-align: center; background: var(--color-fondo-card); border: 1.5px solid var(--color-borde); border-radius: 4px; padding: 6px 4px; font-family: 'Libre Baskerville', serif; font-size: .98rem; color: var(--color-texto); outline: none; }
+input.num.ancho { width: 92px; }
+input.num:focus, select:focus { border-color: var(--color-acento); }
+input.num.mal { border-color: var(--color-incorrecto); background: #F9EAEA; }
+input.num.bien { border-color: var(--color-correcto); background: #EEF6EE; }
+input:disabled, select:disabled { background: var(--color-neutro); color: var(--color-texto-suave); }
+select { background: var(--color-fondo-card); border: 1.5px solid var(--color-borde); border-radius: 4px; padding: 6px 6px; font-family: 'Lato', sans-serif; font-size: .92rem; color: var(--color-texto); outline: none; }
+select.signo { font-family: 'Libre Baskerville', serif; font-size: 1.02rem; width: 56px; text-align: center; }
+.fila-forma { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; font-family: 'Libre Baskerville', serif; font-size: 1.05rem; }
+
+.rest { display: grid; grid-template-columns: 24px auto; gap: 6px 10px; align-items: center; padding: 8px 10px; background: var(--color-fondo-card); border: 1px solid var(--color-borde-suave); border-radius: 4px; margin-bottom: 8px; }
+.rest.mal { border-color: var(--color-incorrecto); background: #FBF0EE; }
+.rest.bien { border-color: var(--color-correcto); background: #F1F7F1; }
+.rest .idx { font-family: 'Libre Baskerville', serif; color: var(--color-texto-suave); font-size: .85rem; }
+.rest .prueba-fila { grid-column: 2; display: flex; align-items: center; gap: 8px; font-size: .84rem; color: var(--color-texto-suave); flex-wrap: wrap; }
+.rest .prueba-fila .pp { font-family: 'Libre Baskerville', serif; color: var(--color-texto); }
+.rest .marca { grid-column: 2; font-size: .8rem; }
+.rest .marca:empty { display: none; }
+.rest.mal .marca { color: var(--color-incorrecto); }
+.rest.bien .marca { color: var(--color-correcto); }
+
+table.vert { border-collapse: collapse; margin: 6px 0 10px; font-family: 'Libre Baskerville', serif; }
+table.vert th, table.vert td { border: 1.5px solid var(--color-borde); padding: 5px 10px; text-align: center; }
+table.vert th { background: var(--color-barra-alumno); font-weight: 400; }
+table.vert td { background: var(--color-fondo-card); }
+.vacio { font-size: .86rem; color: var(--color-texto-suave); font-style: italic; margin: 4px 0 10px; }
+.sol-frase { line-height: 2.6; font-size: .97rem; }
+
+.acciones { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 4px; }
+.btn-primario { background: var(--color-acento); color: #FDFAF3; border: none; border-radius: 4px; padding: 9px 20px; font-family: 'Lato', sans-serif; font-size: .93rem; font-weight: 700; cursor: pointer; letter-spacing: .03em; transition: background-color .2s; }
+.btn-primario:hover:not(:disabled) { background: var(--color-acento-hover); }
+.btn-primario:disabled { background: var(--color-neutro); color: var(--color-texto-suave); cursor: default; }
+.btn-secundario { background: transparent; color: var(--color-acento); border: 2px solid var(--color-borde); border-radius: 4px; padding: 7px 16px; font-family: 'Lato', sans-serif; font-size: .88rem; font-weight: 700; cursor: pointer; transition: border-color .2s, color .2s; }
+.btn-secundario:hover:not(:disabled) { border-color: var(--color-acento); color: var(--color-acento-hover); }
+.btn-secundario:disabled { opacity: .5; cursor: default; }
+
+.fb { margin-top: 10px; font-size: .9rem; line-height: 1.55; }
+.fb:empty { display: none; }
+.feedback-correcto { background: #EAF4EC; border: 1.5px solid var(--color-correcto); color: var(--color-correcto); border-radius: 4px; padding: 10px 14px; }
+.feedback-incorrecto { background: #F9EAEA; border: 1.5px solid var(--color-incorrecto); color: var(--color-incorrecto); border-radius: 4px; padding: 10px 14px; }
+.feedback-incorrecto .solucion, .feedback-correcto .solucion { margin-top: 8px; color: var(--color-texto); }
+.feedback-aviso { background: #FBF3E2; border: 1.5px solid var(--color-borde); color: var(--color-texto-suave); border-radius: 4px; padding: 8px 14px; }
+.fb ul { margin: 6px 0 0; padding-left: 20px; }
+.fb li { margin: 3px 0; }
+.fb table { border-collapse: collapse; margin: 6px 0; font-family: 'Libre Baskerville', serif; font-size: .88rem; color: var(--color-texto); }
+.fb th, .fb td { border: 1px solid var(--color-borde); padding: 3px 9px; text-align: center; background: var(--color-fondo-card); }
+.fb th { background: var(--color-barra-alumno); font-weight: 400; }
+.fb tr.opt td { background: #E4F0E6; font-weight: 700; }
+
+.grafica-card { background: var(--color-fondo-card); border: 1.5px solid var(--color-borde); border-radius: 6px; padding: 10px; box-shadow: 0 2px 8px rgba(44,31,14,.06); }
+#plano { width: 100%; height: auto; display: block; touch-action: manipulation; user-select: none; }
+#plano.interactivo { cursor: pointer; }
+.graf-ayuda { font-size: .84rem; color: var(--color-texto-suave); text-align: center; margin: 8px 4px 2px; min-height: 1.3em; font-style: italic; }
+.leyenda { display: flex; justify-content: center; gap: 6px 14px; font-size: .8rem; color: var(--color-texto-suave); margin-top: 6px; flex-wrap: wrap; }
+.leyenda span { display: inline-flex; align-items: center; gap: 5px; }
+.leyenda i.l { display: inline-block; width: 20px; height: 0; border-top: 2.5px solid; }
+
+.glosario-card { background: var(--color-fondo-card); border: 1.5px solid var(--color-borde); border-radius: 6px; padding: 16px 18px; box-shadow: 0 2px 8px rgba(44,31,14,.06); margin-top: 16px; }
+.glosario-card h4 { font-size: .85rem; color: var(--color-texto-suave); letter-spacing: .03em; margin: 0 0 8px; font-weight: 700; text-transform: uppercase; }
+.glosario-card h4:not(:first-child) { margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--color-borde-suave); }
+.leyenda-fija { display: flex; flex-direction: column; gap: 7px; font-size: .84rem; color: var(--color-texto-suave); }
+.leyenda-fija span { display: flex; align-items: center; gap: 8px; }
+.leyenda-fija i.l { flex: none; display: inline-block; width: 22px; height: 0; border-top: 2.5px solid; }
+.leyenda-fija i.l.punteada { border-top-style: dashed; }
+.glosario-lista { margin: 0; font-size: .85rem; line-height: 1.5; }
+.glosario-lista dt { font-family: 'Libre Baskerville', serif; color: var(--color-texto); font-style: italic; margin-top: 8px; }
+.glosario-lista dt:first-child { margin-top: 0; }
+.glosario-lista dd { margin: 1px 0 0; color: var(--color-texto-suave); }
+
+.pie { margin-top: 26px; padding-top: 18px; border-top: 1px solid var(--color-borde-suave); display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
+.btn-finalizar { background: var(--color-cabecera); color: var(--color-cabecera-txt); border: 2px solid var(--color-borde); border-radius: 4px; padding: 10px 24px; font-family: 'Libre Baskerville', serif; font-size: .95rem; font-weight: 700; cursor: pointer; letter-spacing: .04em; transition: background-color .2s; }
+.btn-finalizar:hover { background: #2C1A0A; }
+
+.overlay { position: fixed; inset: 0; background: rgba(44,31,14,.55); display: none; align-items: center; justify-content: center; z-index: 100; padding: 16px; }
+.overlay.visible { display: flex; }
+.modal-calificacion { border: 3px solid var(--color-borde); border-radius: 8px; font-family: 'Libre Baskerville', serif; box-shadow: 0 6px 24px rgba(44,31,14,.35); padding: 28px 32px; min-width: 300px; max-width: 580px; width: 100%; max-height: 92vh; overflow-y: auto; text-align: center; }
+.modal-calificacion .m-titulo { font-size: 1.25rem; font-weight: 700; margin: 0; }
+.modal-calificacion .m-sub { font-size: .9rem; font-style: italic; margin: 4px 0 10px; opacity: .9; }
+.modal-calificacion hr { border: none; border-top: 1.5px solid currentColor; opacity: .45; margin: 10px 0 14px; }
+.modal-calificacion .m-inf { font-size: .82rem; letter-spacing: .08em; text-transform: uppercase; opacity: .9; }
+.modal-calificacion .m-nombre { font-size: 1.1rem; margin: 6px 0 2px; }
+.modal-calificacion .m-nota { font-size: 3rem; font-weight: 700; margin: 4px 0; line-height: 1.1; }
+.modal-calificacion .m-datos { font-family: 'Lato', sans-serif; font-size: .9rem; display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 18px; margin-bottom: 10px; }
+.modal-calificacion table { width: 100%; border-collapse: collapse; font-family: 'Lato', sans-serif; font-size: .86rem; margin: 6px 0 12px; }
+.modal-calificacion th, .modal-calificacion td { border-bottom: 1px solid rgba(255,255,255,.35); padding: 5px 6px; }
+.modal-calificacion.oscuro-txt th, .modal-calificacion.oscuro-txt td { border-bottom-color: rgba(0,0,0,.2); }
+.modal-calificacion th { text-align: left; font-weight: 700; }
+.modal-calificacion td:not(:first-child), .modal-calificacion th:not(:first-child) { text-align: center; }
+.modal-calificacion h4 { font-size: .95rem; margin: 14px 0 4px; text-align: left; }
+.modal-calificacion .btn-cerrar { margin-top: 10px; background: rgba(255,255,255,.92); color: var(--color-cabecera); border: 2px solid var(--color-borde); border-radius: 4px; padding: 8px 22px; font-family: 'Lato', sans-serif; font-weight: 700; cursor: pointer; }
+.modal-aviso { background: var(--color-fondo-card); color: var(--color-texto); border: 3px solid var(--color-borde); border-radius: 8px; box-shadow: 0 6px 24px rgba(44,31,14,.35); padding: 24px 28px; max-width: 440px; width: 100%; text-align: center; }
+.modal-aviso h3 { margin: 0 0 10px; font-size: 1.1rem; }
+.modal-aviso p { font-size: .93rem; line-height: 1.55; color: var(--color-texto-suave); margin: 0 0 16px; }
+.modal-aviso .acciones { justify-content: center; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+</style>
+</head>
+<body>
+
+<div class="cabecera">Material elaborado por Marta L Letona S. Basado en el trabajo de Javier Cayetano</div>
+
+<div class="ficha-container" id="ficha">
+  <h1 class="titulo-ficha">Programación lineal</h1>
+  <p class="subtitulo">Optimización por el método gráfico · Problemas en contexto</p>
+
+  <div class="barra">
+    <label for="nombre">Alumno/a:</label>
+    <input type="text" id="nombre" placeholder="Nombre y apellidos" autocomplete="off">
+    <span class="dato">Nota: <b id="marcador-nota">0</b> / 10</span>
+    <span class="dato">Pasos comprobados: <b id="marcador-pasos">0</b> / 4</span>
+    <div class="aviso-nombre" id="aviso-nombre">Escribe tu nombre antes de continuar.</div>
+  </div>
+
+  <details class="metodo" open>
+    <summary>Método gráfico</summary>
+    <ol>
+      <li>Define las variables y escribe la <b>función objetivo</b> <span class="mat"><i>Z</i> = <i>a</i><i>x</i> + <i>b</i><i>y</i></span> que hay que maximizar.</li>
+      <li>Traduce cada condición del enunciado a una <b>restricción</b>. Para saber qué semiplano vale, comprueba si un punto (normalmente el origen) la cumple.</li>
+      <li>La <b>región factible</b> es la parte común de todos los semiplanos. Sus <b>vértices</b> son los cortes de las rectas que la delimitan: márcalos y calcula sus coordenadas resolviendo los sistemas.</li>
+      <li>Evalúa <i>Z</i> en cada vértice: el mayor valor da la <b>solución óptima</b>.</li>
+    </ol>
+    <p class="puntuacion">Cada paso vale <b>2,5 puntos</b> y cuenta la <b>primera comprobación</b>. En las restricciones, cada restricción que falte o esté mal resta 0,5. Después de comprobar puedes corregir para aprender, pero ya no suma (en el paso 3, al comprobar, el plano muestra la región y sus vértices). La nota es la del ejercicio actual: si pides otro, empiezas de cero.</p>
+  </details>
+
+  <div class="enunciado" id="enunciado"></div>
+
+  <div class="zona">
+    <div class="columna-pasos" id="pasos"></div>
+    <div class="columna-grafica">
+      <div class="grafica-card">
+        <svg id="plano" viewBox="0 0 470 470" xmlns="http://www.w3.org/2000/svg" aria-label="Plano para la región factible">
+          <defs>
+            <clipPath id="clip"><rect x="48" y="14" width="408" height="408"/></clipPath>
+            <pattern id="rayado" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+              <rect width="9" height="9" fill="rgba(46,107,62,0.10)"/>
+              <line x1="0" y1="0" x2="0" y2="9" stroke="rgba(46,107,62,0.32)" stroke-width="1.5"/>
+            </pattern>
+          </defs>
+          <rect x="0" y="0" width="470" height="470" fill="#FDFAF3"/>
+          <g id="g-region" clip-path="url(#clip)"></g>
+          <g id="g-cuadricula"></g>
+          <g id="g-rectas" clip-path="url(#clip)"></g>
+          <g id="g-nivel" clip-path="url(#clip)"></g>
+          <g id="g-candidatos"></g>
+          <g id="g-etiquetas"></g>
+          <rect id="captura" x="0" y="0" width="470" height="470" fill="transparent"/>
+        </svg>
+        <div class="graf-ayuda" id="graf-ayuda"></div>
+        <div class="leyenda" id="leyenda"></div>
+      </div>
+      <div class="glosario-card">
+        <h4>Clave de colores</h4>
+        <div class="leyenda-fija">
+          <span><i class="l" style="border-color:var(--color-r1)"></i>Restricción r<sub>1</sub> (primer recurso)</span>
+          <span><i class="l" style="border-color:var(--color-r2)"></i>Restricción r<sub>2</sub> (segundo recurso)</span>
+          <span><i class="l punteada" style="border-color:var(--color-min)"></i>Mínimos exigidos</span>
+          <span><i class="l punteada" style="border-color:#B8892E"></i>Recta de nivel (en el óptimo)</span>
+        </div>
+        <h4>Glosario</h4>
+        <dl class="glosario-lista">
+          <dt>Función objetivo (<i>Z</i>)</dt><dd>La cantidad que se quiere maximizar o minimizar.</dd>
+          <dt>Restricción</dt><dd>Condición del problema escrita como inecuación.</dd>
+          <dt>Región factible</dt><dd>Puntos que cumplen todas las restricciones a la vez.</dd>
+          <dt>Vértice</dt><dd>Esquina de la región factible: corte de dos rectas frontera.</dd>
+          <dt>Solución óptima</dt><dd>El vértice donde <i>Z</i> alcanza su mayor valor.</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+
+  <div class="pie">
+    <button class="btn-secundario" id="btn-nuevo">Nuevo ejercicio</button>
+    <button class="btn-finalizar" id="btn-finalizar">Finalizar y Calificar</button>
+  </div>
+</div>
+
+<div class="overlay" id="overlay"><div class="modal-calificacion" id="modal"></div></div>
+<div class="overlay" id="overlay-aviso">
+  <div class="modal-aviso" role="dialog" aria-modal="true">
+    <h3>¿Empezar otro ejercicio?</h3>
+    <p id="aviso-texto"></p>
+    <div class="acciones">
+      <button class="btn-secundario" id="aviso-cancelar">Seguir con este</button>
+      <button class="btn-primario" id="aviso-aceptar">Sí, otro ejercicio</button>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+/* =========================================================
+   MODELO DE PUNTUACIÓN DE ESTA FICHA (perfil proporcional por apartado)
+   4 pasos × 2,5. Cuenta la primera comprobación de cada paso.
+   Paso 2: 2,5 − 0,5 por restricción que falte o esté mal, y por fila
+   errónea añadida (mínimo 0 dentro del paso). Pasos 1, 3 y 4: todo o nada.
+   La nota es la del ejercicio actual; cambiar de ejercicio pide confirmación.
+   Aleatoriedad: ?seed=N solo para QA.
+   ========================================================= */
+const URLP = new URLSearchParams(location.search);
+let rand = Math.random;
+if (URLP.has('seed')) {
+  let s = (parseInt(URLP.get('seed'), 10) || 1) >>> 0;
+  rand = () => { s = (s + 0x6D2B79F5) >>> 0; let t = s; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+}
+const ri = (a, b) => a + Math.floor(rand() * (b - a + 1));
+const pick = arr => arr[Math.floor(rand() * arr.length)];
+const $ = id => document.getElementById(id);
+const N = n => n < 0 ? '−' + fmt(Math.abs(n)) : fmt(n);
+function fmt(n) { const r = Math.round(n * 100) / 100; return String(r).replace('.', ','); }
+const miles = n => Math.round(n).toLocaleString('es-ES');
+const P = n => n < 0 ? '(' + N(n) + ')' : N(n);
+const V = v => `<i>${v}</i>`;
+const M = h => `<span class="mat">${h}</span>`;
+function T(c, v, primero) {
+  if (c === 0) return '';
+  const a = Math.abs(c), cuerpo = (a === 1 ? '' : fmt(a)) + V(v);
+  if (primero) return (c < 0 ? '−' : '') + cuerpo;
+  return (c < 0 ? ' − ' : ' + ') + cuerpo;
+}
+const expr = (a, b) => (a !== 0 ? T(a, 'x', true) + T(b, 'y', false) : T(b, 'y', true)) || '0';
+const restr = (a, b, c, s) => expr(a, b) + ` ${s} ` + N(c);
+const plural = (n, sing, plu) => `${n} ${n === 1 ? sing : plu}`;
+
+/* =========================================================
+   Contextos
+   ========================================================= */
+const CONTEXTOS = [
+  {
+    id: 'rutas', nombre: 'Rutas gastronómicas · Feria de San Juan', unidad: ['ruta', 'rutas'],
+    pares: [['Toro de Lidia', 'Jamón Ibérico'], ['Queso Extremeño', 'Cerdo Ibérico'], ['Vino de Pitarra', 'Migas Extremeñas'],
+            ['Cordero al Ajillo', 'Torta del Casar'], ['Morcilla Patatera', 'Cecina de Caza'], ['Caldereta', 'Pimentón de La Vera']],
+    r1: { sing: 'guía', plu: 'guías' }, r2: { sing: 'autobús pequeño', plu: 'autobuses pequeños' },
+    rP: [[10, 40], [10, 50]], coefs: () => [ri(10, 25) * 10, ri(10, 25) * 10], minY: () => rand() < 0.5, tierra: false,
+    texto(e) {
+      return `<p>La <b>Diputación de Badajoz</b> organiza dos rutas gastronómicas durante la <b>Feria de San Juan</b>.</p>
+        <p>Cada ruta de <b>${e.X}</b> necesita ${plural(e.a1, 'guía', 'guías')} y ${plural(e.a2, 'autobús pequeño', 'autobuses pequeños')}, y deja un beneficio de <b>${miles(e.cx)} €</b>.
+        Cada ruta de <b>${e.Y}</b> necesita ${plural(e.b1, 'guía', 'guías')} y ${plural(e.b2, 'autobús pequeño', 'autobuses pequeños')}, y deja <b>${miles(e.cy)} €</b>.</p>
+        <p>Se dispone de <b>${e.G} guías</b> y <b>${e.B} autobuses pequeños</b>. Por tradición, deben realizarse al menos <b>${e.mx} rutas de ${e.X}</b>${e.my > 0 ? ` y al menos <b>${e.my} rutas de ${e.Y}</b>` : ''}.</p>
+        <p class="pregunta">¿Cuántas rutas de cada tipo hay que organizar para que el beneficio sea máximo? ¿A cuánto asciende?</p>
+        <p class="variables">Llama ${V('x')} al número de rutas de ${e.X} e ${V('y')} al número de rutas de ${e.Y}.</p>`;
+    }
+  },
+  {
+    id: 'granja', nombre: 'Explotación agrícola · Vegas del Guadiana', unidad: ['hectárea', 'hectáreas'],
+    pares: [['maíz', 'trigo'], ['tomate', 'pimiento'], ['girasol', 'cebada'], ['arroz', 'maíz']],
+    rP: [[20, 70], [20, 70]], coefs: () => [ri(10, 30) * 20, ri(10, 30) * 20], minY: () => true, tierra: true,
+    texto(e) {
+      return `<p>Una explotación de las <b>Vegas del Guadiana</b> dispone de <b>${e.G} hectáreas</b> de cultivo y de <b>${e.B} jornales de riego</b> para la campaña.</p>
+        <p>Cada hectárea de <b>${e.X}</b> necesita ${plural(e.a2, 'jornal', 'jornales')} de riego y deja un beneficio de <b>${miles(e.cx)} €</b>.
+        Cada hectárea de <b>${e.Y}</b> necesita ${plural(e.b2, 'jornal', 'jornales')} y deja <b>${miles(e.cy)} €</b>.</p>
+        <p>Por las condiciones de la explotación, hay que dedicar al menos <b>${e.mx} ha al ${e.X}</b> y al menos <b>${e.my} ha al ${e.Y}</b>.</p>
+        <p class="pregunta">¿Cuántas hectáreas hay que dedicar a cada cultivo para que el beneficio sea máximo? ¿A cuánto asciende?</p>
+        <p class="variables">Llama ${V('x')} a las hectáreas de ${e.X} e ${V('y')} a las de ${e.Y}.</p>`;
+    }
+  },
+  {
+    id: 'obrador', nombre: 'Obrador de dulces · Mérida', unidad: ['bandeja', 'bandejas'],
+    pares: [['perrunillas', 'bollos de Pascua'], ['roscas fritas', 'repápalos'], ['técula mécula', 'coquillos'], ['flores fritas', 'pestiños']],
+    rP: [[10, 40], [10, 45]], coefs: () => [ri(4, 20), ri(4, 20)], minY: () => false, tierra: false,
+    texto(e) {
+      return `<p>Un obrador de <b>Mérida</b> prepara bandejas de <b>${e.X}</b> y de <b>${e.Y}</b> para la Semana Santa.</p>
+        <p>Cada bandeja de ${e.X} lleva ${plural(e.a1, 'kg', 'kg')} de harina y ${plural(e.a2, 'hora', 'horas')} de horno, y deja un beneficio de <b>${miles(e.cx)} €</b>.
+        Cada bandeja de ${e.Y} lleva ${plural(e.b1, 'kg', 'kg')} de harina y ${plural(e.b2, 'hora', 'horas')} de horno, y deja <b>${miles(e.cy)} €</b>.</p>
+        <p>El obrador dispone de <b>${e.G} kg de harina</b> y <b>${e.B} horas de horno</b>, y tiene un encargo de al menos <b>${e.mx} bandejas de ${e.X}</b>.</p>
+        <p class="pregunta">¿Cuántas bandejas de cada tipo debe preparar para que el beneficio sea máximo? ¿A cuánto asciende?</p>
+        <p class="variables">Llama ${V('x')} al número de bandejas de ${e.X} e ${V('y')} al de ${e.Y}.</p>`;
+    }
+  }
+];
+const NOMBRE_R = { r1: 'r<sub>1</sub>', r2: 'r<sub>2</sub>', rx: 'mín. x', ry: 'mín. y' };
+
+/* =========================================================
+   Generador: vértices enteros, región de 4 vértices, óptimo único
+   ========================================================= */
+function cortes(l1, l2) {
+  const d = l1.a * l2.b - l2.a * l1.b;
+  if (d === 0) return null;
+  return [(l1.c * l2.b - l2.c * l1.b) / d, (l1.a * l2.c - l2.a * l1.c) / d];
+}
+const cumpleR = (r, p) => r.s === '≤' ? r.a * p[0] + r.b * p[1] <= r.c + 1e-9 : r.a * p[0] + r.b * p[1] >= r.c - 1e-9;
+let ultimaFirma = '';
+function generar() {
+  for (let t = 0; t < 20000; t++) {
+    const ctx = pick(CONTEXTOS);
+    const a1 = ctx.tierra ? 1 : ri(1, 4), b1 = ctx.tierra ? 1 : ri(1, 4);
+    const a2 = ri(1, 4), b2 = ri(1, 4);
+    if (a1 * b2 - a2 * b1 === 0) continue;
+    const px = ri(...ctx.rP[0]), py = ri(...ctx.rP[1]);
+    const G = a1 * px + b1 * py, B = a2 * px + b2 * py;
+    const mx = ri(4, Math.max(4, Math.floor(px * 0.6)));
+    const my = ctx.minY() ? ri(4, Math.max(4, Math.floor(py * 0.6))) : 0;
+    if (mx >= px || my >= py) continue;
+    const R = [
+      { id: 'r1', a: a1, b: b1, c: G, s: '≤' }, { id: 'r2', a: a2, b: b2, c: B, s: '≤' },
+      { id: 'rx', a: 1, b: 0, c: mx, s: '≥' }, { id: 'ry', a: 0, b: 1, c: my, s: '≥' }
+    ];
+    const verts = [];
+    let enteros = true;
+    for (let i = 0; i < 4; i++) for (let j = i + 1; j < 4; j++) {
+      const p = cortes(R[i], R[j]);
+      if (!p || !R.every(r => cumpleR(r, p))) continue;
+      if (verts.some(q => Math.abs(q[0] - p[0]) < 1e-9 && Math.abs(q[1] - p[1]) < 1e-9)) continue;
+      if (!Number.isInteger(p[0] + 0) || !Number.isInteger(p[1] + 0)) enteros = false;
+      verts.push([p[0] + 0, p[1] + 0, [R[i].id, R[j].id]]);
+    }
+    if (!enteros || verts.length !== 4) continue;
+    if (!verts.some(v => v[0] === px && v[1] === py)) continue;
+    const [cx, cy] = ctx.coefs();
+    const zs = verts.map(v => cx * v[0] + cy * v[1]).sort((a, b) => b - a);
+    if (zs[0] - zs[1] < Math.max(1, zs[0] * 0.01)) continue;   // óptimo único y claro
+    const opt = verts.reduce((m, v) => (cx * v[0] + cy * v[1] > cx * m[0] + cy * m[1] ? v : m));
+    if (rand() < 0.7 && !(opt[0] === px && opt[1] === py)) continue;  // casi siempre el corte de r1 y r2
+    const par = pick(ctx.pares);
+    const firma = [ctx.id, a1, b1, a2, b2, px, py, mx, my, cx, cy].join(',');
+    if (firma === ultimaFirma) continue;
+    ultimaFirma = firma;
+    const e = { ctx, X: par[0], Y: par[1], a1, b1, a2, b2, G, B, mx, my, cx, cy, R, verts, opt, zmax: cx * opt[0] + cy * opt[1] };
+    e.candidatos = calcularCandidatos(e);
+    prepararEscala(e);   // descarta ejercicios con puntos de corte demasiado juntos para hacer clic
+    const c = e.candidatos;
+    let juntos = false;
+    for (let i = 0; i < c.length && !juntos; i++) for (let j = i + 1; j < c.length; j++)
+      if (Math.hypot(X(c[i][0]) - X(c[j][0]), Y(c[i][1]) - Y(c[j][1])) < 22) { juntos = true; break; }
+    if (juntos) continue;
+    return e;
+  }
+  throw new Error('No se pudo generar un ejercicio válido');
+}
+
+/* =========================================================
+   Plano
+   ========================================================= */
+const SVGNS = 'http://www.w3.org/2000/svg';
+const PL = 48, PT = 14, PW = 408, PH = 408;
+const svg = $('plano');
+let esc = null;
+function el(tag, attrs, padre, texto) {
+  const e = document.createElementNS(SVGNS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (texto !== undefined) e.textContent = texto;
+  if (padre) padre.appendChild(e);
+  return e;
+}
+const limpiar = id => { const g = $(id); while (g.firstChild) g.removeChild(g.firstChild); };
+function pasoBonito(max) {
+  for (const p of [1, 2, 5, 10, 20, 25, 50, 100, 200]) if (max / p <= 11) return p;
+  return 500;
+}
+function prepararEscala(e) {
+  const xs = [e.G / e.a1, e.B / e.a2, ...e.verts.map(v => v[0])];
+  const ys = [e.G / e.b1, e.B / e.b2, ...e.verts.map(v => v[1])];
+  const mX = Math.max(...xs) * 1.08, mY = Math.max(...ys) * 1.08;
+  const sx = pasoBonito(mX), sy = pasoBonito(mY);
+  esc = { xmax: Math.ceil(mX / sx) * sx, ymax: Math.ceil(mY / sy) * sy, sx, sy };
+}
+const X = x => PL + x / esc.xmax * PW;
+const Y = y => PT + PH - y / esc.ymax * PH;
+function dibujarCuadricula() {
+  limpiar('g-cuadricula');
+  const g = $('g-cuadricula');
+  for (let x = 0; x <= esc.xmax + 1e-9; x += esc.sx) {
+    el('line', { x1: X(x), y1: Y(0), x2: X(x), y2: Y(esc.ymax), stroke: x === 0 ? '#6B4F35' : '#E8DCC0', 'stroke-width': x === 0 ? 1.6 : 0.8 }, g);
+    el('text', { x: X(x), y: Y(0) + 15, 'text-anchor': 'middle', 'font-size': 10, fill: '#6B4F35', 'font-family': 'Lato, sans-serif' }, g, fmt(x));
+  }
+  for (let y = 0; y <= esc.ymax + 1e-9; y += esc.sy) {
+    el('line', { x1: X(0), y1: Y(y), x2: X(esc.xmax), y2: Y(y), stroke: y === 0 ? '#6B4F35' : '#E8DCC0', 'stroke-width': y === 0 ? 1.6 : 0.8 }, g);
+    if (y > 0) el('text', { x: X(0) - 6, y: Y(y) + 3.5, 'text-anchor': 'end', 'font-size': 10, fill: '#6B4F35', 'font-family': 'Lato, sans-serif' }, g, fmt(y));
+  }
+  el('text', { x: X(esc.xmax) - 4, y: Y(0) - 7, 'text-anchor': 'end', 'font-size': 14, fill: '#2C1F0E', 'font-family': 'Libre Baskerville, serif', 'font-style': 'italic' }, g, 'x');
+  el('text', { x: X(0) + 7, y: Y(esc.ymax) + 13, 'font-size': 14, fill: '#2C1F0E', 'font-family': 'Libre Baskerville, serif', 'font-style': 'italic' }, g, 'y');
+}
+const COLOR = { r1: '#A0522D', r2: '#3F6E8C', rx: '#8A6D2F', ry: '#8A6D2F' };
+function dibujarRecta(r) {
+  const g = $('g-rectas');
+  let p1, p2;
+  if (r.b === 0) { p1 = [r.c / r.a, -esc.ymax]; p2 = [r.c / r.a, 2 * esc.ymax]; }
+  else { p1 = [-esc.xmax, (r.c + r.a * esc.xmax) / r.b]; p2 = [2 * esc.xmax, (r.c - 2 * r.a * esc.xmax) / r.b]; }
+  el('line', { x1: X(p1[0]), y1: Y(p1[1]), x2: X(p2[0]), y2: Y(p2[1]), stroke: COLOR[r.id], 'stroke-width': (r.id === 'r1' || r.id === 'r2') ? 2.4 : 2, 'stroke-dasharray': (r.id === 'rx' || r.id === 'ry') ? '8 5' : 'none' }, g);
+}
+function dibujarRestricciones() {
+  limpiar('g-rectas');
+  ex.R.forEach(r => { if (!(r.id === 'ry' && r.c === 0)) dibujarRecta(r); });
+  const ley = [
+    `<span><i class="l" style="border-color:${COLOR.r1}"></i>${M(restr(ex.a1, ex.b1, ex.G, '≤'))}</span>`,
+    `<span><i class="l" style="border-color:${COLOR.r2}"></i>${M(restr(ex.a2, ex.b2, ex.B, '≤'))}</span>`,
+    `<span><i class="l" style="border-color:${COLOR.rx};border-top-style:dashed"></i>${M(V('x') + ' ≥ ' + ex.mx)}</span>`
+  ];
+  if (ex.my > 0) ley.push(`<span><i class="l" style="border-color:${COLOR.ry};border-top-style:dashed"></i>${M(V('y') + ' ≥ ' + ex.my)}</span>`);
+  $('leyenda').innerHTML = ley.join('');
+}
+function calcularCandidatos(e) {
+  const lineas = [
+    { id: 'r1', a: e.a1, b: e.b1, c: e.G }, { id: 'r2', a: e.a2, b: e.b2, c: e.B },
+    { id: 'rx', a: 1, b: 0, c: e.mx }, { id: 'ry', a: 0, b: 1, c: e.my },
+    { id: 'ejeX', a: 0, b: 1, c: 0 }, { id: 'ejeY', a: 1, b: 0, c: 0 }
+  ];
+  const out = [];
+  for (let i = 0; i < lineas.length; i++) for (let j = i + 1; j < lineas.length; j++) {
+    const p = cortes(lineas[i], lineas[j]);
+    if (!p || p[0] < -1e-9 || p[1] < -1e-9) continue;
+    const q = [Math.round(p[0] * 1000) / 1000 + 0, Math.round(p[1] * 1000) / 1000 + 0];
+    if (q[0] === 0 && q[1] === 0) continue;
+    if (out.some(o => Math.abs(o[0] - q[0]) < 1e-6 && Math.abs(o[1] - q[1]) < 1e-6)) continue;
+    out.push(q);
+  }
+  return out;
+}
+const LETRAS = 'ABCDEFGHIJ';
+function dibujarCandidatos() {
+  limpiar('g-candidatos'); limpiar('g-etiquetas');
+  const g = $('g-candidatos'), ge = $('g-etiquetas');
+  const enPaso3 = pasoActivo() === 3 || ex.estado[3].comprobado;
+  if (!enPaso3) return;
+  ex.candidatos.forEach((c, i) => {
+    const k = ex.sel.indexOf(i);
+    if (k < 0) {
+      if (pasoActivo() === 3) el('circle', { cx: X(c[0]), cy: Y(c[1]), r: 5, fill: '#FDFAF3', stroke: '#6B4F35', 'stroke-width': 1.3, opacity: .85 }, g);
+    } else {
+      el('circle', { cx: X(c[0]), cy: Y(c[1]), r: 7, fill: '#A0522D', stroke: '#FDFAF3', 'stroke-width': 2 }, g);
+      el('text', { x: X(c[0]) + 9, y: Y(c[1]) - 8, 'font-size': 13, 'font-weight': 700, fill: '#7B3B1E', 'font-family': 'Libre Baskerville, serif', 'paint-order': 'stroke', stroke: '#FDFAF3', 'stroke-width': 3.5 }, ge, LETRAS[k]);
+    }
+  });
+}
+function dibujarRegion() {
+  limpiar('g-region');
+  const vs = ex.verts.map(v => [v[0], v[1]]);
+  const cx = vs.reduce((s, v) => s + v[0], 0) / vs.length, cy = vs.reduce((s, v) => s + v[1], 0) / vs.length;
+  vs.sort((p, q) => Math.atan2(p[1] - cy, p[0] - cx) - Math.atan2(q[1] - cy, q[0] - cx));
+  el('polygon', { points: vs.map(v => X(v[0]) + ',' + Y(v[1])).join(' '), fill: 'url(#rayado)', stroke: '#2E6B3E', 'stroke-width': 1.2 }, $('g-region'));
+}
+function dibujarSolucionVertices() {
+  limpiar('g-candidatos'); limpiar('g-etiquetas');
+  const g = $('g-candidatos'), ge = $('g-etiquetas');
+  ex.verts.forEach(v => {
+    el('circle', { cx: X(v[0]), cy: Y(v[1]), r: 5.5, fill: '#2E6B3E', stroke: '#FDFAF3', 'stroke-width': 1.8 }, g);
+    const dx = v[0] > esc.xmax * 0.7 ? -8 : 8;
+    el('text', { x: X(v[0]) + dx, y: Y(v[1]) - 8, 'text-anchor': dx < 0 ? 'end' : 'start', 'font-size': 10.5, fill: '#2E6B3E', 'font-family': 'Libre Baskerville, serif', 'paint-order': 'stroke', stroke: '#FDFAF3', 'stroke-width': 3 }, ge, `(${fmt(v[0])}, ${fmt(v[1])})`);
+  });
+}
+function dibujarNivel() {
+  limpiar('g-nivel');
+  const { cx, cy, zmax, opt } = ex, g = $('g-nivel');
+  const y = x => (zmax - cx * x) / cy;
+  el('line', { x1: X(-esc.xmax), y1: Y(y(-esc.xmax)), x2: X(2 * esc.xmax), y2: Y(y(2 * esc.xmax)), stroke: '#B8892E', 'stroke-width': 2, 'stroke-dasharray': '3 4' }, g);
+  el('circle', { cx: X(opt[0]), cy: Y(opt[1]), r: 9, fill: 'none', stroke: '#B8892E', 'stroke-width': 2.5 }, g);
+  $('leyenda').insertAdjacentHTML('beforeend', `<span><i class="l" style="border-color:#B8892E;border-top-style:dotted"></i>Recta de nivel ${M(V('Z') + ' = ' + miles(zmax))}</span>`);
+}
+function aMat(evt) {
+  const pt = svg.createSVGPoint(); pt.x = evt.clientX; pt.y = evt.clientY;
+  return pt.matrixTransform(svg.getScreenCTM().inverse());
+}
+svg.addEventListener('click', evt => {
+  if (pasoActivo() !== 3 || ex.estado[3].comprobado) return;
+  const p = aMat(evt);
+  let mejor = -1, dmin = 16;
+  ex.candidatos.forEach((c, i) => { const d = Math.hypot(X(c[0]) - p.x, Y(c[1]) - p.y); if (d < dmin) { dmin = d; mejor = i; } });
+  if (mejor < 0) return;
+  const k = ex.sel.indexOf(mejor);
+  if (k >= 0) { ex.sel.splice(k, 1); ex.coords.splice(k, 1); }
+  else { ex.sel.push(mejor); ex.coords.push(['', '']); }
+  guardarCoordsDesdeDOM(); dibujarCandidatos(); renderTablaVertices(); limpiarFb(3);
+});
+
+/* =========================================================
+   Pasos
+   ========================================================= */
+let ex = null;
+const PASOS = { 1: 'Función objetivo', 2: 'Restricciones', 3: 'Región factible y vértices', 4: 'Solución óptima' };
+const PUNTOS_PASO = 2.5;
+const OPC = s => '<option value="">?</option>' + s.map(x => `<option value="${x}">${x}</option>`).join('');
+function htmlPaso(n) {
+  if (n === 1) return `
+    <p class="instr">Escribe la función que hay que optimizar y di si se maximiza o se minimiza.</p>
+    <div class="fila-forma"><i>Z</i> = <input class="num ancho" id="fo-a" aria-label="coeficiente de x en Z"> <i>x</i> + <input class="num ancho" id="fo-b" aria-label="coeficiente de y en Z"> <i>y</i>
+      <select id="fo-obj" aria-label="maximizar o minimizar"><option value="">¿qué se busca?</option><option value="max">→ maximizar</option><option value="min">→ minimizar</option></select></div>
+    <div class="acciones" style="margin-top:10px"><button class="btn-primario" data-comprobar="1">Comprobar</button></div>`;
+  if (n === 2) {
+    let filas = '';
+    for (let i = 0; i < 5; i++) filas += `
+      <div class="rest" id="rest-${i}">
+        <span class="idx">${i + 1}.</span>
+        <div class="fila-forma"><input class="num" id="r${i}-a" aria-label="restricción ${i + 1}, coeficiente de x"> <i>x</i> + <input class="num" id="r${i}-b" aria-label="restricción ${i + 1}, coeficiente de y"> <i>y</i>
+          <select class="signo" id="r${i}-s" aria-label="restricción ${i + 1}, signo">${OPC(['≤', '≥', '<', '>', '='])}</select> <input class="num ancho" id="r${i}-c" aria-label="restricción ${i + 1}, término independiente"></div>
+        <div class="prueba-fila">¿Cumple el punto <span class="pp" id="r${i}-pp">(0, 0)</span> esta restricción?
+          <select id="r${i}-cumple" aria-label="restricción ${i + 1}, cumple el punto de prueba"><option value="">Elige…</option><option value="si">Sí</option><option value="no">No</option></select></div>
+        <div class="marca" id="r${i}-marca"></div>
+      </div>`;
+    return `
+    <p class="instr">Escribe una restricción por fila, en la forma <span class="mat"><i>a</i><i>x</i> + <i>b</i><i>y</i> ≤ <i>c</i></span>. Si una incógnita no aparece, su coeficiente es 0. Deja vacías las filas que no uses.</p>
+    ${filas}
+    <p class="nota-in">El punto de prueba indica qué semiplano corresponde a cada restricción.</p>
+    <div class="acciones"><button class="btn-primario" data-comprobar="2">Comprobar</button></div>`;
+  }
+  if (n === 3) return `
+    <p class="instr">En el plano, haz clic en los puntos de corte que sean <b>vértices de la región factible</b> (otro clic lo quita). Después escribe sus coordenadas resolviendo el sistema de las dos rectas que se cortan.</p>
+    <div id="tabla-vertices"></div>
+    <div class="acciones"><button class="btn-primario" data-comprobar="3">Comprobar</button></div>`;
+  return `
+    <p class="instr">Evalúa <i>Z</i> en cada vértice y completa la conclusión.</p>
+    <div class="sol-frase">El beneficio máximo se obtiene con
+      <input class="num ancho" id="s-x" aria-label="valor óptimo de x"> <span id="s-ux"></span> e
+      <input class="num ancho" id="s-y" aria-label="valor óptimo de y"> <span id="s-uy"></span>,
+      y asciende a <input class="num ancho" id="s-z" aria-label="beneficio máximo"> €.</div>
+    <div class="acciones"><button class="btn-primario" data-comprobar="4">Comprobar</button></div>`;
+}
+function renderEjercicio() {
+  $('enunciado').innerHTML = `<span class="contexto">${ex.ctx.nombre}</span>` + ex.ctx.texto(ex);
+  $('pasos').innerHTML = [1, 2, 3, 4].map(n => `
+    <div class="paso bloqueado" id="paso-${n}">
+      <h3><span class="n">${n}</span>${PASOS[n]}<span class="pts" id="pts-${n}">2,5 pts</span></h3>
+      ${htmlPaso(n)}
+      <div class="fb" id="fb-${n}" aria-live="polite"></div>
+    </div>`).join('');
+  $('s-ux').textContent = `${ex.ctx.unidad[1]} de ${ex.X}`;
+  $('s-uy').textContent = `${ex.ctx.unidad[1]} de ${ex.Y}`;
+  document.querySelectorAll('[data-comprobar]').forEach(b => b.addEventListener('click', () => comprobar(+b.dataset.comprobar)));
+  for (let i = 0; i < 5; i++) $('r' + i + '-c').addEventListener('input', () => actualizarPuntoPrueba(i));
+  prepararEscala(ex); dibujarCuadricula();
+  ['g-region', 'g-rectas', 'g-nivel', 'g-candidatos', 'g-etiquetas'].forEach(limpiar);
+  $('leyenda').innerHTML = '';
+  actualizarPasos();
+}
+function puntoPrueba(c) { return c === 0 ? [1, 1] : [0, 0]; }
+function actualizarPuntoPrueba(i) {
+  const c = leerNum($('r' + i + '-c').value);
+  const p = puntoPrueba(c === null ? 1 : c);
+  $('r' + i + '-pp').textContent = `(${p[0]}, ${p[1]})`;
+}
+function pasoActivo() {
+  for (let n = 1; n <= 4; n++) if (!ex.estado[n].comprobado) return n;
+  return 0;
+}
+function actualizarPasos() {
+  const act = pasoActivo();
+  for (let n = 1; n <= 4; n++) {
+    const d = $('paso-' + n), st = ex.estado[n];
+    const desbloqueado = n === 1 || ex.estado[n - 1].comprobado;
+    d.classList.toggle('bloqueado', !desbloqueado);
+    d.classList.toggle('activo', n === act);
+    d.classList.toggle('hecho', st.comprobado && st.correcto);
+    d.classList.toggle('fallado', st.comprobado && !st.correcto);
+    d.querySelectorAll('input, select, button').forEach(c => { c.disabled = !desbloqueado || (st.comprobado && (st.correcto || n === 3)); });
+    const pts = $('pts-' + n);
+    if (!st.comprobado) { pts.textContent = '2,5 pts'; pts.className = 'pts'; }
+    else { pts.textContent = `${fmt(st.puntos)} / 2,5`; pts.className = 'pts ' + (st.puntos >= PUNTOS_PASO ? 'ganado' : 'perdido'); }
+  }
+  svg.classList.toggle('interactivo', act === 3);
+  const ayudas = {
+    1: 'El plano se completará cuando escribas las restricciones.',
+    2: 'Al comprobar las restricciones se dibujarán sus rectas.',
+    3: 'Haz clic en los puntos de corte que sean vértices de la región factible.',
+    4: 'Evalúa la función objetivo en los vértices.',
+    0: 'En verde, la región factible; en dorado, la recta de nivel que pasa por el óptimo.'
+  };
+  $('graf-ayuda').textContent = ayudas[act];
+  if (act === 3) { renderTablaVertices(); dibujarCandidatos(); }
+  actualizarMarcador();
+}
+
+/* ---------- utilidades ---------- */
+function leerNum(str) {
+  if (str == null) return null;
+  str = String(str).trim().replace(/[−–]/g, '-').replace(/\s+/g, '').replace(',', '.');
+  if (!/^[-+]?\d+(\.\d+)?$/.test(str)) return null;
+  return parseFloat(str);
+}
+const limpiarFb = n => { const f = $('fb-' + n); if (f) f.innerHTML = ''; };
+const fb = (n, tipo, html) => { $('fb-' + n).innerHTML = `<div class="feedback-${tipo}">${html}</div>`; };
+function nombreValido() {
+  const n = $('nombre');
+  if (n.value.trim()) { n.classList.remove('falta'); $('aviso-nombre').classList.remove('visible'); return true; }
+  n.classList.add('falta'); $('aviso-nombre').classList.add('visible'); n.focus(); return false;
+}
+$('nombre').addEventListener('input', () => { if ($('nombre').value.trim()) { $('nombre').classList.remove('falta'); $('aviso-nombre').classList.remove('visible'); } });
+
+/* ---------- Paso 1 ---------- */
+function validar1() {
+  const a = leerNum($('fo-a').value), b = leerNum($('fo-b').value), obj = $('fo-obj').value;
+  if (a === null || b === null || !obj) return { ok: null, html: 'Escribe los dos coeficientes y elige si se maximiza o se minimiza.' };
+  const correcta = M(V('Z') + ' = ' + expr(ex.cx, ex.cy));
+  const coefOk = a === ex.cx && b === ex.cy;
+  if (coefOk && obj === 'max') return { ok: true, html: `<b>Correcto.</b> ${correcta}: cada ${ex.ctx.unidad[0]} de ${ex.X} aporta ${miles(ex.cx)} € y cada una de ${ex.Y}, ${miles(ex.cy)} €. Se busca el beneficio <b>máximo</b>.` };
+  const motivos = [];
+  if (a === ex.cy && b === ex.cx) motivos.push(`Has intercambiado los coeficientes: ${V('x')} son las ${ex.ctx.unidad[1]} de ${ex.X}, así que su coeficiente es el beneficio de ${ex.X}.`);
+  else if (!coefOk) motivos.push('Los coeficientes de la función objetivo son los <b>beneficios unitarios</b>, no los recursos que consume cada unidad.');
+  if (obj === 'min') motivos.push('Se pide el beneficio <b>máximo</b>: la función objetivo se maximiza.');
+  return { ok: false, html: `<b>Incorrecto.</b> ${motivos.join(' ')}<div class="solucion">La función objetivo es ${correcta}, que hay que maximizar.</div>` };
+}
+
+/* ---------- Paso 2 ---------- */
+const GIRA = { '≤': '≥', '≥': '≤', '<': '>', '>': '<', '=': '=' };
+function proporcional(f, r) {   // f = fila del alumno, r = restricción {a,b,c}. Devuelve k (factor) o 0
+  const k = r.a !== 0 ? f.a / r.a : f.b / r.b;
+  if (k === 0 || !isFinite(k)) return 0;
+  return Math.abs(f.a - k * r.a) < 1e-9 && Math.abs(f.b - k * r.b) < 1e-9 && Math.abs(f.c - k * r.c) < 1e-9 ? k : 0;
+}
+function clasificar(f) {
+  for (const r of ex.R) {
+    const k = proporcional(f, r);
+    if (!k) continue;
+    const esperado = k > 0 ? r.s : GIRA[r.s];
+    if (f.s === esperado) return { cat: r.id };
+    const estricta = k > 0 ? (r.s === '≤' ? '<' : '>') : (r.s === '≤' ? '>' : '<');
+    if (f.s === estricta) return { cat: null, recta: true, motivo: 'Usa ≤ o ≥, no una desigualdad estricta: el recurso puede agotarse justo y el mínimo puede cumplirse justo.' };
+    if (f.s === '=') return { cat: null, recta: true, motivo: 'No es una igualdad: no hace falta gastar todo el recurso ni quedarse exactamente en el mínimo.' };
+    return { cat: null, recta: true, motivo: k < 0 ? 'Al multiplicar por un número negativo hay que cambiar el sentido de la desigualdad.' : 'La recta es la correcta, pero el sentido de la desigualdad no.' };
+  }
+  if (f.s === '≥' && f.c === 0 && ((f.a > 0 && f.b === 0) || (f.a === 0 && f.b > 0))) return { cat: 'redundante' };
+  return { cat: null, motivo: 'No corresponde a ninguna condición del enunciado. Revisa qué consume cada unidad de cada tipo.' };
+}
+function validar2() {
+  const filas = [];
+  for (let i = 0; i < 5; i++) {
+    const vals = ['a', 'b', 'c'].map(k => $(`r${i}-${k}`).value.trim()), s = $(`r${i}-s`).value, cumple = $(`r${i}-cumple`).value;
+    const vacia = vals.every(v => v === '') && !s;
+    if (vacia) continue;
+    const [a, b, c] = vals.map(leerNum);
+    if (a === null || b === null || c === null || !s) return { ok: null, html: `Completa la fila ${i + 1}: dos coeficientes, el signo y el término independiente (o déjala vacía).` };
+    if (a === 0 && b === 0) return { ok: null, html: `En la fila ${i + 1} los dos coeficientes son 0: eso no es una restricción.` };
+    if (!cumple) return { ok: null, html: `Responde en la fila ${i + 1} si el punto de prueba cumple la restricción.` };
+    filas.push({ i, a, b, c, s, cumple });
+  }
+  if (!filas.length) return { ok: null, html: 'Escribe al menos una restricción.' };
+  const necesarias = ex.R;
+  const hechas = {}, marcas = {};
+  let filasMal = 0;
+  filas.forEach(f => {
+    const cl = clasificar(f);
+    const p = puntoPrueba(f.c);
+    const valor = f.a * p[0] + f.b * p[1];
+    const cumpleReal = { '≤': valor <= f.c, '≥': valor >= f.c, '<': valor < f.c, '>': valor > f.c, '=': valor === f.c }[f.s];
+    const pruebaOk = (f.cumple === 'si') === cumpleReal;
+    if (cl.cat && pruebaOk) {
+      if (cl.cat !== 'redundante') hechas[cl.cat] = true;
+      marcas[f.i] = { ok: true, txt: cl.cat === 'redundante' ? 'Correcta, aunque ya queda incluida en otra restricción.' : '' };
+    } else if (cl.cat) {
+      marcas[f.i] = { ok: false, txt: `La restricción está bien, pero el punto (${p[0]}, ${p[1]}) ${cumpleReal ? 'sí' : 'no'} la cumple: ${M(`${P(f.a)}·${p[0]} + ${P(f.b)}·${p[1]} = ${N(valor)}`)}, y ${M(`${N(valor)} ${f.s} ${N(f.c)}`)} es ${cumpleReal ? 'verdadero' : 'falso'}.` };
+    } else {
+      if (!cl.recta) filasMal++;   // si la recta es la buena, ya cuenta como restricción que falta
+      marcas[f.i] = { ok: false, txt: cl.motivo };
+    }
+  });
+  const faltan = necesarias.filter(r => !hechas[r.id]);
+  const penal = faltan.length + filasMal;
+  for (let i = 0; i < 5; i++) {
+    const d = $('rest-' + i), m = marcas[i];
+    d.classList.toggle('bien', !!m && m.ok); d.classList.toggle('mal', !!m && !m.ok);
+    $(`r${i}-marca`).innerHTML = m ? m.txt : '';
+  }
+  const lista = '<ul>' + necesarias.map(r => {
+    const txt = r.id === 'ry' && r.c === 0 ? `${M(V('y') + ' ≥ 0')}: no se pueden hacer cantidades negativas`
+      : r.id === 'r1' ? `${M(restr(r.a, r.b, r.c, '≤'))}: ${ex.ctx.tierra ? 'hectáreas disponibles' : ex.ctx.id === 'rutas' ? 'guías disponibles' : 'harina disponible'}`
+      : r.id === 'r2' ? `${M(restr(r.a, r.b, r.c, '≤'))}: ${ex.ctx.tierra ? 'jornales de riego' : ex.ctx.id === 'rutas' ? 'autobuses disponibles' : 'horas de horno'}`
+      : `${M((r.id === 'rx' ? V('x') : V('y')) + ' ≥ ' + r.c)}: mínimo exigido`;
+    return `<li>${hechas[r.id] ? '✓ ' : '✗ '}${txt}</li>`;
+  }).join('') + '</ul>';
+  const puntos = Math.max(0, PUNTOS_PASO - 0.5 * penal);
+  if (penal === 0) return { ok: true, puntos, html: `<b>Correcto.</b> Las ${necesarias.length} restricciones del problema:${lista}` };
+  const partes = [];
+  if (faltan.length) partes.push(`Te ${faltan.length === 1 ? 'falta o está mal 1 restricción' : `faltan o están mal ${faltan.length} restricciones`}`);
+  if (filasMal) partes.push(`${filasMal === 1 ? 'hay 1 fila' : `hay ${filasMal} filas`} que no corresponde${filasMal === 1 ? '' : 'n'} a ninguna condición`);
+  return { ok: false, puntos, html: `<b>Incorrecto.</b> ${partes.join(' y ')} (−0,5 cada una). El motivo de cada fila aparece bajo ella.<div class="solucion">Restricciones del problema:${lista}${ex.my === 0 ? '<span style="font-size:.85rem">(No hace falta escribir <i>x</i> ≥ 0: ya la incluye el mínimo de <i>x</i>.)</span>' : ''}</div>` };
+}
+
+/* ---------- Paso 3 ---------- */
+function guardarCoordsDesdeDOM() {
+  ex.coords = ex.coords.map((c, k) => {
+    const ix = $('v' + k + '-x'), iy = $('v' + k + '-y');
+    return ix ? [ix.value, iy.value] : c;
+  });
+}
+function renderTablaVertices() {
+  const cont = $('tabla-vertices'); if (!cont) return;
+  if (!ex.sel.length) { cont.innerHTML = '<p class="vacio">Aún no has marcado ningún vértice en el plano.</p>'; return; }
+  const bloqueado = ex.estado[3].comprobado;
+  cont.innerHTML = '<table class="vert"><tr><th>Vértice</th><th><i>x</i></th><th><i>y</i></th></tr>' +
+    ex.sel.map((_, k) => `<tr><td>${LETRAS[k]}</td><td><input class="num" id="v${k}-x" aria-label="x del vértice ${LETRAS[k]}" value="${ex.coords[k][0]}" ${bloqueado ? 'disabled' : ''}></td><td><input class="num" id="v${k}-y" aria-label="y del vértice ${LETRAS[k]}" value="${ex.coords[k][1]}" ${bloqueado ? 'disabled' : ''}></td></tr>`).join('') + '</table>';
+  cont.querySelectorAll('input').forEach(i => i.addEventListener('input', () => { guardarCoordsDesdeDOM(); }));
+}
+function nombreRecta(id) {
+  return { r1: M(restr(ex.a1, ex.b1, ex.G, '=')), r2: M(restr(ex.a2, ex.b2, ex.B, '=')), rx: M(V('x') + ' = ' + ex.mx), ry: M(V('y') + ' = ' + ex.my) }[id];
+}
+function validar3() {
+  guardarCoordsDesdeDOM();
+  if (!ex.sel.length) return { ok: null, html: 'Marca en el plano los vértices de la región factible.' };
+  const tipos = ex.coords.map(c => [leerNum(c[0]), leerNum(c[1])]);
+  if (tipos.some(c => c[0] === null || c[1] === null)) return { ok: null, html: 'Escribe las coordenadas de todos los vértices marcados.' };
+  const esVert = p => ex.verts.find(v => Math.abs(v[0] - p[0]) < 1e-6 && Math.abs(v[1] - p[1]) < 1e-6);
+  const errores = [];
+  ex.sel.forEach((ci, k) => {
+    const c = ex.candidatos[ci], v = esVert(c), L = LETRAS[k];
+    $('v' + k + '-x').classList.remove('bien', 'mal'); $('v' + k + '-y').classList.remove('bien', 'mal');
+    if (!v) {
+      const viola = ex.R.filter(r => !cumpleR(r, c));
+      errores.push(`El punto ${L} no es vértice: está fuera de la región factible porque no cumple ${viola.map(r => M(restr(r.a, r.b, r.c, r.s))).join(' ni ')}.`);
+      return;
+    }
+    const okC = Math.abs(tipos[k][0] - v[0]) < 1e-6 && Math.abs(tipos[k][1] - v[1]) < 1e-6;
+    $('v' + k + '-x').classList.add(Math.abs(tipos[k][0] - v[0]) < 1e-6 ? 'bien' : 'mal');
+    $('v' + k + '-y').classList.add(Math.abs(tipos[k][1] - v[1]) < 1e-6 ? 'bien' : 'mal');
+    if (!okC) errores.push(`El vértice ${L} está bien elegido, pero sus coordenadas son (${fmt(v[0])}, ${fmt(v[1])}): es el corte de ${nombreRecta(v[2][0])} con ${nombreRecta(v[2][1])}; resuelve ese sistema.`);
+  });
+  const marcados = ex.sel.map(ci => ex.candidatos[ci]);
+  ex.verts.forEach(v => {
+    if (!marcados.some(c => Math.abs(c[0] - v[0]) < 1e-6 && Math.abs(c[1] - v[1]) < 1e-6))
+      errores.push(`Falta el vértice de corte de ${nombreRecta(v[2][0])} con ${nombreRecta(v[2][1])}.`);
+  });
+  const lista = ex.verts.map(v => `(${fmt(v[0])}, ${fmt(v[1])})`).join(', ');
+  if (!errores.length) return { ok: true, html: `<b>Correcto.</b> La región factible es el cuadrilátero de vértices ${lista}: en cada uno se cortan dos de las rectas frontera.` };
+  return { ok: false, html: `<b>Incorrecto.</b><ul>${errores.map(e => `<li>${e}</li>`).join('')}</ul><div class="solucion">Vértices de la región factible: ${lista}. Recuerda que los cortes con los ejes solo son vértices si cumplen <b>todas</b> las restricciones.</div>` };
+}
+
+/* ---------- Paso 4 ---------- */
+function tablaZ() {
+  return '<table><tr><th>Vértice</th><th><i>Z</i> = ' + expr(ex.cx, ex.cy) + '</th></tr>' + ex.verts.map(v => {
+    const z = ex.cx * v[0] + ex.cy * v[1], esOpt = v === ex.opt;
+    return `<tr class="${esOpt ? 'opt' : ''}"><td>(${fmt(v[0])}, ${fmt(v[1])})</td><td>${miles(ex.cx)}·${fmt(v[0])} + ${miles(ex.cy)}·${fmt(v[1])} = ${miles(z)} €</td></tr>`;
+  }).join('') + '</table>';
+}
+function validar4() {
+  const x = leerNum($('s-x').value), y = leerNum($('s-y').value), z = leerNum($('s-z').value.replace(/\./g, ''));
+  if (x === null || y === null || z === null) return { ok: null, html: 'Completa los tres huecos con números.' };
+  const { opt, zmax, cx, cy } = ex;
+  const xyOk = x === opt[0] && y === opt[1];
+  const zOk = z === zmax;
+  const conclusion = `El beneficio máximo es <b>${miles(zmax)} €</b>, con ${fmt(opt[0])} ${ex.ctx.unidad[1]} de ${ex.X} y ${fmt(opt[1])} de ${ex.Y}.`;
+  if (xyOk && zOk) return { ok: true, html: `<b>Correcto.</b> ${conclusion}<div class="solucion">${tablaZ()}</div>` };
+  let motivo;
+  const vEleg = ex.verts.find(v => v[0] === x && v[1] === y);
+  if (xyOk) motivo = `El vértice es el correcto, pero el valor de ${V('Z')} no: ${M(`${miles(cx)}·${fmt(x)} + ${miles(cy)}·${fmt(y)} = ${miles(zmax)}`)}.`;
+  else if (x === opt[1] && y === opt[0]) motivo = `Has intercambiado ${V('x')} e ${V('y')}.`;
+  else if (vEleg) motivo = `(${fmt(x)}, ${fmt(y)}) es un vértice, pero no el que da el mayor valor de ${V('Z')}: hay que evaluar la función en <b>todos</b> los vértices y quedarse con el mayor.`;
+  else motivo = `(${fmt(x)}, ${fmt(y)}) no es un vértice de la región factible: el óptimo de un problema lineal se alcanza siempre en un vértice.`;
+  return { ok: false, html: `<b>Incorrecto.</b> ${motivo}<div class="solucion">${tablaZ()}${conclusion}</div>` };
+}
+
+/* ---------- Corrección ---------- */
+const VALIDAR = { 1: validar1, 2: validar2, 3: validar3, 4: validar4 };
+function comprobar(n) {
+  if (!ex) return;
+  const st = ex.estado[n];
+  if (n > 1 && !ex.estado[n - 1].comprobado) return;
+  if (st.comprobado && (st.correcto || n === 3)) return;
+  if (!nombreValido()) return;
+  const r = VALIDAR[n]();
+  if (r.ok === null) { fb(n, 'aviso', r.html); return; }
+  fb(n, r.ok ? 'correcto' : 'incorrecto', r.html);
+  st.intentos++;
+  if (!st.comprobado) {
+    st.comprobado = true;
+    st.puntos = r.puntos !== undefined ? r.puntos : (r.ok ? PUNTOS_PASO : 0);
+    st.primera = r.ok;
+    if (n === 2) dibujarRestricciones();
+    if (n === 3) { dibujarRegion(); dibujarSolucionVertices(); }
+    if (n === 4) { dibujarNivel(); }
+  } else if (r.ok && !st.correcto) {
+    fb(n, 'correcto', r.html + '<div class="solucion" style="font-size:.85rem">Corregido. Este paso ya se puntuó en la primera comprobación.</div>');
+  }
+  st.correcto = r.ok;
+  actualizarPasos();
+  if (n === 3 && st.comprobado) { dibujarSolucionVertices(); }
+}
+function calcularNota() {
+  const s = [1, 2, 3, 4].reduce((acc, n) => acc + ex.estado[n].puntos, 0);
+  return Math.round(Math.min(10, Math.max(0, s)) * 100) / 100;
+}
+function actualizarMarcador() {
+  const nota = calcularNota();
+  $('marcador-nota').textContent = fmt(nota);
+  $('marcador-pasos').textContent = [1, 2, 3, 4].filter(n => ex.estado[n].comprobado).length;
+  $('ficha').classList.toggle('completa', nota >= 10);
+}
+
+/* =========================================================
+   Ejercicio nuevo (con aviso) e informe
+   ========================================================= */
+$('pasos').addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  const paso = e.target.closest('.paso'); if (!paso) return;
+  e.preventDefault(); comprobar(+paso.id.split('-')[1]);
+});
+const historial = { abandonados: 0, completados: 0, inicio: Date.now() };
+function nuevoEjercicio() {
+  if (ex) {
+    const todos = [1, 2, 3, 4].every(n => ex.estado[n].comprobado);
+    if (todos) historial.completados++;
+    else if ([1, 2, 3, 4].some(n => ex.estado[n].comprobado)) historial.abandonados++;
+  }
+  ex = generar();
+  ex.estado = {};
+  for (let n = 1; n <= 4; n++) ex.estado[n] = { comprobado: false, correcto: false, puntos: 0, intentos: 0, primera: false };
+  ex.sel = []; ex.coords = [];
+  renderEjercicio();
+}
+$('btn-nuevo').addEventListener('click', () => {
+  const algo = [1, 2, 3, 4].some(n => ex.estado[n].comprobado);
+  if (!algo) { nuevoEjercicio(); return; }
+  $('aviso-texto').innerHTML = `Tu nota actual es <b>${fmt(calcularNota())}</b>. Si empiezas otro ejercicio, la nota vuelve a 0 y solo contará el nuevo. ${[1, 2, 3, 4].every(n => ex.estado[n].comprobado) ? '' : 'Este ejercicio quedará registrado como <b>abandonado</b> en el informe.'}`;
+  $('overlay-aviso').classList.add('visible');
+  $('aviso-cancelar').focus();
+});
+$('aviso-cancelar').addEventListener('click', () => $('overlay-aviso').classList.remove('visible'));
+$('aviso-aceptar').addEventListener('click', () => {
+  $('overlay-aviso').classList.remove('visible');
+  nuevoEjercicio();
+  $('enunciado').scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+
+function colorNota(n) {
+  const f = Math.floor(n + 1e-9);
+  if (f >= 10) return ['#1a7a1a', '#fff'];
+  if (f === 9) return ['#6dbf6d', '#fff'];
+  if (f === 8) return ['#1a4f8a', '#fff'];
+  if (f === 7) return ['#5b9bd5', '#fff'];
+  if (f === 6) return ['#c05c00', '#fff'];
+  if (f === 5) return ['#f5a623', '#000'];
+  return ['#c0392b', '#fff'];
+}
+const dos = n => String(n).padStart(2, '0');
+$('btn-finalizar').addEventListener('click', () => {
+  if (!nombreValido()) return;
+  const nota = calcularNota(), [bg, fg] = colorNota(nota), ahora = new Date();
+  const min = Math.ceil((Date.now() - historial.inicio) / 60000);
+  const filas = [1, 2, 3, 4].map(n => {
+    const st = ex.estado[n];
+    const estado = !st.comprobado ? 'Sin comprobar' : st.primera ? 'Bien a la primera' : st.correcto ? 'Corregido después' : 'Con errores';
+    return `<tr><td>${n}. ${PASOS[n]}</td><td>${estado}</td><td>${st.intentos}</td><td>${fmt(st.puntos)} / 2,5</td></tr>`;
+  }).join('');
+  const modal = $('modal');
+  modal.style.background = bg; modal.style.color = fg;
+  modal.classList.toggle('oscuro-txt', fg === '#000');
+  modal.innerHTML = `
+    <p class="m-titulo">${document.querySelector('.titulo-ficha').textContent}</p>
+    <p class="m-sub">${document.querySelector('.subtitulo').textContent}</p>
+    <hr>
+    <div class="m-inf">Informe de la actividad</div>
+    <div class="m-nombre">${$('nombre').value.trim().replace(/[<>&]/g, '')}</div>
+    <div class="m-nota">${fmt(nota)}<span style="font-size:1.1rem; font-weight:400"> / 10</span></div>
+    <div class="m-datos">
+      <span>Fecha: ${dos(ahora.getDate())}/${dos(ahora.getMonth() + 1)}/${ahora.getFullYear()}</span>
+      <span>Hora: ${dos(ahora.getHours())}:${dos(ahora.getMinutes())}:${dos(ahora.getSeconds())}</span>
+      <span>Tiempo empleado: ${dos(Math.floor(min / 60))}:${dos(min % 60)}</span>
+    </div>
+    <div class="m-datos"><span>Ejercicio: ${ex.ctx.nombre}</span></div>
+    <h4>Desglose por paso (ejercicio actual)</h4>
+    <table><tr><th>Paso</th><th>Estado</th><th>Comprobaciones</th><th>Puntos</th></tr>${filas}</table>
+    <div class="m-datos"><span>Ejercicios anteriores completados: <b>${historial.completados}</b></span><span>Ejercicios abandonados: <b>${historial.abandonados}</b></span></div>
+    <button class="btn-cerrar" id="btn-cerrar">Cerrar y seguir practicando</button>`;
+  $('overlay').classList.add('visible');
+  $('btn-cerrar').addEventListener('click', () => $('overlay').classList.remove('visible'));
+});
+$('overlay').addEventListener('click', e => { if (e.target === $('overlay')) $('overlay').classList.remove('visible'); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { $('overlay').classList.remove('visible'); $('overlay-aviso').classList.remove('visible'); } });
+
+nuevoEjercicio();
+</script>
+</body>
+</html>
