@@ -40,7 +40,7 @@
   --color-correcto: #2E6B3E;
   --color-incorrecto: #8B1A1A;
   --color-neutro: #E8DFC8;
-  --color-apagado: #7A6B5C;
+  --color-apagado: #736454;
   --color-apagado-fondo: #F3EFE6;
 }
 
@@ -288,7 +288,6 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--color-acent
   padding: 26px 28px; min-width: 320px; max-width: 640px; width: 100%;
   max-height: 92vh; overflow-y: auto; text-align: center;
 }
-.modal-calificacion.sombra { text-shadow: 0 1px 2px rgba(0, 0, 0, .35); }
 .inf-titulo { font-size: 1.15rem; font-weight: 700; margin: 0; }
 .inf-subtitulo { font-size: .85rem; font-style: italic; opacity: .9; margin: 4px 0 12px; }
 .inf-linea { border: none; border-top: 1px solid currentColor; opacity: .45; margin: 0 0 12px; }
@@ -309,6 +308,8 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--color-acent
 .tabla-informe th { color: var(--color-texto-suave); font-weight: 700; font-size: .74rem; text-transform: uppercase; letter-spacing: .04em; }
 .tabla-informe td:first-child, .tabla-informe th:first-child { text-align: left; }
 .tabla-informe .c { display: none; }
+.nota-tabla { display: none; font-size: .74rem; color: var(--color-texto-suave); margin: 6px 0 0; }
+.nota-tabla.visible { display: block; }
 .tabla-informe .ok { color: var(--color-correcto); font-weight: 700; }
 .tabla-informe .no { color: var(--color-incorrecto); font-weight: 700; }
 .historial { list-style: none; margin: 14px 0 0; padding: 0; font-size: .82rem; }
@@ -381,7 +382,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--color-acent
       </li>
       <li>Cada tipo vale <b>2 puntos</b> y se supera con <b>un acierto</b>. Cada fallo resta <b>0,5 puntos</b>.</li>
       <li>Si fallas, verás la resolución completa y podrás pedir <b>otro límite del mismo tipo con otros números</b> para volver a intentarlo.</li>
-      <li><b>Mostrar soluciones</b> enseña resueltos los límites que tengas pendientes. No te resta nada y conservas los puntos que ya tienes, pero esos límites concretos no cuentan para la nota: después podrás hacer otros del mismo tipo con números nuevos.</li>
+      <li><b>Mostrar soluciones</b> enseña resueltos los límites que tengas pendientes, para que entiendas cómo se hacen. No te resta nada y conservas los puntos que ya tienes, pero esos límites no puntúan: <b>para conseguir los puntos de ese tipo tienes que acertar otro límite nuevo</b>. El informe indica qué tipos superaste después de ver una solución.</li>
       <li>Cómo escribir el resultado: enteros (<b>−3</b>), fracciones (<b>3/4</b>, <b>−2/5</b>) o decimales con coma o punto (<b>0,25</b>). Si el decimal no es exacto, redondea con al menos dos decimales. Para infinito usa los botones <b>+∞</b> y <b>−∞</b>.</li>
       <li>Puedes comprobar con la tecla <b>Intro</b>. Al terminar, pulsa <b>Finalizar y calificar</b>, haz una captura del informe y entrégala en Google Classroom.</li>
     </ul>
@@ -433,6 +434,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--color-acent
           <tbody id="inf-tabla"></tbody>
         </table>
       </div>
+      <p class="nota-tabla" id="nota-tabla">✓* Superado resolviendo un límite nuevo después de ver la solución de otro del mismo tipo.</p>
       <h4 style="margin-top:16px">Límites trabajados</h4>
       <ol class="historial" id="inf-historial"></ol>
     </div>
@@ -973,7 +975,7 @@ const state = {
   usadas: new Set(),
   inicio: Date.now()
 };
-ORDEN.forEach(t => state.tipos[t] = { superado: false, aciertos: 0, fallos: 0, solucionesVistas: 0 });
+ORDEN.forEach(t => state.tipos[t] = { superado: false, trasSolucion: false, aciertos: 0, fallos: 0, solucionesVistas: 0 });
 
 function calcularNota() {
   const superados = ORDEN.filter(t => state.tipos[t].superado).length;
@@ -1081,6 +1083,7 @@ function comprobar(i) {
   if (acierto) {
     T.aciertos++;
     T.superado = true;
+    T.trasSolucion = T.solucionesVistas > 0;
     t.estado = 'superado';
     fb.className = 'fb ok';
     fb.innerHTML = `<b>Correcto.</b> El límite vale ${M(solTex(t.ex.sol))}. ${breve}
@@ -1136,7 +1139,8 @@ function revelarSoluciones() {
     limpiarMJ(fb);
     fb.className = 'fb sol';
     fb.innerHTML = `<b>Solución.</b> El límite vale ${M(solTex(t.ex.sol))}. ${t.ex.breve || TIPOS[t.tipo].breve}
-      <div style="margin-top:6px">${t.ex.explic}</div>`;
+      <div style="margin-top:6px">${t.ex.explic}</div>
+      <p class="nota-fallo">Este límite no puntúa. Para conseguir los ${fmt(PUNTO_POR_TIPO)} puntos de este tipo, pulsa «Otro límite de este tipo» y resuélvelo tú.</p>`;
     t.estado = 'revelado';
     state.tipos[t.tipo].solucionesVistas++;
     state.historial.push({ tipo: t.tipo, latex: t.ex.latex, resultado: 'solucion', respuesta: '' });
@@ -1175,10 +1179,10 @@ $('#nombre').addEventListener('input', () => {
 // ---------- Informe ----------
 const COLORES = [
   [10, '#1a7a1a', '#ffffff', '🏆 ¡Excelente!'],
-  [9, '#6dbf6d', '#ffffff', '🌟 Muy bien'],
+  [9, '#6dbf6d', '#1b1b1b', '🌟 Muy bien'],
   [8, '#1a4f8a', '#ffffff', 'Notable'],
-  [7, '#5b9bd5', '#ffffff', 'Bien'],
-  [6, '#c05c00', '#ffffff', 'Suficiente'],
+  [7, '#5b9bd5', '#1b1b1b', 'Bien'],
+  [6, '#b05400', '#ffffff', 'Suficiente'],
   [5, '#f5a623', '#000000', 'Aprobado'],
   [0, '#c0392b', '#ffffff', 'Sigue practicando']
 ];
@@ -1190,7 +1194,6 @@ function finalizar() {
   const modal = $('#modal-inf');
   modal.style.backgroundColor = bg;
   modal.style.color = fg;
-  modal.classList.toggle('sombra', bg === '#6dbf6d' || bg === '#5b9bd5');
 
   const ahora = new Date();
   const seg = Math.floor((Date.now() - state.inicio) / 1000);
@@ -1207,10 +1210,11 @@ function finalizar() {
   $('#inf-tabla').innerHTML = ORDEN.map(t => {
     const T = state.tipos[t];
     return `<tr><td>${TIPOS[t].nombre}</td>
-      <td class="${T.superado ? 'ok' : 'no'}"><span class="l">${T.superado ? 'Superado' : 'No superado'}</span><span class="c">${T.superado ? '✓' : '✗'}</span></td>
+      <td class="${T.superado ? 'ok' : 'no'}"><span class="l">${T.superado ? (T.trasSolucion ? 'Superado tras ver la solución' : 'Superado') : 'No superado'}</span><span class="c">${T.superado ? (T.trasSolucion ? '✓*' : '✓') : '✗'}</span></td>
       <td>${T.aciertos + T.fallos}</td><td>${T.aciertos}</td><td>${T.fallos}</td><td>${T.solucionesVistas}</td></tr>`;
   }).join('');
 
+  $('#nota-tabla').classList.toggle('visible', ORDEN.some(t => state.tipos[t].trasSolucion));
   const hist = $('#inf-historial');
   limpiarMJ(hist);
   const etiquetas = { acierto: 'Correcto', fallo: 'Fallo', solucion: 'Solución vista' };
