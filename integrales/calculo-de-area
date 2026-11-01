@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ficha — Cálculo de Áreas</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap');
+
+:root {
+  --color-fondo: #F5F0E8;
+  --color-fondo-card: #FDFAF3;
+  --color-texto: #2C1F0E;
+  --color-texto-suave: #6B4F35;
+  --color-acento: #A0522D;
+  --color-acento-hover: #7B3B1E;
+  --color-borde: #C9A96E;
+  --color-borde-suave: #E0CEAA;
+  --color-cabecera: #3B2510;
+  --color-cabecera-txt: #F5EDD8;
+  --color-correcto: #2E6B3E;
+  --color-incorrecto: #8B1A1A;
+  --color-neutro: #E8DFC8;
+  --verde: #2E6B3E;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Lato',sans-serif;font-size:15px;color:var(--color-texto);background:var(--color-fondo);padding:0 0 2rem;}
+
+.cabecera-top{background:var(--color-cabecera);color:var(--color-cabecera-txt);font-family:'Libre Baskerville',serif;text-align:center;padding:10px 20px;border-bottom:3px solid var(--color-borde);font-size:0.75rem;letter-spacing:0.05em;}
+
+.wrap{max-width:760px;margin:20px auto;transition:background 0.5s;}
+.wrap.verde-total{background:#d4edda!important;border-radius:10px;padding:12px;}
+
+/* ── BARRA DE TIPOS ── */
+.tipos-bar{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+.tipo-badge{flex:1;min-width:200px;background:var(--color-fondo-card);border:2px solid var(--color-borde-suave);border-radius:6px;padding:10px 16px;cursor:pointer;text-align:center;font-family:'Libre Baskerville',serif;font-size:0.85rem;transition:all 0.2s;position:relative;}
+.tipo-badge:hover{border-color:var(--color-acento);}
+.tipo-badge.activo{background:var(--color-acento);color:#fff;border-color:var(--color-acento);}
+.tipo-badge.completado{background:var(--verde);color:#fff;border-color:var(--verde);}
+.tipo-badge .badge-pts{font-size:0.72rem;display:block;margin-top:3px;opacity:0.85;}
+.tipo-badge .badge-check{position:absolute;top:8px;right:10px;font-size:1rem;}
+
+/* ── BARRA DE PROGRESO ── */
+.progreso-wrap{background:var(--color-fondo-card);border:1.5px solid var(--color-borde-suave);border-radius:6px;padding:10px 16px;margin-bottom:14px;}
+.barra-outer{background:var(--color-neutro);border-radius:10px;height:10px;margin:6px 0 4px;}
+.barra-fill{height:10px;border-radius:10px;background:var(--color-acento);transition:width 0.5s;width:0%;}
+.progreso-label{font-size:0.73rem;color:var(--color-texto-suave);}
+
+.cabecera{background:var(--color-fondo-card);border:2px solid var(--color-borde);border-radius:6px;padding:18px 22px;margin-bottom:14px;box-shadow:0 2px 8px rgba(44,31,14,0.10);}
+.cab-title{font-family:'Libre Baskerville',serif;font-size:1.35rem;color:var(--color-texto);text-align:center;margin-bottom:4px;}
+.cab-title::after{content:'';display:block;width:50px;height:3px;background:var(--color-borde);margin:6px auto 0;border-radius:2px;}
+.cab-sub{font-size:0.82rem;color:var(--color-texto-suave);text-align:center;margin:10px 0 14px;}
+.campo-nombre{display:flex;align-items:center;gap:10px;}
+.campo-nombre label{font-size:0.78rem;color:var(--color-texto-suave);text-transform:uppercase;letter-spacing:0.05em;white-space:nowrap;}
+.campo-nombre input{flex:1;border:none;border-bottom:1.5px solid var(--color-borde);background:transparent;font-family:'Lato',sans-serif;font-size:0.95rem;color:var(--color-texto);padding:4px 2px;outline:none;}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+.stat{background:var(--color-fondo-card);border:1.5px solid var(--color-borde-suave);border-radius:6px;padding:8px;text-align:center;}
+.stat-label{font-size:0.68rem;color:var(--color-texto-suave);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:2px;}
+.stat-val{font-family:'Libre Baskerville',serif;font-size:1.35rem;color:var(--color-acento);}
+
+.ficha{background:var(--color-fondo-card);border:2px solid var(--color-borde);border-radius:6px;padding:20px 24px;margin-bottom:14px;box-shadow:0 2px 8px rgba(44,31,14,0.08);}
+.ficha-hdr{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding-bottom:10px;border-bottom:1.5px solid var(--color-borde-suave);}
+.ficha-num{background:var(--color-acento);color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700;flex-shrink:0;}
+.ficha-title{font-family:'Libre Baskerville',serif;font-size:1rem;color:var(--color-texto);}
+.tag{background:var(--color-neutro);color:var(--color-acento);border-radius:4px;font-size:0.7rem;font-family:'Lato',sans-serif;padding:2px 8px;margin-left:8px;font-weight:700;letter-spacing:0.03em;}
+
+.enunciado{background:var(--color-fondo);border-left:4px solid var(--color-borde);border-radius:0 6px 6px 0;padding:12px 16px;font-size:0.9rem;color:var(--color-texto-suave);line-height:1.7;margin-bottom:18px;}
+.enunciado strong{color:var(--color-texto);font-weight:700;}
+
+.plabel{font-size:0.7rem;font-weight:700;color:var(--color-texto-suave);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;}
+
+.paso-bloque{border-left:4px solid var(--color-borde-suave);border-radius:0 6px 6px 0;padding:12px 14px;margin-bottom:12px;background:var(--color-fondo);transition:border-color 0.3s,background 0.3s;}
+.paso-bloque.paso-ok{border-color:var(--color-correcto);background:#EAF4EC;}
+.paso-bloque.paso-fail{border-color:var(--color-incorrecto);background:#F9EAEA;}
+
+.paso-hdr{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.pnum{background:var(--color-neutro);color:var(--color-acento);border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;flex-shrink:0;transition:background 0.3s,color 0.3s;}
+.pnum.done{background:var(--color-correcto);color:#fff;}
+.plbl{font-size:0.82rem;color:var(--color-texto-suave);font-style:italic;}
+
+.irow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:6px;}
+.ihint{font-size:0.72rem;color:#aaa;}
+
+input[type=text],select{background:var(--color-fondo);border:1.5px solid var(--color-borde);border-radius:4px;padding:6px 10px;font-family:'Lato',sans-serif;font-size:0.9rem;color:var(--color-texto);outline:none;transition:border-color 0.2s;}
+input[type=text]:focus,select:focus{border-color:var(--color-acento);}
+input[type=text].ok{border-color:var(--color-correcto);background:#EAF4EC;}
+input[type=text].fail{border-color:var(--color-incorrecto);background:#F9EAEA;}
+select.ok{border-color:var(--color-correcto);background:#EAF4EC;}
+select.fail{border-color:var(--color-incorrecto);background:#F9EAEA;}
+
+.btn-paso{background:var(--color-acento);color:#FDFAF3;border:none;border-radius:4px;padding:5px 14px;font-family:'Lato',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;margin-top:10px;transition:background 0.2s;}
+.btn-paso:hover{background:var(--color-acento-hover);}
+
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
+.btn-check{background:var(--color-cabecera);color:var(--color-cabecera-txt);border:2px solid var(--color-borde);border-radius:4px;padding:8px 20px;font-family:'Libre Baskerville',serif;font-size:0.88rem;font-weight:700;cursor:pointer;letter-spacing:0.03em;transition:background 0.2s;}
+.btn-check:hover{background:#2C1A0A;}
+.btn-otro{background:transparent;color:var(--color-acento);border:1.5px solid var(--color-borde);border-radius:4px;padding:7px 16px;font-family:'Lato',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;display:none;transition:border-color 0.2s;}
+.btn-otro:hover{border-color:var(--color-acento);}
+.btn-add-intervalo{background:transparent;color:var(--color-texto-suave);border:1.5px dashed var(--color-borde);border-radius:4px;padding:6px 14px;font-family:'Lato',sans-serif;font-size:0.82rem;cursor:pointer;margin-top:6px;transition:border-color 0.2s;}
+.btn-add-intervalo:hover{border-color:var(--color-acento);color:var(--color-acento);}
+
+/* ── botón "pasar al tipo 2" ── */
+.btn-cambiar-tipo{background:var(--verde);color:#fff;border:none;border-radius:4px;padding:8px 20px;font-family:'Libre Baskerville',serif;font-size:0.88rem;font-weight:700;cursor:pointer;transition:background 0.2s;display:none;}
+.btn-cambiar-tipo:hover{background:#1d4d27;}
+.btn-cambiar-tipo-visible{background:transparent;color:var(--verde);border:1.5px solid var(--verde);border-radius:4px;padding:7px 16px;font-family:'Lato',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;transition:border-color 0.2s;}
+.btn-cambiar-tipo-visible:hover{border-color:var(--color-correcto);}
+
+.fb-paso{margin-top:8px;font-size:0.82rem;border-radius:4px;padding:7px 12px;display:none;line-height:1.55;}
+.fb-paso.show{display:block;}
+.fb-paso.ok{background:#EAF4EC;color:var(--color-correcto);border:1px solid var(--color-correcto);font-weight:700;}
+.fb-paso.fail{background:#F9EAEA;color:var(--color-incorrecto);border:1px solid var(--color-incorrecto);}
+
+.fb{margin-top:10px;font-size:0.85rem;border-radius:4px;padding:10px 14px;display:none;line-height:1.65;}
+.fb.show{display:block;}
+.fb.ok{background:#EAF4EC;color:var(--color-correcto);border:1.5px solid var(--color-correcto);font-weight:700;}
+.fb.fail{background:#F9EAEA;color:var(--color-incorrecto);border:1.5px solid var(--color-incorrecto);}
+
+.intervalo-row{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:8px;background:var(--color-fondo-card);border:1px solid var(--color-borde-suave);border-radius:4px;padding:8px 10px;}
+.intervalo-lbl{font-family:'Libre Baskerville',serif;font-size:0.88rem;color:var(--color-texto);white-space:nowrap;}
+
+hr.sep{border:none;border-top:1px solid var(--color-borde-suave);margin:14px 0;}
+
+.primitiva-display{font-family:'Libre Baskerville',serif;font-size:0.92rem;color:var(--color-texto-suave);margin-bottom:6px;}
+.primitiva-display span.fx{font-style:italic;color:var(--color-texto);}
+.hint-prim{font-size:0.72rem;color:#aaa;margin-top:4px;}
+
+/* ── TIPO 2: resultado parcial ── */
+.resultado-parcial{font-family:'Libre Baskerville',serif;font-size:0.9rem;color:var(--color-texto-suave);background:var(--color-fondo-card);border:1px dashed var(--color-borde);border-radius:4px;padding:8px 12px;margin-top:6px;display:none;}
+.resultado-parcial.show{display:block;}
+
+.calc-wrap{background:var(--color-fondo-card);border:1.5px solid var(--color-borde-suave);border-radius:6px;padding:12px 16px;margin-bottom:14px;}
+.calc-toggle{font-size:0.85rem;color:var(--color-texto-suave);cursor:pointer;display:flex;align-items:center;gap:6px;font-weight:700;}
+.calc-body{display:none;margin-top:10px;}
+.calc-body.open{display:block;}
+.calc-screen{background:#fff;border:1px solid var(--color-borde-suave);border-radius:4px;padding:8px 12px;text-align:right;font-size:1.3rem;color:var(--color-texto);min-height:42px;margin-bottom:8px;word-break:break-all;}
+.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;}
+.ck{border:1px solid var(--color-borde-suave);border-radius:4px;padding:9px 4px;font-size:0.9rem;cursor:pointer;background:var(--color-fondo);color:var(--color-texto);text-align:center;font-family:'Lato',sans-serif;}
+.ck:hover{background:var(--color-neutro);}
+.ck.op{background:var(--color-neutro);color:var(--color-acento);font-weight:700;}
+.ck.eq{background:var(--color-acento);color:#fff;border-color:var(--color-acento);}
+.ck.ac{color:var(--color-incorrecto);font-weight:700;}
+
+.btn-final{background:var(--color-cabecera);color:var(--color-cabecera-txt);border:2px solid var(--color-borde);border-radius:4px;padding:11px 24px;font-family:'Libre Baskerville',serif;font-size:0.95rem;font-weight:700;cursor:pointer;width:100%;margin-top:4px;letter-spacing:0.03em;transition:background 0.2s;}
+.btn-final:hover{background:#2C1A0A;}
+
+.modal-bg{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(44,31,14,0.55);display:none;align-items:center;justify-content:center;z-index:9999;}
+.modal-bg.show{display:flex;}
+.modal{border:3px solid var(--color-borde);border-radius:8px;padding:32px 36px;max-width:380px;width:90%;text-align:center;font-family:'Libre Baskerville',serif;box-shadow:0 6px 24px rgba(44,31,14,0.35);}
+.modal h2{font-size:1.2rem;font-weight:700;margin-bottom:4px;}
+.modal .nota-big{font-size:3.2rem;font-weight:700;line-height:1.1;margin:8px 0;}
+.modal .meta{font-size:0.82rem;opacity:0.9;line-height:1.9;margin-bottom:12px;font-family:'Lato',sans-serif;}
+.modal .captura{font-size:0.85rem;border-radius:6px;padding:8px 12px;background:rgba(255,255,255,0.2);margin-bottom:12px;font-family:'Lato',sans-serif;}
+.modal .btn-cerrar{background:rgba(255,255,255,0.25);border:1.5px solid rgba(255,255,255,0.55);border-radius:4px;padding:8px 20px;font-size:0.85rem;cursor:pointer;font-family:'Lato',sans-serif;}
+
+/* badge completado en barra */
+.tipos-bar .completado .badge-check::before{content:'✓ ';}
+
+/* nota pendientes aviso */
+.aviso-pendiente{background:#FFF8EC;border:1.5px solid var(--color-borde);border-radius:6px;padding:10px 14px;font-size:0.82rem;color:var(--color-texto-suave);margin-bottom:10px;display:none;}
+.aviso-pendiente.show{display:block;}
+</style>
+</head>
+<body>
+
+<div class="cabecera-top">Material elaborado por Marta L Letona S. Basado en el trabajo de J. Cayetano</div>
+
+<div class="wrap" id="wrap">
+
+  <!-- CABECERA -->
+  <div class="cabecera">
+    <div class="cab-title">Cálculo de Áreas bajo la Curva</div>
+    <div class="cab-sub">Integral definida · Primitiva · Regla de Barrow · Despeje de límite</div>
+    <div class="campo-nombre">
+      <label for="nombre">Nombre del alumno</label>
+      <input type="text" id="nombre" placeholder="Escribe tu nombre completo..." oninput="startTimer()" aria-label="Nombre del alumno">
+    </div>
+  </div>
+
+  <!-- BARRA DE TIPOS -->
+  <div class="tipos-bar">
+    <div class="tipo-badge" id="badge-tipo1" onclick="elegirTipo('tipo1')">
+      <span class="badge-check" id="check-tipo1"></span>
+      Tipo 1 — Área bajo la curva
+      <span class="badge-pts">Integral definida · hasta 5 pts</span>
+    </div>
+    <div class="tipo-badge" id="badge-tipo2" onclick="elegirTipo('tipo2')">
+      <span class="badge-check" id="check-tipo2"></span>
+      Tipo 2 — Hallar el límite dado el área
+      <span class="badge-pts">Despejar m · hasta 5 pts</span>
+    </div>
+  </div>
+
+  <!-- PROGRESO -->
+  <div class="progreso-wrap">
+    <div class="progreso-label" id="progreso-label">Tipos completados: 0/2 · Puntuación: 0/10</div>
+    <div class="barra-outer"><div class="barra-fill" id="barra-fill"></div></div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat"><div class="stat-label">Tipos hechos</div><div class="stat-val" id="s-tipos">0/2</div></div>
+    <div class="stat"><div class="stat-label">Pasos superados</div><div class="stat-val" id="s-ac" style="color:#2E6B3E">0</div></div>
+    <div class="stat"><div class="stat-label">Fallos (0 pts)</div><div class="stat-val" id="s-fail" style="color:#8B1A1A">0</div></div>
+    <div class="stat"><div class="stat-label">Puntuación</div><div class="stat-val" id="s-pts">0/10</div></div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════
+       FICHA TIPO 1 — Área bajo la curva
+  ════════════════════════════════════════════════════ -->
+  <div class="ficha" id="ficha-tipo1">
+    <div class="ficha-hdr">
+      <div class="ficha-num">1</div>
+      <div class="ficha-title">Área bajo la curva <span class="tag">Tipo 1 · 5 pts</span></div>
+    </div>
+    <div class="enunciado" id="enunciado-t1"></div>
+    <div class="plabel">Resuelve paso a paso</div>
+
+    <!-- PASO 1 -->
+    <div class="paso-bloque" id="bloque1">
+      <div class="paso-hdr">
+        <div class="pnum" id="pnum1">1</div>
+        <div class="plbl">Identifica la curva y sus raíces con el eje OX</div>
+      </div>
+      <div class="irow">
+        <select id="e_tipo" style="min-width:220px;" aria-label="Tipo de curva">
+          <option value="">— Selecciona el tipo de curva —</option>
+          <option value="recta_crec">Recta creciente</option>
+          <option value="recta_dec">Recta decreciente</option>
+          <option value="parabola_conc">Parábola cóncava (∪)</option>
+          <option value="parabola_conv">Parábola convexa (∩)</option>
+          <option value="cubica_crec">Cúbica creciente</option>
+          <option value="cubica_dec">Cúbica decreciente</option>
+        </select>
+      </div>
+      <div class="plabel" style="margin-top:10px;">Raíces con el eje OX</div>
+      <div class="irow">
+        <span class="ihint">x =</span>
+        <input type="text" id="e_r1" placeholder="raíz 1" style="width:72px" aria-label="Raíz 1">
+        <input type="text" id="e_r2" placeholder="raíz 2" style="width:72px" aria-label="Raíz 2">
+        <input type="text" id="e_r3" placeholder="raíz 3 (si hay)" style="width:110px" aria-label="Raíz 3 (si hay)">
+      </div>
+      <button class="btn-paso" onclick="checkPaso1()">Comprobar paso 1</button>
+      <div class="fb-paso" id="fb1" aria-live="polite"></div>
+    </div>
+
+    <hr class="sep">
+
+    <!-- PASO 2 -->
+    <div class="paso-bloque" id="bloque2">
+      <div class="paso-hdr">
+        <div class="pnum" id="pnum2">2</div>
+        <div class="plbl">Calcula la primitiva F(x)</div>
+      </div>
+      <div class="primitiva-display" id="prim-display"></div>
+      <div class="irow">
+        <input type="text" id="e_prim" placeholder="Ej: 1/4x⁴ − 9/2x²" style="width:290px" aria-label="Primitiva F(x)">
+      </div>
+      <div class="hint-prim">Escribe fracciones con /: 1/4x⁴ o 1/4x^4. Usa ^ o ² ³ ⁴ para potencias.</div>
+      <button class="btn-paso" onclick="checkPaso2()">Comprobar paso 2</button>
+      <div class="fb-paso" id="fb2" aria-live="polite"></div>
+    </div>
+
+    <hr class="sep">
+
+    <!-- PASO 3 -->
+    <div class="paso-bloque" id="bloque3">
+      <div class="paso-hdr">
+        <div class="pnum" id="pnum3">3</div>
+        <div class="plbl">Áreas parciales — Regla de Barrow &nbsp;<span style="font-size:0.75rem;font-style:normal;color:var(--color-texto-suave);">[ I = F(b) − F(a) ]</span></div>
+      </div>
+      <div id="intervalos-container"></div>
+      <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+        <button class="btn-add-intervalo" onclick="addIntervalo()">＋ Añadir intervalo</button>
+        <button class="btn-paso" onclick="checkPaso3()" style="margin-top:0;">Comprobar paso 3</button>
+      </div>
+      <div class="fb-paso" id="fb3" aria-live="polite"></div>
+    </div>
+
+    <hr class="sep">
+
+    <!-- PASO 4 -->
+    <div class="paso-bloque" id="bloque4">
+      <div class="paso-hdr">
+        <div class="pnum" id="pnum4">4</div>
+        <div class="plbl">Área total (suma de valores absolutos de áreas parciales)</div>
+      </div>
+      <div class="irow">
+        <span style="font-family:'Libre Baskerville',serif;font-size:0.9rem;" id="atotal-lbl">A<sub>total</sub> =</span>
+        <input type="text" id="e_atotal" placeholder="resultado" style="width:130px" aria-label="Área total">
+        <span class="ihint">u²</span>
+      </div>
+      <button class="btn-paso" onclick="checkPaso4()">Comprobar paso 4</button>
+      <div class="fb-paso" id="fb4" aria-live="polite"></div>
+    </div>
+
+    <div id="aviso-pendiente-t1" class="aviso-pendiente">
+      💡 Para alcanzar el 10 también debes completar el <strong>Tipo 2</strong>.
+      Pulsa el botón "Tipo 2" en la barra superior o el botón de abajo.
+    </div>
+
+    <div class="btns">
+      <button class="btn-otro" id="btn-otro-t1" onclick="nuevoEjT1()">Hacer otro ejercicio T1</button>
+      <button class="btn-cambiar-tipo" id="btn-ir-t2" onclick="elegirTipo('tipo2')">Ir al Tipo 2 →</button>
+    </div>
+    <div class="fb" id="fb-global" aria-live="polite"></div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════
+       FICHA TIPO 2 — Hallar el límite dado el área
+  ════════════════════════════════════════════════════ -->
+  <div class="ficha" id="ficha-tipo2" style="display:none;">
+    <div class="ficha-hdr">
+      <div class="ficha-num">2</div>
+      <div class="ficha-title">Hallar el límite dado el área <span class="tag">Tipo 2 · 5 pts</span></div>
+    </div>
+    <div class="enunciado" id="enunciado-t2"></div>
+    <div class="plabel">Resuelve paso a paso</div>
+
+    <!-- T2 · PASO 1: Primitiva -->
+    <div class="paso-bloque" id="t2-bloque1">
+      <div class="paso-hdr">
+        <div class="pnum" id="t2-pnum1">1</div>
+        <div class="plbl" id="t2-paso1-lbl">Calcula la primitiva F(x)</div>
+      </div>
+      <div id="t2-prim-display" style="font-family:'Libre Baskerville',serif;font-size:0.88rem;color:var(--color-texto-suave);margin-bottom:8px;">
+        F(x) = ∫ f(x) dx = ___
+      </div>
+      <div class="irow">
+        <input type="text" id="t2-prim" placeholder="Escribe la primitiva" style="width:220px" aria-label="Primitiva F(x)">
+      </div>
+      <div class="hint-prim">Usa x² o x^2 para potencias. No pongas constante de integración (C = 0).</div>
+      <button class="btn-paso" onclick="checkT2Paso1()">Comprobar paso 1</button>
+      <div class="fb-paso" id="t2-fb1" aria-live="polite"></div>
+    </div>
+
+    <hr class="sep">
+
+    <!-- T2 · PASO 2: Barrow — expresión algebraica en m -->
+    <div class="paso-bloque" id="t2-bloque2">
+      <div class="paso-hdr">
+        <div class="pnum" id="t2-pnum2">2</div>
+        <div class="plbl" id="t2-paso2-lbl">Aplica la Regla de Barrow: F(m) − F(0)</div>
+      </div>
+      <div id="t2-barrow-display" style="font-family:'Libre Baskerville',serif;font-size:0.88rem;color:var(--color-texto-suave);margin-bottom:8px;">
+        ∫<sub>0</sub><sup>m</sup> f(x) dx = F(m) − F(0) = ___
+      </div>
+      <div class="irow">
+        <input type="text" id="t2-barrow" placeholder="Expresión en m" style="width:220px" aria-label="Expresión F(m) menos F(0)">
+      </div>
+      <div class="hint-prim">Escribe el resultado como expresión en m. Recuerda calcular F(0).</div>
+      <div class="resultado-parcial" id="t2-res-parcial"></div>
+      <button class="btn-paso" onclick="checkT2Paso2()">Comprobar paso 2</button>
+      <div class="fb-paso" id="t2-fb2" aria-live="polite"></div>
+    </div>
+
+    <hr class="sep">
+
+    <!-- T2 · PASO 3: Ecuación -->
+    <div class="paso-bloque" id="t2-bloque3">
+      <div class="paso-hdr">
+        <div class="pnum" id="t2-pnum3">3</div>
+        <div class="plbl">Plantea la ecuación: F(m) − F(0) = <span id="t2-area-objetivo">?</span></div>
+      </div>
+      <div style="font-family:'Libre Baskerville',serif;font-size:0.88rem;color:var(--color-texto-suave);margin-bottom:8px;">
+        Iguala la expresión en m al área dada:
+      </div>
+      <div class="irow">
+        <input type="text" id="t2-ecuacion" placeholder="expresión = valor" style="width:240px" aria-label="Ecuación en m">
+      </div>
+      <button class="btn-paso" onclick="checkT2Paso3()">Comprobar paso 3</button>
+      <div class="fb-paso" id="t2-fb3" aria-live="polite"></div>
+    </div>
+
+    <hr class="sep">
+
+    <!-- T2 · PASO 4: Despejar m -->
+    <div class="paso-bloque" id="t2-bloque4">
+      <div class="paso-hdr">
+        <div class="pnum" id="t2-pnum4">4</div>
+        <div class="plbl">Despeja m (toma la solución positiva)</div>
+      </div>
+      <div class="irow">
+        <span style="font-family:'Libre Baskerville',serif;font-size:0.9rem;">m =</span>
+        <input type="text" id="t2-m" placeholder="valor de m" style="width:110px" aria-label="Valor de m">
+        <span class="ihint">(solución positiva)</span>
+      </div>
+      <button class="btn-paso" onclick="checkT2Paso4()">Comprobar paso 4</button>
+      <div class="fb-paso" id="t2-fb4" aria-live="polite"></div>
+    </div>
+
+    <div id="aviso-pendiente-t2" class="aviso-pendiente">
+      💡 Para alcanzar el 10 también debes completar el <strong>Tipo 1</strong>.
+      Pulsa el botón "Tipo 1" en la barra superior.
+    </div>
+
+    <div class="btns">
+      <button class="btn-otro" id="btn-otro-t2" onclick="nuevoEjT2()">Hacer otro ejercicio T2</button>
+      <button class="btn-cambiar-tipo" id="btn-ir-t1" onclick="elegirTipo('tipo1')">← Ir al Tipo 1</button>
+    </div>
+    <div class="fb" id="t2-fb-global" aria-live="polite"></div>
+  </div>
+
+  <!-- CALCULADORA -->
+  <div class="calc-wrap">
+    <div class="calc-toggle" onclick="toggleCalc()">🖩 Calculadora <span id="calc-arrow">▸</span></div>
+    <div class="calc-body" id="calc-body">
+      <div class="calc-screen" id="cscreen">0</div>
+      <div class="calc-grid">
+        <button class="ck ac" onclick="cc('AC')">AC</button>
+        <button class="ck op" onclick="cc('+/-')">+/−</button>
+        <button class="ck op" onclick="cc('%')">%</button>
+        <button class="ck op" onclick="cc('/')">÷</button>
+        <button class="ck" onclick="cc('7')">7</button><button class="ck" onclick="cc('8')">8</button>
+        <button class="ck" onclick="cc('9')">9</button><button class="ck op" onclick="cc('*')">×</button>
+        <button class="ck" onclick="cc('4')">4</button><button class="ck" onclick="cc('5')">5</button>
+        <button class="ck" onclick="cc('6')">6</button><button class="ck op" onclick="cc('-')">−</button>
+        <button class="ck" onclick="cc('1')">1</button><button class="ck" onclick="cc('2')">2</button>
+        <button class="ck" onclick="cc('3')">3</button><button class="ck op" onclick="cc('+')">+</button>
+        <button class="ck" style="grid-column:span 2" onclick="cc('0')">0</button>
+        <button class="ck" onclick="cc('.')">.</button>
+        <button class="ck eq" onclick="cc('=')">＝</button>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-final" onclick="finalizar()">Finalizar y Calificar</button>
+</div>
+
+<!-- MODAL -->
+<!-- MODAL CONFIRMACIÓN: generar ejercicio nuevo con puntos ya conseguidos -->
+<div class="modal-bg" id="confirm-nuevo-bg">
+  <div class="modal" id="confirm-nuevo-modal" style="background:var(--color-fondo-card);color:var(--color-texto);border-color:var(--color-incorrecto);">
+    <h2 style="color:var(--color-incorrecto);">⚠ Vas a perder puntos</h2>
+    <div class="meta" id="confirm-nuevo-texto" style="text-align:left;color:var(--color-texto-suave);"></div>
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:6px;flex-wrap:wrap;">
+      <button class="btn-otro" style="display:inline-block;" onclick="cancelarNuevoEjercicio()">Cancelar</button>
+      <button class="btn-check" onclick="confirmarNuevoEjercicio()">Sí, nuevo ejercicio</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL AVISO: finalizar con algún tipo incompleto -->
+<div class="modal-bg" id="aviso-bg">
+  <div class="modal" id="aviso-modal" style="background:var(--color-fondo-card);color:var(--color-texto);border-color:var(--color-incorrecto);">
+    <h2 style="color:var(--color-incorrecto);">⚠ Aún no has terminado</h2>
+    <div class="meta" id="aviso-texto" style="text-align:left;color:var(--color-texto-suave);"></div>
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:6px;flex-wrap:wrap;">
+      <button class="btn-otro" style="display:inline-block;" onclick="cerrarAvisoIncompleto()">Seguir practicando</button>
+      <button class="btn-check" onclick="confirmarFinalizarIncompleto()">Finalizar de todos modos</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modal-bg">
+  <div class="modal" id="modal">
+    <h2 id="m-nombre">—</h2>
+    <div class="nota-big" id="m-nota">—</div>
+    <div class="meta" id="m-meta"></div>
+    <div class="captura">📸 Haz una captura de pantalla y entrégala en Google Classroom.</div>
+    <button class="btn-cerrar" onclick="cerrarModal()">Cerrar y seguir practicando</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+//  HELPERS POLINÓMICOS
+// ═══════════════════════════════════════════════════════════════════
+function sup(n){const m={'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};return String(n).split('').map(c=>m[c]||c).join('');}
+function subIdx(n){const m={'1':'₁','2':'₂','3':'₃','4':'₄'};return String(n).split('').map(c=>m[c]||c).join('');}
+function polyEval(coeffs,x){return coeffs.reduce((a,c)=>a*x+c,0);}
+function polyStr(coeffs){
+  const deg=coeffs.length-1;let s='';
+  coeffs.forEach((c,i)=>{const d=deg-i;if(c===0)return;const isFirst=s==='';const sign=c>0?(isFirst?'':' + '):(isFirst?'−':' − ');const abs=Math.abs(c);const absStr=abs===1&&d>0?'':String(abs);if(d===0)s+=sign+abs;else if(d===1)s+=sign+absStr+'x';else s+=sign+absStr+'x'+sup(d);});
+  return s||'0';
+}
+function gcd(a,b){return b===0?a:gcd(b,a%b);}
+function toFrac(val){for(let d=1;d<=12;d++){const n=Math.round(val*d);if(Math.abs(n/d-val)<1e-9){const g=gcd(Math.abs(n),d);return[n/g,d/g];}}return[Math.round(val*100)/100,1];}
+function primCoeffs(coeffs){const deg=coeffs.length-1;return coeffs.map((c,i)=>c/(deg-i+1)).concat([0]);}
+function primEval(coeffs,x){return primCoeffs(coeffs).reduce((a,c)=>a*x+c,0);}
+function primStr(coeffs){
+  const p=primCoeffs(coeffs);const deg=p.length-1;let s='';
+  p.forEach((c,i)=>{const d=deg-i;if(d===0||c===0)return;const isFirst=s==='';const sign=c>0?(isFirst?'':' + '):(isFirst?'−':' − ');const absC=Math.abs(c);const[num,den]=toFrac(absC);let cs=den===1?(num===1&&d>0?'':String(num)):(num+'/'+den);if(d===1)s+=sign+cs+'x';else s+=sign+cs+'x'+sup(d);});
+  return s||'0';
+}
+
+// ── Validación de primitiva por evaluación numérica ──
+function normalizarExpresion(raw){
+  let s=raw.trim();
+  s=s.replace(/^[Ff]\s*\([xX]\)\s*=\s*/,'');
+  s=s.replace(/[−–—]/g,'-');
+  // Coma decimal española (0,5 -> 0.5), antes de cualquier otra sustitución
+  s=s.replace(/(\d),(\d)/g,'$1.$2');
+  // Punto medio · como multiplicación (usado en fracciones tipo "3/2·x²")
+  s=s.replace(/\u00B7/g,'*').replace(/·/g,'*');
+  s=s.replace(/x²/g,'x^2').replace(/x³/g,'x^3').replace(/x⁴/g,'x^4').replace(/x⁵/g,'x^5').replace(/x⁶/g,'x^6').replace(/x¹/g,'x^1');
+  s=s.replace(/\^/g,'**');
+  s=s.replace(/(\d+)\/(\d+)\s*(\*?)\s*x/g,'($1/$2)*x');
+  s=s.replace(/(\d)(\*?)\s*x/g,'$1*x');
+  s=s.replace(/^(-?)(\d+)\/(\d+)\s*(\*?)\s*x/g,'$1($2/$3)*x');
+  s=s.replace(/(?<!\d)-x/g,'-1*x');
+  s=s.replace(/^x/g,'1*x');
+  s=s.replace(/\s/g,'');
+  return s;
+}
+function evaluarExpresion(expr,xVal){try{const fn=new Function('x','return ('+expr+')');return fn(xVal);}catch(e){return NaN;}}
+function checkPrimCorrecta(input,coeffs){
+  if(!input||input.trim()==='')return false;
+  const exprN=normalizarExpresion(input);
+  const pts=[-3,-2,-1,0,1,2,3,-1.5,1.5,-2.5,2.5];
+  let ok=0,tot=0;
+  for(const x of pts){
+    const v=evaluarExpresion(exprN,x);if(isNaN(v))continue;
+    const vr=primEval(coeffs,x);tot++;
+    const tol=Math.max(0.1,Math.abs(vr)*0.05);
+    if(Math.abs(v-vr)<=tol)ok++;
+  }
+  if(tot===0)return false;
+  return ok>=Math.min(8,tot-1);
+}
+
+// ── Normalización y evaluación en m ──
+function normalizarExpresionM(raw){
+  let s=raw.trim();
+  s=s.replace(/[−–—]/g,'-');
+  // Coma decimal española (0,5 -> 0.5), antes de cualquier otra sustitución
+  s=s.replace(/(\d),(\d)/g,'$1.$2');
+  // Punto medio · (U+00B7) como multiplicación: 3/2·m² → 3/2*m^2
+  s=s.replace(/\u00B7/g,'*').replace(/·/g,'*');
+  // Superíndices unicode
+  s=s.replace(/m²/g,'m^2').replace(/m³/g,'m^3').replace(/m⁴/g,'m^4');
+  // Potencias
+  s=s.replace(/\^/g,'**');
+  // Fracciones seguidas de m: 1/3*m o 1/3m → (1/3)*m
+  s=s.replace(/(\d+)\/(\d+)\s*\*?\s*m/g,'($1/$2)*m');
+  // Dígito pegado a m: 3m → 3*m
+  s=s.replace(/(\d)\*?m/g,'$1*m');
+  // -m sin dígito delante
+  s=s.replace(/(?<![0-9\)])-m/g,'-1*m');
+  // m al inicio de expresión
+  s=s.replace(/^m/g,'1*m');
+  s=s.replace(/\s/g,'');
+  return s;
+}
+function evaluarEnM(expr,mVal){
+  try{const fn=new Function('m','return ('+expr+')');return fn(mVal);}catch(e){return NaN;}
+}
+
+// ── Validación primitiva T2 por evaluación numérica ──
+// fnPrim(x) es la función primitiva correcta
+function checkPrimT2(input, fnPrim){
+  if(!input||input.trim()==='')return false;
+  const exprN=normalizarExpresion(input);
+  const pts=[-3,-2,-1,0,1,2,3,1.5,2.5];
+  let ok=0,tot=0;
+  for(const x of pts){
+    const v=evaluarExpresion(exprN,x);if(isNaN(v))continue;
+    const vr=fnPrim(x);tot++;
+    const tol=Math.max(0.05,Math.abs(vr)*0.05);
+    if(Math.abs(v-vr)<=tol)ok++;
+  }
+  if(tot===0)return false;
+  return ok>=Math.min(7,tot-1);
+}
+
+// ── Validación expresión Barrow en m ──
+// fnBarrow(m) = F(m) - F(0) correcta
+function checkBarrowT2(input, fnBarrow){
+  if(!input||input.trim()==='')return false;
+  const exprN=normalizarExpresionM(input);
+  const pts=[1,2,3,4,5,1.5,3.5];
+  let ok=0,tot=0;
+  for(const mv of pts){
+    const v=evaluarEnM(exprN,mv);if(isNaN(v))continue;
+    const vr=fnBarrow(mv);tot++;
+    const tol=Math.max(0.05,Math.abs(vr)*0.05);
+    if(Math.abs(v-vr)<=tol)ok++;
+  }
+  if(tot===0)return false;
+  return ok>=Math.min(6,tot-1);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  GENERADORES TIPO 1
+// ═══════════════════════════════════════════════════════════════════
+function randInt(min,max){return Math.floor(Math.random()*(max-min+1))+min;}
+function genRecta(crec){const m=crec?randInt(1,4):randInt(-4,-1);const raiz=randInt(-3,3);const b=-m*raiz;const coeffs=[m,b];const d1=randInt(1,3),d2=randInt(1,3);const limA=raiz-d1,limB=raiz+d2;const i1=primEval(coeffs,raiz)-primEval(coeffs,limA);const i2=primEval(coeffs,limB)-primEval(coeffs,raiz);return{tipo:crec?'recta_crec':'recta_dec',tipoStr:crec?'Recta creciente':'Recta decreciente',coeffs,raices:[raiz],limA,limB,intervalos:[{a:limA,b:raiz,val:i1},{a:raiz,b:limB,val:i2}],atotal:Math.round((Math.abs(i1)+Math.abs(i2))*100)/100};}
+function genParabola(conc){let r1,r2;do{r1=randInt(-4,-1);r2=randInt(1,4);}while(Math.abs(r1)===Math.abs(r2));const a=conc?1:-1;const coeffs=[a,-a*(r1+r2),a*r1*r2];const limA=r1,limB=r2;const val=primEval(coeffs,limB)-primEval(coeffs,limA);return{tipo:conc?'parabola_conc':'parabola_conv',tipoStr:conc?'Parábola cóncava (∪)':'Parábola convexa (∩)',coeffs,raices:[r1,r2],limA,limB,intervalos:[{a:limA,b:limB,val}],atotal:Math.round(Math.abs(val)*100)/100};}
+function genCubica(crec){let r1,r2,r3;do{r1=randInt(-4,-1);r2=randInt(r1+1,1);r3=randInt(r2+1,4);}while(Math.abs(r1)===Math.abs(r3));const a=crec?1:-1;const s1=r1+r2+r3,s2=r1*r2+r1*r3+r2*r3,s3=r1*r2*r3;const coeffs=[a,-a*s1,a*s2,-a*s3];const i1=primEval(coeffs,r2)-primEval(coeffs,r1);const i2=primEval(coeffs,r3)-primEval(coeffs,r2);return{tipo:crec?'cubica_crec':'cubica_dec',tipoStr:crec?'Cúbica creciente':'Cúbica decreciente',coeffs,raices:[r1,r2,r3],limA:r1,limB:r3,intervalos:[{a:r1,b:r2,val:i1},{a:r2,b:r3,val:i2}],atotal:Math.round((Math.abs(i1)+Math.abs(i2))*100)/100};}
+const generadores=[()=>genRecta(true),()=>genRecta(false),()=>genParabola(true),()=>genParabola(false),()=>genCubica(true),()=>genCubica(false)];
+
+// ═══════════════════════════════════════════════════════════════════
+//  GENERADOR TIPO 2 — banco de funciones
+// ═══════════════════════════════════════════════════════════════════
+
+const BANCO_T2 = [
+  {
+    fStr: '2x + 1',
+    FStr: 'x² + x',
+    primPlaceholder: 'Ej: 3x² + 5x',
+    barrowPlaceholder: 'Ej: 3m² + 5m',
+    fnPrim: x => x*x + x,
+    fnBarrow: m => m*m + m,
+    solveM: S => (-1 + Math.sqrt(1 + 4*S)) / 2,
+    genS: () => { const m=randInt(2,9); return {S: m*m+m, mCorr: m}; }
+  },
+  {
+    fStr: '3x + 2',
+    FStr: '3/2·x² + 2x',
+    primPlaceholder: 'Ej: x² + 4x',
+    barrowPlaceholder: 'Ej: m² + 4m',
+    fnPrim: x => 1.5*x*x + 2*x,
+    fnBarrow: m => 1.5*m*m + 2*m,
+    solveM: S => (-2 + Math.sqrt(4 + 6*S)) / 3,
+    genS: () => { const m=randInt(2,7); return {S: 1.5*m*m+2*m, mCorr: m}; }
+  },
+  {
+    fStr: 'x + 3',
+    FStr: '1/2·x² + 3x',
+    primPlaceholder: 'Ej: 2x² + x',
+    barrowPlaceholder: 'Ej: 2m² + m',
+    fnPrim: x => 0.5*x*x + 3*x,
+    fnBarrow: m => 0.5*m*m + 3*m,
+    solveM: S => (-3 + Math.sqrt(9 + 2*S)),
+    genS: () => { const m=randInt(2,8); return {S: 0.5*m*m+3*m, mCorr: m}; }
+  },
+  {
+    fStr: '4x + 2',
+    FStr: '2x² + 2x',
+    primPlaceholder: 'Ej: x² + 3x',
+    barrowPlaceholder: 'Ej: m² + 3m',
+    fnPrim: x => 2*x*x + 2*x,
+    fnBarrow: m => 2*m*m + 2*m,
+    solveM: S => (-2 + Math.sqrt(4 + 8*S)) / 4,
+    genS: () => { const m=randInt(2,7); return {S: 2*m*m+2*m, mCorr: m}; }
+  },
+  {
+    fStr: 'x² + 2x',
+    FStr: '1/3·x³ + x²',
+    primPlaceholder: 'Ej: 2x³ + x²',
+    barrowPlaceholder: 'Ej: 2m³ + m²',
+    fnPrim: x => x*x*x/3 + x*x,
+    fnBarrow: m => m*m*m/3 + m*m,
+    solveM: S => {
+      let mv=3;
+      for(let i=0;i<50;i++){const f=mv*mv*mv/3+mv*mv-S;const fp=mv*mv+2*mv;mv-=f/fp;}
+      return Math.round(mv*100)/100;
+    },
+    genS: () => { const m=randInt(2,5); return {S: m*m*m/3+m*m, mCorr: m}; }
+  },
+  {
+    fStr: '2x² + x',
+    FStr: '2/3·x³ + 1/2·x²',
+    primPlaceholder: 'Ej: x³ + 2x²',
+    barrowPlaceholder: 'Ej: m³ + 2m²',
+    fnPrim: x => 2*x*x*x/3 + 0.5*x*x,
+    fnBarrow: m => 2*m*m*m/3 + 0.5*m*m,
+    solveM: S => {
+      let mv=2;
+      for(let i=0;i<50;i++){const f=2*mv*mv*mv/3+0.5*mv*mv-S;const fp=2*mv*mv+mv;mv-=f/fp;}
+      return Math.round(mv*100)/100;
+    },
+    genS: () => { const m=randInt(2,4); return {S: Math.round((2*m*m*m/3+0.5*m*m)*100)/100, mCorr: m}; }
+  }
+];
+
+function genTipo2(){
+  const plantilla = BANCO_T2[randInt(0, BANCO_T2.length-1)];
+  const {S, mCorr} = plantilla.genS();
+  return {
+    plantilla,
+    fStr: plantilla.fStr,
+    FStr: plantilla.FStr,
+    primPlaceholder: plantilla.primPlaceholder,
+    barrowPlaceholder: plantilla.barrowPlaceholder,
+    S: Math.round(S*100)/100,
+    mCorrecto: mCorr
+  };
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  ESTADO GLOBAL
+// ═══════════════════════════════════════════════════════════════════
+const TIPOS=['tipo1','tipo2'];
+let state={
+  puntos:0,
+  tiposCompletados:new Set(),
+  tipoActual:'tipo1',
+  aciertos:0,fallos:0,
+  inicio:null
+};
+
+let currentEjT1=null;
+let currentEjT2=null;
+let intervalCount=0;
+let ptsPasoT1={p1:null,p2:null,p3:null,p4:null};
+let ptsPasoT2={p1:null,p2:null,p3:null,p4:null};
+let timerStart=null;
+
+// ── Política del ejercicio: cada tipo tiene 4 apartados, cada uno vale 5/4 = 1,25 pts.
+//    La puntuación de un apartado se fija en su PRIMER intento (correcto = 1,25, fallo = 0)
+//    y ya no cambia después — así corregir con la solución que el feedback acaba de
+//    revelar no da puntos, pero fallar un apartado solo cuesta ese apartado, no los 5
+//    puntos del tipo entero. El resto de apartados del mismo tipo siguen abiertos.
+const PUNTOS_MAX_TIPO=5;
+const PUNTOS_POR_APARTADO=PUNTOS_MAX_TIPO/4; // 1.25
+
+function puntosT1(){return Object.values(ptsPasoT1).reduce((a,b)=>a+(b||0),0);}
+function puntosT2(){return Object.values(ptsPasoT2).reduce((a,b)=>a+(b||0),0);}
+
+
+function startTimer(){if(!timerStart)timerStart=Date.now();}
+function elapsed(){if(!timerStart)return'00:00';const s=Math.floor((Date.now()-timerStart)/1000);return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+
+// Aciertos/fallos: cada apartado se congela en su primer intento (correcto=1,25, fallo=0),
+// así que basta con contar cuántos de los 8 apartados (4+4) han quedado en cada estado.
+function recomputeAciertosFallos(){
+  let ac=0,fa=0;
+  ['p1','p2','p3','p4'].forEach(k=>{
+    if(ptsPasoT1[k]===PUNTOS_POR_APARTADO)ac++; else if(ptsPasoT1[k]===0)fa++;
+    if(ptsPasoT2[k]===PUNTOS_POR_APARTADO)ac++; else if(ptsPasoT2[k]===0)fa++;
+  });
+  state.aciertos=ac;
+  state.fallos=fa;
+}
+
+function actualizarUI(){
+  recomputeAciertosFallos();
+  state.puntos=puntosT1()+puntosT2();
+  document.getElementById('s-tipos').textContent=state.tiposCompletados.size+'/2';
+  document.getElementById('s-ac').textContent=state.aciertos;
+  document.getElementById('s-fail').textContent=state.fallos;
+  const nota=Math.min(10,state.puntos);
+  document.getElementById('s-pts').textContent=nota.toFixed(1)+'/10';
+  document.getElementById('progreso-label').textContent='Tipos completados: '+state.tiposCompletados.size+'/2 · Puntuación: '+nota.toFixed(1)+'/10';
+  document.getElementById('barra-fill').style.width=Math.min(100,(nota/10)*100)+'%';
+  actualizarBadges();
+}
+
+function actualizarBadges(){
+  TIPOS.forEach(t=>{
+    const el=document.getElementById('badge-'+t);
+    const ck=document.getElementById('check-'+t);
+    if(!el)return;
+    el.classList.remove('activo','completado');
+    if(state.tiposCompletados.has(t)){
+      el.classList.add('completado');
+      if(ck) ck.textContent='✓ ';
+    } else if(t===state.tipoActual){
+      el.classList.add('activo');
+      if(ck) ck.textContent='';
+    } else {
+      if(ck) ck.textContent='';
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  ELEGIR TIPO (navegación)
+// ═══════════════════════════════════════════════════════════════════
+function elegirTipo(tipo){
+  state.tipoActual=tipo;
+  document.getElementById('ficha-tipo1').style.display=tipo==='tipo1'?'block':'none';
+  document.getElementById('ficha-tipo2').style.display=tipo==='tipo2'?'block':'none';
+  actualizarBadges();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  HELPERS UI COMPARTIDOS
+// ═══════════════════════════════════════════════════════════════════
+function markField(id,ok){const el=document.getElementById(id);if(!el)return;el.classList.remove('ok','fail');el.classList.add(ok?'ok':'fail');}
+function markBloque(id,ok){const el=document.getElementById(id);if(!el)return;el.classList.remove('paso-ok','paso-fail');el.classList.add(ok?'paso-ok':'paso-fail');const pnum=el.querySelector('.pnum');if(pnum)pnum.classList.toggle('done',ok);}
+function showFb(id,ok,msg){const el=document.getElementById(id);if(!el)return;el.className='fb-paso show '+(ok?'ok':'fail');el.innerHTML=msg;}
+function xn(s){
+  // Coma decimal española (0,5 -> 0.5) ANTES de tratar la coma como separador de lista
+  let str=String(s).replace(/[\u2212\u2013\u2014]/g,'-');
+  str=str.replace(/(\d),(\d)/g,'$1.$2');
+  str=str.replace(/[,;]/g,' ');
+  const vals=[],used=[];
+  const fracRe=/(-?\d+)\s*\/\s*(\d+)/g;let m;
+  while((m=fracRe.exec(str))!==null){vals.push(parseInt(m[1])/parseInt(m[2]));used.push([m.index,m.index+m[0].length]);}
+  const numRe=/-?\d+(\.\d+)?/g;
+  while((m=numRe.exec(str))!==null){const s=m.index,e=m.index+m[0].length;if(!used.some(([a,b])=>s>=a&&e<=b))vals.push(Number(m[0]));}
+  return vals;
+}
+function has(arr,v){const tol=Math.max(0.02,Math.abs(v)*0.001)+0.01;return arr.some(n=>Math.abs(n-v)<=tol);}
+
+// ═══════════════════════════════════════════════════════════════════
+//  BUILD TIPO 1
+// ═══════════════════════════════════════════════════════════════════
+function buildEjT1(ej){
+  const fStr=polyStr(ej.coeffs);
+  document.getElementById('enunciado-t1').innerHTML='Calcula el <strong>área</strong> comprendida entre la curva <strong>f(x) = '+fStr+'</strong>, el eje OX y las rectas <strong>x = '+ej.limA+'</strong> y <strong>x = '+ej.limB+'</strong>.';
+  document.getElementById('prim-display').innerHTML='F(x) = ∫ <span class="fx">( '+fStr+' )</span> dx = ___';
+  document.getElementById('intervalos-container').innerHTML='';
+  intervalCount=0;
+  ej.intervalos.forEach((_,idx)=>addIntervalRow(idx+1));
+  const parts=ej.intervalos.map((_,i)=>'|I'+(i+1)+'|');
+  document.getElementById('atotal-lbl').innerHTML='A<sub>total</sub> = '+parts.join(' + ')+' =';
+  document.getElementById('e_tipo').value='';
+  ['e_r1','e_r2','e_r3','e_prim','e_atotal'].forEach(id=>{const el=document.getElementById(id);if(el){el.value='';el.className='';}});
+  [1,2,3,4].forEach(n=>{const b=document.getElementById('bloque'+n);if(b)b.classList.remove('paso-ok','paso-fail');const p=document.getElementById('pnum'+n);if(p)p.classList.remove('done');const f=document.getElementById('fb'+n);if(f){f.className='fb-paso';f.innerHTML='';}});
+  document.getElementById('fb-global').className='fb';
+  document.getElementById('btn-otro-t1').style.display='none';
+  document.getElementById('btn-ir-t2').style.display='none';
+  document.getElementById('aviso-pendiente-t1').classList.remove('show');
+  ptsPasoT1={p1:null,p2:null,p3:null,p4:null};
+}
+
+function addIntervalRow(num){
+  intervalCount++;const idx=intervalCount;
+  const div=document.createElement('div');div.className='intervalo-row';div.id='irow-'+idx;
+  div.innerHTML='<span class="intervalo-lbl">I<sub>'+num+'</sub> = F(</span><input type="text" id="ib_'+idx+'" placeholder="b" style="width:46px" aria-label="Límite b del intervalo '+num+'"><span class="intervalo-lbl">) − F(</span><input type="text" id="ia_'+idx+'" placeholder="a" style="width:46px" aria-label="Límite a del intervalo '+num+'"><span class="intervalo-lbl">) =</span><input type="text" id="ifb_'+idx+'" placeholder="F(b)" style="width:70px" aria-label="F(b) del intervalo '+num+'"><span class="intervalo-lbl"> − </span><input type="text" id="ifa_'+idx+'" placeholder="F(a)" style="width:70px" aria-label="F(a) del intervalo '+num+'"><span class="intervalo-lbl"> =</span><input type="text" id="iv_'+idx+'" placeholder="valor" style="width:76px" aria-label="Valor del intervalo '+num+'">';
+  document.getElementById('intervalos-container').appendChild(div);
+}
+function addIntervalo(){const n=document.getElementById('intervalos-container').children.length+1;addIntervalRow(n);}
+
+// ═══════════════════════════════════════════════════════════════════
+//  BUILD TIPO 2
+// ═══════════════════════════════════════════════════════════════════
+function buildEjT2(ej){
+  document.getElementById('enunciado-t2').innerHTML=
+    'Calcula el valor de <strong>m &gt; 0</strong> para que el área encerrada entre la curva '+
+    '<strong>f(x) = '+ej.fStr+'</strong>, el eje OX, y las rectas <strong>x = 0</strong> y <strong>x = m</strong> '+
+    'sea igual a <strong>'+ej.S+' unidades cuadradas</strong>.';
+
+  document.getElementById('t2-paso1-lbl').innerHTML=
+    'Calcula la primitiva F(x) de f(x) = '+ej.fStr;
+  document.getElementById('t2-prim-display').innerHTML=
+    'F(x) = ∫ ( '+ej.fStr+' ) dx = ___';
+  document.getElementById('t2-prim').placeholder=ej.primPlaceholder;
+
+  document.getElementById('t2-paso2-lbl').innerHTML=
+    'Aplica la Regla de Barrow: F(m) − F(0)';
+  document.getElementById('t2-barrow-display').innerHTML=
+    '∫<sub>0</sub><sup>m</sup> ('+ej.fStr+') dx = F(m) − F(0) = ___';
+  document.getElementById('t2-barrow').placeholder=ej.barrowPlaceholder;
+
+  document.getElementById('t2-area-objetivo').textContent=ej.S;
+  document.getElementById('t2-ecuacion').placeholder='Tu expresión = '+ej.S;
+
+  document.getElementById('t2-m').placeholder='valor de m';
+
+  ['t2-prim','t2-barrow','t2-ecuacion','t2-m'].forEach(id=>{const el=document.getElementById(id);if(el){el.value='';el.className='';}});
+  ['t2-bloque1','t2-bloque2','t2-bloque3','t2-bloque4'].forEach(id=>{const b=document.getElementById(id);if(b)b.classList.remove('paso-ok','paso-fail');});
+  ['t2-pnum1','t2-pnum2','t2-pnum3','t2-pnum4'].forEach(id=>{const p=document.getElementById(id);if(p)p.classList.remove('done');});
+  ['t2-fb1','t2-fb2','t2-fb3','t2-fb4'].forEach(id=>{const f=document.getElementById(id);if(f){f.className='fb-paso';f.innerHTML='';}});
+  document.getElementById('t2-fb-global').className='fb';
+  document.getElementById('btn-otro-t2').style.display='none';
+  document.getElementById('btn-ir-t1').style.display='none';
+  document.getElementById('aviso-pendiente-t2').classList.remove('show');
+  const rp=document.getElementById('t2-res-parcial');rp.className='resultado-parcial';
+  ptsPasoT2={p1:null,p2:null,p3:null,p4:null};
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  COMPROBACIONES TIPO 1
+// ═══════════════════════════════════════════════════════════════════
+function checkPaso1(){
+  startTimer();const e=currentEjT1;let ok=0,tot=0;
+  const tipoOk=document.getElementById('e_tipo').value===e.tipo;
+  markField('e_tipo',tipoOk);ok+=tipoOk?1:0;tot++;
+  const rIds=['e_r1','e_r2','e_r3'];
+  const raicesCorrectas=[...e.raices];
+  const camposUsados=new Set();
+  raicesCorrectas.forEach(r=>{let found=false;rIds.forEach((id,i)=>{if(!found&&i<e.raices.length&&!camposUsados.has(id)){if(has(xn(document.getElementById(id).value),r)){camposUsados.add(id);found=true;}}});});
+  const raicesRestantes=[...raicesCorrectas];
+  rIds.forEach((id,i)=>{if(i>=e.raices.length){return;}const v=xn(document.getElementById(id).value);const idx=raicesRestantes.findIndex(r=>has(v,r));if(idx!==-1){markField(id,true);raicesRestantes.splice(idx,1);ok++;tot++;}else{markField(id,false);tot++;}});
+  const allOk=(ok===tot);markBloque('bloque1',allOk);
+  if(allOk){showFb('fb1',true,'✓ Correcto — '+e.tipoStr+', raíces: x = '+e.raices.join(', '));}
+  else{let msg='';if(!tipoOk)msg+='Tipo: <em>'+e.tipoStr+'</em><br>';if(raicesRestantes.length)msg+='Raíces correctas: x = '+e.raices.join(', ')+'<br><span style="font-size:0.78rem">(el orden no importa)</span>';showFb('fb1',false,msg);}
+  if(ptsPasoT1.p1===null)ptsPasoT1.p1=allOk?PUNTOS_POR_APARTADO:0;
+  actualizarUI();evaluarCompletitudT1();
+}
+function checkPaso2(){
+  startTimer();const e=currentEjT1;const input=document.getElementById('e_prim').value.trim();
+  const primOk=input!==''&&checkPrimCorrecta(input,e.coeffs);
+  markField('e_prim',primOk);markBloque('bloque2',primOk);
+  const pCorr=primStr(e.coeffs);
+  if(primOk)showFb('fb2',true,'✓ Primitiva correcta');
+  else showFb('fb2',false,'Primitiva correcta: F(x) = '+pCorr+(input===''?'<br><span style="font-size:0.78rem">No has escrito nada.</span>':'<br><span style="font-size:0.78rem">Ejemplos válidos: -x²-6x  o  -x^2-6*x</span>'));
+  if(ptsPasoT1.p2===null)ptsPasoT1.p2=primOk?PUNTOS_POR_APARTADO:0;
+  actualizarUI();evaluarCompletitudT1();
+}
+function checkPaso3(){
+  startTimer();const e=currentEjT1;let ok=0,tot=0,errMsg='';
+  e.intervalos.forEach((iv,i)=>{
+    const idx=i+1;const bEl=document.getElementById('ib_'+idx);const aEl=document.getElementById('ia_'+idx);const fbEl=document.getElementById('ifb_'+idx);const faEl=document.getElementById('ifa_'+idx);const vEl=document.getElementById('iv_'+idx);
+    if(!bEl||!aEl||!fbEl||!faEl||!vEl){tot+=4;return;}
+    const bOk=has(xn(bEl.value),iv.b);const aOk=has(xn(aEl.value),iv.a);
+    const Fb=Math.round(primEval(e.coeffs,iv.b)*100)/100;const Fa=Math.round(primEval(e.coeffs,iv.a)*100)/100;
+    const fbOk=has(xn(fbEl.value),Fb);const faOk=has(xn(faEl.value),Fa);
+    const valR=Math.round(iv.val*100)/100;const valOk=has(xn(vEl.value),valR);
+    markField('ib_'+idx,bOk);markField('ia_'+idx,aOk);markField('ifb_'+idx,fbOk);markField('ifa_'+idx,faOk);markField('iv_'+idx,valOk);
+    ok+=(bOk&&aOk?1:0)+(fbOk?1:0)+(faOk?1:0)+(valOk?1:0);tot+=4;
+    if(!bOk||!aOk||!fbOk||!faOk||!valOk){
+      function fmtV(v){if(Number.isInteger(v))return String(v);for(let d=2;d<=12;d++){const n=Math.round(v*d);if(Math.abs(n/d-v)<1e-9){const g=(function gcd(a,b){return b===0?a:gcd(b,a%b);})(Math.abs(n),d);return(n/g)+'/'+(d/g);}}return v.toFixed(2);}
+      errMsg+='I'+subIdx(idx)+': F('+iv.b+') = '+fmtV(primEval(e.coeffs,iv.b))+' ; F('+iv.a+') = '+fmtV(primEval(e.coeffs,iv.a))+' → '+fmtV(iv.val)+'<br>';
+    }
+  });
+  const allOk=(ok===tot);markBloque('bloque3',allOk);
+  if(allOk)showFb('fb3',true,'✓ Todos los intervalos correctos');
+  else showFb('fb3',false,'Valores correctos:<br>'+errMsg);
+  if(ptsPasoT1.p3===null)ptsPasoT1.p3=allOk?PUNTOS_POR_APARTADO:0;
+  actualizarUI();evaluarCompletitudT1();
+}
+function checkPaso4(){
+  startTimer();const e=currentEjT1;
+  const atotalOk=has(xn(document.getElementById('e_atotal').value),e.atotal);
+  markField('e_atotal',atotalOk);markBloque('bloque4',atotalOk);
+  if(atotalOk)showFb('fb4',true,'✓ Área total correcta: '+e.atotal+' u²');
+  else showFb('fb4',false,'Área total correcta: '+e.atotal+' u²');
+  if(ptsPasoT1.p4===null)ptsPasoT1.p4=atotalOk?PUNTOS_POR_APARTADO:0;
+  actualizarUI();evaluarCompletitudT1();
+}
+
+function evaluarCompletitudT1(){
+  if(!currentEjT1)return;
+  const algunoIntentado=Object.values(ptsPasoT1).some(v=>v!==null);
+  if(!algunoIntentado)return;
+  document.getElementById('btn-otro-t1').style.display='inline-block';
+  document.getElementById('btn-ir-t2').style.display='inline-flex';
+  const todosIntentados=Object.values(ptsPasoT1).every(v=>v!==null);
+  const fb=document.getElementById('fb-global');
+  if(!todosIntentados){
+    fb.className='fb'; // aún trabajando, no mostramos nada global todavía
+    return;
+  }
+  const puntos=puntosT1();
+  const aciertosN=Object.values(ptsPasoT1).filter(v=>v===PUNTOS_POR_APARTADO).length;
+  if(!state.tiposCompletados.has('tipo1')){
+    state.tiposCompletados.add('tipo1');
+    actualizarUI();
+  }
+  if(aciertosN===4){
+    fb.className='fb show ok';
+    fb.innerHTML='¡Tipo 1 completado sin fallos! Área total = <strong>'+currentEjT1.atotal+' u²</strong> — <strong>'+puntos.toFixed(2)+'/5 puntos</strong>';
+  } else {
+    fb.className='fb show fail';
+    fb.innerHTML='Tipo 1 terminado: <strong>'+aciertosN+' de 4 apartados correctos</strong> — <strong>'+puntos.toFixed(2)+'/5 puntos</strong>. Cada apartado fallado se ha quedado en 0 pts (ya se reveló su solución). Usa "Hacer otro ejercicio T1" para un intento nuevo y limpio.';
+  }
+  if(!state.tiposCompletados.has('tipo2')){
+    document.getElementById('aviso-pendiente-t1').classList.add('show');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  COMPROBACIONES TIPO 2
+// ═══════════════════════════════════════════════════════════════════
+function checkT2Paso1(){
+  startTimer();const ej=currentEjT2;
+  const input=document.getElementById('t2-prim').value.trim();
+  const ok=checkPrimT2(input, ej.plantilla.fnPrim);
+  markField('t2-prim',ok);markBloque('t2-bloque1',ok);
+  if(ok){
+    showFb('t2-fb1',true,'✓ Correcto: F(x) = '+ej.FStr);
+    const rp=document.getElementById('t2-res-parcial');
+    const F0=ej.plantilla.fnPrim(0);
+    rp.textContent='F(0) = '+F0+', luego F(m) − F(0) = F(m) − '+F0;
+    rp.className='resultado-parcial show';
+  } else {
+    showFb('t2-fb1',false,'La primitiva de f(x) = '+ej.fStr+' es F(x) = '+ej.FStr+' (con C = 0).<br><span style="font-size:0.78rem">Usa ^ o ² para potencias.</span>');
+  }
+  if(ptsPasoT2.p1===null)ptsPasoT2.p1=ok?PUNTOS_POR_APARTADO:0;
+  actualizarUI();evaluarCompletitudT2();
+}
+
+function checkT2Paso2(){
+  startTimer();const ej=currentEjT2;
+  const input=document.getElementById('t2-barrow').value.trim();
+  const ok=checkBarrowT2(input, ej.plantilla.fnBarrow);
+  markField('t2-barrow',ok);markBloque('t2-bloque2',ok);
+  if(ok){
+    showFb('t2-fb2',true,'✓ Correcto: F(m) − F(0) = '+ej.plantilla.barrowPlaceholder.replace('Ej: ',''));
+  } else {
+    showFb('t2-fb2',false,'F(x) = '+ej.FStr+', F(0) = '+ej.plantilla.fnPrim(0)+
+      ', luego F(m) − F(0) = '+ej.FStr.replace(/x/g,'m')+
+      '<br><span style="font-size:0.78rem">Escribe la expresión en función de m.</span>');
+  }
+  if(ptsPasoT2.p2===null)ptsPasoT2.p2=ok?PUNTOS_POR_APARTADO:0;
+  actualizarUI();evaluarCompletitudT2();
+}
+
+function checkT2Paso3(){
+  startTimer();const ej=currentEjT2;
+  const input=document.getElementById('t2-ecuacion').value.trim().replace(/\s/g,'');
+  const S=ej.S;
+  let ok=false;
+  const parts=input.replace(/[−–—]/g,'-').replace(/m²/g,'m^2').replace(/m³/g,'m^3').split('=');
+  if(parts.length===2){
+    const lhsRaw=parts[0],rhsRaw=parts[1];
+    const rhs=parseFloat(rhsRaw);
+    if(Math.abs(rhs-S)<0.1){
+      const lhsN=normalizarExpresionM(lhsRaw);
+      let lhsOk=true;
+      const pts=[1,2,3,4];
+      for(const mv of pts){const v=evaluarEnM(lhsN,mv);const vr=ej.plantilla.fnBarrow(mv);if(isNaN(v)||Math.abs(v-vr)>0.15){lhsOk=false;break;}}
+      ok=lhsOk;
+    }
+  }
+  markField('t2-ecuacion',ok);markBloque('t2-bloque3',ok);
+  const barrowStr=ej.FStr.replace(/x/g,'m');
+  if(ok){
+    showFb('t2-fb3',true,'✓ Ecuación correcta: '+barrowStr+' = '+S);
+  } else {
+    showFb('t2-fb3',false,'La ecuación correcta es: <strong>'+barrowStr+' = '+S+'</strong><br><span style="font-size:0.78rem">Iguala la expresión en m al área objetivo.</span>');
+  }
+  if(ptsPasoT2.p3===null)ptsPasoT2.p3=ok?PUNTOS_POR_APARTADO:0;
+  actualizarUI();evaluarCompletitudT2();
+}
+
+function checkT2Paso4(){
+  startTimer();const ej=currentEjT2;
+  const input=document.getElementById('t2-m').value.trim();
+  const vals=xn(input);
+  const mCorr=ej.mCorrecto;
+  const ok=has(vals,mCorr);
+  markField('t2-m',ok);markBloque('t2-bloque4',ok);
+  if(ok){
+    showFb('t2-fb4',true,'✓ Correcto: m = '+mCorr);
+  } else {
+    showFb('t2-fb4',false,'Despejando m de la ecuación obtenemos m = '+mCorr+' (solución positiva).');
+  }
+  if(ptsPasoT2.p4===null)ptsPasoT2.p4=ok?PUNTOS_POR_APARTADO:0;
+  actualizarUI();evaluarCompletitudT2();
+}
+
+function evaluarCompletitudT2(){
+  if(!currentEjT2)return;
+  const algunoIntentado=Object.values(ptsPasoT2).some(v=>v!==null);
+  if(!algunoIntentado)return;
+  document.getElementById('btn-otro-t2').style.display='inline-block';
+  document.getElementById('btn-ir-t1').style.display='inline-flex';
+  const todosIntentados=Object.values(ptsPasoT2).every(v=>v!==null);
+  const fb=document.getElementById('t2-fb-global');
+  if(!todosIntentados){
+    fb.className='fb';
+    return;
+  }
+  const puntos=puntosT2();
+  const aciertosN=Object.values(ptsPasoT2).filter(v=>v===PUNTOS_POR_APARTADO).length;
+  if(!state.tiposCompletados.has('tipo2')){
+    state.tiposCompletados.add('tipo2');
+    actualizarUI();
+  }
+  if(aciertosN===4){
+    fb.className='fb show ok';
+    fb.innerHTML='¡Tipo 2 completado sin fallos! m = <strong>'+currentEjT2.mCorrecto+'</strong> — <strong>'+puntos.toFixed(2)+'/5 puntos</strong>';
+  } else {
+    fb.className='fb show fail';
+    fb.innerHTML='Tipo 2 terminado: <strong>'+aciertosN+' de 4 apartados correctos</strong> — <strong>'+puntos.toFixed(2)+'/5 puntos</strong>. Cada apartado fallado se ha quedado en 0 pts (ya se reveló su solución). Usa "Hacer otro ejercicio T2" para un intento nuevo y limpio.';
+  }
+  if(!state.tiposCompletados.has('tipo1')){
+    document.getElementById('aviso-pendiente-t2').classList.add('show');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  NUEVO EJERCICIO
+// ═══════════════════════════════════════════════════════════════════
+function generarNuevoEjT1(){
+  state.tiposCompletados.delete('tipo1');
+  currentEjT1=generadores[Math.floor(Math.random()*generadores.length)]();
+  buildEjT1(currentEjT1);
+  actualizarUI();
+}
+function generarNuevoEjT2(){
+  state.tiposCompletados.delete('tipo2');
+  currentEjT2=genTipo2();
+  buildEjT2(currentEjT2);
+  actualizarUI();
+}
+
+let tipoPendienteNuevo=null;
+function mostrarConfirmNuevoEjercicio(tipo){
+  tipoPendienteNuevo=tipo;
+  const puntos=tipo==='tipo1'?puntosT1():puntosT2();
+  document.getElementById('confirm-nuevo-texto').innerHTML=
+    'Este '+(tipo==='tipo1'?'Tipo 1':'Tipo 2')+' ya tiene <strong>'+puntos.toFixed(2)+' puntos</strong> conseguidos.<br><br>'+
+    'Si generas un ejercicio nuevo, esos puntos se pierden y empiezas este tipo desde 0.';
+  document.getElementById('confirm-nuevo-bg').classList.add('show');
+}
+function cancelarNuevoEjercicio(){
+  document.getElementById('confirm-nuevo-bg').classList.remove('show');
+  tipoPendienteNuevo=null;
+}
+function confirmarNuevoEjercicio(){
+  document.getElementById('confirm-nuevo-bg').classList.remove('show');
+  if(tipoPendienteNuevo==='tipo1')generarNuevoEjT1();
+  else if(tipoPendienteNuevo==='tipo2')generarNuevoEjT2();
+  tipoPendienteNuevo=null;
+}
+
+function nuevoEjT1(){
+  if(puntosT1()>0){mostrarConfirmNuevoEjercicio('tipo1');return;}
+  generarNuevoEjT1();
+}
+function nuevoEjT2(){
+  if(puntosT2()>0){mostrarConfirmNuevoEjercicio('tipo2');return;}
+  generarNuevoEjT2();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  CALCULADORA
+// ═══════════════════════════════════════════════════════════════════
+let cexpr='';
+function toggleCalc(){const b=document.getElementById('calc-body');b.classList.toggle('open');document.getElementById('calc-arrow').textContent=b.classList.contains('open')?'▾':'▸';}
+function cc(v){const sc=document.getElementById('cscreen');if(v==='AC'){cexpr='';sc.textContent='0';return;}if(v==='+/-'){try{cexpr=String(parseFloat(eval(cexpr))*-1);sc.textContent=cexpr;}catch(e){}return;}if(v==='%'){try{cexpr=String(parseFloat(eval(cexpr))/100);sc.textContent=cexpr;}catch(e){}return;}if(v==='='){try{cexpr=String(Math.round(eval(cexpr)*1e10)/1e10);sc.textContent=cexpr;}catch(e){sc.textContent='Error';cexpr='';}return;}cexpr+=v;sc.textContent=cexpr;}
+
+// ═══════════════════════════════════════════════════════════════════
+//  FINALIZAR
+// ═══════════════════════════════════════════════════════════════════
+function finalizar(){
+  const nombreEl=document.getElementById('nombre');
+  if(!nombreEl.value.trim()){nombreEl.style.borderBottom='2px solid #8B1A1A';nombreEl.placeholder='⚠ Escribe tu nombre antes de finalizar';nombreEl.focus();return;}
+  if(state.tiposCompletados.size<2){
+    mostrarAvisoIncompleto();
+    return;
+  }
+  finalizarDeVerdad();
+}
+
+function mostrarAvisoIncompleto(){
+  const faltantes=[];
+  if(!state.tiposCompletados.has('tipo1'))faltantes.push('Tipo 1');
+  if(!state.tiposCompletados.has('tipo2'))faltantes.push('Tipo 2');
+  const notaActual=Math.min(10,state.puntos);
+  document.getElementById('aviso-texto').innerHTML=
+    'Todavía te falta completar: <strong>'+faltantes.join(' y ')+'</strong>.<br><br>'+
+    'Si finalizas ahora, tu nota quedará en <strong>'+notaActual.toFixed(2)+'/10</strong>.<br><br>'+
+    '<span style="font-size:0.78rem">Si después cierras el resumen con "Cerrar y seguir practicando", este intento se reinicia por completo y perderías lo ya conseguido.</span>';
+  document.getElementById('aviso-bg').classList.add('show');
+}
+function cerrarAvisoIncompleto(){
+  document.getElementById('aviso-bg').classList.remove('show');
+}
+function confirmarFinalizarIncompleto(){
+  document.getElementById('aviso-bg').classList.remove('show');
+  finalizarDeVerdad();
+}
+
+function finalizarDeVerdad(){
+  const nombreEl=document.getElementById('nombre');
+  const nombre=nombreEl.value.trim();
+  const nota=Math.min(10,state.puntos);
+  const now=new Date();
+  const fecha=String(now.getDate()).padStart(2,'0')+'/'+String(now.getMonth()+1).padStart(2,'0')+'/'+now.getFullYear();
+  const hora=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')+':'+String(now.getSeconds()).padStart(2,'0');
+  const cols={10:{bg:'#1a7a1a',txt:'#fff',v:true},9:{bg:'#6dbf6d',txt:'#fff'},8:{bg:'#1a4f8a',txt:'#fff'},7:{bg:'#5b9bd5',txt:'#fff'},6:{bg:'#c05c00',txt:'#fff'},5:{bg:'#f5a623',txt:'#000'}};
+  const k=nota>=10?10:nota>=9?9:nota>=8?8:nota>=7?7:nota>=6?6:nota>=5?5:-1;
+  const col=cols[k]||{bg:'#8B1A1A',txt:'#fff'};
+  const modal=document.getElementById('modal');modal.style.background=col.bg;modal.style.color=col.txt;modal.querySelector('.btn-cerrar').style.color=col.txt;
+  document.getElementById('m-nombre').textContent=nombre;
+  document.getElementById('m-nota').textContent=nota.toFixed(1)+' / 10';
+  const tiposStr=Array.from(state.tiposCompletados).map(t=>t==='tipo1'?'Tipo 1 ✓':'Tipo 2 ✓').join(' · ')||'Ninguno completado';
+  document.getElementById('m-meta').innerHTML='Fecha: '+fecha+'<br>Hora: '+hora+'<br>Tiempo: '+elapsed()+'<br>Tipos completados: '+tiposStr+'<br>Aciertos: '+state.aciertos+' · Fallos: '+state.fallos;
+  document.getElementById('modal-bg').classList.add('show');
+  if(col.v)document.getElementById('wrap').classList.add('verde-total');
+}
+
+function cerrarModal(){
+  document.getElementById('modal-bg').classList.remove('show');
+  document.getElementById('wrap').classList.remove('verde-total');
+  state={puntos:0,tiposCompletados:new Set(),tipoActual:'tipo1',aciertos:0,fallos:0,inicio:null};
+  timerStart=null;
+  document.getElementById('nombre').value='';
+  document.getElementById('nombre').style.borderBottom='';
+  document.getElementById('nombre').placeholder='Escribe tu nombre completo...';
+  actualizarUI();
+  nuevoEjT1();nuevoEjT2();
+  elegirTipo('tipo1');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  ACCESIBILIDAD: tecla Enter dispara el botón "Comprobar" del bloque
+//  actual (funciona también con los inputs generados dinámicamente,
+//  como los de los intervalos, por delegación de eventos).
+// ═══════════════════════════════════════════════════════════════════
+document.addEventListener('keydown', function(e){
+  if(e.key!=='Enter')return;
+  const t=e.target;
+  if(t.tagName!=='INPUT'&&t.tagName!=='SELECT')return;
+  const bloque=t.closest('.paso-bloque');
+  if(!bloque)return;
+  const btn=bloque.querySelector('.btn-paso');
+  if(btn){e.preventDefault();btn.click();}
+});
+
+// ═══════════════════════════════════════════════════════════════════
+//  INICIO
+// ═══════════════════════════════════════════════════════════════════
+nuevoEjT1();
+nuevoEjT2();
+elegirTipo('tipo1');
+actualizarUI();
+</script>
+</body>
+</html>
