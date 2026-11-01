@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Homotecias Interactiva | Aprendizaje Geométrico</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            transition: background 0.3s;
+        }
+        
+        body.bg-10 { background: linear-gradient(135deg, #1a7a1a 0%, #2ecc71 100%); }
+        body.bg-9  { background: linear-gradient(135deg, #2d8f2d 0%, #6dbf6d 100%); }
+        body.bg-8  { background: linear-gradient(135deg, #1a4f8a 0%, #3498db 100%); }
+        body.bg-7  { background: linear-gradient(135deg, #2c5aa0 0%, #5b9bd5 100%); }
+        body.bg-6  { background: linear-gradient(135deg, #c05c00 0%, #f39c12 100%); }
+        body.bg-5  { background: linear-gradient(135deg, #d68910 0%, #f5a623 100%); }
+        body.bg-low{ background: linear-gradient(135deg, #922b21 0%, #e74c3c 100%); }
+        
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+        
+        .credits-header {
+            background: #0d3b66;
+            color: white;
+            padding: 12px 30px;
+            text-align: center;
+            font-size: 0.95em;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+        
+        .main-content {
+            padding: 30px 40px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 15px;
+        }
+        
+        .header h1 { color: #1e3799; font-size: 2.4em; letter-spacing: -0.5px; }
+        .header p  { color: #4a5568; font-size: 0.9em; }
+        
+        .student-section {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 40px;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 2px solid #3498db;
+        }
+        
+        .student-input-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex: 1;
+        }
+        
+        .student-section label { font-weight: 600; color: #1e3799; white-space: nowrap; }
+        
+        .student-section input {
+            flex: 1;
+            max-width: 400px;
+            padding: 10px 16px;
+            border: 2px solid #3498db;
+            border-radius: 30px;
+            font-size: 1em;
+            outline: none;
+            transition: 0.2s;
+        }
+        
+        .student-section input:focus { box-shadow: 0 0 0 3px rgba(52,152,219,0.3); }
+        
+        .score-section {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            background: #ecf9ff;
+            padding: 12px 20px;
+            border-radius: 30px;
+            border: 2px solid #3498db;
+            white-space: nowrap;
+        }
+        
+        .score-section span { font-weight: bold; color: #1e3799; font-size: 1.1em; }
+        
+        .exercise-info {
+            background: #ecf9ff;
+            padding: 12px 20px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            border-left: 6px solid #3498db;
+        }
+        
+        .exercise-info h3 { color: #2c3e50; }
+        
+        .instructions {
+            background: #fef9e6;
+            padding: 15px;
+            border-radius: 18px;
+            margin-bottom: 20px;
+            border-left: 4px solid #f39c12;
+        }
+
+        /* ====================================================
+           CANVAS CONTAINER — siempre dos columnas, sin @media
+           ==================================================== */
+        .canvas-container {
+            display: grid;
+            grid-template-columns: 1fr 220px;   /* canvas flexible + tabla fija */
+            gap: 15px;
+            margin: 20px 0;
+            border-radius: 20px;
+            background: #fdfdfd;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            padding: 15px;
+            align-items: start;
+        }
+        
+        .canvas-wrapper {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            min-width: 0;          /* evita que el canvas desborde el grid */
+        }
+        
+        canvas {
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            cursor: grab;
+            background: white;
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        canvas:active { cursor: grabbing; }
+        
+        /* La tabla siempre pegada arriba en su columna */
+        .distance-box {
+            width: 220px;
+            background: white;
+            border-radius: 18px;
+            padding: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border: 2px solid #3498db;
+            font-size: 0.85rem;
+            align-self: start;
+        }
+        
+        .distance-box h4 { margin-bottom: 6px; font-size: 0.95rem; }
+        
+        .distance-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 6px 0;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+        
+        .distance-item span { font-size: 0.85rem; }
+        
+        .distance-item input {
+            width: 60px;
+            padding: 3px;
+            border-radius: 8px;
+            border: 1px solid #3498db;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+        
+        .distance-box p { font-size: 0.65rem; margin-top: 6px; }
+
+        /* =================== resto de estilos sin cambios =================== */
+        
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item { display: flex; align-items: center; gap: 6px; }
+        
+        .legend-color {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        button {
+            padding: 12px 35px;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-width: 250px;
+        }
+        
+        .btn-check { background: #27ae60; color: white; box-shadow: 0 2px 8px rgba(39,174,96,0.3); }
+        .btn-check:hover { background: #2c9e55; transform: translateY(-2px); }
+        
+        .btn-finalize {
+            background: #e67e22;
+            color: white;
+            padding: 12px 35px;
+            font-size: 1rem;
+            border-radius: 50px;
+            box-shadow: 0 2px 8px rgba(230,126,34,0.3);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-finalize:hover { background: #d35400; transform: translateY(-2px); }
+        
+        .score-display { text-align: center; font-weight: bold; font-size: 1.2rem; color: #2c3e50; }
+
+        /* Aviso nombre faltante */
+        .name-warning {
+            display: none;
+            background: #ffe0e0;
+            color: #a1220a;
+            border-left: 6px solid #e74c3c;
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            text-align: center;
+            animation: fadeIn 0.2s ease;
+        }
+        .name-warning.visible { display: block; }
+        
+        .feedback {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 18px;
+            display: none;
+            font-weight: 500;
+            text-align: center;
+        }
+        
+        .feedback.success { background: #d0f0d0; color: #145214; border-left: 6px solid #2ecc71; }
+        .feedback.error   { background: #ffe0e0; color: #a1220a; border-left: 6px solid #e74c3c; }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+        
+        .modal.active { display: flex; }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 36px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            animation: scaleUp 0.2s;
+            border-top: 8px solid #3498db;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        @keyframes scaleUp {
+            from { transform: scale(0.95); opacity: 0; }
+            to   { transform: scale(1);    opacity: 1; }
+        }
+        
+        .report-title { font-size: 1.8em; font-weight: bold; margin-bottom: 20px; color: #2c3e50; }
+        
+        .report-item {
+            text-align: left;
+            margin: 15px 0;
+            padding: 12px 0;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .report-item strong { color: #1e3799; font-weight: 600; }
+        .report-item span   { font-size: 1.05em; font-weight: 500; }
+        
+        .report-score {
+            background: white;
+            margin: 25px 0 20px 0;
+            padding: 20px;
+            border-radius: 20px;
+            font-size: 2.5em;
+            font-weight: bold;
+            letter-spacing: 2px;
+            border: 3px solid #3498db;
+        }
+        
+        .report-reminder {
+            background: #fef9e6;
+            padding: 15px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #f39c12;
+            font-weight: 500;
+            font-size: 1.05em;
+        }
+        
+        .close-modal { background: #3498db; color: white; margin-top: 20px; padding: 12px 35px; font-size: 1rem; }
+        .close-modal:hover { background: #2980b9; transform: translateY(-2px); }
+        
+        /* Colores exactos del modal según nota */
+        .score-10  { background:#1a7a1a; border-top:8px solid #145c14; color:white; }
+        .score-10  .report-title,.score-10  .report-item strong{color:white}
+        .score-10  .report-item{border-bottom-color:rgba(255,255,255,0.3)}
+        .score-10  .report-score{border-color:white;color:white;background:rgba(255,255,255,0.15)}
+
+        .score-9   { background:#6dbf6d; border-top:8px solid #4a9f4a; color:white; }
+        .score-9   .report-title,.score-9   .report-item strong{color:white}
+        .score-9   .report-item{border-bottom-color:rgba(255,255,255,0.3)}
+        .score-9   .report-score{border-color:white;color:white;background:rgba(255,255,255,0.15)}
+
+        .score-8   { background:#1a4f8a; border-top:8px solid #10335c; color:white; }
+        .score-8   .report-title,.score-8   .report-item strong{color:white}
+        .score-8   .report-item{border-bottom-color:rgba(255,255,255,0.3)}
+        .score-8   .report-score{border-color:white;color:white;background:rgba(255,255,255,0.15)}
+
+        .score-7   { background:#5b9bd5; border-top:8px solid #3a7ab5; color:white; }
+        .score-7   .report-title,.score-7   .report-item strong{color:white}
+        .score-7   .report-item{border-bottom-color:rgba(255,255,255,0.3)}
+        .score-7   .report-score{border-color:white;color:white;background:rgba(255,255,255,0.15)}
+
+        .score-6   { background:#c05c00; border-top:8px solid #8f4400; color:white; }
+        .score-6   .report-title,.score-6   .report-item strong{color:white}
+        .score-6   .report-item{border-bottom-color:rgba(255,255,255,0.3)}
+        .score-6   .report-score{border-color:white;color:white;background:rgba(255,255,255,0.15)}
+
+        .score-5   { background:#f5a623; border-top:8px solid #c07d00; color:#1a1a1a; }
+        .score-5   .report-title,.score-5   .report-item strong{color:#1a1a1a}
+        .score-5   .report-item{border-bottom-color:rgba(0,0,0,0.2)}
+        .score-5   .report-score{border-color:#1a1a1a;color:#1a1a1a;background:rgba(255,255,255,0.25)}
+
+        .score-low { background:#c0392b; border-top:8px solid #8e1a0f; color:white; }
+        .score-low .report-title,.score-low .report-item strong{color:white}
+        .score-low .report-item{border-bottom-color:rgba(255,255,255,0.3)}
+        .score-low .report-score{border-color:white;color:white;background:rgba(255,255,255,0.15)}
+
+        @media (max-width: 760px) {
+            .canvas-container {
+                grid-template-columns: 1fr;   /* una sola columna: canvas arriba, tabla debajo */
+            }
+            .distance-box { width: 100%; }
+            button { min-width: 0; width: 100%; max-width: 320px; }
+            .student-section { flex-wrap: wrap; gap: 15px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="credits-header">
+        📝 Material elaborado por Marta L Letona S. Basado en el trabajo de Javier Cayetano
+    </div>
+    
+    <div class="main-content">
+        <div class="header">
+            <h1>📐 Homotecias Interactivas</h1>
+            <p>Material didáctico basado en geometría transformacional</p>
+        </div>
+
+        <div class="student-section" id="studentSection">
+            <div class="student-input-group">
+                <label for="studentName">👩‍🎓 Alumno/a:</label>
+                <input type="text" id="studentName" placeholder="Escribe tu nombre completo">
+            </div>
+            <div class="score-section">
+                <span>🏆 Puntuación:</span>
+                <span id="scoreValueHeader">0 / 10</span>
+            </div>
+        </div>
+
+        <div class="content" id="mainContent" style="display: block;">
+            <div class="exercise-info">
+                <h3 id="exerciseTitle">Ejercicio 1</h3>
+                <p id="exerciseDescription"></p>
+            </div>
+
+            <div class="instructions">
+                <h4>📌 Modo de uso:</h4>
+                <ol>
+                    <li>Observa el triángulo ORIGINAL (azul) y el centro de homotecia (punto <strong>O</strong>).</li>
+                    <li>Arrastra los vértices del triángulo <span style="color:#e74c3c">ROJO (A', B', C')</span> para llevarlos a su posición correcta.</li>
+                    <li><strong>Mientras arrastras un vértice</strong> aparecerá una línea <span style="color:#2ecc71;">verde auxiliar</span> desde O hasta el vértice. Al soltarlo, la línea verde <u>desaparece</u>.</li>
+                    <li>Puedes usar las distancias sugeridas (OA', OB', OC') como ayuda. ¡Precisión al milímetro!</li>
+                    <li>Haz clic en "Verificar" para comprobar. Si aciertas, pasarás al siguiente ejercicio.</li>
+                </ol>
+            </div>
+
+            <!-- Grid: canvas a la izquierda, tabla siempre a la derecha -->
+            <div class="canvas-container">
+                <div class="canvas-wrapper">
+                    <canvas id="canvas" width="800" height="500"></canvas>
+                </div>
+
+                <div class="distance-box">
+                    <h4>📏 Valores de control</h4>
+                    <div class="distance-item"><span>🔢 Razón k:</span><strong id="displayK">--</strong></div>
+                    <div style="border-top:1px solid #ccc; margin:5px 0"></div>
+                    <div class="distance-item"><span>📐 OA:</span><strong id="distOA">-</strong></div>
+                    <div class="distance-item"><span>🎯 OA' deseado:</span><input type="number" id="inputOAp" aria-label="Distancia OA' deseada"></div>
+                    <div class="distance-item"><span>📐 OB:</span><strong id="distOB">-</strong></div>
+                    <div class="distance-item"><span>🎯 OB' deseado:</span><input type="number" id="inputOBp" aria-label="Distancia OB' deseada"></div>
+                    <div class="distance-item"><span>📐 OC:</span><strong id="distOC">-</strong></div>
+                    <div class="distance-item"><span>🎯 OC' deseado:</span><input type="number" id="inputOCp" aria-label="Distancia OC' deseada"></div>
+                    <p>* Introduce la distancia teórica para visualizar un círculo guía.</p>
+                </div>
+            </div>
+
+            <div class="legend">
+                <div class="legend-item"><div class="legend-color" style="background:#3498db;"></div><span>Triángulo original</span></div>
+                <div class="legend-item"><div class="legend-color" style="background:#e74c3c;"></div><span>Triángulo homotético (transformado)</span></div>
+                <div class="legend-item"><div class="legend-color" style="background:#f39c12;"></div><span>Centro O</span></div>
+
+            </div>
+
+            <div class="feedback" id="feedback" aria-live="polite"></div>
+            <div class="name-warning" id="nameWarning">⚠️ Introduce tu nombre completo antes de finalizar.</div>
+            <div class="button-group">
+                <button class="btn-check" onclick="checkAnswer()">✅ Verificar posición</button>
+                <button class="btn-finalize" onclick="openReport()">📋 Finalizar y calificar</button>
+            </div>
+            <div class="score-display">🏆 Puntuación: <span id="scoreValue">0</span> / 10</div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="reportModal">
+    <div class="modal-content" id="modalContent">
+        <div class="report-title">📊 Resumen de aprendizaje</div>
+        <div class="report-item"><strong>Nombre:</strong> <span id="reportName"></span></div>
+        <div class="report-item"><strong>Nota:</strong> <span id="reportScore">0 / 10</span></div>
+        <div class="report-item"><strong>Fecha:</strong> <span id="reportDate"></span></div>
+        <div class="report-item"><strong>Hora:</strong> <span id="reportTime"></span></div>
+        <div class="report-item"><strong>Tiempo transcurrido:</strong> <span id="reportElapsedTime">0:00</span></div>
+        <div class="report-reminder">📸 Haz una captura de pantalla y entrégala en Google Classroom.</div>
+        <button class="close-modal" onclick="closeReport()">Cerrar y seguir practicando</button>
+    </div>
+</div>
+
+<script>
+    const exercises = [
+        { k: 2,    desc: "Homotecia directa con k = 2 (ampliación, mismo sentido)" },
+        { k: -2,   desc: "Homotecia inversa con k = -2 (ampliación y simetría central)" },
+        { k: 0.5,  desc: "Homotecia directa con k = 0.5 (reducción a la mitad)" },
+        { k: -0.5, desc: "Homotecia inversa con k = -0.5 (reducción + inversión)" }
+    ];
+    
+    let state = {
+        studentName: '',
+        currentExerciseIdx: 0,
+        score: 0,
+        completedTypes: new Set(),
+        hits: 0,
+        errors: 0,
+        exercisesDone: 0,
+        startTime: null,
+        activeDragVertex: null,
+    };
+    
+    let canvas, ctx;
+    let center = { x: 0, y: 0 };
+    let originalTriangle = { x: 0, y: 0, size: 70 };
+    let transformedTriangle = { vertices: [{x:0,y:0},{x:0,y:0},{x:0,y:0}], correctVertices: [{x:0,y:0},{x:0,y:0},{x:0,y:0}] };
+    let tolerance = 18;
+    
+    window.addEventListener('load', () => {
+        canvas = document.getElementById('canvas');
+        if (!canvas) return;
+        ctx = canvas.getContext('2d');
+        state.startTime = new Date();
+        loadExercise(0);
+        updateProgressUI();
+    });
+    
+    function loadExercise(index) {
+        const ex = exercises[index % exercises.length];
+        state.currentExerciseIdx = index % exercises.length;
+        state.activeDragVertex = null;
+        
+        document.getElementById('inputOAp').value = '';
+        document.getElementById('inputOBp').value = '';
+        document.getElementById('inputOCp').value = '';
+        
+        if (ex.k > 0) {
+            center = { x: 110, y: 80 };
+            originalTriangle = { x: 200, y: 190, size: 70 };
+        } else if (ex.k === -2) {
+            // k=-2: triángulo pequeño y centrado para que la imagen ampliada quepa en el canvas
+            center = { x: 400, y: 250 };
+            originalTriangle = { x: 430, y: 275, size: 55 };
+        } else {
+            // k=-0.5: imagen reducida, hay más margen
+            center = { x: 250, y: 200 };
+            originalTriangle = { x: 280, y: 300, size: 70 };
+        }
+        
+        const origVerts = getOriginalVertices();
+        const correct = origVerts.map(p => ({
+            x: center.x + ex.k * (p.x - center.x),
+            y: center.y + ex.k * (p.y - center.y)
+        }));
+        
+        let randomStart = () => {
+            let minX = Math.max(20, center.x - 200);
+            let maxX = Math.min(canvas.width - 60, center.x + 200);
+            let minY = Math.max(20, center.y - 180);
+            let maxY = Math.min(canvas.height - 60, center.y + 180);
+            return { x: Math.random() * (maxX - minX) + minX, y: Math.random() * (maxY - minY) + minY };
+        };
+        
+        transformedTriangle = {
+            vertices: [randomStart(), randomStart(), randomStart()],
+            correctVertices: correct
+        };
+        
+        canvas.onmousedown = handleMouseDown;
+        canvas.onmousemove = handleMouseMove;
+        canvas.onmouseup   = handleMouseUp;
+        canvas.onmouseleave = handleMouseUp;
+        
+        document.getElementById('exerciseTitle').innerHTML = `Ejercicio ${state.exercisesDone + 1} · Razón k = ${ex.k}`;
+        document.getElementById('exerciseDescription').innerHTML = ex.desc;
+        document.getElementById('displayK').innerText = ex.k;
+        document.getElementById('feedback').style.display = 'none';
+        
+        updateDistanceBoxValues();
+        setupInputListeners();
+        
+        if (window.animFrame) cancelAnimationFrame(window.animFrame);
+        function drawLoop() {
+            drawCanvas();
+            window.animFrame = requestAnimationFrame(drawLoop);
+        }
+        drawLoop();
+    }
+    
+    function getOriginalVertices() {
+        const ox = originalTriangle.x;
+        const oy = originalTriangle.y;
+        const s  = originalTriangle.size;
+        return [
+            { x: ox,       y: oy },
+            { x: ox + s,   y: oy },
+            { x: ox + s/2, y: oy - s }
+        ];
+    }
+    
+    function drawCanvas() {
+        if (!ctx) return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.save();
+        
+        const origVerts = getOriginalVertices();
+        
+        // Triángulo original
+        ctx.beginPath();
+        ctx.moveTo(origVerts[0].x, origVerts[0].y);
+        ctx.lineTo(origVerts[1].x, origVerts[1].y);
+        ctx.lineTo(origVerts[2].x, origVerts[2].y);
+        ctx.closePath();
+        ctx.strokeStyle = "#3498db";
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+        ctx.fillStyle = "rgba(52,152,219,0.1)";
+        ctx.fill();
+        
+        ctx.fillStyle = "#1e3799";
+        ctx.font = "bold 14px 'Segoe UI'";
+        ctx.fillText("A", origVerts[0].x+10, origVerts[0].y+12);
+        ctx.fillText("B", origVerts[1].x+10, origVerts[1].y+12);
+        ctx.fillText("C", origVerts[2].x-18, origVerts[2].y-8);
+        
+        // Líneas punteadas grises desde O a vértices originales
+        // Solo para k positiva: para k negativa revelarían la dirección de A', B', C'
+        const exNow = exercises[state.currentExerciseIdx];
+        if (!exNow || exNow.k > 0) {
+            ctx.setLineDash([6, 8]);
+            ctx.strokeStyle = "#95a5a6";
+            ctx.lineWidth = 1.2;
+            for (let v of origVerts) {
+                ctx.beginPath();
+                ctx.moveTo(center.x, center.y);
+                ctx.lineTo(v.x, v.y);
+                ctx.stroke();
+            }
+            ctx.setLineDash([]);
+        }
+        
+        // Recta auxiliar verde: solo del vértice que se está arrastrando en este momento.
+        // Desaparece al soltar, tal y como se indica en las instrucciones.
+        const lineColors = ["#2ecc71", "#27ae60", "#1aaf5d"];
+        for (let i = 0; i < 3; i++) {
+            let pos = (state.activeDragVertex === i) ? transformedTriangle.vertices[i] : null;
+            if (pos) {
+                const dx = pos.x - center.x;
+                const dy = pos.y - center.y;
+                const len = Math.hypot(dx, dy);
+                if (len > 0.5) {
+                    const nx = dx / len, ny = dy / len;
+                    ctx.beginPath();
+                    ctx.moveTo(center.x - nx * 1200, center.y - ny * 1200);
+                    ctx.lineTo(center.x + nx * 1200, center.y + ny * 1200);
+                    ctx.strokeStyle = lineColors[i];
+                    ctx.lineWidth = 1.8;
+                    ctx.setLineDash([8, 6]);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                }
+            }
+        }
+        
+        // Triángulo transformado
+        const triVerts = transformedTriangle.vertices;
+        ctx.beginPath();
+        ctx.moveTo(triVerts[0].x, triVerts[0].y);
+        ctx.lineTo(triVerts[1].x, triVerts[1].y);
+        ctx.lineTo(triVerts[2].x, triVerts[2].y);
+        ctx.closePath();
+        ctx.fillStyle = "rgba(231,76,60,0.15)";
+        ctx.fill();
+        ctx.strokeStyle = "#e74c3c";
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+        
+        const labels = ["A'", "B'", "C'"];
+        for (let i = 0; i < triVerts.length; i++) {
+            ctx.fillStyle = "#c0392b";
+            ctx.beginPath();
+            ctx.arc(triVerts[i].x, triVerts[i].y, 6, 0, 2*Math.PI);
+            ctx.fill();
+            ctx.fillStyle = "#2c3e50";
+            ctx.font = "bold 13px 'Segoe UI'";
+            ctx.fillText(labels[i], triVerts[i].x+12, triVerts[i].y-8);
+        }
+        
+        // Centro O
+        ctx.fillStyle = "#f39c12";
+        ctx.beginPath();
+        ctx.arc(center.x, center.y, 8, 0, 2*Math.PI);
+        ctx.fill();
+        ctx.fillStyle = "#2c3e50";
+        ctx.font = "bold 15px Arial";
+        ctx.fillText("O", center.x+10, center.y-6);
+        
+        // Círculos guía
+        const ex = exercises[state.currentExerciseIdx];
+        if (ex) {
+            const oa = parseFloat(document.getElementById('inputOAp')?.value);
+            const ob = parseFloat(document.getElementById('inputOBp')?.value);
+            const oc = parseFloat(document.getElementById('inputOCp')?.value);
+            const colors = ["#27ae60","#2980b9","#8e44ad"];
+            [oa,ob,oc].forEach((d, i) => {
+                if (!isNaN(d) && d > 0) {
+                    ctx.beginPath();
+                    ctx.arc(center.x, center.y, d, 0, 2*Math.PI);
+                    ctx.strokeStyle = colors[i];
+                    ctx.setLineDash([6,10]);
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                }
+            });
+        }
+        
+        ctx.restore();
+    }
+    
+    let isDraggingGlobal = false;
+    
+    function handleMouseDown(e) {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width  / rect.width;
+        const scaleY = canvas.height / rect.height;
+        const mouseX = (e.clientX - rect.left) * scaleX;
+        const mouseY = (e.clientY - rect.top)  * scaleY;
+        for (let i = 0; i < transformedTriangle.vertices.length; i++) {
+            const v = transformedTriangle.vertices[i];
+            if (Math.hypot(mouseX - v.x, mouseY - v.y) < 14) {
+                state.activeDragVertex = i;
+                isDraggingGlobal = true;
+                canvas.style.cursor = 'grabbing';
+                break;
+            }
+        }
+    }
+    
+    function handleMouseMove(e) {
+        if (!isDraggingGlobal || state.activeDragVertex === null) return;
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width  / rect.width;
+        const scaleY = canvas.height / rect.height;
+        let rawX = (e.clientX - rect.left) * scaleX;
+        let rawY = (e.clientY - rect.top)  * scaleY;
+        rawX = Math.min(Math.max(rawX, 10), canvas.width  - 10);
+        rawY = Math.min(Math.max(rawY, 10), canvas.height - 10);
+        const snapped = { x: Math.round(rawX/8)*8, y: Math.round(rawY/8)*8 };
+        transformedTriangle.vertices[state.activeDragVertex] = snapped;
+        updateDistanceBoxValues();
+    }
+    
+    function handleMouseUp(e) {
+        state.activeDragVertex = null;
+        isDraggingGlobal = false;
+        canvas.style.cursor = 'grab';
+        updateDistanceBoxValues();
+    }
+    
+    function updateDistanceBoxValues() {
+        const origVerts = getOriginalVertices();
+        const ex = exercises[state.currentExerciseIdx];
+        const dOA = Math.round(Math.hypot(center.x - origVerts[0].x, center.y - origVerts[0].y));
+        const dOB = Math.round(Math.hypot(center.x - origVerts[1].x, center.y - origVerts[1].y));
+        const dOC = Math.round(Math.hypot(center.x - origVerts[2].x, center.y - origVerts[2].y));
+        document.getElementById('distOA').innerText = dOA;
+        document.getElementById('distOB').innerText = dOB;
+        document.getElementById('distOC').innerText = dOC;
+        document.getElementById('inputOAp').placeholder = '';
+        document.getElementById('inputOBp').placeholder = '';
+        document.getElementById('inputOCp').placeholder = '';
+    }
+    
+    function setupInputListeners() {
+        const ids = ['inputOAp','inputOBp','inputOCp'];
+        ids.forEach((id, index) => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.replaceWith(el.cloneNode(true)); // limpiar listeners previos
+            }
+        });
+        ids.forEach((id, index) => {
+            document.getElementById(id).addEventListener('input', () => {
+                for (let i = 0; i < index; i++) document.getElementById(ids[i]).value = '';
+            });
+        });
+    }
+    
+    function checkAnswer() {
+        let allPlaced = true;
+        for (let i = 0; i < transformedTriangle.vertices.length; i++) {
+            const dist = Math.hypot(
+                transformedTriangle.vertices[i].x - transformedTriangle.correctVertices[i].x,
+                transformedTriangle.vertices[i].y - transformedTriangle.correctVertices[i].y
+            );
+            if (dist > tolerance) { allPlaced = false; break; }
+        }
+        
+        const ex = exercises[state.currentExerciseIdx];
+        const PUNTOS_POR_TIPO = 10 / exercises.length; // 2.5 pts, uno por cada tipo de homotecia
+        if (allPlaced) {
+            state.hits++;
+            const yaCompletado = state.completedTypes.has(ex.k);
+            if (!yaCompletado) {
+                state.completedTypes.add(ex.k);
+                state.score = Math.min(state.score + PUNTOS_POR_TIPO, 10);
+            }
+            state.exercisesDone++;
+            document.getElementById('feedback').className = 'feedback success';
+            document.getElementById('feedback').innerHTML = yaCompletado
+                ? `<h4>✔️ ¡Correcto!</h4><p>Ya habías conseguido los puntos de k = ${ex.k} antes. Sigues practicando, pero este tipo no vuelve a sumar. Avanzando...</p>`
+                : `<h4>✔️ ¡Perfecto!</h4><p>Has aplicado correctamente k = ${ex.k}. Avanzando...</p>`;
+            document.getElementById('feedback').style.display = 'block';
+            setTimeout(() => loadExercise(state.currentExerciseIdx + 1), 1500);
+        } else {
+            state.errors++;
+            state.exercisesDone++;
+            document.getElementById('feedback').className = 'feedback error';
+            document.getElementById('feedback').innerHTML = `<h4>❌ Posición incorrecta</h4><p>No consigues los puntos de este intento, pero no se te penaliza. Revisa la homotecia: P' = O + k·(P−O). k = ${ex.k}. Los vértices deben estar en posición exacta. Tendrás otra oportunidad con este mismo tipo más adelante.</p>`;
+            document.getElementById('feedback').style.display = 'block';
+            setTimeout(() => loadExercise(state.currentExerciseIdx + 1), 2200);
+        }
+        updateProgressUI();
+    }
+    
+    function updateProgressUI() {
+        const s = Math.min(state.score, 10).toFixed(1);
+        document.getElementById('scoreValue').innerText = s;
+        document.getElementById('scoreValueHeader').innerText = s + ' / 10';
+    }
+    
+    function getElapsedTime() {
+        if (!state.startTime) return "0:00";
+        const t = Math.ceil((Date.now() - state.startTime.getTime()) / 1000);
+        const h = Math.floor(t / 3600);
+        const m = Math.floor((t % 3600) / 60);
+        const s = t % 60;
+        return h > 0
+            ? `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`
+            : `${m}:${String(s).padStart(2,'0')}`;
+    }
+    
+    function openReport() {
+        const name = document.getElementById('studentName').value.trim();
+        const warning = document.getElementById('nameWarning');
+        if (!name) {
+            warning.classList.add('visible');
+            document.getElementById('studentName').focus();
+            setTimeout(() => warning.classList.remove('visible'), 3500);
+            return;
+        }
+        warning.classList.remove('visible');
+        state.studentName = name;
+        
+        const now = new Date();
+        const dateStr = `${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()}`;
+        const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+        const finalScore = Math.min(state.score, 10);
+        
+        document.getElementById('reportName').innerText = state.studentName;
+        document.getElementById('reportScore').innerHTML = finalScore.toFixed(1) + " / 10";
+        document.getElementById('reportDate').innerText = dateStr;
+        document.getElementById('reportTime').innerText = timeStr;
+        document.getElementById('reportElapsedTime').innerText = getElapsedTime();
+        
+        // Umbrales exactos: 10, 9, 8, 7, 6, 5, <5
+        let cls;
+        const sc = Math.round(finalScore * 10) / 10;
+        if      (sc >= 10)  cls = 'score-10';
+        else if (sc >= 9)   cls = 'score-9';
+        else if (sc >= 8)   cls = 'score-8';
+        else if (sc >= 7)   cls = 'score-7';
+        else if (sc >= 6)   cls = 'score-6';
+        else if (sc >= 5)   cls = 'score-5';
+        else                cls = 'score-low';
+        
+        document.getElementById('modalContent').className = `modal-content ${cls}`;
+        document.body.className = `bg-${cls.split('-')[1]}`;
+        document.getElementById('reportModal').classList.add('active');
+    }
+    
+    function closeReport() {
+        document.getElementById('reportModal').classList.remove('active');
+        document.body.className = '';
+    }
+</script>
+</body>
+</html>
