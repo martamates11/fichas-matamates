@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ficha — Tipos de funciones: arrastra la expresión a su gráfica</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap');
+
+:root {
+  --color-fondo: #F5F0E8;
+  --color-fondo-card: #FDFAF3;
+  --color-texto: #2C1F0E;
+  --color-texto-suave: #6B4F35;
+  --color-acento: #A0522D;
+  --color-borde: #C9A96E;
+  --color-borde-suave: #E0CEAA;
+  --color-cabecera: #3B2510;
+  --color-cabecera-txt: #F5EDD8;
+  --color-correcto: #2E6B3E;
+  --color-incorrecto: #8B1A1A;
+  --color-drag-over: #d4a373;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Lato',sans-serif;font-size:15px;color:var(--color-texto);background:var(--color-fondo);padding:0 0 2rem;}
+
+.cabecera-top{background:var(--color-cabecera);color:var(--color-cabecera-txt);font-family:'Libre Baskerville',serif;text-align:center;padding:10px 20px;border-bottom:3px solid var(--color-borde);font-size:0.75rem;}
+
+.wrap{max-width:1200px;margin:20px auto;}
+
+.cabecera{background:var(--color-fondo-card);border:2px solid var(--color-borde);border-radius:6px;padding:18px 22px;margin-bottom:14px;}
+.cab-title{font-family:'Libre Baskerville',serif;font-size:1.35rem;color:var(--color-texto);text-align:center;}
+.cab-title::after{content:'';display:block;width:50px;height:3px;background:var(--color-borde);margin:6px auto 0;}
+.cab-sub{font-size:0.82rem;color:var(--color-texto-suave);text-align:center;margin:10px 0 14px;}
+.campo-nombre{display:flex;align-items:center;gap:10px;}
+.campo-nombre label{font-size:0.78rem;color:var(--color-texto-suave);text-transform:uppercase;}
+.campo-nombre input{flex:1;border:none;border-bottom:1.5px solid var(--color-borde);background:transparent;font-size:0.95rem;padding:4px 2px;outline:none;transition:border-bottom-color 0.2s;}
+.campo-nombre input.error{border-bottom-color:var(--color-incorrecto);}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+.stat{background:var(--color-fondo-card);border:1.5px solid var(--color-borde-suave);border-radius:6px;padding:8px;text-align:center;}
+.stat-label{font-size:0.68rem;color:var(--color-texto-suave);text-transform:uppercase;}
+.stat-val{font-family:'Libre Baskerville',serif;font-size:1.35rem;color:var(--color-acento);}
+
+.contenedor-juego{display:flex;gap:20px;flex-wrap:wrap;}
+
+.panel-graficas{flex:2;min-width:350px;background:var(--color-fondo-card);border:2px solid var(--color-borde);border-radius:6px;padding:16px;margin-bottom:14px;}
+.panel-graficas h3{font-family:'Libre Baskerville',serif;font-size:1rem;margin-bottom:12px;color:var(--color-texto);border-bottom:1px solid var(--color-borde-suave);padding-bottom:6px;}
+
+.grid-graficas{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;}
+.tarjeta-grafica{background:var(--color-fondo);border:2px solid var(--color-borde-suave);border-radius:6px;padding:5px;transition:all 0.2s;position:relative;}
+.tarjeta-grafica.drag-over{border-color:var(--color-drag-over);background:#f8f0e0;}
+.tarjeta-grafica.completada{opacity:0.6;background:#e8f0e8;border-color:var(--color-correcto);}
+.tarjeta-grafica.completada::after{content:"✓";position:absolute;top:-6px;right:-6px;background:var(--color-correcto);color:white;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:bold;}
+.tarjeta-grafica.fallada{background:#fdeaea;border-color:var(--color-incorrecto);}
+canvas{background:#fef9e8;border-radius:3px;display:block;margin:0 auto;}
+
+.panel-expresiones{flex:1;min-width:280px;background:var(--color-fondo-card);border:2px solid var(--color-borde);border-radius:6px;padding:16px;margin-bottom:14px;}
+.panel-expresiones h3{font-family:'Libre Baskerville',serif;font-size:1rem;margin-bottom:12px;color:var(--color-texto);border-bottom:1px solid var(--color-borde-suave);padding-bottom:6px;}
+
+.lista-expresiones{display:flex;flex-direction:row;flex-wrap:wrap;gap:8px;justify-content:center;}
+.tarjeta-expresion{background:var(--color-acento);color:white;border-radius:6px;padding:6px 12px;cursor:grab;transition:box-shadow 0.15s;text-align:center;font-family:'Libre Baskerville',serif;font-size:0.7rem;user-select:none;display:inline-block;width:auto;touch-action:none;}
+.tarjeta-expresion:active{cursor:grabbing;}
+.tarjeta-expresion.dragging{opacity:0.35;}
+.tarjeta-expresion.arrastrada{display:none;}
+.drag-clone{box-shadow:0 8px 18px rgba(44,31,14,0.4);}
+
+.btns{display:flex;gap:8px;margin:14px 0;}
+.btn-check,.btn-reiniciar{background:var(--color-cabecera);color:white;border:2px solid var(--color-borde);border-radius:4px;padding:8px 20px;font-family:'Libre Baskerville',serif;font-weight:700;cursor:pointer;}
+.btn-reiniciar{background:var(--color-acento);}
+.btn-check:hover,.btn-reiniciar:hover{opacity:0.9;}
+.btn-final{background:var(--color-cabecera);color:white;border:2px solid var(--color-borde);border-radius:4px;padding:11px 24px;cursor:pointer;width:100%;margin-top:10px;font-weight:700;}
+
+.fb-global{margin-top:10px;padding:10px 14px;border-radius:4px;display:none;}
+.fb-global.show{display:block;}
+.fb-global.ok{background:#EAF4EC;color:var(--color-correcto);border:1.5px solid var(--color-correcto);}
+.fb-global.fail{background:#F9EAEA;color:var(--color-incorrecto);border:1.5px solid var(--color-incorrecto);}
+
+.modal-bg{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(44,31,14,0.55);display:none;align-items:center;justify-content:center;z-index:9999;}
+.modal-bg.show{display:flex;}
+.modal{border-radius:8px;padding:32px 36px;max-width:400px;width:90%;text-align:center;transition:all 0.3s;}
+.modal .nota-big{font-size:3.5rem;font-weight:700;margin:8px 0;font-family:'Libre Baskerville',serif;}
+.modal .meta{font-size:0.85rem;opacity:0.9;line-height:1.8;margin-bottom:15px;}
+.modal .captura{font-size:0.8rem;border-radius:6px;padding:8px 12px;background:rgba(0,0,0,0.15);margin-bottom:15px;}
+.modal .btn-cerrar{border:none;border-radius:4px;padding:8px 20px;cursor:pointer;font-weight:700;margin-top:5px;}
+
+.confirm-box{background:var(--color-fondo-card);border:2px solid var(--color-borde);border-radius:8px;padding:26px 30px;max-width:380px;width:90%;text-align:center;color:var(--color-texto);}
+.confirm-box p{font-size:0.95rem;line-height:1.5;margin-bottom:6px;}
+.confirm-btns{display:flex;gap:10px;justify-content:center;margin-top:18px;}
+.btn-cancelar{background:#E5DCC7;color:var(--color-texto);border:1.5px solid var(--color-borde);border-radius:4px;padding:8px 18px;cursor:pointer;font-weight:700;}
+.btn-confirmar-reinicio{background:var(--color-incorrecto);color:white;border:none;border-radius:4px;padding:8px 18px;cursor:pointer;font-weight:700;}
+.btn-cancelar:hover,.btn-confirmar-reinicio:hover{opacity:0.9;}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head>
+<body>
+
+<div class="cabecera-top">Material realizado por Marta L. Letona S. · Basado en ejercicios de J. Cayetano</div>
+
+<div class="wrap" id="wrap">
+  <div class="cabecera">
+    <div class="cab-title">Tipos de funciones</div>
+    <div class="cab-sub">Arrastra cada expresión matemática hasta su gráfica correspondiente</div>
+    <div class="campo-nombre">
+      <label for="nombre">Nombre del alumno</label>
+      <input type="text" id="nombre" placeholder="Escribe tu nombre completo..." oninput="eliminarErrorNombre()">
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-label">Aciertos</div><div class="stat-val" id="aciertos">0</div></div>
+    <div class="stat"><div class="stat-label">Fallos</div><div class="stat-val" id="fallos">0</div></div>
+    <div class="stat"><div class="stat-label">Pendientes</div><div class="stat-val" id="pendientes">0</div></div>
+    <div class="stat"><div class="stat-label">Puntuación</div><div class="stat-val" id="puntuacion">0</div></div>
+  </div>
+
+  <div class="contenedor-juego">
+    <div class="panel-graficas">
+      <h3>📊 Gráficas de funciones</h3>
+      <div class="grid-graficas" id="grid-graficas"></div>
+    </div>
+    <div class="panel-expresiones">
+      <h3>📐 Expresiones matemáticas</h3>
+      <div class="lista-expresiones" id="lista-expresiones"></div>
+    </div>
+  </div>
+
+  <div class="btns">
+    <button class="btn-check" onclick="comprobarTodo()">✓ Comprobar todo</button>
+    <button class="btn-reiniciar" onclick="pedirConfirmacionReinicio()">🔄 Reiniciar juego</button>
+  </div>
+  <div class="fb-global" id="fb-global" role="status" aria-live="polite"></div>
+  <button class="btn-final" onclick="finalizar()">📋 Finalizar y Calificar</button>
+</div>
+
+<div class="modal-bg" id="modal-bg">
+  <div class="modal" id="modal">
+    <h2 id="m-nombre">—</h2>
+    <div class="nota-big" id="m-nota">—</div>
+    <div class="meta" id="m-meta"></div>
+    <div class="captura">📸 Haz captura de pantalla y entrégala en Google Classroom</div>
+    <button class="btn-cerrar" id="btn-cerrar-modal" onclick="cerrarModal()">Cerrar</button>
+  </div>
+</div>
+
+<div class="modal-bg" id="confirm-bg">
+  <div class="confirm-box">
+    <p>¿Seguro que quieres reiniciar el juego?</p>
+    <p>Se perderán los aciertos y fallos actuales.</p>
+    <div class="confirm-btns">
+      <button class="btn-cancelar" onclick="cancelarReinicio()">Cancelar</button>
+      <button class="btn-confirmar-reinicio" onclick="confirmarReinicio()">Sí, reiniciar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ==================== BIBLIOTECA DE FUNCIONES ====================
+function mapearX(x, w) { return w/2 + x * (w-20) / 5; }
+function mapearY(y, h) { return h/2 - y * (h-30) / 5; }
+
+const FUNCIONES_ORIGINAL = [
+  { id: 0, nombre: "Constante", latex: "f(x) = 2", tipo: "constante",
+    dibujar: (ctx, w, h) => { ctx.beginPath(); let y = mapearY(2, h); ctx.moveTo(10, y); ctx.lineTo(w-10, y); ctx.stroke(); } },
+  { id: 1, nombre: "Lineal", latex: "f(x) = x", tipo: "lineal",
+    dibujar: (ctx, w, h) => { ctx.beginPath(); ctx.moveTo(mapearX(-2.5, w), mapearY(-2.5, h)); ctx.lineTo(mapearX(2.5, w), mapearY(2.5, h)); ctx.stroke(); } },
+  { id: 2, nombre: "Cuadrática", latex: "f(x) = x^2", tipo: "cuadratica",
+    dibujar: (ctx, w, h) => { ctx.beginPath(); for(let x=-2.2;x<=2.2;x+=0.05){ let px=mapearX(x, w); let py=mapearY(x*x, h); if(x==-2.2)ctx.moveTo(px,py);else ctx.lineTo(px,py);} ctx.stroke(); } },
+  { id: 3, nombre: "Grado 3", latex: "f(x) = x^3", tipo: "cubica",
+    dibujar: (ctx, w, h) => { ctx.beginPath(); for(let x=-2;x<=2;x+=0.05){ let px=mapearX(x, w); let py=mapearY(x*x*x, h); if(x==-2)ctx.moveTo(px,py);else ctx.lineTo(px,py);} ctx.stroke(); } },
+  { id: 4, nombre: "Grado 4", latex: "f(x) = x^4", tipo: "cuartica",
+    dibujar: (ctx, w, h) => { ctx.beginPath(); for(let x=-1.8;x<=1.8;x+=0.05){ let px=mapearX(x, w); let py=mapearY(x*x*x*x, h); if(x==-1.8)ctx.moveTo(px,py);else ctx.lineTo(px,py);} ctx.stroke(); } },
+  { id: 5, nombre: "Racional 1/x", latex: "f(x) = \\frac{1}{x}", tipo: "racional",
+    dibujar: (ctx, w, h) => { ctx.beginPath(); let primero=true; for(let x=-2.5;x<=-0.2;x+=0.05){ let y=1/x; if(y>5)y=5;if(y<-5)y=-5; let px=mapearX(x, w); let py=mapearY(y, h); if(primero){ ctx.moveTo(px,py); primero=false; } else ctx.lineTo(px,py);} ctx.stroke(); ctx.beginPath(); primero=true; for(let x=0.2;x<=2.5;x+=0.05){ let y=1/x; if(y>5)y=5;if(y<-5)y=-5; let px=mapearX(x, w); let py=mapearY(y, h); if(primero){ ctx.moveTo(px,py); primero=false; } else ctx.lineTo(px,py);} ctx.stroke(); } },
+  { id: 6, nombre: "Racional 1/x²", latex: "f(x) = \\frac{1}{x^2}", tipo: "racional2",
+    dibujar: (ctx, w, h) => { ctx.beginPath(); let primero=true; for(let x=-2.5;x<=-0.3;x+=0.05){ let y=1/(x*x); if(y>5)y=5; let px=mapearX(x, w); let py=mapearY(y, h); if(primero){ ctx.moveTo(px,py); primero=false; } else ctx.lineTo(px,py);} ctx.stroke(); ctx.beginPath(); primero=true; for(let x=0.3;x<=2.5;x+=0.05){ let y=1/(x*x); if(y>5)y=5; let px=mapearX(x, w); let py=mapearY(y, h); if(primero){ ctx.moveTo(px,py); primero=false; } else ctx.lineTo(px,py);} ctx.stroke(); } },
+  { id: 7, nombre: "Raíz cuadrada", latex: "f(x) = \\sqrt{x}", tipo: "raiz",
+    dibujar: (ctx, w, h) => { ctx.beginPath(); let primero=true; for(let x=0;x<=4;x+=0.05){ let y=Math.sqrt(x); let px=mapearX(x, w); let py=mapearY(y, h); if(primero){ ctx.moveTo(px,py); primero=false; } else ctx.lineTo(px,py);} ctx.stroke(); } },
+  { id: 8, nombre: "Raíz cúbica", latex: "f(x) = \\sqrt[3]{x}", tipo: "raizcubica",
+    dibujar: (ctx, w, h) => { ctx.beginPath(); let primero=true; for(let x=-2.5;x<=2.5;x+=0.05){ let y=Math.cbrt(x); let px=mapearX(x, w); let py=mapearY(y, h); if(primero){ ctx.moveTo(px,py); primero=false; } else ctx.lineTo(px,py);} ctx.stroke(); } },
+  { id: 9, nombre: "Exponencial", latex: "f(x) = e^x", tipo: "exponencial",
+    dibujar: (ctx, w, h) => { ctx.beginPath(); let primero=true; for(let x=-2;x<=2.2;x+=0.05){ let y=Math.exp(x); if(y>5.5)y=5.5; let px=mapearX(x, w); let py=mapearY(y, h); if(primero){ ctx.moveTo(px,py); primero=false; } else ctx.lineTo(px,py);} ctx.stroke(); } },
+  { id: 10, nombre: "Logarítmica", latex: "f(x) = \\ln(x)", tipo: "logaritmica",
+    dibujar: (ctx, w, h) => { ctx.beginPath(); let primero=true; for(let x=0.1;x<=4;x+=0.05){ let y=Math.log(x); if(y<-2.5)y=-2.5;if(y>2.5)y=2.5; let px=mapearX(x, w); let py=mapearY(y, h); if(primero){ ctx.moveTo(px,py); primero=false; } else ctx.lineTo(px,py);} ctx.stroke(); } },
+  { id: 11, nombre: "Valor absoluto", latex: "f(x) = |x|", tipo: "absoluto",
+    dibujar: (ctx, w, h) => { ctx.beginPath(); let primero=true; for(let x=-2.5;x<=0;x+=0.05){ let y=-x; let px=mapearX(x, w); let py=mapearY(y, h); if(primero){ ctx.moveTo(px,py); primero=false; } else ctx.lineTo(px,py);} ctx.stroke(); ctx.beginPath(); primero=true; for(let x=0;x<=2.5;x+=0.05){ let y=x; let px=mapearX(x, w); let py=mapearY(y, h); if(primero){ ctx.moveTo(px,py); primero=false; } else ctx.lineTo(px,py);} ctx.stroke(); } },
+  { id: 12, nombre: "Parte entera", latex: "f(x) = \\lfloor x \\rfloor", tipo: "parteentera",
+    dibujar: (ctx, w, h) => { for(let n=-2;n<=3;n++){ ctx.beginPath(); let x1=mapearX(n, w); let x2=mapearX(n+0.95, w); let y=mapearY(n, h); ctx.moveTo(x1,y); ctx.lineTo(x2,y); ctx.stroke(); } } }
+];
+
+function mezclarArray(array) {
+  const resultado = [...array];
+  for (let i = resultado.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [resultado[i], resultado[j]] = [resultado[j], resultado[i]];
+  }
+  return resultado;
+}
+
+// ==================== ESTADO DEL JUEGO ====================
+// El temporizador empieza al cargar la página (inicio = Date.now())
+let estado = {
+  aciertos: 0,
+  fallos: 0,
+  pendientes: FUNCIONES_ORIGINAL.length,
+  parejasCompletadas: new Set(),
+  inicio: Date.now()  // ← Empieza al cargar la página
+};
+
+let funcionesActuales = [];
+
+// ==================== ARRASTRE POR POINTER EVENTS (ratón + táctil) ====================
+let elementoArrastrado = null;
+let idArrastrado = null;
+let dragClone = null;
+let ultimoPointerX = 0;
+let ultimoPointerY = 0;
+
+function iniciarDragPointer(e, elemento) {
+  if (elemento.classList.contains('arrastrada')) return;
+  e.preventDefault();
+
+  elementoArrastrado = elemento;
+  idArrastrado = parseInt(elemento.getAttribute('data-id'));
+  elemento.classList.add('dragging');
+
+  const rect = elemento.getBoundingClientRect();
+  dragClone = elemento.cloneNode(true);
+  dragClone.classList.add('drag-clone');
+  dragClone.style.position = 'fixed';
+  dragClone.style.left = rect.left + 'px';
+  dragClone.style.top = rect.top + 'px';
+  dragClone.style.width = rect.width + 'px';
+  dragClone.style.pointerEvents = 'none';
+  dragClone.style.zIndex = '9999';
+  dragClone.style.opacity = '0.9';
+  document.body.appendChild(dragClone);
+
+  ultimoPointerX = e.clientX;
+  ultimoPointerY = e.clientY;
+
+  try { elemento.setPointerCapture(e.pointerId); } catch (err) { /* no-op */ }
+}
+
+function moverDragPointer(e) {
+  if (!elementoArrastrado || !dragClone) return;
+  ultimoPointerX = e.clientX;
+  ultimoPointerY = e.clientY;
+
+  const w = dragClone.offsetWidth, h = dragClone.offsetHeight;
+  dragClone.style.left = (e.clientX - w / 2) + 'px';
+  dragClone.style.top = (e.clientY - h / 2) + 'px';
+
+  document.querySelectorAll('.tarjeta-grafica').forEach(g => g.classList.remove('drag-over'));
+  const debajo = document.elementFromPoint(e.clientX, e.clientY);
+  const graficaDebajo = debajo ? debajo.closest('.tarjeta-grafica') : null;
+  if (graficaDebajo && !graficaDebajo.classList.contains('completada')) {
+    graficaDebajo.classList.add('drag-over');
+  }
+}
+
+function soltarDragPointer(e) {
+  if (!elementoArrastrado) return;
+
+  document.querySelectorAll('.tarjeta-grafica').forEach(g => g.classList.remove('drag-over'));
+  const debajo = document.elementFromPoint(ultimoPointerX, ultimoPointerY);
+  const graficaDestino = debajo ? debajo.closest('.tarjeta-grafica') : null;
+
+  if (dragClone) { dragClone.remove(); dragClone = null; }
+  elementoArrastrado.classList.remove('dragging');
+
+  if (graficaDestino) { procesarEmparejamiento(graficaDestino); }
+
+  elementoArrastrado = null;
+  idArrastrado = null;
+}
+
+function cancelarDragPointer() {
+  if (dragClone) { dragClone.remove(); dragClone = null; }
+  if (elementoArrastrado) { elementoArrastrado.classList.remove('dragging'); }
+  document.querySelectorAll('.tarjeta-grafica').forEach(g => g.classList.remove('drag-over'));
+  elementoArrastrado = null;
+  idArrastrado = null;
+}
+
+document.addEventListener('pointermove', moverDragPointer);
+document.addEventListener('pointerup', soltarDragPointer);
+document.addEventListener('pointercancel', cancelarDragPointer);
+
+// ==================== FUNCIONES DE NOMBRE ====================
+function eliminarErrorNombre() {
+  const inputNombre = document.getElementById('nombre');
+  inputNombre.classList.remove('error');
+}
+
+function mostrarErrorNombre() {
+  const inputNombre = document.getElementById('nombre');
+  inputNombre.classList.add('error');
+  inputNombre.focus();
+
+  const fb = document.getElementById('fb-global');
+  fb.innerHTML = "⚠️ Por favor, escribe tu nombre antes de finalizar.";
+  fb.className = 'fb-global show fail';
+  setTimeout(() => { if (fb.className.includes('show')) fb.className = 'fb-global'; }, 3000);
+}
+
+// ==================== DIBUJAR GRÁFICAS ====================
+function dibujarGrafica(canvas, fn) {
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  ctx.fillStyle = "#fef9e8";
+  ctx.fillRect(0, 0, w, h);
+  ctx.strokeStyle = "#C9A96E";
+  ctx.lineWidth = 0.5;
+  ctx.beginPath(); ctx.moveTo(w/2, 5); ctx.lineTo(w/2, h-5); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(5, h/2); ctx.lineTo(w-5, h/2); ctx.stroke();
+  ctx.strokeStyle = "#A0522D";
+  ctx.lineWidth = 1.8;
+  fn.dibujar(ctx, w, h);
+}
+
+function generarGraficas() {
+  const grid = document.getElementById('grid-graficas');
+  grid.innerHTML = '';
+  const funcionesMezcladas = mezclarArray(funcionesActuales);
+
+  funcionesMezcladas.forEach(fn => {
+    const tarjeta = document.createElement('div');
+    tarjeta.className = 'tarjeta-grafica';
+    tarjeta.id = `grafica-${fn.id}`;
+    tarjeta.setAttribute('data-id', fn.id);
+    tarjeta.setAttribute('data-tipo', fn.tipo);
+
+    const canvas = document.createElement('canvas');
+    canvas.width = 90;
+    canvas.height = 70;
+    canvas.style.width = '100%';
+    canvas.style.height = 'auto';
+    dibujarGrafica(canvas, fn);
+
+    tarjeta.appendChild(canvas);
+    grid.appendChild(tarjeta);
+  });
+}
+
+function generarExpresiones() {
+  const lista = document.getElementById('lista-expresiones');
+  lista.innerHTML = '';
+  const funcionesMezcladas = mezclarArray(funcionesActuales);
+
+  funcionesMezcladas.forEach(fn => {
+    if (!estado.parejasCompletadas.has(fn.id)) {
+      const tarjeta = document.createElement('div');
+      tarjeta.className = 'tarjeta-expresion';
+      tarjeta.id = `expresion-${fn.id}`;
+      tarjeta.setAttribute('data-id', fn.id);
+      tarjeta.setAttribute('data-tipo', fn.tipo);
+      tarjeta.innerHTML = `\\(${fn.latex}\\)`;
+      tarjeta.addEventListener('pointerdown', (e) => { iniciarDragPointer(e, tarjeta); });
+      lista.appendChild(tarjeta);
+    }
+  });
+
+  // MathJax puede fallar si el CDN externo no está disponible (red del centro, iframe con CSP, etc.)
+  // Si eso ocurre, las expresiones se muestran sin formatear pero el resto de la ficha sigue funcionando.
+  if (typeof MathJax !== 'undefined' && MathJax.typesetPromise) {
+    try { MathJax.typesetPromise(); } catch (err) { console.warn('MathJax no disponible: se muestran las expresiones sin formatear.'); }
+  }
+}
+
+function procesarEmparejamiento(tarjetaGrafica) {
+  const idGrafica = parseInt(tarjetaGrafica.getAttribute('data-id'));
+  const funcionGrafica = funcionesActuales.find(f => f.id === idGrafica);
+  const funcionExpresion = funcionesActuales.find(f => f.id === idArrastrado);
+  if (!funcionGrafica || !funcionExpresion) return;
+
+  if (estado.parejasCompletadas.has(idGrafica)) {
+    mostrarFeedbackTemporal("Esta gráfica ya ha sido emparejada correctamente", false);
+    return;
+  }
+
+  if (funcionGrafica.tipo === funcionExpresion.tipo) {
+    estado.aciertos++;
+    estado.pendientes--;
+    estado.parejasCompletadas.add(idGrafica);
+    tarjetaGrafica.classList.add('completada');
+    actualizarStats();
+    mostrarFeedbackTemporal(`✓ ¡Correcto! ${funcionExpresion.nombre}`, true);
+    generarExpresiones();
+  } else {
+    estado.fallos++;
+    actualizarStats();
+    tarjetaGrafica.classList.add('fallada');
+    setTimeout(() => { tarjetaGrafica.classList.remove('fallada'); }, 500);
+    mostrarFeedbackTemporal(`✗ Incorrecto. "${funcionExpresion.nombre}" no corresponde con esa gráfica`, false);
+  }
+
+  if (estado.pendientes === 0) {
+    document.getElementById('fb-global').className = 'fb-global show ok';
+    document.getElementById('fb-global').innerHTML = '🎉 ¡Felicidades! Has completado todas las funciones correctamente. 🎉';
+  }
+}
+
+function mostrarFeedbackTemporal(mensaje, esCorrecto) {
+  const fb = document.getElementById('fb-global');
+  fb.innerHTML = mensaje;
+  fb.className = `fb-global show ${esCorrecto ? 'ok' : 'fail'}`;
+  setTimeout(() => { if (fb.className.includes('show')) fb.className = 'fb-global'; }, 2000);
+}
+
+function comprobarTodo() {
+  let faltantes = estado.pendientes;
+  if (faltantes === 0) { mostrarFeedbackTemporal("¡Ya has completado todas las funciones! ✅", true); }
+  else { mostrarFeedbackTemporal(`Faltan ${faltantes} función(es) por emparejar. Sigue arrastrando.`, false); }
+}
+
+// ==================== REINICIO CON CONFIRMACIÓN ====================
+function pedirConfirmacionReinicio() {
+  document.getElementById('confirm-bg').classList.add('show');
+}
+
+function cancelarReinicio() {
+  document.getElementById('confirm-bg').classList.remove('show');
+}
+
+function confirmarReinicio() {
+  document.getElementById('confirm-bg').classList.remove('show');
+  ejecutarReinicio();
+}
+
+function ejecutarReinicio() {
+  estado.aciertos = 0;
+  estado.fallos = 0;
+  estado.pendientes = FUNCIONES_ORIGINAL.length;
+  estado.parejasCompletadas.clear();
+  // El temporizador NO se reinicia: sigue corriendo desde la carga de la página.
+
+  funcionesActuales = mezclarArray(FUNCIONES_ORIGINAL);
+
+  actualizarStats();
+  generarGraficas();
+  generarExpresiones();
+  document.getElementById('fb-global').className = 'fb-global';
+}
+
+function actualizarStats() {
+  const puntosPorAcierto = 10 / FUNCIONES_ORIGINAL.length;
+  // Los fallos descuentan 1 punto cada uno (asimetría intencionada, mantenida sin cambios)
+  let nota = (estado.aciertos * puntosPorAcierto) - (estado.fallos * 1);
+  nota = Math.max(0, Math.min(10, nota));
+  document.getElementById('aciertos').textContent = estado.aciertos;
+  document.getElementById('fallos').textContent = estado.fallos;
+  document.getElementById('pendientes').textContent = estado.pendientes;
+  document.getElementById('puntuacion').textContent = nota.toFixed(1);
+}
+
+function obtenerTiempo() {
+  if (estado.inicio === null) return '00:00';
+  const segundosTranscurridos = (Date.now() - estado.inicio) / 1000;
+  const minutosTotales = Math.ceil(segundosTranscurridos / 60); // redondeo hacia arriba, como exige el estándar del proyecto
+  const horas = Math.floor(minutosTotales / 60);
+  const minutos = minutosTotales % 60;
+  return `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}`;
+}
+
+function getColorPorNota(nota) {
+  // Paleta fija del proyecto (skill fichas-interactivas)
+  if (nota >= 10) return { bg: '#1a7a1a', text: 'white' };
+  if (nota >= 9)  return { bg: '#6dbf6d', text: 'white' };
+  if (nota >= 8)  return { bg: '#1a4f8a', text: 'white' };
+  if (nota >= 7)  return { bg: '#5b9bd5', text: 'white' };
+  if (nota >= 6)  return { bg: '#c05c00', text: 'white' };
+  if (nota >= 5)  return { bg: '#f5a623', text: 'black' };
+  return { bg: '#c0392b', text: 'white' };
+}
+
+function finalizar() {
+  const nombre = document.getElementById('nombre').value.trim();
+  if (!nombre) {
+    mostrarErrorNombre();
+    return;
+  }
+
+  if (estado.pendientes > 0) {
+    mostrarFeedbackTemporal(`⚠️ Aún te faltan ${estado.pendientes} función(es) por emparejar antes de finalizar.`, false);
+    return;
+  }
+
+  if (estado.inicio === null) estado.inicio = Date.now();
+  const puntosPorAcierto = 10 / FUNCIONES_ORIGINAL.length;
+  let nota = (estado.aciertos * puntosPorAcierto) - (estado.fallos * 1);
+  nota = Math.max(0, Math.min(10, nota));
+  const colores = getColorPorNota(nota);
+  const modal = document.getElementById('modal');
+  modal.style.backgroundColor = colores.bg;
+  modal.style.color = colores.text;
+  document.getElementById('m-nombre').textContent = nombre;
+  document.getElementById('m-nota').textContent = nota.toFixed(1) + ' / 10';
+  document.getElementById('m-meta').innerHTML =
+    `📅 Fecha: ${new Date().toLocaleDateString('es-ES')}<br>` +
+    `⏰ Hora: ${new Date().toLocaleTimeString('es-ES')}<br>` +
+    `⏱️ Tiempo: ${obtenerTiempo()}<br>` +
+    `✅ Aciertos: ${estado.aciertos}/${FUNCIONES_ORIGINAL.length}<br>` +
+    `❌ Fallos: ${estado.fallos}`;
+  document.getElementById('modal-bg').classList.add('show');
+}
+
+function cerrarModal() {
+  document.getElementById('modal-bg').classList.remove('show');
+  ejecutarReinicio();
+  // El temporizador NO se reinicia al cerrar el modal, sigue desde la carga original.
+  document.getElementById('nombre').value = '';
+  document.getElementById('nombre').classList.remove('error');
+  actualizarStats();
+}
+
+funcionesActuales = mezclarArray(FUNCIONES_ORIGINAL);
+window.addEventListener('load', () => { generarGraficas(); generarExpresiones(); actualizarStats(); });
+</script>
+</body>
+</html>
