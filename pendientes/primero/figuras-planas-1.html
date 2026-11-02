@@ -1,0 +1,1646 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Figuras Planas · 1º ESO · Ficha interactiva</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script" async></script>
+<style>
+:root {
+    --color-fondo: #F5F0E8;
+    --color-fondo-card: #FDFAF3;
+    --color-texto: #2C1F0E;
+    --color-texto-suave: #6B4F35;
+    --color-acento: #A0522D;
+    --color-acento-hover: #7B3B1E;
+    --color-borde: #C9A96E;
+    --color-borde-suave: #E0CEAA;
+    --color-cabecera: #3B2510;
+    --color-cabecera-txt: #F5EDD8;
+    --color-correcto: #2E6B3E;
+    --color-incorrecto: #8B1A1A;
+    --color-neutro: #E8DFC8;
+    --color-aviso: #D4A259;
+    --color-nuevo: #4A6FA5;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    background: var(--color-fondo);
+    font-family: 'Lato', 'DM Sans', sans-serif;
+    color: var(--color-texto);
+    min-height: 100vh;
+    transition: background 0.5s ease;
+}
+.autoria {
+    background: var(--color-cabecera);
+    text-align: center;
+    padding: 6px;
+    font-size: 10px;
+    color: rgba(245,240,232,0.7);
+    font-family: 'Libre Baskerville', serif;
+    letter-spacing: 0.04em;
+}
+.ficha-wrapper { max-width: 1000px; margin: 0 auto; padding: 2rem 1rem; }
+.header {
+    background: var(--color-cabecera);
+    border-radius: 1.5rem;
+    padding: 1.8rem 2rem;
+    margin-bottom: 1.8rem;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+.header h1 { font-size: 2.2rem; font-weight: 700; color: var(--color-cabecera-txt); margin-bottom: 0.5rem; font-family: 'Libre Baskerville', serif; }
+.header p { color: #C9B896; font-size: 0.9rem; }
+.header-badges { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem; }
+.header-badge { background: rgba(255,255,255,0.08); padding: 0.25rem 0.75rem; border-radius: 40px; font-size: 0.7rem; color: #E0CEAA; }
+.info-bar {
+    background: var(--color-fondo-card);
+    border-radius: 1.2rem;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    border: 1px solid var(--color-borde);
+}
+.info-item { display: flex; align-items: center; gap: 0.6rem; font-size: 0.85rem; font-weight: 500; color: var(--color-texto-suave); }
+.info-icon { width: 30px; height: 30px; background: var(--color-fondo); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+.info-value { font-weight: 700; font-size: 1rem; color: var(--color-texto); }
+.name-section {
+    background: var(--color-fondo-card);
+    border-radius: 1rem;
+    padding: 0.8rem 1.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    border: 1px solid var(--color-borde-suave);
+}
+.name-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--color-texto-suave); font-family: 'Libre Baskerville', serif; }
+.name-input { flex: 1; max-width: 280px; border: none; border-bottom: 2px solid var(--color-borde); padding: 0.5rem 0.25rem; font-size: 0.95rem; background: transparent; }
+.name-input:focus { outline: none; border-bottom-color: var(--color-acento); }
+
+.ejercicio-card {
+    background: var(--color-fondo-card);
+    border-radius: 1.2rem;
+    padding: 1.5rem;
+    margin-bottom: 1.8rem;
+    border: 1px solid var(--color-borde);
+    border-left: 4px solid var(--color-borde);
+    transition: all 0.2s;
+}
+.ejercicio-card.superado { border-left: 5px solid var(--color-correcto); background: #eaf4ec; opacity: 0.9; }
+.ejercicio-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.2rem; flex-wrap: wrap; justify-content: space-between; }
+.ejercicio-titulo-wrapper { display: flex; align-items: center; gap: 0.75rem; }
+.ejercicio-num { background: var(--color-acento); color: white; width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; }
+.ejercicio-titulo { font-weight: 700; font-size: 1.05rem; font-family: 'Libre Baskerville', serif; color: var(--color-texto); }
+.apartado-titulo {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-texto-suave);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--color-borde-suave);
+    padding-bottom: 6px;
+    margin-bottom: 16px;
+    margin-top: 20px;
+    font-family: 'Libre Baskerville', serif;
+}
+
+/* DRAG & DROP */
+.drag-area { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; margin: 18px 0; }
+.draggable-figure {
+    cursor: grab;
+    user-select: none;
+    padding: 10px;
+    border: 2px solid var(--color-borde);
+    border-radius: 12px;
+    background: var(--color-fondo);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.18s;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--color-texto-suave);
+}
+.draggable-figure:hover { border-color: var(--color-acento); background: #fff8f0; transform: scale(1.04); }
+.draggable-figure.dragging { opacity: 0.4; cursor: grabbing; }
+.drop-zones { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; margin: 10px 0; }
+.drop-zone {
+    min-width: 140px;
+    min-height: 130px;
+    border: 2.5px dashed var(--color-borde);
+    border-radius: 14px;
+    background: var(--color-fondo);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 10px 8px 8px;
+    gap: 6px;
+    transition: all 0.18s;
+    position: relative;
+}
+.drop-zone-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--color-acento);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid var(--color-borde-suave);
+    padding-bottom: 4px;
+    margin-bottom: 4px;
+    width: 100%;
+    text-align: center;
+    font-family: 'Libre Baskerville', serif;
+}
+.drop-zone.over { background: #fff3e5; border-color: var(--color-acento); }
+.drop-zone.correcto { border-color: var(--color-correcto); background: #eaf4ec; }
+.drop-zone.incorrecto { border-color: var(--color-incorrecto); background: #f9eaea; }
+
+/* INPUTS */
+.number-input {
+    border: 2px solid var(--color-borde);
+    border-radius: 10px;
+    padding: 6px 10px;
+    font-size: 0.9rem;
+    width: 90px;
+    text-align: center;
+    font-weight: 700;
+    background: white;
+    font-family: 'Lato', sans-serif;
+}
+.number-input:focus { outline: none; border-color: var(--color-acento); }
+.input-area { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 0.8rem; }
+.pregunta-item { background: var(--color-fondo); border-radius: 1rem; padding: 1rem; margin-bottom: 1rem; border: 1px solid var(--color-borde-suave); }
+
+/* BOTONES */
+.btn-primary { background: var(--color-acento); border: none; color: white; padding: 8px 18px; border-radius: 40px; font-weight: 700; cursor: pointer; transition: all 0.2s; font-family: 'Lato', sans-serif; }
+.btn-primary:hover:not(:disabled) { background: var(--color-acento-hover); transform: scale(0.97); }
+.btn-large { background: var(--color-acento); color: white; border: none; padding: 12px 36px; font-size: 0.95rem; font-weight: 700; border-radius: 50px; cursor: pointer; transition: all 0.2s; font-family: 'Libre Baskerville', serif; }
+.btn-large:hover { background: var(--color-acento-hover); transform: translateY(-2px); }
+.btn-outline { background: transparent; border: 2px solid var(--color-borde); color: var(--color-texto-suave); padding: 10px 28px; font-size: 0.85rem; font-weight: 700; border-radius: 50px; cursor: pointer; transition: all 0.2s; font-family: 'Lato', sans-serif; }
+.btn-outline:hover { border-color: var(--color-acento); color: var(--color-acento); }
+.btn-nuevo { background: var(--color-nuevo); border: none; color: white; padding: 6px 14px; border-radius: 40px; font-size: 0.7rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+.btn-nuevo:hover { background: #3a5a82; transform: scale(0.96); }
+.action-buttons { display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; flex-wrap: wrap; }
+
+/* FEEDBACK */
+.feedback { margin-top: 10px; font-size: 0.85rem; font-weight: 600; }
+.feedback-correcto { color: var(--color-correcto); background: rgba(46,107,62,0.1); padding: 6px 14px; border-radius: 30px; display: inline-block; }
+.feedback-error { color: var(--color-incorrecto); background: rgba(139,26,26,0.08); padding: 8px 14px; border-radius: 12px; display: block; }
+.feedback-hint { color: var(--color-acento); background: rgba(160,82,45,0.1); padding: 8px 14px; border-radius: 12px; display: block; margin-top: 6px; font-size: 0.82rem; border-left: 3px solid var(--color-acento); }
+
+/* MODALS */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(44,31,14,0.55); align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
+.modal-overlay.show { display: flex; }
+.modal-confirm-card { background: #fffdf7; border-radius: 12px; padding: 28px; max-width: 400px; width: 90%; text-align: center; position: relative; border: 3px solid var(--color-borde); }
+.modal-result-card { border-radius: 16px; padding: 28px; max-width: 450px; width: 90%; text-align: center; position: relative; border: 3px solid var(--color-borde); transition: all 0.3s; }
+.modal-close { background: none; border: none; font-size: 24px; cursor: pointer; opacity: 0.7; position: absolute; top: 12px; right: 15px; }
+.modal-close:hover { opacity: 1; }
+.modal-buttons { display: flex; gap: 12px; justify-content: center; margin-top: 20px; }
+.btn-confirm { background: var(--color-correcto); color: white; border: none; padding: 10px 24px; border-radius: 30px; font-weight: 700; cursor: pointer; }
+.btn-cancel { background: var(--color-incorrecto); color: white; border: none; padding: 10px 24px; border-radius: 30px; font-weight: 700; cursor: pointer; }
+.modal-grade { font-size: 52px; font-weight: 900; margin: 12px 0 8px; font-family: 'Libre Baskerville', serif; }
+.modal-stats { border-radius: 10px; padding: 12px; margin-bottom: 14px; font-size: 13px; text-align: left; background: rgba(255,255,255,0.2); }
+.modal-stats p { padding: 4px 0; }
+.modal-footer { font-size: 10px; margin-top: 12px; opacity: 0.8; font-style: italic; }
+.recordatorio { font-size: 12px; margin-top: 8px; font-weight: 700; background: rgba(255,255,255,0.3); border-radius: 20px; padding: 8px; }
+.bg-nota-10 { background: #1a7a1a; color: white; }
+.bg-nota-9  { background: #6dbf6d; color: white; }
+.bg-nota-8  { background: #1a4f8a; color: white; }
+.bg-nota-7  { background: #5b9bd5; color: white; }
+.bg-nota-6  { background: #c05c00; color: white; }
+.bg-nota-5  { background: #f5a623; color: black; }
+.bg-nota-4, .bg-nota-3, .bg-nota-2, .bg-nota-1, .bg-nota-0 { background: #c0392b; color: white; }
+
+/* CIRCUNFERENCIA */
+.circ-container { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+.select-elemento { border: 2px solid var(--color-borde); border-radius: 10px; padding: 6px 12px; font-size: 0.9rem; background: white; cursor: pointer; font-family: 'Lato', sans-serif; color: var(--color-texto); }
+.select-elemento:focus { outline: none; border-color: var(--color-acento); }
+.circ-select-item { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 700; color: var(--color-texto-suave); }
+.circ-leyenda { width: 28px; height: 3px; border-radius: 2px; }
+
+@media (max-width: 600px) {
+    .drag-area, .drop-zones { gap: 10px; }
+    .drop-zone { min-width: 110px; }
+    .header h1 { font-size: 1.5rem; }
+    .ej5-layout { flex-direction: column; gap: 10px; }
+    .ej5-conector-wrap { height: 30px; width: 100%; }
+    .ej5-svg-lines { width: 100% !important; height: 30px !important; }
+}
+
+/* ===== EJERCICIO 5 — CONEXIONES ===== */
+.ej5-layout {
+    display: flex;
+    gap: 0;
+    align-items: flex-start;
+    justify-content: center;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+}
+.ej5-col {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 130px;
+}
+.ej5-col-dibujos { min-width: 170px; }
+.ej5-col-nombres  { min-width: 130px; }
+.ej5-col-defs     { min-width: 190px; flex: 1; }
+.ej5-col-titulo {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--color-acento);
+    font-family: 'Libre Baskerville', serif;
+    letter-spacing: 0.04em;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--color-borde-suave);
+    margin-bottom: 4px;
+    text-align: center;
+}
+.ej5-dibujo {
+    padding: 6px;
+    border: 1px solid var(--color-borde-suave);
+    border-radius: 10px;
+    background: var(--color-fondo);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.18s;
+}
+.ej5-dibujo:hover { border-color: var(--color-acento); background: #fff8f0; transform: scale(1.02); }
+.ej5-tarjeta {
+    border: 2px solid var(--color-borde-suave);
+    border-radius: 10px;
+    padding: 8px 10px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    background: white;
+    transition: all 0.18s;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 48px;
+    color: var(--color-texto);
+}
+.ej5-tarjeta:hover { border-color: var(--color-acento); background: #fff8f0; transform: scale(1.02); }
+.ej5-seleccionado { border-color: var(--color-acento) !important; background: #fff3e5 !important; box-shadow: 0 0 0 3px rgba(160,82,45,0.2); }
+.ej5-correcto   { border-color: var(--color-correcto) !important; background: #eaf4ec !important; }
+.ej5-incorrecto { border-color: var(--color-incorrecto) !important; background: #f9eaea !important; }
+.ej5-conector-wrap {
+    width: 60px;
+    flex-shrink: 0;
+    position: relative;
+    align-self: stretch;
+    margin-top: 34px; /* alinea con las tarjetas, no con el título */
+}
+.ej5-svg-lines {
+    position: absolute;
+    top: 0; left: 0;
+    overflow: visible;
+    pointer-events: none;
+}
+</style>
+</head>
+<body>
+<div class="autoria">Material elaborado por Marta L. Letona S. · Basado en el trabajo de Javier Cayetano</div>
+
+<div class="ficha-wrapper">
+    <div class="header">
+        <h1>📐 Figuras Planas</h1>
+        <p>Ejercicios interactivos · 1º ESO · Geometría</p>
+        <div class="header-badges">
+            <span class="header-badge">🎯 Supera cada apartado para obtener el 10</span>
+            <span class="header-badge">💡 Cada fallo resta 0.2 puntos</span>
+            <span class="header-badge">📚 Feedback pedagógico en cada error</span>
+            <span class="header-badge">🔄 Si fallas → pulsa "Nuevo" e inténtalo otra vez</span>
+        </div>
+    </div>
+
+    <div class="info-bar">
+        <div class="info-item"><span class="info-icon">📊</span><span>Progreso: <span id="progresoCount" class="info-value">0</span>/<span id="totalEjerciciosTxt">8</span></span></div>
+        <div class="info-item"><span class="info-icon">❌</span><span>Fallos: <span id="fallosCount" class="info-value">0</span></span></div>
+        <div class="info-item"><span class="info-icon">⭐</span><span>Nota: <span id="notaActual" class="info-value">0.0</span>/10</span></div>
+        <div class="info-item"><span class="info-icon">⏱️</span><span>Tiempo: <span id="tiempoTranscurrido" class="info-value">00:00</span></span></div>
+    </div>
+
+    <div class="name-section">
+        <label for="nombreAlumno" class="name-label">👤 Alumno/a</label>
+        <input type="text" id="nombreAlumno" class="name-input" placeholder="Escribe tu nombre y apellidos...">
+    </div>
+
+    <div id="ejerciciosContainer"></div>
+
+    <div class="action-buttons">
+        <button class="btn-large" id="btnFinalizar">🏆 Finalizar y Calificar</button>
+        <button class="btn-outline" id="btnResetear">🔄 Reiniciar toda la ficha</button>
+    </div>
+</div>
+
+<!-- Modal confirmación -->
+<div id="modalConfirmacion" class="modal-overlay">
+    <div class="modal-confirm-card">
+        <button class="modal-close" onclick="cerrarModalConfirmacion()">✕</button>
+        <h3 style="color:var(--color-aviso);margin-bottom:12px;">⚠️ ¿Finalizar ficha?</h3>
+        <p style="margin-bottom:16px;">Si finalizas la ficha, ya no podrás seguir sumando puntos ni modificar tus respuestas. ¿Estás seguro?</p>
+        <div class="modal-buttons">
+            <button class="btn-confirm" onclick="confirmarFinalizar()">✅ Sí, finalizar</button>
+            <button class="btn-cancel" onclick="cerrarModalConfirmacion()">❌ Seguir practicando</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal confirmación de reinicio -->
+<div id="modalReiniciar" class="modal-overlay">
+    <div class="modal-confirm-card">
+        <button class="modal-close" onclick="cerrarModalReiniciar()">✕</button>
+        <h3 style="color:var(--color-aviso);margin-bottom:12px;">⚠️ ¿Reiniciar toda la ficha?</h3>
+        <p style="margin-bottom:16px;">Se borrarán todos tus progresos, fallos y el tiempo transcurrido. Esta acción no se puede deshacer.</p>
+        <div class="modal-buttons">
+            <button class="btn-confirm" onclick="confirmarReiniciar()">✅ Sí, reiniciar</button>
+            <button class="btn-cancel" onclick="cerrarModalReiniciar()">❌ Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal resultados -->
+<div id="modalResultados" class="modal-overlay">
+    <div id="modalResultCard" class="modal-result-card">
+        <button class="modal-close" onclick="cerrarModalResultados()">✕</button>
+        <div id="modalNombreMostrar" style="font-size:1.2rem;font-weight:700;margin-bottom:5px;font-family:'Libre Baskerville',serif;"></div>
+        <div style="font-size:0.9rem;opacity:0.9;margin-bottom:12px;">📐 Figuras Planas · 1º ESO</div>
+        <div class="modal-grade" id="modalNota"></div>
+        <div class="modal-stats" id="modalStats"></div>
+        <div class="recordatorio">📸 Haz una captura de pantalla y entrégala en Google Classroom.</div>
+        <div class="modal-footer">Material elaborado por Marta L. Letona S. · Basado en el trabajo de Javier Cayetano</div>
+    </div>
+</div>
+
+<script>
+/* ======= ESTADO GLOBAL ======= */
+let fallosGlobales = 0;
+let finalizado = false;
+let tiempoInicio = null;
+let intervaloReloj = null;
+const TOTAL_APARTADOS = 8;
+
+const superados = { ej1a:false, ej1b:false, ej2a:false, ej2b:false, ej3a:false, ej3b:false, ej4:false, ej5:false };
+// Guarda la "firma" del último intento incorrecto por apartado, para no
+// penalizar de nuevo si el alumno reenvía exactamente la misma respuesta.
+const ultimoIntentoFallido = {};
+
+/* ======= TIMER ======= */
+function detenerTimer() { if (intervaloReloj) { clearInterval(intervaloReloj); intervaloReloj = null; } }
+function iniciarTimer() {
+    detenerTimer();
+    tiempoInicio = new Date();
+    intervaloReloj = setInterval(actualizarTiempo, 1000);
+    actualizarTiempo();
+}
+function _segAHHMM(seg) {
+    // Redondeo hacia arriba: cualquier segundo iniciado cuenta como minuto completo
+    const minTotales = Math.ceil(seg / 60);
+    const h = Math.floor(minTotales / 60);
+    const m = minTotales % 60;
+    return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+}
+function actualizarTiempo() {
+    if (!tiempoInicio) return;
+    const seg = Math.ceil((new Date() - tiempoInicio) / 1000);
+    const el = document.getElementById('tiempoTranscurrido');
+    if (el) el.innerText = _segAHHMM(seg);
+}
+function obtenerTiempoFormateado() {
+    if (!tiempoInicio) return '00:00';
+    const seg = Math.ceil((new Date() - tiempoInicio) / 1000);
+    return _segAHHMM(seg);
+}
+function obtenerFechaHora() {
+    const d = new Date();
+    return {
+        fecha: `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`,
+        hora:  `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`
+    };
+}
+
+/* ======= NOTA ======= */
+function calcularNota() {
+    const n = Object.values(superados).filter(Boolean).length;
+    return { nota: Math.max(0, Math.min(10, n * (10/TOTAL_APARTADOS) - fallosGlobales * 0.2)), superadosN: n };
+}
+function actualizarUI() {
+    const n = Object.values(superados).filter(Boolean).length;
+    document.getElementById('progresoCount').innerText = n;
+    document.getElementById('totalEjerciciosTxt').innerText = TOTAL_APARTADOS;
+    document.getElementById('fallosCount').innerText = fallosGlobales;
+    document.getElementById('notaActual').innerText = calcularNota().nota.toFixed(1);
+}
+
+/* ======= UTILIDAD: mezclar array ======= */
+function mezclar(arr) { return [...arr].sort(() => Math.random() - 0.5); }
+
+/* ======= DRAG & DROP ======= */
+let dragSrc = null;
+let touchEl = null, touchClone = null;
+
+function initDrag(el) {
+    el.setAttribute('draggable','true');
+    el.addEventListener('dragstart', e => {
+        dragSrc = el;
+        e.dataTransfer.effectAllowed = 'move';
+        setTimeout(() => el.classList.add('dragging'), 0);
+    });
+    el.addEventListener('dragend', () => el.classList.remove('dragging'));
+    el.addEventListener('touchstart', onTouchStart, { passive:true });
+    el.addEventListener('touchmove',  onTouchMove,  { passive:false });
+    el.addEventListener('touchend',   onTouchEnd);
+}
+function onTouchStart(e) {
+    touchEl = e.currentTarget;
+    const t = e.touches[0];
+    touchClone = touchEl.cloneNode(true);
+    touchClone.style.cssText = `position:fixed;opacity:0.7;pointer-events:none;z-index:9999;transform:scale(1.05);left:${t.clientX-40}px;top:${t.clientY-40}px;`;
+    document.body.appendChild(touchClone);
+}
+function onTouchMove(e) {
+    e.preventDefault();
+    const t = e.touches[0];
+    if (touchClone) { touchClone.style.left=(t.clientX-40)+'px'; touchClone.style.top=(t.clientY-40)+'px'; }
+    document.querySelectorAll('.drop-zone').forEach(z => z.classList.remove('over'));
+    const under = document.elementFromPoint(t.clientX, t.clientY);
+    if (under) { const z = under.closest('.drop-zone'); if (z) z.classList.add('over'); }
+}
+function onTouchEnd(e) {
+    if (touchClone) { touchClone.remove(); touchClone = null; }
+    document.querySelectorAll('.drop-zone').forEach(z => z.classList.remove('over'));
+    const t = e.changedTouches[0];
+    const under = document.elementFromPoint(t.clientX, t.clientY);
+    const zone = under ? under.closest('.drop-zone') : null;
+    if (zone && touchEl) handleDrop(zone, touchEl);
+    touchEl = null;
+}
+function initDropZone(el) {
+    el.addEventListener('dragover', e => { e.preventDefault(); el.classList.add('over'); });
+    el.addEventListener('dragleave', () => el.classList.remove('over'));
+    el.addEventListener('drop', e => {
+        e.preventDefault(); el.classList.remove('over');
+        if (dragSrc) { handleDrop(el, dragSrc); dragSrc = null; }
+    });
+}
+function handleDrop(zone, figEl) {
+    const figId = figEl.dataset.id;
+    const grupo = zone.dataset.group;
+    // Quitar la figura de cualquier otra zona del mismo grupo
+    document.querySelectorAll(`.drop-zone[data-group="${grupo}"] [data-id="${figId}"]`).forEach(e => e.remove());
+    // Quitar del pool
+    const pool = document.getElementById(zone.dataset.pool);
+    if (pool) { const enPool = pool.querySelector(`[data-id="${figId}"]`); if (enPool) enPool.remove(); }
+    // Clonar y añadir a zona
+    const clone = figEl.cloneNode(true);
+    clone.classList.remove('dragging');
+    clone.style.cursor = 'pointer';
+    clone.title = 'Clic para devolver al área de figuras';
+    clone.removeAttribute('draggable');
+    clone.addEventListener('click', () => {
+        clone.remove();
+        zone.classList.remove('correcto','incorrecto');
+        if (pool) { const restored = figEl.cloneNode(true); initDrag(restored); pool.appendChild(restored); }
+    });
+    zone.appendChild(clone);
+}
+
+/* ======================================================
+   SVGs — TRIÁNGULOS POR LADOS
+   ====================================================== */
+function svgEquilatero() {
+    return `<svg width="72" height="66" viewBox="0 0 72 66">
+        <polygon points="36,3 69,63 3,63" fill="#D4E8C2" stroke="#2E6B3E" stroke-width="2.5"/>
+    </svg>`;
+}
+function svgIsosceles() {
+    return `<svg width="72" height="66" viewBox="0 0 72 66">
+        <polygon points="36,4 64,63 8,63" fill="#C2D8E8" stroke="#1a4f8a" stroke-width="2.5"/>
+    </svg>`;
+}
+function svgEscaleno() {
+    // Triángulo escaleno: los tres lados claramente distintos
+    return `<svg width="72" height="66" viewBox="0 0 72 66">
+        <polygon points="12,62 68,62 28,8" fill="#E8D4C2" stroke="#A0522D" stroke-width="2.5"/>
+    </svg>`;
+}
+
+/* ======================================================
+   SVGs — TRIÁNGULOS POR ÁNGULOS
+   ====================================================== */
+function svgAcutanguloTri() {
+    // Todos los ángulos agudos → triángulo "puntiagudo" en los tres vértices
+    return `<svg width="72" height="66" viewBox="0 0 72 66">
+        <polygon points="36,4 70,63 2,63" fill="#D4E8C2" stroke="#2E6B3E" stroke-width="2.5"/>
+    </svg>`;
+}
+function svgRectanguloTri() {
+    // Triángulo rectángulo: ángulo recto en el vértice inferior izquierdo
+    return `<svg width="72" height="66" viewBox="0 0 72 66">
+        <polygon points="5,63 5,5 65,63" fill="#C2D8E8" stroke="#1a4f8a" stroke-width="2.5"/>
+        <!-- cuadradito de ángulo recto -->
+        <polyline points="5,51 17,51 17,63" fill="none" stroke="#1a4f8a" stroke-width="2"/>
+    </svg>`;
+}
+function svgObtusanguloTri() {
+    // A=(30,62), B=(78,62), C=(4,6) → ángulo en A ≈ 119° (obtuso)
+    return `<svg width="82" height="68" viewBox="0 0 82 68">
+        <polygon points="30,62 78,62 4,6" fill="#E8D4C2" stroke="#A0522D" stroke-width="2.5"/>
+    </svg>`;
+}
+
+/* ======================================================
+   SVGs — CUADRILÁTEROS (paralelogramos)
+   ====================================================== */
+function svgCuadrado() {
+    return `<svg width="62" height="62" viewBox="0 0 62 62">
+        <rect x="5" y="5" width="52" height="52" fill="#D4E8C2" stroke="#2E6B3E" stroke-width="2.5"/>
+        <polyline points="5,17 17,17 17,5" fill="none" stroke="#2E6B3E" stroke-width="1.5"/>
+    </svg>`;
+}
+function svgRectanguloFig() {
+    return `<svg width="82" height="52" viewBox="0 0 82 52">
+        <rect x="5" y="5" width="72" height="42" fill="#C2D8E8" stroke="#1a4f8a" stroke-width="2.5"/>
+        <polyline points="5,17 17,17 17,5" fill="none" stroke="#1a4f8a" stroke-width="1.5"/>
+    </svg>`;
+}
+function svgRombo() {
+    return `<svg width="66" height="66" viewBox="0 0 66 66">
+        <polygon points="33,3 63,33 33,63 3,33" fill="#F0E4C2" stroke="#A0522D" stroke-width="2.5"/>
+        <!-- marcas de igualdad en los 4 lados -->
+        <line x1="16" y1="20" x2="20" y2="16" stroke="#A0522D" stroke-width="2"/>
+        <line x1="48" y1="16" x2="52" y2="20" stroke="#A0522D" stroke-width="2"/>
+        <line x1="48" y1="50" x2="52" y2="46" stroke="#A0522D" stroke-width="2"/>
+        <line x1="16" y1="46" x2="20" y2="50" stroke="#A0522D" stroke-width="2"/>
+    </svg>`;
+}
+function svgRomboide() {
+    return `<svg width="82" height="56" viewBox="0 0 82 56">
+        <polygon points="18,5 77,5 64,51 5,51" fill="#E0C8E8" stroke="#6B3B8A" stroke-width="2.5"/>
+    </svg>`;
+}
+
+/* ======================================================
+   SVGs — TRAPECIOS Y TRAPEZOIDE
+   ====================================================== */
+function svgTrapecioRect() {
+    // Lado izquierdo perpendicular a la base → ángulo recto
+    return `<svg width="76" height="56" viewBox="0 0 76 56">
+        <polygon points="5,5 50,5 72,51 5,51" fill="#C2E8E0" stroke="#1a7a5a" stroke-width="2.5"/>
+        <polyline points="5,39 17,39 17,51" fill="none" stroke="#1a7a5a" stroke-width="1.8"/>
+    </svg>`;
+}
+function svgTrapecioIsosceles() {
+    // Lados no paralelos iguales → simétrico
+    return `<svg width="76" height="56" viewBox="0 0 76 56">
+        <polygon points="18,5 58,5 73,51 3,51" fill="#D4E8C2" stroke="#2E6B3E" stroke-width="2.5"/>
+        <!-- marcas en los lados no paralelos -->
+        <line x1="8" y1="30" x2="13" y2="26" stroke="#2E6B3E" stroke-width="2"/>
+        <line x1="65" y1="26" x2="70" y2="30" stroke="#2E6B3E" stroke-width="2"/>
+    </svg>`;
+}
+function svgTrapecioEscaleno() {
+    // Lados no paralelos distintos y base mayor claramente más larga
+    return `<svg width="76" height="56" viewBox="0 0 76 56">
+        <polygon points="8,5 48,5 72,51 3,51" fill="#E8D4C2" stroke="#A0522D" stroke-width="2.5"/>
+    </svg>`;
+}
+function svgTrapezoide() {
+    // Ningún par de lados paralelos: cuadrilátero irregular sin paralelismo
+    // Puntos pensados para que ningún par de lados sea paralelo
+    return `<svg width="76" height="62" viewBox="0 0 76 62">
+        <polygon points="5,10 55,4 72,52 20,58" fill="#E8C2D4" stroke="#8B1A1A" stroke-width="2.5"/>
+    </svg>`;
+}
+
+/* ======================================================
+   EJERCICIO 1 — Clasificación de Triángulos
+   (figuras en orden aleatorio en el pool)
+   ====================================================== */
+function renderEj1() {
+    // Definición de figuras con su id, svg y etiqueta
+    const figLados = mezclar([
+        { id:'equilatero', svg: svgEquilatero() },
+        { id:'isosceles',  svg: svgIsosceles()  },
+        { id:'escaleno',   svg: svgEscaleno()   }
+    ]);
+    const letrasL = ['A','B','C'];
+    const figAngulos = mezclar([
+        { id:'acutangulo',   svg: svgAcutanguloTri()  },
+        { id:'rectangulo_t', svg: svgRectanguloTri()  },
+        { id:'obtusangulo',  svg: svgObtusanguloTri() }
+    ]);
+    const letrasA = ['D','E','F'];
+
+    const poolLados = figLados.map((f,i) => `
+        <div class="draggable-figure" data-id="${f.id}" data-group="lados">
+            ${f.svg}<span>▲ Figura ${letrasL[i]}</span>
+        </div>`).join('');
+
+    const poolAngulos = figAngulos.map((f,i) => `
+        <div class="draggable-figure" data-id="${f.id}" data-group="angulos">
+            ${f.svg}<span>▲ Figura ${letrasA[i]}</span>
+        </div>`).join('');
+
+    return `
+    <div class="ejercicio-card ${superados.ej1a && superados.ej1b ? 'superado' : ''}" id="card-ej1">
+        <div class="ejercicio-header">
+            <div class="ejercicio-titulo-wrapper">
+                <span class="ejercicio-num">1</span>
+                <span class="ejercicio-titulo">Clasificación de Triángulos</span>
+            </div>
+        </div>
+
+        <div class="apartado-titulo">A) Según sus lados — Arrastra cada triángulo a su categoría</div>
+        <div class="drag-area" id="pool-lados">${poolLados}</div>
+        <div class="drop-zones">
+            <div class="drop-zone" data-zone="equilatero"  data-group="lados" data-pool="pool-lados" data-correct="equilatero">
+                <div class="drop-zone-label">Equilátero</div>
+            </div>
+            <div class="drop-zone" data-zone="isosceles"   data-group="lados" data-pool="pool-lados" data-correct="isosceles">
+                <div class="drop-zone-label">Isósceles</div>
+            </div>
+            <div class="drop-zone" data-zone="escaleno"    data-group="lados" data-pool="pool-lados" data-correct="escaleno">
+                <div class="drop-zone-label">Escaleno</div>
+            </div>
+        </div>
+        <div style="text-align:center;margin-top:10px;">
+            <button class="btn-primary" onclick="comprobarDrag('lados','ej1a','fb-ej1a')">✅ Comprobar Apartado A</button>
+        </div>
+        <div id="fb-ej1a" class="feedback" style="text-align:center;margin-top:8px;" aria-live="polite"></div>
+
+        <div class="apartado-titulo" style="margin-top:28px;">B) Según sus ángulos — Arrastra cada triángulo a su categoría</div>
+        <div class="drag-area" id="pool-angulos">${poolAngulos}</div>
+        <div class="drop-zones">
+            <div class="drop-zone" data-zone="acutangulo"  data-group="angulos" data-pool="pool-angulos" data-correct="acutangulo">
+                <div class="drop-zone-label">Acutángulo</div>
+            </div>
+            <div class="drop-zone" data-zone="rectangulo_t" data-group="angulos" data-pool="pool-angulos" data-correct="rectangulo_t">
+                <div class="drop-zone-label">Rectángulo</div>
+            </div>
+            <div class="drop-zone" data-zone="obtusangulo" data-group="angulos" data-pool="pool-angulos" data-correct="obtusangulo">
+                <div class="drop-zone-label">Obtusángulo</div>
+            </div>
+        </div>
+        <div style="text-align:center;margin-top:10px;">
+            <button class="btn-primary" onclick="comprobarDrag('angulos','ej1b','fb-ej1b')">✅ Comprobar Apartado B</button>
+        </div>
+        <div id="fb-ej1b" class="feedback" style="text-align:center;margin-top:8px;" aria-live="polite"></div>
+    </div>`;
+}
+
+/* ======================================================
+   EJERCICIO 2 — Clasificación de Cuadriláteros
+   (figuras en orden aleatorio en el pool)
+   ====================================================== */
+function renderEj2() {
+    const figPara = mezclar([
+        { id:'cuadrado',   svg: svgCuadrado()     },
+        { id:'rectangulo', svg: svgRectanguloFig() },
+        { id:'rombo',      svg: svgRombo()         },
+        { id:'romboide',   svg: svgRomboide()      }
+    ]);
+    const letrasP = ['A','B','C','D'];
+
+    const figTrap = mezclar([
+        { id:'trap_rect', svg: svgTrapecioRect()     },
+        { id:'trap_isos', svg: svgTrapecioIsosceles() },
+        { id:'trap_esc',  svg: svgTrapecioEscaleno()  },
+        { id:'trapezoide',svg: svgTrapezoide()        }
+    ]);
+    const letrasT = ['E','F','G','H'];
+
+    const poolPara = figPara.map((f,i) => `
+        <div class="draggable-figure" data-id="${f.id}" data-group="para">
+            ${f.svg}<span>▪ Figura ${letrasP[i]}</span>
+        </div>`).join('');
+
+    const poolTrap = figTrap.map((f,i) => `
+        <div class="draggable-figure" data-id="${f.id}" data-group="trap">
+            ${f.svg}<span>▪ Figura ${letrasT[i]}</span>
+        </div>`).join('');
+
+    return `
+    <div class="ejercicio-card ${superados.ej2a && superados.ej2b ? 'superado' : ''}" id="card-ej2">
+        <div class="ejercicio-header">
+            <div class="ejercicio-titulo-wrapper">
+                <span class="ejercicio-num">2</span>
+                <span class="ejercicio-titulo">Clasificación de Cuadriláteros</span>
+            </div>
+        </div>
+
+        <div class="apartado-titulo">A) Paralelogramos — Arrastra cada figura a su nombre</div>
+        <div class="drag-area" id="pool-para">${poolPara}</div>
+        <div class="drop-zones">
+            <div class="drop-zone" data-zone="cuadrado"   data-group="para" data-pool="pool-para" data-correct="cuadrado">
+                <div class="drop-zone-label">Cuadrado</div>
+            </div>
+            <div class="drop-zone" data-zone="rectangulo" data-group="para" data-pool="pool-para" data-correct="rectangulo">
+                <div class="drop-zone-label">Rectángulo</div>
+            </div>
+            <div class="drop-zone" data-zone="rombo"      data-group="para" data-pool="pool-para" data-correct="rombo">
+                <div class="drop-zone-label">Rombo</div>
+            </div>
+            <div class="drop-zone" data-zone="romboide"   data-group="para" data-pool="pool-para" data-correct="romboide">
+                <div class="drop-zone-label">Romboide</div>
+            </div>
+        </div>
+        <div style="text-align:center;margin-top:10px;">
+            <button class="btn-primary" onclick="comprobarDrag('para','ej2a','fb-ej2a')">✅ Comprobar Apartado A</button>
+        </div>
+        <div id="fb-ej2a" class="feedback" style="text-align:center;margin-top:8px;" aria-live="polite"></div>
+
+        <div class="apartado-titulo" style="margin-top:28px;">B) Trapecios y Trapezoide — Arrastra cada figura a su nombre</div>
+        <div class="drag-area" id="pool-trap">${poolTrap}</div>
+        <div class="drop-zones">
+            <div class="drop-zone" data-zone="trap_rect"  data-group="trap" data-pool="pool-trap" data-correct="trap_rect"  style="min-width:122px;">
+                <div class="drop-zone-label">Trap. Rectángulo</div>
+            </div>
+            <div class="drop-zone" data-zone="trap_isos"  data-group="trap" data-pool="pool-trap" data-correct="trap_isos"  style="min-width:122px;">
+                <div class="drop-zone-label">Trap. Isósceles</div>
+            </div>
+            <div class="drop-zone" data-zone="trap_esc"   data-group="trap" data-pool="pool-trap" data-correct="trap_esc"   style="min-width:122px;">
+                <div class="drop-zone-label">Trap. Escaleno</div>
+            </div>
+            <div class="drop-zone" data-zone="trapezoide" data-group="trap" data-pool="pool-trap" data-correct="trapezoide" style="min-width:122px;">
+                <div class="drop-zone-label">Trapezoide</div>
+            </div>
+        </div>
+        <div style="text-align:center;margin-top:10px;">
+            <button class="btn-primary" onclick="comprobarDrag('trap','ej2b','fb-ej2b')">✅ Comprobar Apartado B</button>
+        </div>
+        <div id="fb-ej2b" class="feedback" style="text-align:center;margin-top:8px;" aria-live="polite"></div>
+    </div>`;
+}
+
+/* ======================================================
+   EJERCICIO 3 — Ángulos internos
+   ====================================================== */
+let ej3a_datos = {};
+let ej3b_datos = {};
+
+function generarEj3a() {
+    const a1 = Math.floor(Math.random() * 55) + 30;
+    const a2 = Math.floor(Math.random() * (140 - a1 - 10)) + 10;
+    ej3a_datos = { a1, a2, a3: 180 - a1 - a2 };
+}
+
+const POLIGONOS = [
+    { nombre:'Cuadrilátero', lados:4 },
+    { nombre:'Pentágono',    lados:5 },
+    { nombre:'Hexágono',     lados:6 },
+    { nombre:'Heptágono',    lados:7 },
+    { nombre:'Octógono',     lados:8 },
+];
+
+function generarEj3b() {
+    // Todos los ángulos (también el desconocido) entre 60° y 170°: el polígono
+    // es convexo, como el dibujo, y no salen ángulos imposibles.
+    const ANG_MIN = 60, ANG_MAX = 170;
+    const pol = POLIGONOS[Math.floor(Math.random() * POLIGONOS.length)];
+    const sumaTotal = (pol.lados - 2) * 180;
+    const k = pol.lados - 1;
+    // El desconocido, de modo que los demás puedan repartirse dentro del rango
+    const fMin = Math.max(ANG_MIN, sumaTotal - k * ANG_MAX);
+    const fMax = Math.min(ANG_MAX, sumaTotal - k * ANG_MIN);
+    const faltante = fMin + Math.floor(Math.random() * (fMax - fMin + 1));
+    const angulos = Array(k).fill(ANG_MIN);
+    let extra = sumaTotal - faltante - k * ANG_MIN;
+    while (extra > 0) {
+        const libres = angulos.map((x, i) => i).filter(i => angulos[i] < ANG_MAX);
+        const i = libres[Math.floor(Math.random() * libres.length)];
+        const paso = Math.min(extra, ANG_MAX - angulos[i], 1 + Math.floor(Math.random() * 20));
+        angulos[i] += paso;
+        extra -= paso;
+    }
+    ej3b_datos = { pol, sumaTotal, angulos, faltante };
+}
+
+// Mezcla el orden en que se muestran los dos ángulos dados en el triángulo
+function svgTrianguloAngulos(a1, a2) {
+    // Aleatorizamos qué ángulo va a la izq y cuál a la der
+    const [izq, der] = Math.random() < 0.5 ? [a1, a2] : [a2, a1];
+    return `<svg width="190" height="125" viewBox="0 0 190 125">
+        <polygon points="95,8 178,118 12,118" fill="#C2D8E8" stroke="#1a4f8a" stroke-width="2"/>
+        <text x="95" y="28" text-anchor="middle" font-size="15" fill="#8B1A1A" font-weight="700">?</text>
+        <text x="24"  y="114" text-anchor="middle" font-size="14" fill="#2E6B3E" font-weight="700">${izq}°</text>
+        <text x="165" y="114" text-anchor="middle" font-size="14" fill="#A0522D" font-weight="700">${der}°</text>
+    </svg>`;
+}
+
+function svgPoligono(lados) {
+    const cx = 92, cy = 82, r = 66;
+    let pts = [];
+    for (let i = 0; i < lados; i++) {
+        const a = (2 * Math.PI * i / lados) - Math.PI / 2;
+        pts.push([(cx + r * Math.cos(a)).toFixed(1), (cy + r * Math.sin(a)).toFixed(1)]);
+    }
+    const ptsStr = pts.map(p => p.join(',')).join(' ');
+    const etiquetas = pts.map((p, i) => {
+        const label = i === 0 ? '?' : `${ej3b_datos.angulos[i-1]}°`;
+        const color = i === 0 ? '#8B1A1A' : '#2C1F0E';
+        // Empujar la etiqueta ligeramente hacia fuera del polígono
+        const dx = (parseFloat(p[0]) - cx) * 0.18;
+        const dy = (parseFloat(p[1]) - cy) * 0.18;
+        return `<text x="${(parseFloat(p[0])+dx).toFixed(1)}" y="${(parseFloat(p[1])+dy+4).toFixed(1)}" text-anchor="middle" font-size="11" fill="${color}" font-weight="700">${label}</text>`;
+    }).join('');
+    return `<svg width="185" height="165" viewBox="0 0 185 165">
+        <polygon points="${ptsStr}" fill="#E0C8E8" stroke="#6B3B8A" stroke-width="2"/>
+        ${etiquetas}
+    </svg>`;
+}
+
+function renderEj3() {
+    generarEj3a();
+    generarEj3b();
+    return renderEj3HTML();
+}
+
+function htmlEj3a() {
+    const { a1, a2 } = ej3a_datos;
+    return `
+        <div class="pregunta-item" id="item-ej3a">
+            <div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap;justify-content:center;">
+                ${svgTrianguloAngulos(a1, a2)}
+                <div>
+                    <p style="font-size:0.9rem;color:var(--color-texto-suave);margin-bottom:12px;">
+                        Se conocen dos ángulos del triángulo. Calcula el tercero (marcado con <b style="color:#8B1A1A;">?</b>).
+                    </p>
+                    <div class="input-area">
+                        <label for="ej3a_r" style="font-size:0.9rem;font-weight:700;">Ángulo desconocido =</label>
+                        <input type="number" id="ej3a_r" class="number-input" placeholder="°" min="1" max="177" onkeydown="if(event.key==='Enter'){event.preventDefault();comprobarEj3a();}">
+                    </div>
+                    <button class="btn-primary" onclick="comprobarEj3a()">✅ Comprobar</button>
+                </div>
+            </div>
+            <div id="fb-ej3a" class="feedback" style="text-align:center;margin-top:8px;" aria-live="polite"></div>
+        </div>`;
+}
+
+function htmlEj3b() {
+    const { pol, angulos } = ej3b_datos;
+    // Orden aleatorio de los ángulos conocidos en la lista del apartado B
+    const listaAngulos = mezclar([...angulos]);
+    return `
+        <div class="pregunta-item" id="item-ej3b">
+            <div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap;justify-content:center;">
+                ${svgPoligono(pol.lados)}
+                <div>
+                    <p style="font-size:0.9rem;color:var(--color-texto-suave);margin-bottom:8px;">
+                        <b>${pol.nombre}</b> (n = ${pol.lados} lados)
+                    </p>
+                    <p style="font-size:0.88rem;margin-bottom:8px;">
+                        Ángulos conocidos: <b>${listaAngulos.join('°, ')}°</b>
+                    </p>
+                    <p style="font-size:0.88rem;margin-bottom:10px;">
+                        Fórmula: Suma = 180° · (n − 2)
+                    </p>
+                    <div class="input-area">
+                        <label for="ej3b_r" style="font-size:0.9rem;font-weight:700;">Ángulo desconocido (?) =</label>
+                        <input type="number" id="ej3b_r" class="number-input" placeholder="°" min="20" max="160" onkeydown="if(event.key==='Enter'){event.preventDefault();comprobarEj3b();}">
+                    </div>
+                    <button class="btn-primary" onclick="comprobarEj3b()">✅ Comprobar</button>
+                </div>
+            </div>
+            <div id="fb-ej3b" class="feedback" style="text-align:center;margin-top:8px;" aria-live="polite"></div>
+        </div>`;
+}
+
+function renderEj3HTML() {
+    return `
+    <div class="ejercicio-card ${superados.ej3a && superados.ej3b ? 'superado' : ''}" id="card-ej3">
+        <div class="ejercicio-header">
+            <div class="ejercicio-titulo-wrapper">
+                <span class="ejercicio-num">3</span>
+                <span class="ejercicio-titulo">Ángulos Internos de Polígonos</span>
+            </div>
+            <button class="btn-nuevo" onclick="nuevoEj3()">🔄 Nuevo</button>
+        </div>
+
+        <div class="apartado-titulo">A) Tercer ángulo de un triángulo</div>
+        ${htmlEj3a()}
+
+        <div class="apartado-titulo" style="margin-top:20px;">B) Ángulo desconocido en un polígono</div>
+        ${htmlEj3b()}
+    </div>`;
+}
+
+/* Tras un fallo que enseña la solución, el apartado cambia de datos (y de
+   solución) para que copiar la solución mostrada no lo supere. */
+function regenerarApartadoEj3(apartado) {
+    const solucionAnterior = apartado === 'a' ? ej3a_datos.a3 : ej3b_datos.faltante;
+    const firmaAnterior = JSON.stringify(apartado === 'a' ? ej3a_datos : ej3b_datos);
+    for (let i = 0; i < 50; i++) {
+        if (apartado === 'a') generarEj3a(); else generarEj3b();
+        const solucion = apartado === 'a' ? ej3a_datos.a3 : ej3b_datos.faltante;
+        const firma = JSON.stringify(apartado === 'a' ? ej3a_datos : ej3b_datos);
+        if (solucion !== solucionAnterior && firma !== firmaAnterior) break;
+    }
+    const item = document.getElementById('item-ej3' + apartado);
+    if (item) { const tmp = document.createElement('div'); tmp.innerHTML = apartado === 'a' ? htmlEj3a() : htmlEj3b(); item.replaceWith(tmp.firstElementChild); }
+}
+
+function nuevoEj3() {
+    if (finalizado) { mostrarAviso("La ficha ya ha sido finalizada."); return; }
+    delete ultimoIntentoFallido.ej3a; delete ultimoIntentoFallido.ej3b;
+    generarEj3a(); generarEj3b();
+    const card = document.getElementById('card-ej3');
+    if (card) { const tmp = document.createElement('div'); tmp.innerHTML = renderEj3HTML(); card.replaceWith(tmp.firstElementChild); }
+}
+
+function comprobarEj3a() {
+    if (finalizado) return;
+    if (superados.ej3a) { document.getElementById('fb-ej3a').innerHTML = '<span class="feedback-correcto">✅ ¡Ya tenías este apartado superado!</span>'; return; }
+    const val = parseInt(document.getElementById('ej3a_r').value);
+    if (isNaN(val)) { mostrarAviso("Introduce un valor numérico."); return; }
+    const { a1, a2, a3 } = ej3a_datos;
+    if (val === a3) {
+        superados.ej3a = true; actualizarUI();
+        delete ultimoIntentoFallido.ej3a;
+        document.getElementById('fb-ej3a').innerHTML = '<span class="feedback-correcto">🎉 ¡Correcto! Has calculado bien el ángulo desconocido.</span>';
+        document.getElementById('card-ej3').classList.toggle('superado', superados.ej3a && superados.ej3b);
+    } else {
+        fallosGlobales++; actualizarUI();
+        delete ultimoIntentoFallido.ej3a;
+        
+        const msg = `<span class="feedback-error">❌ Incorrecto. Tu respuesta fue ${val}°, pero no es correcta.</span>
+             <span class="feedback-hint">📘 Solución del ejercicio anterior: la suma de los ángulos interiores de cualquier triángulo es siempre <b>180°</b>. Suma los dos ángulos que ya conoces y réstaselos a 180°: 180° − ${a1}° − ${a2}° = <b>${a3}°</b>. 👉 Ahora inténtalo con este triángulo nuevo.</span>`;
+        regenerarApartadoEj3('a');
+        document.getElementById('fb-ej3a').innerHTML = msg;
+    }
+}
+
+function comprobarEj3b() {
+    if (finalizado) return;
+    if (superados.ej3b) { document.getElementById('fb-ej3b').innerHTML = '<span class="feedback-correcto">✅ ¡Ya tenías este apartado superado!</span>'; return; }
+    const val = parseInt(document.getElementById('ej3b_r').value);
+    if (isNaN(val)) { mostrarAviso("Introduce un valor numérico."); return; }
+    const { faltante, pol, sumaTotal, angulos } = ej3b_datos;
+    if (val === faltante) {
+        superados.ej3b = true; actualizarUI();
+        delete ultimoIntentoFallido.ej3b;
+        document.getElementById('fb-ej3b').innerHTML = '<span class="feedback-correcto">🎉 ¡Correcto! Has aplicado bien la fórmula de ángulos internos.</span>';
+        document.getElementById('card-ej3').classList.toggle('superado', superados.ej3a && superados.ej3b);
+    } else {
+        fallosGlobales++; actualizarUI();
+        delete ultimoIntentoFallido.ej3b;
+        const sumaConoc = angulos.reduce((a,b) => a+b, 0);
+        const msg = `<span class="feedback-error">❌ Incorrecto. Tu respuesta fue ${val}°, pero no es correcta.</span>
+             <span class="feedback-hint">📘 Solución del ejercicio anterior (${pol.nombre.toLowerCase()}): aplica la fórmula: <b>Suma de ángulos internos = 180° · (n − 2) = 180° · (${pol.lados} − 2) = ${sumaTotal}°</b>. Los ángulos conocidos suman ${sumaConoc}°. Entonces el desconocido es: ${sumaTotal}° − ${sumaConoc}° = <b>${faltante}°</b>. 👉 Ahora inténtalo con este polígono nuevo.</span>`;
+        regenerarApartadoEj3('b');
+        document.getElementById('fb-ej3b').innerHTML = msg;
+    }
+}
+
+/* ======================================================
+   EJERCICIO 4 — Elementos de la Circunferencia
+   ====================================================== */
+const LETRAS_EJ4 = ['A', 'B', 'C', 'D'];
+const COLORES_EJ4 = { A:'#1a4f8a', B:'#2E6B3E', C:'#8B1A1A', D:'#E88B20' };
+let ej4_datos = { asignacion: { A:'cuerda', B:'diametro', C:'radio', D:'arco' }, t0: 0, phi: 0, mCuerda: 0, hCuerda: 0, aArco: 0, spanArco: 0 };
+
+function azar(min, max) { return min + Math.floor(Math.random() * (max - min + 1)); }
+
+/* El dibujo se genera: cada letra es un elemento distinto (cuerda,
+   diámetro, radio y arco) en posiciones al azar, sin cruzarse. */
+function generarEj4() {
+    const tipos = mezclar(['cuerda', 'diametro', 'radio', 'arco']);
+    const asignacion = {};
+    LETRAS_EJ4.forEach((l, i) => { asignacion[l] = tipos[i]; });
+    const t0 = azar(0, 179);
+    ej4_datos = {
+        asignacion, t0,
+        phi: t0 + azar(50, 80),
+        mCuerda: t0 - 90 + azar(-15, 15),
+        hCuerda: azar(40, 55),
+        aArco: t0 + azar(110, 125),
+        spanArco: azar(35, 50),
+    };
+}
+
+function svgCircunferencia() {
+    const cx = 110, cy = 110, r = 90;
+    const pt = (ang, d) => {
+        const rad = ang * Math.PI / 180;
+        return [cx + d * Math.cos(rad), cy + d * Math.sin(rad)];
+    };
+    const f = (n) => n.toFixed(1);
+    const { asignacion, t0, phi, mCuerda, hCuerda, aArco, spanArco } = ej4_datos;
+    const letraDe = {};
+    LETRAS_EJ4.forEach(l => { letraDe[asignacion[l]] = l; });
+    const etiqueta = (tipo, x, y) => {
+        const l = letraDe[tipo];
+        return `<text x="${f(x)}" y="${f(y + 5)}" font-size="15" fill="${COLORES_EJ4[l]}" font-weight="700" text-anchor="middle">${l}</text>`;
+    };
+    const linea = (tipo, p, q) =>
+        `<line x1="${f(p[0])}" y1="${f(p[1])}" x2="${f(q[0])}" y2="${f(q[1])}" stroke="${COLORES_EJ4[letraDe[tipo]]}" stroke-width="4" stroke-linecap="round"/>`;
+    // Diámetro
+    const d1 = pt(t0, r), d2 = pt(t0 + 180, r);
+    const ld = pt(t0 + 180, 0.6 * r), off = pt(t0 + 90, 13);
+    // Radio
+    const rFin = pt(phi, r);
+    const lr = pt(phi, 0.55 * r), offR = pt(phi - 90, 13);
+    // Cuerda
+    const c1 = pt(mCuerda - hCuerda, r), c2 = pt(mCuerda + hCuerda, r);
+    const lc = pt(mCuerda, r * Math.cos(hCuerda * Math.PI / 180) - 16);
+    // Arco
+    const a1 = pt(aArco, r), a2 = pt(aArco + spanArco, r);
+    const la = pt(aArco + spanArco / 2, 1.1 * r);
+    return `<svg width="220" height="220" viewBox="0 0 220 220">
+        <circle cx="110" cy="110" r="90" fill="#FFF8F0" stroke="#C9A96E" stroke-width="2.5"/>
+        <path d="M ${f(a1[0])},${f(a1[1])} A 90,90 0 0,1 ${f(a2[0])},${f(a2[1])}" fill="none" stroke="${COLORES_EJ4[letraDe.arco]}" stroke-width="4.5" stroke-linecap="round"/>
+        ${etiqueta('arco', la[0], la[1])}
+        ${linea('cuerda', c1, c2)}
+        ${etiqueta('cuerda', lc[0], lc[1])}
+        ${linea('diametro', d1, d2)}
+        ${etiqueta('diametro', ld[0] + off[0] - cx, ld[1] + off[1] - cy)}
+        ${linea('radio', [cx, cy], rFin)}
+        ${etiqueta('radio', lr[0] + offR[0] - cx, lr[1] + offR[1] - cy)}
+        <circle cx="110" cy="110" r="4" fill="#2C1F0E"/>
+    </svg>`;
+}
+
+function renderEj4HTML() {
+    const items = ['cuerda','diametro','radio','arco'];
+    const labels = { cuerda:'Cuerda', diametro:'Diámetro', radio:'Radio', arco:'Arco' };
+    function opcionesAleatorias() {
+        const mezclado = [...items].sort(() => Math.random() - 0.5);
+        return `<option value="">-- elige --</option>` +
+            mezclado.map(v => `<option value="${v}">${labels[v]}</option>`).join('');
+    }
+    const selector = (l) =>
+        `<div class="circ-select-item"><div class="circ-leyenda" style="background:${COLORES_EJ4[l]};"></div><label for="sel_${l}" style="color:${COLORES_EJ4[l]};"><b>${l}</b> es:</label>&nbsp;<select id="sel_${l}" class="select-elemento">${opcionesAleatorias()}</select></div>`;
+    return `
+    <div class="ejercicio-card ${superados.ej4 ? 'superado' : ''}" id="card-ej4">
+        <div class="ejercicio-header">
+            <div class="ejercicio-titulo-wrapper">
+                <span class="ejercicio-num">4</span>
+                <span class="ejercicio-titulo">Elementos de la Circunferencia</span>
+            </div>
+        </div>
+        <p style="font-size:0.88rem;color:var(--color-texto-suave);margin-bottom:16px;">
+            Observa el dibujo e identifica qué elemento de la circunferencia es cada segmento o arco marcado.
+        </p>
+        <div class="circ-container">
+            ${svgCircunferencia()}
+            <div style="display:flex;flex-wrap:wrap;gap:14px;justify-content:center;">
+                ${LETRAS_EJ4.map(selector).join('\n                ')}
+            </div>
+            <button class="btn-primary" onclick="comprobarEj4()">✅ Comprobar</button>
+            <div id="fb-ej4" class="feedback" style="text-align:center;" aria-live="polite"></div>
+        </div>
+    </div>`;
+}
+
+function renderEj4() { generarEj4(); return renderEj4HTML(); }
+
+/* Tras un fallo, otro dibujo con otra asignación de letras. */
+function regenerarEj4() {
+    const anterior = JSON.stringify(ej4_datos.asignacion);
+    for (let i = 0; i < 50; i++) {
+        generarEj4();
+        if (JSON.stringify(ej4_datos.asignacion) !== anterior) break;
+    }
+    const card = document.getElementById('card-ej4');
+    if (card) { const tmp = document.createElement('div'); tmp.innerHTML = renderEj4HTML(); card.replaceWith(tmp.firstElementChild); }
+}
+
+const EXPLICACION_EJ4 = {
+    cuerda:   l => `<b>${l}</b> es una <b>cuerda</b>: segmento cuyos dos extremos están en la circunferencia, pero no pasa por el centro.`,
+    diametro: l => `<b>${l}</b> es el <b>diámetro</b>: la cuerda más larga posible, que pasa exactamente por el centro y une dos puntos opuestos.`,
+    radio:    l => `<b>${l}</b> es un <b>radio</b>: segmento que va desde el centro hasta cualquier punto de la circunferencia. Mide la mitad del diámetro.`,
+    arco:     l => `<b>${l}</b> es un <b>arco</b>: parte de la propia circunferencia (la línea curva), no un segmento recto.`,
+};
+
+function comprobarEj4() {
+    if (finalizado) return;
+    if (superados.ej4) { document.getElementById('fb-ej4').innerHTML = '<span class="feedback-correcto">✅ ¡Ya tenías este ejercicio superado!</span>'; return; }
+    const elegidos = {};
+    LETRAS_EJ4.forEach(l => { elegidos[l] = document.getElementById(`sel_${l}`).value; });
+    if (LETRAS_EJ4.some(l => !elegidos[l])) { mostrarAviso("Identifica todos los elementos antes de comprobar."); return; }
+    const correctos = ej4_datos.asignacion;
+    if (LETRAS_EJ4.every(l => elegidos[l] === correctos[l])) {
+        superados.ej4 = true; actualizarUI();
+        delete ultimoIntentoFallido.ej4;
+        document.getElementById('fb-ej4').innerHTML = '<span class="feedback-correcto">🎉 ¡Perfecto! Identificas correctamente todos los elementos.</span>';
+        document.getElementById('card-ej4').classList.add('superado');
+    } else {
+        fallosGlobales++; actualizarUI();
+        delete ultimoIntentoFallido.ej4;
+        const errores = LETRAS_EJ4.filter(l => elegidos[l] !== correctos[l]).map(l => EXPLICACION_EJ4[correctos[l]](l));
+        regenerarEj4();
+        document.getElementById('fb-ej4').innerHTML =
+            `<span class="feedback-error">❌ Hay errores en tu identificación.</span>
+             <span class="feedback-hint">📘 Solución del dibujo anterior:<br>${errores.join('<br>')}<br>👉 Ahora inténtalo con este dibujo nuevo.</span>`;
+    }
+}
+
+/* ======================================================
+   DRAG & DROP — COMPROBAR (con feedback pedagógico)
+   ====================================================== */
+const feedbackDrag = {
+    lados: {
+        equilatero: "El triángulo <b>equilátero</b> tiene sus <b>tres lados iguales</b>. Las marcas en los lados te lo indican: un solo trazo en cada lado significa que los tres miden lo mismo.",
+        isosceles:  "El triángulo <b>isósceles</b> tiene exactamente <b>dos lados iguales</b> (y uno diferente). Las dobles marcas en dos de sus lados te lo señalan.",
+        escaleno:   "El triángulo <b>escaleno</b> tiene sus <b>tres lados de distinta longitud</b>. No lleva marcas de igualdad porque ningún lado coincide con otro."
+    },
+    angulos: {
+        acutangulo:   "El triángulo <b>acutángulo</b> tiene sus <b>tres ángulos menores de 90°</b>. En la figura, los tres vértices son puntiagudos y ninguno llega a ser recto ni obtuso.",
+        rectangulo_t: "El triángulo <b>rectángulo</b> tiene exactamente <b>un ángulo de 90°</b>. El cuadradito dibujado en uno de sus vértices es la marca clásica del ángulo recto.",
+        obtusangulo:  "El triángulo <b>obtusángulo</b> tiene un ángulo <b>mayor de 90°</b>. En la figura puedes ver ese vértice con el arco que indica un ángulo claramente abierto, mayor que recto."
+    },
+    para: {
+        cuadrado:   "El <b>cuadrado</b> tiene sus <b>4 lados iguales</b> y sus <b>4 ángulos rectos</b>. Es el caso más simétrico de todos los rectángulos.",
+        rectangulo: "El <b>rectángulo</b> tiene sus <b>lados opuestos iguales</b> y sus <b>4 ángulos rectos</b>, pero sus lados adyacentes son distintos.",
+        rombo:      "El <b>rombo</b> tiene sus <b>4 lados iguales</b> (como el cuadrado), pero sus ángulos <b>no son rectos</b>: dos son agudos y dos son obtusos.",
+        romboide:   "El <b>romboide</b> tiene los <b>lados opuestos iguales y paralelos</b>, pero sin ángulos rectos ni lados todos iguales. Es la figura más general de los paralelogramos."
+    },
+    trap: {
+        trap_rect: "El <b>trapecio rectángulo</b> tiene <b>exactamente dos ángulos rectos</b>. Uno de sus lados no paralelos es perpendicular a las bases. El cuadradito en la figura te lo marca.",
+        trap_isos: "El <b>trapecio isósceles</b> tiene sus dos <b>lados no paralelos iguales</b>, lo que le da simetría. Las marcas en esos lados te lo indican.",
+        trap_esc:  "El <b>trapecio escaleno</b> tiene <b>todos sus lados de distinta longitud</b>. Solo tiene un par de lados paralelos (las bases), pero sin ninguna igualdad adicional.",
+        trapezoide:"El <b>trapezoide</b> es un cuadrilátero que <b>no tiene ningún par de lados paralelos</b>. A diferencia de los trapecios, sus cuatro lados van en direcciones completamente distintas."
+    }
+};
+
+function comprobarDrag(grupo, key, fbId) {
+    if (finalizado) { mostrarAviso("La ficha ya ha sido finalizada."); return; }
+    if (superados[key]) {
+        document.getElementById(fbId).innerHTML = '<span class="feedback-correcto">✅ ¡Ya tenías este apartado superado!</span>';
+        return;
+    }
+    const zonas = document.querySelectorAll(`.drop-zone[data-group="${grupo}"]`);
+    let todoBien = true, errores = [];
+
+    zonas.forEach(zona => {
+        const esperado = zona.dataset.correct;
+        const figs = [...zona.querySelectorAll('[data-id]')];
+        if (figs.length === 0) {
+            todoBien = false;
+            errores.push(`Falta una figura en <b>${zona.querySelector('.drop-zone-label').innerText}</b>.`);
+            zona.classList.remove('correcto','incorrecto');
+        } else {
+            const colocada = figs[figs.length-1].dataset.id;
+            if (colocada === esperado) {
+                zona.classList.add('correcto'); zona.classList.remove('incorrecto');
+            } else {
+                todoBien = false;
+                zona.classList.add('incorrecto'); zona.classList.remove('correcto');
+                errores.push(feedbackDrag[grupo]?.[esperado] || '');
+            }
+        }
+    });
+
+    const fbEl = document.getElementById(fbId);
+    if (todoBien) {
+        superados[key] = true; actualizarUI();
+        delete ultimoIntentoFallido[key];
+        fbEl.innerHTML = '<span class="feedback-correcto">🎉 ¡Correcto! Todas las figuras están bien clasificadas.</span>';
+        if ((key==='ej1a'||key==='ej1b') && superados.ej1a && superados.ej1b) document.getElementById('card-ej1')?.classList.add('superado');
+        if ((key==='ej2a'||key==='ej2b') && superados.ej2a && superados.ej2b) document.getElementById('card-ej2')?.classList.add('superado');
+    } else {
+        // Firma de la colocación actual (qué figura hay en cada zona, en orden de DOM)
+        const firma = [...zonas].map(z => {
+            const figs = [...z.querySelectorAll('[data-id]')];
+            return figs.length ? figs[figs.length-1].dataset.id : '_';
+        }).join(',');
+        if (ultimoIntentoFallido[key] !== firma) {
+            fallosGlobales++; actualizarUI();
+            ultimoIntentoFallido[key] = firma;
+        }
+        fbEl.innerHTML = `<span class="feedback-error">❌ Alguna figura no está en su sitio correcto.</span>
+            <span class="feedback-hint">📘 ${errores.join('<br>')}<br>Puedes mover las figuras de nuevo haciendo clic en ellas para devolverlas al área de figuras.</span>`;
+    }
+}
+
+/* ======= MODALS ======= */
+function cerrarModalConfirmacion() { document.getElementById('modalConfirmacion').classList.remove('show'); }
+function cerrarModalResultados()   { document.getElementById('modalResultados').classList.remove('show'); }
+function cerrarModalReiniciar()    { document.getElementById('modalReiniciar').classList.remove('show'); }
+function confirmarReiniciar() { cerrarModalReiniciar(); inicializarFicha(); }
+
+function mostrarAviso(msg) {
+    const m = document.createElement('div');
+    m.className = 'modal-overlay show';
+    m.innerHTML = `<div style="background:#fffdf7;border-radius:12px;padding:24px;max-width:380px;width:90%;text-align:center;position:relative;border:2px solid var(--color-borde);">
+        <h3 style="color:var(--color-aviso);margin-bottom:10px;">⚠️ Aviso</h3>
+        <p style="font-size:0.9rem;margin-bottom:14px;">${msg}</p>
+        <button onclick="this.closest('.modal-overlay').remove()" style="background:var(--color-acento);color:white;border:none;padding:10px 22px;border-radius:30px;cursor:pointer;font-weight:700;">Entendido</button>
+    </div>`;
+    document.body.appendChild(m);
+}
+
+function obtenerClaseNota(nota) {
+    if (nota>=10) return 'bg-nota-10'; if (nota>=9) return 'bg-nota-9';
+    if (nota>=8)  return 'bg-nota-8';  if (nota>=7) return 'bg-nota-7';
+    if (nota>=6)  return 'bg-nota-6';  if (nota>=5) return 'bg-nota-5';
+    return 'bg-nota-4';
+}
+
+function confirmarFinalizar() {
+    cerrarModalConfirmacion();
+    const nombre = document.getElementById('nombreAlumno').value.trim();
+    if (!nombre) { mostrarAviso("Debes introducir tu nombre y apellidos antes de finalizar la ficha."); return; }
+    finalizado = true;
+    detenerTimer();
+    const { nota, superadosN } = calcularNota();
+    const { fecha, hora } = obtenerFechaHora();
+    const bg = nota>=10?'#1a7a1a':nota>=9?'#6dbf6d':nota>=8?'#1a4f8a':nota>=7?'#5b9bd5':nota>=6?'#c05c00':nota>=5?'#f5a623':'#c0392b';
+    document.body.style.background = bg;
+    const card = document.getElementById('modalResultCard');
+    card.className = `modal-result-card ${obtenerClaseNota(nota)}`;
+    document.getElementById('modalNombreMostrar').textContent = `👤 ${nombre}`;
+    document.getElementById('modalNota').innerHTML = `${nota.toFixed(1)} / 10`;
+    const msg = nota>=10?"🏆 ¡PERFECTO! Dominas todos los contenidos.":nota>=9?"🌟 ¡EXCELENTE! Casi perfecto.":nota>=7?"👍 ¡MUY BIEN! Sigue así.":nota>=5?"📚 ¡APROBADO! Repasa lo que fallaste.":"📖 Sigue practicando, ¡tú puedes!";
+    document.getElementById('modalStats').innerHTML = `
+        <p>📊 Apartados superados: <strong>${superadosN} de ${TOTAL_APARTADOS}</strong></p>
+        <p>❌ Fallos totales: <strong>${fallosGlobales}</strong></p>
+        <p>📅 Fecha: <strong>${fecha}</strong></p>
+        <p>⏰ Hora: <strong>${hora}</strong></p>
+        <p>⏱️ Tiempo: <strong>${obtenerTiempoFormateado()}</strong></p>
+        <p style="margin-top:8px;">💬 ${msg}</p>`;
+    document.getElementById('modalResultados').classList.add('show');
+}
+
+/* ======= RENDER PRINCIPAL ======= */
+function renderTodo() {
+    document.getElementById('ejerciciosContainer').innerHTML =
+        renderEj1() + renderEj2() + renderEj3() + renderEj4() + renderEj5();
+    document.querySelectorAll('.draggable-figure').forEach(initDrag);
+    document.querySelectorAll('.drop-zone').forEach(initDropZone);
+    iniciarConexiones();
+    if (window.MathJax) MathJax.typesetPromise();
+}
+
+function inicializarFicha() {
+    detenerTimer();
+    fallosGlobales = 0; finalizado = false;
+    Object.keys(superados).forEach(k => superados[k] = false);
+    Object.keys(ultimoIntentoFallido).forEach(k => delete ultimoIntentoFallido[k]);
+    document.body.style.background = '';
+    actualizarUI();
+    renderTodo();
+    iniciarTimer();
+}
+
+document.getElementById('btnFinalizar').addEventListener('click', () => document.getElementById('modalConfirmacion').classList.add('show'));
+document.getElementById('btnResetear').addEventListener('click', () => document.getElementById('modalReiniciar').classList.add('show'));
+/* ======================================================
+   EJERCICIO 5 — Rectas notables del triángulo
+   Actividad de conexión con líneas SVG entre:
+   Columna 1: dibujo del triángulo con sus rectas
+   Columna 2: nombre del punto notable (tarjeta arrastrable)
+   Columna 3: definición (tarjeta arrastrable)
+   
+   Mecánica: click en un elemento de col1 y click en col2/col3
+   para trazar la conexión. Comprobar al pulsar el botón.
+   ====================================================== */
+
+// SVG del triángulo con alturas y ortocentro
+function svgOrtocentro() {
+    return `<svg width="170" height="135" viewBox="0 0 170 135">
+        <polygon points="20,118 150,118 55,10" fill="#EAF0F8" stroke="#1a4f8a" stroke-width="2"/>
+        <line x1="55" y1="10" x2="55" y2="118" stroke="#c0392b" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <polyline points="48,118 48,111 55,111" fill="none" stroke="#c0392b" stroke-width="1.2"/>
+        <line x1="20" y1="118" x2="55" y2="87" stroke="#c0392b" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <line x1="150" y1="118" x2="55" y2="87" stroke="#c0392b" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <circle cx="55" cy="87" r="5" fill="#c0392b"/>
+    </svg>`;
+}
+
+function svgIncentro() {
+    return `<svg width="170" height="135" viewBox="0 0 170 135">
+        <polygon points="20,118 150,118 55,10" fill="#F0EAF8" stroke="#6B3B8A" stroke-width="2"/>
+        <line x1="20" y1="118" x2="105" y2="49" stroke="#E88B20" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <line x1="150" y1="118" x2="40" y2="60" stroke="#E88B20" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <line x1="55" y1="10" x2="70" y2="118" stroke="#E88B20" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <circle cx="70" cy="82" r="5" fill="#E88B20"/>
+    </svg>`;
+}
+
+function svgCircuncentro() {
+    return `<svg width="170" height="135" viewBox="0 0 170 135">
+        <polygon points="20,118 150,118 55,10" fill="#EAF8EF" stroke="#2E6B3E" stroke-width="2"/>
+        <line x1="85" y1="6" x2="85" y2="128" stroke="#2E6B3E" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <circle cx="85" cy="118" r="3" fill="#2E6B3E"/>
+        <line x1="79" y1="118" x2="79" y2="112" stroke="#2E6B3E" stroke-width="1.3"/>
+        <line x1="79" y1="112" x2="85" y2="112" stroke="#2E6B3E" stroke-width="1.3"/>
+        <line x1="54" y1="107" x2="151" y2="21" stroke="#2E6B3E" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <circle cx="103" cy="64" r="3" fill="#2E6B3E"/>
+        <line x1="5" y1="54" x2="97" y2="83" stroke="#2E6B3E" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <circle cx="38" cy="64" r="3" fill="#2E6B3E"/>
+        <circle cx="85" cy="79" r="5" fill="#2E6B3E"/>
+    </svg>`;
+}
+
+let ej5_selDibujo = null;
+let ej5_selNom    = null;
+let ej5_conDN = {};
+let ej5_conexiones = {};
+
+function ej5ClickDibujo(id) {
+    if (finalizado || superados.ej5) return;
+    document.querySelectorAll('.ej5-dibujo').forEach(el => el.classList.remove('ej5-seleccionado'));
+    if (ej5_selDibujo === id) { ej5_selDibujo = null; return; }
+    ej5_selDibujo = id;
+    document.getElementById(`ej5-dib-${id}`)?.classList.add('ej5-seleccionado');
+}
+
+function ej5ClickNombre(id) {
+    if (finalizado || superados.ej5) return;
+
+    if (ej5_selDibujo !== null) {
+        Object.keys(ej5_conDN).forEach(k => { if (ej5_conDN[k] === id) delete ej5_conDN[k]; });
+        ej5_conDN[ej5_selDibujo] = id;
+        document.querySelectorAll('.ej5-dibujo').forEach(el => el.classList.remove('ej5-seleccionado'));
+        ej5_selDibujo = null;
+        dibujarLineasDN();
+        return;
+    }
+
+    document.querySelectorAll('.ej5-nom').forEach(el => el.classList.remove('ej5-seleccionado'));
+    if (ej5_selNom === id) { ej5_selNom = null; return; }
+    ej5_selNom = id;
+    document.getElementById(`ej5-nom-${id}`)?.classList.add('ej5-seleccionado');
+}
+
+function ej5ClickDef(id) {
+    if (finalizado || superados.ej5) return;
+    if (!ej5_selNom) return;
+    Object.keys(ej5_conexiones).forEach(k => { if (ej5_conexiones[k] === id) delete ej5_conexiones[k]; });
+    ej5_conexiones[ej5_selNom] = id;
+    document.querySelectorAll('.ej5-nom').forEach(el => el.classList.remove('ej5-seleccionado'));
+    ej5_selNom = null;
+    dibujarLineasND();
+}
+
+function ej5Limpiar() {
+    ej5_conDN = {}; ej5_conexiones = {};
+    ej5_selDibujo = null; ej5_selNom = null;
+    document.querySelectorAll('.ej5-dibujo').forEach(el => el.classList.remove('ej5-seleccionado','ej5-correcto','ej5-incorrecto'));
+    document.querySelectorAll('.ej5-nom').forEach(el => el.classList.remove('ej5-seleccionado','ej5-correcto','ej5-incorrecto'));
+    document.querySelectorAll('.ej5-def').forEach(el => el.classList.remove('ej5-correcto','ej5-incorrecto'));
+    dibujarLineasDN(); dibujarLineasND();
+    document.getElementById('fb-ej5').innerHTML = '';
+}
+
+function dibujarLineasDN() {
+    const svg  = document.getElementById('ej5-svg-dn');
+    const wrap = document.getElementById('ej5-svg-dn-wrap');
+    if (!svg || !wrap) return;
+    const wR = wrap.getBoundingClientRect();
+    svg.setAttribute('width',  wR.width);
+    svg.setAttribute('height', wR.height);
+    svg.innerHTML = '';
+
+    Object.entries(ej5_conDN).forEach(([dibId, nomId]) => {
+        const dibEl = document.getElementById(`ej5-dib-${dibId}`);
+        const nomEl = document.getElementById(`ej5-nom-${nomId}`);
+        if (!dibEl || !nomEl) return;
+
+        const dR = dibEl.getBoundingClientRect();
+        const nR = nomEl.getBoundingClientRect();
+
+        const x1 = dR.right  - wR.left;
+        const y1 = dR.top    + dR.height/2 - wR.top;
+        const x2 = nR.left   - wR.left;
+        const y2 = nR.top    + nR.height/2 - wR.top;
+
+        const dato  = EJ5_DATOS.find(d => d.id === dibId);
+        const color = dato ? dato.color : '#C9A96E';
+        const cx    = (x1 + x2) / 2;
+
+        agregarFlecha(svg, `dn-${dibId}`, x1, y1, x2, y2, cx, color);
+    });
+}
+
+function dibujarLineasND() {
+    const svg  = document.getElementById('ej5-svg-nd');
+    const wrap = document.getElementById('ej5-svg-nd-wrap');
+    if (!svg || !wrap) return;
+    const wR = wrap.getBoundingClientRect();
+    svg.setAttribute('width',  wR.width);
+    svg.setAttribute('height', wR.height);
+    svg.innerHTML = '';
+
+    Object.entries(ej5_conexiones).forEach(([nomId, defId]) => {
+        const nomEl = document.getElementById(`ej5-nom-${nomId}`);
+        const defEl = document.getElementById(`ej5-def-${defId}`);
+        if (!nomEl || !defEl) return;
+
+        const nR = nomEl.getBoundingClientRect();
+        const dR = defEl.getBoundingClientRect();
+
+        const x1 = nR.right  - wR.left;
+        const y1 = nR.top    + nR.height/2 - wR.top;
+        const x2 = dR.left   - wR.left;
+        const y2 = dR.top    + dR.height/2 - wR.top;
+
+        const dato  = EJ5_DATOS.find(d => d.id === nomId);
+        const color = dato ? dato.color : '#C9A96E';
+        const cx    = (x1 + x2) / 2;
+
+        agregarFlecha(svg, `nd-${nomId}`, x1, y1, x2, y2, cx, color);
+    });
+}
+
+function agregarFlecha(svg, markId, x1, y1, x2, y2, cx, color) {
+    let defs = svg.querySelector('defs');
+    if (!defs) { defs = document.createElementNS('http://www.w3.org/2000/svg','defs'); svg.insertBefore(defs, svg.firstChild); }
+    if (!defs.querySelector(`#arrow-${markId}`)) {
+        const marker = document.createElementNS('http://www.w3.org/2000/svg','marker');
+        marker.setAttribute('id', `arrow-${markId}`);
+        marker.setAttribute('markerWidth','8'); marker.setAttribute('markerHeight','8');
+        marker.setAttribute('refX','6'); marker.setAttribute('refY','3');
+        marker.setAttribute('orient','auto');
+        const poly = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+        poly.setAttribute('points','0 0, 8 3, 0 6');
+        poly.setAttribute('fill', color);
+        marker.appendChild(poly);
+        defs.appendChild(marker);
+    }
+    const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d', `M${x1},${y1} C${cx},${y1} ${cx},${y2} ${x2},${y2}`);
+    path.setAttribute('fill','none');
+    path.setAttribute('stroke', color);
+    path.setAttribute('stroke-width','2.5');
+    path.setAttribute('stroke-dasharray','5,3');
+    path.setAttribute('marker-end', `url(#arrow-${markId})`);
+    svg.appendChild(path);
+}
+
+window.addEventListener('resize', () => {
+    if (document.getElementById('ej5-svg-dn')) dibujarLineasDN();
+    if (document.getElementById('ej5-svg-nd')) dibujarLineasND();
+});
+
+function iniciarConexiones() {
+    ej5_conDN = {}; ej5_conexiones = {};
+    ej5_selDibujo = null; ej5_selNom = null;
+    setTimeout(() => { dibujarLineasDN(); dibujarLineasND(); }, 120);
+}
+
+function comprobarEj5() {
+    if (finalizado) return;
+    if (superados.ej5) { document.getElementById('fb-ej5').innerHTML = '<span class="feedback-correcto">✅ ¡Ya tenías este ejercicio superado!</span>'; return; }
+
+    if (Object.keys(ej5_conDN).length < 3) {
+        mostrarAviso("Conecta también los tres dibujos (columna izquierda) con sus nombres antes de comprobar."); return;
+    }
+    if (Object.keys(ej5_conexiones).length < 3) {
+        mostrarAviso("Conecta los tres nombres con sus definiciones antes de comprobar."); return;
+    }
+
+    let todoBien = true, errores = [];
+
+    EJ5_DATOS.forEach(d => {
+        const nomConectado = ej5_conDN[d.id];
+        const defConectada = ej5_conexiones[d.id];
+
+        const dibOk  = nomConectado === d.id;
+        const defOk  = defConectada === d.id;
+        const ok = dibOk && defOk;
+
+        document.getElementById(`ej5-dib-${d.id}`)?.classList.toggle('ej5-correcto',   ok);
+        document.getElementById(`ej5-dib-${d.id}`)?.classList.toggle('ej5-incorrecto', !ok);
+        document.getElementById(`ej5-nom-${d.id}`)?.classList.toggle('ej5-correcto',   ok);
+        document.getElementById(`ej5-nom-${d.id}`)?.classList.toggle('ej5-incorrecto', !ok);
+        document.getElementById(`ej5-def-${d.id}`)?.classList.toggle('ej5-correcto',   defOk);
+
+        if (!ok) {
+            todoBien = false;
+            let msg = `<b>${d.nombre}</b>: `;
+            if (!dibOk) {
+                const nomActual = nomConectado ? (EJ5_DATOS.find(x=>x.id===nomConectado)?.nombre||'?') : 'ninguno';
+                msg += `el dibujo lo has unido con "${nomActual}" — incorrecto. `;
+            }
+            if (!defOk) {
+                const defActual = ej5_conexiones[d.id];
+                const defNom = defActual ? (EJ5_DATOS.find(x=>x.id===defActual)?.definicion||'?') : 'ninguna';
+                msg += `el nombre lo has conectado con "${defNom}" en vez de con "${d.definicion}".`;
+            }
+            errores.push(msg);
+        }
+    });
+
+    const fb = document.getElementById('fb-ej5');
+    if (todoBien) {
+        superados.ej5 = true; actualizarUI();
+        delete ultimoIntentoFallido.ej5;
+        document.getElementById('card-ej5').classList.add('superado');
+        fb.innerHTML = '<span class="feedback-correcto">🎉 ¡Perfecto! Identificas y defines correctamente los tres puntos notables.</span>';
+    } else {
+        const firma = JSON.stringify(ej5_conDN) + '|' + JSON.stringify(ej5_conexiones);
+        if (ultimoIntentoFallido.ej5 !== firma) {
+            fallosGlobales++; actualizarUI();
+            ultimoIntentoFallido.ej5 = firma;
+        }
+        fb.innerHTML = `<span class="feedback-error">❌ Hay conexiones incorrectas.</span>
+            <span class="feedback-hint">📘 ${errores.join('<br>')}<br>Pulsa "🗑️ Borrar todo" y vuelve a intentarlo.</span>`;
+    }
+}
+
+const EJ5_DATOS = [
+    {
+        id: 'ortocentro',
+        nombre: 'Ortocentro',
+        definicion: 'Intersección de las tres alturas del triángulo',
+        color: '#c0392b',
+        svgFn: svgOrtocentro
+    },
+    {
+        id: 'incentro',
+        nombre: 'Incentro',
+        definicion: 'Intersección de las tres bisectrices del triángulo',
+        color: '#E88B20',
+        svgFn: svgIncentro
+    },
+    {
+        id: 'circuncentro',
+        nombre: 'Circuncentro',
+        definicion: 'Intersección de las tres mediatrices del triángulo',
+        color: '#2E6B3E',
+        svgFn: svgCircuncentro
+    }
+];
+
+function renderEj5() {
+    const nomMezclados = mezclar([...EJ5_DATOS]);
+    const defMezcladas = mezclar([...EJ5_DATOS]);
+
+    const colDibujos = EJ5_DATOS.map(d => `
+        <div class="ej5-dibujo" id="ej5-dib-${d.id}" data-id="${d.id}" onclick="ej5ClickDibujo('${d.id}')">
+            ${d.svgFn()}
+        </div>`).join('');
+
+    const colNombres = nomMezclados.map(d => `
+        <div class="ej5-tarjeta ej5-nom" id="ej5-nom-${d.id}" data-id="${d.id}"
+             onclick="ej5ClickNombre('${d.id}')">
+            ${d.nombre}
+        </div>`).join('');
+
+    const colDefs = defMezcladas.map(d => `
+        <div class="ej5-tarjeta ej5-def" id="ej5-def-${d.id}" data-id="${d.id}"
+             onclick="ej5ClickDef('${d.id}')">
+            ${d.definicion}
+        </div>`).join('');
+
+    return `
+    <div class="ejercicio-card ${superados.ej5 ? 'superado':''}" id="card-ej5">
+        <div class="ejercicio-header">
+            <div class="ejercicio-titulo-wrapper">
+                <span class="ejercicio-num">5</span>
+                <span class="ejercicio-titulo">Rectas Notables del Triángulo</span>
+            </div>
+        </div>
+        <p style="font-size:0.88rem;color:var(--color-texto-suave);margin-bottom:16px;">
+            <b>Fase 1:</b> haz clic en un <b>dibujo</b> (izquierda) y luego en el <b>nombre</b> que le corresponde (centro). 
+            <b>Fase 2:</b> haz clic en un <b>nombre</b> (centro) y luego en su <b>definición</b> (derecha).
+        </p>
+
+        <div class="ej5-layout">
+            <div class="ej5-col ej5-col-dibujos">
+                <div class="ej5-col-titulo">Dibujo</div>
+                ${colDibujos}
+            </div>
+            <div class="ej5-conector-wrap" id="ej5-svg-dn-wrap">
+                <svg id="ej5-svg-dn" class="ej5-svg-lines"></svg>
+            </div>
+            <div class="ej5-col ej5-col-nombres" id="ej5-col-nombres">
+                <div class="ej5-col-titulo">Punto notable</div>
+                ${colNombres}
+            </div>
+            <div class="ej5-conector-wrap" id="ej5-svg-nd-wrap">
+                <svg id="ej5-svg-nd" class="ej5-svg-lines"></svg>
+            </div>
+            <div class="ej5-col ej5-col-defs" id="ej5-col-defs">
+                <div class="ej5-col-titulo">Definición</div>
+                ${colDefs}
+            </div>
+        </div>
+
+        <div style="text-align:center;margin-top:16px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+            <button class="btn-primary" onclick="comprobarEj5()">✅ Comprobar conexiones</button>
+            <button class="btn-nuevo" onclick="ej5Limpiar()">🗑️ Borrar todo</button>
+        </div>
+        <div id="fb-ej5" class="feedback" style="text-align:center;margin-top:10px;" aria-live="polite"></div>
+    </div>`;
+}
+
+
+window.onload = () => inicializarFicha();
+</script>
+</body>
+</html>

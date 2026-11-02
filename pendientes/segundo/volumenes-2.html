@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Volúmenes - 2 ESO</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cf:#F5F0E8; --cfc:#FDFAF3; --ct:#2C1F0E; --cts:#6B4F35;
+  --ca:#A0522D; --cah:#7B3B1E; --cb:#C9A96E; --cbs:#E0CEAA;
+  --cc:#3B2510; --cct:#F5EDD8; --cok:#2E6B3E; --cerr:#8B1A1A;
+  --cn:#E8DFC8;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--cf);font-family:'Lato',sans-serif;color:var(--ct);min-height:100vh;transition:background .5s;}
+.autoria{background:var(--cc);text-align:center;padding:6px;font-size:10px;color:rgba(245,240,232,.7);font-family:'Libre Baskerville',serif;letter-spacing:.04em;}
+.ficha-wrapper{max-width:1000px;margin:0 auto;padding:2rem 1rem;}
+.header{background:var(--cc);border-radius:1.5rem;padding:1.8rem 2rem;margin-bottom:1.8rem;box-shadow:0 8px 20px rgba(0,0,0,.1);}
+.header h1{font-size:2.2rem;font-weight:700;color:var(--cct);margin-bottom:.5rem;font-family:'Libre Baskerville',serif;}
+.header p{color:#C9B896;font-size:.9rem;}
+.header-badges{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1rem;}
+.header-badge{background:rgba(255,255,255,.08);padding:.25rem .75rem;border-radius:40px;font-size:.7rem;color:#E0CEAA;}
+.info-bar{background:var(--cfc);border-radius:1.2rem;padding:1rem 1.5rem;margin-bottom:1.5rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;border:1px solid var(--cb);}
+.info-item{display:flex;align-items:center;gap:.6rem;font-size:.85rem;font-weight:500;color:var(--cts);}
+.info-icon{width:30px;height:30px;background:var(--cf);border-radius:10px;display:flex;align-items:center;justify-content:center;}
+.info-value{font-weight:700;font-size:1rem;color:var(--ct);}
+.name-section{background:var(--cfc);border-radius:1rem;padding:.8rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;border:1px solid var(--cbs);}
+.name-label{font-size:.75rem;font-weight:700;text-transform:uppercase;color:var(--cts);font-family:'Libre Baskerville',serif;}
+.name-input{flex:1;max-width:320px;border:none;border-bottom:2px solid var(--cb);padding:.5rem .25rem;font-size:.95rem;background:transparent;font-family:'Lato',sans-serif;color:var(--ct);}
+.name-input:focus{outline:none;border-bottom-color:var(--ca);}
+.ejercicio-card{background:var(--cfc);border-radius:1.2rem;padding:1.5rem;margin-bottom:1.8rem;border:1px solid var(--cb);border-left:4px solid var(--cb);}
+.ejercicio-card.superado{border-left:5px solid var(--cok);background:#eaf4ec;opacity:.94;}
+.ejercicio-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1.2rem;flex-wrap:wrap;justify-content:space-between;}
+.ejercicio-titulo-wrapper{display:flex;align-items:center;gap:.75rem;}
+.ejercicio-num{background:var(--ca);color:white;width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.1rem;flex-shrink:0;}
+.ejercicio-titulo{font-weight:700;font-size:1.05rem;font-family:'Libre Baskerville',serif;color:var(--ct);}
+.ejercicio-instr{font-size:.82rem;color:var(--cts);margin-bottom:1rem;}
+.figura-layout{display:flex;gap:2rem;align-items:center;flex-wrap:wrap;justify-content:center;}
+.figura-svg{flex-shrink:0;overflow:visible;}
+.figura-svg svg{display:block;overflow:visible;width:210px;height:180px;}
+.campos-wrapper{display:flex;flex-direction:column;gap:1rem;min-width:220px;}
+.campo-row{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;}
+.campo-label{font-size:.88rem;font-weight:700;color:var(--cts);min-width:110px;font-family:'Libre Baskerville',serif;}
+.number-input{border:2px solid var(--cb);border-radius:10px;padding:7px 12px;font-size:.95rem;width:120px;text-align:center;font-weight:700;background:white;font-family:'Lato',sans-serif;color:var(--ct);}
+.number-input:focus{outline:none;border-color:var(--ca);}
+.unidad{font-size:.85rem;color:var(--cts);font-weight:600;}
+.btn-primary{background:var(--ca);border:none;color:white;padding:9px 20px;border-radius:40px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Lato',sans-serif;font-size:.88rem;}
+.btn-primary:hover{background:var(--cah);transform:scale(.97);}
+.btn-large{background:var(--ca);color:white;border:none;padding:12px 36px;font-size:.95rem;font-weight:700;border-radius:50px;cursor:pointer;transition:all .2s;font-family:'Libre Baskerville',serif;}
+.btn-large:hover{background:var(--cah);transform:translateY(-2px);}
+.btn-outline{background:transparent;border:2px solid var(--cb);color:var(--cts);padding:10px 28px;font-size:.85rem;font-weight:700;border-radius:50px;cursor:pointer;transition:all .2s;font-family:'Lato',sans-serif;}
+.btn-outline:hover{border-color:var(--ca);color:var(--ca);}
+.btn-nuevo{background:#4A6FA5;border:none;color:white;padding:6px 14px;border-radius:40px;font-size:.72rem;font-weight:700;cursor:pointer;}
+.btn-nuevo:hover{background:#3a5a82;}
+.btns-comprobar{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:.5rem;}
+.action-buttons{display:flex;gap:1rem;justify-content:center;margin-top:2rem;flex-wrap:wrap;}
+.feedback{margin-top:12px;font-size:.85rem;font-weight:600;}
+.feedback-correcto{color:var(--cok);background:rgba(46,107,62,.1);padding:7px 14px;border-radius:30px;display:inline-block;}
+.feedback-error{color:var(--cerr);background:rgba(139,26,26,.08);padding:8px 14px;border-radius:12px;display:block;margin-bottom:4px;}
+.feedback-hint{color:var(--ca);background:rgba(160,82,45,.1);padding:8px 14px;border-radius:12px;display:block;margin-top:6px;font-size:.82rem;border-left:3px solid var(--ca);line-height:1.7;}
+/* --- Tipo 1: clasificación por arrastre --- */
+.t1-tray{display:flex;flex-wrap:wrap;gap:12px;padding:16px;background:var(--cf);border-radius:12px;border:1.5px dashed var(--cbs);min-height:96px;margin-bottom:18px;}
+.figura-chip{width:78px;height:74px;cursor:grab;touch-action:none;border:2px solid var(--cb);border-radius:10px;background:var(--cfc);display:flex;align-items:center;justify-content:center;transition:box-shadow .15s,outline .15s;}
+.figura-chip .chip-label{display:none;}
+.figura-chip:focus-visible{outline:3px solid var(--ca);outline-offset:2px;}
+.figura-chip.seleccionada{outline:3px solid var(--ca);box-shadow:0 0 0 3px rgba(160,82,45,.25);}
+.figura-chip.dragging{opacity:.92;box-shadow:0 8px 18px rgba(44,31,14,.35);cursor:grabbing;}
+.figura-chip.colocada{cursor:default;width:66px;height:auto;min-height:64px;opacity:1;flex-direction:column;justify-content:center;gap:2px;padding:5px 2px;}
+.figura-chip.colocada svg{width:42px;height:38px;}
+.figura-chip.colocada .chip-label{display:block;font-family:'Libre Baskerville',serif;font-size:.62rem;font-weight:700;color:var(--cts);text-align:center;line-height:1.15;}
+.figura-chip svg{width:100%;height:100%;display:block;}
+.t1-zonas{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.dropzone{background:var(--cfc);border:2px solid var(--cb);border-radius:12px;padding:10px;min-height:130px;transition:background .15s,border-color .15s;}
+.dropzone.drag-over{border-color:var(--ca);background:#f7ecd9;}
+.dropzone-titulo{font-family:'Libre Baskerville',serif;font-weight:700;font-size:.78rem;color:var(--cts);margin-bottom:8px;text-align:center;line-height:1.3;}
+.dropzone-items{display:flex;flex-wrap:wrap;gap:6px;min-height:56px;align-content:flex-start;justify-content:center;}
+@media(max-width:760px){.t1-zonas{grid-template-columns:repeat(2,1fr);}}
+/* --- Modales --- */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(44,31,14,.55);align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(4px);padding:16px;}
+.modal-overlay.show{display:flex;}
+.modal-confirm-card{background:#fffdf7;border-radius:12px;padding:28px;max-width:400px;width:90%;text-align:center;position:relative;border:3px solid var(--cb);}
+.modal-result-card{border-radius:16px;padding:28px;max-width:480px;width:95%;max-height:90vh;overflow-y:auto;text-align:center;position:relative;border:3px solid var(--cb);}
+.modal-close{background:none;border:none;font-size:24px;cursor:pointer;opacity:.7;position:absolute;top:12px;right:15px;}
+.modal-buttons{display:flex;gap:12px;justify-content:center;margin-top:20px;}
+.btn-confirm{background:var(--cok);color:white;border:none;padding:10px 24px;border-radius:30px;font-weight:700;cursor:pointer;}
+.btn-cancel{background:var(--cerr);color:white;border:none;padding:10px 24px;border-radius:30px;font-weight:700;cursor:pointer;}
+.modal-grade{font-size:52px;font-weight:900;margin:12px 0 8px;font-family:'Libre Baskerville',serif;}
+.modal-stats{border-radius:10px;padding:12px;margin-bottom:14px;font-size:13px;text-align:left;background:rgba(255,255,255,.2);}
+.modal-stats p{padding:3px 0;}
+.desglose{margin-top:10px;border-radius:10px;padding:10px 12px;background:rgba(255,255,255,.25);font-size:12px;text-align:left;}
+.desglose-tipo{padding:5px 0;border-bottom:1px solid rgba(0,0,0,.08);}
+.desglose-tipo:last-child{border-bottom:none;}
+.desglose-nombre{font-weight:700;}
+.desglose-ok{color:#1a7a1a;}
+.desglose-no{color:#8B1A1A;}
+.modal-footer{font-size:10px;margin-top:12px;opacity:.8;font-style:italic;}
+.recordatorio{font-size:12px;margin-top:8px;font-weight:700;background:rgba(255,255,255,.3);border-radius:20px;padding:8px;}
+.n10{background:#1a7a1a;color:white;} .n9{background:#6dbf6d;color:white;} .n8{background:#1a4f8a;color:white;}
+.n7{background:#5b9bd5;color:white;} .n6{background:#c05c00;color:white;} .n5{background:#f5a623;color:black;}
+.nbaja{background:#c0392b;color:white;}
+@media(max-width:600px){.figura-layout{flex-direction:column;gap:1rem;}.header h1{font-size:1.5rem;}.figura-svg{flex-shrink:1;max-width:100%;}.figura-svg svg{max-width:100%;height:auto;}.campos-wrapper{max-width:100%;}.feedback-hint{overflow-x:auto;}}
+</style>
+<script>MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"]]},options:{skipHtmlTags:["script","noscript","style","textarea"]}}</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+</head>
+<body>
+<div class="autoria">Material elaborado por Marta L. Letona S. &middot; Basado en el trabajo de Javier Cayetano</div>
+<div class="ficha-wrapper">
+  <div class="header">
+    <h1>&#128230; Vol&uacute;menes</h1>
+    <p>Ejercicios interactivos &middot; 2&ordm; ESO &middot; Cuerpos geom&eacute;tricos</p>
+    <div class="header-badges">
+      <span class="header-badge">&#127919; Supera cada apartado para llegar al 10</span>
+      <span class="header-badge">&#128161; Cada fallo resta 0.5 puntos</span>
+      <span class="header-badge">&#128218; Pista con las f&oacute;rmulas si te equivocas</span>
+      <span class="header-badge">&#9989; Clasifica: acierta las 10 figuras para superar el apartado</span>
+    </div>
+  </div>
+  <div class="info-bar">
+    <div class="info-item"><span class="info-icon">&#128202;</span><span>Apartados: <span id="progresoCount" class="info-value">0</span>/6</span></div>
+    <div class="info-item"><span class="info-icon">&#10060;</span><span>Fallos: <span id="fallosCount" class="info-value">0</span></span></div>
+    <div class="info-item"><span class="info-icon">&#11088;</span><span>Nota: <span id="notaActual" class="info-value">0.0</span>/10</span></div>
+    <div class="info-item"><span class="info-icon">&#9203;</span><span>Tiempo: <span id="tiempoTranscurrido" class="info-value">00:00</span></span></div>
+  </div>
+  <div class="name-section">
+    <label class="name-label" for="nombreAlumno">Alumno/a</label>
+    <input type="text" id="nombreAlumno" class="name-input" placeholder="Escribe tu nombre y apellidos...">
+  </div>
+  <div id="ejerciciosContainer"></div>
+  <div class="action-buttons">
+    <button class="btn-large" id="btnFinalizar">Finalizar y Calificar</button>
+    <button class="btn-outline" id="btnResetear">Reiniciar toda la ficha</button>
+  </div>
+</div>
+
+<div id="modalConfirmacion" class="modal-overlay">
+  <div class="modal-confirm-card">
+    <button class="modal-close" onclick="cerrarModalConf()" aria-label="Cerrar">&#10005;</button>
+    <h3 style="color:#D4A259;margin-bottom:12px;">&iquest;Finalizar ficha?</h3>
+    <p style="margin-bottom:16px;">Si finalizas, ya no podr&aacute;s seguir sumando puntos. &iquest;Est&aacute;s seguro/a?</p>
+    <div class="modal-buttons">
+      <button class="btn-confirm" onclick="confirmarFinalizar()">S&iacute;, finalizar</button>
+      <button class="btn-cancel" onclick="cerrarModalConf()">Seguir practicando</button>
+    </div>
+  </div>
+</div>
+<div id="modalReiniciar" class="modal-overlay">
+  <div class="modal-confirm-card">
+    <button class="modal-close" onclick="cerrarModalReiniciar()" aria-label="Cerrar">&#10005;</button>
+    <h3 style="color:#D4A259;margin-bottom:12px;">&iquest;Reiniciar la ficha?</h3>
+    <p style="margin-bottom:16px;">Se perder&aacute;n todos los progresos y la nota actual. &iquest;Seguro?</p>
+    <div class="modal-buttons">
+      <button class="btn-confirm" onclick="confirmarReiniciar()">S&iacute;, reiniciar</button>
+      <button class="btn-cancel" onclick="cerrarModalReiniciar()">Cancelar</button>
+    </div>
+  </div>
+</div>
+<div id="modalResultados" class="modal-overlay">
+  <div id="modalResultCard" class="modal-result-card">
+    <button class="modal-close" onclick="cerrarModalRes()" aria-label="Cerrar">&#10005;</button>
+    <div id="modalNombreMostrar" style="font-size:1.2rem;font-weight:700;margin-bottom:5px;font-family:'Libre Baskerville',serif;"></div>
+    <div style="font-size:.9rem;opacity:.9;margin-bottom:12px;">Vol&uacute;menes &middot; 2&ordm; ESO</div>
+    <div class="modal-grade" id="modalNota"></div>
+    <div class="modal-stats" id="modalStats"></div>
+    <div class="desglose" id="modalDesglose"></div>
+    <div class="recordatorio">Haz una captura de pantalla y entr&eacute;gala en Google Classroom.</div>
+    <div class="modal-footer">Material elaborado por Marta L. Letona S. &middot; Basado en el trabajo de Javier Cayetano</div>
+  </div>
+</div>
+
+<script>
+// ====================================================
+// CONSTANTES Y ESTADO GLOBAL
+// ====================================================
+var NOMBRES_TIPO = {t1:'Clasificar cuerpos',t2:'Prisma',t3:'Pir\u00e1mide',t4:'Cilindro',t5:'Cono',t6:'Esfera'};
+var TOTAL_TIPOS = 6;
+var PUNTO_TIPO = 10/TOTAL_TIPOS;
+var PENALIZACION = 0.5;
+var fallosGlobales = 0, finalizado = false, tiempoInicio = null, intervaloReloj = null;
+var superados = {t1:false,t2:false,t3:false,t4:false,t5:false,t6:false};
+var stats = {
+  t1:{intentos:0,aciertos:0,fallos:0},
+  t2:{intentos:0,aciertos:0,fallos:0},
+  t3:{intentos:0,aciertos:0,fallos:0},
+  t4:{intentos:0,aciertos:0,fallos:0},
+  t5:{intentos:0,aciertos:0,fallos:0},
+  t6:{intentos:0,aciertos:0,fallos:0}
+};
+
+// ---- TIMER ----
+function fmtMMSS(s){var m=Math.floor(s/60),ss=s%60;return pad(m)+':'+pad(ss);}
+function fmtHHMM(s){var min=Math.max(1,Math.ceil(s/60));var h=Math.floor(min/60),m=min%60;return pad(h)+':'+pad(m);}
+function pad(n){return String(n).padStart(2,'0');}
+function iniciarTimer(){detenerTimer();tiempoInicio=new Date();intervaloReloj=setInterval(tickTimer,1000);tickTimer();}
+function detenerTimer(){if(intervaloReloj){clearInterval(intervaloReloj);intervaloReloj=null;}}
+function tickTimer(){if(!tiempoInicio)return;var s=Math.floor((new Date()-tiempoInicio)/1000);var el=document.getElementById('tiempoTranscurrido');if(el)el.textContent=fmtMMSS(s);}
+function tiempoFinal(){if(!tiempoInicio)return'00:01';return fmtHHMM(Math.floor((new Date()-tiempoInicio)/1000));}
+function fechaHora(){var d=new Date();return{fecha:pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear(),hora:pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds())};}
+
+// ---- NOTA ----
+function calcularNota(){
+  var pts=0;
+  Object.keys(superados).forEach(function(k){if(superados[k])pts+=PUNTO_TIPO;});
+  return Math.max(0,Math.min(10,pts-fallosGlobales*PENALIZACION));
+}
+function actualizarUI(){
+  var n=Object.values(superados).filter(Boolean).length;
+  document.getElementById('progresoCount').textContent=n;
+  document.getElementById('fallosCount').textContent=fallosGlobales;
+  document.getElementById('notaActual').textContent=calcularNota().toFixed(1);
+}
+
+// ---- UTILS ----
+function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function rd(x,d){d=d===undefined?2:d;return Math.round(x*Math.pow(10,d))/Math.pow(10,d);}
+function parseEs(v){if(typeof v!=='string')return NaN;return parseFloat(v.trim().replace(',','.'));}
+function ok(v,c){return Math.abs(v-c)<=Math.max(0.02*Math.abs(c),0.2);}
+function shuffle(arr){for(var i=arr.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=arr[i];arr[i]=arr[j];arr[j]=t;}return arr;}
+function mostrarAviso(msg){
+  var m=document.createElement('div');
+  m.className='modal-overlay show';
+  m.innerHTML='<div style="background:#fffdf7;border-radius:12px;padding:24px;max-width:380px;width:90%;text-align:center;border:2px solid #C9A96E;position:relative;"><h3 style="color:#D4A259;margin-bottom:10px;">Aviso</h3><p style="font-size:.9rem;margin-bottom:14px;">'+msg+'</p><button onclick="this.closest(\'.modal-overlay\').remove()" style="background:#A0522D;color:white;border:none;padding:10px 22px;border-radius:30px;cursor:pointer;font-weight:700;">Entendido</button></div>';
+  document.body.appendChild(m);
+}
+function tipeset(id){
+  var el=document.getElementById(id);
+  if(!el)return;
+  if(window.MathJax&&MathJax.typesetPromise){MathJax.typesetPromise([el]).catch(function(e){console.warn(e);});}
+}
+
+// ====================================================
+// ICONOS SVG (cuerpos geom\u00e9tricos) - viewBox 0 0 100 90
+// ====================================================
+function ICO(inner){return '<svg viewBox="0 0 100 90" xmlns="http://www.w3.org/2000/svg"><ellipse cx="50" cy="87" rx="27" ry="4.5" fill="#3B2510" opacity="0.16"/>'+inner+'</svg>';}
+var C1='#F5ECD3', C2='#D8B77E', C3='#A97C42', LN='#3B2510';
+var D1='#A0522D', D2='#3B6EA5', D3='#6E4B6E';
+
+var ICONOS = {
+  tetraedro: ICO(
+    '<polygon points="50,58 18,74 82,74" fill="'+C2+'" stroke="'+LN+'" stroke-width="1.5"/>'+
+    '<polygon points="50,10 18,74 50,58" fill="'+C1+'" stroke="'+LN+'" stroke-width="2"/>'+
+    '<polygon points="50,10 50,58 82,74" fill="'+C3+'" stroke="'+LN+'" stroke-width="2"/>'
+  ),
+  hexaedro: ICO(
+    '<polygon points="50,8 78,24 50,40 22,24" fill="'+C1+'" stroke="'+LN+'" stroke-width="2"/>'+
+    '<polygon points="50,40 78,24 78,60 50,76" fill="'+C3+'" stroke="'+LN+'" stroke-width="2"/>'+
+    '<polygon points="50,40 22,24 22,60 50,76" fill="'+C2+'" stroke="'+LN+'" stroke-width="2"/>'
+  ),
+  prisma_recto_regular: ICO(
+    '<polygon points="50,4 70,15 50,26 30,15" fill="'+C1+'" stroke="'+LN+'" stroke-width="2"/>'+
+    '<polygon points="30,15 50,26 50,88 30,77" fill="'+C2+'" stroke="'+LN+'" stroke-width="2"/>'+
+    '<polygon points="50,26 70,15 70,77 50,88" fill="'+C3+'" stroke="'+LN+'" stroke-width="2"/>'
+  ),
+  prisma_recto_irregular: ICO(
+    '<polygon points="30,14 66,10 74,30 34,34" fill="'+C1+'" stroke="'+LN+'" stroke-width="2"/>'+
+    '<polygon points="34,34 74,30 74,70 34,74" fill="'+C3+'" stroke="'+LN+'" stroke-width="2"/>'+
+    '<polygon points="30,14 34,34 34,74 30,54" fill="'+C2+'" stroke="'+LN+'" stroke-width="2"/>'+
+    '<rect x="30" y="48" width="6" height="6" fill="none" stroke="'+LN+'" stroke-width="1.2"/>'
+  ),
+  prisma_oblicuo: ICO(
+    '<polygon points="16,78 66,78 74,68 24,68" fill="'+C2+'" stroke="'+LN+'" stroke-width="2"/>'+
+    '<polygon points="36,32 86,32 94,22 44,22" fill="'+C1+'" stroke="'+LN+'" stroke-width="2"/>'+
+    '<polygon points="16,78 66,78 86,32 36,32" fill="'+C3+'" stroke="'+LN+'" stroke-width="2" fill-opacity=".7"/>'+
+    '<line x1="16" y1="78" x2="16" y2="30" stroke="'+LN+'" stroke-width="1" stroke-dasharray="3,2"/>'+
+    '<path d="M16,66 A16,16 0 0,1 30,70" fill="none" stroke="'+LN+'" stroke-width="1.3"/>'
+  ),
+  piramide_recta_regular: ICO(
+    '<polygon points="50,50 78,62 50,74 22,62" fill="'+C2+'" stroke="'+LN+'" stroke-width="1.5"/>'+
+    '<polygon points="50,10 22,62 50,74" fill="'+C1+'" stroke="'+LN+'" stroke-width="2"/>'+
+    '<polygon points="50,10 50,74 78,62" fill="'+C3+'" stroke="'+LN+'" stroke-width="2"/>'+
+    '<line x1="50" y1="10" x2="50" y2="62" stroke="'+LN+'" stroke-width="1" stroke-dasharray="3,2"/>'+
+    '<rect x="47" y="56" width="6" height="6" fill="none" stroke="'+LN+'" stroke-width="1.2"/>'
+  ),
+  piramide_recta_irregular: ICO(
+    '<polygon points="50,52 80,58 62,74 26,66" fill="'+C2+'" stroke="'+LN+'" stroke-width="1.5"/>'+
+    '<polygon points="52,10 26,66 62,74" fill="'+C1+'" stroke="'+LN+'" stroke-width="2"/>'+
+    '<polygon points="52,10 62,74 80,58" fill="'+C3+'" stroke="'+LN+'" stroke-width="2"/>'+
+    '<line x1="52" y1="10" x2="52" y2="60" stroke="'+LN+'" stroke-width="1" stroke-dasharray="3,2"/>'+
+    '<rect x="49" y="54" width="6" height="6" fill="none" stroke="'+LN+'" stroke-width="1.2"/>'
+  ),
+  cilindro: ICO(
+    '<ellipse cx="50" cy="70" rx="30" ry="10" fill="'+C2+'" stroke="'+LN+'" stroke-width="2"/>'+
+    '<rect x="20" y="20" width="60" height="50" fill="'+C1+'" stroke="none"/>'+
+    '<line x1="20" y1="20" x2="20" y2="70" stroke="'+LN+'" stroke-width="2"/>'+
+    '<line x1="80" y1="20" x2="80" y2="70" stroke="'+LN+'" stroke-width="2"/>'+
+    '<path d="M20,70 A30,10 0 0,0 80,70" fill="none" stroke="'+LN+'" stroke-width="2"/>'+
+    '<ellipse cx="50" cy="20" rx="30" ry="10" fill="'+C1+'" stroke="'+LN+'" stroke-width="2"/>'
+  ),
+  cono: ICO(
+    '<ellipse cx="50" cy="70" rx="28" ry="9" fill="'+C2+'" stroke="'+LN+'" stroke-width="1" stroke-dasharray="2,2"/>'+
+    '<polygon points="50,10 22,66 78,66" fill="'+C1+'" stroke="'+LN+'" stroke-width="2"/>'+
+    '<path d="M22,66 A28,9 0 0,0 78,66" fill="none" stroke="'+LN+'" stroke-width="2"/>'
+  ),
+  esfera: ICO(
+    '<circle cx="50" cy="46" r="34" fill="'+C1+'" stroke="'+LN+'" stroke-width="2"/>'+
+    '<path d="M50,12 A34,34 0 0,1 50,80 A10,34 0 0,0 50,12 Z" fill="'+C3+'" opacity="0.45"/>'+
+    '<ellipse cx="50" cy="46" rx="34" ry="10" fill="none" stroke="'+LN+'" stroke-width="1"/>'+
+    '<ellipse cx="50" cy="46" rx="10" ry="34" fill="none" stroke="'+LN+'" stroke-width="1"/>'
+  )
+};
+
+var CUERPOS_T1 = [
+  {id:'tetraedro',cat:'poliedros',nombre:'Tetraedro'},
+  {id:'hexaedro',cat:'poliedros',nombre:'Cubo'},
+  {id:'prisma_recto_regular',cat:'prismas',nombre:'Prisma recto regular'},
+  {id:'prisma_recto_irregular',cat:'prismas',nombre:'Prisma recto irregular'},
+  {id:'prisma_oblicuo',cat:'prismas',nombre:'Prisma oblicuo'},
+  {id:'piramide_recta_regular',cat:'piramides',nombre:'Pir\u00e1mide recta regular'},
+  {id:'piramide_recta_irregular',cat:'piramides',nombre:'Pir\u00e1mide recta irregular'},
+  {id:'cilindro',cat:'revolucion',nombre:'Cilindro'},
+  {id:'cono',cat:'revolucion',nombre:'Cono'},
+  {id:'esfera',cat:'revolucion',nombre:'Esfera'}
+];
+var NOMBRE_CAT = {poliedros:'poliedro regular',prismas:'prisma',piramides:'pir\u00e1mide',revolucion:'cuerpo de revoluci\u00f3n'};
+
+var colocadosT1 = 0;
+var chipSeleccionado = null;
+var ordenT1 = [];
+
+// ====================================================
+// TIPO 1: CLASIFICAR CUERPOS (ARRASTRE)
+// ====================================================
+function renderTipo1HTML(){
+  var chipsHTML = ordenT1.map(function(c){
+    return '<div class="figura-chip" id="chip-'+c.id+'" data-id="'+c.id+'" data-cat="'+c.cat+'" tabindex="0" role="button" aria-label="Cuerpo geom\u00e9trico: '+c.nombre+'">'+ICONOS[c.id]+'<span class="chip-label">'+c.nombre+'</span></div>';
+  }).join('');
+  var zonasHTML = ['poliedros','prismas','piramides','revolucion'].map(function(cat){
+    var titulos = {poliedros:'Poliedros regulares',prismas:'Prismas',piramides:'Pir\u00e1mides',revolucion:'Cuerpos de revoluci\u00f3n'};
+    return '<div class="dropzone" id="zona-'+cat+'" data-cat="'+cat+'" tabindex="0" role="button" aria-label="Grupo: '+titulos[cat]+'"><div class="dropzone-titulo">'+titulos[cat]+'</div><div class="dropzone-items" id="items-'+cat+'"></div></div>';
+  }).join('');
+  return '<div class="ejercicio-card'+(superados.t1?' superado':'')+'" id="card-t1">'+
+    '<div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">1</span><span class="ejercicio-titulo">Clasifica los cuerpos geom\u00e9tricos</span></div></div>'+
+    '<p class="ejercicio-instr">Arrastra cada figura (o t\u00f3cala y despu\u00e9s toca su grupo) hasta su categor\u00eda correcta. Si te equivocas, la figura vuelve a la bandeja y puedes intentarlo de nuevo. El apartado se supera cuando las 10 figuras est\u00e9n bien clasificadas.</p>'+
+    '<div class="t1-tray" id="t1-tray">'+chipsHTML+'</div>'+
+    '<div class="t1-zonas">'+zonasHTML+'</div>'+
+    '<div id="fb-t1" class="feedback" aria-live="polite"></div>'+
+    '</div>';
+}
+
+function inicializarInteraccionT1(){
+  document.querySelectorAll('.figura-chip').forEach(function(chip){ habilitarChip(chip); });
+  document.querySelectorAll('.dropzone').forEach(function(zone){ habilitarZona(zone); });
+}
+
+function habilitarChip(chip){
+  chip.addEventListener('pointerdown', function(e){
+    if(finalizado || chip.dataset.colocada==='1') return;
+    var startX=e.clientX, startY=e.clientY, dragging=false;
+    var pointerId=e.pointerId;
+    var origParent=chip.parentNode, origNext=chip.nextSibling;
+    var offsetX=0, offsetY=0, w=0;
+
+    function onMove(ev){
+      if(!dragging){
+        if(Math.abs(ev.clientX-startX)<6 && Math.abs(ev.clientY-startY)<6) return;
+        dragging=true;
+        var rect=chip.getBoundingClientRect();
+        w=rect.width;
+        offsetX=startX-rect.left; offsetY=startY-rect.top;
+        chip.classList.add('dragging');
+        chip.style.position='fixed';
+        chip.style.width=w+'px';
+        chip.style.zIndex=999;
+        document.body.appendChild(chip);
+        chip.setPointerCapture(pointerId);
+      }
+      chip.style.left=(ev.clientX-offsetX)+'px';
+      chip.style.top=(ev.clientY-offsetY)+'px';
+      document.querySelectorAll('.dropzone').forEach(function(z){z.classList.remove('drag-over');});
+      var under=document.elementFromPoint(ev.clientX,ev.clientY);
+      var zone=under?under.closest('.dropzone'):null;
+      if(zone) zone.classList.add('drag-over');
+    }
+    function onUp(ev){
+      chip.removeEventListener('pointermove',onMove);
+      chip.removeEventListener('pointerup',onUp);
+      chip.removeEventListener('pointercancel',onUp);
+      document.querySelectorAll('.dropzone').forEach(function(z){z.classList.remove('drag-over');});
+      if(!dragging){
+        toggleSeleccion(chip);
+        return;
+      }
+      chip.classList.remove('dragging');
+      chip.style.position='';chip.style.zIndex='';chip.style.left='';chip.style.top='';chip.style.width='';
+      var under=document.elementFromPoint(ev.clientX,ev.clientY);
+      var zone=under?under.closest('.dropzone'):null;
+      if(origNext) origParent.insertBefore(chip,origNext); else origParent.appendChild(chip);
+      manejarSoltura(chip,zone);
+    }
+    chip.addEventListener('pointermove',onMove);
+    chip.addEventListener('pointerup',onUp);
+    chip.addEventListener('pointercancel',onUp);
+  });
+  chip.addEventListener('keydown', function(e){
+    if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleSeleccion(chip);}
+  });
+}
+
+function habilitarZona(zone){
+  zone.addEventListener('click', function(){ intentarColocarSeleccionado(zone); });
+  zone.addEventListener('keydown', function(e){
+    if(e.key==='Enter'||e.key===' '){e.preventDefault();intentarColocarSeleccionado(zone);}
+  });
+}
+
+function toggleSeleccion(chip){
+  if(finalizado || chip.dataset.colocada==='1') return;
+  if(chipSeleccionado===chip){chip.classList.remove('seleccionada');chipSeleccionado=null;return;}
+  if(chipSeleccionado) chipSeleccionado.classList.remove('seleccionada');
+  chipSeleccionado=chip; chip.classList.add('seleccionada');
+}
+
+function intentarColocarSeleccionado(zone){
+  if(!chipSeleccionado || finalizado) return;
+  var chip=chipSeleccionado;
+  chipSeleccionado=null; chip.classList.remove('seleccionada');
+  manejarSoltura(chip,zone);
+}
+
+function manejarSoltura(chip, zone){
+  if(finalizado || chip.dataset.colocada==='1') return;
+  if(!zone) return; // soltada fuera de cualquier zona: vuelve a la bandeja, sin penalizaci\u00f3n
+  stats.t1.intentos++;
+  if(zone.dataset.cat===chip.dataset.cat){
+    stats.t1.aciertos++;
+    chip.dataset.colocada='1';
+    chip.classList.add('colocada');
+    chip.setAttribute('tabindex','-1');
+    chip.setAttribute('aria-disabled','true');
+    document.getElementById('items-'+zone.dataset.cat).appendChild(chip);
+    colocadosT1++;
+    document.getElementById('fb-t1').innerHTML='<span class="feedback-correcto">Correcto: es un '+NOMBRE_CAT[zone.dataset.cat]+'.</span>';
+    if(colocadosT1>=10){ superarTipo1(); }
+    actualizarUI();
+  } else {
+    stats.t1.fallos++;
+    fallosGlobales++;
+    document.getElementById('t1-tray').appendChild(chip);
+    document.getElementById('fb-t1').innerHTML='<span class="feedback-error">Esa figura no es un '+NOMBRE_CAT[zone.dataset.cat]+'. Observa sus caras y vu\u00e9lvelo a intentar.</span>';
+    actualizarUI();
+  }
+}
+
+function superarTipo1(){
+  superados.t1=true;
+  var card=document.getElementById('card-t1');
+  if(card) card.classList.add('superado');
+  document.getElementById('fb-t1').innerHTML='<span class="feedback-correcto">\u00a1Clasificaci\u00f3n completa! Apartado superado.</span>';
+  actualizarUI();
+}
+
+// ====================================================
+// TIPO 2: PRISMA (base rectangular)
+// ====================================================
+var d2={};
+function generarD2(){ d2={a:rnd(4,12), b:rnd(4,12), h:rnd(4,12)}; }
+function svgPrismaDatos(a,b,h){
+  return '<svg viewBox="-20 -15 260 210" width="220" height="190">'+
+    '<polygon points="60,30 150,30 175,55 85,55" fill="'+C1+'" stroke="'+LN+'" stroke-width="2"/>'+
+    '<polygon points="60,30 85,55 85,145 60,120" fill="'+C2+'" stroke="'+LN+'" stroke-width="2"/>'+
+    '<polygon points="85,55 175,55 175,145 85,145" fill="'+C3+'" stroke="'+LN+'" stroke-width="2"/>'+
+    '<line x1="60" y1="30" x2="150" y2="30" stroke="'+D1+'" stroke-width="4" stroke-linecap="round"/>'+
+    '<line x1="150" y1="30" x2="175" y2="55" stroke="'+D2+'" stroke-width="4" stroke-linecap="round"/>'+
+    '<line x1="60" y1="30" x2="60" y2="120" stroke="'+D3+'" stroke-width="4" stroke-linecap="round"/>'+
+    '<line x1="105" y1="30" x2="105" y2="14" stroke="'+D1+'" stroke-width="1.2"/>'+
+    '<line x1="162" y1="42" x2="200" y2="28" stroke="'+D2+'" stroke-width="1.2"/>'+
+    '<line x1="60" y1="75" x2="20" y2="75" stroke="'+D3+'" stroke-width="1.2"/>'+
+    '<text x="105" y="6" text-anchor="middle" font-size="13" font-weight="700" fill="'+D1+'" font-family="Lato,sans-serif">a = '+a+' cm</text>'+
+    '<text x="225" y="24" text-anchor="end" font-size="13" font-weight="700" fill="'+D2+'" font-family="Lato,sans-serif">b = '+b+' cm</text>'+
+    '<text x="55" y="70" text-anchor="end" font-size="13" font-weight="700" fill="'+D3+'" font-family="Lato,sans-serif">h = '+h+' cm</text>'+
+    '</svg>';
+}
+function renderEjT2HTML(){
+  var a=d2.a,b=d2.b,h=d2.h;
+  return '<div class="ejercicio-card'+(superados.t2?' superado':'')+'" id="card-t2">'+
+    '<div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">2</span><span class="ejercicio-titulo">Prisma: volumen y superficie</span></div><button class="btn-nuevo" onclick="nuevoTipo(2)">&#128260; Nuevo</button></div>'+
+    '<div class="figura-layout"><div class="figura-svg" id="fig-t2">'+svgPrismaDatos(a,b,h)+'</div>'+
+    '<div class="campos-wrapper">'+
+    '<div class="campo-row"><label class="campo-label" for="t2_v">Volumen =</label><input type="text" inputmode="decimal" id="t2_v" class="number-input" placeholder="cm\u00b3"><span class="unidad">cm\u00b3</span></div>'+
+    '<div class="campo-row"><label class="campo-label" for="t2_s">Superficie =</label><input type="text" inputmode="decimal" id="t2_s" class="number-input" placeholder="cm\u00b2"><span class="unidad">cm\u00b2</span></div>'+
+    '<div class="btns-comprobar"><button class="btn-primary" onclick="comprobarTipo2()">Comprobar</button></div>'+
+    '<div id="fb-t2" class="feedback" aria-live="polite"></div></div></div></div>';
+}
+function comprobarTipo2(){
+  if(finalizado) return;
+  if(superados.t2){document.getElementById('fb-t2').innerHTML='<span class="feedback-correcto">\u00a1Ya superado!</span>';return;}
+  var a=d2.a,b=d2.b,h=d2.h;
+  var vC=rd(a*b*h), abase=a*b, alat=2*(a+b)*h, sC=rd(2*abase+alat);
+  var vV=parseEs(document.getElementById('t2_v').value), vS=parseEs(document.getElementById('t2_s').value);
+  if(isNaN(vV)||isNaN(vS)){mostrarAviso('Completa los dos campos.');return;}
+  stats.t2.intentos++;
+  if(ok(vV,vC)&&ok(vS,sC)){
+    stats.t2.aciertos++; superados.t2=true; actualizarUI();
+    document.getElementById('fb-t2').innerHTML='<span class="feedback-correcto">\u00a1Correcto! Apartado superado.</span>';
+    document.getElementById('card-t2').classList.add('superado');
+  } else {
+    stats.t2.fallos++; fallosGlobales++; actualizarUI();
+    var hh='';
+    if(!ok(vV,vC)) hh+='El volumen del prisma es \\( V = a \\times b \\times h = '+a+' \\times '+b+' \\times '+h+' = \\mathbf{'+vC+'\\text{ cm}^3} \\). ';
+    if(!ok(vS,sC)) hh+='La superficie total es Abase + Alateral, pero el prisma tiene dos bases: \\( A_{base} = a \\times b = '+a+' \\times '+b+' = '+rd(abase)+'\\text{ cm}^2 \\), \\( A_{lateral} = 2(a+b) \\times h = '+rd(2*(a+b))+' \\times '+h+' = '+rd(alat)+'\\text{ cm}^2 \\). \\( A_{total} = 2A_{base} + A_{lateral} = 2 \\times '+rd(abase)+' + '+rd(alat)+' = \\mathbf{'+sC+'\\text{ cm}^2} \\).';
+    document.getElementById('fb-t2').innerHTML='<span class="feedback-error">Revisa tus c\u00e1lculos.</span><span class="feedback-hint">Soluci&oacute;n del ejercicio anterior: '+hh.charAt(0).toLowerCase()+hh.slice(1)+'<br>&#128073; Ahora int&eacute;ntalo con este nuevo.</span>';
+    tipeset('fb-t2');
+    regenerarDistinto(2,generarD2);
+    document.getElementById('fig-t2').innerHTML=svgPrismaDatos(d2.a,d2.b,d2.h);
+    document.getElementById('t2_v').value=''; document.getElementById('t2_s').value='';
+  }
+}
+
+// ====================================================
+// TIPO 3: PIR\u00c1MIDE (base cuadrada)
+// ====================================================
+var d3={};
+function generarD3(){
+  var l=rnd(4,12), h=rnd(4,15);
+  var apL=rd(Math.sqrt(h*h+(l/2)*(l/2)),1);
+  d3={l:l,h:h,apL:apL};
+}
+function svgPiramideDatos(l,h,apL){
+  return '<svg viewBox="-20 -15 260 210" width="220" height="190">'+
+    '<polygon points="105,110 175,130 105,150 35,130" fill="'+C2+'" stroke="'+LN+'" stroke-width="1.5"/>'+
+    '<polygon points="105,20 35,130 105,150" fill="'+C1+'" stroke="'+LN+'" stroke-width="2"/>'+
+    '<polygon points="105,20 105,150 175,130" fill="'+C3+'" stroke="'+LN+'" stroke-width="2"/>'+
+    '<line x1="105" y1="20" x2="105" y2="130" stroke="'+D2+'" stroke-width="3" stroke-dasharray="5,3" stroke-linecap="round"/>'+
+    '<line x1="105" y1="20" x2="70" y2="140" stroke="'+D3+'" stroke-width="4" stroke-linecap="round"/>'+
+    '<line x1="105" y1="150" x2="175" y2="130" stroke="'+D1+'" stroke-width="4" stroke-linecap="round"/>'+
+    '<rect x="100" y="124" width="10" height="10" fill="none" stroke="'+LN+'" stroke-width="1.2"/>'+
+    '<line x1="106" y1="40" x2="130" y2="20" stroke="'+D2+'" stroke-width="1.2"/>'+
+    '<line x1="70" y1="140" x2="10" y2="166" stroke="'+D3+'" stroke-width="1.2"/>'+
+    '<line x1="140" y1="140" x2="195" y2="158" stroke="'+D1+'" stroke-width="1.2"/>'+
+    '<text x="6" y="172" text-anchor="start" font-size="13" font-weight="700" fill="'+D3+'" font-family="Lato,sans-serif">h\u2113 = '+apL+' cm</text>'+
+    '<text x="228" y="163" text-anchor="end" font-size="13" font-weight="700" fill="'+D1+'" font-family="Lato,sans-serif">l = '+l+' cm</text>'+
+    '<text x="134" y="16" text-anchor="start" font-size="13" font-weight="700" fill="'+D2+'" font-family="Lato,sans-serif">h = '+h+' cm</text>'+
+    '</svg>';
+}
+function renderEjT3HTML(){
+  var l=d3.l,h=d3.h,apL=d3.apL;
+  return '<div class="ejercicio-card'+(superados.t3?' superado':'')+'" id="card-t3">'+
+    '<div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">3</span><span class="ejercicio-titulo">Pir\u00e1mide: volumen y superficie</span></div><button class="btn-nuevo" onclick="nuevoTipo(3)">&#128260; Nuevo</button></div>'+
+    '<p class="ejercicio-instr">Base cuadrada de lado l. La altura del tri\u00e1ngulo lateral (h\u2113) ya te la damos calculada.</p>'+
+    '<div class="figura-layout"><div class="figura-svg" id="fig-t3">'+svgPiramideDatos(l,h,apL)+'</div>'+
+    '<div class="campos-wrapper">'+
+    '<div class="campo-row"><label class="campo-label" for="t3_v">Volumen =</label><input type="text" inputmode="decimal" id="t3_v" class="number-input" placeholder="cm\u00b3"><span class="unidad">cm\u00b3</span></div>'+
+    '<div class="campo-row"><label class="campo-label" for="t3_s">Superficie =</label><input type="text" inputmode="decimal" id="t3_s" class="number-input" placeholder="cm\u00b2"><span class="unidad">cm\u00b2</span></div>'+
+    '<div class="btns-comprobar"><button class="btn-primary" onclick="comprobarTipo3()">Comprobar</button></div>'+
+    '<div id="fb-t3" class="feedback" aria-live="polite"></div></div></div></div>';
+}
+function comprobarTipo3(){
+  if(finalizado) return;
+  if(superados.t3){document.getElementById('fb-t3').innerHTML='<span class="feedback-correcto">\u00a1Ya superado!</span>';return;}
+  var l=d3.l,h=d3.h,apL=d3.apL;
+  var vC=rd((1/3)*l*l*h), abase=l*l, alat=2*l*apL, sC=rd(abase+alat);
+  var vV=parseEs(document.getElementById('t3_v').value), vS=parseEs(document.getElementById('t3_s').value);
+  if(isNaN(vV)||isNaN(vS)){mostrarAviso('Completa los dos campos.');return;}
+  stats.t3.intentos++;
+  if(ok(vV,vC)&&ok(vS,sC)){
+    stats.t3.aciertos++; superados.t3=true; actualizarUI();
+    document.getElementById('fb-t3').innerHTML='<span class="feedback-correcto">\u00a1Correcto! Apartado superado.</span>';
+    document.getElementById('card-t3').classList.add('superado');
+  } else {
+    stats.t3.fallos++; fallosGlobales++; actualizarUI();
+    var hh='';
+    if(!ok(vV,vC)) hh+='El volumen de la pir\u00e1mide es \\( V = \\dfrac{1}{3} \\times A_{base} \\times h = \\dfrac{1}{3} \\times '+l+'^2 \\times '+h+' = \\mathbf{'+vC+'\\text{ cm}^3} \\). ';
+    if(!ok(vS,sC)) hh+='La superficie total es Abase + Alateral (una sola base): \\( A_{base} = l^2 = '+l+'^2 = '+rd(abase)+'\\text{ cm}^2 \\), \\( A_{lateral} = 2 \\times l \\times h_{\\ell} = 2 \\times '+l+' \\times '+apL+' = '+rd(alat)+'\\text{ cm}^2 \\). \\( A_{total} = A_{base} + A_{lateral} = '+rd(abase)+' + '+rd(alat)+' = \\mathbf{'+sC+'\\text{ cm}^2} \\).';
+    document.getElementById('fb-t3').innerHTML='<span class="feedback-error">Revisa tus c\u00e1lculos.</span><span class="feedback-hint">Soluci&oacute;n del ejercicio anterior: '+hh.charAt(0).toLowerCase()+hh.slice(1)+'<br>&#128073; Ahora int&eacute;ntalo con este nuevo.</span>';
+    tipeset('fb-t3');
+    regenerarDistinto(3,generarD3);
+    document.getElementById('fig-t3').innerHTML=svgPiramideDatos(d3.l,d3.h,d3.apL);
+    document.getElementById('t3_v').value=''; document.getElementById('t3_s').value='';
+  }
+}
+
+// ====================================================
+// TIPO 4: CILINDRO
+// ====================================================
+var d4={};
+function generarD4(){ d4={r:rnd(3,10), h:rnd(4,15)}; }
+function svgCilindroDatos(r,h){
+  return '<svg viewBox="-20 -15 260 210" width="220" height="190">'+
+    '<ellipse cx="110" cy="150" rx="55" ry="18" fill="'+C2+'" stroke="'+LN+'" stroke-width="2"/>'+
+    '<rect x="55" y="45" width="110" height="105" fill="'+C1+'"/>'+
+    '<line x1="55" y1="45" x2="55" y2="150" stroke="'+LN+'" stroke-width="2"/>'+
+    '<line x1="165" y1="45" x2="165" y2="150" stroke="'+LN+'" stroke-width="2"/>'+
+    '<path d="M55,150 A55,18 0 0,0 165,150" fill="none" stroke="'+LN+'" stroke-width="2"/>'+
+    '<ellipse cx="110" cy="45" rx="55" ry="18" fill="'+C1+'" stroke="'+LN+'" stroke-width="2"/>'+
+    '<line x1="165" y1="45" x2="165" y2="150" stroke="'+D2+'" stroke-width="4" stroke-linecap="round"/>'+
+    '<line x1="110" y1="45" x2="165" y2="45" stroke="'+D1+'" stroke-width="4" stroke-linecap="round"/>'+
+    '<line x1="140" y1="45" x2="150" y2="18" stroke="'+D1+'" stroke-width="1.2"/>'+
+    '<line x1="165" y1="97" x2="200" y2="97" stroke="'+D2+'" stroke-width="1.2"/>'+
+    '<text x="153" y="13" text-anchor="start" font-size="13" font-weight="700" fill="'+D1+'" font-family="Lato,sans-serif">r = '+r+' cm</text>'+
+    '<text x="228" y="101" text-anchor="end" font-size="13" font-weight="700" fill="'+D2+'" font-family="Lato,sans-serif">h = '+h+' cm</text>'+
+    '</svg>';
+}
+function renderEjT4HTML(){
+  var r=d4.r,h=d4.h;
+  return '<div class="ejercicio-card'+(superados.t4?' superado':'')+'" id="card-t4">'+
+    '<div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">4</span><span class="ejercicio-titulo">Cilindro: volumen y superficie</span></div><button class="btn-nuevo" onclick="nuevoTipo(4)">&#128260; Nuevo</button></div>'+
+    '<div class="figura-layout"><div class="figura-svg" id="fig-t4">'+svgCilindroDatos(r,h)+'</div>'+
+    '<div class="campos-wrapper">'+
+    '<div class="campo-row"><label class="campo-label" for="t4_v">Volumen =</label><input type="text" inputmode="decimal" id="t4_v" class="number-input" placeholder="cm\u00b3"><span class="unidad">cm\u00b3</span></div>'+
+    '<div class="campo-row"><label class="campo-label" for="t4_s">Superficie =</label><input type="text" inputmode="decimal" id="t4_s" class="number-input" placeholder="cm\u00b2"><span class="unidad">cm\u00b2</span></div>'+
+    '<div class="btns-comprobar"><button class="btn-primary" onclick="comprobarTipo4()">Comprobar</button></div>'+
+    '<div id="fb-t4" class="feedback" aria-live="polite"></div></div></div></div>';
+}
+function comprobarTipo4(){
+  if(finalizado) return;
+  if(superados.t4){document.getElementById('fb-t4').innerHTML='<span class="feedback-correcto">\u00a1Ya superado!</span>';return;}
+  var r=d4.r,h=d4.h;
+  var vC=rd(Math.PI*r*r*h), abase=Math.PI*r*r, alat=2*Math.PI*r*h, sC=rd(2*abase+alat);
+  var vV=parseEs(document.getElementById('t4_v').value), vS=parseEs(document.getElementById('t4_s').value);
+  if(isNaN(vV)||isNaN(vS)){mostrarAviso('Completa los dos campos.');return;}
+  stats.t4.intentos++;
+  if(ok(vV,vC)&&ok(vS,sC)){
+    stats.t4.aciertos++; superados.t4=true; actualizarUI();
+    document.getElementById('fb-t4').innerHTML='<span class="feedback-correcto">\u00a1Correcto! Apartado superado.</span>';
+    document.getElementById('card-t4').classList.add('superado');
+  } else {
+    stats.t4.fallos++; fallosGlobales++; actualizarUI();
+    var hh='';
+    if(!ok(vV,vC)) hh+='El volumen del cilindro es \\( V = \\pi r^2 h = \\pi \\times '+r+'^2 \\times '+h+' \\approx \\mathbf{'+vC+'\\text{ cm}^3} \\) (usa \\(\\pi \\approx 3{,}14\\)). ';
+    if(!ok(vS,sC)) hh+='La superficie total es Abase + Alateral, con dos bases circulares: \\( A_{base} = \\pi r^2 = \\pi \\times '+r+'^2 \\approx '+rd(abase)+'\\text{ cm}^2 \\), \\( A_{lateral} = 2\\pi r h = 2\\pi \\times '+r+' \\times '+h+' \\approx '+rd(alat)+'\\text{ cm}^2 \\). \\( A_{total} = 2A_{base} + A_{lateral} \\approx \\mathbf{'+sC+'\\text{ cm}^2} \\).';
+    document.getElementById('fb-t4').innerHTML='<span class="feedback-error">Revisa tus c\u00e1lculos.</span><span class="feedback-hint">Soluci&oacute;n del ejercicio anterior: '+hh.charAt(0).toLowerCase()+hh.slice(1)+'<br>&#128073; Ahora int&eacute;ntalo con este nuevo.</span>';
+    tipeset('fb-t4');
+    regenerarDistinto(4,generarD4);
+    document.getElementById('fig-t4').innerHTML=svgCilindroDatos(d4.r,d4.h);
+    document.getElementById('t4_v').value=''; document.getElementById('t4_s').value='';
+  }
+}
+
+// ====================================================
+// TIPO 5: CONO
+// ====================================================
+var d5={};
+function generarD5(){
+  var r=rnd(3,10), h=rnd(4,15);
+  var g=rd(Math.sqrt(r*r+h*h),1);
+  d5={r:r,h:h,g:g};
+}
+function svgConoDatos(r,h,g){
+  return '<svg viewBox="-20 -15 260 210" width="220" height="190">'+
+    '<ellipse cx="110" cy="150" rx="55" ry="18" fill="'+C2+'" stroke="'+LN+'" stroke-width="1" stroke-dasharray="3,3"/>'+
+    '<polygon points="110,20 55,150 165,150" fill="'+C1+'" stroke="'+LN+'" stroke-width="2"/>'+
+    '<path d="M55,150 A55,18 0 0,0 165,150" fill="none" stroke="'+LN+'" stroke-width="2"/>'+
+    '<line x1="110" y1="20" x2="110" y2="150" stroke="'+D2+'" stroke-width="3" stroke-dasharray="5,3" stroke-linecap="round"/>'+
+    '<line x1="110" y1="20" x2="165" y2="150" stroke="'+D3+'" stroke-width="4" stroke-linecap="round"/>'+
+    '<line x1="110" y1="150" x2="165" y2="150" stroke="'+D1+'" stroke-width="4" stroke-linecap="round"/>'+
+    '<line x1="110" y1="35" x2="140" y2="18" stroke="'+D2+'" stroke-width="1.2"/>'+
+    '<line x1="140" y1="85" x2="190" y2="80" stroke="'+D3+'" stroke-width="1.2"/>'+
+    '<text x="144" y="13" text-anchor="start" font-size="13" font-weight="700" fill="'+D2+'" font-family="Lato,sans-serif">h = '+h+' cm</text>'+
+    '<text x="228" y="84" text-anchor="end" font-size="13" font-weight="700" fill="'+D3+'" font-family="Lato,sans-serif">g = '+g+' cm</text>'+
+    '<text x="137" y="181" text-anchor="middle" font-size="13" font-weight="700" fill="'+D1+'" font-family="Lato,sans-serif">r = '+r+' cm</text>'+
+    '</svg>';
+}
+function renderEjT5HTML(){
+  var r=d5.r,h=d5.h,g=d5.g;
+  return '<div class="ejercicio-card'+(superados.t5?' superado':'')+'" id="card-t5">'+
+    '<div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">5</span><span class="ejercicio-titulo">Cono: volumen y superficie</span></div><button class="btn-nuevo" onclick="nuevoTipo(5)">&#128260; Nuevo</button></div>'+
+    '<p class="ejercicio-instr">Te damos la generatriz (g) ya calculada.</p>'+
+    '<div class="figura-layout"><div class="figura-svg" id="fig-t5">'+svgConoDatos(r,h,g)+'</div>'+
+    '<div class="campos-wrapper">'+
+    '<div class="campo-row"><label class="campo-label" for="t5_v">Volumen =</label><input type="text" inputmode="decimal" id="t5_v" class="number-input" placeholder="cm\u00b3"><span class="unidad">cm\u00b3</span></div>'+
+    '<div class="campo-row"><label class="campo-label" for="t5_s">Superficie =</label><input type="text" inputmode="decimal" id="t5_s" class="number-input" placeholder="cm\u00b2"><span class="unidad">cm\u00b2</span></div>'+
+    '<div class="btns-comprobar"><button class="btn-primary" onclick="comprobarTipo5()">Comprobar</button></div>'+
+    '<div id="fb-t5" class="feedback" aria-live="polite"></div></div></div></div>';
+}
+function comprobarTipo5(){
+  if(finalizado) return;
+  if(superados.t5){document.getElementById('fb-t5').innerHTML='<span class="feedback-correcto">\u00a1Ya superado!</span>';return;}
+  var r=d5.r,h=d5.h,g=d5.g;
+  var vC=rd((1/3)*Math.PI*r*r*h), abase=Math.PI*r*r, alat=Math.PI*r*g, sC=rd(abase+alat);
+  var vV=parseEs(document.getElementById('t5_v').value), vS=parseEs(document.getElementById('t5_s').value);
+  if(isNaN(vV)||isNaN(vS)){mostrarAviso('Completa los dos campos.');return;}
+  stats.t5.intentos++;
+  if(ok(vV,vC)&&ok(vS,sC)){
+    stats.t5.aciertos++; superados.t5=true; actualizarUI();
+    document.getElementById('fb-t5').innerHTML='<span class="feedback-correcto">\u00a1Correcto! Apartado superado.</span>';
+    document.getElementById('card-t5').classList.add('superado');
+  } else {
+    stats.t5.fallos++; fallosGlobales++; actualizarUI();
+    var hh='';
+    if(!ok(vV,vC)) hh+='El volumen del cono es \\( V = \\dfrac{1}{3}\\pi r^2 h = \\dfrac{1}{3}\\pi \\times '+r+'^2 \\times '+h+' \\approx \\mathbf{'+vC+'\\text{ cm}^3} \\). ';
+    if(!ok(vS,sC)) hh+='La superficie total es Abase + Alateral (una sola base): \\( A_{base} = \\pi r^2 = \\pi \\times '+r+'^2 \\approx '+rd(abase)+'\\text{ cm}^2 \\), \\( A_{lateral} = \\pi r g = \\pi \\times '+r+' \\times '+g+' \\approx '+rd(alat)+'\\text{ cm}^2 \\). \\( A_{total} = A_{base} + A_{lateral} \\approx \\mathbf{'+sC+'\\text{ cm}^2} \\).';
+    document.getElementById('fb-t5').innerHTML='<span class="feedback-error">Revisa tus c\u00e1lculos.</span><span class="feedback-hint">Soluci&oacute;n del ejercicio anterior: '+hh.charAt(0).toLowerCase()+hh.slice(1)+'<br>&#128073; Ahora int&eacute;ntalo con este nuevo.</span>';
+    tipeset('fb-t5');
+    regenerarDistinto(5,generarD5);
+    document.getElementById('fig-t5').innerHTML=svgConoDatos(d5.r,d5.h,d5.g);
+    document.getElementById('t5_v').value=''; document.getElementById('t5_s').value='';
+  }
+}
+
+// ====================================================
+// TIPO 6: ESFERA
+// ====================================================
+var d6={};
+function generarD6(){ d6={r:rnd(3,15)}; }
+function svgEsferaDatos(r){
+  return '<svg viewBox="-20 -15 260 210" width="220" height="190">'+
+    '<circle cx="110" cy="95" r="65" fill="'+C1+'" stroke="'+LN+'" stroke-width="2"/>'+
+    '<path d="M110,30 A65,65 0 0,1 110,160 A20,65 0 0,0 110,30 Z" fill="'+C3+'" opacity="0.4"/>'+
+    '<ellipse cx="110" cy="95" rx="65" ry="18" fill="none" stroke="'+LN+'" stroke-width="1"/>'+
+    '<line x1="110" y1="30" x2="110" y2="160" stroke="'+LN+'" stroke-width="1" stroke-dasharray="3,2"/>'+
+    '<line x1="110" y1="95" x2="175" y2="95" stroke="'+D1+'" stroke-width="4" stroke-linecap="round"/>'+
+    '<line x1="150" y1="95" x2="150" y2="172" stroke="'+D1+'" stroke-width="1.2"/>'+
+    '<text x="150" y="184" text-anchor="middle" font-size="13" font-weight="700" fill="'+D1+'" font-family="Lato,sans-serif">r = '+r+' cm</text>'+
+    '</svg>';
+}
+function renderEjT6HTML(){
+  var r=d6.r;
+  return '<div class="ejercicio-card'+(superados.t6?' superado':'')+'" id="card-t6">'+
+    '<div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">6</span><span class="ejercicio-titulo">Esfera: volumen y superficie</span></div><button class="btn-nuevo" onclick="nuevoTipo(6)">&#128260; Nuevo</button></div>'+
+    '<div class="figura-layout"><div class="figura-svg" id="fig-t6">'+svgEsferaDatos(r)+'</div>'+
+    '<div class="campos-wrapper">'+
+    '<div class="campo-row"><label class="campo-label" for="t6_v">Volumen =</label><input type="text" inputmode="decimal" id="t6_v" class="number-input" placeholder="cm\u00b3"><span class="unidad">cm\u00b3</span></div>'+
+    '<div class="campo-row"><label class="campo-label" for="t6_s">Superficie =</label><input type="text" inputmode="decimal" id="t6_s" class="number-input" placeholder="cm\u00b2"><span class="unidad">cm\u00b2</span></div>'+
+    '<div class="btns-comprobar"><button class="btn-primary" onclick="comprobarTipo6()">Comprobar</button></div>'+
+    '<div id="fb-t6" class="feedback" aria-live="polite"></div></div></div></div>';
+}
+function comprobarTipo6(){
+  if(finalizado) return;
+  if(superados.t6){document.getElementById('fb-t6').innerHTML='<span class="feedback-correcto">\u00a1Ya superado!</span>';return;}
+  var r=d6.r;
+  var vC=rd((4/3)*Math.PI*r*r*r), sC=rd(4*Math.PI*r*r);
+  var vV=parseEs(document.getElementById('t6_v').value), vS=parseEs(document.getElementById('t6_s').value);
+  if(isNaN(vV)||isNaN(vS)){mostrarAviso('Completa los dos campos.');return;}
+  stats.t6.intentos++;
+  if(ok(vV,vC)&&ok(vS,sC)){
+    stats.t6.aciertos++; superados.t6=true; actualizarUI();
+    document.getElementById('fb-t6').innerHTML='<span class="feedback-correcto">\u00a1Correcto! Apartado superado.</span>';
+    document.getElementById('card-t6').classList.add('superado');
+  } else {
+    stats.t6.fallos++; fallosGlobales++; actualizarUI();
+    var hh='';
+    if(!ok(vV,vC)) hh+='El volumen de la esfera es \\( V = \\dfrac{4}{3}\\pi r^3 = \\dfrac{4}{3}\\pi \\times '+r+'^3 \\approx \\mathbf{'+vC+'\\text{ cm}^3} \\). ';
+    if(!ok(vS,sC)) hh+='La esfera no tiene base ni cara lateral separadas: \\( A_{total} = 4\\pi r^2 = 4\\pi \\times '+r+'^2 \\approx \\mathbf{'+sC+'\\text{ cm}^2} \\).';
+    document.getElementById('fb-t6').innerHTML='<span class="feedback-error">Revisa tus c\u00e1lculos.</span><span class="feedback-hint">Soluci&oacute;n del ejercicio anterior: '+hh.charAt(0).toLowerCase()+hh.slice(1)+'<br>&#128073; Ahora int&eacute;ntalo con este nuevo.</span>';
+    tipeset('fb-t6');
+    regenerarDistinto(6,generarD6);
+    document.getElementById('fig-t6').innerHTML=svgEsferaDatos(d6.r);
+    document.getElementById('t6_v').value=''; document.getElementById('t6_s').value='';
+  }
+}
+
+// ====================================================
+// NUEVO (regenerar manualmente un tipo 2-6)
+// ====================================================
+// Soluciones [volumen, superficie] de cada tipo con sus datos actuales
+function soluciones(n){
+  if(n===2)return[rd(d2.a*d2.b*d2.h),rd(2*d2.a*d2.b+2*(d2.a+d2.b)*d2.h)];
+  if(n===3)return[rd((1/3)*d3.l*d3.l*d3.h),rd(d3.l*d3.l+2*d3.l*d3.apL)];
+  if(n===4)return[rd(Math.PI*d4.r*d4.r*d4.h),rd(2*Math.PI*d4.r*d4.r+2*Math.PI*d4.r*d4.h)];
+  if(n===5)return[rd((1/3)*Math.PI*d5.r*d5.r*d5.h),rd(Math.PI*d5.r*d5.r+Math.PI*d5.r*d5.g)];
+  return[rd((4/3)*Math.PI*d6.r*d6.r*d6.r),rd(4*Math.PI*d6.r*d6.r)];
+}
+// Genera otro cuerpo con otras medidas (otro volumen y otra superficie): copiar la
+// solución mostrada del ejercicio anterior ya no supera el nuevo.
+function regenerarDistinto(n,gen){
+  var antes=soluciones(n);
+  for(var i=0;i<50;i++){
+    gen();
+    var ahora=soluciones(n);
+    if(antes.every(function(v,k){return !ok(v,ahora[k]);}))break;
+  }
+}
+
+function nuevoTipo(n){
+  if(finalizado){mostrarAviso('La ficha ya ha sido finalizada.');return;}
+  var gens={2:generarD2,3:generarD3,4:generarD4,5:generarD5,6:generarD6};
+  var renders={2:renderEjT2HTML,3:renderEjT3HTML,4:renderEjT4HTML,5:renderEjT5HTML,6:renderEjT6HTML};
+  gens[n]();
+  var card=document.getElementById('card-t'+n);
+  if(card){var tmp=document.createElement('div');tmp.innerHTML=renders[n]();card.replaceWith(tmp.firstElementChild);}
+}
+
+// ====================================================
+// MODALES
+// ====================================================
+function cerrarModalConf(){document.getElementById('modalConfirmacion').classList.remove('show');}
+function cerrarModalRes(){document.getElementById('modalResultados').classList.remove('show');}
+function cerrarModalReiniciar(){document.getElementById('modalReiniciar').classList.remove('show');}
+
+function claseNota(nota){
+  if(nota>=10)return'n10';if(nota>=9)return'n9';if(nota>=8)return'n8';
+  if(nota>=7)return'n7';if(nota>=6)return'n6';if(nota>=5)return'n5';
+  return'nbaja';
+}
+
+function confirmarFinalizar(){
+  cerrarModalConf();
+  var nombre=document.getElementById('nombreAlumno').value.trim();
+  if(!nombre){mostrarAviso('Debes introducir tu nombre antes de finalizar.');return;}
+  finalizado=true; detenerTimer();
+  var nota=calcularNota();
+  var sup=Object.values(superados).filter(Boolean).length;
+  var dh=fechaHora(); var tf=tiempoFinal();
+  var bgs=['#c0392b','#c0392b','#c0392b','#c0392b','#c0392b','#f5a623','#c05c00','#5b9bd5','#1a4f8a','#6dbf6d','#1a7a1a'];
+  document.body.style.background=bgs[Math.min(10,Math.floor(nota))];
+  var card=document.getElementById('modalResultCard');
+  card.className='modal-result-card '+claseNota(nota);
+  document.getElementById('modalNombreMostrar').textContent=nombre;
+  document.getElementById('modalNota').textContent=nota.toFixed(1)+' / 10';
+  var msg=nota>=10?'\u00a1PERFECTO! Dominas los vol\u00famenes.':nota>=9?'\u00a1EXCELENTE! Casi perfecto.':nota>=7?'\u00a1MUY BIEN! Sigue as\u00ed.':nota>=6?'\u00a1APROBADO! Buen trabajo.':nota>=5?'Aprobado justo. Repasa lo que fallaste.':'Sigue practicando antes de finalizar.';
+  document.getElementById('modalStats').innerHTML=
+    '<p>Apartados superados: <strong>'+sup+' de '+TOTAL_TIPOS+'</strong></p>'+
+    '<p>Fallos totales: <strong>'+fallosGlobales+'</strong></p>'+
+    '<p>Fecha: <strong>'+dh.fecha+'</strong></p>'+
+    '<p>Hora: <strong>'+dh.hora+'</strong></p>'+
+    '<p>Tiempo: <strong>'+tf+'</strong></p>'+
+    '<p style="margin-top:6px;">'+msg+'</p>';
+  var desgloseHTML='';
+  Object.keys(NOMBRES_TIPO).forEach(function(k){
+    var s=stats[k];
+    desgloseHTML+='<div class="desglose-tipo"><span class="desglose-nombre">'+NOMBRES_TIPO[k]+':</span> <span class="'+(superados[k]?'desglose-ok':'desglose-no')+'">'+(superados[k]?'Superado':'No superado')+'</span><br>Intentos: '+s.intentos+' &middot; Aciertos: '+s.aciertos+' &middot; Fallos: '+s.fallos+'</div>';
+  });
+  document.getElementById('modalDesglose').innerHTML=desgloseHTML;
+  document.getElementById('modalResultados').classList.add('show');
+}
+
+// ====================================================
+// INICIALIZAR / REINICIAR
+// ====================================================
+function hayProgreso(){
+  return fallosGlobales>0 || Object.values(superados).some(Boolean) || colocadosT1>0;
+}
+
+function inicializarFicha(){
+  detenerTimer(); fallosGlobales=0; finalizado=false; colocadosT1=0; chipSeleccionado=null;
+  Object.keys(superados).forEach(function(k){superados[k]=false;});
+  Object.keys(stats).forEach(function(k){stats[k]={intentos:0,aciertos:0,fallos:0};});
+  document.body.style.background='';
+  actualizarUI();
+  ordenT1=shuffle(CUERPOS_T1.slice());
+  generarD2(); generarD3(); generarD4(); generarD5(); generarD6();
+  document.getElementById('ejerciciosContainer').innerHTML=
+    renderTipo1HTML()+renderEjT2HTML()+renderEjT3HTML()+renderEjT4HTML()+renderEjT5HTML()+renderEjT6HTML();
+  inicializarInteraccionT1();
+  iniciarTimer();
+}
+
+document.getElementById('ejerciciosContainer').addEventListener('keydown',function(e){
+  if(e.key==='Enter' && e.target.classList && e.target.classList.contains('number-input')){
+    e.preventDefault();
+    var m=e.target.id.match(/^t([2-6])_/);
+    if(m){var fn=window['comprobarTipo'+m[1]]; if(typeof fn==='function') fn();}
+  }
+});
+document.getElementById('btnFinalizar').addEventListener('click',function(){document.getElementById('modalConfirmacion').classList.add('show');});
+document.getElementById('btnResetear').addEventListener('click',function(){
+  if(!hayProgreso()){inicializarFicha();return;}
+  document.getElementById('modalReiniciar').classList.add('show');
+});
+function confirmarReiniciar(){cerrarModalReiniciar();inicializarFicha();}
+window.onload=function(){inicializarFicha();};
+</script>
+</body>
+</html>

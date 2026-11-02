@@ -1,0 +1,2894 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Potencia con Números Enteros · Ficha interactiva</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script" async></script>
+  <style>
+    :root {
+      --color-fondo: #F5F0E8;
+      --color-fondo-card: #FDFAF3;
+      --color-texto: #2C1F0E;
+      --color-texto-suave: #6B4F35;
+      --color-acento: #A0522D;
+      --color-acento-hover: #7B3B1E;
+      --color-borde: #C9A96E;
+      --color-borde-suave: #E0CEAA;
+      --color-cabecera: #3B2510;
+      --color-cabecera-txt: #F5EDD8;
+      --color-correcto: #2E6B3E;
+      --color-incorrecto: #8B1A1A;
+      --color-neutro: #E8DFC8;
+      --color-aviso: #D4A259;
+      --color-nuevo: #4A6FA5;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--color-fondo);
+      font-family: 'DM Sans', 'Inter', sans-serif;
+      color: var(--color-texto);
+      min-height: 100vh;
+      transition: background 0.5s ease;
+    }
+    .autoria {
+      background: var(--color-cabecera);
+      text-align: center;
+      padding: 6px;
+      font-size: 10px;
+      color: rgba(245, 240, 232, 0.7);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+    .ficha-wrapper { max-width: 1000px; margin: 0 auto; padding: 2rem 1rem; }
+    .header {
+      background: var(--color-cabecera);
+      border-radius: 1.5rem;
+      padding: 1.8rem 2rem;
+      margin-bottom: 1.8rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+    .header h1 { font-size: 2.2rem; font-weight: 700; color: var(--color-cabecera-txt); margin-bottom: 0.5rem; }
+    .header p { color: #C9B896; font-size: 0.9rem; }
+    .header-badges { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem; }
+    .header-badge { background: rgba(255,255,255,0.08); padding: 0.25rem 0.75rem; border-radius: 40px; font-size: 0.7rem; color: #E0CEAA; }
+    .info-bar {
+      background: var(--color-fondo-card);
+      border-radius: 1.2rem;
+      padding: 1rem 1.5rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      border: 1px solid var(--color-borde);
+    }
+    .info-item { display: flex; align-items: center; gap: 0.6rem; font-size: 0.85rem; font-weight: 500; color: var(--color-texto-suave); }
+    .info-icon { width: 30px; height: 30px; background: var(--color-fondo); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+    .info-value { font-weight: 700; font-size: 1rem; color: var(--color-texto); }
+    .name-section {
+      background: var(--color-fondo-card);
+      border-radius: 1rem;
+      padding: 0.8rem 1.5rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      border: 1px solid var(--color-borde-suave);
+    }
+    .name-label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--color-texto-suave); }
+    .name-input { flex: 1; max-width: 280px; border: none; border-bottom: 2px solid var(--color-borde); padding: 0.5rem 0.25rem; font-size: 0.95rem; background: transparent; }
+    .name-input:focus { outline: none; border-bottom-color: var(--color-acento); }
+    .ejercicio-card {
+      background: var(--color-fondo-card);
+      border-radius: 1.2rem;
+      padding: 1.5rem;
+      margin-bottom: 1.2rem;
+      border: 1px solid var(--color-borde);
+      transition: all 0.2s;
+    }
+    .ejercicio-card.superado {
+      border-left: 5px solid var(--color-correcto);
+      background: #E8F5E9;
+      opacity: 0.85;
+    }
+    .ejercicio-card.superado .pregunta-item { opacity: 0.6; }
+    .ejercicio-card.agotado {
+      border-left: 5px solid var(--color-aviso);
+      background: #FBF2E3;
+    }
+    .ejercicio-card.agotado .pregunta-item { opacity: 0.75; }
+    .ejercicio-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+    .ejercicio-titulo-wrapper { display: flex; align-items: center; gap: 0.75rem; }
+    .ejercicio-num { background: var(--color-acento); color: white; width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+    .ejercicio-titulo { font-weight: 600; font-size: 1rem; }
+    .btn-nuevo-ejercicio { background: var(--color-nuevo); border: none; color: white; padding: 6px 14px; border-radius: 40px; font-size: 0.7rem; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+    .btn-nuevo-ejercicio:hover { background: #3a5a82; transform: scale(0.96); }
+    .pregunta-item { background: var(--color-fondo); border-radius: 1rem; padding: 1rem; margin-bottom: 1rem; border: 1px solid var(--color-borde-suave); }
+    .enunciado { background: transparent; padding: 0.5rem 0; font-size: 1rem; margin-bottom: 0.8rem; display: block; font-family: 'JetBrains Mono', monospace; }
+    .enunciado-latex { background: transparent; padding: 0.5rem 0; font-size: 1.1rem; margin-bottom: 0.8rem; }
+    .base-exp-alto { display: inline-flex; align-items: flex-end; gap: 4px; background: transparent; padding: 0; }
+    .base-input-alto { width: 70px; padding: 6px 8px; font-size: 0.9rem; text-align: center; border: 2px solid var(--color-borde); border-radius: 10px; font-weight: 500; background: white; }
+    .exp-input-alto { width: 50px; padding: 4px 6px; font-size: 0.75rem; text-align: center; border: 2px solid var(--color-borde); border-radius: 10px; background: white; margin-bottom: 10px; font-weight: 500; }
+    .text-input { border: 2px solid var(--color-borde); border-radius: 10px; padding: 6px 12px; font-size: 0.85rem; width: 200px; font-family: 'JetBrains Mono', monospace; background: white; }
+    .number-input { border: 2px solid var(--color-borde); border-radius: 10px; padding: 6px 10px; font-size: 0.85rem; width: 100px; text-align: center; font-weight: 500; background: white; }
+    .btn-primary { background: var(--color-acento); border: none; color: white; padding: 8px 18px; border-radius: 40px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+    .btn-primary:hover:not(:disabled) { background: var(--color-acento-hover); transform: scale(0.97); }
+    .btn-primary:disabled { background: #C9A96E; cursor: not-allowed; }
+    .btn-large { background: var(--color-acento); color: white; border: none; padding: 12px 36px; font-size: 0.95rem; font-weight: 600; border-radius: 50px; cursor: pointer; transition: all 0.2s; }
+    .btn-large:hover { background: var(--color-acento-hover); transform: translateY(-2px); }
+    .btn-outline { background: transparent; border: 2px solid var(--color-borde); color: var(--color-texto-suave); padding: 10px 28px; font-size: 0.85rem; font-weight: 600; border-radius: 50px; cursor: pointer; transition: all 0.2s; }
+    .btn-outline:hover { border-color: var(--color-acento); color: var(--color-acento); }
+    .input-area { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 0.8rem; }
+    .feedback { margin-top: 10px; font-size: 0.85rem; font-weight: 500; }
+    .feedback-correcto { color: var(--color-correcto); background: rgba(46,107,62,0.1); padding: 6px 14px; border-radius: 30px; display: inline-block; }
+    .feedback-error { color: var(--color-incorrecto); background: rgba(139,26,26,0.08); padding: 6px 14px; border-radius: 30px; display: inline-block; }
+    .feedback-pedagogico {
+      color: var(--color-texto);
+      background: rgba(160,82,45,0.08);
+      padding: 12px 16px;
+      border-radius: 12px;
+      display: block;
+      margin-top: 8px;
+      font-size: 0.85rem;
+      border-left: 4px solid var(--color-acento);
+      text-align: left;
+    }
+    .feedback-pedagogico strong { color: var(--color-acento); }
+    .feedback-pedagogico .math { font-family: 'JetBrains Mono', monospace; }
+    .feedback-necesita-nuevo { color: var(--color-aviso); background: rgba(212,162,89,0.15); padding: 6px 14px; border-radius: 30px; display: inline-block; font-weight: 600; }
+    .action-buttons { display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; flex-wrap: wrap; }
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
+    .modal-overlay.show { display: flex; }
+    .modal-confirm-card { background: #fffdf7; border-radius: 12px; padding: 28px; max-width: 400px; width: 90%; text-align: center; position: relative; }
+    .modal-result-card { border-radius: 16px; padding: 28px; max-width: 450px; width: 90%; text-align: center; position: relative; transition: all 0.3s; }
+    .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; opacity: 0.7; position: absolute; top: 12px; right: 15px; }
+    .modal-close:hover { opacity: 1; }
+    .modal-buttons { display: flex; gap: 12px; justify-content: center; margin-top: 20px; }
+    .btn-confirm { background: var(--color-correcto); color: white; border: none; padding: 10px 24px; border-radius: 30px; font-weight: 600; cursor: pointer; }
+    .btn-cancel { background: var(--color-incorrecto); color: white; border: none; padding: 10px 24px; border-radius: 30px; font-weight: 600; cursor: pointer; }
+    .modal-grade { font-size: 52px; font-weight: 900; margin: 12px 0 8px; }
+    .modal-message { font-size: 14px; margin-bottom: 16px; }
+    .modal-stats { border-radius: 10px; padding: 12px; margin-bottom: 14px; font-size: 13px; text-align: left; background: rgba(255,255,255,0.2); }
+    .modal-stats p { padding: 4px 0; }
+    .modal-footer { font-size: 10px; margin-top: 12px; opacity: 0.8; }
+    .recordatorio { font-size: 12px; margin-top: 8px; font-weight: 600; background: rgba(255,255,255,0.3); border-radius: 20px; padding: 8px; }
+    .bg-nota-10 { background: #1a7a1a; color: white; }
+    .bg-nota-9 { background: #6dbf6d; color: white; }
+    .bg-nota-8 { background: #1a4f8a; color: white; }
+    .bg-nota-7 { background: #5b9bd5; color: white; }
+    .bg-nota-6 { background: #c05c00; color: white; }
+    .bg-nota-5 { background: #f5a623; color: black; }
+    .bg-nota-4, .bg-nota-3, .bg-nota-2, .bg-nota-1, .bg-nota-0 { background: #c0392b; color: white; }
+
+    .tabla-tres-columnas {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0;
+    }
+    .tabla-tres-columnas th {
+      background: var(--color-cabecera);
+      color: var(--color-cabecera-txt);
+      padding: 8px 6px;
+      text-align: center;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .tabla-tres-columnas td {
+      padding: 6px 6px;
+      text-align: center;
+      border-bottom: 1px solid var(--color-borde-suave);
+      vertical-align: middle;
+    }
+    .tabla-tres-columnas select {
+      padding: 4px 6px;
+      border-radius: 6px;
+      border: 2px solid var(--color-borde);
+      background: white;
+      font-size: 0.75rem;
+      width: 100%;
+      max-width: 140px;
+      font-weight: 500;
+    }
+    .tabla-tres-columnas select:focus {
+      outline: none;
+      border-color: var(--color-acento);
+    }
+    .columna-potencia {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+    .badge-penalizacion {
+      background: rgba(255,255,255,0.08);
+      color: #E0CEAA;
+      padding: 0.25rem 0.75rem;
+      border-radius: 40px;
+      font-size: 0.7rem;
+    }
+    .error-item {
+      margin: 4px 0;
+      padding: 4px 8px;
+      background: rgba(255,255,255,0.5);
+      border-radius: 4px;
+    }
+    .grid-potencias {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 10px 0;
+    }
+    .item-potencia {
+      background: rgba(255,255,255,0.5);
+      padding: 8px 12px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .item-potencia .enunciado-latex {
+      margin: 0;
+      padding: 0;
+      font-size: 1.1rem;
+    }
+    .item-potencia input {
+      width: 100px;
+      padding: 4px 8px;
+      border: 2px solid var(--color-borde);
+      border-radius: 6px;
+      font-size: 0.9rem;
+      text-align: center;
+      font-weight: 500;
+    }
+    .item-potencia input:focus {
+      outline: none;
+      border-color: var(--color-acento);
+    }
+    .grid-ejercicio4 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin: 10px 0;
+    }
+    .item-ej4 {
+      background: rgba(255,255,255,0.5);
+      padding: 12px 16px;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      border: 1px solid var(--color-borde-suave);
+    }
+    .item-ej4 .enunciado-latex {
+      margin: 0;
+      padding: 0;
+      font-size: 1.1rem;
+      text-align: center;
+    }
+    .item-ej4 .input-group {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .item-ej4 .input-group input {
+      width: 70px;
+      padding: 4px 8px;
+      border: 2px solid var(--color-borde);
+      border-radius: 6px;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+    .item-ej4 .input-group input:focus {
+      outline: none;
+      border-color: var(--color-acento);
+    }
+    .item-ej4 .input-group span {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    .grid-ejercicio5 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin: 10px 0;
+    }
+    .item-ej5 {
+      background: rgba(255,255,255,0.5);
+      padding: 12px 16px;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      border: 1px solid var(--color-borde-suave);
+    }
+    .item-ej5 .enunciado-latex {
+      margin: 0;
+      padding: 0;
+      font-size: 1.1rem;
+      text-align: center;
+    }
+    .item-ej5 input {
+      width: 100%;
+      padding: 6px 10px;
+      border: 2px solid var(--color-borde);
+      border-radius: 6px;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+    .item-ej5 input:focus {
+      outline: none;
+      border-color: var(--color-acento);
+    }
+    .grid-ejercicio7 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin: 10px 0;
+    }
+    .item-ej7 {
+      background: rgba(255,255,255,0.5);
+      padding: 12px 16px;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      border: 1px solid var(--color-borde-suave);
+    }
+    .item-ej7 .enunciado-latex {
+      margin: 0;
+      padding: 0 0 4px 0;
+      font-size: 1.1rem;
+      text-align: center;
+      max-width: 100%;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+    .item-ej7 .enunciado-latex mjx-container {
+      max-width: 100%;
+    }
+    .item-ej7 .input-group {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .item-ej7 .input-group input {
+      width: 70px;
+      padding: 4px 8px;
+      border: 2px solid var(--color-borde);
+      border-radius: 6px;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+    .item-ej7 .input-group input:focus {
+      outline: none;
+      border-color: var(--color-acento);
+    }
+    .item-ej7 .input-group span {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    @media (max-width: 640px) {
+      .grid-ejercicio7 {
+        grid-template-columns: 1fr;
+      }
+    }
+    .grid-ejercicio8 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin: 10px 0;
+    }
+    .item-ej8 {
+      background: rgba(255,255,255,0.5);
+      padding: 12px 16px;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      border: 1px solid var(--color-borde-suave);
+    }
+    .item-ej8 .enunciado {
+      margin: 0;
+      padding: 0;
+      text-align: center;
+      font-size: 1rem;
+      font-weight: 500;
+    }
+    .item-ej8 input {
+      width: 100%;
+      padding: 6px 10px;
+      border: 2px solid var(--color-borde);
+      border-radius: 6px;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+    .item-ej8 input:focus {
+      outline: none;
+      border-color: var(--color-acento);
+    }
+    .item-ej8 input.input-error {
+      border-color: var(--color-incorrecto);
+      background: rgba(139,26,26,0.08);
+      box-shadow: 0 0 0 1px var(--color-incorrecto);
+    }
+    @media (max-width: 640px) {
+      .grid-ejercicio4, .grid-ejercicio5, .grid-ejercicio8 { grid-template-columns: 1fr; }
+      .item-ej4 .input-group, .item-ej7 .input-group { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+<div class="autoria">Material elaborado por Marta L Letona S. Basado en el trabajo de Javier Cayetano</div>
+<div class="ficha-wrapper">
+  <div class="header">
+    <h1>⚡ Potencia con Números Enteros</h1>
+    <p>Bases y exponentes negativos · Ejercicios interactivos. 2º ESO</p>
+    <div class="header-badges">
+      <span class="header-badge">🎯 Acertar todas → superado</span>
+      <span class="header-badge badge-penalizacion">💥 Cada fallo resta 0.5 puntos</span>
+      <span class="header-badge">📚 Feedback pedagógico</span>
+      <span class="header-badge">🔄 Si fallas → pulsa "Nuevo"</span>
+    </div>
+  </div>
+
+  <div class="info-bar">
+    <div class="info-item"><span class="info-icon">📊</span><span>Progreso: <span id="progresoCount" class="info-value">0</span>/<span id="totalEjerciciosTxt">10</span></span></div>
+    <div class="info-item"><span class="info-icon">❌</span><span>Fallos: <span id="fallosCount" class="info-value">0</span></span></div>
+    <div class="info-item"><span class="info-icon">⭐</span><span>Nota: <span id="notaActual" class="info-value">0.0</span>/10</span></div>
+    <div class="info-item"><span class="info-icon">⏱️</span><span>Tiempo: <span id="tiempoTranscurrido" class="info-value">00:00</span></span></div>
+  </div>
+
+  <div class="name-section">
+    <span class="name-label">👤 ALUMNO/A</span>
+    <input type="text" id="nombreAlumno" class="name-input" placeholder="Escribe tu nombre...">
+  </div>
+
+  <div id="ejerciciosContainer"></div>
+
+  <div class="action-buttons">
+    <button class="btn-large" id="btnFinalizar">🏆 Finalizar y Calificar</button>
+    <button class="btn-outline" id="btnResetear">🔄 Reiniciar toda la ficha</button>
+  </div>
+</div>
+
+<div id="modalConfirmacion" class="modal-overlay">
+  <div class="modal-confirm-card">
+    <button class="modal-close" onclick="cerrarModalConfirmacion()">✕</button>
+    <h3 style="color: var(--color-aviso); margin-bottom: 12px;">⚠️ ¿Finalizar ficha?</h3>
+    <p style="margin-bottom: 16px;">Si finalizas la ficha, ya no podrás seguir sumando puntos ni modificar respuestas. ¿Seguro?</p>
+    <div class="modal-buttons">
+      <button class="btn-confirm" onclick="confirmarFinalizar()">✅ Sí, finalizar</button>
+      <button class="btn-cancel" onclick="cerrarModalConfirmacion()">❌ Seguir practicando</button>
+    </div>
+  </div>
+</div>
+
+<div id="modalConfirmarNuevo" class="modal-overlay">
+  <div class="modal-confirm-card">
+    <button class="modal-close" onclick="cerrarModalConfirmarNuevo()">✕</button>
+    <h3 style="color: var(--color-aviso); margin-bottom: 12px;">⚠️ ¿Generar un ejercicio nuevo?</h3>
+    <p style="margin-bottom: 16px;" id="mensajeConfirmarNuevo">Este ejercicio ya está superado y vas a perder el punto que tenías ganado en él. ¿Seguro que quieres continuar?</p>
+    <div class="modal-buttons">
+      <button class="btn-confirm" onclick="confirmarReiniciarEjercicio()">✅ Sí, generar nuevo</button>
+      <button class="btn-cancel" onclick="cerrarModalConfirmarNuevo()">❌ Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div id="modalConfirmarReset" class="modal-overlay">
+  <div class="modal-confirm-card">
+    <button class="modal-close" onclick="cerrarModalConfirmarReset()">✕</button>
+    <h3 style="color: var(--color-incorrecto); margin-bottom: 12px;">⚠️ ¿Reiniciar toda la ficha?</h3>
+    <p style="margin-bottom: 16px;" id="mensajeConfirmarReset">Vas a borrar todo el progreso y la nota actual, y a generar ejercicios nuevos desde cero. Esta acción no se puede deshacer. ¿Seguro que quieres continuar?</p>
+    <div class="modal-buttons">
+      <button class="btn-confirm" onclick="confirmarResetTotal()">✅ Sí, reiniciar todo</button>
+      <button class="btn-cancel" onclick="cerrarModalConfirmarReset()">❌ Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div id="modalResultados" class="modal-overlay">
+  <div id="modalResultCard" class="modal-result-card">
+    <button class="modal-close" onclick="cerrarModalResultados()">✕</button>
+    <div id="modalNombreMostrar" style="font-size: 1.2rem; font-weight: 600; margin-bottom: 5px;"></div>
+    <div style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 12px;">⚡ Potencia con Números Enteros</div>
+    <div class="modal-grade" id="modalNota"></div>
+    <div class="modal-stats" id="modalStats"></div>
+    <div class="recordatorio">📸 Haz una captura de pantalla y entrégala en Google Classroom.</div>
+    <div class="modal-footer">Material elaborado por Marta L Letona S.</div>
+  </div>
+</div>
+
+<script>
+  let finalizado = false;
+  let ejercicios = [];
+
+  // Lee un entero escrito por el alumno; NaN si no es un entero válido (antes "2,5" o "3abc" se leían como 2 y 3)
+  function leerEntero(txt) {
+    const t = String(txt == null ? '' : txt).trim();
+    return /^[+-]?\d+$/.test(t) ? parseInt(t, 10) : NaN;
+  }
+  // El signo menos tipográfico (−) que algunos teclados del móvil escriben se convierte en el guion normal
+  document.addEventListener('input', function (e) {
+    const t = e.target;
+    if (!t || t.tagName !== 'INPUT' || t.type !== 'text') return;
+    const n = t.value.replace(/[\u2212\u2013\u2014]/g, '-');
+    if (n !== t.value) {
+      const pos = t.selectionStart;
+      t.value = n;
+      try { t.setSelectionRange(pos, pos); } catch (err) {}
+    }
+  });
+  let indicePendienteDeReiniciar = null;
+  const TOTAL_EJERCICIOS = 10;
+  const PENALIZACION = 0.5; // Decisión pedagógica de Marta: se mantiene en 0.5 (no 0.75)
+  let tiempoInicio = null;
+  let intervaloReloj = null;
+  let timerActivo = false;
+
+  // ===== TIMER CORREGIDO (sin fugas de memoria) =====
+  function detenerTimer() {
+    if (intervaloReloj) {
+      clearInterval(intervaloReloj);
+      intervaloReloj = null;
+    }
+    timerActivo = false;
+  }
+
+  function iniciarTimer() {
+    // Detener cualquier timer anterior para evitar fugas
+    detenerTimer();
+
+    // Establecer tiempo de inicio
+    tiempoInicio = new Date();
+    timerActivo = true;
+
+    // Actualizar inmediatamente
+    actualizarTiempo();
+
+    // Iniciar nuevo intervalo
+    intervaloReloj = setInterval(actualizarTiempo, 1000);
+  }
+
+  function actualizarTiempo() {
+    if (!tiempoInicio || !timerActivo) {
+      // Si no hay tiempo de inicio o el timer no está activo, no hacer nada
+      return;
+    }
+    const ahora = new Date();
+    const diffMs = ahora - tiempoInicio;
+    const totalSegundos = Math.ceil(diffMs / 1000);
+    const diffHoras = Math.floor(totalSegundos / 3600);
+    const diffMinutos = Math.floor((totalSegundos % 3600) / 60);
+    const tiempoFormateado = `${diffHoras.toString().padStart(2,'0')}:${diffMinutos.toString().padStart(2,'0')}`;
+    const tiempoSpan = document.getElementById('tiempoTranscurrido');
+    if (tiempoSpan) tiempoSpan.innerText = tiempoFormateado;
+  }
+
+  function obtenerTiempoFormateado() {
+    if (!tiempoInicio) return "00:00";
+    const ahora = new Date();
+    const diffMs = ahora - tiempoInicio;
+    const totalSegundos = Math.ceil(diffMs / 1000);
+    const diffHoras = Math.floor(totalSegundos / 3600);
+    const diffMinutos = Math.floor((totalSegundos % 3600) / 60);
+    return `${diffHoras.toString().padStart(2,'0')}:${diffMinutos.toString().padStart(2,'0')}`;
+  }
+
+  function obtenerFechaHoraActual() {
+    const ahora = new Date();
+    const fecha = `${ahora.getDate().toString().padStart(2,'0')}/${(ahora.getMonth()+1).toString().padStart(2,'0')}/${ahora.getFullYear()}`;
+    const hora = `${ahora.getHours().toString().padStart(2,'0')}:${ahora.getMinutes().toString().padStart(2,'0')}:${ahora.getSeconds().toString().padStart(2,'0')}`;
+    return { fecha, hora };
+  }
+
+  // ===== CLASE BASE =====
+  class EjercicioDosPreguntas {
+    constructor(id) {
+      this.id = id;
+      this.superado = false;
+      this.cerrado = false;       // true = ya se reveló la respuesta en un fallo; bloqueado hasta pulsar "Nuevo"
+      this.fallosPropios = 0;     // fallos acumulados de ESTE apartado (no se reinicia con "Nuevo")
+      this.feedbackHTML = '';     // último feedback de fallo, para que sobreviva a un re-render
+      this.generarPreguntas();
+    }
+    generarPreguntas() {}
+    // Contenido generado del ejercicio (enunciado y soluciones), sin el estado de la partida
+    instantanea() {
+      const copia = {};
+      Object.keys(this).forEach(k => { if (!['id', 'superado', 'cerrado', 'fallosPropios', 'feedbackHTML'].includes(k)) copia[k] = this[k]; });
+      return JSON.stringify(copia);
+    }
+    // "Nuevo" genera un ejercicio distinto del anterior (no el mismo con las respuestas ya reveladas)
+    reiniciar() {
+      const antes = this.instantanea();
+      this.superado = false; this.cerrado = false; this.feedbackHTML = '';
+      for (let i = 0; i < 60; i++) { this.generarPreguntas(); if (this.instantanea() !== antes) break; }
+    }
+    verificarPreguntas(respuesta1, respuesta2) {
+      if (this.superado || finalizado) return { correcto: false, superado: true, msg: "Ejercicio ya superado." };
+      if (this.cerrado) return { correcto: false, superado: false, cerrado: true, msg: "Este intento ya está agotado. Pulsa \"🔄 Nuevo\" para generar un ejercicio distinto." };
+      const r1 = this.comprobarPregunta1(respuesta1);
+      const r2 = this.comprobarPregunta2(respuesta2);
+      const ambasCorrectas = r1.correcto && r2.correcto;
+      if (ambasCorrectas) {
+        this.superado = true;
+        actualizarUI();
+        return { correcto: true, superado: true, msg: "🎉 ¡Ejercicio superado!", feedback: "correcto" };
+      } else {
+        this.fallosPropios++;
+        this.cerrado = true;
+        actualizarUI();
+        let explicacion = "";
+        if (!r1.correcto && !r2.correcto) explicacion = `Pregunta 1: ${r1.explicacion} | Pregunta 2: ${r2.explicacion}`;
+        else if (!r1.correcto) explicacion = `Error en pregunta 1: ${r1.explicacion}`;
+        else explicacion = `Error en pregunta 2: ${r2.explicacion}`;
+        return { correcto: false, superado: false, msg: "❌ Has fallado en alguna pregunta.", explicacion, feedback: "error" };
+      }
+    }
+    comprobarPregunta1(r) { return { correcto: false, explicacion: "" }; }
+    comprobarPregunta2(r) { return { correcto: false, explicacion: "" }; }
+    getHTML() { return ""; }
+  }
+
+  // ===== EJERCICIO 1 =====
+  class Ejercicio1Tabla extends EjercicioDosPreguntas {
+    generarPreguntas() {
+      this.base = Math.floor(Math.random() * 8) + 2;
+      const shuffle = (arr) => arr.sort(() => Math.random() - 0.5);
+      const expPares = [2, 4, 6];
+      const expImpares = [1, 3, 5];
+
+      const casos = [];
+      const expPar = shuffle([...expPares])[0];
+      casos.push({
+        potencia: `(-${this.base})^${expPar}`,
+        signoCorrecto: "Positivo",
+        motivoCorrecto: "porque la base es negativa y el exponente par"
+      });
+      const expImpar = shuffle([...expImpares])[0];
+      casos.push({
+        potencia: `(-${this.base})^${expImpar}`,
+        signoCorrecto: "Negativo",
+        motivoCorrecto: "porque la base es negativa y el exponente impar"
+      });
+      const expPar2 = shuffle([...expPares])[0];
+      casos.push({
+        potencia: `-${this.base}^${expPar2}`,
+        signoCorrecto: "Negativo",
+        motivoCorrecto: "porque la base es positiva y el exponente solo afecta al número"
+      });
+      const expImpar2 = shuffle([...expImpares])[0];
+      casos.push({
+        potencia: `-${this.base}^${expImpar2}`,
+        signoCorrecto: "Negativo",
+        motivoCorrecto: "porque la base es positiva y el exponente solo afecta al número"
+      });
+
+      this.filas = shuffle(casos);
+      this.opcionesSigno = ["Positivo", "Negativo"];
+      const motivos = [
+        "porque la base es negativa y el exponente par",
+        "porque la base es negativa y el exponente impar",
+        "porque la base es positiva y el exponente solo afecta al número"
+      ];
+      this.opcionesMotivo = shuffle([...motivos]);
+    }
+
+    comprobarPregunta1(respuestas) {
+      let todosCorrectos = true;
+      let errores = [];
+      for (let i = 0; i < this.filas.length; i++) {
+        const fila = this.filas[i];
+        const resp = respuestas[i] || { signo: "", motivo: "" };
+        const signoOk = resp.signo === fila.signoCorrecto;
+        const motivoOk = resp.motivo === fila.motivoCorrecto;
+        if (!signoOk || !motivoOk) {
+          todosCorrectos = false;
+          let detalle = `\\(${fila.potencia}\\)`;
+          if (!signoOk) detalle += ` → El resultado correcto es "${fila.signoCorrecto}"`;
+          if (!motivoOk) detalle += ` → El motivo correcto es "${fila.motivoCorrecto}"`;
+          errores.push(detalle);
+        }
+      }
+      if (todosCorrectos) return { correcto: true };
+      return { correcto: false, explicacion: errores.join(" | ") };
+    }
+
+    comprobarPregunta2() { return { correcto: true }; }
+
+    verificarPreguntas(respuesta1, respuesta2) {
+      if (this.superado || finalizado) return { correcto: false, superado: true, msg: "Ejercicio ya superado." };
+      if (this.cerrado) return { correcto: false, superado: false, cerrado: true, msg: "Este intento ya está agotado. Pulsa \"🔄 Nuevo\" para generar un ejercicio distinto." };
+      const resultado = this.comprobarPregunta1(respuesta1);
+      if (resultado.correcto) {
+        this.superado = true;
+        actualizarUI();
+        return { correcto: true, superado: true, msg: "🎉 ¡Ejercicio superado!", feedback: "correcto" };
+      } else {
+        this.fallosPropios++;
+        this.cerrado = true;
+        actualizarUI();
+        return { correcto: false, superado: false, msg: "❌ Has fallado en alguna clasificación.", explicacion: resultado.explicacion, feedback: "error" };
+      }
+    }
+
+    getHTML() {
+      let claseCard = this.superado ? 'superado' : (this.cerrado ? 'agotado' : '');
+      const bloqueado = this.superado || this.cerrado;
+      let tablaHTML = `
+        <div class="ejercicio-card ${claseCard}" id="ej-card-1">
+          <div class="ejercicio-header">
+            <div class="ejercicio-titulo-wrapper">
+              <span class="ejercicio-num">1</span>
+              <span class="ejercicio-titulo">Clasificar el signo de la potencia</span>
+            </div>
+            <button class="btn-nuevo-ejercicio" onclick="reiniciarEjercicio(0)">🔄 Nuevo</button>
+          </div>
+          <div class="pregunta-item">
+            <p style="margin-bottom: 10px; font-weight: 500;">🔍 Observa cada potencia y elige si el resultado es positivo o negativo, y el motivo:</p>
+            <table class="tabla-tres-columnas">
+              <thead><tr><th>Potencia</th><th>Resultado</th><th>Motivo</th></tr></thead>
+              <tbody>
+      `;
+      for (let i = 0; i < this.filas.length; i++) {
+        const fila = this.filas[i];
+        const disabled = bloqueado ? 'disabled' : '';
+        tablaHTML += `
+          <tr>
+            <td class="columna-potencia">\\(${fila.potencia}\\)</td>
+            <td><select id="signo_${i}" ${disabled}><option value="">---</option>
+        `;
+        for (const op of this.opcionesSigno) {
+          const sel = (this.superado && op === fila.signoCorrecto) ? 'selected' : '';
+          tablaHTML += `<option value="${op}" ${sel}>${op}</option>`;
+        }
+        tablaHTML += `</select></td>
+            <td><select id="motivo_${i}" ${disabled}><option value="">---</option>
+        `;
+        for (const op of this.opcionesMotivo) {
+          const sel = (this.superado && op === fila.motivoCorrecto) ? 'selected' : '';
+          tablaHTML += `<option value="${op}" ${sel}>${op}</option>`;
+        }
+        tablaHTML += `</select></td>
+          </tr>
+        `;
+      }
+      tablaHTML += `
+              </tbody>
+            </table>
+            <div style="text-align:center; margin-top:15px;">
+              <button class="btn-primary" onclick="verificarEjercicio1()" ${bloqueado ? 'disabled' : ''}>✅ Comprobar clasificación</button>
+            </div>
+            <div id="fb_1" class="feedback" style="text-align:center; margin-top:10px;">${this.cerrado ? this.feedbackHTML : ''}</div>
+          </div>
+        </div>
+      `;
+      return tablaHTML;
+    }
+  }
+
+  function verificarEjercicio1() {
+    if (finalizado) { mostrarModalAdvertencia("La ficha ya ha sido finalizada."); return; }
+    if (ejercicios[0].superado) {
+      document.getElementById('fb_1').className = "feedback feedback-correcto";
+      document.getElementById('fb_1').innerHTML = "✅ Este ejercicio ya estaba superado.";
+      return;
+    }
+    if (ejercicios[0].cerrado) {
+      document.getElementById('fb_1').className = "feedback feedback-necesita-nuevo";
+      document.getElementById('fb_1').innerHTML = "🔒 Ya viste la respuesta correcta en el intento anterior. Pulsa \"🔄 Nuevo\" para generar preguntas distintas.";
+      return;
+    }
+    const filas = ejercicios[0].filas;
+    const respuestas = [];
+    let hayVacios = false;
+    for (let i = 0; i < filas.length; i++) {
+      const signo = document.getElementById(`signo_${i}`);
+      const motivo = document.getElementById(`motivo_${i}`);
+      if (!signo || !motivo) { hayVacios = true; break; }
+      const signoVal = signo.value || "";
+      const motivoVal = motivo.value || "";
+      respuestas.push({ signo: signoVal, motivo: motivoVal });
+      if (!signoVal || !motivoVal) hayVacios = true;
+    }
+
+    const resultado = ejercicios[0].verificarPreguntas(respuestas, null);
+    const elFb = document.getElementById('fb_1');
+
+    if (resultado.correcto) {
+      elFb.className = "feedback feedback-correcto";
+      elFb.innerHTML = resultado.msg;
+      renderizarEjercicios();
+    } else {
+      const errores = resultado.explicacion.split(' | ');
+      let lista = '';
+      if (errores.length > 0 && errores[0] !== '') {
+        lista = '<ul style="list-style:none; padding-left:0; margin:8px 0 0 0;">' +
+          errores.map(e => {
+            let texto = e;
+            texto = texto.replace(/ → /g, ' • ');
+            return `<li class="error-item">${texto}</li>`;
+          }).join('') + '</ul>';
+      }
+      let mensajeExtra = '';
+      if (hayVacios) {
+        mensajeExtra = '<div style="margin-top: 8px; color: var(--color-aviso);">⚠️ Has dejado alguna fila sin completar. Se contabiliza como fallo.</div>';
+      }
+      elFb.className = "feedback";
+      elFb.innerHTML = `
+        <div style="color: var(--color-incorrecto); font-weight: 600;">${resultado.msg}</div>
+        <div class="feedback-pedagogico">
+          <strong>📘 Vamos a revisarlo:</strong>
+          ${lista || resultado.explicacion}
+          <div style="margin-top: 8px; font-size: 0.9rem;">
+            💡 <strong>Recuerda:</strong> Cuando el exponente es par, el resultado es positivo; cuando es impar, negativo.
+            Si el signo está fuera del paréntesis, no se eleva y el resultado siempre es negativo.
+          </div>
+        </div>
+        ${mensajeExtra}
+        <div style="margin-top: 8px;"><strong>👉 Pulsa "🔄 Nuevo" para generar nuevas preguntas y volver a intentarlo.</strong></div>
+      `;
+      bloquearTrasFallo(0, 'ej-card-1', elFb.innerHTML);
+      if(window.MathJax) MathJax.typesetPromise().catch(() => {});
+    }
+  }
+
+  // ===== EJERCICIO 2 =====
+  class Ejercicio2ExponentesNegativos extends EjercicioDosPreguntas {
+    generarPreguntas() {
+      const a = Math.floor(Math.random() * 5) + 2;
+      const b = Math.floor(Math.random() * 5) + 2;
+
+      const shuffle = (arr) => arr.sort(() => Math.random() - 0.5);
+
+      const resultado1 = `${a*a}/${b*b}`;
+      const resultado2 = `${b*b}/${a*a}`;
+      const resultado3 = `1/${a*a}`;
+      const resultado4 = `-${b*b}`;
+
+      const casos = [
+        {
+          potencia: `(${a}/${b})^2`,
+          resultadoCorrecto: resultado1,
+          motivoCorrecto: "exponente positivo, elevo numerador y denominador"
+        },
+        {
+          potencia: `(${a}/${b})^{-2}`,
+          resultadoCorrecto: resultado2,
+          motivoCorrecto: "exponente negativo, invierto la fracción y el exponente se vuelve positivo"
+        },
+        {
+          potencia: `${a}^{-2}`,
+          resultadoCorrecto: resultado3,
+          motivoCorrecto: "exponente negativo, convierto en inverso con exponente positivo"
+        },
+        {
+          potencia: `-${b}^2`,
+          resultadoCorrecto: resultado4,
+          motivoCorrecto: "el signo no se eleva, solo afecta al número"
+        }
+      ];
+
+      this.filas = shuffle(casos);
+      this.opcionesResultados = shuffle([resultado1, resultado2, resultado3, resultado4]);
+      this.opcionesMotivos = shuffle([
+        "exponente positivo, elevo numerador y denominador",
+        "exponente negativo, invierto la fracción y el exponente se vuelve positivo",
+        "exponente negativo, convierto en inverso con exponente positivo",
+        "el signo no se eleva, solo afecta al número"
+      ]);
+    }
+
+    comprobarPregunta1(respuestas) {
+      let todosCorrectos = true;
+      let errores = [];
+      for (let i = 0; i < this.filas.length; i++) {
+        const fila = this.filas[i];
+        const resp = respuestas[i] || { resultado: "", motivo: "" };
+        const resOk = resp.resultado === fila.resultadoCorrecto;
+        const motOk = resp.motivo === fila.motivoCorrecto;
+        if (!resOk || !motOk) {
+          todosCorrectos = false;
+          let detalle = `\\(${fila.potencia}\\)`;
+          if (!resOk) detalle += ` → El resultado correcto es \\(${fila.resultadoCorrecto}\\)`;
+          if (!motOk) detalle += ` → El motivo correcto es "${fila.motivoCorrecto}"`;
+          errores.push(detalle);
+        }
+      }
+      if (todosCorrectos) return { correcto: true };
+      return { correcto: false, explicacion: errores.join(" | ") };
+    }
+
+    comprobarPregunta2() { return { correcto: true }; }
+
+    verificarPreguntas(respuesta1, respuesta2) {
+      if (this.superado || finalizado) return { correcto: false, superado: true, msg: "Ejercicio ya superado." };
+      if (this.cerrado) return { correcto: false, superado: false, cerrado: true, msg: "Este intento ya está agotado. Pulsa \"🔄 Nuevo\" para generar un ejercicio distinto." };
+      const resultado = this.comprobarPregunta1(respuesta1);
+      if (resultado.correcto) {
+        this.superado = true;
+        actualizarUI();
+        return { correcto: true, superado: true, msg: "🎉 ¡Ejercicio superado!", feedback: "correcto" };
+      } else {
+        this.fallosPropios++;
+        this.cerrado = true;
+        actualizarUI();
+        return { correcto: false, superado: false, msg: "❌ Has fallado en algún emparejamiento.", explicacion: resultado.explicacion, feedback: "error" };
+      }
+    }
+
+    getHTML() {
+      let claseCard = this.superado ? 'superado' : (this.cerrado ? 'agotado' : '');
+      const bloqueado = this.superado || this.cerrado;
+      let tablaHTML = `
+        <div class="ejercicio-card ${claseCard}" id="ej-card-2">
+          <div class="ejercicio-header">
+            <div class="ejercicio-titulo-wrapper">
+              <span class="ejercicio-num">2</span>
+              <span class="ejercicio-titulo">Exponentes negativos</span>
+            </div>
+            <button class="btn-nuevo-ejercicio" onclick="reiniciarEjercicio(1)">🔄 Nuevo</button>
+          </div>
+          <div class="pregunta-item">
+            <p style="margin-bottom: 10px; font-weight: 500;">🔍 Relaciona cada potencia con su resultado y el motivo correspondiente:</p>
+            <table class="tabla-tres-columnas">
+              <thead><tr><th>Potencia</th><th>Resultado</th><th>Motivo</th></tr></thead>
+              <tbody>
+      `;
+      for (let i = 0; i < this.filas.length; i++) {
+        const fila = this.filas[i];
+        const disabled = bloqueado ? 'disabled' : '';
+        tablaHTML += `
+          <tr>
+            <td class="columna-potencia">\\(${fila.potencia}\\)</td>
+            <td><select id="res_${i}" ${disabled}><option value="">---</option>
+        `;
+        for (const op of this.opcionesResultados) {
+          const sel = (this.superado && op === fila.resultadoCorrecto) ? 'selected' : '';
+          tablaHTML += `<option value="${op}" ${sel}>${op}</option>`;
+        }
+        tablaHTML += `</select></td>
+            <td><select id="mot_${i}" ${disabled}><option value="">---</option>
+        `;
+        for (const op of this.opcionesMotivos) {
+          const sel = (this.superado && op === fila.motivoCorrecto) ? 'selected' : '';
+          tablaHTML += `<option value="${op}" ${sel}>${op}</option>`;
+        }
+        tablaHTML += `</select></td>
+          </tr>
+        `;
+      }
+      tablaHTML += `
+              </tbody>
+            </table>
+            <div style="text-align:center; margin-top:15px;">
+              <button class="btn-primary" onclick="verificarEjercicio2()" ${bloqueado ? 'disabled' : ''}>✅ Comprobar emparejamiento</button>
+            </div>
+            <div id="fb_2" class="feedback" style="text-align:center; margin-top:10px;">${this.cerrado ? this.feedbackHTML : ''}</div>
+          </div>
+        </div>
+      `;
+      return tablaHTML;
+    }
+  }
+
+  function verificarEjercicio2() {
+    if (finalizado) { mostrarModalAdvertencia("La ficha ya ha sido finalizada."); return; }
+    if (ejercicios[1].superado) {
+      document.getElementById('fb_2').className = "feedback feedback-correcto";
+      document.getElementById('fb_2').innerHTML = "✅ Este ejercicio ya estaba superado.";
+      return;
+    }
+    if (ejercicios[1].cerrado) {
+      document.getElementById('fb_2').className = "feedback feedback-necesita-nuevo";
+      document.getElementById('fb_2').innerHTML = "🔒 Ya viste la respuesta correcta en el intento anterior. Pulsa \"🔄 Nuevo\" para generar preguntas distintas.";
+      return;
+    }
+    const filas = ejercicios[1].filas;
+    const respuestas = [];
+    let hayVacios = false;
+    for (let i = 0; i < filas.length; i++) {
+      const res = document.getElementById(`res_${i}`);
+      const mot = document.getElementById(`mot_${i}`);
+      if (!res || !mot) { hayVacios = true; break; }
+      const resVal = res.value || "";
+      const motVal = mot.value || "";
+      respuestas.push({ resultado: resVal, motivo: motVal });
+      if (!resVal || !motVal) hayVacios = true;
+    }
+
+    const resultado = ejercicios[1].verificarPreguntas(respuestas, null);
+    const elFb = document.getElementById('fb_2');
+
+    if (resultado.correcto) {
+      elFb.className = "feedback feedback-correcto";
+      elFb.innerHTML = resultado.msg;
+      renderizarEjercicios();
+    } else {
+      const errores = resultado.explicacion.split(' | ');
+      let lista = '';
+      if (errores.length > 0 && errores[0] !== '') {
+        lista = '<ul style="list-style:none; padding-left:0; margin:8px 0 0 0;">' +
+          errores.map(e => {
+            let texto = e;
+            texto = texto.replace(/ → /g, ' • ');
+            return `<li class="error-item">${texto}</li>`;
+          }).join('') + '</ul>';
+      }
+      let mensajeExtra = '';
+      if (hayVacios) {
+        mensajeExtra = '<div style="margin-top: 8px; color: var(--color-aviso);">⚠️ Has dejado alguna fila sin completar. Se contabiliza como fallo.</div>';
+      }
+      elFb.className = "feedback";
+      elFb.innerHTML = `
+        <div style="color: var(--color-incorrecto); font-weight: 600;">${resultado.msg}</div>
+        <div class="feedback-pedagogico">
+          <strong>📘 Vamos a revisarlo:</strong>
+          ${lista || resultado.explicacion}
+          <div style="margin-top: 8px; font-size: 0.9rem;">
+            💡 <strong>Recuerda:</strong> Un exponente negativo invierte la base:
+            \\(\\left(\\frac{a}{b}\\right)^{-n} = \\left(\\frac{b}{a}\\right)^n\\) y
+            \\(a^{-n} = \\frac{1}{a^n}\\). Si el signo está fuera, no se eleva.
+          </div>
+        </div>
+        ${mensajeExtra}
+        <div style="margin-top: 8px;"><strong>👉 Pulsa "🔄 Nuevo" para generar nuevas preguntas y volver a intentarlo.</strong></div>
+      `;
+      bloquearTrasFallo(1, 'ej-card-2', elFb.innerHTML);
+      if(window.MathJax) MathJax.typesetPromise().catch(() => {});
+    }
+  }
+
+  // ===== EJERCICIO 3 =====
+  class Ejercicio3CalculoPotencias extends EjercicioDosPreguntas {
+    generarPreguntas() {
+      const shuffle = (arr) => arr.sort(() => Math.random() - 0.5);
+
+      const casos = [];
+
+      const b1 = Math.floor(Math.random() * 3) + 2;
+      const e1 = Math.floor(Math.random() * 2) + 2;
+      casos.push({
+        potencia: `${b1}^${e1}`,
+        resultadoCorrecto: String(Math.pow(b1, e1))
+      });
+
+      const b2 = Math.floor(Math.random() * 3) + 2;
+      const e2 = 2;
+      casos.push({
+        potencia: `(-${b2})^${e2}`,
+        resultadoCorrecto: String(Math.pow(b2, e2))
+      });
+
+      const b3 = Math.floor(Math.random() * 3) + 2;
+      const e3 = -2;
+      casos.push({
+        potencia: `${b3}^{${e3}}`,
+        resultadoCorrecto: `1/${b3*b3}`
+      });
+
+      const b4 = Math.floor(Math.random() * 3) + 2;
+      const e4 = 2;
+      casos.push({
+        potencia: `-${b4}^${e4}`,
+        resultadoCorrecto: `-${b4*b4}`
+      });
+
+      this.filas = shuffle(casos);
+    }
+
+    comprobarPregunta1(respuestas) {
+      // parseFloat("1/9") devuelve 1 (se detiene en el primer carácter no numérico),
+      // así que la comparación anterior aceptaba "1" como correcto para 1/9, 1/4, 1/16...
+      // Esta función evalúa fracciones "a/b" a su valor numérico real antes de comparar,
+      // y admite tanto coma como punto decimal.
+      function parseNumeroOFraccion(str) {
+        str = String(str).trim().replace(/,/g, '.');
+        if (str.includes('/')) {
+          const partes = str.split('/');
+          if (partes.length !== 2) return NaN;
+          const num = parseFloat(partes[0]);
+          const den = parseFloat(partes[1]);
+          if (isNaN(num) || isNaN(den) || den === 0) return NaN;
+          return num / den;
+        }
+        return parseFloat(str);
+      }
+      let todosCorrectos = true;
+      let errores = [];
+      for (let i = 0; i < this.filas.length; i++) {
+        const fila = this.filas[i];
+        const resp = respuestas[i] || "";
+        const respNormalizada = resp.trim().replace(/\s/g, '');
+        const correctoNormalizado = fila.resultadoCorrecto.replace(/\s/g, '');
+        const valorResp = parseNumeroOFraccion(respNormalizada);
+        const valorCorrecto = parseNumeroOFraccion(correctoNormalizado);
+        let esCorrecto = false;
+        if (!isNaN(valorResp) && !isNaN(valorCorrecto)) {
+          esCorrecto = Math.abs(valorResp - valorCorrecto) < 0.001;
+        } else {
+          esCorrecto = respNormalizada === correctoNormalizado;
+        }
+
+        if (!esCorrecto) {
+          todosCorrectos = false;
+          let detalle = `\\(${fila.potencia}\\) → El resultado correcto es \\(${fila.resultadoCorrecto}\\)`;
+          errores.push(detalle);
+        }
+      }
+      if (todosCorrectos) return { correcto: true };
+      return { correcto: false, explicacion: errores.join(" | ") };
+    }
+
+    comprobarPregunta2() { return { correcto: true }; }
+
+    verificarPreguntas(respuesta1, respuesta2) {
+      if (this.superado || finalizado) return { correcto: false, superado: true, msg: "Ejercicio ya superado." };
+      if (this.cerrado) return { correcto: false, superado: false, cerrado: true, msg: "Este intento ya está agotado. Pulsa \"🔄 Nuevo\" para generar un ejercicio distinto." };
+      const resultado = this.comprobarPregunta1(respuesta1);
+      if (resultado.correcto) {
+        this.superado = true;
+        actualizarUI();
+        return { correcto: true, superado: true, msg: "🎉 ¡Ejercicio superado! Has calculado correctamente todas las potencias.", feedback: "correcto" };
+      } else {
+        this.fallosPropios++;
+        this.cerrado = true;
+        actualizarUI();
+        return { correcto: false, superado: false, msg: "❌ Has fallado en algún cálculo.", explicacion: resultado.explicacion, feedback: "error" };
+      }
+    }
+
+    getHTML() {
+      let claseCard = this.superado ? 'superado' : (this.cerrado ? 'agotado' : '');
+      const bloqueado = this.superado || this.cerrado;
+      let html = `
+        <div class="ejercicio-card ${claseCard}" id="ej-card-3">
+          <div class="ejercicio-header">
+            <div class="ejercicio-titulo-wrapper">
+              <span class="ejercicio-num">3</span>
+              <span class="ejercicio-titulo">Calcular potencias</span>
+            </div>
+            <button class="btn-nuevo-ejercicio" onclick="reiniciarEjercicio(2)">🔄 Nuevo</button>
+          </div>
+          <div class="pregunta-item">
+            <p style="margin-bottom: 10px; font-weight: 500;">📝 Calcula mentalmente el resultado de cada potencia y escríbelo:</p>
+            <div class="grid-potencias">
+      `;
+      for (let i = 0; i < this.filas.length; i++) {
+        const fila = this.filas[i];
+        const disabled = bloqueado ? 'disabled' : '';
+        const valorCorrecto = this.superado ? fila.resultadoCorrecto : '';
+        let potenciaLatex = fila.potencia;
+        potenciaLatex = potenciaLatex.replace(/\^(\d+)/g, '^{$1}');
+        html += `
+          <div class="item-potencia">
+            <span class="enunciado-latex">\\(${potenciaLatex}\\)</span>
+            <input type="text" id="res3_${i}" placeholder="Resultado" ${disabled} value="${valorCorrecto}">
+          </div>
+        `;
+      }
+      html += `
+            </div>
+            <div style="text-align:center; margin-top:15px;">
+              <button class="btn-primary" onclick="verificarEjercicio3()" ${bloqueado ? 'disabled' : ''}>✅ Comprobar resultados</button>
+            </div>
+            <div id="fb_3" class="feedback" style="text-align:center; margin-top:10px;">${this.cerrado ? this.feedbackHTML : ''}</div>
+          </div>
+        </div>
+      `;
+      return html;
+    }
+  }
+
+  function verificarEjercicio3() {
+    if (finalizado) { mostrarModalAdvertencia("La ficha ya ha sido finalizada."); return; }
+    if (ejercicios[2].superado) {
+      document.getElementById('fb_3').className = "feedback feedback-correcto";
+      document.getElementById('fb_3').innerHTML = "✅ Este ejercicio ya estaba superado.";
+      return;
+    }
+    if (ejercicios[2].cerrado) {
+      document.getElementById('fb_3').className = "feedback feedback-necesita-nuevo";
+      document.getElementById('fb_3').innerHTML = "🔒 Ya viste la respuesta correcta en el intento anterior. Pulsa \"🔄 Nuevo\" para generar preguntas distintas.";
+      return;
+    }
+    const filas = ejercicios[2].filas;
+    const respuestas = [];
+    let hayVacios = false;
+    for (let i = 0; i < filas.length; i++) {
+      const input = document.getElementById(`res3_${i}`);
+      if (!input) { hayVacios = true; break; }
+      const valor = input.value || "";
+      respuestas.push(valor);
+      if (!valor.trim()) hayVacios = true;
+    }
+
+    const resultado = ejercicios[2].verificarPreguntas(respuestas, null);
+    const elFb = document.getElementById('fb_3');
+
+    if (resultado.correcto) {
+      elFb.className = "feedback feedback-correcto";
+      elFb.innerHTML = resultado.msg;
+      renderizarEjercicios();
+    } else {
+      const errores = resultado.explicacion.split(' | ');
+      let lista = '';
+      if (errores.length > 0 && errores[0] !== '') {
+        lista = '<ul style="list-style:none; padding-left:0; margin:8px 0 0 0;">' +
+          errores.map(e => {
+            let texto = e;
+            texto = texto.replace(/ → /g, ' • ');
+            return `<li class="error-item">${texto}</li>`;
+          }).join('') + '</ul>';
+      }
+      let mensajeExtra = '';
+      if (hayVacios) {
+        mensajeExtra = '<div style="margin-top: 8px; color: var(--color-aviso);">⚠️ Has dejado alguna potencia sin calcular. Se contabiliza como fallo.</div>';
+      }
+      elFb.className = "feedback";
+      elFb.innerHTML = `
+        <div style="color: var(--color-incorrecto); font-weight: 600;">${resultado.msg}</div>
+        <div class="feedback-pedagogico">
+          <strong>📘 Vamos a revisarlo:</strong>
+          ${lista || resultado.explicacion}
+          <div style="margin-top: 8px; font-size: 0.9rem;">
+            💡 <strong>Recuerda:</strong>
+            • \\(a^{-n} = \\frac{1}{a^n}\\) (exponente negativo → inverso).<br>
+            • Si el signo está <strong>dentro</strong> del paréntesis, se eleva: \\((-2)^2 = 4\\).<br>
+            • Si el signo está <strong>fuera</strong> del paréntesis, no se eleva: \\(-2^2 = -4\\).
+          </div>
+        </div>
+        ${mensajeExtra}
+        <div style="margin-top: 8px;"><strong>👉 Pulsa "🔄 Nuevo" para generar nuevas preguntas y volver a intentarlo.</strong></div>
+      `;
+      bloquearTrasFallo(2, 'ej-card-3', elFb.innerHTML);
+      if(window.MathJax) MathJax.typesetPromise().catch(() => {});
+    }
+  }
+
+  // ===== EJERCICIO 4 =====
+  class Ejercicio4MismaBase extends EjercicioDosPreguntas {
+    generarPreguntas() {
+      // Sin esta línea, la llamada a shuffle(ejerciciosList) de más abajo lanza
+      // "shuffle is not defined" y corta toda la inicialización de la ficha (por eso
+      // el cuerpo se queda vacío: ningún ejercicio llega a renderizarse).
+      const shuffle = (arr) => arr.sort(() => Math.random() - 0.5);
+      const bases = [2, 3, 4, 5, -2, -3, -4];
+      this.base = bases[Math.floor(Math.random() * bases.length)];
+
+      const ejerciciosList = [];
+
+      const e1A = Math.floor(Math.random() * 3) + 1;
+      const e1B = Math.floor(Math.random() * 3) + 1;
+      const res1 = e1A + e1B;
+      const baseStr1 = this.base < 0 ? `(${this.base})` : `${this.base}`;
+      ejerciciosList.push({
+        operacion: `${baseStr1}^{${e1A}} \\cdot ${baseStr1}^{${e1B}}`,
+        baseCorrecta: this.base,
+        expCorrecto: res1,
+        tipo: "producto"
+      });
+
+      const e2A = -(Math.floor(Math.random() * 3) + 1);
+      const e2B = -(Math.floor(Math.random() * 3) + 1);
+      const res2 = e2A + e2B;
+      const baseStr2 = this.base < 0 ? `(${this.base})` : `${this.base}`;
+      ejerciciosList.push({
+        operacion: `${baseStr2}^{${e2A}} \\cdot ${baseStr2}^{${e2B}}`,
+        baseCorrecta: this.base,
+        expCorrecto: res2,
+        tipo: "producto"
+      });
+
+      const e3A = Math.floor(Math.random() * 3) + 3;
+      const e3B = Math.floor(Math.random() * 2) + 1;
+      const res3 = e3A - e3B;
+      const baseStr3 = this.base < 0 ? `(${this.base})` : `${this.base}`;
+      ejerciciosList.push({
+        operacion: `\\frac{${baseStr3}^{${e3A}}}{${baseStr3}^{${e3B}}}`,
+        baseCorrecta: this.base,
+        expCorrecto: res3,
+        tipo: "cociente"
+      });
+
+      const e4A = -(Math.floor(Math.random() * 3) + 2);
+      const e4B = -(Math.floor(Math.random() * 2) + 1);
+      const res4 = e4A - e4B;
+      const baseStr4 = this.base < 0 ? `(${this.base})` : `${this.base}`;
+      ejerciciosList.push({
+        operacion: `\\frac{${baseStr4}^{${e4A}}}{${baseStr4}^{${e4B}}}`,
+        baseCorrecta: this.base,
+        expCorrecto: res4,
+        tipo: "cociente"
+      });
+
+      this.ejercicios = shuffle(ejerciciosList);
+    }
+
+    comprobarPregunta1(respuestas) {
+      let todosCorrectos = true;
+      let errores = [];
+      for (let i = 0; i < this.ejercicios.length; i++) {
+        const ej = this.ejercicios[i];
+        const resp = respuestas[i] || { base: "", exp: "" };
+        const baseOk = leerEntero(resp.base) === ej.baseCorrecta;
+        const expOk = leerEntero(resp.exp) === ej.expCorrecto;
+        if (!baseOk || !expOk) {
+          todosCorrectos = false;
+          let detalle = `\\(${ej.operacion}\\)`;
+          if (!baseOk) detalle += ` → La base correcta es ${ej.baseCorrecta}`;
+          if (!expOk) detalle += ` → El exponente correcto es ${ej.expCorrecto}`;
+          errores.push(detalle);
+        }
+      }
+      if (todosCorrectos) return { correcto: true };
+      return { correcto: false, explicacion: errores.join(" | ") };
+    }
+
+    comprobarPregunta2() { return { correcto: true }; }
+
+    verificarPreguntas(respuesta1, respuesta2) {
+      if (this.superado || finalizado) return { correcto: false, superado: true, msg: "Ejercicio ya superado." };
+      if (this.cerrado) return { correcto: false, superado: false, cerrado: true, msg: "Este intento ya está agotado. Pulsa \"🔄 Nuevo\" para generar un ejercicio distinto." };
+      const resultado = this.comprobarPregunta1(respuesta1);
+      if (resultado.correcto) {
+        this.superado = true;
+        actualizarUI();
+        return { correcto: true, superado: true, msg: "🎉 ¡Ejercicio superado! Has aplicado correctamente las propiedades.", feedback: "correcto" };
+      } else {
+        this.fallosPropios++;
+        this.cerrado = true;
+        actualizarUI();
+        return { correcto: false, superado: false, msg: "❌ Has fallado en alguna operación.", explicacion: resultado.explicacion, feedback: "error" };
+      }
+    }
+
+    getHTML() {
+      let claseCard = this.superado ? 'superado' : (this.cerrado ? 'agotado' : '');
+      const bloqueado = this.superado || this.cerrado;
+      let html = `
+        <div class="ejercicio-card ${claseCard}" id="ej-card-4">
+          <div class="ejercicio-header">
+            <div class="ejercicio-titulo-wrapper">
+              <span class="ejercicio-num">4</span>
+              <span class="ejercicio-titulo">Propiedades con misma base</span>
+            </div>
+            <button class="btn-nuevo-ejercicio" onclick="reiniciarEjercicio(3)">🔄 Nuevo</button>
+          </div>
+          <div class="pregunta-item">
+            <p style="margin-bottom: 10px; font-weight: 500;">📝 Aplica las propiedades de las potencias con misma base para simplificar cada expresión:</p>
+            <p style="margin-bottom: 12px; font-size: 0.85rem; color: var(--color-texto-suave);">
+              💡 Recuerda: \\(a^m \\cdot a^n = a^{m+n}\\) y \\(\\frac{a^m}{a^n} = a^{m-n}\\)
+            </p>
+            <div class="grid-ejercicio4">
+      `;
+      for (let i = 0; i < this.ejercicios.length; i++) {
+        const ej = this.ejercicios[i];
+        const disabled = bloqueado ? 'disabled' : '';
+        const baseValor = this.superado ? ej.baseCorrecta : '';
+        const expValor = this.superado ? ej.expCorrecto : '';
+        html += `
+          <div class="item-ej4">
+            <div class="enunciado-latex">\\(${ej.operacion}\\)</div>
+            <div class="input-group">
+              <span>\\(a =\\)</span>
+              <input type="text" autocomplete="off" id="e4_base_${i}" placeholder="Base" ${disabled} value="${baseValor}">
+              <span>\\(,\\ n =\\)</span>
+              <input type="text" autocomplete="off" id="e4_exp_${i}" placeholder="Exp" ${disabled} value="${expValor}">
+            </div>
+          </div>
+        `;
+      }
+      html += `
+            </div>
+            <div style="text-align:center; margin-top:15px;">
+              <button class="btn-primary" onclick="verificarEjercicio4()" ${bloqueado ? 'disabled' : ''}>✅ Comprobar resultados</button>
+            </div>
+            <div id="fb_4" class="feedback" style="text-align:center; margin-top:10px;">${this.cerrado ? this.feedbackHTML : ''}</div>
+          </div>
+        </div>
+      `;
+      return html;
+    }
+  }
+
+  function verificarEjercicio4() {
+    if (finalizado) { mostrarModalAdvertencia("La ficha ya ha sido finalizada."); return; }
+    if (ejercicios[3].superado) {
+      document.getElementById('fb_4').className = "feedback feedback-correcto";
+      document.getElementById('fb_4').innerHTML = "✅ Este ejercicio ya estaba superado.";
+      return;
+    }
+    if (ejercicios[3].cerrado) {
+      document.getElementById('fb_4').className = "feedback feedback-necesita-nuevo";
+      document.getElementById('fb_4').innerHTML = "🔒 Ya viste la respuesta correcta en el intento anterior. Pulsa \"🔄 Nuevo\" para generar preguntas distintas.";
+      return;
+    }
+    const ejerciciosList = ejercicios[3].ejercicios;
+    const respuestas = [];
+    let hayVacios = false;
+    for (let i = 0; i < ejerciciosList.length; i++) {
+      const baseInput = document.getElementById(`e4_base_${i}`);
+      const expInput = document.getElementById(`e4_exp_${i}`);
+      if (!baseInput || !expInput) { hayVacios = true; break; }
+      const baseVal = baseInput.value || "";
+      const expVal = expInput.value || "";
+      respuestas.push({ base: baseVal, exp: expVal });
+      if (!baseVal || !expVal) hayVacios = true;
+    }
+
+    const resultado = ejercicios[3].verificarPreguntas(respuestas, null);
+    const elFb = document.getElementById('fb_4');
+
+    if (resultado.correcto) {
+      elFb.className = "feedback feedback-correcto";
+      elFb.innerHTML = resultado.msg;
+      renderizarEjercicios();
+    } else {
+      const errores = resultado.explicacion.split(' | ');
+      let lista = '';
+      if (errores.length > 0 && errores[0] !== '') {
+        lista = '<ul style="list-style:none; padding-left:0; margin:8px 0 0 0;">' +
+          errores.map(e => {
+            let texto = e;
+            texto = texto.replace(/ → /g, ' • ');
+            return `<li class="error-item">${texto}</li>`;
+          }).join('') + '</ul>';
+      }
+      let mensajeExtra = '';
+      if (hayVacios) {
+        mensajeExtra = '<div style="margin-top: 8px; color: var(--color-aviso);">⚠️ Has dejado alguna operación sin completar. Se contabiliza como fallo.</div>';
+      }
+      elFb.className = "feedback";
+      elFb.innerHTML = `
+        <div style="color: var(--color-incorrecto); font-weight: 600;">${resultado.msg}</div>
+        <div class="feedback-pedagogico">
+          <strong>📘 Vamos a revisarlo:</strong>
+          ${lista || resultado.explicacion}
+          <div style="margin-top: 8px; font-size: 0.9rem;">
+            💡 <strong>Recuerda:</strong>
+            • Producto: \\(a^m \\cdot a^n = a^{m+n}\\)<br>
+            • Cociente: \\(\\frac{a^m}{a^n} = a^{m-n}\\)<br>
+            • Si la base es negativa, se escribe entre paréntesis: \\((-2)^3\\)
+          </div>
+        </div>
+        ${mensajeExtra}
+        <div style="margin-top: 8px;"><strong>👉 Pulsa "🔄 Nuevo" para generar nuevas preguntas y volver a intentarlo.</strong></div>
+      `;
+      bloquearTrasFallo(3, 'ej-card-4', elFb.innerHTML);
+      if(window.MathJax) MathJax.typesetPromise().catch(() => {});
+    }
+  }
+
+  // ===== EJERCICIO 5 =====
+  class Ejercicio5Base10 extends EjercicioDosPreguntas {
+    generarPreguntas() {
+      const shuffle = (arr) => arr.sort(() => Math.random() - 0.5);
+
+      const ejerciciosList = [];
+
+      const e1 = Math.floor(Math.random() * 4) + 2;
+      ejerciciosList.push({
+        potencia: `10^{${e1}}`,
+        resultadoCorrecto: "1" + "0".repeat(e1)
+      });
+
+      const e2 = Math.floor(Math.random() * 3) + 2;
+      const decimales2 = "0." + "0".repeat(e2 - 1) + "1";
+      ejerciciosList.push({
+        potencia: `10^{-${e2}}`,
+        resultadoCorrecto: decimales2
+      });
+
+      ejerciciosList.push({
+        potencia: `10^{1}`,
+        resultadoCorrecto: "10"
+      });
+
+      ejerciciosList.push({
+        potencia: `10^{-1}`,
+        resultadoCorrecto: "0.1"
+      });
+
+      this.ejercicios = shuffle(ejerciciosList);
+    }
+
+    comprobarPregunta1(respuestas) {
+      let todosCorrectos = true;
+      let errores = [];
+      for (let i = 0; i < this.ejercicios.length; i++) {
+        const ej = this.ejercicios[i];
+        const resp = respuestas[i] || "";
+        // Normalizamos la coma decimal española a punto (0,001 -> 0.001) antes de comparar
+        let respNormalizada = resp.trim().replace(/\s/g, '').replace(/,/g, '.');
+        let correctoNormalizado = ej.resultadoCorrecto.replace(/\s/g, '').replace(/,/g, '.');
+        let esCorrecto = respNormalizada === correctoNormalizado;
+
+        if (!esCorrecto) {
+          todosCorrectos = false;
+          let detalle = `\\(${ej.potencia}\\) → El resultado correcto es ${ej.resultadoCorrecto}`;
+          errores.push(detalle);
+        }
+      }
+      if (todosCorrectos) return { correcto: true };
+      return { correcto: false, explicacion: errores.join(" | ") };
+    }
+
+    comprobarPregunta2() { return { correcto: true }; }
+
+    verificarPreguntas(respuesta1, respuesta2) {
+      if (this.superado || finalizado) return { correcto: false, superado: true, msg: "Ejercicio ya superado." };
+      if (this.cerrado) return { correcto: false, superado: false, cerrado: true, msg: "Este intento ya está agotado. Pulsa \"🔄 Nuevo\" para generar un ejercicio distinto." };
+      const resultado = this.comprobarPregunta1(respuesta1);
+      if (resultado.correcto) {
+        this.superado = true;
+        actualizarUI();
+        return { correcto: true, superado: true, msg: "🎉 ¡Ejercicio superado! Has escrito correctamente las potencias de base 10.", feedback: "correcto" };
+      } else {
+        this.fallosPropios++;
+        this.cerrado = true;
+        actualizarUI();
+        return { correcto: false, superado: false, msg: "❌ Has fallado en alguna potencia.", explicacion: resultado.explicacion, feedback: "error" };
+      }
+    }
+
+    getHTML() {
+      let claseCard = this.superado ? 'superado' : (this.cerrado ? 'agotado' : '');
+      const bloqueado = this.superado || this.cerrado;
+      let html = `
+        <div class="ejercicio-card ${claseCard}" id="ej-card-5">
+          <div class="ejercicio-header">
+            <div class="ejercicio-titulo-wrapper">
+              <span class="ejercicio-num">5</span>
+              <span class="ejercicio-titulo">Potencias de base 10</span>
+            </div>
+            <button class="btn-nuevo-ejercicio" onclick="reiniciarEjercicio(4)">🔄 Nuevo</button>
+          </div>
+          <div class="pregunta-item">
+            <p style="margin-bottom: 10px; font-weight: 500;">📝 Escribe el número correspondiente a cada potencia de base 10:</p>
+            <p style="margin-bottom: 12px; font-size: 0.85rem; color: var(--color-texto-suave);">
+              💡 Recuerda: \\(10^n = 1\\) seguido de \\(n\\) ceros. \\(10^{-n} = 0,\\) seguido de \\(n-1\\) ceros y un 1.
+            </p>
+            <div class="grid-ejercicio5">
+      `;
+      for (let i = 0; i < this.ejercicios.length; i++) {
+        const ej = this.ejercicios[i];
+        const disabled = bloqueado ? 'disabled' : '';
+        const valorCorrecto = this.superado ? ej.resultadoCorrecto : '';
+        html += `
+          <div class="item-ej5">
+            <div class="enunciado-latex">\\(${ej.potencia}\\)</div>
+            <input type="text" id="e5_res_${i}" placeholder="Escribe el número" ${disabled} value="${valorCorrecto}">
+          </div>
+        `;
+      }
+      html += `
+            </div>
+            <div style="text-align:center; margin-top:15px;">
+              <button class="btn-primary" onclick="verificarEjercicio5()" ${bloqueado ? 'disabled' : ''}>✅ Comprobar resultados</button>
+            </div>
+            <div id="fb_5" class="feedback" style="text-align:center; margin-top:10px;">${this.cerrado ? this.feedbackHTML : ''}</div>
+          </div>
+        </div>
+      `;
+      return html;
+    }
+  }
+
+  function verificarEjercicio5() {
+    if (finalizado) { mostrarModalAdvertencia("La ficha ya ha sido finalizada."); return; }
+    if (ejercicios[4].superado) {
+      document.getElementById('fb_5').className = "feedback feedback-correcto";
+      document.getElementById('fb_5').innerHTML = "✅ Este ejercicio ya estaba superado.";
+      return;
+    }
+    if (ejercicios[4].cerrado) {
+      document.getElementById('fb_5').className = "feedback feedback-necesita-nuevo";
+      document.getElementById('fb_5').innerHTML = "🔒 Ya viste la respuesta correcta en el intento anterior. Pulsa \"🔄 Nuevo\" para generar preguntas distintas.";
+      return;
+    }
+    const ejerciciosList = ejercicios[4].ejercicios;
+    const respuestas = [];
+    let hayVacios = false;
+    for (let i = 0; i < ejerciciosList.length; i++) {
+      const input = document.getElementById(`e5_res_${i}`);
+      if (!input) { hayVacios = true; break; }
+      const valor = input.value || "";
+      respuestas.push(valor);
+      if (!valor.trim()) hayVacios = true;
+    }
+
+    const resultado = ejercicios[4].verificarPreguntas(respuestas, null);
+    const elFb = document.getElementById('fb_5');
+
+    if (resultado.correcto) {
+      elFb.className = "feedback feedback-correcto";
+      elFb.innerHTML = resultado.msg;
+      renderizarEjercicios();
+    } else {
+      const errores = resultado.explicacion.split(' | ');
+      let lista = '';
+      if (errores.length > 0 && errores[0] !== '') {
+        lista = '<ul style="list-style:none; padding-left:0; margin:8px 0 0 0;">' +
+          errores.map(e => {
+            let texto = e;
+            texto = texto.replace(/ → /g, ' • ');
+            return `<li class="error-item">${texto}</li>`;
+          }).join('') + '</ul>';
+      }
+      let mensajeExtra = '';
+      if (hayVacios) {
+        mensajeExtra = '<div style="margin-top: 8px; color: var(--color-aviso);">⚠️ Has dejado alguna potencia sin escribir. Se contabiliza como fallo.</div>';
+      }
+      elFb.className = "feedback";
+      elFb.innerHTML = `
+        <div style="color: var(--color-incorrecto); font-weight: 600;">${resultado.msg}</div>
+        <div class="feedback-pedagogico">
+          <strong>📘 Vamos a revisarlo:</strong>
+          ${lista || resultado.explicacion}
+          <div style="margin-top: 8px; font-size: 0.9rem;">
+            💡 <strong>Recuerda:</strong>
+            • \\(10^n = 1\\) seguido de \\(n\\) ceros.<br>
+            • \\(10^{-n} = 0,\\) seguido de \\(n-1\\) ceros y un 1.<br>
+            • \\(10^1 = 10\\) y \\(10^{-1} = 0,1\\).
+          </div>
+        </div>
+        ${mensajeExtra}
+        <div style="margin-top: 8px;"><strong>👉 Pulsa "🔄 Nuevo" para generar nuevas preguntas y volver a intentarlo.</strong></div>
+      `;
+      bloquearTrasFallo(4, 'ej-card-5', elFb.innerHTML);
+      if(window.MathJax) MathJax.typesetPromise().catch(() => {});
+    }
+  }
+
+  // ===== EJERCICIO 6 =====
+  class Ejercicio6PotenciaDePotencia extends EjercicioDosPreguntas {
+    generarPreguntas() {
+      const bases = [2, 3, 4, 5, -2, -3, -4];
+      this.b = bases[Math.floor(Math.random() * bases.length)];
+      this.eA = (Math.floor(Math.random() * 3) + 1) * (Math.random() > 0.5 ? 1 : -1);
+      this.eB = (Math.floor(Math.random() * 2) + 1) * (Math.random() > 0.5 ? 1 : -1);
+      this.expTotal = this.eA * this.eB;
+      this.basePositiva = Math.abs(this.b);
+      this.desapareceSigno = (this.b < 0 && this.expTotal % 2 === 0);
+      // Base resultante: la base ya con el signo resuelto. Si la base original es negativa
+      // y el exponente total es par, el signo desaparece de verdad (ej. (-3)^6 = 3^6 = 729),
+      // así que la base resultante es positiva. En cualquier otro caso, se mantiene igual.
+      this.baseResultante = this.desapareceSigno ? this.basePositiva : this.b;
+    }
+
+    comprobarPregunta1(r) {
+      const esperado = this.eA * this.eB;
+      const baseCorrecta = leerEntero(r.base) === this.baseResultante;
+      const expCorrecto = leerEntero(r.exp) === esperado;
+      if (baseCorrecta && expCorrecto) return { correcto: true };
+      let explicacion = `La base resultante correcta es ${this.baseResultante}`;
+      if (this.desapareceSigno) {
+        explicacion += ` (el signo negativo desaparece porque la base original era negativa y el exponente total ${this.expTotal} es par)`;
+      } else if (this.b < 0) {
+        explicacion += ` (el signo negativo se mantiene porque el exponente total ${this.expTotal} es impar)`;
+      }
+      explicacion += ` y el exponente es ${this.eA} × (${this.eB}) = ${esperado}`;
+      return { correcto: false, explicacion: explicacion };
+    }
+
+    comprobarPregunta2() { return { correcto: true }; }
+
+    verificarPreguntas(respuesta1, respuesta2) {
+      if (this.superado || finalizado) return { correcto: false, superado: true, msg: "Ejercicio ya superado." };
+      if (this.cerrado) return { correcto: false, superado: false, cerrado: true, msg: "Este intento ya está agotado. Pulsa \"🔄 Nuevo\" para generar un ejercicio distinto." };
+      const r1 = this.comprobarPregunta1(respuesta1);
+      if (r1.correcto) {
+        this.superado = true;
+        actualizarUI();
+        return { correcto: true, superado: true, msg: "🎉 ¡Ejercicio superado!", feedback: "correcto" };
+      } else {
+        this.fallosPropios++;
+        this.cerrado = true;
+        actualizarUI();
+        return { correcto: false, superado: false, msg: "❌ Respuesta incorrecta.", explicacion: r1.explicacion, feedback: "error" };
+      }
+    }
+
+    getHTML() {
+      let claseCard = this.superado ? 'superado' : (this.cerrado ? 'agotado' : '');
+      const bloqueado = this.superado || this.cerrado;
+      const baseStr = this.b < 0 ? `(${this.b})` : `${this.b}`;
+      const disabled = bloqueado ? 'disabled' : '';
+      const baseValor = this.superado ? this.baseResultante : '';
+      const expValor = this.superado ? this.expTotal : '';
+      const feedbackPrevio = this.cerrado ? this.feedbackHTML : '';
+      return `
+        <div class="ejercicio-card ${claseCard}" id="ej-card-6">
+          <div class="ejercicio-header">
+            <div class="ejercicio-titulo-wrapper">
+              <span class="ejercicio-num">6</span>
+              <span class="ejercicio-titulo">Potencia de potencia</span>
+            </div>
+            <button class="btn-nuevo-ejercicio" onclick="reiniciarEjercicio(5)">🔄 Nuevo</button>
+          </div>
+          <div class="pregunta-item">
+            <p style="margin-bottom: 10px; font-weight: 500;">📝 Simplifica la siguiente potencia de potencia:</p>
+            <div style="text-align:center; margin:15px 0;">
+              <span class="enunciado-latex">\\(( ${baseStr}^{${this.eA}} )^{${this.eB}}\\)</span>
+            </div>
+            <div style="display:flex; gap:20px; justify-content:center; flex-wrap:wrap;">
+              <div>
+                <label>Base resultante:</label>
+                <input type="text" autocomplete="off" id="e6_base" placeholder="Base" ${disabled} value="${baseValor}" style="width:80px; padding:4px 8px; border:2px solid var(--color-borde); border-radius:6px; font-size:0.9rem; text-align:center;">
+              </div>
+              <div>
+                <label>Exponente <em>n</em>:</label>
+                <input type="text" autocomplete="off" id="e6_exp" placeholder="Exp" ${disabled} value="${expValor}" style="width:80px; padding:4px 8px; border:2px solid var(--color-borde); border-radius:6px; font-size:0.9rem; text-align:center;">
+              </div>
+            </div>
+            <div style="text-align:center; margin-top:15px;">
+              <button class="btn-primary" onclick="verificarEjercicio6()" ${bloqueado ? 'disabled' : ''}>✅ Comprobar</button>
+            </div>
+            <div id="fb_6" class="feedback" style="text-align:center; margin-top:10px;">${feedbackPrevio}</div>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  function verificarEjercicio6() {
+    if (finalizado) { mostrarModalAdvertencia("La ficha ya ha sido finalizada."); return; }
+    if (ejercicios[5].superado) {
+      document.getElementById('fb_6').className = "feedback feedback-correcto";
+      document.getElementById('fb_6').innerHTML = "✅ Este ejercicio ya estaba superado.";
+      return;
+    }
+    if (ejercicios[5].cerrado) {
+      document.getElementById('fb_6').className = "feedback feedback-necesita-nuevo";
+      document.getElementById('fb_6').innerHTML = "🔒 Ya viste la respuesta correcta en el intento anterior. Pulsa \"🔄 Nuevo\" para generar un ejercicio distinto.";
+      return;
+    }
+    const base = document.getElementById('e6_base').value;
+    const exp = document.getElementById('e6_exp').value;
+    if (!base || !exp) {
+      const elFb = document.getElementById('fb_6');
+      elFb.className = "feedback";
+      elFb.innerHTML = `
+        <div style="color: var(--color-incorrecto); font-weight: 600;">⚠️ Has dejado algún campo vacío. Rellena los dos antes de comprobar (no se contabiliza como fallo).</div>
+        <div class="feedback-pedagogico">
+          <strong>📘 Recuerda:</strong> Debes rellenar tanto la base como el exponente.
+        </div>
+        <div style="margin-top: 8px;"><strong>👉 Rellena ambos campos y vuelve a comprobar.</strong></div>
+      `;
+      if(window.MathJax) MathJax.typesetPromise().catch(() => {});
+      return;
+    }
+    const resultado = ejercicios[5].verificarPreguntas({base, exp}, null);
+    const elFb = document.getElementById('fb_6');
+    if (resultado.correcto) {
+      elFb.className = "feedback feedback-correcto";
+      elFb.innerHTML = resultado.msg;
+      renderizarEjercicios();
+    } else {
+      elFb.className = "feedback";
+      elFb.innerHTML = `
+        <div style="color: var(--color-incorrecto); font-weight: 600;">${resultado.msg}</div>
+        <div class="feedback-pedagogico">
+          <strong>📘 Vamos a revisarlo:</strong>
+          <div style="margin-top: 4px;">${resultado.explicacion}</div>
+          <div style="margin-top: 8px; font-size: 0.9rem;">
+            💡 <strong>Recuerda:</strong> \\((a^m)^n = a^{m \\cdot n}\\).
+            Si la base original es negativa, mira la paridad del exponente total: par → la base resultante es positiva; impar → sigue siendo negativa.
+          </div>
+        </div>
+        <div style="margin-top: 8px;"><strong>👉 Pulsa "🔄 Nuevo" para intentarlo de nuevo.</strong></div>
+      `;
+      bloquearTrasFallo(5, 'ej-card-6', elFb.innerHTML);
+      if(window.MathJax) MathJax.typesetPromise().catch(() => {});
+    }
+  }
+
+  // ===== EJERCICIO 7 =====
+  class Ejercicio7MismoExponente extends EjercicioDosPreguntas {
+    generarPreguntas() {
+      const shuffle = (arr) => arr.sort(() => Math.random() - 0.5);
+      const bases = [2, 3, 4, 5, -2, -3, -4];
+
+      // Elige dos bases DISTINTAS sin bucle "while" (evita el riesgo de bucle infinito
+      // que tenía el código original si el sorteo repetía el mismo valor dos veces).
+      function elegirDosDistintas(lista) {
+        const i = Math.floor(Math.random() * lista.length);
+        let j = Math.floor(Math.random() * (lista.length - 1));
+        if (j >= i) j++;
+        return [lista[i], lista[j]];
+      }
+
+      // Elige dos bases DISTINTAS y compatibles por divisibilidad, precalculando todos
+      // los pares válidos: nunca puede quedarse sin candidatos. Solo se acepta el sentido
+      // en el que x es múltiplo EXACTO de y (x % y === 0), porque luego se usa
+      // literalmente x/y como "base correcta" del cociente — aceptar también el sentido
+      // contrario (p. ej. el par (2,4), donde 4 % 2 === 0 pero 2/4 = 0.5) podía generar
+      // una "base correcta" decimal que ningún alumno puede acertar, porque la
+      // comprobación compara con parseInt(), que trunca a entero.
+      function elegirParDivisible(lista) {
+        const pares = [];
+        for (const x of lista) {
+          for (const y of lista) {
+            if (x !== y && x % y === 0) pares.push([x, y]);
+          }
+        }
+        return pares[Math.floor(Math.random() * pares.length)];
+      }
+
+      [this.a, this.b] = elegirDosDistintas(bases);
+      this.e = (Math.floor(Math.random() * 3) + 1) * (Math.random() > 0.5 ? 1 : -1);
+
+      const ejerciciosList = [];
+
+      const baseStrA1 = this.a < 0 ? `(${this.a})` : `${this.a}`;
+      const baseStrB1 = this.b < 0 ? `(${this.b})` : `${this.b}`;
+      const prod1 = this.a * this.b;
+      ejerciciosList.push({
+        operacion: `${baseStrA1}^{${this.e}} \\cdot ${baseStrB1}^{${this.e}}`,
+        baseCorrecta: prod1,
+        expCorrecto: this.e,
+        tipo: "producto"
+      });
+
+      const [a2, b2] = elegirDosDistintas(bases);
+      const baseStrA2 = a2 < 0 ? `(${a2})` : `${a2}`;
+      const baseStrB2 = b2 < 0 ? `(${b2})` : `${b2}`;
+      const prod2 = a2 * b2;
+      ejerciciosList.push({
+        operacion: `${baseStrA2}^{${this.e}} \\cdot ${baseStrB2}^{${this.e}}`,
+        baseCorrecta: prod2,
+        expCorrecto: this.e,
+        tipo: "producto"
+      });
+
+      const [a3, b3] = elegirParDivisible(bases);
+      const baseStrA3 = a3 < 0 ? `(${a3})` : `${a3}`;
+      const baseStrB3 = b3 < 0 ? `(${b3})` : `${b3}`;
+      const coc3 = a3 / b3;
+      ejerciciosList.push({
+        operacion: `\\frac{${baseStrA3}^{${this.e}}}{${baseStrB3}^{${this.e}}}`,
+        baseCorrecta: coc3,
+        expCorrecto: this.e,
+        tipo: "cociente"
+      });
+
+      const [a4, b4] = elegirParDivisible(bases);
+      const baseStrA4 = a4 < 0 ? `(${a4})` : `${a4}`;
+      const baseStrB4 = b4 < 0 ? `(${b4})` : `${b4}`;
+      const coc4 = a4 / b4;
+      ejerciciosList.push({
+        operacion: `\\frac{${baseStrA4}^{${this.e}}}{${baseStrB4}^{${this.e}}}`,
+        baseCorrecta: coc4,
+        expCorrecto: this.e,
+        tipo: "cociente"
+      });
+
+      this.ejercicios = shuffle(ejerciciosList);
+    }
+
+    comprobarPregunta1(respuestas) {
+      let todosCorrectos = true;
+      let errores = [];
+      for (let i = 0; i < this.ejercicios.length; i++) {
+        const ej = this.ejercicios[i];
+        const resp = respuestas[i] || { base: "", exp: "" };
+        const baseOk = leerEntero(resp.base) === ej.baseCorrecta;
+        const expOk = leerEntero(resp.exp) === ej.expCorrecto;
+        if (!baseOk || !expOk) {
+          todosCorrectos = false;
+          let detalle = `\\(${ej.operacion}\\)`;
+          if (!baseOk) detalle += ` → La base correcta es ${ej.baseCorrecta}`;
+          if (!expOk) detalle += ` → El exponente correcto es ${ej.expCorrecto}`;
+          errores.push(detalle);
+        }
+      }
+      if (todosCorrectos) return { correcto: true };
+      return { correcto: false, explicacion: errores.join(" | ") };
+    }
+
+    comprobarPregunta2() { return { correcto: true }; }
+
+    verificarPreguntas(respuesta1, respuesta2) {
+      if (this.superado || finalizado) return { correcto: false, superado: true, msg: "Ejercicio ya superado." };
+      if (this.cerrado) return { correcto: false, superado: false, cerrado: true, msg: "Este intento ya está agotado. Pulsa \"🔄 Nuevo\" para generar un ejercicio distinto." };
+      const resultado = this.comprobarPregunta1(respuesta1);
+      if (resultado.correcto) {
+        this.superado = true;
+        actualizarUI();
+        return { correcto: true, superado: true, msg: "🎉 ¡Ejercicio superado! Has aplicado correctamente las propiedades.", feedback: "correcto" };
+      } else {
+        this.fallosPropios++;
+        this.cerrado = true;
+        actualizarUI();
+        return { correcto: false, superado: false, msg: "❌ Has fallado en alguna operación.", explicacion: resultado.explicacion, feedback: "error" };
+      }
+    }
+
+    getHTML() {
+      let claseCard = this.superado ? 'superado' : (this.cerrado ? 'agotado' : '');
+      const bloqueado = this.superado || this.cerrado;
+      let html = `
+        <div class="ejercicio-card ${claseCard}" id="ej-card-7">
+          <div class="ejercicio-header">
+            <div class="ejercicio-titulo-wrapper">
+              <span class="ejercicio-num">7</span>
+              <span class="ejercicio-titulo">Productos y cocientes con mismo exponente</span>
+            </div>
+            <button class="btn-nuevo-ejercicio" onclick="reiniciarEjercicio(6)">🔄 Nuevo</button>
+          </div>
+          <div class="pregunta-item">
+            <p style="margin-bottom: 10px; font-weight: 500;">📝 Aplica las propiedades de las potencias con mismo exponente para simplificar cada expresión:</p>
+            <p style="margin-bottom: 12px; font-size: 0.85rem; color: var(--color-texto-suave);">
+              💡 Recuerda: \\(a^n \\cdot b^n = (a \\cdot b)^n\\) y \\(\\frac{a^n}{b^n} = \\left(\\frac{a}{b}\\right)^n\\)
+            </p>
+            <div class="grid-ejercicio7">
+      `;
+      for (let i = 0; i < this.ejercicios.length; i++) {
+        const ej = this.ejercicios[i];
+        const disabled = bloqueado ? 'disabled' : '';
+        const baseValor = this.superado ? ej.baseCorrecta : '';
+        const expValor = this.superado ? ej.expCorrecto : '';
+        html += `
+          <div class="item-ej7">
+            <div class="enunciado-latex">\\(${ej.operacion}\\)</div>
+            <div class="input-group">
+              <span>\\(a =\\)</span>
+              <input type="text" autocomplete="off" id="e7_base_${i}" placeholder="Base" ${disabled} value="${baseValor}">
+              <span>\\(,\\ n =\\)</span>
+              <input type="text" autocomplete="off" id="e7_exp_${i}" placeholder="Exp" ${disabled} value="${expValor}">
+            </div>
+          </div>
+        `;
+      }
+      html += `
+            </div>
+            <div style="text-align:center; margin-top:15px;">
+              <button class="btn-primary" onclick="verificarEjercicio7()" ${bloqueado ? 'disabled' : ''}>✅ Comprobar resultados</button>
+            </div>
+            <div id="fb_7" class="feedback" style="text-align:center; margin-top:10px;">${this.cerrado ? this.feedbackHTML : ''}</div>
+          </div>
+        </div>
+      `;
+      return html;
+    }
+  }
+
+  function verificarEjercicio7() {
+    if (finalizado) { mostrarModalAdvertencia("La ficha ya ha sido finalizada."); return; }
+    if (ejercicios[6].superado) {
+      document.getElementById('fb_7').className = "feedback feedback-correcto";
+      document.getElementById('fb_7').innerHTML = "✅ Este ejercicio ya estaba superado.";
+      return;
+    }
+    if (ejercicios[6].cerrado) {
+      document.getElementById('fb_7').className = "feedback feedback-necesita-nuevo";
+      document.getElementById('fb_7').innerHTML = "🔒 Ya viste la respuesta correcta en el intento anterior. Pulsa \"🔄 Nuevo\" para generar preguntas distintas.";
+      return;
+    }
+    const ejerciciosList = ejercicios[6].ejercicios;
+    const respuestas = [];
+    let hayVacios = false;
+    for (let i = 0; i < ejerciciosList.length; i++) {
+      const baseInput = document.getElementById(`e7_base_${i}`);
+      const expInput = document.getElementById(`e7_exp_${i}`);
+      if (!baseInput || !expInput) { hayVacios = true; break; }
+      const baseVal = baseInput.value || "";
+      const expVal = expInput.value || "";
+      respuestas.push({ base: baseVal, exp: expVal });
+      if (!baseVal || !expVal) hayVacios = true;
+    }
+
+    const resultado = ejercicios[6].verificarPreguntas(respuestas, null);
+    const elFb = document.getElementById('fb_7');
+
+    if (resultado.correcto) {
+      elFb.className = "feedback feedback-correcto";
+      elFb.innerHTML = resultado.msg;
+      renderizarEjercicios();
+    } else {
+      const errores = resultado.explicacion.split(' | ');
+      let lista = '';
+      if (errores.length > 0 && errores[0] !== '') {
+        lista = '<ul style="list-style:none; padding-left:0; margin:8px 0 0 0;">' +
+          errores.map(e => {
+            let texto = e;
+            texto = texto.replace(/ → /g, ' • ');
+            return `<li class="error-item">${texto}</li>`;
+          }).join('') + '</ul>';
+      }
+      let mensajeExtra = '';
+      if (hayVacios) {
+        mensajeExtra = '<div style="margin-top: 8px; color: var(--color-aviso);">⚠️ Has dejado alguna operación sin completar. Se contabiliza como fallo.</div>';
+      }
+      elFb.className = "feedback";
+      elFb.innerHTML = `
+        <div style="color: var(--color-incorrecto); font-weight: 600;">${resultado.msg}</div>
+        <div class="feedback-pedagogico">
+          <strong>📘 Vamos a revisarlo:</strong>
+          ${lista || resultado.explicacion}
+          <div style="margin-top: 8px; font-size: 0.9rem;">
+            💡 <strong>Recuerda:</strong>
+            • Producto: \\(a^n \\cdot b^n = (a \\cdot b)^n\\)<br>
+            • Cociente: \\(\\frac{a^n}{b^n} = \\left(\\frac{a}{b}\\right)^n\\)<br>
+            • Si la base es negativa, se escribe entre paréntesis: \\((-2)^3\\)
+          </div>
+        </div>
+        ${mensajeExtra}
+        <div style="margin-top: 8px;"><strong>👉 Pulsa "🔄 Nuevo" para generar nuevas preguntas y volver a intentarlo.</strong></div>
+      `;
+      bloquearTrasFallo(6, 'ej-card-7', elFb.innerHTML);
+      if(window.MathJax) MathJax.typesetPromise().catch(() => {});
+    }
+  }
+
+  // ===== EJERCICIO 8 =====
+  class Ejercicio8NotacionCientifica extends EjercicioDosPreguntas {
+    generarPreguntas() {
+      const shuffle = (arr) => arr.sort(() => Math.random() - 0.5);
+
+      const ejerciciosList = [];
+
+      const num1 = Math.floor(Math.random() * 9) + 1;
+      const ceros1 = Math.floor(Math.random() * 5) + 3;
+      const numero1 = num1 + "0".repeat(ceros1);
+      // num1 es siempre de un solo dígito, así que la notación científica nunca lleva
+      // parte decimal (antes se forzaba "num1,00..." con ceros superfluos, que no es la
+      // notación estándar y hacía que se rechazara la respuesta correcta del alumno).
+      ejerciciosList.push({
+        numero: numero1,
+        notacionCorrecta: `${num1} × 10^${ceros1}`
+      });
+
+      const num2 = Math.floor(Math.random() * 9) + 1;
+      const ceros2 = Math.floor(Math.random() * 4) + 2;
+      const numero2 = "0," + "0".repeat(ceros2-1) + num2;
+      ejerciciosList.push({
+        numero: numero2,
+        notacionCorrecta: `${num2} × 10^-${ceros2}`
+      });
+
+      const num3 = Math.floor(Math.random() * 99) + 10;
+      const ceros3 = Math.floor(Math.random() * 3) + 2;
+      const numero3 = num3 + "0".repeat(ceros3);
+      const num3Str = String(num3);
+      const primerDigito3 = num3Str[0];
+      const resto3 = num3Str.substring(1);
+      // resto3 puede tener varios dígitos y ser TODO ceros (p. ej. num3=200 -> resto3="00"),
+      // no solo el caso de un único "0": en ese caso la mantisa no debe llevar parte
+      // decimal superflua ("2,00 × 10^n" es incorrecto, la forma normalizada es "2 × 10^n").
+      const decimales3 = /^0+$/.test(resto3) ? '' : `,${resto3}`;
+      const exp3 = ceros3 + resto3.length;
+      ejerciciosList.push({
+        numero: numero3,
+        notacionCorrecta: `${primerDigito3}${decimales3} × 10^${exp3}`
+      });
+
+      const num4 = Math.floor(Math.random() * 99) + 10;
+      const ceros4 = Math.floor(Math.random() * 3) + 2;
+      const num4Str = String(num4);
+      const primerDigito4 = num4Str[0];
+      const resto4 = num4Str.substring(1);
+      // Mismo fix que en resto3: resto4 "todo ceros" (p. ej. num4=200 -> "00") no debe
+      // generar decimales superfluos en la mantisa.
+      const decimales4 = /^0+$/.test(resto4) ? '' : `,${resto4}`;
+      const numero4 = "0," + "0".repeat(ceros4-1) + num4Str;
+      const exp4 = ceros4;
+      ejerciciosList.push({
+        numero: numero4,
+        notacionCorrecta: `${primerDigito4}${decimales4} × 10^-${exp4}`
+      });
+
+      this.ejercicios = shuffle(ejerciciosList);
+    }
+
+    comprobarPregunta1(respuestas) {
+      // Comparador robusto: extrae mantisa y exponente de la respuesta del alumno con una
+      // regex que acepta cualquier símbolo habitual de multiplicación (×, x, X, *, ·) o
+      // incluso su ausencia, y compara el VALOR NUMÉRICO real (mantisa × 10^exponente)
+      // en vez de exigir coincidencia exacta de cadena. Antes, escribir "5 * 10^3" (con
+      // asterisco, el símbolo más habitual en cualquier teclado) se marcaba siempre como
+      // incorrecto porque solo se aceptaban "×" o la letra "x" minúscula.
+      function parseNotacionCientifica(str) {
+        if (typeof str !== 'string') return null;
+        let s = str.trim().replace(/,/g, '.');
+        // separador de miles no soportado; solo un punto decimal
+        const regex = /^(-?\d+(?:\.\d+)?)\s*(?:[×xX*·]\s*)?10\s*(?:\^|\*\*)?\s*\{?(-?\d+)\}?$/;
+        const m = s.match(regex);
+        if (!m) return null;
+        const mantisa = parseFloat(m[1]);
+        const exponente = parseInt(m[2], 10);
+        if (isNaN(mantisa) || isNaN(exponente)) return null;
+        return { mantisa, exponente, valor: mantisa * Math.pow(10, exponente) };
+      }
+
+      let todosCorrectos = true;
+      let errores = [];
+      let indicesErroneos = [];
+      for (let i = 0; i < this.ejercicios.length; i++) {
+        const ej = this.ejercicios[i];
+        const resp = respuestas[i] || "";
+        const parseado = parseNotacionCientifica(resp);
+        const correcto = parseNotacionCientifica(ej.notacionCorrecta);
+
+        let esCorrecto = false;
+        if (parseado && correcto) {
+          // Exige forma normalizada (1 <= |mantisa| < 10) para que sea notación
+          // científica de verdad, y compara el valor real con tolerancia numérica.
+          const mantisaNormalizada = Math.abs(parseado.mantisa) >= 1 && Math.abs(parseado.mantisa) < 10;
+          const valorCoincide = Math.abs(parseado.valor - correcto.valor) < Math.abs(correcto.valor) * 1e-9 + 1e-12;
+          esCorrecto = mantisaNormalizada && valorCoincide;
+        }
+
+        if (!esCorrecto) {
+          todosCorrectos = false;
+          indicesErroneos.push(i);
+          let detalle = `El número ${ej.numero} → La notación correcta es ${ej.notacionCorrecta}`;
+          errores.push(detalle);
+        }
+      }
+      if (todosCorrectos) return { correcto: true };
+      return { correcto: false, explicacion: errores.join(" | "), indicesErroneos };
+    }
+
+    comprobarPregunta2() { return { correcto: true }; }
+
+    verificarPreguntas(respuesta1, respuesta2) {
+      if (this.superado || finalizado) return { correcto: false, superado: true, msg: "Ejercicio ya superado." };
+      if (this.cerrado) return { correcto: false, superado: false, cerrado: true, msg: "Este intento ya está agotado. Pulsa \"🔄 Nuevo\" para generar un ejercicio distinto." };
+      const resultado = this.comprobarPregunta1(respuesta1);
+      if (resultado.correcto) {
+        this.superado = true;
+        actualizarUI();
+        return { correcto: true, superado: true, msg: "🎉 ¡Ejercicio superado! Has escrito correctamente todos los números en notación científica.", feedback: "correcto" };
+      } else {
+        this.fallosPropios++;
+        this.cerrado = true;
+        actualizarUI();
+        return { correcto: false, superado: false, msg: "❌ Has fallado en alguna conversión.", explicacion: resultado.explicacion, indicesErroneos: resultado.indicesErroneos, feedback: "error" };
+      }
+    }
+
+    getHTML() {
+      let claseCard = this.superado ? 'superado' : (this.cerrado ? 'agotado' : '');
+      const bloqueado = this.superado || this.cerrado;
+      let html = `
+        <div class="ejercicio-card ${claseCard}" id="ej-card-8">
+          <div class="ejercicio-header">
+            <div class="ejercicio-titulo-wrapper">
+              <span class="ejercicio-num">8</span>
+              <span class="ejercicio-titulo">Notación científica</span>
+            </div>
+            <button class="btn-nuevo-ejercicio" onclick="reiniciarEjercicio(7)">🔄 Nuevo</button>
+          </div>
+          <div class="pregunta-item">
+            <p style="margin-bottom: 10px; font-weight: 500;">📝 Escribe cada número en notación científica (puedes usar ×, x o * para la multiplicación):</p>
+            <p style="margin-bottom: 12px; font-size: 0.85rem; color: var(--color-texto-suave);">
+              💡 Recuerda: \\(N \\times 10^n\\), donde \\(1 \\leq N < 10\\) y \\(n\\) es un número entero.
+            </p>
+            <div class="grid-ejercicio8">
+      `;
+      for (let i = 0; i < this.ejercicios.length; i++) {
+        const ej = this.ejercicios[i];
+        const disabled = bloqueado ? 'disabled' : '';
+        const valorCorrecto = this.superado ? ej.notacionCorrecta : '';
+        html += `
+          <div class="item-ej8">
+            <div class="enunciado">${ej.numero}</div>
+            <input type="text" id="e8_res_${i}" placeholder="Ej: 1,23 x 10^4 (o 10^-4)" ${disabled} value="${valorCorrecto}">
+          </div>
+        `;
+      }
+      html += `
+            </div>
+            <div style="text-align:center; margin-top:15px;">
+              <button class="btn-primary" onclick="verificarEjercicio8()" ${bloqueado ? 'disabled' : ''}>✅ Comprobar resultados</button>
+            </div>
+            <div id="fb_8" class="feedback" style="text-align:center; margin-top:10px;">${this.cerrado ? this.feedbackHTML : ''}</div>
+          </div>
+        </div>
+      `;
+      return html;
+    }
+  }
+
+  function verificarEjercicio8() {
+    if (finalizado) { mostrarModalAdvertencia("La ficha ya ha sido finalizada."); return; }
+    if (ejercicios[7].superado) {
+      document.getElementById('fb_8').className = "feedback feedback-correcto";
+      document.getElementById('fb_8').innerHTML = "✅ Este ejercicio ya estaba superado.";
+      return;
+    }
+    if (ejercicios[7].cerrado) {
+      document.getElementById('fb_8').className = "feedback feedback-necesita-nuevo";
+      document.getElementById('fb_8').innerHTML = "🔒 Ya viste la respuesta correcta en el intento anterior. Pulsa \"🔄 Nuevo\" para generar preguntas distintas.";
+      return;
+    }
+    const ejerciciosList = ejercicios[7].ejercicios;
+    const respuestas = [];
+    let hayVacios = false;
+    for (let i = 0; i < ejerciciosList.length; i++) {
+      const input = document.getElementById(`e8_res_${i}`);
+      if (!input) { hayVacios = true; break; }
+      input.classList.remove('input-error');
+      const valor = input.value || "";
+      respuestas.push(valor);
+      if (!valor.trim()) hayVacios = true;
+    }
+
+    const resultado = ejercicios[7].verificarPreguntas(respuestas, null);
+    const elFb = document.getElementById('fb_8');
+
+    if (resultado.correcto) {
+      elFb.className = "feedback feedback-correcto";
+      elFb.innerHTML = resultado.msg;
+      renderizarEjercicios();
+    } else {
+      // Marca en rojo únicamente los recuadros cuya conversión es incorrecta,
+      // dejando sin marcar los que el alumno sí ha acertado.
+      if (resultado.indicesErroneos) {
+        resultado.indicesErroneos.forEach(i => {
+          const input = document.getElementById(`e8_res_${i}`);
+          if (input) input.classList.add('input-error');
+        });
+      }
+      const errores = resultado.explicacion.split(' | ');
+      let lista = '';
+      if (errores.length > 0 && errores[0] !== '') {
+        lista = '<ul style="list-style:none; padding-left:0; margin:8px 0 0 0;">' +
+          errores.map(e => {
+            let texto = e;
+            texto = texto.replace(/ → /g, ' • ');
+            return `<li class="error-item">${texto}</li>`;
+          }).join('') + '</ul>';
+      }
+      let mensajeExtra = '';
+      if (hayVacios) {
+        mensajeExtra = '<div style="margin-top: 8px; color: var(--color-aviso);">⚠️ Has dejado algún número sin convertir. Se contabiliza como fallo.</div>';
+      }
+      elFb.className = "feedback";
+      elFb.innerHTML = `
+        <div style="color: var(--color-incorrecto); font-weight: 600;">${resultado.msg}</div>
+        <div class="feedback-pedagogico">
+          <strong>📘 Vamos a revisarlo:</strong>
+          ${lista || resultado.explicacion}
+          <div style="margin-top: 8px; font-size: 0.9rem;">
+            💡 <strong>Recuerda:</strong> La notación científica tiene la forma \\(a \\times 10^n\\), con \\(1 \\leq a < 10\\).<br>
+            • Para números grandes, el exponente \\(n\\) es positivo.<br>
+            • Para números pequeños, el exponente \\(n\\) es negativo.
+          </div>
+        </div>
+        ${mensajeExtra}
+        <div style="margin-top: 8px;"><strong>👉 Pulsa "🔄 Nuevo" para generar nuevas preguntas y volver a intentarlo.</strong></div>
+      `;
+      bloquearTrasFallo(7, 'ej-card-8', elFb.innerHTML);
+      if(window.MathJax) MathJax.typesetPromise().catch(() => {});
+    }
+  }
+
+  // ===== EJERCICIO 9 =====
+  class Ejercicio9ExponentesEspeciales extends EjercicioDosPreguntas {
+    generarPreguntas() {
+      const shuffle = (arr) => arr.sort(() => Math.random() - 0.5);
+
+      const n1 = Math.floor(Math.random() * 8) + 2;
+      const n2 = Math.floor(Math.random() * 8) + 2;
+      const n3 = Math.floor(Math.random() * 8) + 2;
+
+      const casos = [
+        {
+          potencia: `(-${n1})^0`,
+          resultadoCorrecto: "1",
+          motivoCorrecto: "cualquier número distinto de 0 elevado a 0 es 1"
+        },
+        {
+          potencia: `-${n1}^0`,
+          resultadoCorrecto: "-1",
+          motivoCorrecto: "el signo no se eleva, solo el número, y n^0 = 1, por lo que queda -1"
+        },
+        {
+          potencia: `${n2}^1`,
+          resultadoCorrecto: `${n2}`,
+          motivoCorrecto: "cualquier número elevado a 1 es el mismo número"
+        },
+        {
+          potencia: `(-${n3})^1`,
+          resultadoCorrecto: `-${n3}`,
+          motivoCorrecto: "cualquier número elevado a 1 es el mismo número, y el signo se mantiene"
+        }
+      ];
+
+      this.filas = shuffle(casos);
+      this.opcionesResultados = shuffle([`1`, `-1`, `${n2}`, `-${n3}`]);
+      this.opcionesMotivos = shuffle([
+        "cualquier número distinto de 0 elevado a 0 es 1",
+        "el signo no se eleva, solo el número, y n^0 = 1, por lo que queda -1",
+        "cualquier número elevado a 1 es el mismo número",
+        "cualquier número elevado a 1 es el mismo número, y el signo se mantiene"
+      ]);
+    }
+
+    comprobarPregunta1(respuestas) {
+      let todosCorrectos = true;
+      let errores = [];
+      for (let i = 0; i < this.filas.length; i++) {
+        const fila = this.filas[i];
+        const resp = respuestas[i] || { resultado: "", motivo: "" };
+        const resOk = resp.resultado === fila.resultadoCorrecto;
+        const motOk = resp.motivo === fila.motivoCorrecto;
+        if (!resOk || !motOk) {
+          todosCorrectos = false;
+          let detalle = `\\(${fila.potencia}\\)`;
+          if (!resOk) detalle += ` → El resultado correcto es "${fila.resultadoCorrecto}"`;
+          if (!motOk) detalle += ` → El motivo correcto es "${fila.motivoCorrecto}"`;
+          errores.push(detalle);
+        }
+      }
+      if (todosCorrectos) return { correcto: true };
+      return { correcto: false, explicacion: errores.join(" | ") };
+    }
+
+    comprobarPregunta2() { return { correcto: true }; }
+
+    verificarPreguntas(respuesta1, respuesta2) {
+      if (this.superado || finalizado) return { correcto: false, superado: true, msg: "Ejercicio ya superado." };
+      if (this.cerrado) return { correcto: false, superado: false, cerrado: true, msg: "Este intento ya está agotado. Pulsa \"🔄 Nuevo\" para generar un ejercicio distinto." };
+      const resultado = this.comprobarPregunta1(respuesta1);
+      if (resultado.correcto) {
+        this.superado = true;
+        actualizarUI();
+        return { correcto: true, superado: true, msg: "🎉 ¡Ejercicio superado! Has clasificado correctamente todas las potencias.", feedback: "correcto" };
+      } else {
+        this.fallosPropios++;
+        this.cerrado = true;
+        actualizarUI();
+        return { correcto: false, superado: false, msg: "❌ Has fallado en alguna clasificación.", explicacion: resultado.explicacion, feedback: "error" };
+      }
+    }
+
+    getHTML() {
+      let claseCard = this.superado ? 'superado' : (this.cerrado ? 'agotado' : '');
+      const bloqueado = this.superado || this.cerrado;
+      let tablaHTML = `
+        <div class="ejercicio-card ${claseCard}" id="ej-card-9">
+          <div class="ejercicio-header">
+            <div class="ejercicio-titulo-wrapper">
+              <span class="ejercicio-num">9</span>
+              <span class="ejercicio-titulo">Exponentes especiales: 0, 1 y -1</span>
+            </div>
+            <button class="btn-nuevo-ejercicio" onclick="reiniciarEjercicio(8)">🔄 Nuevo</button>
+          </div>
+          <div class="pregunta-item">
+            <p style="margin-bottom: 10px; font-weight: 500;">🔍 Analiza cada potencia y determina su resultado y el motivo:</p>
+            <table class="tabla-tres-columnas">
+              <thead><tr><th>Potencia</th><th>Resultado</th><th>Motivo</th></tr></thead>
+              <tbody>
+      `;
+      for (let i = 0; i < this.filas.length; i++) {
+        const fila = this.filas[i];
+        const disabled = bloqueado ? 'disabled' : '';
+        tablaHTML += `
+          <tr>
+            <td class="columna-potencia">\\(${fila.potencia}\\)</td>
+            <td><select id="res9_${i}" ${disabled}><option value="">---</option>
+        `;
+        for (const op of this.opcionesResultados) {
+          const sel = (this.superado && op === fila.resultadoCorrecto) ? 'selected' : '';
+          tablaHTML += `<option value="${op}" ${sel}>${op}</option>`;
+        }
+        tablaHTML += `</select></td>
+            <td><select id="mot9_${i}" ${disabled}><option value="">---</option>
+        `;
+        for (const op of this.opcionesMotivos) {
+          const sel = (this.superado && op === fila.motivoCorrecto) ? 'selected' : '';
+          tablaHTML += `<option value="${op}" ${sel}>${op}</option>`;
+        }
+        tablaHTML += `</select></td>
+          </tr>
+        `;
+      }
+      tablaHTML += `
+              </tbody>
+            </table>
+            <div style="text-align:center; margin-top:15px;">
+              <button class="btn-primary" onclick="verificarEjercicio9()" ${bloqueado ? 'disabled' : ''}>✅ Comprobar clasificación</button>
+            </div>
+            <div id="fb_9" class="feedback" style="text-align:center; margin-top:10px;">${this.cerrado ? this.feedbackHTML : ''}</div>
+          </div>
+        </div>
+      `;
+      return tablaHTML;
+    }
+  }
+
+  function verificarEjercicio9() {
+    if (finalizado) { mostrarModalAdvertencia("La ficha ya ha sido finalizada."); return; }
+    if (ejercicios[8].superado) {
+      document.getElementById('fb_9').className = "feedback feedback-correcto";
+      document.getElementById('fb_9').innerHTML = "✅ Este ejercicio ya estaba superado.";
+      return;
+    }
+    if (ejercicios[8].cerrado) {
+      document.getElementById('fb_9').className = "feedback feedback-necesita-nuevo";
+      document.getElementById('fb_9').innerHTML = "🔒 Ya viste la respuesta correcta en el intento anterior. Pulsa \"🔄 Nuevo\" para generar preguntas distintas.";
+      return;
+    }
+    const filas = ejercicios[8].filas;
+    const respuestas = [];
+    let hayVacios = false;
+    for (let i = 0; i < filas.length; i++) {
+      const res = document.getElementById(`res9_${i}`);
+      const mot = document.getElementById(`mot9_${i}`);
+      if (!res || !mot) { hayVacios = true; break; }
+      const resVal = res.value || "";
+      const motVal = mot.value || "";
+      respuestas.push({ resultado: resVal, motivo: motVal });
+      if (!resVal || !motVal) hayVacios = true;
+    }
+
+    const resultado = ejercicios[8].verificarPreguntas(respuestas, null);
+    const elFb = document.getElementById('fb_9');
+
+    if (resultado.correcto) {
+      elFb.className = "feedback feedback-correcto";
+      elFb.innerHTML = resultado.msg;
+      renderizarEjercicios();
+    } else {
+      const errores = resultado.explicacion.split(' | ');
+      let lista = '';
+      if (errores.length > 0 && errores[0] !== '') {
+        lista = '<ul style="list-style:none; padding-left:0; margin:8px 0 0 0;">' +
+          errores.map(e => {
+            let texto = e;
+            texto = texto.replace(/ → /g, ' • ');
+            return `<li class="error-item">${texto}</li>`;
+          }).join('') + '</ul>';
+      }
+      let mensajeExtra = '';
+      if (hayVacios) {
+        mensajeExtra = '<div style="margin-top: 8px; color: var(--color-aviso);">⚠️ Has dejado alguna fila sin completar. Se contabiliza como fallo.</div>';
+      }
+      elFb.className = "feedback";
+      elFb.innerHTML = `
+        <div style="color: var(--color-incorrecto); font-weight: 600;">${resultado.msg}</div>
+        <div class="feedback-pedagogico">
+          <strong>📘 Vamos a revisarlo:</strong>
+          ${lista || resultado.explicacion}
+          <div style="margin-top: 8px; font-size: 0.9rem;">
+            💡 <strong>Recuerda:</strong>
+            • Cualquier número distinto de 0 elevado a 0 es 1: \\(a^0 = 1\\).<br>
+            • Cualquier número elevado a 1 es el mismo número: \\(a^1 = a\\).<br>
+            • Si el signo está fuera del paréntesis, no se eleva: \\(-n^0 = -1\\).
+          </div>
+        </div>
+        ${mensajeExtra}
+        <div style="margin-top: 8px;"><strong>👉 Pulsa "🔄 Nuevo" para generar nuevas preguntas y volver a intentarlo.</strong></div>
+      `;
+      bloquearTrasFallo(8, 'ej-card-9', elFb.innerHTML);
+      if(window.MathJax) MathJax.typesetPromise().catch(() => {});
+    }
+  }
+
+  // ===== EJERCICIO 10 =====
+  class Ejercicio10Raices extends EjercicioDosPreguntas {
+    generarPreguntas() {
+      const shuffle = (arr) => arr.sort(() => Math.random() - 0.5);
+
+      const num1 = Math.floor(Math.random() * 5) + 2;
+      const num2 = Math.floor(Math.random() * 5) + 2;
+      const num3 = Math.floor(Math.random() * 5) + 2;
+
+      const casos = [
+        {
+          raiz: `\\sqrt{-${num1*num1}}`,
+          indice: 2,
+          radicando: -num1*num1,
+          resultadoCorrecto: "No existe en los números reales",
+          motivoCorrecto: "raíz de índice par de un número negativo no tiene solución real"
+        },
+        {
+          raiz: `\\sqrt[4]{-${num2*num2*num2*num2}}`,
+          indice: 4,
+          radicando: -Math.pow(num2, 4),
+          resultadoCorrecto: "No existe en los números reales",
+          motivoCorrecto: "raíz de índice par de un número negativo no tiene solución real"
+        },
+        {
+          raiz: `\\sqrt[3]{-${num3*num3*num3}}`,
+          indice: 3,
+          radicando: -Math.pow(num3, 3),
+          resultadoCorrecto: `-${num3}`,
+          motivoCorrecto: "raíz de índice impar de un número negativo es negativa"
+        },
+        {
+          raiz: `\\sqrt[3]{-${(num3+1)*(num3+1)*(num3+1)}}`,
+          indice: 3,
+          radicando: -Math.pow(num3+1, 3),
+          resultadoCorrecto: `-${num3+1}`,
+          motivoCorrecto: "raíz de índice impar de un número negativo es negativa"
+        }
+      ];
+
+      this.filas = shuffle(casos);
+
+      // Antes esta lista tenía "No existe en los números reales" duplicado (dos filas
+      // comparten esa respuesta), lo que hacía aparecer la misma opción dos veces en
+      // el desplegable. Usamos únicos.
+      const opcionesResultadosUnicas = [...new Set([
+        "No existe en los números reales",
+        `-${num3}`,
+        `-${num3+1}`
+      ])];
+      this.opcionesResultados = shuffle(opcionesResultadosUnicas);
+
+      this.opcionesMotivos = shuffle([
+        "raíz de índice par de un número negativo no tiene solución real",
+        "raíz de índice impar de un número negativo es negativa"
+      ]);
+    }
+
+    comprobarPregunta1(respuestas) {
+      let todosCorrectos = true;
+      let errores = [];
+      for (let i = 0; i < this.filas.length; i++) {
+        const fila = this.filas[i];
+        const resp = respuestas[i] || { resultado: "", motivo: "" };
+        const resOk = resp.resultado === fila.resultadoCorrecto;
+        const motOk = resp.motivo === fila.motivoCorrecto;
+        if (!resOk || !motOk) {
+          todosCorrectos = false;
+          let detalle = `\\(${fila.raiz}\\)`;
+          if (!resOk) detalle += ` → El resultado correcto es "${fila.resultadoCorrecto}"`;
+          if (!motOk) detalle += ` → El motivo correcto es "${fila.motivoCorrecto}"`;
+          errores.push(detalle);
+        }
+      }
+      if (todosCorrectos) return { correcto: true };
+      return { correcto: false, explicacion: errores.join(" | ") };
+    }
+
+    comprobarPregunta2() { return { correcto: true }; }
+
+    verificarPreguntas(respuesta1, respuesta2) {
+      if (this.superado || finalizado) return { correcto: false, superado: true, msg: "Ejercicio ya superado." };
+      if (this.cerrado) return { correcto: false, superado: false, cerrado: true, msg: "Este intento ya está agotado. Pulsa \"🔄 Nuevo\" para generar un ejercicio distinto." };
+      const resultado = this.comprobarPregunta1(respuesta1);
+      if (resultado.correcto) {
+        this.superado = true;
+        actualizarUI();
+        return { correcto: true, superado: true, msg: "🎉 ¡Ejercicio superado! Has clasificado correctamente todas las raíces.", feedback: "correcto" };
+      } else {
+        this.fallosPropios++;
+        this.cerrado = true;
+        actualizarUI();
+        return { correcto: false, superado: false, msg: "❌ Has fallado en alguna clasificación.", explicacion: resultado.explicacion, feedback: "error" };
+      }
+    }
+
+    getHTML() {
+      let claseCard = this.superado ? 'superado' : (this.cerrado ? 'agotado' : '');
+      const bloqueado = this.superado || this.cerrado;
+      let tablaHTML = `
+        <div class="ejercicio-card ${claseCard}" id="ej-card-10">
+          <div class="ejercicio-header">
+            <div class="ejercicio-titulo-wrapper">
+              <span class="ejercicio-num">10</span>
+              <span class="ejercicio-titulo">Raíces con bases negativas</span>
+            </div>
+            <button class="btn-nuevo-ejercicio" onclick="reiniciarEjercicio(9)">🔄 Nuevo</button>
+          </div>
+          <div class="pregunta-item">
+            <p style="margin-bottom: 10px; font-weight: 500;">🔍 Analiza cada raíz y determina su resultado y el motivo:</p>
+            <table class="tabla-tres-columnas">
+              <thead><tr><th>Raíz</th><th>Resultado</th><th>Motivo</th></tr></thead>
+              <tbody>
+      `;
+      for (let i = 0; i < this.filas.length; i++) {
+        const fila = this.filas[i];
+        const disabled = bloqueado ? 'disabled' : '';
+        tablaHTML += `
+          <tr>
+            <td class="columna-potencia">\\(${fila.raiz}\\)</td>
+            <td><select id="res10_${i}" ${disabled}><option value="">---</option>
+        `;
+        for (const op of this.opcionesResultados) {
+          const sel = (this.superado && op === fila.resultadoCorrecto) ? 'selected' : '';
+          tablaHTML += `<option value="${op}" ${sel}>${op}</option>`;
+        }
+        tablaHTML += `</select></td>
+            <td><select id="mot10_${i}" ${disabled}><option value="">---</option>
+        `;
+        for (const op of this.opcionesMotivos) {
+          const sel = (this.superado && op === fila.motivoCorrecto) ? 'selected' : '';
+          tablaHTML += `<option value="${op}" ${sel}>${op}</option>`;
+        }
+        tablaHTML += `</select></td>
+          </tr>
+        `;
+      }
+      tablaHTML += `
+              </tbody>
+            </table>
+            <div style="text-align:center; margin-top:15px;">
+              <button class="btn-primary" onclick="verificarEjercicio10()" ${bloqueado ? 'disabled' : ''}>✅ Comprobar clasificación</button>
+            </div>
+            <div id="fb_10" class="feedback" style="text-align:center; margin-top:10px;">${this.cerrado ? this.feedbackHTML : ''}</div>
+          </div>
+        </div>
+      `;
+      return tablaHTML;
+    }
+  }
+
+  function verificarEjercicio10() {
+    if (finalizado) { mostrarModalAdvertencia("La ficha ya ha sido finalizada."); return; }
+    if (ejercicios[9].superado) {
+      document.getElementById('fb_10').className = "feedback feedback-correcto";
+      document.getElementById('fb_10').innerHTML = "✅ Este ejercicio ya estaba superado.";
+      return;
+    }
+    if (ejercicios[9].cerrado) {
+      document.getElementById('fb_10').className = "feedback feedback-necesita-nuevo";
+      document.getElementById('fb_10').innerHTML = "🔒 Ya viste la respuesta correcta en el intento anterior. Pulsa \"🔄 Nuevo\" para generar preguntas distintas.";
+      return;
+    }
+    const filas = ejercicios[9].filas;
+    const respuestas = [];
+    let hayVacios = false;
+    for (let i = 0; i < filas.length; i++) {
+      const res = document.getElementById(`res10_${i}`);
+      const mot = document.getElementById(`mot10_${i}`);
+      if (!res || !mot) { hayVacios = true; break; }
+      const resVal = res.value || "";
+      const motVal = mot.value || "";
+      respuestas.push({ resultado: resVal, motivo: motVal });
+      if (!resVal || !motVal) hayVacios = true;
+    }
+
+    const resultado = ejercicios[9].verificarPreguntas(respuestas, null);
+    const elFb = document.getElementById('fb_10');
+
+    if (resultado.correcto) {
+      elFb.className = "feedback feedback-correcto";
+      elFb.innerHTML = resultado.msg;
+      renderizarEjercicios();
+    } else {
+      const errores = resultado.explicacion.split(' | ');
+      let lista = '';
+      if (errores.length > 0 && errores[0] !== '') {
+        lista = '<ul style="list-style:none; padding-left:0; margin:8px 0 0 0;">' +
+          errores.map(e => {
+            let texto = e;
+            texto = texto.replace(/ → /g, ' • ');
+            return `<li class="error-item">${texto}</li>`;
+          }).join('') + '</ul>';
+      }
+      let mensajeExtra = '';
+      if (hayVacios) {
+        mensajeExtra = '<div style="margin-top: 8px; color: var(--color-aviso);">⚠️ Has dejado alguna fila sin completar. Se contabiliza como fallo.</div>';
+      }
+      elFb.className = "feedback";
+      elFb.innerHTML = `
+        <div style="color: var(--color-incorrecto); font-weight: 600;">${resultado.msg}</div>
+        <div class="feedback-pedagogico">
+          <strong>📘 Vamos a revisarlo:</strong>
+          ${lista || resultado.explicacion}
+        </div>
+        ${mensajeExtra}
+        <div style="margin-top: 8px;"><strong>👉 Pulsa "🔄 Nuevo" para generar nuevas preguntas y volver a intentarlo.</strong></div>
+      `;
+      bloquearTrasFallo(9, 'ej-card-10', elFb.innerHTML);
+      if(window.MathJax) MathJax.typesetPromise().catch(() => {});
+    }
+  }
+
+  function reiniciarEjercicio(index) {
+    if(finalizado) { mostrarModalAdvertencia("La ficha ya fue finalizada."); return; }
+    if (ejercicios[index].superado) {
+      // Hay un punto ya ganado en juego: pedimos confirmación explícita antes de borrarlo.
+      indicePendienteDeReiniciar = index;
+      document.getElementById('mensajeConfirmarNuevo').innerText =
+        "Este ejercicio ya está superado y vas a perder el punto que tenías ganado en él. ¿Seguro que quieres continuar?";
+      document.getElementById('modalConfirmarNuevo').classList.add('show');
+      return;
+    }
+    // Ni superado ni con puntos en juego (o ya cerrado en 0 tras un fallo): no hay nada
+    // que perder, así que se regenera directamente sin interrumpir con un aviso.
+    ejercicios[index].reiniciar();
+    renderizarEjercicios();
+    actualizarUI();
+  }
+
+  function confirmarReiniciarEjercicio() {
+    if (indicePendienteDeReiniciar === null) { cerrarModalConfirmarNuevo(); return; }
+    const idx = indicePendienteDeReiniciar;
+    cerrarModalConfirmarNuevo();
+    ejercicios[idx].reiniciar();
+    renderizarEjercicios();
+    actualizarUI();
+  }
+
+  function cerrarModalConfirmarNuevo() {
+    document.getElementById('modalConfirmarNuevo').classList.remove('show');
+    indicePendienteDeReiniciar = null;
+  }
+
+  function calcularNota() {
+    // Cada ejercicio aporta como máximo 10/TOTAL_EJERCICIOS puntos, de forma independiente.
+    // Un fallo en un ejercicio (que revela la respuesta) resta PENALIZACION solo a la
+    // contribución de ESE ejercicio, nunca a la de los demás.
+    const PUNTOS_POR_EJERCICIO = 10 / TOTAL_EJERCICIOS;
+    let superados = 0;
+    let nota = 0;
+    for (const ej of ejercicios) {
+      if (ej.superado) {
+        superados++;
+        const contribucion = Math.max(0, PUNTOS_POR_EJERCICIO - (ej.fallosPropios * PENALIZACION));
+        nota += contribucion;
+      }
+    }
+    if (nota < 0) nota = 0;
+    if (nota > 10) nota = 10;
+    return { nota, superados };
+  }
+
+  function totalFallos() {
+    return ejercicios.reduce((acc, ej) => acc + ej.fallosPropios, 0);
+  }
+
+  function actualizarUI() {
+    let superados = ejercicios.filter(e => e.superado).length;
+    document.getElementById('progresoCount').innerText = superados;
+    document.getElementById('totalEjerciciosTxt').innerText = TOTAL_EJERCICIOS;
+    document.getElementById('fallosCount').innerText = totalFallos();
+    let { nota } = calcularNota();
+    document.getElementById('notaActual').innerText = nota.toFixed(1);
+  }
+
+  function bloquearTrasFallo(indexEj, cardId, htmlFeedback) {
+    // Guarda el feedback para que sobreviva si otro ejercicio provoca un re-render completo,
+    // y bloquea de inmediato los campos de ESTA tarjeta sin tocar las demás (no pierde
+    // respuestas sin enviar que el alumno tenga en otros ejercicios).
+    ejercicios[indexEj].feedbackHTML = htmlFeedback;
+    const card = document.getElementById(cardId);
+    if (card) {
+      card.classList.remove('superado');
+      card.classList.add('agotado');
+      card.querySelectorAll('input, select, button.btn-primary').forEach(el => { el.disabled = true; });
+    }
+  }
+
+  function mostrarModalAdvertencia(msg) {
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay show';
+    modal.innerHTML = `<div class="modal-confirm-card"><button class="modal-close" onclick="this.closest('.modal-overlay').remove()">✕</button><h3 style="color:var(--color-aviso);">⚠️ Aviso</h3><p style="font-size:13px; margin:16px 0;">${msg}</p><button onclick="this.closest('.modal-overlay').remove()" style="background:var(--color-aviso); border:none; padding:10px; width:100%; border-radius:6px; font-weight:600; cursor:pointer;">Entendido</button></div>`;
+    document.body.appendChild(modal);
+  }
+
+  function cerrarModalConfirmacion() { document.getElementById('modalConfirmacion').classList.remove('show'); }
+  function cerrarModalResultados() { document.getElementById('modalResultados').classList.remove('show'); }
+
+  function obtenerClaseNota(nota) {
+    if(nota >= 10) return 'bg-nota-10';
+    if(nota >= 9) return 'bg-nota-9';
+    if(nota >= 8) return 'bg-nota-8';
+    if(nota >= 7) return 'bg-nota-7';
+    if(nota >= 6) return 'bg-nota-6';
+    if(nota >= 5) return 'bg-nota-5';
+    return 'bg-nota-4';
+  }
+
+  function confirmarFinalizar() {
+    cerrarModalConfirmacion();
+    let nombre = document.getElementById('nombreAlumno').value.trim();
+    if(!nombre) { mostrarModalAdvertencia("Introduce tu nombre."); return; }
+    finalizado = true;
+    let { nota, superados } = calcularNota();
+    let { fecha, hora } = obtenerFechaHoraActual();
+    let tiempo = obtenerTiempoFormateado();
+
+    if(nota >= 10) document.body.style.background = '#1a7a1a';
+    else if(nota >= 9) document.body.style.background = '#6dbf6d';
+    else if(nota >= 8) document.body.style.background = '#1a4f8a';
+    else if(nota >= 7) document.body.style.background = '#5b9bd5';
+    else if(nota >= 6) document.body.style.background = '#c05c00';
+    else if(nota >= 5) document.body.style.background = '#f5a623';
+    else document.body.style.background = '#c0392b';
+
+    const modalCard = document.getElementById('modalResultCard');
+    modalCard.className = `modal-result-card ${obtenerClaseNota(nota)}`;
+    document.getElementById('modalNombreMostrar').innerHTML = `👤 ${nombre}`;
+    document.getElementById('modalNota').innerHTML = `${nota.toFixed(1)} / 10`;
+
+    let mensaje = "";
+    if(nota >= 10) mensaje = "🏆 ¡PERFECTO! Dominas las potencias con números enteros.";
+    else if(nota >= 9) mensaje = "🌟 ¡EXCELENTE! Casi perfecto.";
+    else if(nota >= 7) mensaje = "👍 ¡MUY BIEN! Sigue así.";
+    else if(nota >= 5) mensaje = "📚 ¡APROBADO! Repasa los fallos.";
+    else mensaje = "📖 Sigue practicando, ¡tú puedes!";
+
+    document.getElementById('modalStats').innerHTML = `
+      <p>📊 Superados: <strong>${superados} de ${TOTAL_EJERCICIOS}</strong></p>
+      <p>❌ Fallos: <strong>${totalFallos()}</strong></p>
+      <p>💥 Penalización: <strong>-${PENALIZACION} puntos/fallo</strong></p>
+      <p>📅 Fecha: <strong>${fecha}</strong></p>
+      <p>⏰ Hora: <strong>${hora}</strong></p>
+      <p>⏱️ Tiempo: <strong>${tiempo}</strong></p>
+      <p style="margin-top:8px;">💬 ${mensaje}</p>
+    `;
+    document.getElementById('modalResultados').classList.add('show');
+  }
+
+  function renderizarEjercicios() {
+    const contenedor = document.getElementById('ejerciciosContainer');
+    contenedor.innerHTML = ejercicios.map(e => e.getHTML()).join('');
+    if(window.MathJax) MathJax.typesetPromise().catch(() => {});
+  }
+
+  function inicializarFicha() {
+    // Detener cualquier timer anterior antes de reiniciar
+    detenerTimer();
+
+    const ej1 = new Ejercicio1Tabla(1);
+    const ej2 = new Ejercicio2ExponentesNegativos(2);
+    const ej3 = new Ejercicio3CalculoPotencias(3);
+    const ej4 = new Ejercicio4MismaBase(4);
+    const ej5 = new Ejercicio5Base10(5);
+    const ej6 = new Ejercicio6PotenciaDePotencia(6);
+    const ej7 = new Ejercicio7MismoExponente(7);
+    const ej8 = new Ejercicio8NotacionCientifica(8);
+    const ej9 = new Ejercicio9ExponentesEspeciales(9);
+    const ej10 = new Ejercicio10Raices(10);
+    ejercicios = [ej1, ej2, ej3, ej4, ej5, ej6, ej7, ej8, ej9, ej10];
+    finalizado = false;
+    document.body.style.background = '';
+    actualizarUI();
+    renderizarEjercicios();
+
+    // Iniciar el timer después de que todo esté listo
+    iniciarTimer();
+  }
+
+  document.getElementById('btnFinalizar').addEventListener('click', () => {
+    document.getElementById('modalConfirmacion').classList.add('show');
+  });
+  document.getElementById('btnResetear').addEventListener('click', () => {
+    const hayProgreso = ejercicios.some(ej => ej.superado) || totalFallos() > 0;
+    if (!hayProgreso) {
+      // No hay nada que perder todavía: reiniciar directamente sin interrumpir con un aviso.
+      inicializarFicha();
+      return;
+    }
+    document.getElementById('modalConfirmarReset').classList.add('show');
+  });
+
+  function confirmarResetTotal() {
+    cerrarModalConfirmarReset();
+    inicializarFicha();
+  }
+
+  function cerrarModalConfirmarReset() {
+    document.getElementById('modalConfirmarReset').classList.remove('show');
+  }
+
+  window.onload = () => { inicializarFicha(); };
+</script>
+</body>
+</html>

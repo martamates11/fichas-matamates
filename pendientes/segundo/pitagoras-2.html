@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Triángulos Rectángulos - Pitágoras - 2 ESO</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cf:#F5F0E8; --cfc:#FDFAF3; --ct:#2C1F0E; --cts:#6B4F35;
+  --ca:#A0522D; --cah:#7B3B1E; --cb:#C9A96E; --cbs:#E0CEAA;
+  --cc:#3B2510; --cct:#F5EDD8; --cok:#2E6B3E; --cerr:#8B1A1A;
+  --cn:#E8DFC8; --cav:#D4A259; --cnv:#4A6FA5;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--cf);font-family:'Lato',sans-serif;color:var(--ct);min-height:100vh;transition:background .5s;}
+.autoria{background:var(--cc);text-align:center;padding:6px;font-size:10px;color:rgba(245,240,232,.7);font-family:'Libre Baskerville',serif;letter-spacing:.04em;}
+.ficha-wrapper{max-width:1000px;margin:0 auto;padding:2rem 1rem;}
+.header{background:var(--cc);border-radius:1.5rem;padding:1.8rem 2rem;margin-bottom:1.8rem;box-shadow:0 8px 20px rgba(0,0,0,.1);}
+.header h1{font-size:2.2rem;font-weight:700;color:var(--cct);margin-bottom:.5rem;font-family:'Libre Baskerville',serif;}
+.header p{color:#C9B896;font-size:.9rem;}
+.header-badges{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1rem;}
+.header-badge{background:rgba(255,255,255,.08);padding:.25rem .75rem;border-radius:40px;font-size:.7rem;color:#E0CEAA;}
+.info-bar{background:var(--cfc);border-radius:1.2rem;padding:1rem 1.5rem;margin-bottom:1.5rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;border:1px solid var(--cb);}
+.info-item{display:flex;align-items:center;gap:.6rem;font-size:.85rem;font-weight:500;color:var(--cts);}
+.info-icon{width:30px;height:30px;background:var(--cf);border-radius:10px;display:flex;align-items:center;justify-content:center;}
+.info-value{font-weight:700;font-size:1rem;color:var(--ct);}
+.name-section{background:var(--cfc);border-radius:1rem;padding:.8rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;border:1px solid var(--cbs);}
+.name-label{font-size:.75rem;font-weight:700;text-transform:uppercase;color:var(--cts);font-family:'Libre Baskerville',serif;}
+.name-input{flex:1;max-width:320px;border:none;border-bottom:2px solid var(--cb);padding:.5rem .25rem;font-size:.95rem;background:transparent;font-family:'Lato',sans-serif;color:var(--ct);}
+.name-input:focus{outline:none;border-bottom-color:var(--ca);}
+.ejercicio-card{background:var(--cfc);border-radius:1.2rem;padding:1.5rem;margin-bottom:1.8rem;border:1px solid var(--cb);border-left:4px solid var(--cb);}
+.ejercicio-card.superado{border-left:5px solid var(--cok);background:#eaf4ec;opacity:.92;}
+.ejercicio-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1.2rem;flex-wrap:wrap;justify-content:space-between;}
+.ejercicio-titulo-wrapper{display:flex;align-items:center;gap:.75rem;}
+.ejercicio-num{background:var(--ca);color:white;width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.1rem;flex-shrink:0;}
+.ejercicio-titulo{font-weight:700;font-size:1.05rem;font-family:'Libre Baskerville',serif;color:var(--ct);}
+.figura-layout{display:flex;gap:2rem;align-items:center;flex-wrap:wrap;justify-content:center;}
+.figura-svg{flex-shrink:0;overflow:visible;}
+.figura-svg svg{display:block;overflow:visible;}
+.campos-wrapper{display:flex;flex-direction:column;gap:1rem;}
+.campo-row{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;}
+.campo-label{font-size:.88rem;font-weight:700;color:var(--cts);min-width:120px;font-family:'Libre Baskerville',serif;}
+.number-input{border:2px solid var(--cb);border-radius:10px;padding:7px 12px;font-size:.95rem;width:120px;text-align:center;font-weight:700;background:white;font-family:'Lato',sans-serif;color:var(--ct);}
+.number-input:focus{outline:none;border-color:var(--ca);}
+.unidad{font-size:.85rem;color:var(--cts);font-weight:600;}
+.btn-primary{background:var(--ca);border:none;color:white;padding:9px 20px;border-radius:40px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Lato',sans-serif;font-size:.88rem;}
+.btn-primary:hover{background:var(--cah);transform:scale(.97);}
+.btn-large{background:var(--ca);color:white;border:none;padding:12px 36px;font-size:.95rem;font-weight:700;border-radius:50px;cursor:pointer;transition:all .2s;font-family:'Libre Baskerville',serif;}
+.btn-large:hover{background:var(--cah);transform:translateY(-2px);}
+.btn-outline{background:transparent;border:2px solid var(--cb);color:var(--cts);padding:10px 28px;font-size:.85rem;font-weight:700;border-radius:50px;cursor:pointer;transition:all .2s;font-family:'Lato',sans-serif;}
+.btn-outline:hover{border-color:var(--ca);color:var(--ca);}
+.btn-nuevo{background:var(--cnv);border:none;color:white;padding:6px 14px;border-radius:40px;font-size:.72rem;font-weight:700;cursor:pointer;}
+.btn-nuevo:hover{background:#3a5a82;}
+.btns-comprobar{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:.5rem;}
+.action-buttons{display:flex;gap:1rem;justify-content:center;margin-top:2rem;flex-wrap:wrap;}
+.feedback{margin-top:12px;font-size:.85rem;font-weight:600;}
+.feedback-correcto{color:var(--cok);background:rgba(46,107,62,.1);padding:7px 14px;border-radius:30px;display:inline-block;}
+.feedback-error{color:var(--cerr);background:rgba(139,26,26,.08);padding:8px 14px;border-radius:12px;display:block;margin-bottom:4px;}
+.feedback-hint{color:var(--ca);background:rgba(160,82,45,.1);padding:8px 14px;border-radius:12px;display:block;margin-top:6px;font-size:.82rem;border-left:3px solid var(--ca);line-height:1.7;}
+.nota-explicativa{font-size:.82rem;color:var(--cts);margin-bottom:.4rem;background:rgba(107,59,138,.08);border-left:3px solid #6B3B8A;padding:8px 12px;border-radius:8px;line-height:1.6;}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(44,31,14,.55);align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(4px);}
+.modal-overlay.show{display:flex;}
+.modal-confirm-card{background:#fffdf7;border-radius:12px;padding:28px;max-width:400px;width:90%;text-align:center;position:relative;border:3px solid var(--cb);}
+.modal-result-card{border-radius:16px;padding:28px;max-width:450px;width:90%;text-align:center;position:relative;border:3px solid var(--cb);}
+.modal-close{background:none;border:none;font-size:24px;cursor:pointer;opacity:.7;position:absolute;top:12px;right:15px;}
+.modal-buttons{display:flex;gap:12px;justify-content:center;margin-top:20px;}
+.btn-confirm{background:var(--cok);color:white;border:none;padding:10px 24px;border-radius:30px;font-weight:700;cursor:pointer;}
+.btn-cancel{background:var(--cerr);color:white;border:none;padding:10px 24px;border-radius:30px;font-weight:700;cursor:pointer;}
+.modal-grade{font-size:52px;font-weight:900;margin:12px 0 8px;font-family:'Libre Baskerville',serif;}
+.modal-stats{border-radius:10px;padding:12px;margin-bottom:14px;font-size:13px;text-align:left;background:rgba(255,255,255,.2);}
+.modal-stats p{padding:4px 0;}
+.modal-footer{font-size:10px;margin-top:12px;opacity:.8;font-style:italic;}
+.recordatorio{font-size:12px;margin-top:8px;font-weight:700;background:rgba(255,255,255,.3);border-radius:20px;padding:8px;}
+.n10{background:#1a7a1a;color:white;} .n9{background:#6dbf6d;color:white;} .n8{background:#1a4f8a;color:white;}
+.n7{background:#5b9bd5;color:white;} .n6{background:#c05c00;color:white;} .n5{background:#f5a623;color:black;}
+.nbaja{background:#c0392b;color:white;}
+@media(max-width:600px){.figura-layout{flex-direction:column;gap:1rem;}.header h1{font-size:1.5rem;}.figura-svg{flex-shrink:1;max-width:100%;}.figura-svg svg{max-width:100%;height:auto;}.campos-wrapper{max-width:100%;}.feedback-hint{overflow-x:auto;}}
+</style>
+<script>MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"]]},options:{skipHtmlTags:["script","noscript","style","textarea"]}}</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+</head>
+<body>
+<div class="autoria">Material elaborado por Marta L. Letona S. &middot; Basado en el trabajo de Javier Cayetano</div>
+<div class="ficha-wrapper">
+  <div class="header">
+    <h1>&#128207; Tri&aacute;ngulos Rect&aacute;ngulos: Teorema de Pit&aacute;goras</h1>
+    <p>Ejercicios interactivos &middot; 2&ordm; ESO &middot; Geometr&iacute;a</p>
+    <div class="header-badges">
+      <span class="header-badge">&#127919; Supera cada ejercicio para obtener el 10</span>
+      <span class="header-badge">&#128161; Cada fallo resta 0.2 puntos</span>
+      <span class="header-badge">&#128218; Pista con la f&oacute;rmula si te equivocas</span>
+      <span class="header-badge">&#128260; Pulsa "Nuevo" para cambiar los datos</span>
+    </div>
+  </div>
+  <div class="info-bar">
+    <div class="info-item"><span class="info-icon">&#128202;</span><span>Progreso: <span id="progresoCount" class="info-value">0</span>/6</span></div>
+    <div class="info-item"><span class="info-icon">&#10060;</span><span>Fallos: <span id="fallosCount" class="info-value">0</span></span></div>
+    <div class="info-item"><span class="info-icon">&#11088;</span><span>Nota: <span id="notaActual" class="info-value">0.0</span>/10</span></div>
+    <div class="info-item"><span class="info-icon">&#9203;</span><span>Tiempo: <span id="tiempoTranscurrido" class="info-value">00:00</span></span></div>
+  </div>
+  <div class="name-section">
+    <label class="name-label" for="nombreAlumno">Alumno/a</label>
+    <input type="text" id="nombreAlumno" class="name-input" placeholder="Escribe tu nombre y apellidos...">
+  </div>
+  <div id="ejerciciosContainer"></div>
+  <div class="action-buttons">
+    <button class="btn-large" id="btnFinalizar">Finalizar y Calificar</button>
+    <button class="btn-outline" id="btnResetear">Reiniciar toda la ficha</button>
+  </div>
+</div>
+
+<div id="modalConfirmacion" class="modal-overlay">
+  <div class="modal-confirm-card">
+    <button class="modal-close" onclick="cerrarModalConf()">&#10005;</button>
+    <h3 style="color:var(--cav);margin-bottom:12px;">&iquest;Finalizar ficha?</h3>
+    <p style="margin-bottom:16px;">Si finalizas, ya no podr&aacute;s seguir sumando puntos. &iquest;Est&aacute;s seguro/a?</p>
+    <div class="modal-buttons">
+      <button class="btn-confirm" onclick="confirmarFinalizar()">S&iacute;, finalizar</button>
+      <button class="btn-cancel" onclick="cerrarModalConf()">Seguir practicando</button>
+    </div>
+  </div>
+</div>
+<div id="modalResultados" class="modal-overlay">
+  <div id="modalResultCard" class="modal-result-card">
+    <button class="modal-close" onclick="cerrarModalRes()">&#10005;</button>
+    <div id="modalNombreMostrar" style="font-size:1.2rem;font-weight:700;margin-bottom:5px;font-family:'Libre Baskerville',serif;"></div>
+    <div style="font-size:.9rem;opacity:.9;margin-bottom:12px;">Tri&aacute;ngulos Rect&aacute;ngulos &middot; Pit&aacute;goras &middot; 2&ordm; ESO</div>
+    <div class="modal-grade" id="modalNota"></div>
+    <div class="modal-stats" id="modalStats"></div>
+    <div class="recordatorio">Haz una captura de pantalla y entr&eacute;gala en Google Classroom.</div>
+    <div class="modal-footer">Material elaborado por Marta L. Letona S. &middot; Basado en el trabajo de Javier Cayetano</div>
+  </div>
+</div>
+<div id="modalReset" class="modal-overlay">
+  <div class="modal-confirm-card">
+    <button class="modal-close" onclick="cerrarModalReset()">&#10005;</button>
+    <h3 style="color:var(--cav);margin-bottom:12px;">&iquest;Reiniciar la ficha?</h3>
+    <p style="margin-bottom:16px;">Se perder&aacute;n todos los progresos y fallos registrados. &iquest;Est&aacute;s seguro/a?</p>
+    <div class="modal-buttons">
+      <button class="btn-confirm" onclick="confirmarReset()">S&iacute;, reiniciar</button>
+      <button class="btn-cancel" onclick="cerrarModalReset()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div id="avisoAria" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden;"></div>
+
+<script>
+var TOTAL_EJ = 6;
+var PENALIZACION = 0.2;
+var fallosGlobales = 0, finalizado = false, tiempoInicio = null, intervaloReloj = null;
+var superados = {ej1:false,ej2:false,ej3:false,ej4:false,ej5:false,ej6:false};
+
+// Colores fijos: mismo lado = mismo color en toda la ficha
+var COL_BASE='#1a4f8a';   // azul: primer cateto / base mayor / lado horizontal
+var COL_ALT='#2E6B3E';    // verde: segundo cateto / base menor
+var COL_HIP='#A0522D';    // terracota: hipotenusa conocida / contorno de figura
+var COL_LADO='#6B3B8A';   // violeta: lados iguales (indican congruencia)
+var COL_INC='#c0392b';    // rojo discontinuo: siempre el dato que hay que calcular
+
+// ---- TIMER ----
+function fmtMMSS(s){var m=Math.floor(s/60),ss=s%60;return pad(m)+':'+pad(ss);}
+function fmtHHMM(s){var min=Math.max(1,Math.ceil(s/60));var h=Math.floor(min/60),m=min%60;return pad(h)+':'+pad(m);}
+function pad(n){return String(n).padStart(2,'0');}
+function iniciarTimer(){detenerTimer();tiempoInicio=new Date();intervaloReloj=setInterval(tickTimer,1000);tickTimer();}
+function detenerTimer(){if(intervaloReloj){clearInterval(intervaloReloj);intervaloReloj=null;}}
+function tickTimer(){if(!tiempoInicio)return;var s=Math.floor((new Date()-tiempoInicio)/1000);var el=document.getElementById('tiempoTranscurrido');if(el)el.textContent=fmtMMSS(s);}
+function tiempoFinal(){if(!tiempoInicio)return'00:01';return fmtHHMM(Math.floor((new Date()-tiempoInicio)/1000));}
+function fechaHora(){var d=new Date();return{fecha:pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear(),hora:pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds())};}
+
+// ---- NOTA ----
+function calcularNota(){var n=Object.values(superados).filter(Boolean).length;return Math.max(0,Math.min(10,n*(10/TOTAL_EJ)-fallosGlobales*PENALIZACION));}
+function actualizarUI(){var n=Object.values(superados).filter(Boolean).length;document.getElementById('progresoCount').textContent=n;document.getElementById('fallosCount').textContent=fallosGlobales;document.getElementById('notaActual').textContent=calcularNota().toFixed(1);}
+
+// ---- UTILS ----
+function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function rd(x,d){d=d===undefined?2:d;return Math.round(x*Math.pow(10,d))/Math.pow(10,d);}
+// tolerancia normal: para resultados decimales (se admite redondeo a centesimas)
+function ok(v,c){return Math.abs(v-c)<=Math.max(0.02*Math.abs(c),0.05);}
+// tolerancia estricta: para resultados que deben salir exactos (ternas pitagoricas)
+function okExacto(v,c){return Math.abs(v-c)<=0.01;}
+function parseEntrada(v){
+  if(typeof v!=='string')return NaN;
+  return parseFloat(v.trim().replace(',','.'));
+}
+function mostrarAviso(msg){
+  var m=document.createElement('div');
+  m.className='modal-overlay show';
+  m.setAttribute('role','alertdialog');
+  m.innerHTML='<div style="background:#fffdf7;border-radius:12px;padding:24px;max-width:380px;width:90%;text-align:center;border:2px solid #C9A96E;position:relative;"><h3 style="color:#D4A259;margin-bottom:10px;">Aviso</h3><p style="font-size:.9rem;margin-bottom:14px;">'+msg+'</p><button onclick="this.closest(\'.modal-overlay\').remove()" style="background:#A0522D;color:white;border:none;padding:10px 22px;border-radius:30px;cursor:pointer;font-weight:700;">Entendido</button></div>';
+  document.body.appendChild(m);
+}
+function tipeset(id){
+  var el=document.getElementById(id);
+  if(!el)return;
+  if(window.MathJax&&MathJax.typesetPromise){MathJax.typesetPromise([el]).catch(function(e){console.warn(e);});}
+}
+// vector normal "hacia fuera" respecto a un punto de referencia (evita etiquetas cruzando la figura)
+function normalHaciaFuera(x1,y1,x2,y2,refx,refy){
+  var dx=x2-x1,dy=y2-y1,len=Math.sqrt(dx*dx+dy*dy)||1;
+  var nx=-dy/len, ny=dx/len;
+  var mx=(x1+x2)/2, my=(y1+y2)/2;
+  var dot=nx*(mx-refx)+ny*(my-refy);
+  if(dot<0){nx=-nx;ny=-ny;}
+  return {nx:nx,ny:ny};
+}
+function tickAt(x1,y1,x2,y2,t,col){
+  var px=x1+(x2-x1)*t,py=y1+(y2-y1)*t;
+  var dx=x2-x1,dy=y2-y1,len=Math.sqrt(dx*dx+dy*dy)||1;
+  var nx=-dy/len*7,ny=dx/len*7;
+  return '<line x1="'+(px-nx)+'" y1="'+(py-ny)+'" x2="'+(px+nx)+'" y2="'+(py+ny)+'" stroke="'+col+'" stroke-width="2"/>';
+}
+function tickMid(x1,y1,x2,y2,col){
+  var mx=(x1+x2)/2,my=(y1+y2)/2,dx=x2-x1,dy=y2-y1,len=Math.sqrt(dx*dx+dy*dy)||1;
+  var nx=-dy/len*7,ny=dx/len*7;
+  return '<line x1="'+(mx-nx)+'" y1="'+(my-ny)+'" x2="'+(mx+nx)+'" y2="'+(my+ny)+'" stroke="'+col+'" stroke-width="2"/>';
+}
+
+// ====================================================
+// TERNAS PITAGORICAS (para Ej1 y Ej2): catetos y catetos->hipotenusa exactos
+// ====================================================
+var TRIPLES=[[3,4,5],[6,8,10],[9,12,15],[5,12,13],[8,15,17],[12,16,20],[7,24,25],[10,24,26]];
+
+// ====================================================
+// FIGURA COMUN: triangulo rectangulo con catetos b (horizontal) y a (vertical)
+// which indica cual de los tres lados es la incognita: 'hip' | 'catB' | 'catA'
+// ====================================================
+function svgTriRect(b,a,hip,which){
+  var esc=Math.min(15,170/b,140/a);
+  var bpx=Math.round(b*esc),apx=Math.round(a*esc);
+  var PL=90,PR=60,PT=40,PB=60;
+  var W=bpx+PL+PR,H=apx+PT+PB;
+  var x0=PL,yB=PT+apx,xB=PL+bpx,yA=PT;
+  var incB=(which==='catB'),incA=(which==='catA'),incH=(which==='hip');
+  var colB=incB?COL_INC:COL_BASE, colA=incA?COL_INC:COL_ALT, colH=incH?COL_INC:COL_HIP;
+  var dashB=incB?' stroke-dasharray="6,4"':'', dashA=incA?' stroke-dasharray="6,4"':'', dashH=incH?' stroke-dasharray="7,5"':'';
+  var lblB=incB?'b = ?':'b = '+b+' cm';
+  var lblA=incA?'a = ?':'a = '+a+' cm';
+  var lblH=incH?'c = ?':'c = '+hip+' cm';
+  var svg='<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" style="overflow:visible;display:block;">';
+  svg+='<polygon points="'+x0+','+yB+' '+xB+','+yB+' '+x0+','+yA+'" fill="#EFE6D0" stroke="#4A3418" stroke-width="2"/>';
+  svg+='<polyline points="'+x0+','+(yB-14)+' '+(x0+14)+','+(yB-14)+' '+(x0+14)+','+yB+'" fill="none" stroke="#4A3418" stroke-width="1.5"/>';
+  svg+='<line x1="'+x0+'" y1="'+yA+'" x2="'+xB+'" y2="'+yB+'" stroke="'+colH+'" stroke-width="3.5"'+dashH+'/>';
+  var dx=xB-x0,dy=yB-yA,len=Math.sqrt(dx*dx+dy*dy);
+  var offx=Math.round(dy/len*24),offy=Math.round(-dx/len*24);
+  var mHx=Math.round((x0+xB)/2+offx),mHy=Math.round((yA+yB)/2+offy);
+  svg+='<text x="'+mHx+'" y="'+mHy+'" text-anchor="middle" font-size="15" fill="'+colH+'" font-weight="700" font-family="Lato,sans-serif">'+lblH+'</text>';
+  svg+='<line x1="'+x0+'" y1="'+(yB+18)+'" x2="'+xB+'" y2="'+(yB+18)+'" stroke="'+colB+'" stroke-width="1.4"'+dashB+'/>';
+  svg+='<line x1="'+x0+'" y1="'+(yB+13)+'" x2="'+x0+'" y2="'+(yB+23)+'" stroke="'+colB+'" stroke-width="1.4"/>';
+  svg+='<line x1="'+xB+'" y1="'+(yB+13)+'" x2="'+xB+'" y2="'+(yB+23)+'" stroke="'+colB+'" stroke-width="1.4"/>';
+  svg+='<text x="'+Math.round((x0+xB)/2)+'" y="'+(yB+40)+'" text-anchor="middle" font-size="15" fill="'+colB+'" font-weight="700" font-family="Lato,sans-serif">'+lblB+'</text>';
+  svg+='<line x1="'+(x0-22)+'" y1="'+yA+'" x2="'+(x0-22)+'" y2="'+yB+'" stroke="'+colA+'" stroke-width="1.4"'+dashA+'/>';
+  svg+='<line x1="'+(x0-27)+'" y1="'+yA+'" x2="'+(x0-17)+'" y2="'+yA+'" stroke="'+colA+'" stroke-width="1.4"/>';
+  svg+='<line x1="'+(x0-27)+'" y1="'+yB+'" x2="'+(x0-17)+'" y2="'+yB+'" stroke="'+colA+'" stroke-width="1.4"/>';
+  svg+='<text x="'+(x0-30)+'" y="'+Math.round((yA+yB)/2+5)+'" text-anchor="end" font-size="15" fill="'+colA+'" font-weight="700" font-family="Lato,sans-serif">'+lblA+'</text>';
+  svg+='</svg>';
+  return svg;
+}
+
+// ====================================================
+// EJ1: dados los dos catetos, calcular la hipotenusa (terna pitagorica exacta)
+// ====================================================
+var d1={};
+function generarD1(){
+  var t=TRIPLES[rnd(0,TRIPLES.length-1)];
+  var legs=[t[0],t[1]]; if(Math.random()<0.5)legs=[t[1],t[0]];
+  d1={b:legs[0],a:legs[1],hip:t[2]};
+}
+function renderEj1HTML(){
+  return '<div class="ejercicio-card'+(superados.ej1?' superado':'')+'" id="card-ej1">'
+    +'<div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">1</span><span class="ejercicio-titulo">Calcula la hipotenusa</span></div><button class="btn-nuevo" onclick="nuevoEj(1)">&#128260; Nuevo</button></div>'
+    +'<div class="figura-layout"><div class="figura-svg">'+svgTriRect(d1.b,d1.a,d1.hip,'hip')+'</div>'
+    +'<div class="campos-wrapper">'
+    +'<p style="font-size:.82rem;color:var(--cts);">Este tri&aacute;ngulo rect&aacute;ngulo tiene los catetos que se indican en la figura.</p>'
+    +'<div class="campo-row"><label class="campo-label" for="ej1_c">Hipotenusa (c) =</label><input type="text" inputmode="decimal" id="ej1_c" class="number-input" placeholder="cm"><span class="unidad">cm</span></div>'
+    +'<div class="btns-comprobar"><button class="btn-primary" onclick="comprobarEj1()">Comprobar</button></div>'
+    +'<div id="fb-ej1" class="feedback" aria-live="polite"></div></div></div></div>';
+}
+function comprobarEj1(){
+  if(finalizado)return;
+  if(superados.ej1){document.getElementById('fb-ej1').innerHTML='<span class="feedback-correcto">&iexcl;Ya superado!</span>';return;}
+  var b=d1.b,a=d1.a,hip=d1.hip;
+  var vC=parseEntrada(document.getElementById('ej1_c').value);
+  if(isNaN(vC)){mostrarAviso('Completa el campo de la hipotenusa.');return;}
+  if(okExacto(vC,hip)){
+    superados.ej1=true;actualizarUI();
+    document.getElementById('fb-ej1').innerHTML='<span class="feedback-correcto">&iexcl;Correcto! El teorema de Pit&aacute;goras te da directamente la hipotenusa.</span>';
+    document.getElementById('card-ej1').classList.add('superado');
+  }else{
+    fallosGlobales++;actualizarUI();
+    var hh='En un tri&aacute;ngulo rect&aacute;ngulo, el cuadrado de la hipotenusa es igual a la suma de los cuadrados de los catetos: \\( c = \\sqrt{b^2+a^2} = \\sqrt{'+b+'^2+'+a+'^2} = \\sqrt{'+(b*b+a*a)+'} = \\mathbf{'+hip+'\\text{ cm}} \\).';
+    trasFallo(1,hh);
+  }
+}
+
+// ====================================================
+// EJ2: dados la hipotenusa y un cateto, calcular el otro cateto (terna exacta)
+// ====================================================
+var d2={};
+function generarD2(){
+  var t=TRIPLES[rnd(0,TRIPLES.length-1)];
+  var legs=[t[0],t[1]]; if(Math.random()<0.5)legs=[t[1],t[0]];
+  var falta=Math.random()<0.5?'catB':'catA';
+  d2={b:legs[0],a:legs[1],hip:t[2],falta:falta};
+}
+function renderEj2HTML(){
+  var idCampo = d2.falta==='catB' ? 'b' : 'a';
+  var labelCampo = d2.falta==='catB' ? 'Cateto b =' : 'Cateto a =';
+  return '<div class="ejercicio-card'+(superados.ej2?' superado':'')+'" id="card-ej2">'
+    +'<div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">2</span><span class="ejercicio-titulo">Calcula el cateto que falta</span></div><button class="btn-nuevo" onclick="nuevoEj(2)">&#128260; Nuevo</button></div>'
+    +'<div class="figura-layout"><div class="figura-svg">'+svgTriRect(d2.b,d2.a,d2.hip,d2.falta)+'</div>'
+    +'<div class="campos-wrapper">'
+    +'<p style="font-size:.82rem;color:var(--cts);">Conoces la hipotenusa y un cateto. Calcula el cateto marcado en rojo.</p>'
+    +'<div class="campo-row"><label class="campo-label" for="ej2_x">'+labelCampo+'</label><input type="text" inputmode="decimal" id="ej2_x" class="number-input" placeholder="cm"><span class="unidad">cm</span></div>'
+    +'<div class="btns-comprobar"><button class="btn-primary" onclick="comprobarEj2()">Comprobar</button></div>'
+    +'<div id="fb-ej2" class="feedback" aria-live="polite"></div></div></div></div>';
+}
+function comprobarEj2(){
+  if(finalizado)return;
+  if(superados.ej2){document.getElementById('fb-ej2').innerHTML='<span class="feedback-correcto">&iexcl;Ya superado!</span>';return;}
+  var b=d2.b,a=d2.a,hip=d2.hip;
+  var correcto = d2.falta==='catB' ? b : a;
+  var conocido = d2.falta==='catB' ? a : b;
+  var vX=parseEntrada(document.getElementById('ej2_x').value);
+  if(isNaN(vX)){mostrarAviso('Completa el campo del cateto.');return;}
+  if(okExacto(vX,correcto)){
+    superados.ej2=true;actualizarUI();
+    document.getElementById('fb-ej2').innerHTML='<span class="feedback-correcto">&iexcl;Correcto!</span>';
+    document.getElementById('card-ej2').classList.add('superado');
+  }else{
+    fallosGlobales++;actualizarUI();
+    var letraDesconocida = d2.falta==='catB' ? 'b' : 'a';
+    var hh='Cuando conoces la hipotenusa y un cateto, despejas el cateto que falta: \\( '+letraDesconocida+' = \\sqrt{c^2-'+(d2.falta==='catB'?'a':'b')+'^2} = \\sqrt{'+hip+'^2-'+conocido+'^2} = \\sqrt{'+(hip*hip-conocido*conocido)+'} = \\mathbf{'+correcto+'\\text{ cm}} \\).';
+    trasFallo(2,hh);
+  }
+}
+
+// ====================================================
+// EJ3: triangulo isosceles, dados la base y el lado igual, calcular la altura
+// ====================================================
+var d3={};
+function generarD3(){
+  var base=2*rnd(3,11); // par, 6-22
+  var minLado=Math.ceil(base/2)+2;
+  var lado=rnd(minLado,minLado+13);
+  d3={base:base,lado:lado};
+}
+function svgIsosceles(base,lado){
+  var hAprox=Math.sqrt(Math.max(0.01,lado*lado-(base/2)*(base/2)));
+  var esc=Math.min(15,160/base,130/hAprox);
+  var bpx=Math.round(base*esc),hpx=Math.round(hAprox*esc);
+  var PL=85,PR=85,PT=40,PB=62;
+  var W=bpx+PL+PR,H=hpx+PT+PB;
+  var xL=PL,xR=PL+bpx,yB=PT+hpx,apexX=Math.round(PL+bpx/2),apexY=PT;
+  var svg='<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" style="overflow:visible;display:block;">';
+  svg+='<polygon points="'+xL+','+yB+' '+xR+','+yB+' '+apexX+','+apexY+'" fill="#EFE6D0" stroke="#4A3418" stroke-width="2"/>';
+  svg+='<line x1="'+apexX+'" y1="'+apexY+'" x2="'+apexX+'" y2="'+yB+'" stroke="'+COL_INC+'" stroke-width="2.6" stroke-dasharray="6,4"/>';
+  svg+='<polyline points="'+(apexX-12)+','+yB+' '+(apexX-12)+','+(yB-12)+' '+apexX+','+(yB-12)+'" fill="none" stroke="'+COL_INC+'" stroke-width="1.5"/>';
+  svg+='<text x="'+(apexX+14)+'" y="'+Math.round((apexY+yB)/2+5)+'" text-anchor="start" font-size="15" fill="'+COL_INC+'" font-weight="700" font-family="Lato,sans-serif">h = ?</text>';
+  var tSide=0.62;
+  var mLx=apexX+(xL-apexX)*tSide, mLy=apexY+(yB-apexY)*tSide;
+  svg+=tickAt(apexX,apexY,xL,yB,tSide,COL_LADO);
+  svg+=tickAt(apexX,apexY,xR,yB,tSide,COL_LADO);
+  svg+='<text x="'+Math.round(mLx-16)+'" y="'+Math.round(mLy+2)+'" text-anchor="end" font-size="15" fill="'+COL_LADO+'" font-weight="700" font-family="Lato,sans-serif">l = '+lado+' cm</text>';
+  svg+='<line x1="'+xL+'" y1="'+(yB+18)+'" x2="'+xR+'" y2="'+(yB+18)+'" stroke="'+COL_BASE+'" stroke-width="1.4"/>';
+  svg+='<line x1="'+xL+'" y1="'+(yB+13)+'" x2="'+xL+'" y2="'+(yB+23)+'" stroke="'+COL_BASE+'" stroke-width="1.4"/>';
+  svg+='<line x1="'+xR+'" y1="'+(yB+13)+'" x2="'+xR+'" y2="'+(yB+23)+'" stroke="'+COL_BASE+'" stroke-width="1.4"/>';
+  svg+='<text x="'+Math.round((xL+xR)/2)+'" y="'+(yB+40)+'" text-anchor="middle" font-size="15" fill="'+COL_BASE+'" font-weight="700" font-family="Lato,sans-serif">b = '+base+' cm</text>';
+  svg+='</svg>';
+  return svg;
+}
+function renderEj3HTML(){
+  return '<div class="ejercicio-card'+(superados.ej3?' superado':'')+'" id="card-ej3">'
+    +'<div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">3</span><span class="ejercicio-titulo">Tri&aacute;ngulo Is&oacute;sceles: la altura</span></div><button class="btn-nuevo" onclick="nuevoEj(3)">&#128260; Nuevo</button></div>'
+    +'<div class="figura-layout"><div class="figura-svg">'+svgIsosceles(d3.base,d3.lado)+'</div>'
+    +'<div class="campos-wrapper">'
+    +'<p style="font-size:.82rem;color:var(--cts);">Los dos lados marcados en violeta miden lo mismo. Calcula la altura (redondea a las cent&eacute;simas si no es exacta).</p>'
+    +'<div class="campo-row"><label class="campo-label" for="ej3_h">Altura (h) =</label><input type="text" inputmode="decimal" id="ej3_h" class="number-input" placeholder="cm"><span class="unidad">cm</span></div>'
+    +'<div class="btns-comprobar"><button class="btn-primary" onclick="comprobarEj3()">Comprobar</button></div>'
+    +'<div id="fb-ej3" class="feedback" aria-live="polite"></div></div></div></div>';
+}
+function comprobarEj3(){
+  if(finalizado)return;
+  if(superados.ej3){document.getElementById('fb-ej3').innerHTML='<span class="feedback-correcto">&iexcl;Ya superado!</span>';return;}
+  var base=d3.base,lado=d3.lado;
+  var hC=rd(Math.sqrt(lado*lado-(base/2)*(base/2)));
+  var vH=parseEntrada(document.getElementById('ej3_h').value);
+  if(isNaN(vH)){mostrarAviso('Completa el campo de la altura.');return;}
+  if(ok(vH,hC)){
+    superados.ej3=true;actualizarUI();
+    document.getElementById('fb-ej3').innerHTML='<span class="feedback-correcto">&iexcl;Correcto!</span>';
+    document.getElementById('card-ej3').classList.add('superado');
+  }else{
+    fallosGlobales++;actualizarUI();
+    var hh='La altura de un tri&aacute;ngulo is&oacute;sceles cae justo en el punto medio de la base y forma un tri&aacute;ngulo rect&aacute;ngulo con el lado igual (hipotenusa) y la mitad de la base (cateto): \\( h = \\sqrt{l^2-\\left(\\dfrac{b}{2}\\right)^2} = \\sqrt{'+lado+'^2-'+(base/2)+'^2} = \\sqrt{'+rd(lado*lado-(base/2)*(base/2))+'} \\approx \\mathbf{'+hC+'\\text{ cm}} \\).';
+    trasFallo(3,hh);
+  }
+}
+
+// ====================================================
+// EJ4: rectangulo, dados los dos lados, calcular la diagonal
+// ====================================================
+var d4={};
+function generarD4(){d4={b:rnd(6,20),h:rnd(4,16)};}
+function svgRectDiag(b,h){
+  var esc=Math.min(15,170/b,130/h);
+  var bpx=Math.round(b*esc),hpx=Math.round(h*esc);
+  var PL=80,PR=50,PT=35,PB=58;
+  var W=bpx+PL+PR,H=hpx+PT+PB;
+  var x0=PL,y0=PT;
+  var svg='<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" style="overflow:visible;display:block;">';
+  svg+='<rect x="'+x0+'" y="'+y0+'" width="'+bpx+'" height="'+hpx+'" fill="#D9E6F2" stroke="'+COL_BASE+'" stroke-width="2"/>';
+  svg+='<line x1="'+x0+'" y1="'+(y0+hpx)+'" x2="'+(x0+bpx)+'" y2="'+y0+'" stroke="'+COL_INC+'" stroke-width="3" stroke-dasharray="7,5"/>';
+  var mx=x0+bpx/2,my=y0+hpx/2;
+  svg+='<text x="'+Math.round(mx)+'" y="'+Math.round(my-12)+'" text-anchor="middle" font-size="15" fill="'+COL_INC+'" font-weight="700" font-family="Lato,sans-serif">d = ?</text>';
+  svg+='<line x1="'+x0+'" y1="'+(y0+hpx+18)+'" x2="'+(x0+bpx)+'" y2="'+(y0+hpx+18)+'" stroke="'+COL_BASE+'" stroke-width="1.4"/>';
+  svg+='<line x1="'+x0+'" y1="'+(y0+hpx+13)+'" x2="'+x0+'" y2="'+(y0+hpx+23)+'" stroke="'+COL_BASE+'" stroke-width="1.4"/>';
+  svg+='<line x1="'+(x0+bpx)+'" y1="'+(y0+hpx+13)+'" x2="'+(x0+bpx)+'" y2="'+(y0+hpx+23)+'" stroke="'+COL_BASE+'" stroke-width="1.4"/>';
+  svg+='<text x="'+Math.round(x0+bpx/2)+'" y="'+(y0+hpx+38)+'" text-anchor="middle" font-size="15" fill="'+COL_BASE+'" font-weight="700" font-family="Lato,sans-serif">b = '+b+' cm</text>';
+  svg+='<line x1="'+(x0-20)+'" y1="'+y0+'" x2="'+(x0-20)+'" y2="'+(y0+hpx)+'" stroke="'+COL_ALT+'" stroke-width="1.4"/>';
+  svg+='<line x1="'+(x0-25)+'" y1="'+y0+'" x2="'+(x0-15)+'" y2="'+y0+'" stroke="'+COL_ALT+'" stroke-width="1.4"/>';
+  svg+='<line x1="'+(x0-25)+'" y1="'+(y0+hpx)+'" x2="'+(x0-15)+'" y2="'+(y0+hpx)+'" stroke="'+COL_ALT+'" stroke-width="1.4"/>';
+  svg+='<text x="'+(x0-29)+'" y="'+Math.round(y0+hpx/2+5)+'" text-anchor="end" font-size="15" fill="'+COL_ALT+'" font-weight="700" font-family="Lato,sans-serif">h = '+h+' cm</text>';
+  svg+='</svg>';
+  return svg;
+}
+function renderEj4HTML(){
+  return '<div class="ejercicio-card'+(superados.ej4?' superado':'')+'" id="card-ej4">'
+    +'<div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">4</span><span class="ejercicio-titulo">Rect&aacute;ngulo: la diagonal</span></div><button class="btn-nuevo" onclick="nuevoEj(4)">&#128260; Nuevo</button></div>'
+    +'<div class="figura-layout"><div class="figura-svg">'+svgRectDiag(d4.b,d4.h)+'</div>'
+    +'<div class="campos-wrapper">'
+    +'<p style="font-size:.82rem;color:var(--cts);">Calcula la diagonal (redondea a las cent&eacute;simas si no es exacta).</p>'
+    +'<div class="campo-row"><label class="campo-label" for="ej4_d">Diagonal (d) =</label><input type="text" inputmode="decimal" id="ej4_d" class="number-input" placeholder="cm"><span class="unidad">cm</span></div>'
+    +'<div class="btns-comprobar"><button class="btn-primary" onclick="comprobarEj4()">Comprobar</button></div>'
+    +'<div id="fb-ej4" class="feedback" aria-live="polite"></div></div></div></div>';
+}
+function comprobarEj4(){
+  if(finalizado)return;
+  if(superados.ej4){document.getElementById('fb-ej4').innerHTML='<span class="feedback-correcto">&iexcl;Ya superado!</span>';return;}
+  var b=d4.b,h=d4.h;
+  var dC=rd(Math.sqrt(b*b+h*h));
+  var vD=parseEntrada(document.getElementById('ej4_d').value);
+  if(isNaN(vD)){mostrarAviso('Completa el campo de la diagonal.');return;}
+  if(ok(vD,dC)){
+    superados.ej4=true;actualizarUI();
+    document.getElementById('fb-ej4').innerHTML='<span class="feedback-correcto">&iexcl;Correcto!</span>';
+    document.getElementById('card-ej4').classList.add('superado');
+  }else{
+    fallosGlobales++;actualizarUI();
+    var hh='La diagonal de un rect&aacute;ngulo es la hipotenusa del tri&aacute;ngulo rect&aacute;ngulo que forman sus dos lados: \\( d = \\sqrt{b^2+h^2} = \\sqrt{'+b+'^2+'+h+'^2} = \\sqrt{'+(b*b+h*h)+'} \\approx \\mathbf{'+dC+'\\text{ cm}} \\).';
+    trasFallo(4,hh);
+  }
+}
+
+// ====================================================
+// EJ5: hexagono regular, dado el lado, calcular la apotema
+// ====================================================
+var d5={};
+function generarD5(){d5={l:rnd(6,16)};}
+function svgHexApotema(l){
+  var r=l;
+  var esc=Math.min(11,90/r);
+  var rpx=Math.round(r*esc);
+  var PAD=78;
+  var W=rpx*2+PAD*2,H=rpx*2+PAD*2;
+  var cx=W/2,cy=H/2;
+  var vx=[],vy=[];
+  for(var i=0;i<6;i++){
+    var ang=-Math.PI/2+(2*Math.PI*i/6);
+    vx.push(rd(cx+rpx*Math.cos(ang),1));
+    vy.push(rd(cy+rpx*Math.sin(ang),1));
+  }
+  var pts=vx.map(function(x,i){return x+','+vy[i];}).join(' ');
+  var svg='<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" style="overflow:visible;display:block;">';
+  svg+='<polygon points="'+pts+'" fill="#E8DFF0" stroke="'+COL_LADO+'" stroke-width="2"/>';
+  svg+='<polygon points="'+cx+','+cy+' '+vx[2]+','+vy[2]+' '+vx[3]+','+vy[3]+'" fill="rgba(255,255,255,.6)" stroke="'+COL_LADO+'" stroke-width="2"/>';
+  svg+='<circle cx="'+cx+'" cy="'+cy+'" r="3.5" fill="'+COL_LADO+'"/>';
+  svg+=tickMid(cx,cy,vx[2],vy[2],COL_LADO);
+  svg+=tickMid(cx,cy,vx[3],vy[3],COL_LADO);
+  svg+=tickMid(vx[2],vy[2],vx[3],vy[3],COL_LADO);
+  var mSx=(vx[2]+vx[3])/2,mSy=(vy[2]+vy[3])/2;
+  var norm=normalHaciaFuera(vx[2],vy[2],vx[3],vy[3],cx,cy);
+  var lx=Math.round(mSx+norm.nx*24),ly=Math.round(mSy+norm.ny*24);
+  svg+='<text x="'+lx+'" y="'+ly+'" text-anchor="middle" font-size="14" fill="'+COL_LADO+'" font-weight="700" font-family="Lato,sans-serif">l = '+l+' cm</text>';
+  svg+='<line x1="'+cx+'" y1="'+cy+'" x2="'+rd(mSx,1)+'" y2="'+rd(mSy,1)+'" stroke="'+COL_INC+'" stroke-width="2.6" stroke-dasharray="5,4"/>';
+  var dxApo=mSx-cx,dyApo=mSy-cy;
+  var apx=cx+dxApo*0.55, apy=cy+dyApo*0.55;
+  svg+='<text x="'+Math.round(apx-26)+'" y="'+Math.round(apy+5)+'" text-anchor="end" font-size="14" fill="'+COL_INC+'" font-weight="700" font-family="Lato,sans-serif">a = ?</text>';
+  svg+='</svg>';
+  return svg;
+}
+function renderEj5HTML(){
+  return '<div class="ejercicio-card'+(superados.ej5?' superado':'')+'" id="card-ej5">'
+    +'<div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">5</span><span class="ejercicio-titulo">Hex&aacute;gono Regular: la apotema</span></div><button class="btn-nuevo" onclick="nuevoEj(5)">&#128260; Nuevo</button></div>'
+    +'<div class="figura-layout"><div class="figura-svg">'+svgHexApotema(d5.l)+'</div>'
+    +'<div class="campos-wrapper">'
+    +'<p class="nota-explicativa">Solo en el hex&aacute;gono regular ocurre esto: el &aacute;ngulo central mide 360&deg; / 6 = 60&deg;, as&iacute; que el tri&aacute;ngulo violeta (centro + los dos extremos de un lado) es equil&aacute;tero. Por eso los dos radios miden lo mismo que el lado.</p>'
+    +'<p style="font-size:.82rem;color:var(--cts);">Calcula la apotema (redondea a las cent&eacute;simas si no es exacta).</p>'
+    +'<div class="campo-row"><label class="campo-label" for="ej5_a">Apotema (a) =</label><input type="text" inputmode="decimal" id="ej5_a" class="number-input" placeholder="cm"><span class="unidad">cm</span></div>'
+    +'<div class="btns-comprobar"><button class="btn-primary" onclick="comprobarEj5()">Comprobar</button></div>'
+    +'<div id="fb-ej5" class="feedback" aria-live="polite"></div></div></div></div>';
+}
+function comprobarEj5(){
+  if(finalizado)return;
+  if(superados.ej5){document.getElementById('fb-ej5').innerHTML='<span class="feedback-correcto">&iexcl;Ya superado!</span>';return;}
+  var l=d5.l;
+  var aC=rd(l*Math.sqrt(3)/2);
+  var vA=parseEntrada(document.getElementById('ej5_a').value);
+  if(isNaN(vA)){mostrarAviso('Completa el campo de la apotema.');return;}
+  if(ok(vA,aC)){
+    superados.ej5=true;actualizarUI();
+    document.getElementById('fb-ej5').innerHTML='<span class="feedback-correcto">&iexcl;Correcto!</span>';
+    document.getElementById('card-ej5').classList.add('superado');
+  }else{
+    fallosGlobales++;actualizarUI();
+    var mitad=rd(l/2);
+    var hh='El tri&aacute;ngulo formado por el centro y un lado es equil&aacute;tero (lado = '+l+' cm). La apotema es su altura, que divide ese tri&aacute;ngulo en dos rect&aacute;ngulos: \\( a = \\sqrt{l^2-\\left(\\dfrac{l}{2}\\right)^2} = \\sqrt{'+l+'^2-'+mitad+'^2} \\approx \\mathbf{'+aC+'\\text{ cm}} \\). Tambi&eacute;n puedes usar directamente \\( a = \\dfrac{l\\sqrt{3}}{2} \\).';
+    trasFallo(5,hh);
+  }
+}
+
+// ====================================================
+// EJ6: trapecio isosceles, dados B, b y el lado igual, calcular la altura
+// ====================================================
+var d6={};
+function generarD6(){
+  var B=2*rnd(7,13); // par, 14-26
+  var diffMitades=rnd(2,6);
+  var b=B-2*diffMitades; // par, siempre >=2
+  var lado=rnd(diffMitades+2,diffMitades+14);
+  d6={B:B,b:b,lado:lado,offset:diffMitades};
+}
+function svgTrapecioIsos(B,b,lado,offset){
+  var hAprox=Math.sqrt(Math.max(0.01,lado*lado-offset*offset));
+  var esc=Math.min(13,170/B,120/hAprox);
+  var Bpx=Math.round(B*esc),hpx=Math.round(hAprox*esc),offpx=Math.round(offset*esc);
+  var PAD=80;
+  var W=Bpx+PAD*2,H=hpx+PAD*2;
+  var x0=PAD,yT=PAD,yB=PAD+hpx,xBR=x0+Bpx,xTL=x0+offpx,xTR=x0+Bpx-offpx;
+  var svg='<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" style="overflow:visible;display:block;">';
+  svg+='<polygon points="'+x0+','+yB+' '+xBR+','+yB+' '+xTR+','+yT+' '+xTL+','+yT+'" fill="#F0E4C2" stroke="'+COL_HIP+'" stroke-width="2"/>';
+  svg+='<line x1="'+xTL+'" y1="'+yT+'" x2="'+xTL+'" y2="'+yB+'" stroke="'+COL_INC+'" stroke-width="2.6" stroke-dasharray="6,4"/>';
+  svg+='<polyline points="'+(xTL+12)+','+yB+' '+(xTL+12)+','+(yB-12)+' '+xTL+','+(yB-12)+'" fill="none" stroke="'+COL_INC+'" stroke-width="1.5"/>';
+  svg+='<text x="'+(xTL+16)+'" y="'+Math.round((yT+yB)/2+5)+'" text-anchor="start" font-size="14" fill="'+COL_INC+'" font-weight="700" font-family="Lato,sans-serif">h = ?</text>';
+  svg+=tickMid(x0,yB,xTL,yT,COL_LADO);
+  svg+=tickMid(xBR,yB,xTR,yT,COL_LADO);
+  var mRx=(xBR+xTR)/2,mRy=(yB+yT)/2;
+  svg+='<text x="'+(mRx+18)+'" y="'+Math.round(mRy+2)+'" text-anchor="start" font-size="14" fill="'+COL_LADO+'" font-weight="700" font-family="Lato,sans-serif">l = '+lado+' cm</text>';
+  svg+='<line x1="'+x0+'" y1="'+(yB+18)+'" x2="'+xBR+'" y2="'+(yB+18)+'" stroke="'+COL_BASE+'" stroke-width="1.4"/>';
+  svg+='<line x1="'+x0+'" y1="'+(yB+13)+'" x2="'+x0+'" y2="'+(yB+23)+'" stroke="'+COL_BASE+'" stroke-width="1.4"/>';
+  svg+='<line x1="'+xBR+'" y1="'+(yB+13)+'" x2="'+xBR+'" y2="'+(yB+23)+'" stroke="'+COL_BASE+'" stroke-width="1.4"/>';
+  svg+='<text x="'+Math.round((x0+xBR)/2)+'" y="'+(yB+40)+'" text-anchor="middle" font-size="14" fill="'+COL_BASE+'" font-weight="700" font-family="Lato,sans-serif">B = '+B+' cm</text>';
+  svg+='<text x="'+Math.round((xTL+xTR)/2)+'" y="'+(yT-14)+'" text-anchor="middle" font-size="14" fill="'+COL_ALT+'" font-weight="700" font-family="Lato,sans-serif">b = '+b+' cm</text>';
+  svg+='</svg>';
+  return svg;
+}
+function renderEj6HTML(){
+  return '<div class="ejercicio-card'+(superados.ej6?' superado':'')+'" id="card-ej6">'
+    +'<div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">6</span><span class="ejercicio-titulo">Trapecio Is&oacute;sceles: la altura</span></div><button class="btn-nuevo" onclick="nuevoEj(6)">&#128260; Nuevo</button></div>'
+    +'<div class="figura-layout"><div class="figura-svg">'+svgTrapecioIsos(d6.B,d6.b,d6.lado,d6.offset)+'</div>'
+    +'<div class="campos-wrapper">'
+    +'<p style="font-size:.82rem;color:var(--cts);">Los dos lados violetas miden lo mismo. Calcula la altura (redondea a las cent&eacute;simas si no es exacta).</p>'
+    +'<div class="campo-row"><label class="campo-label" for="ej6_h">Altura (h) =</label><input type="text" inputmode="decimal" id="ej6_h" class="number-input" placeholder="cm"><span class="unidad">cm</span></div>'
+    +'<div class="btns-comprobar"><button class="btn-primary" onclick="comprobarEj6()">Comprobar</button></div>'
+    +'<div id="fb-ej6" class="feedback" aria-live="polite"></div></div></div></div>';
+}
+function comprobarEj6(){
+  if(finalizado)return;
+  if(superados.ej6){document.getElementById('fb-ej6').innerHTML='<span class="feedback-correcto">&iexcl;Ya superado!</span>';return;}
+  var lado=d6.lado,offset=d6.offset;
+  var hC=rd(Math.sqrt(lado*lado-offset*offset));
+  var vH=parseEntrada(document.getElementById('ej6_h').value);
+  if(isNaN(vH)){mostrarAviso('Completa el campo de la altura.');return;}
+  if(ok(vH,hC)){
+    superados.ej6=true;actualizarUI();
+    document.getElementById('fb-ej6').innerHTML='<span class="feedback-correcto">&iexcl;Correcto!</span>';
+    document.getElementById('card-ej6').classList.add('superado');
+  }else{
+    fallosGlobales++;actualizarUI();
+    var hh='Al trazar la altura de un trapecio is&oacute;sceles se forma un tri&aacute;ngulo rect&aacute;ngulo cuya hipotenusa es el lado oblicuo y cuyo cateto horizontal es la semidiferencia de las bases, \\( \\dfrac{B-b}{2} = \\dfrac{'+d6.B+'-'+d6.b+'}{2} = '+offset+'\\text{ cm} \\): \\( h = \\sqrt{l^2-\\left(\\dfrac{B-b}{2}\\right)^2} = \\sqrt{'+lado+'^2-'+offset+'^2} \\approx \\mathbf{'+hC+'\\text{ cm}} \\).';
+    trasFallo(6,hh);
+  }
+}
+
+// ====================================================
+// NUEVO EJERCICIO
+// ====================================================
+// Solución de cada ejercicio con sus datos actuales
+function solucion(n){
+  if(n===1)return d1.hip;
+  if(n===2)return d2.falta==='catB'?d2.b:d2.a;
+  if(n===3)return rd(Math.sqrt(d3.lado*d3.lado-(d3.base/2)*(d3.base/2)));
+  if(n===4)return rd(Math.sqrt(d4.b*d4.b+d4.h*d4.h));
+  if(n===5)return rd(d5.l*Math.sqrt(3)/2);
+  return rd(Math.sqrt(d6.lado*d6.lado-d6.offset*d6.offset));
+}
+
+// Tras un fallo que enseña la solución, otra figura con otras medidas:
+// copiar la solución mostrada ya no supera el ejercicio.
+function trasFallo(n,pista){
+  var gens=[null,generarD1,generarD2,generarD3,generarD4,generarD5,generarD6];
+  var renders=[null,renderEj1HTML,renderEj2HTML,renderEj3HTML,renderEj4HTML,renderEj5HTML,renderEj6HTML];
+  var antes=solucion(n);
+  for(var i=0;i<50;i++){
+    gens[n]();
+    if(!ok(antes,solucion(n)))break;
+  }
+  var card=document.getElementById('card-ej'+n);
+  if(card){var tmp=document.createElement('div');tmp.innerHTML=renders[n]();card.replaceWith(tmp.firstElementChild);}
+  var el=document.getElementById('fb-ej'+n);
+  if(el){
+    el.innerHTML='<span class="feedback-error">Revisa tu c&aacute;lculo.</span><span class="feedback-hint">Soluci&oacute;n del ejercicio anterior: '+pista.charAt(0).toLowerCase()+pista.slice(1)+'<br>&#128073; Ahora int&eacute;ntalo con este nuevo.</span>';
+    tipeset('fb-ej'+n);
+  }
+}
+
+function nuevoEj(n){
+  if(finalizado){mostrarAviso('La ficha ya ha sido finalizada.');return;}
+  var gens=[null,generarD1,generarD2,generarD3,generarD4,generarD5,generarD6];
+  var renders=[null,renderEj1HTML,renderEj2HTML,renderEj3HTML,renderEj4HTML,renderEj5HTML,renderEj6HTML];
+  gens[n]();
+  var card=document.getElementById('card-ej'+n);
+  if(card){var tmp=document.createElement('div');tmp.innerHTML=renders[n]();card.replaceWith(tmp.firstElementChild);}
+}
+
+// ====================================================
+// MODALS
+// ====================================================
+function cerrarModalConf(){document.getElementById('modalConfirmacion').classList.remove('show');}
+function cerrarModalRes(){document.getElementById('modalResultados').classList.remove('show');}
+function cerrarModalReset(){document.getElementById('modalReset').classList.remove('show');}
+function confirmarReset(){cerrarModalReset();inicializarFicha();}
+function claseNota(nota){
+  if(nota>=10)return'n10';if(nota>=9)return'n9';if(nota>=8)return'n8';
+  if(nota>=7)return'n7';if(nota>=6)return'n6';if(nota>=5)return'n5';
+  return'nbaja';
+}
+function confirmarFinalizar(){
+  cerrarModalConf();
+  var nombre=document.getElementById('nombreAlumno').value.trim();
+  if(!nombre){mostrarAviso('Debes introducir tu nombre antes de finalizar.');return;}
+  finalizado=true;detenerTimer();
+  var nota=calcularNota();
+  var sup=Object.values(superados).filter(Boolean).length;
+  var dh=fechaHora();
+  var tf=tiempoFinal();
+  var bgs=['#c0392b','#c0392b','#c0392b','#c0392b','#c0392b','#f5a623','#c05c00','#5b9bd5','#1a4f8a','#6dbf6d','#1a7a1a'];
+  document.body.style.background=bgs[Math.min(10,Math.floor(nota))];
+  var card=document.getElementById('modalResultCard');
+  card.className='modal-result-card '+claseNota(nota);
+  document.getElementById('modalNombreMostrar').textContent=nombre;
+  document.getElementById('modalNota').textContent=nota.toFixed(1)+' / 10';
+  var msg=nota>=10?'&iexcl;PERFECTO! Dominas Pit&aacute;goras en todas sus aplicaciones.':nota>=9?'&iexcl;EXCELENTE! Casi perfecto.':nota>=7?'&iexcl;MUY BIEN! Sigue as&iacute;.':nota>=6?'&iexcl;APROBADO! Buen trabajo.':nota>=5?'Aprobado justo. Repasa lo que fallaste.':'Sigue practicando con el bot&oacute;n Nuevo.';
+  var nombresEj={ej1:'1. Hipotenusa',ej2:'2. Cateto',ej3:'3. Altura tri&aacute;ngulo is&oacute;sceles',ej4:'4. Diagonal rect&aacute;ngulo',ej5:'5. Apotema hex&aacute;gono',ej6:'6. Altura trapecio'};
+  var desglose='<p style="margin-top:6px;font-weight:700;">Desglose por ejercicio:</p>';
+  Object.keys(nombresEj).forEach(function(k){
+    desglose+='<p>'+nombresEj[k]+': <strong>'+(superados[k]?'Superado':'No superado')+'</strong></p>';
+  });
+  document.getElementById('modalStats').innerHTML=
+    '<p>Ejercicios superados: <strong>'+sup+' de '+TOTAL_EJ+'</strong></p>'
+    +'<p>Fallos totales: <strong>'+fallosGlobales+'</strong></p>'
+    +'<p>Fecha: <strong>'+dh.fecha+'</strong></p>'
+    +'<p>Hora: <strong>'+dh.hora+'</strong></p>'
+    +'<p>Tiempo: <strong>'+tf+'</strong></p>'
+    +desglose
+    +'<p style="margin-top:8px;">'+msg+'</p>';
+  document.getElementById('modalResultados').classList.add('show');
+}
+
+// ====================================================
+// INICIALIZAR
+// ====================================================
+function inicializarFicha(){
+  detenerTimer();fallosGlobales=0;finalizado=false;
+  Object.keys(superados).forEach(function(k){superados[k]=false;});
+  document.body.style.background='';
+  actualizarUI();
+  generarD1();generarD2();generarD3();generarD4();generarD5();generarD6();
+  document.getElementById('ejerciciosContainer').innerHTML=
+    renderEj1HTML()+renderEj2HTML()+renderEj3HTML()+renderEj4HTML()+renderEj5HTML()+renderEj6HTML();
+  iniciarTimer();
+}
+
+document.getElementById('ejerciciosContainer').addEventListener('keydown',function(e){
+  if(e.key==='Enter'&&e.target.classList&&e.target.classList.contains('number-input')){
+    e.preventDefault();
+    var m=e.target.id.match(/^ej([1-6])_/);
+    if(m){
+      var fn=window['comprobarEj'+m[1]];
+      if(typeof fn==='function')fn();
+    }
+  }
+});
+document.getElementById('btnFinalizar').addEventListener('click',function(){document.getElementById('modalConfirmacion').classList.add('show');});
+document.getElementById('btnResetear').addEventListener('click',function(){
+  if(fallosGlobales>0||Object.values(superados).some(Boolean)){
+    document.getElementById('modalReset').classList.add('show');
+  } else {
+    inicializarFicha();
+  }
+});
+window.onload=function(){inicializarFicha();};
+</script>
+</body>
+</html>

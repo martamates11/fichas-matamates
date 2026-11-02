@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Probabilidad · 1º ESO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --color-fondo: #F5F0E8;
+    --color-fondo-card: #FDFAF3;
+    --color-texto: #2C1F0E;
+    --color-texto-suave: #6B4F35;
+    --color-acento: #A0522D;
+    --color-acento-hover: #7B3B1E;
+    --color-borde: #C9A96E;
+    --color-borde-suave: #E0CEAA;
+    --color-cabecera: #3B2510;
+    --color-cabecera-txt: #F5EDD8;
+    --color-correcto: #2E6B3E;
+    --color-incorrecto: #8B1A1A;
+    --color-neutro: #E8DFC8;
+    --color-rojo: #C95A4A;
+    --color-verde: #5A8F5A;
+    --color-azul: #6B8E9A;
+  }
+  * { box-sizing: border-box; }
+  .sr-only {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  body {
+    background: var(--color-fondo);
+    font-family: 'DM Sans', 'Inter', sans-serif;
+    color: var(--color-texto);
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+  }
+  .autoria {
+    background: var(--color-cabecera);
+    text-align: center;
+    padding: 6px;
+    font-size: 10px;
+    color: rgba(245, 240, 232, 0.7);
+  }
+  .ficha-wrapper {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+  .header {
+    background: var(--color-cabecera);
+    border-radius: 1.5rem;
+    padding: 1.8rem 2rem;
+    margin-bottom: 1.8rem;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  }
+  .header h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--color-cabecera-txt);
+    letter-spacing: -0.02em;
+    margin: 0 0 0.5rem 0;
+  }
+  .header p {
+    color: #C9B896;
+    font-size: 0.9rem;
+    margin: 0;
+  }
+  .header-badges {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+  }
+  .header-badge {
+    background: rgba(255,255,255,0.08);
+    padding: 0.25rem 0.75rem;
+    border-radius: 40px;
+    font-size: 0.7rem;
+    color: #E0CEAA;
+  }
+  .nombre-alumno-area {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    margin-top: 1.1rem;
+  }
+  .nombre-alumno-area label {
+    color: #E0CEAA;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  .nombre-alumno-area input {
+    width: 240px;
+    max-width: 100%;
+  }
+  .info-bar {
+    background: var(--color-fondo-card);
+    border-radius: 1.2rem;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    border: 1px solid var(--color-borde);
+  }
+  .info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--color-texto-suave);
+  }
+  .info-icon {
+    width: 30px;
+    height: 30px;
+    background: var(--color-fondo);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+  }
+  .info-value {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--color-texto);
+  }
+  .ejercicio-card {
+    background: var(--color-fondo-card);
+    border-radius: 1.2rem;
+    padding: 1.5rem;
+    margin-bottom: 1.2rem;
+    border: 1px solid var(--color-borde);
+    transition: all 0.2s;
+  }
+  .ejercicio-card-superado {
+    border-left: 5px solid var(--color-correcto);
+    background: #FAF8F0;
+  }
+  .ejercicio-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+  .ejercicio-num {
+    background: var(--color-acento);
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+  .ejercicio-titulo { font-weight: 600; font-size: 1rem; }
+  .badge-superado {
+    background: var(--color-correcto);
+    color: white;
+    padding: 0.2rem 0.7rem;
+    border-radius: 40px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    margin-left: 0.5rem;
+  }
+  .enunciado {
+    background: var(--color-fondo);
+    padding: 0.8rem 1.2rem;
+    border-radius: 1rem;
+    font-size: 1rem;
+    margin-bottom: 1.2rem;
+    border: 1px solid var(--color-borde-suave);
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .match-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+    margin: 1rem 0;
+  }
+  .match-col { flex: 1; min-width: 200px; }
+  .match-col h4 { margin: 0 0 0.5rem 0; }
+  .match-item {
+    background: var(--color-neutro);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: 0.1s;
+    border: 2px solid transparent;
+    text-align: center;
+    font-weight: 500;
+  }
+  .match-item-selected {
+    background: var(--color-acento);
+    color: white;
+    border-color: var(--color-acento-hover);
+  }
+  .match-item-pareado {
+    opacity: 0.6;
+    text-decoration: line-through;
+    background: var(--color-borde-suave);
+    cursor: default;
+    pointer-events: none;
+  }
+  .input-area {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin: 1rem 0;
+  }
+  .text-input {
+    border: 2px solid var(--color-borde);
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-size: 0.9rem;
+    width: 200px;
+    font-family: 'JetBrains Mono', monospace;
+    background: white;
+  }
+  .number-input {
+    border: 2px solid var(--color-borde);
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-size: 0.9rem;
+    width: 120px;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    background: white;
+  }
+  .select-input {
+    border: 2px solid var(--color-borde);
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-size: 0.9rem;
+    width: auto;
+    min-width: 180px;
+    cursor: pointer;
+    background: white;
+  }
+  .btn-primary {
+    background: var(--color-acento);
+    border: none;
+    color: white;
+    padding: 8px 22px;
+    border-radius: 40px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .btn-primary:hover { background: var(--color-acento-hover); }
+  .btn-secondary {
+    background: #C9A96E;
+    border: none;
+    color: var(--color-texto);
+    padding: 8px 22px;
+    border-radius: 40px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .feedback { margin-top: 10px; font-size: 0.85rem; font-weight: 500; }
+  .feedback-correcto {
+    color: var(--color-correcto);
+    background: rgba(46,107,62,0.1);
+    padding: 6px 14px;
+    border-radius: 30px;
+    display: inline-block;
+  }
+  .feedback-error {
+    color: var(--color-incorrecto);
+    background: rgba(139,26,26,0.08);
+    padding: 6px 14px;
+    border-radius: 30px;
+    display: inline-block;
+  }
+  .feedback-explicacion {
+    color: var(--color-texto-suave);
+    background: var(--color-neutro);
+    padding: 12px 16px;
+    border-radius: 12px;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    border-left: 3px solid var(--color-acento);
+  }
+  hr.divisor { margin: 0.5rem 0; border: none; border-top: 1px solid var(--color-borde-suave); }
+  .action-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+  }
+  .btn-large {
+    background: var(--color-acento);
+    color: white;
+    border: none;
+    padding: 12px 36px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 50px;
+    cursor: pointer;
+  }
+  .btn-outline {
+    background: transparent;
+    border: 2px solid var(--color-borde);
+    color: var(--color-texto-suave);
+    padding: 10px 28px;
+    border-radius: 50px;
+    cursor: pointer;
+  }
+  .tabla-scroll { position: relative; overflow-x: auto; margin: 1rem 0; -webkit-overflow-scrolling: touch; }
+  table.tabla { width: 100%; min-width: 480px; border-collapse: collapse; margin: 0; }
+  table.tabla th {
+    border: 1px solid var(--color-borde);
+    padding: 10px;
+    text-align: center;
+    background: var(--color-neutro);
+  }
+  table.tabla td {
+    border: 1px solid var(--color-borde);
+    padding: 10px;
+    text-align: center;
+  }
+  .urna-ilustracion { display: flex; justify-content: center; margin: 1.5rem 0; }
+  .urna-canvas {
+    background: #E8DFC8;
+    border-radius: 20px;
+    padding: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border: 2px solid var(--color-borde);
+    text-align: center;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  canvas.dibujo { display: block; margin: 0 auto; border-radius: 10px; max-width: 100%; height: auto; }
+  .urna-leyenda { text-align: center; margin-top: 10px; font-size: 0.8rem; color: var(--color-texto-suave); }
+  .urna-span { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin: 0 5px; }
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+  }
+  .modal-card {
+    background: var(--color-fondo-card);
+    border-radius: 12px;
+    padding: 32px;
+    max-width: 460px;
+    width: 90%;
+    text-align: center;
+    border: 2px solid var(--color-borde);
+    transition: background-color 0.3s, color 0.3s;
+  }
+  .modal-close {
+    float: right;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--color-texto-suave);
+  }
+  .modal-grade { font-size: 52px; font-weight: 900; margin: 12px 0; }
+  .modal-stats {
+    border: 1.5px solid var(--color-borde);
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 14px;
+    font-family: monospace;
+    font-size: 12px;
+    text-align: left;
+    background: rgba(0,0,0,0.02);
+  }
+</style>
+</head>
+<body>
+  <div class="autoria">Material elaborado por Marta López de Letona Sánchez · Probabilidad 1º ESO</div>
+  <div class="ficha-wrapper">
+    <div class="header">
+      <h1>🎲 Probabilidad</h1>
+      <p>Conceptos, regla de Laplace y problemas · 1º ESO</p>
+      <div class="header-badges">
+        <span class="header-badge">✅ 1 acierto → ejercicio superado</span>
+        <span class="header-badge">💡 Cada fallo resta 0.5 puntos</span>
+      </div>
+      <div class="nombre-alumno-area">
+        <label for="inputNombreAlumno">👤 Nombre del alumno/a:</label>
+        <input type="text" id="inputNombreAlumno" class="text-input" placeholder="Escribe tu nombre" oninput="setNombreAlumno(this.value)">
+      </div>
+    </div>
+
+    <div class="info-bar" id="info-bar"></div>
+
+    <div id="ejerciciosContainer">
+      <div id="ej1-container"></div>
+      <hr class="divisor">
+      <div id="ej2-container"></div>
+      <hr class="divisor">
+      <div id="ej3-container"></div>
+      <hr class="divisor">
+      <div id="ej4-container"></div>
+    </div>
+
+    <div class="action-buttons">
+      <button class="btn-large" onclick="finalizar()">📋 Finalizar y calificar</button>
+      <button class="btn-outline" onclick="resetearTodo()">🔄 Nueva ficha</button>
+    </div>
+  </div>
+
+  <div id="modal-container"></div>
+
+<script>
+// ============================================================
+// CLASES DE EJERCICIOS
+// ============================================================
+
+// Respuesta vacía: avisa y no cuenta como fallo
+const AVISO_VACIO = "⚠️ Escribe tu respuesta antes de comprobar. No cuenta como fallo.";
+function esVacio(respuestas) {
+  const valores = Object.values(respuestas ?? {}).flatMap(v => (v && typeof v === 'object' ? Object.values(v) : [v]));
+  return valores.every(v => v === undefined || v === null || String(v).trim() === '' || (typeof v === 'number' && isNaN(v)));
+}
+
+// Número escrito como decimal (con coma o punto) o como fracción a/b; NaN si no es ninguno
+function leerNumero(texto) {
+  const t = String(texto ?? '').trim().replace(/\s*\/\s*/, '/').replace(',', '.');
+  const num = s => (/^\d+(\.\d+)?$/.test(s) ? parseFloat(s) : NaN);
+  if (t.includes('/')) {
+    const p = t.split('/');
+    return p.length === 2 ? num(p[0]) / num(p[1]) : NaN;
+  }
+  return num(t);
+}
+
+class Ejercicio1 {
+  constructor() {
+    this.superado = false;
+    this.generarParejas();
+  }
+
+  generarParejas() {
+    this.conceptos = [
+      "Espacio muestral", "Suceso", "Suceso elemental",
+      "Suceso contrario", "Suceso seguro", "Suceso imposible"
+    ];
+    this.definiciones = [
+      "Conjunto de todos los resultados posibles de un experimento aleatorio.",
+      "Subconjunto del espacio muestral.",
+      "Suceso que consta de un único resultado.",
+      "Suceso que ocurre cuando NO ocurre el suceso A.",
+      "Suceso que ocurre siempre, con probabilidad 1.",
+      "Suceso que nunca ocurre, con probabilidad 0."
+    ];
+
+    let indicesConc = [...Array(6).keys()];
+    for (let i = indicesConc.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [indicesConc[i], indicesConc[j]] = [indicesConc[j], indicesConc[i]];
+    }
+    this.conceptosMezclados = indicesConc.map(i => this.conceptos[i]);
+
+    let indicesDef = [...Array(6).keys()];
+    for (let i = indicesDef.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [indicesDef[i], indicesDef[j]] = [indicesDef[j], indicesDef[i]];
+    }
+    this.defsMezcladas = indicesDef.map(i => this.definiciones[i]);
+
+    this.respuestas = new Array(6).fill(null);
+    this.pareados = new Array(6).fill(false);
+    this.seleccionConcepto = null;
+  }
+
+  seleccionarConcepto(i) {
+    if (!this.superado && !this.pareados[i]) this.seleccionConcepto = i;
+  }
+
+  seleccionarDefinicion(j) {
+    if (this.superado || this.seleccionConcepto === null) return false;
+    if (this.respuestas[this.seleccionConcepto] !== null) return false;
+    if (this.respuestas.includes(j)) return false;
+
+    let conceptoCorrecto = this.conceptosMezclados[this.seleccionConcepto];
+    let indiceOriginalConcepto = this.conceptos.indexOf(conceptoCorrecto);
+    let definicionCorrecta = this.definiciones[indiceOriginalConcepto];
+    let defSeleccionada = this.defsMezcladas[j];
+
+    if (definicionCorrecta === defSeleccionada) {
+      this.respuestas[this.seleccionConcepto] = j;
+      this.pareados[this.seleccionConcepto] = true;
+      this.seleccionConcepto = null;
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  verificar() {
+    if (this.superado) return { correcto: false, superado: true };
+    if (this.pareados.every(v => !v)) return { vacio: true, correcto: false, superado: false, msg: "⚠️ Empareja al menos un concepto antes de comprobar. No cuenta como fallo." };
+    let todosPareados = this.pareados.every(v => v === true);
+    if (todosPareados) {
+      this.superado = true;
+      return { correcto: true, superado: true, msg: "🎉 ¡Correcto! Has emparejado todos los conceptos." };
+    } else {
+      return { correcto: false, superado: false, msg: `❌ Faltan ${this.pareados.filter(v => !v).length} emparejamientos. Sigue intentándolo.` };
+    }
+  }
+}
+
+class Ejercicio2 {
+  constructor() {
+    this.superado = false;
+    this.generarFrases();
+  }
+
+  generarFrases() {
+    this.frases = [
+      { texto: "La probabilidad de un suceso siempre es menor o igual que 1", respuestaCorrecta: "V", explicacion: "La probabilidad siempre está entre 0 y 1, ambos inclusive." },
+      { texto: "Si P(A) > P(B) entonces es más fácil que ocurra B", respuestaCorrecta: "F", explicacion: "Si P(A) > P(B), significa que A tiene más probabilidad, por lo que es más fácil que ocurra A, no B." },
+      { texto: "Cuanto más difícil es que ocurra un suceso, su probabilidad se acerca a 1", respuestaCorrecta: "F", explicacion: "Cuanto más difícil es un suceso, su probabilidad se acerca a 0, no a 1." },
+      { texto: "Una probabilidad cercana a 0 significa que el suceso es casi seguro que ocurra", respuestaCorrecta: "F", explicacion: "Probabilidad cercana a 0 significa que es muy poco probable que ocurra, no que sea seguro." },
+      { texto: "Dos sucesos equiprobables tienen igual probabilidad", respuestaCorrecta: "V", explicacion: "Equiprobable significa precisamente que tienen la misma probabilidad." },
+      { texto: "La regla de Laplace es casos favorables / casos posibles", respuestaCorrecta: "V", explicacion: "La regla de Laplace para calcular probabilidades es: P = (casos favorables) / (casos posibles)." }
+    ];
+    for (let i = this.frases.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [this.frases[i], this.frases[j]] = [this.frases[j], this.frases[i]];
+    }
+  }
+
+  verificar(respuestasUsuario) {
+    if (this.superado) return { correcto: false, superado: true };
+    if (esVacio(respuestasUsuario)) return { vacio: true, correcto: false, superado: false, msg: "⚠️ Elige V o F antes de comprobar. No cuenta como fallo." };
+    let incorrectas = [];
+    for (let i = 0; i < this.frases.length; i++) {
+      if (respuestasUsuario[i] !== this.frases[i].respuestaCorrecta) {
+        incorrectas.push(i);
+      }
+    }
+    if (incorrectas.length === 0) {
+      this.superado = true;
+      return { correcto: true, superado: true, msg: "🎉 ¡Excelente! Todas las afirmaciones correctas." };
+    } else {
+      let explicacion = `<div class="feedback-explicacion"><strong>📚 Explicación de los errores:</strong><br>`;
+      for (let idx of incorrectas) {
+        explicacion += `• ${this.frases[idx].texto}<br>`;
+        explicacion += `  <span style="color: var(--color-incorrecto);">❌ Tu respuesta: ${respuestasUsuario[idx] || "(vacía)"}</span><br>`;
+        explicacion += `  <span style="color: var(--color-correcto);">✓ Correcto: ${this.frases[idx].respuestaCorrecta}</span><br>`;
+        explicacion += `  💡 ${this.frases[idx].explicacion}<br><br>`;
+      }
+      explicacion += `</div>`;
+      return { correcto: false, superado: false, msg: `❌ Tienes ${incorrectas.length} fallo(s). Revisa las explicaciones.`, explicacion: explicacion };
+    }
+  }
+}
+
+class Ejercicio3 {
+  constructor() {
+    this.superado = false;
+    this.generarTabla();
+  }
+
+  // Cada fila sale al azar de un repertorio de sucesos con datos variables, así
+  // que las soluciones cambian de una tabla a otra.
+  generarTabla() {
+    const azar = (min, max) => min + Math.floor(Math.random() * (max - min + 1));
+    const elegir = (lista) => lista[Math.floor(Math.random() * lista.length)];
+    const sucesosDado = () => {
+      const k = azar(1, 6), m = azar(2, 5), n = azar(2, 5);
+      return [
+        { suceso: `Sacar un ${k} al tirar un dado de 6 caras`, casosPosibles: 6, favorables: 1, explicacion: `Un dado tiene 6 caras numeradas del 1 al 6. Solo una de ellas tiene el ${k}.` },
+        { suceso: `Sacar número ${elegir(["par", "impar"])} al tirar un dado`, casosPosibles: 6, favorables: 3, explicacion: "En un dado, los pares son 2, 4, 6 (3 números) y los impares son 1, 3, 5 (3 números)." },
+        { suceso: `Sacar un número menor que ${m} al tirar un dado`, casosPosibles: 6, favorables: m - 1, explicacion: `Los números menores que ${m} en un dado son: ${Array.from({ length: m - 1 }, (_, i) => i + 1).join(', ')}. Son ${m - 1}.` },
+        { suceso: `Sacar un número mayor que ${n} al tirar un dado`, casosPosibles: 6, favorables: 6 - n, explicacion: `Los números mayores que ${n} en un dado son: ${Array.from({ length: 6 - n }, (_, i) => n + 1 + i).join(', ')}. Son ${6 - n}.` },
+        { suceso: "Sacar un múltiplo de 3 al tirar un dado", casosPosibles: 6, favorables: 2, explicacion: "En un dado, los múltiplos de 3 son el 3 y el 6." },
+        { suceso: "Sacar un número primo al tirar un dado", casosPosibles: 6, favorables: 3, explicacion: "En un dado, los números primos son 2, 3 y 5 (el 1 no es primo)." },
+        { suceso: "Sacar un divisor de 6 al tirar un dado", casosPosibles: 6, favorables: 4, explicacion: "Los divisores de 6 que hay en un dado son 1, 2, 3 y 6." },
+      ];
+    };
+    const sucesosBaraja = () => [
+      { suceso: `Sacar ${elegir(["oros", "copas", "espadas", "bastos"])} al coger una carta de la baraja española (40 cartas)`, casosPosibles: 40, favorables: 10, explicacion: "La baraja española tiene 4 palos (oros, copas, espadas y bastos) con 10 cartas cada uno." },
+      { suceso: "Sacar un as al coger una carta de la baraja española (40 cartas)", casosPosibles: 40, favorables: 4, explicacion: "Hay un as en cada uno de los 4 palos." },
+      { suceso: "Sacar una figura (sota, caballo o rey) al coger una carta de la baraja española (40 cartas)", casosPosibles: 40, favorables: 12, explicacion: "Cada palo tiene 3 figuras (sota, caballo y rey), y hay 4 palos: 3 · 4 = 12." },
+      { suceso: `Sacar el ${elegir(["rey", "caballo", "as", "siete"])} de ${elegir(["oros", "copas", "espadas", "bastos"])} al coger una carta de la baraja española (40 cartas)`, casosPosibles: 40, favorables: 1, explicacion: "Esa carta concreta solo está una vez en la baraja." },
+    ];
+    const sucesoBolsa = () => {
+      const colores = [["roja", "rojas"], ["azul", "azules"], ["verde", "verdes"], ["amarilla", "amarillas"]];
+      const i = azar(0, 3);
+      let j = azar(0, 2); if (j >= i) j++;
+      const x = azar(2, 9), y = azar(2, 9);
+      return { suceso: `Sacar una bola ${colores[i][0]} de una bolsa con ${x} bolas ${colores[i][1]} y ${y} bolas ${colores[j][1]}`, casosPosibles: x + y, favorables: x, explicacion: `En la bolsa hay ${x} + ${y} = ${x + y} bolas, y ${x} son ${colores[i][1]}.` };
+    };
+    const sucesoBombo = () => {
+      const total = elegir([10, 12, 20, 30]);
+      const opciones = [
+        { suceso: `Sacar un número par de un bombo con bolas numeradas del 1 al ${total}`, favorables: total / 2, explicacion: `Del 1 al ${total} hay ${total / 2} números pares.` },
+        { suceso: `Sacar un múltiplo de 5 de un bombo con bolas numeradas del 1 al ${total}`, favorables: Math.floor(total / 5), explicacion: `Los múltiplos de 5 del 1 al ${total} son ${Array.from({ length: Math.floor(total / 5) }, (_, i) => 5 * (i + 1)).join(', ')}.` },
+        { suceso: `Sacar un número de una cifra de un bombo con bolas numeradas del 1 al ${total}`, favorables: 9, explicacion: `Del 1 al ${total}, los números de una cifra son del 1 al 9: son 9.` },
+      ];
+      return { ...elegir(opciones), casosPosibles: total };
+    };
+    const moneda = { suceso: `Salir ${elegir(["cara", "cruz"])} al tirar una moneda`, casosPosibles: 2, favorables: 1, explicacion: "La moneda tiene 2 caras (cara y cruz). Solo una de ellas es la que buscas." };
+    const dados = sucesosDado();
+    const d1 = azar(0, dados.length - 1);
+    let d2 = azar(0, dados.length - 2); if (d2 >= d1) d2++;
+    this.filas = [
+      Math.random() < 0.3 ? moneda : sucesoBombo(),
+      dados[d1],
+      elegir(sucesosBaraja()),
+      sucesoBolsa(),
+      dados[d2],
+    ].map(f => ({ ...f, prob: f.favorables / f.casosPosibles }));
+  }
+
+  verificar(respuestas) {
+    if (this.superado) return { correcto: false, superado: true };
+    if (esVacio(respuestas)) return { vacio: true, correcto: false, superado: false, msg: AVISO_VACIO };
+    let errores = [];
+    for (let i = 0; i < this.filas.length; i++) {
+      const row = respuestas[i] ?? {};
+      let pos = row.pos;
+      let fav = row.fav;
+      let probVal = leerNumero(row.prob);
+      let erroresFila = [];
+      if (isNaN(pos) || pos !== this.filas[i].casosPosibles) erroresFila.push(`casos posibles (debe ser ${this.filas[i].casosPosibles})`);
+      if (isNaN(fav) || fav !== this.filas[i].favorables) erroresFila.push(`casos favorables (debe ser ${this.filas[i].favorables})`);
+      if (isNaN(probVal) || Math.abs(probVal - this.filas[i].prob) > 0.01) erroresFila.push(`probabilidad (debe ser ≈${this.filas[i].prob.toFixed(2)}, o en fracción: ${this.filas[i].favorables}/${this.filas[i].casosPosibles})`);
+      if (erroresFila.length > 0) {
+        errores.push({ fila: i, suceso: this.filas[i].suceso, errores: erroresFila, explicacion: this.filas[i].explicacion });
+      }
+    }
+    if (errores.length === 0) {
+      this.superado = true;
+      return { correcto: true, superado: true, msg: "🎉 ¡Tabla completada correctamente!" };
+    } else {
+      let explicacion = `<div class="feedback-explicacion"><strong>📚 Corrección y explicación:</strong><br>`;
+      for (let err of errores) {
+        explicacion += `<br><strong>❌ ${err.suceso}</strong><br>`;
+        explicacion += `   Error en: ${err.errores.join(', ')}<br>`;
+        explicacion += `   💡 ${err.explicacion}<br>`;
+      }
+      explicacion += `<br>👉 Ahora inténtalo con esta tabla nueva.</div>`;
+      // Tras un fallo que enseña las soluciones, otra tabla con otros sucesos
+      const firma = () => JSON.stringify(this.filas.map(f => f.suceso));
+      const soluciones = () => JSON.stringify(this.filas.map(f => [f.casosPosibles, f.favorables]));
+      const f0 = firma(), s0 = soluciones();
+      for (let n = 0; n < 50; n++) {
+        this.generarTabla();
+        if (firma() !== f0 && soluciones() !== s0) break;
+      }
+      return { correcto: false, superado: false, msg: `❌ Tienes ${errores.length} fila(s) incorrecta(s).`, explicacion: explicacion, nuevoEnunciado: true };
+    }
+  }
+}
+
+class Ejercicio4 {
+  constructor() {
+    this.superado = false;
+    this.generarUrna();
+  }
+
+  generarUrna() {
+    let total = 12 + Math.floor(Math.random() * 13);
+    // Partimos 'total' en 3 grupos >= 1 mediante dos cortes aleatorios distintos,
+    // y barajamos qué grupo corresponde a cada color para que ninguno tenga
+    // sesgado un mínimo distinto de los demás (antes 'azules' nunca bajaba de 2).
+    let corte1 = 1 + Math.floor(Math.random() * (total - 1));
+    let corte2 = 1 + Math.floor(Math.random() * (total - 1));
+    while (corte2 === corte1) corte2 = 1 + Math.floor(Math.random() * (total - 1));
+    const cMin = Math.min(corte1, corte2), cMax = Math.max(corte1, corte2);
+    let grupos = [cMin, cMax - cMin, total - cMax];
+    for (let i = grupos.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [grupos[i], grupos[j]] = [grupos[j], grupos[i]];
+    }
+    const [rojas, verdes, azules] = grupos;
+    this.urna = { rojas, verdes, azules, total };
+    this.preguntas = [
+      { texto: "Probabilidad de sacar una bola roja", respuesta: rojas / total, formula: `P(roja) = rojas/total = ${rojas}/${total}` },
+      { texto: "Probabilidad de sacar una bola verde", respuesta: verdes / total, formula: `P(verde) = verdes/total = ${verdes}/${total}` },
+      { texto: "Probabilidad de sacar una bola azul", respuesta: azules / total, formula: `P(azul) = azules/total = ${azules}/${total}` },
+      { texto: "Probabilidad de NO sacar una bola roja", respuesta: (verdes + azules) / total, formula: `P(no roja) = (verdes+azules)/total = ${verdes + azules}/${total}` }
+    ];
+  }
+
+  verificar(respuestas) {
+    if (this.superado) return { correcto: false, superado: true };
+    if (esVacio(respuestas)) return { vacio: true, correcto: false, superado: false, msg: AVISO_VACIO };
+    let errores = [];
+    for (let i = 0; i < this.preguntas.length; i++) {
+      let val = respuestas[i] ?? '';
+      let num = leerNumero(val);
+      if (isNaN(num) || Math.abs(num - this.preguntas[i].respuesta) > 0.01) {
+        errores.push({ index: i, pregunta: this.preguntas[i], respuestaUsuario: val });
+      }
+    }
+    if (errores.length === 0) {
+      this.superado = true;
+      return { correcto: true, superado: true, msg: "🎉 ¡Perfecto! Has calculado bien todas las probabilidades." };
+    } else {
+      let explicacion = `<div class="feedback-explicacion"><strong>📚 Aprendamos de los errores:</strong><br><br>`;
+      for (let err of errores) {
+        explicacion += `<strong>❌ ${err.pregunta.texto}</strong><br>`;
+        explicacion += `   Tu respuesta: "${err.respuestaUsuario || '(vacío)'}"<br>`;
+        explicacion += `   Respuesta correcta: ≈${err.pregunta.respuesta.toFixed(2)} (${err.pregunta.formula})<br>`;
+        explicacion += `   💡 Recuerda: Probabilidad = casos favorables / casos posibles.<br>`;
+        explicacion += `   En este caso: ${err.pregunta.formula}<br><br>`;
+      }
+      explicacion += `👉 Ahora inténtalo con esta urna nueva.</div>`;
+      // Tras un fallo que enseña las soluciones, otra urna con otras soluciones:
+      // copiar las mostradas ya no supera el ejercicio.
+      const anteriores = this.preguntas.map(p => p.respuesta);
+      for (let n = 0; n < 50; n++) {
+        this.generarUrna();
+        if (this.preguntas.every((p, i) => Math.abs(p.respuesta - anteriores[i]) > 0.001)) break;
+      }
+      return { correcto: false, superado: false, msg: `❌ Tienes ${errores.length} error(es). Revisa las explicaciones.`, explicacion: explicacion, nuevoEnunciado: true };
+    }
+  }
+}
+
+// ============================================================
+// ESTADO GLOBAL
+// ============================================================
+let ejercicios = [];
+let fallosGlobales = 0;
+let nombreAlumno = '';
+let feedbackMessages = {};
+let respuestasEj2 = {};
+let respuestasEj3 = {};
+let respuestasEj4 = {};
+let selectedConcepto = null;
+let ej1Selected = null;
+let ej1RespuestaError = false;
+let horaInicio = null;
+
+function setNombreAlumno(valor) {
+  nombreAlumno = valor;
+}
+
+function formatearTiempoTranscurrido() {
+  if (!horaInicio) return '00:00';
+  const ms = Date.now() - horaInicio;
+  // Redondeamos SIEMPRE hacia arriba al minuto siguiente (salvo 0 minutos exactos)
+  const minutosTotales = Math.ceil(ms / 60000);
+  const horas = Math.floor(minutosTotales / 60);
+  const minutos = minutosTotales % 60;
+  return `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}`;
+}
+
+function iniciar() {
+  ejercicios = [new Ejercicio1(), new Ejercicio2(), new Ejercicio3(), new Ejercicio4()];
+  fallosGlobales = 0;
+  nombreAlumno = '';
+  feedbackMessages = {};
+  respuestasEj2 = {};
+  respuestasEj3 = {};
+  respuestasEj4 = {};
+  selectedConcepto = null;
+  ej1Selected = null;
+  ej1RespuestaError = false;
+  horaInicio = Date.now();
+  const inputNombre = document.getElementById('inputNombreAlumno');
+  if (inputNombre) inputNombre.value = '';
+  renderAll();
+}
+
+function actualizarInfoBar() {
+  if (!ejercicios.length) return { superados: 0, notaFinal: 0, notaBase: 0 };
+  const superados = ejercicios.filter(e => e.superado).length;
+  let notaBase = superados - (fallosGlobales * 0.2);
+  if (notaBase < 0) notaBase = 0;
+  let notaFinal = (notaBase / 4) * 10;
+  if (notaFinal > 10) notaFinal = 10;
+  return { superados, notaFinal, notaBase };
+}
+
+function registrarError() {
+  fallosGlobales += 1;
+}
+
+// ---------- Ejercicio 1: emparejar ----------
+function handleEj1ConceptoClick(idx) {
+  if (ejercicios[0] && !ejercicios[0].superado && !ejercicios[0].pareados[idx]) {
+    ejercicios[0].seleccionarConcepto(idx);
+    selectedConcepto = idx;
+    ej1Selected = idx;
+    renderContainer(0);
+  }
+}
+
+function handleEj1DefinicionClick(idx) {
+  if (!ejercicios[0] || ejercicios[0].superado || selectedConcepto === null) return;
+  const ej1 = ejercicios[0];
+  const ok = ej1.seleccionarDefinicion(idx);
+  if (!ok) {
+    ej1RespuestaError = true;
+    renderContainer(0);
+    setTimeout(() => { ej1RespuestaError = false; renderContainer(0); }, 1500);
+  } else {
+    selectedConcepto = null;
+    ej1Selected = null;
+    renderContainer(0);
+  }
+}
+
+// ---------- Ejercicio 2 ----------
+function setEj2Respuesta(i, valor) {
+  respuestasEj2[i] = valor;
+}
+
+// ---------- Ejercicio 3 ----------
+function setEj3Pos(i, valor) {
+  respuestasEj3[i] = { ...(respuestasEj3[i] || {}), pos: parseFloat(valor) };
+}
+function setEj3Fav(i, valor) {
+  respuestasEj3[i] = { ...(respuestasEj3[i] || {}), fav: parseFloat(valor) };
+}
+function setEj3Prob(i, valor) {
+  respuestasEj3[i] = { ...(respuestasEj3[i] || {}), prob: valor };
+}
+
+// ---------- Ejercicio 4 ----------
+function setEj4Resp(i, valor) {
+  respuestasEj4[i] = valor;
+}
+
+// ---------- Verificar / Nuevo ----------
+// Lee lo que hay escrito ahora mismo en los campos (si se pulsa Enter, el evento
+// «change» del último campo aún no se ha disparado)
+function sincronizarCampos(idx) {
+  if (idx === 2) {
+    ejercicios[2].filas.forEach((_, i) => {
+      const p = document.getElementById('ej3_pos_' + i), f = document.getElementById('ej3_fav_' + i), q = document.getElementById('ej3_prob_' + i);
+      if (p && f && q) respuestasEj3[i] = { pos: parseFloat(p.value), fav: parseFloat(f.value), prob: q.value };
+    });
+  } else if (idx === 3) {
+    ejercicios[3].preguntas.forEach((_, i) => {
+      const e = document.getElementById('ej4_resp_' + i);
+      if (e) respuestasEj4[i] = e.value;
+    });
+  }
+}
+
+function verificarEjercicio(idx) {
+  sincronizarCampos(idx);
+  let result;
+  if (idx === 0) {
+    result = ejercicios[0].verificar();
+  } else if (idx === 1) {
+    result = ejercicios[1].verificar(respuestasEj2);
+  } else if (idx === 2) {
+    result = ejercicios[2].verificar(respuestasEj3);
+  } else {
+    result = ejercicios[3].verificar(respuestasEj4);
+  }
+  if (!result.correcto && !result.superado && !result.vacio) registrarError();
+  // Tras un fallo se plantea otra tabla o urna: los campos se vacían
+  if (result.nuevoEnunciado) {
+    if (idx === 2) respuestasEj3 = {};
+    if (idx === 3) respuestasEj4 = {};
+  }
+  feedbackMessages[`fb_e${idx + 1}`] = result;
+  renderContainer(idx);
+  renderInfoBar();
+}
+
+function nuevoEjercicio(idx) {
+  let newEj;
+  if (idx === 0) newEj = new Ejercicio1();
+  else if (idx === 1) newEj = new Ejercicio2();
+  else if (idx === 2) newEj = new Ejercicio3();
+  else newEj = new Ejercicio4();
+  ejercicios[idx] = newEj;
+  feedbackMessages[`fb_e${idx + 1}`] = null;
+  if (idx === 1) respuestasEj2 = {};
+  if (idx === 2) respuestasEj3 = {};
+  if (idx === 3) respuestasEj4 = {};
+  if (idx === 0) {
+    selectedConcepto = null;
+    ej1Selected = null;
+  }
+  renderContainer(idx);
+  renderInfoBar();
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+function escapeAttr(v) {
+  return (v === null || v === undefined) ? '' : String(v).replace(/"/g, '&quot;');
+}
+
+function renderFeedbackHTML(idx) {
+  const fb = feedbackMessages[`fb_e${idx + 1}`];
+  if (!fb) return '';
+  let html = '';
+  if (fb.correcto) {
+    html += `<span class="feedback-correcto">${fb.msg}</span>`;
+  } else if (fb.msg) {
+    html += `<span class="feedback-error">${fb.msg}</span>`;
+  }
+  if (fb.explicacion) html += fb.explicacion;
+  return html;
+}
+
+function renderEjercicio1() {
+  const ej1 = ejercicios[0];
+  if (!ej1) return '';
+  if (ej1.superado) {
+    return `
+      <div class="ejercicio-card ejercicio-card-superado">
+        <div class="ejercicio-header">
+          <span class="ejercicio-num">1</span>
+          <span class="ejercicio-titulo">Relaciona conceptos</span>
+          <span class="badge-superado">✓ Superado</span>
+        </div>
+        <p style="margin: 1rem 0; color: green;">🎉 Has emparejado correctamente todos los conceptos.</p>
+      </div>`;
+  }
+  const conceptosHTML = ej1.conceptosMezclados.map((concepto, i) => {
+    let cls = 'match-item';
+    if (ej1Selected === i) cls += ' match-item-selected';
+    if (ej1.pareados[i]) cls += ' match-item-pareado';
+    return `<div class="${cls}" onclick="handleEj1ConceptoClick(${i})">${concepto}</div>`;
+  }).join('');
+  const defsHTML = ej1.defsMezcladas.map((def, j) => {
+    let yaUsado = ej1.respuestas.includes(j);
+    let cls = 'match-item' + (yaUsado ? ' match-item-pareado' : '');
+    return `<div class="${cls}" onclick="handleEj1DefinicionClick(${j})">${def}</div>`;
+  }).join('');
+  return `
+    <div class="ejercicio-card">
+      <div class="ejercicio-header">
+        <span class="ejercicio-num">1</span>
+        <span class="ejercicio-titulo">Relaciona cada concepto con su definición</span>
+        <span style="margin-left: 10px; font-size: 0.7rem; color: var(--color-texto-suave);">💡 Haz clic en concepto y luego en definición</span>
+      </div>
+      <div class="match-container">
+        <div class="match-col">
+          <h4>📌 Concepto</h4>
+          ${conceptosHTML}
+        </div>
+        <div class="match-col">
+          <h4>📖 Definición</h4>
+          ${defsHTML}
+        </div>
+      </div>
+      ${ej1RespuestaError ? `<div class="feedback"><span class="feedback-error">❌ Emparejamiento incorrecto</span></div>` : ''}
+      <div class="input-area">
+        <button class="btn-primary" onclick="verificarEjercicio(0)">Comprobar emparejamientos</button>
+        <button class="btn-secondary" onclick="nuevoEjercicio(0)">🔄 Nueva orden</button>
+      </div>
+      <div class="feedback" id="fb_e1" aria-live="polite">${renderFeedbackHTML(0)}</div>
+    </div>`;
+}
+
+function renderEjercicio2() {
+  const ej2 = ejercicios[1];
+  if (!ej2) return '';
+  if (ej2.superado) {
+    return `
+      <div class="ejercicio-card ejercicio-card-superado">
+        <div class="ejercicio-header">
+          <span class="ejercicio-num">2</span>
+          <span class="ejercicio-titulo">Verdadero o Falso</span>
+          <span class="badge-superado">✓ Superado</span>
+        </div>
+        <p style="margin: 1rem 0; color: green;">✅ Has respondido correctamente todas las afirmaciones.</p>
+      </div>`;
+  }
+  const frasesHTML = ej2.frases.map((frase, i) => {
+    const val = respuestasEj2[i] || '';
+    return `
+      <div>
+        <label class="enunciado" for="ej2_select_${i}">${i + 1}. ${frase.texto}</label>
+        <select class="select-input" id="ej2_select_${i}" onchange="setEj2Respuesta(${i}, this.value)">
+          <option value="" ${val === '' ? 'selected' : ''}>Selecciona</option>
+          <option value="V" ${val === 'V' ? 'selected' : ''}>Verdadero (V)</option>
+          <option value="F" ${val === 'F' ? 'selected' : ''}>Falso (F)</option>
+        </select>
+      </div>`;
+  }).join('');
+  return `
+    <div class="ejercicio-card">
+      <div class="ejercicio-header">
+        <span class="ejercicio-num">2</span>
+        <span class="ejercicio-titulo">Indica si son verdaderas (V) o falsas (F)</span>
+      </div>
+      ${frasesHTML}
+      <div class="input-area">
+        <button class="btn-primary" onclick="verificarEjercicio(1)">Comprobar respuestas</button>
+        <button class="btn-secondary" onclick="nuevoEjercicio(1)">🔄 Nuevo orden</button>
+      </div>
+      <div class="feedback" id="fb_e2" aria-live="polite">${renderFeedbackHTML(1)}</div>
+    </div>`;
+}
+
+function renderEjercicio3() {
+  const ej3 = ejercicios[2];
+  if (!ej3) return '';
+  if (ej3.superado) {
+    return `
+      <div class="ejercicio-card ejercicio-card-superado">
+        <div class="ejercicio-header">
+          <span class="ejercicio-num">3</span>
+          <span class="ejercicio-titulo">Tabla de probabilidad</span>
+          <span class="badge-superado">✓ Superado</span>
+        </div>
+        <p style="margin: 1rem 0; color: green;">✅ ¡Tabla completada correctamente!</p>
+      </div>`;
+  }
+  const filasHTML = ej3.filas.map((fila, i) => {
+    const row = respuestasEj3[i] || {};
+    return `
+      <tr>
+        <td>${fila.suceso}</td>
+        <td>
+          <label class="sr-only" for="ej3_pos_${i}">Nº casos posibles: ${fila.suceso}</label>
+          <input type="number" id="ej3_pos_${i}" class="number-input" value="${escapeAttr(row.pos ?? '')}" onchange="setEj3Pos(${i}, this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();verificarEjercicio(2);}">
+        </td>
+        <td>
+          <label class="sr-only" for="ej3_fav_${i}">Nº casos favorables: ${fila.suceso}</label>
+          <input type="number" id="ej3_fav_${i}" class="number-input" value="${escapeAttr(row.fav ?? '')}" onchange="setEj3Fav(${i}, this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();verificarEjercicio(2);}">
+        </td>
+        <td>
+          <label class="sr-only" for="ej3_prob_${i}">Probabilidad: ${fila.suceso}</label>
+          <input type="text" id="ej3_prob_${i}" class="text-input" placeholder="ej: 0.5 o 1/2" value="${escapeAttr(row.prob ?? '')}" onchange="setEj3Prob(${i}, this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();verificarEjercicio(2);}">
+        </td>
+      </tr>`;
+  }).join('');
+  return `
+    <div class="ejercicio-card">
+      <div class="ejercicio-header">
+        <span class="ejercicio-num">3</span>
+        <span class="ejercicio-titulo">Rellena la tabla (casos posibles, favorables y probabilidad)</span>
+      </div>
+      <div class="tabla-scroll">
+        <table class="tabla">
+          <thead>
+            <tr>
+              <th>Suceso</th>
+              <th>Nº casos posibles</th>
+              <th>Nº casos favorables</th>
+              <th>Probabilidad (fracción o decimal)</th>
+            </tr>
+          </thead>
+          <tbody>${filasHTML}</tbody>
+        </table>
+      </div>
+      <div class="input-area">
+        <button class="btn-primary" onclick="verificarEjercicio(2)">Comprobar tabla</button>
+        <button class="btn-secondary" onclick="nuevoEjercicio(2)">🔄 Nueva tabla</button>
+      </div>
+      <div class="feedback" id="fb_e3" aria-live="polite">${renderFeedbackHTML(2)}</div>
+    </div>`;
+}
+
+function renderEjercicio4() {
+  const ej4 = ejercicios[3];
+  if (!ej4) return '';
+  if (ej4.superado) {
+    return `
+      <div class="ejercicio-card ejercicio-card-superado">
+        <div class="ejercicio-header">
+          <span class="ejercicio-num">4</span>
+          <span class="ejercicio-titulo">Urna de bolas</span>
+          <span class="badge-superado">✓ Superado</span>
+        </div>
+        <p style="margin: 1rem 0; color: green;">✅ ¡Problema de urna resuelto correctamente!</p>
+      </div>`;
+  }
+  const preguntasHTML = ej4.preguntas.map((pregunta, i) => {
+    const val = respuestasEj4[i] || '';
+    return `
+      <div style="margin: 12px 0;">
+        <label for="ej4_resp_${i}"><strong>${i + 1}. ${pregunta.texto}</strong></label><br>
+        <input type="text" id="ej4_resp_${i}" class="text-input" placeholder="Ej: 0.25 o 1/4" value="${escapeAttr(val)}" onchange="setEj4Resp(${i}, this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();verificarEjercicio(3);}">
+      </div>`;
+  }).join('');
+  return `
+    <div class="ejercicio-card">
+      <div class="ejercicio-header">
+        <span class="ejercicio-num">4</span>
+        <span class="ejercicio-titulo">Problema: Urna con bolas</span>
+      </div>
+      <div class="urna-ilustracion">
+        <div class="urna-canvas">
+          <canvas class="dibujo" id="urnaCanvas" width="300" height="200"></canvas>
+          <div class="urna-leyenda">
+            <span class="urna-span" style="background: #C95A4A;"></span> Rojas: ${ej4.urna.rojas} &nbsp;&nbsp;
+            <span class="urna-span" style="background: #5A8F5A;"></span> Verdes: ${ej4.urna.verdes} &nbsp;&nbsp;
+            <span class="urna-span" style="background: #6B8E9A;"></span> Azules: ${ej4.urna.azules}
+          </div>
+        </div>
+      </div>
+      <div class="enunciado">🔴 En una urna hay ${ej4.urna.rojas} bolas rojas, ${ej4.urna.verdes} bolas verdes y ${ej4.urna.azules} bolas azules. Total: ${ej4.urna.total} bolas.</div>
+      ${preguntasHTML}
+      <div class="input-area">
+        <button class="btn-primary" onclick="verificarEjercicio(3)">Comprobar respuestas</button>
+        <button class="btn-secondary" onclick="nuevoEjercicio(3)">🔄 Nueva urna</button>
+      </div>
+      <div class="feedback" id="fb_e4" aria-live="polite">${renderFeedbackHTML(3)}</div>
+    </div>`;
+}
+
+function dibujarUrna() {
+  const canvas = document.getElementById('urnaCanvas');
+  if (!canvas || !ejercicios[3] || ejercicios[3].superado) return;
+  const ctx = canvas.getContext('2d');
+  const w = 300, h = 200;
+  canvas.width = w;
+  canvas.height = h;
+  const { rojas, verdes, azules, total } = ejercicios[3].urna;
+
+  ctx.fillStyle = '#C9A96E';
+  ctx.fillRect(40, 60, 220, 120);
+  ctx.fillStyle = '#A0522D';
+  ctx.fillRect(45, 55, 210, 10);
+  ctx.fillStyle = '#8B5A2B';
+  ctx.beginPath();
+  ctx.ellipse(150, 60, 110, 20, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  const radio = 12;
+  const startX = 70;
+  const startY = 100;
+  const cols = Math.min(8, total);
+  let bolasDibujadas = 0;
+
+  for (let i = 0; i < rojas && bolasDibujadas < 20; i++) {
+    let fila = Math.floor(bolasDibujadas / cols);
+    let col = bolasDibujadas % cols;
+    let x = startX + col * 22;
+    let y = startY + fila * 22;
+    if (y + radio < 160) {
+      ctx.beginPath();
+      ctx.arc(x, y, radio, 0, Math.PI * 2);
+      ctx.fillStyle = '#C95A4A';
+      ctx.fill();
+      ctx.strokeStyle = '#8B3A2A';
+      ctx.stroke();
+      ctx.fillStyle = 'white';
+      ctx.font = 'bold 10px Arial';
+      ctx.fillText('R', x - 4, y + 4);
+    }
+    bolasDibujadas++;
+  }
+  for (let i = 0; i < verdes && bolasDibujadas < 20; i++) {
+    let fila = Math.floor(bolasDibujadas / cols);
+    let col = bolasDibujadas % cols;
+    let x = startX + col * 22;
+    let y = startY + fila * 22;
+    if (y + radio < 160) {
+      ctx.beginPath();
+      ctx.arc(x, y, radio, 0, Math.PI * 2);
+      ctx.fillStyle = '#5A8F5A';
+      ctx.fill();
+      ctx.strokeStyle = '#3A6F3A';
+      ctx.stroke();
+      ctx.fillStyle = 'white';
+      ctx.font = 'bold 10px Arial';
+      ctx.fillText('V', x - 4, y + 4);
+    }
+    bolasDibujadas++;
+  }
+  for (let i = 0; i < azules && bolasDibujadas < 20; i++) {
+    let fila = Math.floor(bolasDibujadas / cols);
+    let col = bolasDibujadas % cols;
+    let x = startX + col * 22;
+    let y = startY + fila * 22;
+    if (y + radio < 160) {
+      ctx.beginPath();
+      ctx.arc(x, y, radio, 0, Math.PI * 2);
+      ctx.fillStyle = '#6B8E9A';
+      ctx.fill();
+      ctx.strokeStyle = '#4B6E7A';
+      ctx.stroke();
+      ctx.fillStyle = 'white';
+      ctx.font = 'bold 10px Arial';
+      ctx.fillText('A', x - 4, y + 4);
+    }
+    bolasDibujadas++;
+  }
+}
+
+function renderInfoBar() {
+  const { superados, notaFinal } = actualizarInfoBar();
+  document.getElementById('info-bar').innerHTML = `
+    <div class="info-item">
+      <span class="info-icon">📊</span>
+      <span>Progreso: <span class="info-value">${superados}</span>/4</span>
+    </div>
+    <div class="info-item">
+      <span class="info-icon">❌</span>
+      <span>Fallos totales: <span class="info-value">${fallosGlobales}</span></span>
+    </div>
+    <div class="info-item">
+      <span class="info-icon">⭐</span>
+      <span>Nota: <span class="info-value">${notaFinal.toFixed(1)}</span>/10</span>
+    </div>`;
+}
+
+function renderContainer(idx) {
+  const renderers = [renderEjercicio1, renderEjercicio2, renderEjercicio3, renderEjercicio4];
+  document.getElementById(`ej${idx + 1}-container`).innerHTML = renderers[idx]();
+  if (idx === 3) dibujarUrna();
+}
+
+function renderAll() {
+  renderInfoBar();
+  for (let i = 0; i < 4; i++) renderContainer(i);
+}
+
+// ---------- Modal de resultados ----------
+function mostrarResultados() {
+  const { superados, notaFinal } = actualizarInfoBar();
+  const bg = notaFinal >= 10 ? '#1a7a1a'
+    : notaFinal >= 9 ? '#6dbf6d'
+    : notaFinal >= 8 ? '#1a4f8a'
+    : notaFinal >= 7 ? '#5b9bd5'
+    : notaFinal >= 6 ? '#c05c00'
+    : notaFinal >= 5 ? '#f5a623'
+    : '#c0392b';
+  const color = (notaFinal >= 5 && notaFinal < 6) ? '#1e2a3a' : 'white';
+  const mensaje = notaFinal >= 7 ? "👍 Muy bien" : (notaFinal >= 5 ? "📘 Aprobado" : "📚 Repasa");
+  const ahora = new Date();
+  const tiempoTranscurrido = formatearTiempoTranscurrido();
+  const nombreMostrado = nombreAlumno.trim() ? nombreAlumno.toUpperCase() : '(sin nombre)';
+  document.getElementById('modal-container').innerHTML = `
+    <div class="modal-overlay">
+      <div class="modal-card" style="background-color: ${bg}; color: ${color};">
+        <button class="modal-close" onclick="cerrarModales()">✕</button>
+        <div style="font-weight: 600;">${nombreMostrado}</div>
+        <div style="font-size: 0.85rem;">🎲 Probabilidad · 1º ESO</div>
+        <div class="modal-grade">${notaFinal.toFixed(1)} / 10</div>
+        <div style="margin-bottom: 10px;">${mensaje}</div>
+        <div class="modal-stats">
+          <p>📅 ${ahora.toLocaleDateString('es-ES')}  🕐 ${ahora.toLocaleTimeString('es-ES')}</p>
+          <p>⏱️ Tiempo empleado: ${tiempoTranscurrido}</p>
+          <p>✅ Ejercicios superados: ${superados}/4</p>
+          <p>❌ Fallos totales: ${fallosGlobales}</p>
+          <p>📉 Penalización: ${(fallosGlobales * 0.5).toFixed(1)} puntos</p>
+          <p>⭐ Nota final: ${notaFinal.toFixed(1)}/10</p>
+        </div>
+        <div style="margin-top: 10px; font-size: 10px;">Material elaborado por Marta López de Letona Sánchez</div>
+      </div>
+    </div>`;
+}
+
+function finalizar() {
+  mostrarResultados();
+}
+
+function cerrarModales() {
+  document.getElementById('modal-container').innerHTML = '';
+}
+
+// ============ AVISO DE CONFIRMACIÓN PROPIO (en lugar de confirm del navegador) ============
+function confirmar(mensaje, { si = 'Sí, reiniciar', no = 'Cancelar', titulo = '¿Seguro?' } = {}) {
+    if (document.querySelector('.confirmar-ficha')) return Promise.resolve(false);
+    return new Promise(resolve => {
+        const fondo = document.createElement('div');
+        fondo.className = 'confirmar-ficha';
+        fondo.setAttribute('role', 'alertdialog');
+        fondo.setAttribute('aria-modal', 'true');
+        fondo.setAttribute('aria-label', titulo);
+        fondo.tabIndex = -1;
+        fondo.style.cssText = 'position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;background:rgba(44,31,14,0.55);padding:16px;';
+        fondo.innerHTML =
+            '<div style="background:#FFFDF7;border:2px solid #C9A96E;border-radius:14px;max-width:380px;width:100%;padding:22px 22px 18px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.25);font-family:inherit;color:#2C1F0E;">' +
+            '<h3 style="margin:0 0 10px;font-size:1.1rem;color:#A0522D;"></h3>' +
+            '<p style="margin:0 0 18px;font-size:0.95rem;line-height:1.45;"></p>' +
+            '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">' +
+            '<button type="button" data-respuesta="no" style="background:transparent;color:#6B4F35;border:2px solid #C9A96E;border-radius:30px;padding:9px 20px;font-weight:700;cursor:pointer;font-family:inherit;"></button>' +
+            '<button type="button" data-respuesta="si" style="background:#A0522D;color:#FFFFFF;border:none;border-radius:30px;padding:10px 22px;font-weight:700;cursor:pointer;font-family:inherit;"></button>' +
+            '</div></div>';
+        fondo.querySelector('h3').textContent = '⚠️ ' + titulo;
+        fondo.querySelector('p').textContent = mensaje;
+        const btnNo = fondo.querySelector('[data-respuesta="no"]');
+        const btnSi = fondo.querySelector('[data-respuesta="si"]');
+        btnNo.textContent = no;
+        btnSi.textContent = si;
+        const cerrar = (respuesta) => { fondo.remove(); resolve(respuesta); };
+        btnNo.addEventListener('click', () => cerrar(false));
+        btnSi.addEventListener('click', () => cerrar(true));
+        fondo.addEventListener('click', (e) => { if (e.target === fondo) cerrar(false); });
+        fondo.addEventListener('keydown', (e) => { if (e.key === 'Escape') cerrar(false); });
+        document.body.appendChild(fondo);
+        btnNo.focus();
+    });
+}
+
+function resetearTodo() {
+  confirmar('¿Reiniciar toda la ficha? Se perderá todo el progreso.').then(ok => {
+    if (!ok) return;
+    iniciar();
+    cerrarModales();
+  });
+}
+
+// ============================================================
+// INICIO
+// ============================================================
+iniciar();
+</script>
+</body>
+</html>

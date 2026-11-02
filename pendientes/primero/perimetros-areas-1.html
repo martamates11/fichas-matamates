@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Perímetros y Áreas - 1º ESO</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cf:#F5F0E8; --cfc:#FDFAF3; --ct:#2C1F0E; --cts:#6B4F35;
+  --ca:#A0522D; --cah:#7B3B1E; --cb:#C9A96E; --cbs:#E0CEAA;
+  --cc:#3B2510; --cct:#F5EDD8; --cok:#2E6B3E; --cerr:#8B1A1A;
+  --cn:#E8DFC8; --cav:#D4A259; --cnv:#4A6FA5;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--cf);font-family:'Lato',sans-serif;color:var(--ct);min-height:100vh;transition:background .5s;}
+.autoria{background:var(--cc);text-align:center;padding:6px;font-size:10px;color:rgba(245,240,232,.7);font-family:'Libre Baskerville',serif;letter-spacing:.04em;}
+.ficha-wrapper{max-width:1000px;margin:0 auto;padding:2rem 1rem;}
+.header{background:var(--cc);border-radius:1.5rem;padding:1.8rem 2rem;margin-bottom:1.8rem;box-shadow:0 8px 20px rgba(0,0,0,.1);}
+.header h1{font-size:2.2rem;font-weight:700;color:var(--cct);margin-bottom:.5rem;font-family:'Libre Baskerville',serif;}
+.header p{color:#C9B896;font-size:.9rem;}
+.header-badges{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1rem;}
+.header-badge{background:rgba(255,255,255,.08);padding:.25rem .75rem;border-radius:40px;font-size:.7rem;color:#E0CEAA;}
+.info-bar{background:var(--cfc);border-radius:1.2rem;padding:1rem 1.5rem;margin-bottom:1.5rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;border:1px solid var(--cb);}
+.info-item{display:flex;align-items:center;gap:.6rem;font-size:.85rem;font-weight:500;color:var(--cts);}
+.info-icon{width:30px;height:30px;background:var(--cf);border-radius:10px;display:flex;align-items:center;justify-content:center;}
+.info-value{font-weight:700;font-size:1rem;color:var(--ct);}
+.name-section{background:var(--cfc);border-radius:1rem;padding:.8rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;border:1px solid var(--cbs);}
+.name-label{font-size:.75rem;font-weight:700;text-transform:uppercase;color:var(--cts);font-family:'Libre Baskerville',serif;}
+.name-input{flex:1;max-width:320px;border:none;border-bottom:2px solid var(--cb);padding:.5rem .25rem;font-size:.95rem;background:transparent;font-family:'Lato',sans-serif;color:var(--ct);}
+.name-input:focus{outline:none;border-bottom-color:var(--ca);}
+.ejercicio-card{background:var(--cfc);border-radius:1.2rem;padding:1.5rem;margin-bottom:1.8rem;border:1px solid var(--cb);border-left:4px solid var(--cb);}
+.ejercicio-card.superado{border-left:5px solid var(--cok);background:#eaf4ec;opacity:.92;}
+.ejercicio-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1.2rem;flex-wrap:wrap;justify-content:space-between;}
+.ejercicio-titulo-wrapper{display:flex;align-items:center;gap:.75rem;}
+.ejercicio-num{background:var(--ca);color:white;width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.1rem;flex-shrink:0;}
+.ejercicio-titulo{font-weight:700;font-size:1.05rem;font-family:'Libre Baskerville',serif;color:var(--ct);}
+.figura-layout{display:flex;gap:2rem;align-items:center;flex-wrap:wrap;justify-content:center;}
+.figura-svg{flex-shrink:0;overflow:visible;}
+.figura-svg svg{display:block;overflow:visible;}
+.campos-wrapper{display:flex;flex-direction:column;gap:1rem;}
+.campo-row{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;}
+.campo-label{font-size:.88rem;font-weight:700;color:var(--cts);min-width:120px;font-family:'Libre Baskerville',serif;}
+.number-input{border:2px solid var(--cb);border-radius:10px;padding:7px 12px;font-size:.95rem;width:120px;text-align:center;font-weight:700;background:white;font-family:'Lato',sans-serif;color:var(--ct);}
+.number-input:focus{outline:none;border-color:var(--ca);}
+.unidad{font-size:.85rem;color:var(--cts);font-weight:600;}
+.btn-primary{background:var(--ca);border:none;color:white;padding:9px 20px;border-radius:40px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Lato',sans-serif;font-size:.88rem;}
+.btn-primary:hover{background:var(--cah);transform:scale(.97);}
+.btn-large{background:var(--ca);color:white;border:none;padding:12px 36px;font-size:.95rem;font-weight:700;border-radius:50px;cursor:pointer;transition:all .2s;font-family:'Libre Baskerville',serif;}
+.btn-large:hover{background:var(--cah);transform:translateY(-2px);}
+.btn-outline{background:transparent;border:2px solid var(--cb);color:var(--cts);padding:10px 28px;font-size:.85rem;font-weight:700;border-radius:50px;cursor:pointer;transition:all .2s;font-family:'Lato',sans-serif;}
+.btn-outline:hover{border-color:var(--ca);color:var(--ca);}
+.btn-nuevo{background:var(--cnv);border:none;color:white;padding:6px 14px;border-radius:40px;font-size:.72rem;font-weight:700;cursor:pointer;}
+.btn-nuevo:hover{background:#3a5a82;}
+.btns-comprobar{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:.5rem;}
+.action-buttons{display:flex;gap:1rem;justify-content:center;margin-top:2rem;flex-wrap:wrap;}
+.feedback{margin-top:12px;font-size:.85rem;font-weight:600;}
+.feedback-correcto{color:var(--cok);background:rgba(46,107,62,.1);padding:7px 14px;border-radius:30px;display:inline-block;}
+.feedback-error{color:var(--cerr);background:rgba(139,26,26,.08);padding:8px 14px;border-radius:12px;display:block;margin-bottom:4px;}
+.feedback-hint{color:var(--ca);background:rgba(160,82,45,.1);padding:8px 14px;border-radius:12px;display:block;margin-top:6px;font-size:.82rem;border-left:3px solid var(--ca);line-height:1.7;}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(44,31,14,.55);align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(4px);}
+.modal-overlay.show{display:flex;}
+.modal-confirm-card{background:#fffdf7;border-radius:12px;padding:28px;max-width:400px;width:90%;text-align:center;position:relative;border:3px solid var(--cb);}
+.modal-result-card{border-radius:16px;padding:28px;max-width:450px;width:90%;text-align:center;position:relative;border:3px solid var(--cb);}
+.modal-close{background:none;border:none;font-size:24px;cursor:pointer;opacity:.7;position:absolute;top:12px;right:15px;}
+.modal-buttons{display:flex;gap:12px;justify-content:center;margin-top:20px;}
+.btn-confirm{background:var(--cok);color:white;border:none;padding:10px 24px;border-radius:30px;font-weight:700;cursor:pointer;}
+.btn-cancel{background:var(--cerr);color:white;border:none;padding:10px 24px;border-radius:30px;font-weight:700;cursor:pointer;}
+.modal-grade{font-size:52px;font-weight:900;margin:12px 0 8px;font-family:'Libre Baskerville',serif;}
+.modal-stats{border-radius:10px;padding:12px;margin-bottom:14px;font-size:13px;text-align:left;background:rgba(255,255,255,.2);}
+.modal-stats p{padding:4px 0;}
+.modal-footer{font-size:10px;margin-top:12px;opacity:.8;font-style:italic;}
+.recordatorio{font-size:12px;margin-top:8px;font-weight:700;background:rgba(255,255,255,.3);border-radius:20px;padding:8px;}
+.n10{background:#1a7a1a;color:white;} .n9{background:#6dbf6d;color:white;} .n8{background:#1a4f8a;color:white;}
+.n7{background:#5b9bd5;color:white;} .n6{background:#c05c00;color:white;} .n5{background:#f5a623;color:black;}
+.nbaja{background:#c0392b;color:white;}
+@media(max-width:600px){.figura-layout{flex-direction:column;gap:1rem;}.header h1{font-size:1.5rem;}.figura-svg{flex-shrink:1;max-width:100%;}.figura-svg svg{max-width:100%;height:auto;}.campos-wrapper{max-width:100%;}.feedback-hint{overflow-x:auto;}}
+</style>
+<script>MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"]]},options:{skipHtmlTags:["script","noscript","style","textarea"]}}</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+</head>
+<body>
+<div class="autoria">Material elaborado por Marta L. Letona S. &middot; Basado en el trabajo de Javier Cayetano</div>
+<div class="ficha-wrapper">
+  <div class="header">
+    <h1>&#128207; Perímetros y Áreas</h1>
+    <p>Ejercicios interactivos &middot; 1&ordm; ESO &middot; Geometría plana</p>
+    <div class="header-badges">
+      <span class="header-badge">&#127919; Supera cada ejercicio para obtener el 10</span>
+      <span class="header-badge">&#128161; Cada fallo resta 0.2 puntos</span>
+      <span class="header-badge">&#128218; Pista con las fórmulas si te equivocas</span>
+      <span class="header-badge">&#128260; Pulsa "Nuevo" para cambiar los datos</span>
+    </div>
+  </div>
+  <div class="info-bar">
+    <div class="info-item"><span class="info-icon">&#128202;</span><span>Progreso: <span id="progresoCount" class="info-value">0</span>/7</span></div>
+    <div class="info-item"><span class="info-icon">&#10060;</span><span>Fallos: <span id="fallosCount" class="info-value">0</span></span></div>
+    <div class="info-item"><span class="info-icon">&#11088;</span><span>Nota: <span id="notaActual" class="info-value">0.0</span>/10</span></div>
+    <div class="info-item"><span class="info-icon">&#9203;</span><span>Tiempo: <span id="tiempoTranscurrido" class="info-value">00:00</span></span></div>
+  </div>
+  <div class="name-section">
+    <label class="name-label" for="nombreAlumno">Alumno/a</label>
+    <input type="text" id="nombreAlumno" class="name-input" placeholder="Escribe tu nombre y apellidos...">
+  </div>
+  <div id="ejerciciosContainer"></div>
+  <div class="action-buttons">
+    <button class="btn-large" id="btnFinalizar">Finalizar y Calificar</button>
+    <button class="btn-outline" id="btnResetear">Reiniciar toda la ficha</button>
+  </div>
+</div>
+
+<div id="modalConfirmacion" class="modal-overlay">
+  <div class="modal-confirm-card">
+    <button class="modal-close" onclick="cerrarModalConf()">&#10005;</button>
+    <h3 style="color:var(--cav);margin-bottom:12px;">¿Finalizar ficha?</h3>
+    <p style="margin-bottom:16px;">Si finalizas, ya no podrás seguir sumando puntos. ¿Estás seguro/a?</p>
+    <div class="modal-buttons">
+      <button class="btn-confirm" onclick="confirmarFinalizar()">Sí, finalizar</button>
+      <button class="btn-cancel" onclick="cerrarModalConf()">Seguir practicando</button>
+    </div>
+  </div>
+</div>
+<div id="modalReinicio" class="modal-overlay">
+  <div class="modal-confirm-card">
+    <button class="modal-close" onclick="cerrarModalReinicio()">&#10005;</button>
+    <h3 style="color:var(--cav);margin-bottom:12px;">¿Reiniciar toda la ficha?</h3>
+    <p style="margin-bottom:16px;">Se perderán todos los progresos, fallos y el tiempo acumulado. ¿Estás seguro/a?</p>
+    <div class="modal-buttons">
+      <button class="btn-confirm" onclick="confirmarReinicio()">Sí, reiniciar</button>
+      <button class="btn-cancel" onclick="cerrarModalReinicio()">Cancelar</button>
+    </div>
+  </div>
+</div>
+<div id="modalResultados" class="modal-overlay">
+  <div id="modalResultCard" class="modal-result-card">
+    <button class="modal-close" onclick="cerrarModalRes()">&#10005;</button>
+    <div id="modalNombreMostrar" style="font-size:1.2rem;font-weight:700;margin-bottom:5px;font-family:'Libre Baskerville',serif;"></div>
+    <div style="font-size:.9rem;opacity:.9;margin-bottom:12px;">Perimetros y Areas &middot; 1&ordm; ESO</div>
+    <div class="modal-grade" id="modalNota"></div>
+    <div class="modal-stats" id="modalStats"></div>
+    <div class="recordatorio">Haz una captura de pantalla y entregala en Google Classroom.</div>
+    <div class="modal-footer">Material elaborado por Marta L. Letona S. &middot; Basado en el trabajo de Javier Cayetano</div>
+  </div>
+</div>
+
+<script>
+var TOTAL_EJ = 7;
+var fallosGlobales = 0, finalizado = false, tiempoInicio = null, intervaloReloj = null;
+var superados = {ej1:false,ej2:false,ej3:false,ej4:false,ej5:false,ej6:false,ej7:false};
+// Guarda la última combinación de respuestas incorrectas enviada en cada ejercicio.
+// Si el alumno reenvía exactamente los mismos valores, no se vuelve a penalizar.
+var ultimoFallo = {ej1:null,ej2:null,ej3:null,ej4:null,ej5:null,ej6:null,ej7:null};
+function registrarFallo(clave,vP,vA){
+  var firma=vP+'|'+vA;
+  if(ultimoFallo[clave]===firma)return false; // mismo error que la vez anterior: no penaliza de nuevo
+  ultimoFallo[clave]=firma;
+  fallosGlobales++;
+  return true;
+}
+
+// ---- TIMER ----
+function fmtMMSS(s){var m=Math.floor(s/60),ss=s%60;return pad(m)+':'+pad(ss);}
+function fmtHHMM(s){var min=Math.max(1,Math.ceil(s/60));var h=Math.floor(min/60),m=min%60;return pad(h)+':'+pad(m);}
+function pad(n){return String(n).padStart(2,'0');}
+function iniciarTimer(){detenerTimer();tiempoInicio=new Date();intervaloReloj=setInterval(tickTimer,1000);tickTimer();}
+function detenerTimer(){if(intervaloReloj){clearInterval(intervaloReloj);intervaloReloj=null;}}
+function tickTimer(){if(!tiempoInicio)return;var s=Math.floor((new Date()-tiempoInicio)/1000);var el=document.getElementById('tiempoTranscurrido');if(el)el.textContent=fmtMMSS(s);}
+function tiempoFinal(){if(!tiempoInicio)return'00:01';return fmtHHMM(Math.floor((new Date()-tiempoInicio)/1000));}
+function fechaHora(){var d=new Date();return{fecha:pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear(),hora:pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds())};}
+
+// ---- NOTA ----
+function calcularNota(){var n=Object.values(superados).filter(Boolean).length;return Math.max(0,Math.min(10,n*(10/TOTAL_EJ)-fallosGlobales*0.2));}
+function actualizarUI(){var n=Object.values(superados).filter(Boolean).length;document.getElementById('progresoCount').textContent=n;document.getElementById('fallosCount').textContent=fallosGlobales;document.getElementById('notaActual').textContent=calcularNota().toFixed(1);}
+
+// ---- UTILS ----
+function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function rd(x,d){d=d===undefined?2:d;return Math.round(x*Math.pow(10,d))/Math.pow(10,d);}
+function ok(v,c){return Math.abs(v-c)<=Math.max(0.02*Math.abs(c),0.2);}
+function mostrarAviso(msg){
+  var m=document.createElement('div');
+  m.className='modal-overlay show';
+  m.innerHTML='<div style="background:#fffdf7;border-radius:12px;padding:24px;max-width:380px;width:90%;text-align:center;border:2px solid #C9A96E;position:relative;"><h3 style="color:#D4A259;margin-bottom:10px;">Aviso</h3><p style="font-size:.9rem;margin-bottom:14px;">'+msg+'</p><button onclick="this.closest(\'.modal-overlay\').remove()" style="background:#A0522D;color:white;border:none;padding:10px 22px;border-radius:30px;cursor:pointer;font-weight:700;">Entendido</button></div>';
+  document.body.appendChild(m);
+}
+
+
+// Renderiza LaTeX en un elemento tras insertar feedback
+function tipeset(id){
+  var el=document.getElementById(id);
+  if(!el)return;
+  if(window.MathJax&&MathJax.typesetPromise){MathJax.typesetPromise([el]).catch(function(e){console.warn(e);});}
+}
+// ====================================================
+// EJ1: TRIANGULO RECTANGULO
+// Perim = a + b + hip,  Area = b*a/2
+// ====================================================
+var d1={};
+function generarD1(){var b=rnd(4,20),a=rnd(3,18);d1={b:b,a:a,hip:rd(Math.sqrt(a*a+b*b))};}
+
+function svgTri(b,a){
+  var esc=Math.min(14,180/b,150/a);
+  var bpx=Math.round(b*esc),apx=Math.round(a*esc);
+  var PL=75,PR=30,PT=30,PB=50;
+  var W=bpx+PL+PR,H=apx+PT+PB;
+  var x0=PL,yB=PT+apx,xB=PL+bpx,yA=PT;
+  return '<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" style="overflow:visible;display:block;">'
+    +'<polygon points="'+x0+','+yB+' '+xB+','+yB+' '+x0+','+yA+'" fill="#C2D8E8" stroke="#1a4f8a" stroke-width="2"/>'
+    +'<polyline points="'+x0+','+(yB-14)+' '+(x0+14)+','+(yB-14)+' '+(x0+14)+','+yB+'" fill="none" stroke="#1a4f8a" stroke-width="1.5"/>'
+    // cota base
+    +'<line x1="'+x0+'" y1="'+(yB+18)+'" x2="'+xB+'" y2="'+(yB+18)+'" stroke="#555" stroke-width="1"/>'
+    +'<line x1="'+x0+'" y1="'+(yB+13)+'" x2="'+x0+'" y2="'+(yB+23)+'" stroke="#555" stroke-width="1"/>'
+    +'<line x1="'+xB+'" y1="'+(yB+13)+'" x2="'+xB+'" y2="'+(yB+23)+'" stroke="#555" stroke-width="1"/>'
+    +'<text x="'+Math.round((x0+xB)/2)+'" y="'+(yB+36)+'" text-anchor="middle" font-size="14" fill="#1a4f8a" font-weight="700" font-family="Lato,sans-serif">b = '+b+' cm</text>'
+    // cota altura (izquierda)
+    +'<line x1="'+(x0-20)+'" y1="'+yA+'" x2="'+(x0-20)+'" y2="'+yB+'" stroke="#555" stroke-width="1"/>'
+    +'<line x1="'+(x0-25)+'" y1="'+yA+'" x2="'+(x0-15)+'" y2="'+yA+'" stroke="#555" stroke-width="1"/>'
+    +'<line x1="'+(x0-25)+'" y1="'+yB+'" x2="'+(x0-15)+'" y2="'+yB+'" stroke="#555" stroke-width="1"/>'
+    +'<text x="'+(x0-24)+'" y="'+Math.round((yA+yB)/2+5)+'" text-anchor="end" font-size="14" fill="#2E6B3E" font-weight="700" font-family="Lato,sans-serif">a = '+a+' cm</text>'
+    +'</svg>';
+}
+
+function renderEj1HTML(){
+  var b=d1.b,a=d1.a;
+  return '<div class="ejercicio-card'+(superados.ej1?' superado':'')+'" id="card-ej1">'
+    +'<div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">1</span><span class="ejercicio-titulo">Tri&aacute;ngulo Rect&aacute;ngulo</span></div><button class="btn-nuevo" onclick="nuevoEj(1)">&#128260; Nuevo</button></div>'
+    +'<div class="figura-layout"><div class="figura-svg">'+svgTri(b,a)+'</div>'
+    +'<div class="campos-wrapper">'
+    +'<div class="campo-row"><label class="campo-label" for="ej1_p">Per&iacute;metro =</label><input type="number" id="ej1_p" class="number-input" placeholder="cm" step="0.01" onkeydown="if(event.key===\'Enter\')comprobarEj1()"><span class="unidad">cm</span></div>'
+    +'<div class="campo-row"><label class="campo-label" for="ej1_a">&Aacute;rea =</label><input type="number" id="ej1_a" class="number-input" placeholder="cm&sup2;" step="0.01" onkeydown="if(event.key===\'Enter\')comprobarEj1()"><span class="unidad">cm&sup2;</span></div>'
+    +'<div class="btns-comprobar"><button class="btn-primary" onclick="comprobarEj1()">Comprobar</button></div>'
+    +'<div id="fb-ej1" class="feedback" aria-live="polite"></div></div></div></div>';
+}
+
+function comprobarEj1(){
+  if(finalizado)return;
+  if(superados.ej1){document.getElementById('fb-ej1').innerHTML='<span class="feedback-correcto">¡Ya superado!</span>';return;}
+  var b=d1.b,a=d1.a,hip=d1.hip;
+  var pC=rd(a+b+hip),aC=rd(b*a/2);
+  var vP=parseFloat(document.getElementById('ej1_p').value),vA=parseFloat(document.getElementById('ej1_a').value);
+  if(isNaN(vP)||isNaN(vA)){mostrarAviso('Completa los dos campos.');return;}
+  if(ok(vP,pC)&&ok(vA,aC)){superados.ej1=true;actualizarUI();document.getElementById('fb-ej1').innerHTML='<span class="feedback-correcto">¡Correcto!</span>';document.getElementById('card-ej1').classList.add('superado');}
+  else{registrarFallo('ej1',vP,vA);actualizarUI();
+    var h='';
+    if(!ok(vP,pC))h+='Calcula primero la hipotenusa con Pit&aacute;goras: \\( c = \\sqrt{a^2+b^2} = \\sqrt{'+a+'^2+'+b+'^2} = \\sqrt{'+(a*a+b*b)+'} \\approx '+hip+'\\text{ cm} \\). Luego el per&iacute;metro: \\( P = a+b+c = '+a+'+'+b+'+'+hip+' = \\mathbf{'+pC+'\\text{ cm}} \\).';
+    if(!ok(vA,aC))h+=(h?' ':'')+'El &aacute;rea del tri&aacute;ngulo rect&aacute;ngulo es \\( A = \\dfrac{\\text{base} \\times \\text{altura}}{2} = \\dfrac{'+b+' \\times '+a+'}{2} = \\mathbf{'+aC+'\\text{ cm}^2} \\).';
+    trasFallo(1,h);
+  }
+}
+
+// ====================================================
+// EJ2: RECTANGULO
+// ====================================================
+var d2={};
+function generarD2(){d2={b:rnd(5,25),h:rnd(3,15)};}
+
+function svgRect(b,h){
+  var esc=Math.min(14,190/b,130/h);
+  var bpx=Math.round(b*esc),hpx=Math.round(h*esc);
+  var PL=75,PR=30,PT=30,PB=50;
+  var W=bpx+PL+PR,H=hpx+PT+PB;
+  var x0=PL,y0=PT;
+  return '<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" style="overflow:visible;display:block;">'
+    +'<rect x="'+x0+'" y="'+y0+'" width="'+bpx+'" height="'+hpx+'" fill="#D4E8C2" stroke="#2E6B3E" stroke-width="2"/>'
+    +'<polyline points="'+x0+','+(y0+14)+' '+(x0+14)+','+(y0+14)+' '+(x0+14)+','+y0+'" fill="none" stroke="#2E6B3E" stroke-width="1.5"/>'
+    // cota base
+    +'<line x1="'+x0+'" y1="'+(y0+hpx+18)+'" x2="'+(x0+bpx)+'" y2="'+(y0+hpx+18)+'" stroke="#555" stroke-width="1"/>'
+    +'<line x1="'+x0+'" y1="'+(y0+hpx+13)+'" x2="'+x0+'" y2="'+(y0+hpx+23)+'" stroke="#555" stroke-width="1"/>'
+    +'<line x1="'+(x0+bpx)+'" y1="'+(y0+hpx+13)+'" x2="'+(x0+bpx)+'" y2="'+(y0+hpx+23)+'" stroke="#555" stroke-width="1"/>'
+    +'<text x="'+Math.round(x0+bpx/2)+'" y="'+(y0+hpx+36)+'" text-anchor="middle" font-size="14" fill="#1a4f8a" font-weight="700" font-family="Lato,sans-serif">b = '+b+' cm</text>'
+    // cota altura (izquierda)
+    +'<line x1="'+(x0-20)+'" y1="'+y0+'" x2="'+(x0-20)+'" y2="'+(y0+hpx)+'" stroke="#555" stroke-width="1"/>'
+    +'<line x1="'+(x0-25)+'" y1="'+y0+'" x2="'+(x0-15)+'" y2="'+y0+'" stroke="#555" stroke-width="1"/>'
+    +'<line x1="'+(x0-25)+'" y1="'+(y0+hpx)+'" x2="'+(x0-15)+'" y2="'+(y0+hpx)+'" stroke="#555" stroke-width="1"/>'
+    +'<text x="'+(x0-24)+'" y="'+Math.round(y0+hpx/2+5)+'" text-anchor="end" font-size="14" fill="#2E6B3E" font-weight="700" font-family="Lato,sans-serif">h = '+h+' cm</text>'
+    +'</svg>';
+}
+
+function renderEj2HTML(){
+  var b=d2.b,h=d2.h;
+  return '<div class="ejercicio-card'+(superados.ej2?' superado':'')+'" id="card-ej2">'
+    +'<div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">2</span><span class="ejercicio-titulo">Rect&aacute;ngulo</span></div><button class="btn-nuevo" onclick="nuevoEj(2)">&#128260; Nuevo</button></div>'
+    +'<div class="figura-layout"><div class="figura-svg">'+svgRect(b,h)+'</div>'
+    +'<div class="campos-wrapper">'
+    +'<div class="campo-row"><label class="campo-label" for="ej2_p">Per&iacute;metro =</label><input type="number" id="ej2_p" class="number-input" placeholder="cm" step="0.01" onkeydown="if(event.key===\'Enter\')comprobarEj2()"><span class="unidad">cm</span></div>'
+    +'<div class="campo-row"><label class="campo-label" for="ej2_a">&Aacute;rea =</label><input type="number" id="ej2_a" class="number-input" placeholder="cm&sup2;" step="0.01" onkeydown="if(event.key===\'Enter\')comprobarEj2()"><span class="unidad">cm&sup2;</span></div>'
+    +'<div class="btns-comprobar"><button class="btn-primary" onclick="comprobarEj2()">Comprobar</button></div>'
+    +'<div id="fb-ej2" class="feedback" aria-live="polite"></div></div></div></div>';
+}
+
+function comprobarEj2(){
+  if(finalizado)return;
+  if(superados.ej2){document.getElementById('fb-ej2').innerHTML='<span class="feedback-correcto">¡Ya superado!</span>';return;}
+  var b=d2.b,h=d2.h,pC=2*(b+h),aC=b*h;
+  var vP=parseFloat(document.getElementById('ej2_p').value),vA=parseFloat(document.getElementById('ej2_a').value);
+  if(isNaN(vP)||isNaN(vA)){mostrarAviso('Completa los dos campos.');return;}
+  if(ok(vP,pC)&&ok(vA,aC)){superados.ej2=true;actualizarUI();document.getElementById('fb-ej2').innerHTML='<span class="feedback-correcto">¡Correcto!</span>';document.getElementById('card-ej2').classList.add('superado');}
+  else{registrarFallo('ej2',vP,vA);actualizarUI();
+    var hh='';
+    if(!ok(vP,pC))hh+='El per&iacute;metro suma los cuatro lados: \\( P = 2(b+h) = 2('+b+'+'+h+') = \\mathbf{'+pC+'\\text{ cm}} \\).';
+    if(!ok(vA,aC))hh+=(hh?' ':'')+'El &aacute;rea es base por altura: \\( A = b \\times h = '+b+' \\times '+h+' = \\mathbf{'+aC+'\\text{ cm}^2} \\).';
+    trasFallo(2,hh);
+  }
+}
+
+// ====================================================
+// EJ3: PARALELOGRAMO
+// Perim = 2*(b+a),  Area = b*h
+// ====================================================
+var d3={};
+function generarD3(){var b=rnd(8,22),h=rnd(4,14),a=rnd(h+2,h+12);d3={b:b,h:h,a:a};}
+
+function svgPara(b,h,a){
+  var off=rd(Math.sqrt(a*a-h*h),1);
+  var esc=Math.min(12,190/(b+off),120/h);
+  var bpx=Math.round(b*esc),hpx=Math.round(h*esc),opx=Math.round(off*esc);
+  var PL=100,PR=110,PT=40,PB=50;
+  var W=bpx+opx+PL+PR,H=hpx+PT+PB;
+  var x0=PL,yT=PT,yB=PT+hpx;
+  var pts=x0+','+yB+' '+(x0+bpx)+','+yB+' '+(x0+bpx+opx)+','+yT+' '+(x0+opx)+','+yT;
+  var hx=x0+opx;
+  var mOx=x0+bpx+opx/2, mOy=(yT+yB)/2;
+  var len=Math.sqrt(hpx*hpx+opx*opx);
+  var nx=rd(hpx/len*26,1), ny=rd(opx/len*26,1);
+  return '<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" style="overflow:visible;display:block;">'
+    +'<polygon points="'+pts+'" fill="#F0E4C2" stroke="#A0522D" stroke-width="2"/>'
+    +'<line x1="'+hx+'" y1="'+yT+'" x2="'+hx+'" y2="'+yB+'" stroke="#8B1A1A" stroke-width="1.5" stroke-dasharray="5,3"/>'
+    +'<polyline points="'+hx+','+(yB-13)+' '+(hx+12)+','+(yB-13)+' '+(hx+12)+','+yB+'" fill="none" stroke="#8B1A1A" stroke-width="1.3"/>'
+    +'<line x1="'+(x0-22)+'" y1="'+yT+'" x2="'+(x0-22)+'" y2="'+yB+'" stroke="#8B1A1A" stroke-width="1.2"/>'
+    +'<line x1="'+(x0-27)+'" y1="'+yT+'" x2="'+(x0-17)+'" y2="'+yT+'" stroke="#8B1A1A" stroke-width="1.2"/>'
+    +'<line x1="'+(x0-27)+'" y1="'+yB+'" x2="'+(x0-17)+'" y2="'+yB+'" stroke="#8B1A1A" stroke-width="1.2"/>'
+    +'<text x="'+(x0-30)+'" y="'+Math.round((yT+yB)/2+5)+'" text-anchor="end" font-size="14" fill="#8B1A1A" font-weight="700" font-family="Lato,sans-serif">h = '+h+' cm</text>'
+    +'<line x1="'+x0+'" y1="'+(yB+18)+'" x2="'+(x0+bpx)+'" y2="'+(yB+18)+'" stroke="#555" stroke-width="1"/>'
+    +'<line x1="'+x0+'" y1="'+(yB+13)+'" x2="'+x0+'" y2="'+(yB+23)+'" stroke="#555" stroke-width="1"/>'
+    +'<line x1="'+(x0+bpx)+'" y1="'+(yB+13)+'" x2="'+(x0+bpx)+'" y2="'+(yB+23)+'" stroke="#555" stroke-width="1"/>'
+    +'<text x="'+Math.round(x0+bpx/2)+'" y="'+(yB+36)+'" text-anchor="middle" font-size="14" fill="#1a4f8a" font-weight="700" font-family="Lato,sans-serif">b = '+b+' cm</text>'
+    +'<text x="'+rd(mOx+nx,1)+'" y="'+rd(mOy+ny,1)+'" text-anchor="start" font-size="14" fill="#A0522D" font-weight="700" font-family="Lato,sans-serif">a = '+a+' cm</text>'
+    +'</svg>';
+}
+
+function renderEj3HTML(){
+  var b=d3.b,h=d3.h,a=d3.a;
+  return '<div class="ejercicio-card'+(superados.ej3?' superado':'')+'" id="card-ej3">'
+    +'<div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">3</span><span class="ejercicio-titulo">Paralelogramo</span></div><button class="btn-nuevo" onclick="nuevoEj(3)">&#128260; Nuevo</button></div>'
+    +'<div class="figura-layout"><div class="figura-svg">'+svgPara(b,h,a)+'</div>'
+    +'<div class="campos-wrapper">'
+    +'<div class="campo-row"><label class="campo-label" for="ej3_p">Per&iacute;metro =</label><input type="number" id="ej3_p" class="number-input" placeholder="cm" step="0.01" onkeydown="if(event.key===\'Enter\')comprobarEj3()"><span class="unidad">cm</span></div>'
+    +'<div class="campo-row"><label class="campo-label" for="ej3_a">&Aacute;rea =</label><input type="number" id="ej3_a" class="number-input" placeholder="cm&sup2;" step="0.01" onkeydown="if(event.key===\'Enter\')comprobarEj3()"><span class="unidad">cm&sup2;</span></div>'
+    +'<div class="btns-comprobar"><button class="btn-primary" onclick="comprobarEj3()">Comprobar</button></div>'
+    +'<div id="fb-ej3" class="feedback" aria-live="polite"></div></div></div></div>';
+}
+
+function comprobarEj3(){
+  if(finalizado)return;
+  if(superados.ej3){document.getElementById('fb-ej3').innerHTML='<span class="feedback-correcto">¡Ya superado!</span>';return;}
+  var b=d3.b,h=d3.h,a=d3.a,pC=2*(b+a),aC=b*h;
+  var vP=parseFloat(document.getElementById('ej3_p').value),vA=parseFloat(document.getElementById('ej3_a').value);
+  if(isNaN(vP)||isNaN(vA)){mostrarAviso('Completa los dos campos.');return;}
+  if(ok(vP,pC)&&ok(vA,aC)){superados.ej3=true;actualizarUI();document.getElementById('fb-ej3').innerHTML='<span class="feedback-correcto">¡Correcto!</span>';document.getElementById('card-ej3').classList.add('superado');}
+  else{registrarFallo('ej3',vP,vA);actualizarUI();
+    var hh='';
+    if(!ok(vP,pC))hh+='El paralelogramo tiene dos pares de lados iguales: \\( P = 2(b+a) = 2('+b+'+'+a+') = \\mathbf{'+pC+'\\text{ cm}} \\).';
+    if(!ok(vA,aC))hh+=(hh?' ':'')+'El &aacute;rea usa la <b>altura perpendicular</b>, no el lado oblicuo: \\( A = b \\times h = '+b+' \\times '+h+' = \\mathbf{'+aC+'\\text{ cm}^2} \\).';
+    trasFallo(3,hh);
+  }
+}
+
+// ====================================================
+// EJ4: ROMBO
+// ====================================================
+var d4={};
+function generarD4(){d4={D:rnd(8,24),d:rnd(4,14)};}
+
+function svgRombo(D,d){
+  var esc=Math.min(12,170/D,140/d);
+  var Dpx=Math.round(D*esc),dpx=Math.round(d*esc);
+  var PAD=65;
+  var W=Dpx+PAD*2,H=dpx+PAD*2;
+  var cx=W/2,cy=H/2;
+  var pts=cx+','+(cy-dpx/2)+' '+(cx+Dpx/2)+','+cy+' '+cx+','+(cy+dpx/2)+' '+(cx-Dpx/2)+','+cy;
+  return '<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" style="overflow:visible;display:block;">'
+    +'<polygon points="'+pts+'" fill="#E8D4C2" stroke="#A0522D" stroke-width="2"/>'
+    +'<line x1="'+(cx-Dpx/2)+'" y1="'+cy+'" x2="'+(cx+Dpx/2)+'" y2="'+cy+'" stroke="#1a4f8a" stroke-width="1.5" stroke-dasharray="5,3"/>'
+    +'<text x="'+cx+'" y="'+(cy+18)+'" text-anchor="middle" font-size="14" fill="#1a4f8a" font-weight="700" font-family="Lato,sans-serif">D = '+D+' cm</text>'
+    +'<line x1="'+cx+'" y1="'+(cy-dpx/2)+'" x2="'+cx+'" y2="'+(cy+dpx/2)+'" stroke="#2E6B3E" stroke-width="1.5" stroke-dasharray="5,3"/>'
+    +'<text x="'+(cx+10)+'" y="'+(cy-dpx/2-8)+'" text-anchor="start" font-size="14" fill="#2E6B3E" font-weight="700" font-family="Lato,sans-serif">d = '+d+' cm</text>'
+    +'</svg>';
+}
+
+function renderEj4HTML(){
+  var D=d4.D,d=d4.d;
+  return '<div class="ejercicio-card'+(superados.ej4?' superado':'')+'" id="card-ej4">'
+    +'<div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">4</span><span class="ejercicio-titulo">Rombo</span></div><button class="btn-nuevo" onclick="nuevoEj(4)">&#128260; Nuevo</button></div>'
+    +'<div class="figura-layout"><div class="figura-svg">'+svgRombo(D,d)+'</div>'
+    +'<div class="campos-wrapper">'
+    +'<div class="campo-row"><label class="campo-label" for="ej4_p">Per&iacute;metro =</label><input type="number" id="ej4_p" class="number-input" placeholder="cm" step="0.01" onkeydown="if(event.key===\'Enter\')comprobarEj4()"><span class="unidad">cm</span></div>'
+    +'<div class="campo-row"><label class="campo-label" for="ej4_a">&Aacute;rea =</label><input type="number" id="ej4_a" class="number-input" placeholder="cm&sup2;" step="0.01" onkeydown="if(event.key===\'Enter\')comprobarEj4()"><span class="unidad">cm&sup2;</span></div>'
+    +'<div class="btns-comprobar"><button class="btn-primary" onclick="comprobarEj4()">Comprobar</button></div>'
+    +'<div id="fb-ej4" class="feedback" aria-live="polite"></div></div></div></div>';
+}
+
+function comprobarEj4(){
+  if(finalizado)return;
+  if(superados.ej4){document.getElementById('fb-ej4').innerHTML='<span class="feedback-correcto">¡Ya superado!</span>';return;}
+  var D=d4.D,d=d4.d;
+  var lado=rd(Math.sqrt(Math.pow(D/2,2)+Math.pow(d/2,2)));
+  var pC=rd(4*lado),aC=rd(D*d/2);
+  var vP=parseFloat(document.getElementById('ej4_p').value),vA=parseFloat(document.getElementById('ej4_a').value);
+  if(isNaN(vP)||isNaN(vA)){mostrarAviso('Completa los dos campos.');return;}
+  if(ok(vP,pC)&&ok(vA,aC)){superados.ej4=true;actualizarUI();document.getElementById('fb-ej4').innerHTML='<span class="feedback-correcto">¡Correcto!</span>';document.getElementById('card-ej4').classList.add('superado');}
+  else{registrarFallo('ej4',vP,vA);actualizarUI();
+    var hh='';
+    if(!ok(vP,pC))hh+='Primero calcula el lado con Pit&aacute;goras: \\( L = \\sqrt{\\left(\\frac{D}{2}\\right)^2+\\left(\\frac{d}{2}\\right)^2} = \\sqrt{'+(D/2)+'^2+'+(d/2)+'^2} = \\mathbf{'+lado+'\\text{ cm}} \\). Luego \\( P = 4L = 4 \\times '+lado+' = \\mathbf{'+pC+'\\text{ cm}} \\).';
+    if(!ok(vA,aC))hh+=(hh?' ':'')+'El &aacute;rea del rombo es la mitad del producto de sus diagonales: \\( A = \\dfrac{D \\times d}{2} = \\dfrac{'+D+' \\times '+d+'}{2} = \\mathbf{'+aC+'\\text{ cm}^2} \\).';
+    trasFallo(4,hh);
+  }
+}
+
+// ====================================================
+// EJ5: TRAPECIO
+// ====================================================
+var d5={};
+function generarD5(){
+  var B=rnd(14,26),b=rnd(4,B-6),h=rnd(5,14);
+  var diff=B-b,offL=rnd(1,diff-1),offR=diff-offL;
+  d5={B:B,b:b,h:h,offL:offL,offR:offR,lL:rd(Math.sqrt(h*h+offL*offL)),lR:rd(Math.sqrt(h*h+offR*offR))};
+}
+
+function svgTrap(B,b,h,offL,offR){
+  var esc=Math.min(12,190/B,130/h);
+  var Bpx=Math.round(B*esc),bpx=Math.round(b*esc),hpx=Math.round(h*esc);
+  var oLpx=Math.round(offL*esc),oRpx=Math.round(offR*esc);
+  var PAD=60;
+  var W=Bpx+PAD*2,H=hpx+PAD*2;
+  var x0=PAD,yT=PAD,yB=PAD+hpx;
+  var pts=x0+','+yB+' '+(x0+Bpx)+','+yB+' '+(x0+Bpx-oRpx)+','+yT+' '+(x0+oLpx)+','+yT;
+  var hxFoot=x0+oLpx;
+  return '<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" style="overflow:visible;display:block;">'
+    +'<polygon points="'+pts+'" fill="#C2E8E0" stroke="#1a7a5a" stroke-width="2"/>'
+    +'<line x1="'+hxFoot+'" y1="'+yT+'" x2="'+hxFoot+'" y2="'+yB+'" stroke="#8B1A1A" stroke-width="1.5" stroke-dasharray="4,3"/>'
+    +'<polyline points="'+hxFoot+','+(yB-13)+' '+(hxFoot+12)+','+(yB-13)+' '+(hxFoot+12)+','+yB+'" fill="none" stroke="#8B1A1A" stroke-width="1.3"/>'
+    +'<text x="'+(hxFoot+16)+'" y="'+Math.round((yT+yB)/2+5)+'" font-size="14" fill="#8B1A1A" font-weight="700" font-family="Lato,sans-serif">h = '+h+' cm</text>'
+    +'<line x1="'+x0+'" y1="'+(yB+18)+'" x2="'+(x0+Bpx)+'" y2="'+(yB+18)+'" stroke="#555" stroke-width="1"/>'
+    +'<line x1="'+x0+'" y1="'+(yB+13)+'" x2="'+x0+'" y2="'+(yB+23)+'" stroke="#555" stroke-width="1"/>'
+    +'<line x1="'+(x0+Bpx)+'" y1="'+(yB+13)+'" x2="'+(x0+Bpx)+'" y2="'+(yB+23)+'" stroke="#555" stroke-width="1"/>'
+    +'<text x="'+Math.round(x0+Bpx/2)+'" y="'+(yB+36)+'" text-anchor="middle" font-size="14" fill="#1a4f8a" font-weight="700" font-family="Lato,sans-serif">B = '+B+' cm</text>'
+    +'<text x="'+Math.round(x0+oLpx+bpx/2)+'" y="'+(yT-10)+'" text-anchor="middle" font-size="14" fill="#2E6B3E" font-weight="700" font-family="Lato,sans-serif">b = '+b+' cm</text>'
+    +'</svg>';
+}
+
+function renderEj5HTML(){
+  var B=d5.B,b=d5.b,h=d5.h,lL=d5.lL,lR=d5.lR,offL=d5.offL,offR=d5.offR;
+  return '<div class="ejercicio-card'+(superados.ej5?' superado':'')+'" id="card-ej5">'
+    +'<div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">5</span><span class="ejercicio-titulo">Trapecio</span></div><button class="btn-nuevo" onclick="nuevoEj(5)">&#128260; Nuevo</button></div>'
+    +'<div class="figura-layout"><div class="figura-svg">'+svgTrap(B,b,h,offL,offR)+'</div>'
+    +'<div class="campos-wrapper">'
+    +'<p style="font-size:.82rem;color:var(--cts);margin-bottom:.4rem;">Lado izq. = <b>'+lL+' cm</b> &nbsp;&middot;&nbsp; Lado der. = <b>'+lR+' cm</b></p>'
+    +'<div class="campo-row"><label class="campo-label" for="ej5_p">Per&iacute;metro =</label><input type="number" id="ej5_p" class="number-input" placeholder="cm" step="0.01" onkeydown="if(event.key===\'Enter\')comprobarEj5()"><span class="unidad">cm</span></div>'
+    +'<div class="campo-row"><label class="campo-label" for="ej5_a">&Aacute;rea =</label><input type="number" id="ej5_a" class="number-input" placeholder="cm&sup2;" step="0.01" onkeydown="if(event.key===\'Enter\')comprobarEj5()"><span class="unidad">cm&sup2;</span></div>'
+    +'<div class="btns-comprobar"><button class="btn-primary" onclick="comprobarEj5()">Comprobar</button></div>'
+    +'<div id="fb-ej5" class="feedback" aria-live="polite"></div></div></div></div>';
+}
+
+function comprobarEj5(){
+  if(finalizado)return;
+  if(superados.ej5){document.getElementById('fb-ej5').innerHTML='<span class="feedback-correcto">¡Ya superado!</span>';return;}
+  var B=d5.B,b=d5.b,h=d5.h,lL=d5.lL,lR=d5.lR;
+  var pC=rd(B+b+lL+lR),aC=rd((B+b)*h/2);
+  var vP=parseFloat(document.getElementById('ej5_p').value),vA=parseFloat(document.getElementById('ej5_a').value);
+  if(isNaN(vP)||isNaN(vA)){mostrarAviso('Completa los dos campos.');return;}
+  if(ok(vP,pC)&&ok(vA,aC)){superados.ej5=true;actualizarUI();document.getElementById('fb-ej5').innerHTML='<span class="feedback-correcto">¡Correcto!</span>';document.getElementById('card-ej5').classList.add('superado');}
+  else{registrarFallo('ej5',vP,vA);actualizarUI();
+    var hh='';
+    if(!ok(vP,pC))hh+='El per&iacute;metro es la suma de los cuatro lados: \\( P = B+b+l_1+l_2 = '+B+'+'+b+'+'+lL+'+'+lR+' = \\mathbf{'+pC+'\\text{ cm}} \\).';
+    if(!ok(vA,aC))hh+=(hh?' ':'')+'El &aacute;rea del trapecio es la semisuma de las bases por la altura: \\( A = \\dfrac{(B+b) \\times h}{2} = \\dfrac{('+B+'+'+b+') \\times '+h+'}{2} = \\mathbf{'+aC+'\\text{ cm}^2} \\).';
+    trasFallo(5,hh);
+  }
+}
+
+// ====================================================
+// EJ6: PENTAGONO REGULAR
+// ====================================================
+var d6={};
+function generarD6(){
+  var l=rnd(5,18);
+  d6={l:l,a:rd(l/(2*Math.tan(Math.PI/5)))};
+}
+
+function svgPenta(l,a){
+  var r=l/(2*Math.sin(Math.PI/5));
+  var esc=Math.min(10,90/r);
+  var rpx=Math.round(r*esc);
+  var PL=60,PR=120,PT=50,PB=55;
+  var W=rpx*2+PL+PR,H=rpx*2+PT+PB;
+  var cx=PL+rpx,cy=PT+rpx;
+  var vx=[],vy=[];
+  for(var i=0;i<5;i++){
+    var ang=-Math.PI/2+(2*Math.PI*i/5);
+    vx.push(rd(cx+rpx*Math.cos(ang),1));
+    vy.push(rd(cy+rpx*Math.sin(ang),1));
+  }
+  var pts=vx.map(function(x,i){return x+','+vy[i];}).join(' ');
+  var mx=(vx[2]+vx[3])/2, my=(vy[2]+vy[3])/2;
+  var dx=mx-cx,dy=my-cy,len=Math.sqrt(dx*dx+dy*dy);
+  var tx=rd(cx+dx*0.5+(dy/len)*30,1);
+  var ty=rd(cy+dy*0.5+(-dx/len)*30,1);
+  return '<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" style="overflow:visible;display:block;">'
+    +'<polygon points="'+pts+'" fill="#E0C8E8" stroke="#6B3B8A" stroke-width="2"/>'
+    +'<line x1="'+cx+'" y1="'+cy+'" x2="'+rd(mx,1)+'" y2="'+rd(my,1)+'" stroke="#c0392b" stroke-width="1.8" stroke-dasharray="5,3"/>'
+    +'<circle cx="'+cx+'" cy="'+cy+'" r="3.5" fill="#6B3B8A"/>'
+    +'<text x="'+tx+'" y="'+ty+'" text-anchor="start" font-size="14" fill="#c0392b" font-weight="700" font-family="Lato,sans-serif">a = '+a+' cm</text>'
+    +'<line x1="'+rd(vx[3],1)+'" y1="'+(rd(my,1)+20)+'" x2="'+rd(vx[2],1)+'" y2="'+(rd(my,1)+20)+'" stroke="#6B3B8A" stroke-width="1.2"/>'
+    +'<line x1="'+rd(vx[3],1)+'" y1="'+(rd(my,1)+15)+'" x2="'+rd(vx[3],1)+'" y2="'+(rd(my,1)+25)+'" stroke="#6B3B8A" stroke-width="1.2"/>'
+    +'<line x1="'+rd(vx[2],1)+'" y1="'+(rd(my,1)+15)+'" x2="'+rd(vx[2],1)+'" y2="'+(rd(my,1)+25)+'" stroke="#6B3B8A" stroke-width="1.2"/>'
+    +'<text x="'+rd(mx,1)+'" y="'+(rd(my,1)+38)+'" text-anchor="middle" font-size="14" fill="#6B3B8A" font-weight="700" font-family="Lato,sans-serif">l = '+l+' cm</text>'
+    +'</svg>';
+}
+
+function renderEj6HTML(){
+  var l=d6.l,a=d6.a;
+  return '<div class="ejercicio-card'+(superados.ej6?' superado':'')+'" id="card-ej6">'
+    +'<div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">6</span><span class="ejercicio-titulo">Pent&aacute;gono Regular</span></div><button class="btn-nuevo" onclick="nuevoEj(6)">&#128260; Nuevo</button></div>'
+    +'<div class="figura-layout"><div class="figura-svg">'+svgPenta(l,a)+'</div>'
+    +'<div class="campos-wrapper">'
+    +'<div class="campo-row"><label class="campo-label" for="ej6_p">Per&iacute;metro =</label><input type="number" id="ej6_p" class="number-input" placeholder="cm" step="0.01" onkeydown="if(event.key===\'Enter\')comprobarEj6()"><span class="unidad">cm</span></div>'
+    +'<div class="campo-row"><label class="campo-label" for="ej6_a">&Aacute;rea =</label><input type="number" id="ej6_a" class="number-input" placeholder="cm&sup2;" step="0.01" onkeydown="if(event.key===\'Enter\')comprobarEj6()"><span class="unidad">cm&sup2;</span></div>'
+    +'<div class="btns-comprobar"><button class="btn-primary" onclick="comprobarEj6()">Comprobar</button></div>'
+    +'<div id="fb-ej6" class="feedback" aria-live="polite"></div></div></div></div>';
+}
+
+function comprobarEj6(){
+  if(finalizado)return;
+  if(superados.ej6){document.getElementById('fb-ej6').innerHTML='<span class="feedback-correcto">¡Ya superado!</span>';return;}
+  var l=d6.l,a=d6.a;
+  var pC=5*l, aC=rd(pC*a/2);
+  var vP=parseFloat(document.getElementById('ej6_p').value),vA=parseFloat(document.getElementById('ej6_a').value);
+  if(isNaN(vP)||isNaN(vA)){mostrarAviso('Completa los dos campos.');return;}
+  if(ok(vP,pC)&&ok(vA,aC)){superados.ej6=true;actualizarUI();document.getElementById('fb-ej6').innerHTML='<span class="feedback-correcto">¡Correcto!</span>';document.getElementById('card-ej6').classList.add('superado');}
+  else{registrarFallo('ej6',vP,vA);actualizarUI();
+    var hh='';
+    if(!ok(vP,pC))hh+='El pent&aacute;gono regular tiene 5 lados iguales: \\( P = 5 \\times l = 5 \\times '+l+' = \\mathbf{'+pC+'\\text{ cm}} \\).';
+    if(!ok(vA,aC))hh+=(hh?' ':'')+'El &aacute;rea de cualquier pol&iacute;gono regular es \\( A = \\dfrac{P \\times a}{2} = \\dfrac{'+pC+' \\times '+a+'}{2} = \\mathbf{'+aC+'\\text{ cm}^2} \\).';
+    trasFallo(6,hh);
+  }
+}
+
+// ====================================================
+// EJ7: CIRCUNFERENCIA
+// ====================================================
+var d7={};
+function generarD7(){d7={r:rnd(3,18)};}
+
+function svgCirc(r){
+  var esc=Math.min(12,90/r);
+  var rpx=Math.round(r*esc);
+  var PAD=65;
+  var W=rpx*2+PAD*2,H=rpx*2+PAD*2;
+  var cx=W/2,cy=H/2;
+  return '<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" style="overflow:visible;display:block;">'
+    +'<circle cx="'+cx+'" cy="'+cy+'" r="'+rpx+'" fill="#D4E8C2" stroke="#2E6B3E" stroke-width="2"/>'
+    +'<circle cx="'+cx+'" cy="'+cy+'" r="3.5" fill="#2C1F0E"/>'
+    +'<line x1="'+cx+'" y1="'+cy+'" x2="'+(cx+rpx)+'" y2="'+cy+'" stroke="#c0392b" stroke-width="2" stroke-dasharray="5,3"/>'
+    +'<text x="'+Math.round(cx+rpx/2)+'" y="'+(cy-12)+'" text-anchor="middle" font-size="14" fill="#c0392b" font-weight="700" font-family="Lato,sans-serif">r = '+r+' cm</text>'
+    +'</svg>';
+}
+
+function renderEj7HTML(){
+  var r=d7.r;
+  return '<div class="ejercicio-card'+(superados.ej7?' superado':'')+'" id="card-ej7">'
+    +'<div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">7</span><span class="ejercicio-titulo">Circunferencia y C&iacute;rculo</span></div><button class="btn-nuevo" onclick="nuevoEj(7)">&#128260; Nuevo</button></div>'
+    +'<div class="figura-layout"><div class="figura-svg">'+svgCirc(r)+'</div>'
+    +'<div class="campos-wrapper">'
+    +'<p style="font-size:.82rem;color:var(--cts);margin-bottom:.4rem;">Usa &pi; &asymp; 3.14159 &middot; Se acepta resultado redondeado a 2 decimales.</p>'
+    +'<div class="campo-row"><label class="campo-label" for="ej7_p">Longitud =</label><input type="number" id="ej7_p" class="number-input" placeholder="cm" step="0.01" onkeydown="if(event.key===\'Enter\')comprobarEj7()"><span class="unidad">cm</span></div>'
+    +'<div class="campo-row"><label class="campo-label" for="ej7_a">&Aacute;rea =</label><input type="number" id="ej7_a" class="number-input" placeholder="cm&sup2;" step="0.01" onkeydown="if(event.key===\'Enter\')comprobarEj7()"><span class="unidad">cm&sup2;</span></div>'
+    +'<div class="btns-comprobar"><button class="btn-primary" onclick="comprobarEj7()">Comprobar</button></div>'
+    +'<div id="fb-ej7" class="feedback" aria-live="polite"></div></div></div></div>';
+}
+
+function comprobarEj7(){
+  if(finalizado)return;
+  if(superados.ej7){document.getElementById('fb-ej7').innerHTML='<span class="feedback-correcto">¡Ya superado!</span>';return;}
+  var r=d7.r;
+  var pC=rd(2*Math.PI*r),aC=rd(Math.PI*r*r);
+  var vP=parseFloat(document.getElementById('ej7_p').value),vA=parseFloat(document.getElementById('ej7_a').value);
+  if(isNaN(vP)||isNaN(vA)){mostrarAviso('Completa los dos campos.');return;}
+  if(ok(vP,pC)&&ok(vA,aC)){superados.ej7=true;actualizarUI();document.getElementById('fb-ej7').innerHTML='<span class="feedback-correcto">¡Correcto!</span>';document.getElementById('card-ej7').classList.add('superado');}
+  else{registrarFallo('ej7',vP,vA);actualizarUI();
+    var hh='';
+    if(!ok(vP,pC))hh+='La longitud de la circunferencia es \\( L = 2\\pi r = 2 \\times \\pi \\times '+r+' \\approx \\mathbf{'+pC+'\\text{ cm}} \\).';
+    if(!ok(vA,aC))hh+=(hh?' ':'')+'El &aacute;rea del c&iacute;rculo es \\( A = \\pi r^2 = \\pi \\times '+r+'^2 = \\pi \\times '+(r*r)+' \\approx \\mathbf{'+aC+'\\text{ cm}^2} \\).';
+    trasFallo(7,hh);
+  }
+}
+
+// ====================================================
+// TRAS UN FALLO: otra figura con otras medidas
+// ====================================================
+// Soluciones [perímetro, área] de cada ejercicio con sus datos actuales
+function soluciones(n){
+  if(n===1)return[rd(d1.a+d1.b+d1.hip),rd(d1.b*d1.a/2)];
+  if(n===2)return[2*(d2.b+d2.h),d2.b*d2.h];
+  if(n===3)return[2*(d3.b+d3.a),d3.b*d3.h];
+  if(n===4){var lado=rd(Math.sqrt(Math.pow(d4.D/2,2)+Math.pow(d4.d/2,2)));return[rd(4*lado),rd(d4.D*d4.d/2)];}
+  if(n===5)return[rd(d5.B+d5.b+d5.lL+d5.lR),rd((d5.B+d5.b)*d5.h/2)];
+  if(n===6)return[5*d6.l,rd(5*d6.l*d6.a/2)];
+  return[rd(2*Math.PI*d7.r),rd(Math.PI*d7.r*d7.r)];
+}
+
+// Tras un fallo que enseña la solución, otra figura con otras medidas:
+// copiar la solución mostrada ya no supera el ejercicio.
+function trasFallo(n,pista){
+  var gens=[null,generarD1,generarD2,generarD3,generarD4,generarD5,generarD6,generarD7];
+  var renders=[null,renderEj1HTML,renderEj2HTML,renderEj3HTML,renderEj4HTML,renderEj5HTML,renderEj6HTML,renderEj7HTML];
+  var antes=soluciones(n);
+  for(var i=0;i<50;i++){
+    gens[n]();
+    var ahora=soluciones(n);
+    if(antes.every(function(v,k){return !ok(v,ahora[k]);}))break;
+  }
+  ultimoFallo['ej'+n]=null;
+  var card=document.getElementById('card-ej'+n);
+  if(card){var tmp=document.createElement('div');tmp.innerHTML=renders[n]();card.replaceWith(tmp.firstElementChild);}
+  document.getElementById('fb-ej'+n).innerHTML='<span class="feedback-error">Revisa tus c&aacute;lculos.</span><span class="feedback-hint">Soluci&oacute;n del ejercicio anterior: '+pista.charAt(0).toLowerCase()+pista.slice(1)+'<br>&#128073; Ahora int&eacute;ntalo con este nuevo.</span>';
+  tipeset('fb-ej'+n);
+}
+
+// ====================================================
+// NUEVO EJERCICIO
+// ====================================================
+function nuevoEj(n){
+  if(finalizado){mostrarAviso('La ficha ya ha sido finalizada.');return;}
+  var gens=[null,generarD1,generarD2,generarD3,generarD4,generarD5,generarD6,generarD7];
+  var renders=[null,renderEj1HTML,renderEj2HTML,renderEj3HTML,renderEj4HTML,renderEj5HTML,renderEj6HTML,renderEj7HTML];
+  gens[n]();
+  ultimoFallo['ej'+n]=null;
+  var card=document.getElementById('card-ej'+n);
+  if(card){var tmp=document.createElement('div');tmp.innerHTML=renders[n]();card.replaceWith(tmp.firstElementChild);}
+}
+
+// ====================================================
+// MODALS
+// ====================================================
+function cerrarModalConf(){document.getElementById('modalConfirmacion').classList.remove('show');}
+function cerrarModalRes(){document.getElementById('modalResultados').classList.remove('show');}
+
+function claseNota(nota){
+  if(nota>=10)return'n10';if(nota>=9)return'n9';if(nota>=8)return'n8';
+  if(nota>=7)return'n7';if(nota>=6)return'n6';if(nota>=5)return'n5';
+  return'nbaja';
+}
+
+function confirmarFinalizar(){
+  cerrarModalConf();
+  var nombre=document.getElementById('nombreAlumno').value.trim();
+  if(!nombre){mostrarAviso('Debes introducir tu nombre antes de finalizar.');return;}
+  finalizado=true;detenerTimer();
+  var nota=calcularNota();
+  var sup=Object.values(superados).filter(Boolean).length;
+  var dh=fechaHora();
+  var tf=tiempoFinal();
+  var bgs=['#c0392b','#c0392b','#c0392b','#c0392b','#c0392b','#f5a623','#c05c00','#5b9bd5','#1a4f8a','#6dbf6d','#1a7a1a'];
+  document.body.style.background=bgs[Math.min(10,Math.floor(nota))];
+  var card=document.getElementById('modalResultCard');
+  card.className='modal-result-card '+claseNota(nota);
+  document.getElementById('modalNombreMostrar').textContent=nombre;
+  document.getElementById('modalNota').textContent=nota.toFixed(1)+' / 10';
+  var msg=nota>=10?'¡PERFECTO! Dominas todas las figuras.':nota>=9?'¡EXCELENTE! Casi perfecto.':nota>=7?'¡MUY BIEN! Sigue así.':nota>=6?'¡APROBADO! Buen trabajo.':nota>=5?'Aprobado justo. Repasa lo que fallaste.':'Sigue practicando con el botón "Nuevo".';
+  document.getElementById('modalStats').innerHTML=
+    '<p>Ejercicios superados: <strong>'+sup+' de '+TOTAL_EJ+'</strong></p>'
+    +'<p>Fallos totales: <strong>'+fallosGlobales+'</strong></p>'
+    +'<p>Fecha: <strong>'+dh.fecha+'</strong></p>'
+    +'<p>Hora: <strong>'+dh.hora+'</strong></p>'
+    +'<p>Tiempo: <strong>'+tf+'</strong></p>'
+    +'<p style="margin-top:8px;">'+msg+'</p>';
+  document.getElementById('modalResultados').classList.add('show');
+}
+
+// ====================================================
+// INICIALIZAR
+// ====================================================
+function inicializarFicha(){
+  detenerTimer();fallosGlobales=0;finalizado=false;
+  Object.keys(superados).forEach(function(k){superados[k]=false;});
+  Object.keys(ultimoFallo).forEach(function(k){ultimoFallo[k]=null;});
+  document.body.style.background='';
+  actualizarUI();
+  generarD1();generarD2();generarD3();generarD4();generarD5();generarD6();generarD7();
+  document.getElementById('ejerciciosContainer').innerHTML=
+    renderEj1HTML()+renderEj2HTML()+renderEj3HTML()+renderEj4HTML()+
+    renderEj5HTML()+renderEj6HTML()+renderEj7HTML();
+  iniciarTimer();
+}
+
+document.getElementById('btnFinalizar').addEventListener('click',function(){document.getElementById('modalConfirmacion').classList.add('show');});
+document.getElementById('btnResetear').addEventListener('click',function(){document.getElementById('modalReinicio').classList.add('show');});
+function cerrarModalReinicio(){document.getElementById('modalReinicio').classList.remove('show');}
+function confirmarReinicio(){cerrarModalReinicio();inicializarFicha();}
+window.onload=function(){inicializarFicha();};
+</script>
+</body>
+</html>

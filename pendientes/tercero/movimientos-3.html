@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Movimientos en el plano · 3.º ESO</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --color-fondo:#F5F0E8; --color-fondo-card:#FDFAF3; --color-texto:#2C1F0E; --color-texto-suave:#6B4F35;
+  --color-acento:#A0522D; --color-acento-hover:#7B3B1E; --color-borde:#C9A96E; --color-borde-suave:#E0CEAA;
+  --color-cabecera:#3B2510; --color-cabecera-txt:#F5EDD8; --color-barra-alumno:#EFE4CC;
+  --color-correcto:#2E6B3E; --color-incorrecto:#8B1A1A; --color-neutro:#E8DFC8;
+  /* Figuras geométricas */
+  --fig-orig:#1a4f8a; --fig-orig-fill:#C9DCEC;
+  --fig-img:#6B3B8A; --fig-img-fill:#E6D3EC;
+  --fig-alu:#A0522D; --fig-alu-fill:rgba(160,82,45,.14);
+  --fig-ok:#2E6B3E; --fig-ok-fill:rgba(46,107,62,.18);
+  --fig-err:#8B1A1A; --fig-err-fill:rgba(139,26,26,.14);
+  --grid-bg:#FFFDF8; --grid-line:#E9DDC3; --grid-line-5:#DCC9A2;
+  --n10:#1a7a1a; --n9:#6dbf6d; --n8:#1a4f8a; --n7:#5b9bd5; --n6:#c05c00; --n5:#f5a623; --nbaja:#c0392b;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--color-fondo);font-family:'Lato',sans-serif;font-size:16px;color:var(--color-texto);min-height:100vh;transition:background .6s;}
+body.ficha-10{background:var(--n10);}
+.cabecera{background:var(--color-cabecera);color:var(--color-cabecera-txt);font-family:'Libre Baskerville',serif;text-align:center;padding:12px 20px;border-bottom:3px solid var(--color-borde);font-size:.78rem;letter-spacing:.04em;}
+.ficha-container{max-width:860px;margin:28px auto;background:var(--color-fondo-card);border:2px solid var(--color-borde);border-radius:6px;box-shadow:0 3px 12px rgba(44,31,14,.15);padding:32px 36px;}
+.titulo-ficha{font-family:'Libre Baskerville',serif;font-size:1.6rem;text-align:center;color:var(--color-texto);}
+.titulo-ficha::after{content:'';display:block;width:60px;height:3px;background:var(--color-borde);margin:10px auto 0;border-radius:2px;}
+.subtitulo{text-align:center;color:var(--color-texto-suave);font-style:italic;font-family:'Libre Baskerville',serif;font-size:.95rem;margin:10px 0 20px;}
+.barra{position:sticky;top:0;z-index:50;background:var(--color-barra-alumno);border:1.5px solid var(--color-borde);border-radius:6px;margin:0 0 22px;box-shadow:0 2px 6px rgba(44,31,14,.08);padding:9px 16px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;justify-content:center;font-size:.92rem;}
+.barra label{font-family:'Libre Baskerville',serif;font-size:.85rem;color:var(--color-texto-suave);}
+.barra input#nombre{background:var(--color-fondo-card);border:1.5px solid var(--color-borde);border-radius:4px;padding:6px 10px;font-family:'Lato',sans-serif;font-size:.95rem;color:var(--color-texto);width:210px;max-width:60vw;outline:none;}
+.barra input#nombre:focus{border-color:var(--color-acento);}
+.barra input#nombre.falta{border-color:var(--color-incorrecto);box-shadow:0 0 0 3px rgba(139,26,26,.18);}
+.barra .dato{color:var(--color-texto-suave);}
+.barra .dato b{color:var(--color-acento);font-family:'Libre Baskerville',serif;}
+.aviso-nombre{color:var(--color-incorrecto);font-size:.82rem;font-weight:700;display:none;width:100%;text-align:center;}
+.aviso-nombre.visible{display:block;}
+.instrucciones{background:var(--color-fondo);border:1.5px solid var(--color-borde-suave);border-radius:4px;padding:14px 20px;margin-bottom:24px;font-size:.9rem;color:var(--color-texto-suave);line-height:1.6;}
+.instrucciones h3{font-size:.95rem;color:var(--color-texto);margin-bottom:6px;}
+.instrucciones ul{padding-left:1.2rem;}
+.instrucciones b{color:var(--color-texto);}
+.ejercicio-card{background:var(--color-fondo);border:1.5px solid var(--color-borde-suave);border-left:4px solid var(--color-borde);border-radius:4px;padding:20px 24px;margin-bottom:22px;transition:border-color .3s,background .3s;}
+.ejercicio-card.superado{border-left-color:var(--color-correcto);background:#EDF4EC;}
+.ejercicio-card.fallado{border-left-color:var(--color-incorrecto);}
+.ej-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px;}
+.ej-num{background:var(--color-acento);color:var(--color-fondo-card);width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'Libre Baskerville',serif;font-weight:700;flex-shrink:0;}
+.ej-tit{font-family:'Libre Baskerville',serif;font-size:1.1rem;flex:1;min-width:160px;}
+.chip{font-size:.75rem;font-weight:700;padding:3px 10px;border-radius:30px;background:var(--color-neutro);color:var(--color-texto-suave);}
+.chip-ok{background:var(--color-correcto);color:var(--color-fondo-card);}
+.chip-err{background:var(--color-incorrecto);color:var(--color-fondo-card);}
+.ej-stats{font-size:.75rem;color:var(--color-texto-suave);width:100%;padding-left:44px;margin-top:-4px;}
+.enunciado{font-size:.98rem;line-height:1.6;margin-bottom:14px;}
+.tablero{display:flex;justify-content:center;margin:0 auto 10px;}
+.tablero svg{width:100%;max-width:600px;height:auto;display:block;user-select:none;-webkit-user-select:none;}
+.leyenda{display:flex;flex-wrap:wrap;gap:6px 18px;justify-content:center;font-size:.78rem;color:var(--color-texto-suave);margin-bottom:14px;}
+.leyenda span{display:inline-flex;align-items:center;gap:6px;}
+.sw{width:14px;height:10px;border-radius:2px;border:2px solid;display:inline-block;}
+.sw-orig{background:var(--fig-orig-fill);border-color:var(--fig-orig);}
+.sw-img{background:var(--fig-img-fill);border-color:var(--fig-img);}
+.sw-alu{background:var(--fig-alu-fill);border-color:var(--fig-alu);border-style:dashed;}
+.sw-ok{background:var(--fig-ok-fill);border-color:var(--fig-ok);}
+.opciones{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:4px 0 14px;}
+.opcion{background:var(--color-fondo-card);border:2px solid var(--color-borde);border-radius:30px;padding:8px 18px;font-family:'Lato',sans-serif;font-size:.95rem;font-weight:700;color:var(--color-texto);cursor:pointer;transition:all .2s;}
+.opcion:hover:not(:disabled){border-color:var(--color-acento);}
+.opcion[aria-pressed="true"]{background:var(--color-acento);border-color:var(--color-acento);color:var(--color-fondo-card);}
+.opcion.correcta{background:var(--color-correcto);border-color:var(--color-correcto);color:var(--color-fondo-card);}
+.opcion.erronea{background:var(--color-incorrecto);border-color:var(--color-incorrecto);color:var(--color-fondo-card);}
+.opcion:disabled{cursor:default;}
+.opcion.correcta:disabled,.opcion.erronea:disabled{opacity:1;}
+.botones{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+.btn-primario{background:var(--color-acento);color:var(--color-fondo-card);border:none;border-radius:4px;padding:10px 22px;font-family:'Lato',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;letter-spacing:.03em;transition:background-color .2s;}
+.btn-primario:hover:not(:disabled){background:var(--color-acento-hover);}
+.btn-secundario{background:transparent;color:var(--color-acento);border:2px solid var(--color-borde);border-radius:4px;padding:8px 20px;font-family:'Lato',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;transition:border-color .2s,color .2s;}
+.btn-secundario:hover:not(:disabled){border-color:var(--color-acento);color:var(--color-acento-hover);}
+.btn-secundario.destacado{border-color:var(--color-acento);background:var(--color-acento);color:var(--color-fondo-card);}
+button:disabled{opacity:.45;cursor:not-allowed;}
+.btn-finalizar{background:var(--color-cabecera);color:var(--color-cabecera-txt);border:2px solid var(--color-borde);border-radius:4px;padding:11px 26px;font-family:'Libre Baskerville',serif;font-size:.95rem;font-weight:700;cursor:pointer;letter-spacing:.04em;transition:background-color .2s;}
+.btn-finalizar:hover{background:#2C1A0A;}
+.pie{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:28px;padding-top:22px;border-top:1px solid var(--color-borde-suave);}
+.feedback{margin-top:14px;}
+.feedback:empty{display:none;}
+.fb{border-radius:4px;padding:12px 16px;font-size:.9rem;line-height:1.6;}
+.fb p+p{margin-top:6px;}
+.fb-ok{background:#EAF4EC;border:1.5px solid var(--color-correcto);color:var(--color-texto);}
+.fb-ok .fb-tit{color:var(--color-correcto);}
+.fb-err{background:#F9EAEA;border:1.5px solid var(--color-incorrecto);color:var(--color-texto);}
+.fb-err .fb-tit{color:var(--color-incorrecto);}
+.fb-tit{font-weight:700;font-family:'Libre Baskerville',serif;}
+.fb-nota{font-style:italic;color:var(--color-texto-suave);}
+.vec{font-family:'Libre Baskerville',serif;font-style:italic;font-weight:700;position:relative;display:inline-block;}
+.vec::before{content:'\2192';position:absolute;top:-.72em;left:50%;transform:translateX(-50%);font-size:.7em;font-style:normal;}
+/* SVG */
+.g-bg{fill:var(--grid-bg);} .g-l{stroke:var(--grid-line);stroke-width:1;} .g-l5{stroke:var(--grid-line-5);stroke-width:1;}
+.g-borde{fill:none;stroke:var(--color-borde);stroke-width:1.5;}
+.p-orig{fill:var(--fig-orig-fill);stroke:var(--fig-orig);stroke-width:2.2;stroke-linejoin:round;}
+.p-img{fill:var(--fig-img-fill);stroke:var(--fig-img);stroke-width:2.2;stroke-linejoin:round;}
+.p-alu{fill:var(--fig-alu-fill);stroke:var(--fig-alu);stroke-width:2.2;stroke-dasharray:7 4;stroke-linejoin:round;}
+.p-alu.err{fill:var(--fig-err-fill);stroke:var(--fig-err);stroke-dasharray:none;}
+.p-alu.ok{fill:var(--fig-ok-fill);stroke:var(--fig-ok);stroke-dasharray:none;}
+.p-sol{fill:var(--fig-ok-fill);stroke:var(--fig-ok);stroke-width:2.4;stroke-linejoin:round;}
+.l-alu{stroke:var(--fig-alu);stroke-width:2.4;stroke-dasharray:8 5;}
+.l-alu.err{stroke:var(--fig-err);stroke-dasharray:none;}
+.l-alu.ok{stroke:var(--fig-ok);stroke-dasharray:none;}
+.l-sol{stroke:var(--fig-ok);stroke-width:2.6;}
+.eje{stroke:var(--color-cabecera);stroke-width:2.2;}
+.aux{stroke:var(--fig-ok);stroke-width:1.5;stroke-dasharray:4 4;fill:none;}
+.aux-head{fill:var(--fig-ok);}
+.vec-l{stroke:var(--color-cabecera);stroke-width:2.6;stroke-linecap:round;}
+.vec-h{fill:var(--color-cabecera);}
+.arc{fill:none;stroke:var(--color-cabecera);stroke-width:1.8;}
+.arc-sol{fill:none;stroke:var(--fig-ok);stroke-width:2;}
+.arc-h{fill:var(--color-cabecera);} .arc-sol-h{fill:var(--fig-ok);}
+.pto{fill:var(--color-cabecera);}
+.pto-ok{fill:var(--fig-ok);}
+.pto-mid{fill:var(--fig-ok);stroke:var(--grid-bg);stroke-width:1.5;}
+.t{font-family:'Lato',sans-serif;font-weight:700;font-size:15px;text-anchor:middle;dominant-baseline:central;paint-order:stroke;stroke:var(--grid-bg);stroke-width:4px;stroke-linejoin:round;}
+.t-orig{fill:var(--fig-orig);} .t-img{fill:var(--fig-img);} .t-alu{fill:var(--fig-alu);} .t-alu.err{fill:var(--fig-err);} .t-alu.ok,.t-ok{fill:var(--fig-ok);}
+.t-neg{fill:var(--color-cabecera);font-family:'Libre Baskerville',serif;font-style:italic;}
+.dot-alu{fill:var(--fig-alu);} .dot-alu.err{fill:var(--fig-err);} .dot-alu.ok{fill:var(--fig-ok);}
+.handle{cursor:grab;outline:none;touch-action:none;}
+.handle .hit{fill:transparent;}
+.handle .knob{fill:var(--fig-alu);stroke:var(--grid-bg);stroke-width:2.5;transition:r .12s;}
+.handle:hover .knob{r:9px;}
+.handle.arrastrando{cursor:grabbing;}
+.handle.arrastrando .knob{r:10px;fill:var(--color-acento-hover);}
+@media (max-width:600px){
+  .handle .knob{r:11px;}
+  .handle.arrastrando .knob{r:13px;}
+}
+.handle:focus-visible .knob{stroke:var(--color-texto);stroke-width:3;}
+/* Modales */
+.overlay{display:none;position:fixed;inset:0;align-items:center;justify-content:center;z-index:1000;background:rgba(44,31,14,.55);backdrop-filter:blur(3px);padding:16px;}
+.overlay.show{display:flex;}
+.modal-simple{background:var(--color-fondo-card);border:3px solid var(--color-borde);border-radius:8px;padding:26px 28px;max-width:420px;width:100%;text-align:center;box-shadow:0 6px 24px rgba(44,31,14,.35);}
+.modal-simple h3{font-family:'Libre Baskerville',serif;color:var(--color-acento);margin-bottom:10px;}
+.modal-simple p{font-size:.95rem;margin-bottom:18px;line-height:1.5;}
+.modal-simple .botones{gap:12px;}
+.modal-calificacion{position:relative;border:3px solid var(--color-borde);border-radius:8px;font-family:'Libre Baskerville',serif;box-shadow:0 6px 24px rgba(44,31,14,.35);padding:30px 32px;min-width:300px;max-width:540px;width:100%;max-height:92vh;overflow:auto;text-align:center;color:#fff;}
+.modal-calificacion.n5{color:#000;}
+.modal-close{position:absolute;top:10px;right:14px;background:none;border:none;font-size:1.5rem;cursor:pointer;color:inherit;opacity:.8;}
+.inf-titulo{font-size:1.25rem;font-weight:700;}
+.inf-sub{font-size:.85rem;font-style:italic;opacity:.9;margin-top:4px;}
+.inf-sep{border:none;border-top:1px solid currentColor;opacity:.4;margin:14px 0;}
+.inf-cab{font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;opacity:.9;}
+.inf-nombre{font-size:1.15rem;font-weight:700;margin-top:6px;}
+.inf-nota{font-size:3rem;font-weight:700;margin:6px 0 4px;}
+.inf-msg{font-family:'Lato',sans-serif;font-size:.95rem;margin-bottom:10px;}
+.inf-datos{font-family:'Lato',sans-serif;font-size:.85rem;display:flex;flex-wrap:wrap;gap:4px 16px;justify-content:center;margin-bottom:14px;}
+.inf-tabla{width:100%;border-collapse:collapse;font-family:'Lato',sans-serif;font-size:.82rem;text-align:left;background:rgba(255,255,255,.14);border-radius:6px;overflow:hidden;}
+.inf-tabla th,.inf-tabla td{padding:6px 8px;border-bottom:1px solid rgba(255,255,255,.3);}
+.n5 .inf-tabla th,.n5 .inf-tabla td{border-bottom-color:rgba(0,0,0,.2);}
+.recordatorio{font-family:'Lato',sans-serif;font-size:.82rem;font-weight:700;background:rgba(255,255,255,.22);border-radius:20px;padding:8px 12px;margin-top:14px;}
+.inf-tabla th{font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;}
+.inf-tabla td.c,.inf-tabla th.c{text-align:center;}
+.inf-pie{font-size:.68rem;font-style:italic;opacity:.85;margin-top:12px;}
+.n10{background:var(--n10);} .n9{background:var(--n9);} .n8{background:var(--n8);} .n7{background:var(--n7);} .n6{background:var(--n6);} .n5{background:var(--n5);} .nbaja{background:var(--nbaja);}
+@media (max-width:600px){
+  .ficha-container{padding:20px 14px;margin:14px 8px;}
+  .ejercicio-card{padding:16px 12px;}
+  .titulo-ficha{font-size:1.3rem;}
+  .barra{padding:8px 10px;gap:6px 14px;font-size:.85rem;}
+  .ej-stats{padding-left:0;}
+  .modal-calificacion{padding:26px 16px;}
+}
+</style>
+</head>
+<body>
+<div class="cabecera">Material elaborado por Marta L Letona S. Basado en el trabajo de Javier Cayetano</div>
+<div class="ficha-container">
+  <h1 class="titulo-ficha">Movimientos en el plano</h1>
+  <p class="subtitulo">3.º ESO · Traslaciones, giros y simetrías</p>
+
+  <div class="barra">
+    <label for="nombre">Alumno/a:</label>
+    <input type="text" id="nombre" placeholder="Nombre y apellidos" autocomplete="off">
+    <span class="dato">Nota: <b id="marcador-nota">0,00</b> / 10</span>
+    <span class="dato">Superados: <b id="marcador-sup">0</b> / 7</span>
+    <span class="dato">Fallos: <b id="marcador-fallos">0</b></span>
+    <span class="dato">Tiempo: <b id="marcador-tiempo">00:00</b></span>
+    <div class="aviso-nombre" id="aviso-nombre">Escribe tu nombre y apellidos antes de comprobar o de finalizar.</div>
+  </div>
+
+  <div class="instrucciones">
+    <h3>Cómo funciona</h3>
+    <ul>
+      <li>Arrastra los <b>puntos de color teja</b> con el ratón o con el dedo; se ajustan solos a los nodos de la cuadrícula. También puedes seleccionarlos con el tabulador y moverlos con las flechas.</li>
+      <li>Los desplazamientos se cuentan en cuadros: <b>(horizontal, vertical)</b>, positivo hacia la derecha y hacia arriba.</li>
+      <li>Giros: el ángulo <b>positivo</b> es en sentido <b>antihorario ↺</b> y el <b>negativo</b>, en sentido <b>horario ↻</b>. Un giro de −90° es el mismo que uno de +270°.</li>
+      <li>Cada ejercicio superado suma <b>10/7 ≈ 1,43 puntos</b>. Cada fallo resta <b>0,5 puntos</b> (la nota nunca baja de 0).</li>
+      <li>Si fallas, verás la solución en verde. Pulsa <b>«Hacer otro»</b> para intentarlo con una figura nueva. Puedes pulsarlo también antes de comprobar, sin penalización.</li>
+    </ul>
+  </div>
+
+  <div id="ejercicios"></div>
+
+  <div class="pie">
+    <button class="btn-finalizar" id="btnFinalizar">Finalizar y Calificar</button>
+    <button class="btn-secundario" id="btnReiniciar">Reiniciar toda la ficha</button>
+  </div>
+</div>
+
+<!-- Aviso genérico -->
+<div class="overlay" id="modalAviso" role="dialog" aria-modal="true">
+  <div class="modal-simple">
+    <h3>Aviso</h3>
+    <p id="avisoTexto"></p>
+    <div class="botones"><button class="btn-primario" id="avisoOk">Entendido</button></div>
+  </div>
+</div>
+<!-- Confirmar reinicio -->
+<div class="overlay" id="modalReinicio" role="dialog" aria-modal="true">
+  <div class="modal-simple">
+    <h3>¿Reiniciar la ficha?</h3>
+    <p>Se perderán la nota, los ejercicios superados y los fallos registrados.</p>
+    <div class="botones">
+      <button class="btn-primario" id="reiniciarSi">Sí, reiniciar</button>
+      <button class="btn-secundario" id="reiniciarNo">Cancelar</button>
+    </div>
+  </div>
+</div>
+<!-- Informe -->
+<div class="overlay" id="modalInforme" role="dialog" aria-modal="true">
+  <div class="modal-calificacion" id="tarjetaInforme">
+    <button class="modal-close" id="cerrarInforme" aria-label="Cerrar informe">✕</button>
+    <div class="inf-titulo" id="infTitulo"></div>
+    <div class="inf-sub" id="infSub"></div>
+    <hr class="inf-sep">
+    <div class="inf-cab">Informe de la actividad</div>
+    <div class="inf-nombre" id="infNombre"></div>
+    <div class="inf-nota" id="infNota"></div>
+    <div class="inf-msg" id="infMsg"></div>
+    <div class="inf-datos" id="infDatos"></div>
+    <table class="inf-tabla" id="infTabla"></table>
+    <div class="recordatorio">Haz una captura de pantalla y súbela a Google Classroom.</div>
+    <div class="inf-pie">Material elaborado por Marta L Letona S. Basado en el trabajo de Javier Cayetano</div>
+  </div>
+</div>
+
+<script>
+'use strict';
+/* ================= Constantes y utilidades ================= */
+const W = 18, H = 12, CELL = 30, PAD = 26;
+const SVGW = W * CELL + 2 * PAD, SVGH = H * CELL + 2 * PAD;
+const TOTAL = 7, PENAL = 0.5, EPS = 1e-6;
+const LET = ['A', 'B', 'C', 'D'], PR = '\u2032';
+const $ = id => document.getElementById(id);
+const rint = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const P = (x, y) => ({ x, y });
+const eq = (p, q) => Math.abs(p.x - q.x) < EPS && Math.abs(p.y - q.y) < EPS;
+const add = (a, b) => P(a.x + b.x, a.y + b.y);
+const sub = (a, b) => P(a.x - b.x, a.y - b.y);
+const mul = (a, k) => P(a.x * k, a.y * k);
+const cross = (a, b) => a.x * b.y - a.y * b.x;
+const dot = (a, b) => a.x * b.x + a.y * b.y;
+const len = v => Math.hypot(v.x, v.y);
+const norm360 = a => ((a % 360) + 360) % 360;
+const fmt = n => (n < 0 ? '\u2212' : '') + String(Math.abs(Math.round(n * 100) / 100)).replace('.', ',');
+const allEq = (s, t) => s.length === t.length && s.every((p, i) => eq(p, t[i]));
+const sameSet = (s, t) => s.length === t.length && s.every(p => t.some(q => eq(p, q))) && t.every(q => s.some(p => eq(p, q)));
+const lista = arr => arr.length <= 1 ? arr.join('') : arr.slice(0, -1).join(', ') + ' y ' + arr[arr.length - 1];
+const nombres = (n, prima) => LET.slice(0, n).map(l => l + (prima ? PR : ''));
+
+/* ---- Geometría ---- */
+function area2(pts) { let s = 0; for (let i = 0; i < pts.length; i++) s += cross(pts[i], pts[(i + 1) % pts.length]); return s; }
+function centroid(pts) { return mul(pts.reduce((a, p) => add(a, p), P(0, 0)), 1 / pts.length); }
+function angleAt(pts, i) {
+  const n = pts.length, a = sub(pts[(i - 1 + n) % n], pts[i]), b = sub(pts[(i + 1) % n], pts[i]);
+  return Math.acos(clamp(dot(a, b) / (len(a) * len(b)), -1, 1)) * 180 / Math.PI;
+}
+function orient(a, b, c) { const v = cross(sub(b, a), sub(c, a)); return Math.abs(v) < EPS ? 0 : (v > 0 ? 1 : -1); }
+function onSeg(p, a, b) { return orient(a, b, p) === 0 && Math.min(a.x, b.x) - EPS <= p.x && p.x <= Math.max(a.x, b.x) + EPS && Math.min(a.y, b.y) - EPS <= p.y && p.y <= Math.max(a.y, b.y) + EPS; }
+function segInter(p1, p2, q1, q2) {
+  const o1 = orient(p1, p2, q1), o2 = orient(p1, p2, q2), o3 = orient(q1, q2, p1), o4 = orient(q1, q2, p2);
+  if (o1 !== o2 && o3 !== o4) return true;
+  return (o1 === 0 && onSeg(q1, p1, p2)) || (o2 === 0 && onSeg(q2, p1, p2)) || (o3 === 0 && onSeg(p1, q1, q2)) || (o4 === 0 && onSeg(p2, q1, q2));
+}
+function pointInPoly(pt, poly) {
+  if (poly.length < 3) return false;
+  let ins = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const a = poly[i], b = poly[j];
+    if (onSeg(pt, a, b)) return true;
+    if ((a.y > pt.y) !== (b.y > pt.y) && pt.x < (b.x - a.x) * (pt.y - a.y) / (b.y - a.y) + a.x) ins = !ins;
+  }
+  return ins;
+}
+function distPtSeg(p, a, b) {
+  const ab = sub(b, a), t = clamp(dot(sub(p, a), ab) / (dot(ab, ab) || 1), 0, 1);
+  return len(sub(p, add(a, mul(ab, t))));
+}
+function distPtPoly(p, poly) {
+  if (pointInPoly(p, poly)) return 0;
+  let d = Infinity;
+  for (let i = 0; i < poly.length; i++) d = Math.min(d, distPtSeg(p, poly[i], poly[(i + 1) % poly.length]));
+  return d;
+}
+function polysOverlap(A, B) {
+  for (let i = 0; i < A.length; i++) for (let j = 0; j < B.length; j++)
+    if (segInter(A[i], A[(i + 1) % A.length], B[j], B[(j + 1) % B.length])) return true;
+  return A.some(p => pointInPoly(p, B)) || B.some(p => pointInPoly(p, A));
+}
+function polyDist(A, B) {
+  if (polysOverlap(A, B)) return 0;
+  let d = Infinity;
+  A.forEach(p => d = Math.min(d, distPtPoly(p, B)));
+  B.forEach(p => d = Math.min(d, distPtPoly(p, A)));
+  return d;
+}
+function inGrid(pts, m) { return pts.every(p => p.x >= m - EPS && p.x <= W - m + EPS && p.y >= m - EPS && p.y <= H - m + EPS); }
+
+/* ---- Transformaciones ---- */
+const tras = v => p => add(p, v);
+function rot(O, a) {
+  const n = norm360(a);
+  return p => {
+    const dx = p.x - O.x, dy = p.y - O.y; let x, y;
+    if (n === 0) { x = dx; y = dy; } else if (n === 90) { x = -dy; y = dx; }
+    else if (n === 180) { x = -dx; y = -dy; } else if (n === 270) { x = dy; y = -dx; }
+    else { const r = n * Math.PI / 180; x = dx * Math.cos(r) - dy * Math.sin(r); y = dx * Math.sin(r) + dy * Math.cos(r); }
+    return P(O.x + x, O.y + y);
+  };
+}
+const central = O => p => P(2 * O.x - p.x, 2 * O.y - p.y);
+function mkLine(type, k) {
+  if (type === 'v') return { type, k, P: P(k, 0), d: P(0, 1) };
+  if (type === 'h') return { type, k, P: P(0, k), d: P(1, 0) };
+  if (type === 'd1') return { type, k, P: P(0, k), d: P(1, 1) };   // y = x + k
+  return { type, k, P: P(0, k), d: P(1, -1) };                      // y = -x + k
+}
+const lineSide = (L, p) => cross(L.d, sub(p, L.P));
+const onLine = (L, p) => Math.abs(lineSide(L, p)) < EPS;
+const reflect = L => p => { const t = dot(sub(p, L.P), L.d) / dot(L.d, L.d); const f = add(L.P, mul(L.d, t)); return sub(mul(f, 2), p); };
+function clipLine(Pt, d) {
+  let t0 = -Infinity, t1 = Infinity;
+  for (const [pc, dc, M] of [[Pt.x, d.x, W], [Pt.y, d.y, H]]) {
+    if (Math.abs(dc) < EPS) { if (pc < -EPS || pc > M + EPS) return null; continue; }
+    const a = (0 - pc) / dc, b = (M - pc) / dc;
+    t0 = Math.max(t0, Math.min(a, b)); t1 = Math.min(t1, Math.max(a, b));
+  }
+  if (t1 - t0 < EPS) return null;
+  return [add(Pt, mul(d, t0)), add(Pt, mul(d, t1))];
+}
+
+/* ---- Generadores de figuras ---- */
+function randTri() {
+  for (let t = 0; t < 4000; t++) {
+    const x0 = rint(1, W - 1), y0 = rint(1, H - 1);
+    let pts = [P(x0, y0), P(x0 + rint(-5, 5), y0 + rint(-5, 5)), P(x0 + rint(-5, 5), y0 + rint(-5, 5))];
+    if (!inGrid(pts, 1)) continue;
+    const a = Math.abs(area2(pts));
+    if (a < 10 || a > 36) continue;
+    let okL = true; for (let i = 0; i < 3; i++) if (len(sub(pts[i], pts[(i + 1) % 3])) < 2) okL = false;
+    if (!okL) continue;
+    if ([0, 1, 2].some(i => angleAt(pts, i) < 25)) continue;
+    if (area2(pts) < 0) pts.reverse();
+    const s = rint(0, 2); pts = pts.slice(s).concat(pts.slice(0, s));
+    return pts;
+  }
+  return [P(3, 3), P(7, 4), P(4, 7)];
+}
+function randQuad() {
+  for (let t = 0; t < 4000; t++) {
+    const c = P(rint(3, W - 3), rint(3, H - 3));
+    let pts = [45, 135, 225, 315].map(b => {
+      const ang = (b + rint(-28, 28)) * Math.PI / 180, r = rint(20, 38) / 10;
+      return P(Math.round(c.x + r * Math.cos(ang)), Math.round(c.y + r * Math.sin(ang)));
+    });
+    if (!inGrid(pts, 1)) continue;
+    let conv = true;
+    for (let i = 0; i < 4; i++) if (cross(sub(pts[(i + 1) % 4], pts[i]), sub(pts[(i + 2) % 4], pts[(i + 1) % 4])) <= 0) conv = false;
+    if (!conv) continue;
+    const e = [0, 1, 2, 3].map(i => sub(pts[(i + 1) % 4], pts[i]));
+    if (e.some(v => len(v) < 2)) continue;
+    const sinMin = Math.sin(10 * Math.PI / 180);
+    if (Math.abs(cross(e[0], e[2])) / (len(e[0]) * len(e[2])) < sinMin) continue;
+    if (Math.abs(cross(e[1], e[3])) / (len(e[1]) * len(e[3])) < sinMin) continue;
+    if ([0, 1, 2, 3].some(i => { const a = angleAt(pts, i); return a < 40 || a > 150; })) continue;
+    if (area2(pts) < 16) continue;
+    const s = rint(0, 3); pts = pts.slice(s).concat(pts.slice(0, s));
+    return pts;
+  }
+  return [P(3, 3), P(7, 2), P(8, 6), P(4, 7)];
+}
+
+/* ================= Dibujo SVG ================= */
+const sx = x => PAD + x * CELL, sy = y => PAD + (H - y) * CELL;
+const sp = p => P(sx(p.x), sy(p.y));
+const r1 = n => Math.round(n * 10) / 10;
+function gridSVG() {
+  let s = `<rect class="g-bg" x="${PAD}" y="${PAD}" width="${W * CELL}" height="${H * CELL}"/>`;
+  for (let i = 1; i < W; i++) s += `<line class="${i % 5 === 0 ? 'g-l5' : 'g-l'}" x1="${sx(i)}" y1="${sy(0)}" x2="${sx(i)}" y2="${sy(H)}"/>`;
+  for (let j = 1; j < H; j++) s += `<line class="${j % 5 === 0 ? 'g-l5' : 'g-l'}" x1="${sx(0)}" y1="${sy(j)}" x2="${sx(W)}" y2="${sy(j)}"/>`;
+  return s + `<rect class="g-borde" x="${PAD}" y="${PAD}" width="${W * CELL}" height="${H * CELL}"/>`;
+}
+const GRID = gridSVG();
+function polySVG(pts, cls) { return `<polygon class="${cls}" points="${pts.map(p => r1(sx(p.x)) + ',' + r1(sy(p.y))).join(' ')}"/>`; }
+function segSVG(a, b, cls) { return `<line class="${cls}" x1="${r1(sx(a.x))}" y1="${r1(sy(a.y))}" x2="${r1(sx(b.x))}" y2="${r1(sy(b.y))}"/>`; }
+function dotSVG(p, cls, r) { return `<circle class="${cls}" cx="${r1(sx(p.x))}" cy="${r1(sy(p.y))}" r="${r}"/>`; }
+function textPx(x, y, txt, cls) { return `<text class="t ${cls}" x="${r1(x)}" y="${r1(y)}">${txt}</text>`; }
+function labelsSVG(pts, names, cls, rotDeg) {
+  const c = sp(centroid(pts)); const r = (rotDeg || 0) * Math.PI / 180;
+  return pts.map((p, i) => {
+    const q = sp(p); let v = sub(q, c); const l = len(v); v = l < 1 ? P(0, -1) : mul(v, 1 / l);
+    const w = P(v.x * Math.cos(r) - v.y * Math.sin(r), v.x * Math.sin(r) + v.y * Math.cos(r));
+    return textPx(q.x + w.x * 17, q.y + w.y * 17, names[i], cls);
+  }).join('');
+}
+function arrowPx(a, b, clsL, clsH, acortar) {
+  const d = sub(b, a), l = len(d); if (l < 1) return '';
+  const u = mul(d, 1 / l), e = sub(b, mul(u, acortar || 0)), n = P(-u.y, u.x);
+  const base = sub(e, mul(u, 11)), w1 = add(base, mul(n, 5)), w2 = sub(base, mul(n, 5));
+  const fin = sub(e, mul(u, 6));
+  return `<line class="${clsL}" x1="${r1(a.x)}" y1="${r1(a.y)}" x2="${r1(fin.x)}" y2="${r1(fin.y)}"/>` +
+    `<polygon class="${clsH}" points="${r1(e.x)},${r1(e.y)} ${r1(w1.x)},${r1(w1.y)} ${r1(w2.x)},${r1(w2.y)}"/>`;
+}
+/* Arco de ángulo en O: desde el ángulo th0 (grados, matemático) barriendo a grados */
+function arcSVG(O, th0, a, rPx, clsA, clsH, etiqueta, clsT) {
+  const c = sp(O), t0 = th0 * Math.PI / 180, t1 = (th0 + a) * Math.PI / 180;
+  const s = P(c.x + rPx * Math.cos(t0), c.y - rPx * Math.sin(t0));
+  const e = P(c.x + rPx * Math.cos(t1), c.y - rPx * Math.sin(t1));
+  const large = Math.abs(a) > 180 ? 1 : 0, sweep = a > 0 ? 0 : 1;
+  let out = `<path class="${clsA}" d="M ${r1(s.x)} ${r1(s.y)} A ${rPx} ${rPx} 0 ${large} ${sweep} ${r1(e.x)} ${r1(e.y)}"/>`;
+  const sg = a > 0 ? 1 : -1, tg = P(-Math.sin(t1) * sg, -Math.cos(t1) * sg); // tangente en px
+  const base = sub(e, mul(tg, 9)), nn = P(-tg.y, tg.x);
+  out += `<polygon class="${clsH}" points="${r1(e.x)},${r1(e.y)} ${r1(base.x + nn.x * 4.5)},${r1(base.y + nn.y * 4.5)} ${r1(base.x - nn.x * 4.5)},${r1(base.y - nn.y * 4.5)}"/>`;
+  if (etiqueta) {
+    const tm = (th0 + a / 2) * Math.PI / 180, rr = rPx + 15;
+    out += textPx(c.x + rr * Math.cos(tm), c.y - rr * Math.sin(tm), etiqueta, clsT);
+  }
+  return out;
+}
+function puntoO(O, cls, etiqueta, figs) {
+  const c = sp(O); let dir = P(1, -1);
+  if (figs && figs.length) { const cc = sp(centroid(figs.flat())); const v = sub(c, cc); if (len(v) > 1) dir = mul(v, 1 / len(v)); }
+  return `<circle class="${cls}" cx="${r1(c.x)}" cy="${r1(c.y)}" r="4.5"/>` + textPx(c.x + dir.x * 16, c.y + dir.y * 16, etiqueta, cls === 'pto-ok' ? 't-ok' : 't-neg');
+}
+function ejeSVG(L, cls, etiqueta, clsT) {
+  const seg = clipLine(L.P, L.d); if (!seg) return '';
+  let s = segSVG(seg[0], seg[1], cls);
+  if (etiqueta) {
+    const e = sp(seg[1]), b = sp(seg[0]), u = mul(sub(e, b), 1 / len(sub(e, b))), n = P(-u.y, u.x);
+    s += textPx(e.x - u.x * 16 + n.x * 12, e.y - u.y * 16 + n.y * 12, etiqueta, clsT);
+  }
+  return s;
+}
+
+/* ================= Estado global ================= */
+let fallos = 0, inicio = Date.now(), reloj = null, drag = null;
+const EJ = [];
+function nuevoEj(id, num, titulo, kind) {
+  const ex = { id, num, titulo, kind, estado: 'abierto', h: [], sol: '', fb: '', eleccion: null, stats: { int: 0, ac: 0, fa: 0 } };
+  EJ.push(ex); return ex;
+}
+const superados = () => EJ.filter(e => e.estado === 'superado').length;
+function nota() { return clamp(superados() * 10 / TOTAL - fallos * PENAL, 0, 10); }
+const fmtNota = n => (Math.round(n * 100) / 100).toFixed(2).replace('.', ',');
+
+/* ---- Diagnóstico común para ejercicios de arrastrar vértices ---- */
+function diagnose(s, o, t, cands, opt) {
+  const n = o.length;
+  if (allEq(s, o)) return 'No has movido los vértices: tu figura sigue encima de la figura original.';
+  for (const c of cands) if (s.every((p, i) => eq(p, c.f(o[i])))) return c.m;
+  if (sameSet(s, t)) return `Tus puntos ocupan las posiciones correctas, pero con las letras cambiadas. Cada vértice debe ir a la posición de su propia imagen: ${nombres(n).map(l => l + ' → ' + l + PR).join(', ')}.`;
+  const w = sub(s[0], o[0]);
+  if (opt && opt.tras && len(w) > EPS && s.every((p, i) => eq(sub(p, o[i]), w))) return opt.tras(w);
+  if (opt && opt.extra) { const m = opt.extra(s); if (m) return m; }
+  const bien = [], mal = [];
+  s.forEach((p, i) => (eq(p, t[i]) ? bien : mal).push(LET[i] + PR));
+  if (bien.length) return `Tienes bien colocado${bien.length > 1 ? 's' : ''} ${lista(bien)}, pero ${lista(mal)} no ${mal.length > 1 ? 'están' : 'está'} en su sitio.`;
+  return 'Ningún vértice está en su posición correcta.';
+}
+function describeVec(v) {
+  const p = [];
+  if (v.x) p.push(`${Math.abs(v.x)} cuadro${Math.abs(v.x) > 1 ? 's' : ''} a la ${v.x > 0 ? 'derecha' : 'izquierda'}`);
+  if (v.y) p.push(`${Math.abs(v.y)} cuadro${Math.abs(v.y) > 1 ? 's' : ''} hacia ${v.y > 0 ? 'arriba' : 'abajo'}`);
+  return p.join(' y ') || 'ningún cuadro';
+}
+const vecTxt = v => `(${fmt(v.x)}, ${fmt(v.y)})`;
+function angTxt(a) {
+  if (Math.abs(a) === 180) return '180°';
+  return a > 0 ? `+${a}° (sentido antihorario ↺)` : `\u2212${-a}° (sentido horario ↻)`;
+}
+function angCorto(a) {
+  if (Math.abs(a) === 180) return '180°';
+  return a > 0 ? `+${a}° (antihorario ↺)` : `\u2212${-a}° (horario ↻)`;
+}
+
+/* ================= EJERCICIO 1 · Traslación ================= */
+const ej1 = nuevoEj('ej1', 1, 'Traslación', 'poly');
+function placeVector(v, polys) {
+  const cands = [];
+  for (let x = 1; x <= W - 1; x++) for (let y = 1; y <= H - 1; y++) {
+    const S = P(x, y), E = add(S, v);
+    if (inGrid([S, E], 1)) cands.push(S);
+  }
+  shuffle(cands);
+  for (const S of cands) {
+    const E = add(S, v);
+    if (polys.every(pl => polyDist([S, E], pl) >= 1.4)) return S;
+  }
+  return null;
+}
+ej1.gen = function () {
+  for (let t = 0; t < 3000; t++) {
+    const tri = randTri(), v = P(rint(-7, 7), rint(-5, 5));
+    if (Math.abs(v.x) + Math.abs(v.y) < 4) continue;
+    const img = tri.map(tras(v));
+    if (!inGrid(img, 1) || polyDist(tri, img) < 1) continue;
+    const S = placeVector(v, [tri, img]); if (!S) continue;
+    Object.assign(this, { o: tri, v, S, t: img, h: tri.map(p => P(p.x, p.y)) }); return;
+  }
+};
+ej1.enunciado = () => 'Dibuja la figura trasladada según el vector <span class="vec">v</span>. Arrastra los vértices A′, B′ y C′ hasta su posición final.';
+ej1.staticSVG = function () {
+  const a = sp(this.S), b = sp(add(this.S, this.v)), u = mul(sub(b, a), 1 / len(sub(b, a))), n = P(-u.y, u.x);
+  const m = mul(add(a, b), .5), lp = add(m, mul(n, 17));
+  return polySVG(this.o, 'p-orig') + labelsSVG(this.o, nombres(3), 't-orig', -32) +
+    arrowPx(a, b, 'vec-l', 'vec-h', 0) + `<circle class="pto" cx="${r1(a.x)}" cy="${r1(a.y)}" r="3"/>` +
+    textPx(lp.x, lp.y + 2, 'v', 't-neg') +
+    `<line class="vec-l" style="stroke-width:1.3" x1="${r1(lp.x - 5)}" y1="${r1(lp.y - 9)}" x2="${r1(lp.x + 3)}" y2="${r1(lp.y - 9)}"/>` +
+    `<polygon class="vec-h" points="${r1(lp.x + 6)},${r1(lp.y - 9)} ${r1(lp.x + 2)},${r1(lp.y - 11.5)} ${r1(lp.x + 2)},${r1(lp.y - 6.5)}"/>`;
+};
+ej1.check = function () {
+  const v = this.v;
+  if (allEq(this.h, this.t)) return { ok: true, m: `Cada vértice se ha desplazado según <span class="vec">v</span> = ${vecTxt(v)}: ${describeVec(v)}. La traslación conserva la forma, el tamaño y la orientación de la figura: solo cambia su posición.` };
+  const c = [{ f: tras(P(-v.x, -v.y)), m: `Has aplicado el vector en sentido contrario: has movido la figura ${describeVec(P(-v.x, -v.y))}. La flecha indica hacia dónde se mueve la figura: desde su origen hasta su punta.` }];
+  if (v.x !== v.y) c.push({ f: tras(P(v.y, v.x)), m: `Has intercambiado las componentes del vector: has usado ${vecTxt(P(v.y, v.x))} en lugar de ${vecTxt(v)}. La primera componente es el desplazamiento horizontal y la segunda, el vertical.` });
+  if (v.x && v.y) {
+    c.push({ f: tras(P(-v.x, v.y)), m: 'El desplazamiento vertical es correcto, pero el horizontal va hacia el lado contrario.' });
+    c.push({ f: tras(P(v.x, -v.y)), m: 'El desplazamiento horizontal es correcto, pero el vertical va en sentido contrario.' });
+  }
+  const m = diagnose(this.h, this.o, this.t, c, { tras: w => `Has movido toda la figura con el mismo desplazamiento, y eso está bien, pero has usado ${vecTxt(w)} (${describeVec(w)}) en lugar de ${vecTxt(v)}. Cuenta con cuidado los cuadros del vector.` });
+  return { ok: false, m, c: `En una traslación todos los puntos se desplazan igual, según el vector. Aquí <span class="vec">v</span> = ${vecTxt(v)}: ${describeVec(v)}. De A a A′, de B a B′ y de C a C′ hay siempre ese mismo desplazamiento.` };
+};
+ej1.solSVG = function (ok) {
+  let s = ok ? '' : polySVG(this.t, 'p-sol') + labelsSVG(this.t, nombres(3, true), 't-ok', 0);
+  this.o.forEach((p, i) => s += arrowPx(sp(p), sp(this.t[i]), 'aux', 'aux-head', 5));
+  return s;
+};
+
+/* ================= EJERCICIO 2 · Giro ================= */
+const ej2 = nuevoEj('ej2', 2, 'Giro', 'poly');
+ej2.gen = function () {
+  for (let t = 0; t < 3000; t++) {
+    const q = randQuad(), O = P(rint(2, W - 2), rint(2, H - 2));
+    if (distPtPoly(O, q) < 2) continue;
+    const a = pick([90, -90, 180, 270]), img = q.map(rot(O, a));
+    if (!inGrid(img, 1) || polyDist(q, img) < 1 || distPtPoly(O, img) < 2) continue;
+    Object.assign(this, { o: q, O, a, t: img, h: q.map(p => P(p.x, p.y)) }); return;
+  }
+};
+ej2.enunciado = function () { return `Dibuja la figura girada con centro <b>O</b> y ángulo <b>α = ${angTxt(this.a)}</b>. Arrastra los vértices A′, B′, C′ y D′ hasta su posición final.`; };
+ej2.staticSVG = function () {
+  const v = sub(this.O, centroid(this.o)), th0 = Math.atan2(v.y, v.x) * 180 / Math.PI;
+  return polySVG(this.o, 'p-orig') + labelsSVG(this.o, nombres(4), 't-orig', -32) +
+    arcSVG(this.O, th0, this.a, 24, 'arc', 'arc-h', 'α', 't-neg') + puntoO(this.O, 'pto', 'O', [this.o]);
+};
+function reglaGiro(a) {
+  const n = norm360(a);
+  if (n === 90) return 'en un giro de +90°, el desplazamiento (a, b) se convierte en (−b, a)';
+  if (n === 270) return 'en un giro de −90° (o +270°), el desplazamiento (a, b) se convierte en (b, −a)';
+  return 'en un giro de 180°, el desplazamiento (a, b) se convierte en (−a, −b)';
+}
+ej2.check = function () {
+  const O = this.O, a = this.a;
+  if (allEq(this.h, this.t)) return { ok: true, m: `Cada vértice está a la misma distancia de O que su original y ha girado ${angCorto(a)} alrededor de O. El giro conserva la forma y el tamaño; cambian la posición y la inclinación de la figura.` };
+  const c = [];
+  [90, 180, 270].filter(b => b !== norm360(a)).forEach(b => {
+    const opuesto = Math.abs(a) === 90 && b === norm360(-a);
+    c.push({ f: rot(O, b), m: opuesto ? `Has girado alrededor de O y la amplitud (90°) es correcta, pero en sentido contrario. El ángulo ${angCorto(a)} indica el sentido: ${a > 0 ? 'contrario a las agujas del reloj' : 'como las agujas del reloj'}.` : `Has girado alrededor de O, pero ${b === 180 ? '180°' : (b === 90 ? '+90° (antihorario)' : '−90° (horario)')} en lugar de ${angCorto(a)}.` });
+  });
+  this.o.forEach((V, j) => c.push({ f: rot(V, a), m: `Parece que has girado alrededor del vértice ${LET[j]} y no alrededor de O. El centro de giro es el único punto que no se mueve, y aquí es O, que está fuera de la figura.` }));
+  const m = diagnose(this.h, this.o, this.t, c, {});
+  const d = sub(this.o[0], O), d2 = sub(this.t[0], O);
+  return { ok: false, m, c: `En un giro de centro O, cada punto P y su imagen P′ están a la misma distancia de O, y el ángulo POP′ es el ángulo de giro. Con la cuadrícula: ${reglaGiro(a)}. Por ejemplo, de O a A hay ${vecTxt(d)} cuadros, así que de O a A′ hay ${vecTxt(d2)}.` };
+};
+ej2.solSVG = function (ok) {
+  let s = ok ? '' : polySVG(this.t, 'p-sol') + labelsSVG(this.t, nombres(4, true), 't-ok', 0);
+  const A = this.o[0], v = sub(A, this.O), th0 = Math.atan2(v.y, v.x) * 180 / Math.PI;
+  s += segSVG(this.O, A, 'aux') + segSVG(this.O, this.t[0], 'aux') + arcSVG(this.O, th0, this.a, 38, 'arc-sol', 'arc-sol-h', '', '');
+  return s;
+};
+
+/* ================= EJERCICIO 3 · Determinar el ángulo de giro ================= */
+const ej3 = nuevoEj('ej3', 3, 'Ángulo de giro', 'choice');
+const ANG3 = [45, 60, 90, 120, 135, 180, -45, -60, -90, -120, -135];
+function circDif(a, b) { const d = Math.abs(norm360(a) - norm360(b)); return Math.min(d, 360 - d); }
+ej3.gen = function () {
+  for (let t = 0; t < 3000; t++) {
+    const f = Math.random() < .5 ? randTri() : randQuad(), O = P(rint(1, W - 1), rint(1, H - 1));
+    if (distPtPoly(O, f) < 2) continue;
+    const a = pick(ANG3), img = f.map(rot(O, a));
+    if (!inGrid(img, .8) || polyDist(f, img) < 1 || distPtPoly(O, img) < 2) continue;
+    // Opciones
+    const opts = [];
+    const alt = Math.abs(a) === 90 && Math.random() < .4;
+    opts.push({ a: alt ? (a > 0 ? a - 360 : a + 360) : a, ok: true });
+    if (Math.abs(a) !== 180) opts.push({ a: -a, ok: false });
+    const pool = shuffle(ANG3.slice());
+    for (const b of pool) {
+      if (opts.length >= 4) break;
+      if (opts.some(o => norm360(o.a) === norm360(b))) continue;
+      if (circDif(b, a) < 30) continue;
+      opts.push({ a: b, ok: false });
+    }
+    Object.assign(this, { o: f, O, a, t: img, opciones: shuffle(opts), eleccion: null }); return;
+  }
+};
+const txtOpcion = a => Math.abs(a) === 180 ? '180°' : (a > 0 ? `+${a}° ↺` : `\u2212${-a}° ↻`);
+ej3.enunciado = function () {
+  const n = this.o.length;
+  return `La figura violeta ${nombres(n, true).join('')} se ha obtenido girando ${nombres(n).join('')} alrededor del punto <b>O</b>. Determina el ángulo de giro (↺ antihorario, ↻ horario).`;
+};
+ej3.staticSVG = function () {
+  const n = this.o.length;
+  return polySVG(this.o, 'p-orig') + labelsSVG(this.o, nombres(n), 't-orig', 0) +
+    polySVG(this.t, 'p-img') + labelsSVG(this.t, nombres(n, true), 't-img', 0) + puntoO(this.O, 'pto', 'O', [this.o, this.t]);
+};
+ej3.check = function () {
+  if (this.eleccion === null) return { aviso: 'Elige una de las opciones antes de comprobar.' };
+  const ch = this.opciones[this.eleccion].a, a = this.a;
+  if (norm360(ch) === norm360(a)) {
+    const extra = Math.abs(ch) === 270 ? ` Fíjate en que ${txtOpcion(ch)} es el mismo giro que ${txtOpcion(a)}.` : '';
+    return { ok: true, m: `El ángulo AOA′ mide ${Math.abs(a)}°${Math.abs(a) === 180 ? '' : ` y para ir de A a A′ se recorre el sentido ${a > 0 ? 'antihorario: el giro es positivo' : 'horario: el giro es negativo'}`}.${extra}` };
+  }
+  let m;
+  if (Math.abs(a) !== 180 && norm360(ch) === norm360(-a)) m = `Has acertado la amplitud (${Math.abs(a)}°), pero no el sentido. Para ir de A a A′ alrededor de O se avanza ${a > 0 ? 'en sentido contrario a las agujas del reloj (antihorario), así que el ángulo es positivo' : 'como las agujas del reloj (horario), así que el ángulo es negativo'}.`;
+  else m = `La amplitud no es correcta: has elegido ${txtOpcion(ch)}, pero el ángulo AOA′ mide ${Math.abs(a)}°. La respuesta correcta es ${angCorto(a)}.`;
+  return { ok: false, m, c: 'Para hallar el ángulo de giro, une O con un vértice y con su imagen (por ejemplo, A y A′): el ángulo AOA′ es el ángulo de giro. Si para ir de A a A′ recorres el camino contrario a las agujas del reloj, el giro es positivo; si vas como las agujas del reloj, es negativo. Referencias útiles: un ángulo recto mide 90° y la diagonal de un cuadrado forma 45° con sus lados.' };
+};
+ej3.solSVG = function () {
+  const A = this.o[0], v = sub(A, this.O), th0 = Math.atan2(v.y, v.x) * 180 / Math.PI;
+  return segSVG(this.O, A, 'aux') + segSVG(this.O, this.t[0], 'aux') + arcSVG(this.O, th0, this.a, 34, 'arc-sol', 'arc-sol-h', txtOpcion(this.a).replace(/ [↺↻]/, ''), 't-ok');
+};
+
+/* ================= EJERCICIO 4 · Simetría axial ================= */
+const ej4 = nuevoEj('ej4', 4, 'Simetría axial', 'poly');
+function genEjeYFigura(fig) {
+  for (let t = 0; t < 4000; t++) {
+    const f = fig(), type = pick(['v', 'h', 'd1', 'd2']);
+    let k;
+    if (type === 'v') k = rint(3, W - 3); else if (type === 'h') k = rint(3, H - 3);
+    else if (type === 'd1') k = rint(-(W - 6), H - 6); else k = rint(6, W + H - 6);
+    const L = mkLine(type, k), seg = clipLine(L.P, L.d);
+    if (!seg || len(sub(seg[1], seg[0])) < 8) continue;
+    const sides = f.map(p => lineSide(L, p));
+    if (!(sides.every(s => s > 0) || sides.every(s => s < 0))) continue;
+    if (Math.min(...sides.map(s => Math.abs(s) / len(L.d))) < 1) continue;
+    const img = f.map(reflect(L));
+    if (!inGrid(img, 1) || polyDist(f, img) < 1) continue;
+    return { f, L, img };
+  }
+  return null;
+}
+ej4.gen = function () {
+  let r = null; while (!r) r = genEjeYFigura(randTri);
+  Object.assign(this, { o: r.f, L: r.L, t: r.img, h: r.f.map(p => P(p.x, p.y)) });
+};
+ej4.enunciado = () => 'Representa la figura simétrica del triángulo ABC con respecto a la recta <b><i>e</i></b>. Arrastra los vértices A′, B′ y C′ hasta su posición final.';
+ej4.staticSVG = function () { return ejeSVG(this.L, 'eje', 'e', 't-neg') + polySVG(this.o, 'p-orig') + labelsSVG(this.o, nombres(3), 't-orig', -32); };
+/* ¿Los puntos s son la reflexión de o respecto a alguna recta del tipo dado? Devuelve la constante o null */
+function familiaRefl(type, s, o) {
+  const ks = s.map((p, i) => {
+    const q = o[i];
+    if (type === 'v') return eq(P(0, p.y), P(0, q.y)) ? (p.x + q.x) / 2 : NaN;
+    if (type === 'h') return eq(P(p.x, 0), P(q.x, 0)) ? (p.y + q.y) / 2 : NaN;
+    if (type === 'd1') { const c = q.y - p.x; return Math.abs(p.y - (q.x + c)) < EPS ? c : NaN; }
+    const c = q.y + p.x; return Math.abs(p.y - (c - q.x)) < EPS ? c : NaN;
+  });
+  if (ks.some(isNaN) || !ks.every(k => Math.abs(k - ks[0]) < EPS)) return null;
+  return ks[0];
+}
+const NOM_TIPO = { v: 'vertical', h: 'horizontal', d1: 'diagonal', d2: 'diagonal' };
+ej4.check = function () {
+  const L = this.L, o = this.o, s = this.h;
+  if (allEq(s, this.t)) return { ok: true, m: 'Cada vértice y su simétrico están en una misma perpendicular al eje y a la misma distancia de él. Observa que la figura simétrica queda «dada la vuelta», como vista en un espejo.' };
+  const extra = st => {
+    for (const ty of ['v', 'h', 'd1', 'd2']) {
+      if (familiaRefl(ty, st, o) === null) continue;
+      if (ty === L.type) return 'Has reflejado la figura respecto a una recta paralela al eje, pero no respecto al eje <i>e</i>: cada vértice debe quedar a la misma distancia del eje que su original, al otro lado.';
+      if ((ty === 'd1' || ty === 'd2') && (L.type === 'd1' || L.type === 'd2')) return 'Has reflejado respecto a la otra diagonal. Los segmentos que unen cada vértice con su simétrico deben ser perpendiculares al eje <i>e</i>.';
+      return `Has reflejado la figura respecto a una recta ${NOM_TIPO[ty]}, pero el eje <i>e</i> es ${NOM_TIPO[L.type]}. Los segmentos que unen cada vértice con su simétrico deben ser perpendiculares al eje <i>e</i>.`;
+    }
+    return null;
+  };
+  const m = diagnose(s, o, this.t, [], { tras: () => 'Has trasladado la figura al otro lado del eje, pero sin darle la vuelta. En una simetría axial la figura queda invertida, como en un espejo: el vértice más cercano al eje sigue siendo el más cercano en la imagen.', extra });
+  let c = 'Cada punto P y su simétrico P′ están en una misma perpendicular al eje y a la misma distancia de él: el eje es la mediatriz del segmento PP′. ';
+  const A = o[0];
+  if (L.type === 'v') { const d = A.x - L.k; c += `Por ejemplo, A está a ${Math.abs(d)} cuadro${Math.abs(d) > 1 ? 's' : ''} a la ${d < 0 ? 'izquierda' : 'derecha'} del eje, así que A′ está a ${Math.abs(d)} a la ${d < 0 ? 'derecha' : 'izquierda'}, en la misma horizontal.`; }
+  else if (L.type === 'h') { const d = A.y - L.k; c += `Por ejemplo, A está ${Math.abs(d)} cuadro${Math.abs(d) > 1 ? 's' : ''} por ${d > 0 ? 'encima' : 'debajo'} del eje, así que A′ está ${Math.abs(d)} por ${d > 0 ? 'debajo' : 'encima'}, en la misma vertical.`; }
+  else c += 'Con un eje en diagonal, la perpendicular también va en diagonal: desde cada vértice, avanza en diagonal hasta el eje y continúa la misma distancia al otro lado.';
+  return { ok: false, m, c };
+};
+ej4.solSVG = function (ok) {
+  let s = ok ? '' : polySVG(this.t, 'p-sol') + labelsSVG(this.t, nombres(3, true), 't-ok', 0);
+  this.o.forEach((p, i) => { s += segSVG(p, this.t[i], 'aux') + dotSVG(mul(add(p, this.t[i]), .5), 'pto-mid', 3.5); });
+  return s;
+};
+
+/* ================= EJERCICIO 5 · Determinar el eje de simetría ================= */
+const ej5 = nuevoEj('ej5', 5, 'Eje de simetría', 'line');
+ej5.gen = function () {
+  let r = null; while (!r) r = genEjeYFigura(Math.random() < .5 ? randTri : randQuad);
+  const figs = [r.f, r.img];
+  const pares = shuffle([[P(1, 1), P(4, 1)], [P(1, H - 1), P(4, H - 1)], [P(W - 4, 1), P(W - 1, 1)], [P(W - 4, H - 1), P(W - 1, H - 1)], [P(1, 1), P(1, 4)], [P(W - 1, 1), P(W - 1, 4)]]);
+  let h = pares[0];
+  for (const pr of pares) {
+    if (pr.every(p => figs.every(f => distPtPoly(p, f) >= 1)) && !(onLine(r.L, pr[0]) && onLine(r.L, pr[1]))) { h = pr; break; }
+  }
+  Object.assign(this, { o: r.f, L: r.L, t: r.img, h: h.map(p => P(p.x, p.y)) });
+};
+ej5.enunciado = () => 'Las dos figuras son simétricas respecto de una recta. Determina el eje de simetría: arrastra los dos puntos para que la recta que pasa por ellos sea el eje.';
+ej5.staticSVG = function () {
+  const n = this.o.length;
+  return polySVG(this.o, 'p-orig') + labelsSVG(this.o, nombres(n), 't-orig', 0) + polySVG(this.t, 'p-img') + labelsSVG(this.t, nombres(n, true), 't-img', 0);
+};
+ej5.check = function () {
+  const [p, q] = this.h, L = this.L;
+  if (eq(p, q)) return { aviso: 'Los dos puntos están en el mismo sitio. Sepáralos para que definan una recta.' };
+  if (onLine(L, p) && onLine(L, q)) return { ok: true, m: 'Tu recta pasa por los puntos medios de los segmentos AA′, BB′… y es perpendicular a ellos: es su mediatriz, y por eso es el eje de simetría.' };
+  const d = sub(q, p); let m;
+  if (Math.abs(cross(d, L.d)) < EPS) m = 'Tu recta tiene la dirección correcta, pero está desplazada: no pasa por los puntos medios de los segmentos que unen cada vértice con su simétrico.';
+  else if (Math.abs(dot(d, L.d)) < EPS) m = 'Tu recta tiene la dirección de los segmentos AA′, BB′…, pero el eje es perpendicular a esos segmentos.';
+  else if (onLine(L, p) || onLine(L, q)) m = 'Uno de tus puntos está en el eje, pero la recta no tiene la dirección correcta: el eje debe ser perpendicular a los segmentos AA′, BB′…';
+  else m = 'Tu recta no es el eje de simetría: no pasa por los puntos medios de los segmentos AA′, BB′…';
+  return { ok: false, m, c: 'El eje de simetría es la mediatriz de cualquier segmento que une un punto con su simétrico: pasa por su punto medio y es perpendicular a él. Localiza el punto medio de AA′ y el de BB′: el eje pasa por los dos.' };
+};
+ej5.solSVG = function () {
+  let s = ejeSVG(this.L, 'l-sol', 'e', 't-ok');
+  this.o.forEach((p, i) => { s += segSVG(p, this.t[i], 'aux') + dotSVG(mul(add(p, this.t[i]), .5), 'pto-mid', 3.5); });
+  return s;
+};
+
+/* ================= EJERCICIO 6 · Simetría central ================= */
+const ej6 = nuevoEj('ej6', 6, 'Simetría central', 'poly');
+ej6.gen = function () {
+  for (let t = 0; t < 3000; t++) {
+    const q = randQuad(), O = P(rint(1, W - 1), rint(1, H - 1));
+    if (distPtPoly(O, q) < 2) continue;
+    const img = q.map(central(O));
+    if (!inGrid(img, 1) || polyDist(q, img) < 1) continue;
+    Object.assign(this, { o: q, O, t: img, h: q.map(p => P(p.x, p.y)) }); return;
+  }
+};
+ej6.enunciado = () => 'Dibuja la figura simétrica de ABCD mediante la simetría central de centro <b>O</b>. Arrastra los vértices A′, B′, C′ y D′ hasta su posición final.';
+ej6.staticSVG = function () { return polySVG(this.o, 'p-orig') + labelsSVG(this.o, nombres(4), 't-orig', -32) + puntoO(this.O, 'pto', 'O', [this.o]); };
+ej6.check = function () {
+  const O = this.O;
+  if (allEq(this.h, this.t)) return { ok: true, m: 'O es el punto medio de cada segmento AA′, BB′, CC′ y DD′. La simetría central equivale a un giro de 180° con centro O.' };
+  const c = [
+    { f: p => P(2 * O.x - p.x, p.y), m: 'Has hecho una simetría axial respecto a la recta vertical que pasa por O, no una simetría central. En la simetría central cada punto pasa al otro lado de O, a través de O.' },
+    { f: p => P(p.x, 2 * O.y - p.y), m: 'Has hecho una simetría axial respecto a la recta horizontal que pasa por O, no una simetría central. En la simetría central cada punto pasa al otro lado de O, a través de O.' },
+    { f: rot(O, 90), m: 'Has girado la figura 90° alrededor de O. La simetría central equivale a un giro de 180°, no de 90°.' },
+    { f: rot(O, -90), m: 'Has girado la figura 90° alrededor de O. La simetría central equivale a un giro de 180°, no de 90°.' },
+    { f: p => P(O.x - 2 * (p.x - O.x), O.y - 2 * (p.y - O.y)), m: 'Has llevado cada vértice al otro lado de O y en la dirección correcta, pero al doble de distancia. P′ debe estar a la misma distancia de O que P.' }
+  ];
+  const m = diagnose(this.h, this.o, this.t, c, { tras: () => 'Has trasladado la figura sin girarla. En la simetría central cada punto pasa al otro lado de O, así que la figura queda girada 180°.' });
+  const d = sub(O, this.o[0]);
+  return { ok: false, m, c: `En la simetría central de centro O, O es el punto medio de cada segmento PP′. Con la cuadrícula: de A a O hay ${vecTxt(d)} cuadros, así que de O a A′ hay otra vez ${vecTxt(d)}.` };
+};
+ej6.solSVG = function (ok) {
+  let s = ok ? '' : polySVG(this.t, 'p-sol') + labelsSVG(this.t, nombres(4, true), 't-ok', 0);
+  this.o.forEach((p, i) => s += segSVG(p, this.t[i], 'aux'));
+  return s;
+};
+
+/* ================= EJERCICIO 7 · Determinar el centro de simetría ================= */
+const ej7 = nuevoEj('ej7', 7, 'Centro de simetría', 'point');
+ej7.gen = function () {
+  for (let t = 0; t < 3000; t++) {
+    const q = randQuad(), O = P(rint(2, W - 2), rint(2, H - 2));
+    if (distPtPoly(O, q) < 1.5) continue;
+    const img = q.map(central(O));
+    if (!inGrid(img, 1) || polyDist(q, img) < 1) continue;
+    const esquinas = shuffle([P(1, 1), P(W - 1, 1), P(1, H - 1), P(W - 1, H - 1)]);
+    const h0 = esquinas.find(p => !eq(p, O) && distPtPoly(p, q) >= 1 && distPtPoly(p, img) >= 1);
+    if (!h0) continue;
+    Object.assign(this, { o: q, O, t: img, h: [P(h0.x, h0.y)] }); return;
+  }
+};
+ej7.enunciado = () => 'Las figuras ABCD y A′B′C′D′ son simétricas respecto de un punto. Obtén el centro de simetría: arrastra el punto <b>O</b> hasta su posición.';
+ej7.staticSVG = function () { return polySVG(this.o, 'p-orig') + labelsSVG(this.o, nombres(4), 't-orig', 0) + polySVG(this.t, 'p-img') + labelsSVG(this.t, nombres(4, true), 't-img', 0); };
+ej7.check = function () {
+  const p = this.h[0];
+  if (eq(p, this.O)) return { ok: true, m: 'O es el punto medio común de todos los segmentos que unen cada vértice con su simétrico: AA′, BB′, CC′ y DD′ se cortan en O.' };
+  let m = null;
+  this.o.forEach((q, i) => { if (!m && onSeg(p, q, this.t[i])) m = `Tu punto está sobre el segmento ${LET[i]}${LET[i]}′, así que vas bien encaminado, pero no está en su punto medio.`; });
+  if (!m) m = 'El punto que has marcado no es el centro de simetría: si lo fuera, estaría a mitad de camino entre cada vértice y su simétrico.';
+  return { ok: false, m, c: 'El centro de simetría es el punto medio común de todos los segmentos que unen cada punto con su simétrico. Une A con A′ y C con C′: esos segmentos se cortan en su punto medio, que es O.' };
+};
+ej7.solSVG = function () {
+  let s = '';
+  this.o.forEach((p, i) => s += segSVG(p, this.t[i], 'aux'));
+  return s + puntoO(this.O, 'pto-ok', 'O', [this.o, this.t]);
+};
+
+/* ================= Capa dinámica (lo que mueve el alumno) ================= */
+function handleSVG(ex, i, p, etiqueta) {
+  const c = sp(p), act = drag && drag.ex === ex && drag.k === i ? ' arrastrando' : '';
+  return `<g class="handle${act}" data-k="${i}" tabindex="0" role="button" aria-label="Punto ${etiqueta}: arrástralo o muévelo con las flechas"><circle class="hit" cx="${r1(c.x)}" cy="${r1(c.y)}" r="18"/><circle class="knob" cx="${r1(c.x)}" cy="${r1(c.y)}" r="7"/></g>`;
+}
+function dynSVG(ex) {
+  const st = ex.estado === 'fallado' ? ' err' : ex.estado === 'superado' ? ' ok' : '';
+  const abierto = ex.estado === 'abierto';
+  let s = '';
+  if (ex.kind === 'poly') {
+    const n = ex.h.length, labs = nombres(n, true);
+    s += polySVG(ex.h, 'p-alu' + st) + labelsSVG(ex.h, labs, 't-alu' + st, 32);
+    ex.h.forEach((p, i) => s += abierto ? handleSVG(ex, i, p, labs[i]) : dotSVG(p, 'dot-alu' + st, 4.5));
+  } else if (ex.kind === 'line') {
+    const [p, q] = ex.h;
+    if (!eq(p, q)) { const seg = clipLine(p, sub(q, p)); if (seg) s += segSVG(seg[0], seg[1], 'l-alu' + st); }
+    ex.h.forEach((pt, i) => s += abierto ? handleSVG(ex, i, pt, i ? 'Q' : 'P') : dotSVG(pt, 'dot-alu' + st, 4.5));
+  } else if (ex.kind === 'point') {
+    const p = ex.h[0], c = sp(p);
+    s += textPx(c.x + 14, c.y - 14, 'O', 't-alu' + st);
+    s += abierto ? handleSVG(ex, 0, p, 'O') : dotSVG(p, 'dot-alu' + st, 5);
+  }
+  return s;
+}
+function boardSVG(ex) {
+  return `<svg viewBox="0 0 ${SVGW} ${SVGH}" xmlns="http://www.w3.org/2000/svg" aria-label="Cuadrícula del ejercicio ${ex.num}">${GRID}<g class="st">${ex.staticSVG()}</g><g class="sol">${ex.sol}</g><g class="dyn">${dynSVG(ex)}</g></svg>`;
+}
+function redrawDyn(ex) { const g = document.querySelector(`#card-${ex.id} .dyn`); if (g) g.innerHTML = dynSVG(ex); }
+function clientToGrid(svg, cx, cy) {
+  const pt = svg.createSVGPoint(); pt.x = cx; pt.y = cy;
+  const q = pt.matrixTransform(svg.getScreenCTM().inverse());
+  return P((q.x - PAD) / CELL, H - (q.y - PAD) / CELL);
+}
+function attachDrag(ex, svg) {
+  svg.addEventListener('touchstart', e => { if (ex.estado === 'abierto' && e.target.closest('.handle')) e.preventDefault(); }, { passive: false });
+  svg.addEventListener('touchmove', e => { if (drag && drag.ex === ex) e.preventDefault(); }, { passive: false });
+  svg.addEventListener('pointerdown', e => {
+    if (ex.estado !== 'abierto') return;
+    const h = e.target.closest('.handle'); if (!h) return;
+    e.preventDefault();
+    drag = { ex, k: +h.dataset.k, pid: e.pointerId };
+    try { svg.setPointerCapture(e.pointerId); } catch (_) { }
+    redrawDyn(ex);
+  });
+  svg.addEventListener('pointermove', e => {
+    if (!drag || drag.ex !== ex || e.pointerId !== drag.pid) return;
+    e.preventDefault();
+    const g = clientToGrid(svg, e.clientX, e.clientY);
+    const np = P(clamp(Math.round(g.x), 0, W), clamp(Math.round(g.y), 0, H));
+    if (!eq(np, ex.h[drag.k])) { ex.h[drag.k] = np; redrawDyn(ex); }
+  });
+  const fin = () => { if (drag && drag.ex === ex) { drag = null; redrawDyn(ex); } };
+  svg.addEventListener('pointerup', fin);
+  svg.addEventListener('pointercancel', fin);
+  svg.addEventListener('keydown', e => {
+    const h = e.target.closest && e.target.closest('.handle');
+    if (!h || ex.estado !== 'abierto') return;
+    const d = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, 1], ArrowDown: [0, -1] }[e.key];
+    if (!d) return;
+    e.preventDefault();
+    const k = +h.dataset.k, p = ex.h[k];
+    ex.h[k] = P(clamp(p.x + d[0], 0, W), clamp(p.y + d[1], 0, H));
+    redrawDyn(ex);
+    const nh = svg.querySelector(`.handle[data-k="${k}"]`); if (nh) nh.focus();
+  });
+}
+
+/* ================= Tarjetas ================= */
+function leyendaHTML(ex) {
+  let s = '<span><i class="sw sw-orig"></i>Figura dada</span>';
+  if (ex.kind !== 'poly') s += '<span><i class="sw sw-img"></i>Figura imagen</span>';
+  if (ex.kind !== 'choice') s += `<span><i class="sw sw-alu"></i>${ex.kind === 'poly' ? 'Tu figura' : ex.kind === 'line' ? 'Tu recta' : 'Tu punto'}</span>`;
+  if (ex.estado !== 'abierto') s += '<span><i class="sw sw-ok"></i>Solución</span>';
+  return s;
+}
+function opcionesHTML(ex) {
+  return '<div class="opciones" role="group" aria-label="Opciones de ángulo">' + ex.opciones.map((o, i) => {
+    let cls = 'opcion';
+    if (ex.estado !== 'abierto') { if (o.ok) cls += ' correcta'; else if (i === ex.eleccion) cls += ' erronea'; }
+    return `<button class="${cls}" data-op="${i}" aria-pressed="${ex.eleccion === i}" ${ex.estado !== 'abierto' ? 'disabled' : ''}>${txtOpcion(o.a)}</button>`;
+  }).join('') + '</div>';
+}
+function renderCard(ex) {
+  let card = $('card-' + ex.id);
+  if (!card) { card = document.createElement('section'); card.id = 'card-' + ex.id; $('ejercicios').appendChild(card); }
+  card.className = 'ejercicio-card' + (ex.estado === 'superado' ? ' superado' : ex.estado === 'fallado' ? ' fallado' : '');
+  const chip = ex.estado === 'superado' ? '<span class="chip chip-ok">✔ Superado</span>' : ex.estado === 'fallado' ? '<span class="chip chip-err">✗ Revisa la solución</span>' : '<span class="chip">Pendiente</span>';
+  card.innerHTML = `<div class="ej-head"><span class="ej-num">${ex.num}</span><h2 class="ej-tit">${ex.titulo}</h2>${chip}
+    <span class="ej-stats">Intentos: ${ex.stats.int} · Aciertos: ${ex.stats.ac} · Fallos: ${ex.stats.fa}</span></div>
+    <p class="enunciado">${ex.enunciado()}</p>
+    <div class="tablero">${boardSVG(ex)}</div>
+    ${ex.kind === 'choice' ? opcionesHTML(ex) : ''}
+    <div class="leyenda">${leyendaHTML(ex)}</div>
+    <div class="botones">
+      <button class="btn-primario" data-acc="comprobar" ${ex.estado !== 'abierto' ? 'disabled' : ''}>Comprobar</button>
+      <button class="btn-secundario${ex.estado === 'fallado' ? ' destacado' : ''}" data-acc="otro" ${ex.estado === 'superado' ? 'disabled' : ''}>↻ Hacer otro</button>
+    </div>
+    <div class="feedback" aria-live="polite">${ex.fb}</div>`;
+  attachDrag(ex, card.querySelector('svg'));
+}
+function hacerOtro(ex) {
+  if (ex.estado === 'superado') return;
+  if (drag && drag.ex === ex) drag = null;
+  ex.gen(); ex.estado = 'abierto'; ex.sol = ''; ex.fb = ''; ex.eleccion = null;
+  renderCard(ex);
+}
+function comprobar(ex) {
+  if (ex.estado !== 'abierto') return;
+  if (!nombreOK()) return;
+  const r = ex.check();
+  if (r.aviso) { mostrarAviso(r.aviso); return; }
+  ex.stats.int++;
+  if (r.ok) {
+    ex.stats.ac++; ex.estado = 'superado';
+    ex.fb = `<div class="fb fb-ok"><p class="fb-tit">✔ ¡Correcto! Ejercicio superado (+${fmtNota(10 / TOTAL)} puntos).</p><p>${r.m}</p></div>`;
+  } else {
+    ex.stats.fa++; fallos++; ex.estado = 'fallado';
+    ex.fb = `<div class="fb fb-err"><p class="fb-tit">✗ No es correcto. Este fallo resta 0,5 puntos.</p><p><b>Qué ha pasado:</b> ${r.m}</p><p><b>Recuerda:</b> ${r.c}</p><p class="fb-nota">En verde tienes la solución. Pulsa «Hacer otro» para intentarlo con una figura nueva.</p></div>`;
+  }
+  ex.sol = ex.solSVG(r.ok);
+  renderCard(ex);
+  actualizarUI();
+}
+
+/* ================= Barra, nombre, reloj ================= */
+function nombreOK() {
+  const inp = $('nombre');
+  if (inp.value.trim()) return true;
+  inp.classList.add('falta'); $('aviso-nombre').classList.add('visible'); inp.focus();
+  return false;
+}
+$('nombre').addEventListener('input', () => {
+  if ($('nombre').value.trim()) { $('nombre').classList.remove('falta'); $('aviso-nombre').classList.remove('visible'); }
+});
+function actualizarUI() {
+  $('marcador-nota').textContent = fmtNota(nota());
+  $('marcador-sup').textContent = superados();
+  $('marcador-fallos').textContent = fallos;
+}
+const pad2 = n => String(n).padStart(2, '0');
+function tick() { const s = Math.floor((Date.now() - inicio) / 1000); $('marcador-tiempo').textContent = pad2(Math.floor(s / 60)) + ':' + pad2(s % 60); }
+
+/* ================= Modales ================= */
+function mostrarAviso(msg) { $('avisoTexto').textContent = msg; $('modalAviso').classList.add('show'); $('avisoOk').focus(); }
+$('avisoOk').addEventListener('click', () => $('modalAviso').classList.remove('show'));
+function claseNota(n) {
+  if (n >= 10 - EPS) return 'n10'; if (n >= 9) return 'n9'; if (n >= 8) return 'n8';
+  if (n >= 7) return 'n7'; if (n >= 6) return 'n6'; if (n >= 5) return 'n5'; return 'nbaja';
+}
+function abrirInforme() {
+  if (!nombreOK()) return;
+  const n = nota(), d = new Date(), seg = Math.floor((Date.now() - inicio) / 1000);
+  const tiempoInf = pad2(Math.floor(seg / 60)) + ':' + pad2(seg % 60);
+  $('infTitulo').textContent = document.querySelector('.titulo-ficha').textContent;
+  $('infSub').textContent = document.querySelector('.subtitulo').textContent;
+  $('infNombre').textContent = $('nombre').value.trim();
+  $('infNota').textContent = fmtNota(n) + ' / 10';
+  $('infMsg').textContent = n >= 10 - EPS ? '¡Perfecto! Dominas todos los movimientos.' : n >= 9 ? '¡Excelente! Casi perfecto.' : n >= 7 ? '¡Muy bien! Sigue así.' : n >= 5 ? 'Aprobado. Repasa los movimientos en los que has fallado.' : 'Sigue practicando con el botón «Hacer otro».';
+  $('infDatos').innerHTML = `<span>Fecha: <b>${pad2(d.getDate())}/${pad2(d.getMonth() + 1)}/${d.getFullYear()}</b></span><span>Hora: <b>${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}</b></span><span>Tiempo: <b>${tiempoInf}</b></span><span>Superados: <b>${superados()} / ${TOTAL}</b></span><span>Fallos: <b>${fallos}</b></span>`;
+  $('infTabla').innerHTML = '<thead><tr><th>Ejercicio</th><th>Estado</th><th class="c">Intentos</th><th class="c">Aciertos</th><th class="c">Fallos</th></tr></thead><tbody>' +
+    EJ.map(e => `<tr><td>${e.num}. ${e.titulo}</td><td>${e.estado === 'superado' ? '✔ Superado' : '✗ No superado'}</td><td class="c">${e.stats.int}</td><td class="c">${e.stats.ac}</td><td class="c">${e.stats.fa}</td></tr>`).join('') + '</tbody>';
+  $('tarjetaInforme').className = 'modal-calificacion ' + claseNota(n);
+  document.body.classList.toggle('ficha-10', n >= 10 - EPS);
+  $('modalInforme').classList.add('show');
+}
+$('btnFinalizar').addEventListener('click', abrirInforme);
+$('cerrarInforme').addEventListener('click', () => $('modalInforme').classList.remove('show'));
+$('btnReiniciar').addEventListener('click', () => {
+  if (EJ.some(e => e.stats.int > 0)) $('modalReinicio').classList.add('show'); else inicializar();
+});
+$('reiniciarNo').addEventListener('click', () => $('modalReinicio').classList.remove('show'));
+$('reiniciarSi').addEventListener('click', () => { $('modalReinicio').classList.remove('show'); inicializar(); });
+
+/* ================= Delegación de clics ================= */
+$('ejercicios').addEventListener('click', e => {
+  const card = e.target.closest('.ejercicio-card'); if (!card) return;
+  const ex = EJ.find(x => 'card-' + x.id === card.id); if (!ex) return;
+  const btn = e.target.closest('button'); if (!btn) return;
+  if (btn.dataset.acc === 'comprobar') comprobar(ex);
+  else if (btn.dataset.acc === 'otro') hacerOtro(ex);
+  else if (btn.dataset.op !== undefined && ex.estado === 'abierto') {
+    ex.eleccion = +btn.dataset.op;
+    card.querySelectorAll('.opcion').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.op === ex.eleccion)));
+  }
+});
+
+/* ================= Inicio ================= */
+function inicializar() {
+  fallos = 0; drag = null; inicio = Date.now();
+  document.body.classList.remove('ficha-10');
+  $('ejercicios').innerHTML = '';
+  EJ.forEach(ex => { ex.estado = 'abierto'; ex.sol = ''; ex.fb = ''; ex.eleccion = null; ex.stats = { int: 0, ac: 0, fa: 0 }; ex.gen(); renderCard(ex); });
+  actualizarUI(); tick();
+  if (reloj) clearInterval(reloj);
+  reloj = setInterval(tick, 1000);
+}
+inicializar();
+</script>
+</body>
+</html>

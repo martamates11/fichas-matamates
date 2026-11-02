@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Probabilidad · 3.º ESO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --color-fondo: #F5F0E8;
+    --color-fondo-card: #FDFAF3;
+    --color-texto: #2C1F0E;
+    --color-texto-suave: #6B4F35;
+    --color-acento: #A0522D;
+    --color-acento-hover: #7B3B1E;
+    --color-borde: #C9A96E;
+    --color-borde-suave: #E0CEAA;
+    --color-cabecera: #3B2510;
+    --color-cabecera-txt: #F5EDD8;
+    --color-barra-alumno: #EFE4CC;
+    --color-correcto: #2E6B3E;
+    --color-incorrecto: #8B1A1A;
+    --color-neutro: #E8DFC8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Lato', sans-serif;
+    font-size: 16px;
+    color: var(--color-texto);
+    background-color: var(--color-fondo);
+    line-height: 1.5;
+  }
+  body.ficha-verde { background-color: #CFE6CF; }
+  body.ficha-verde .ficha-container { border-color: #1a7a1a; }
+
+  /* ---------- Cabecera (solo autoría) ---------- */
+  .cabecera {
+    background-color: var(--color-cabecera);
+    color: var(--color-cabecera-txt);
+    font-family: 'Libre Baskerville', serif;
+    text-align: center;
+    padding: 12px 20px;
+    border-bottom: 3px solid var(--color-borde);
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+  }
+
+  /* ---------- Contenedor ---------- */
+  .ficha-container {
+    max-width: 880px;
+    margin: 28px auto;
+    background: var(--color-fondo-card);
+    border: 2px solid var(--color-borde);
+    border-radius: 6px;
+    box-shadow: 0 3px 12px rgba(44, 31, 14, 0.15);
+    padding: 32px 36px;
+  }
+  @media (max-width: 640px) {
+    .ficha-container { margin: 12px 8px; padding: 20px 14px; }
+  }
+  .titulo-ficha {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 1.6rem;
+    text-align: center;
+    margin: 0 0 6px;
+  }
+  .titulo-ficha::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 3px;
+    background: var(--color-borde);
+    margin: 10px auto 0;
+    border-radius: 2px;
+  }
+  .subtitulo {
+    text-align: center;
+    color: var(--color-texto-suave);
+    font-family: 'Libre Baskerville', serif;
+    font-style: italic;
+    font-size: 0.98rem;
+    margin: 10px 0 22px;
+  }
+
+  /* ---------- Barra del alumno ---------- */
+  .barra {
+    position: sticky; top: 0; z-index: 50;
+    background: var(--color-barra-alumno);
+    border: 1.5px solid var(--color-borde);
+    border-radius: 6px;
+    margin: 0 0 22px;
+    box-shadow: 0 2px 6px rgba(44, 31, 14, 0.08);
+    padding: 9px 20px;
+    display: flex; flex-wrap: wrap; gap: 10px 26px;
+    align-items: center; justify-content: center;
+    font-size: .92rem;
+  }
+  .barra label { font-family: 'Libre Baskerville', serif; font-size: .85rem; color: var(--color-texto-suave); }
+  .barra input#nombre {
+    background: var(--color-fondo-card); border: 1.5px solid var(--color-borde); border-radius: 4px;
+    padding: 6px 10px; font-family: 'Lato', sans-serif; font-size: .95rem;
+    color: var(--color-texto); width: 230px; max-width: 60vw; outline: none;
+  }
+  .barra input#nombre:focus { border-color: var(--color-acento); }
+  .barra input#nombre.falta { border-color: var(--color-incorrecto); box-shadow: 0 0 0 3px rgba(139,26,26,.18); }
+  .barra .dato { color: var(--color-texto-suave); white-space: nowrap; }
+  .barra .dato b { color: var(--color-acento); font-family: 'Libre Baskerville', serif; }
+  .aviso-nombre { color: var(--color-incorrecto); font-size: .82rem; font-weight: 700; display: none; width: 100%; text-align: center; }
+  .aviso-nombre.visible { display: block; }
+  @media (max-width: 640px) {
+    .barra { padding: 7px 10px; gap: 5px 14px; font-size: .82rem; }
+    .barra label { display: none; }
+    .barra input#nombre { width: 100%; max-width: none; padding: 5px 8px; font-size: .9rem; }
+  }
+
+  /* ---------- Instrucciones ---------- */
+  .instrucciones {
+    border: 1px dashed var(--color-borde);
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin-bottom: 26px;
+    font-size: 0.9rem;
+    color: var(--color-texto-suave);
+    background: #FBF6EA;
+  }
+  .instrucciones h2 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 0.95rem;
+    margin: 0 0 6px;
+    color: var(--color-texto);
+  }
+  .instrucciones ul { margin: 0; padding-left: 1.2rem; }
+  .instrucciones li { margin: 3px 0; }
+  .instrucciones code {
+    background: var(--color-fondo-card);
+    border: 1px solid var(--color-borde-suave);
+    border-radius: 3px;
+    padding: 0 5px;
+    font-family: 'Lato', sans-serif;
+    font-weight: 700;
+    color: var(--color-texto);
+  }
+
+  /* ---------- Tarjeta de ejercicio ---------- */
+  .ejercicio-card {
+    background: var(--color-fondo);
+    border: 1.5px solid var(--color-borde-suave);
+    border-left: 4px solid var(--color-borde);
+    border-radius: 4px;
+    padding: 20px 24px;
+    margin-bottom: 22px;
+    transition: border-color .3s, background-color .3s;
+  }
+  @media (max-width: 640px) { .ejercicio-card { padding: 16px 14px; } }
+  .ejercicio-card.superado { border-left-color: var(--color-correcto); background: #F1F4EA; }
+  .ej-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .ej-num {
+    flex: none;
+    width: 32px; height: 32px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--color-acento); color: #FDFAF3;
+    border-radius: 50%;
+    font-family: 'Libre Baskerville', serif; font-weight: 700; font-size: .9rem;
+  }
+  .superado .ej-num { background: var(--color-correcto); }
+  .ej-titulo { font-family: 'Libre Baskerville', serif; font-size: 1.08rem; margin: 0; flex: 1; min-width: 200px; }
+  .badge-ok {
+    background: var(--color-correcto); color: #fff;
+    border-radius: 40px; padding: 3px 12px;
+    font-size: .75rem; font-weight: 700; letter-spacing: .03em;
+  }
+
+  .ventana {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px;
+    margin: 10px 0 0 44px;
+    font-size: .8rem; color: var(--color-texto-suave);
+  }
+  @media (max-width: 640px) { .ventana { margin-left: 0; } }
+  .dots { display: inline-flex; gap: 5px; }
+  .dot {
+    width: 20px; height: 20px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: .7rem; font-weight: 700;
+    border: 1.5px solid var(--color-borde);
+    background: var(--color-fondo-card);
+  }
+  .dot.ok { background: var(--color-correcto); border-color: var(--color-correcto); color: #fff; }
+  .dot.mal { background: var(--color-incorrecto); border-color: var(--color-incorrecto); color: #fff; }
+
+  .ej-cuerpo {
+    display: grid;
+    grid-template-columns: minmax(0, 250px) 1fr;
+    gap: 18px;
+    align-items: center;
+    margin: 16px 0 18px;
+  }
+  .ej-cuerpo.ancho { grid-template-columns: 1fr; }
+  .ej-cuerpo.ancho .ilustracion { order: 2; }
+  @media (max-width: 640px) { .ej-cuerpo { grid-template-columns: 1fr; } }
+  .ilustracion {
+    background: var(--color-fondo-card);
+    border: 1px solid var(--color-borde-suave);
+    border-radius: 6px;
+    padding: 10px;
+    text-align: center;
+  }
+  .ilustracion svg { width: 100%; max-width: 230px; height: auto; display: block; margin: 0 auto; }
+  .leyenda { font-size: .78rem; color: var(--color-texto-suave); margin-top: 4px; }
+  .enunciado { font-size: 1rem; }
+  .enunciado p { margin: 0 0 8px; }
+
+  .proceso { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+  .paso {
+    display: flex; align-items: center; gap: 8px;
+    font-size: .86rem;
+    background: var(--color-fondo-card);
+    border: 1px solid var(--color-borde-suave);
+    border-radius: 4px;
+    padding: 5px 10px;
+  }
+  .paso .n {
+    flex: none; width: 20px; height: 20px; border-radius: 50%;
+    background: var(--color-borde-suave); color: var(--color-texto);
+    font-size: .72rem; font-weight: 700;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .paso.clave { border-color: var(--color-acento); background: #F8EDE3; font-weight: 700; color: var(--color-acento-hover); }
+  .paso.clave .n { background: var(--color-acento); color: #fff; }
+
+  /* Baraja */
+  .baraja-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table.baraja { border-collapse: separate; border-spacing: 3px; margin: 0 auto; font-size: .78rem; }
+  table.baraja th { font-weight: 700; color: var(--color-texto-suave); padding: 2px 4px; }
+  table.baraja th.palo { text-align: left; padding-right: 8px; white-space: nowrap; font-family: 'Libre Baskerville', serif; }
+  table.baraja td {
+    width: 28px; height: 36px; text-align: center; font-weight: 700;
+    border-radius: 4px; border: 1.5px solid; background: #fff;
+  }
+  .p-oros td { border-color: #C9A227; color: #8A6D10; background: #FBF4DC; }
+  .p-copas td { border-color: #B5483B; color: #8B2A1F; background: #F9E7E3; }
+  .p-espadas td { border-color: #4F6E8A; color: #2E4A63; background: #E6EEF5; }
+  .p-bastos td { border-color: #5A8F5A; color: #345F34; background: #E6F1E3; }
+  .punto { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+
+  /* Apartados */
+  ol.apartados { list-style: none; margin: 0; padding: 0; }
+  .apartado {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px 16px;
+    align-items: center;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--color-borde-suave);
+  }
+  .apartado:last-child { border-bottom: none; }
+  @media (max-width: 640px) { .apartado { grid-template-columns: 1fr; } }
+  .apartado label { cursor: pointer; }
+  .letra { font-family: 'Libre Baskerville', serif; font-weight: 700; color: var(--color-acento); margin-right: 4px; }
+  .resp { display: inline-flex; align-items: center; gap: 8px; }
+  .resp input {
+    width: 130px;
+    background-color: var(--color-fondo-card);
+    border: 1.5px solid var(--color-borde);
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-family: 'Lato', sans-serif;
+    font-size: 1rem;
+    text-align: center;
+    color: var(--color-texto);
+    outline: none;
+    transition: border-color 0.2s, box-shadow .2s;
+  }
+  .resp input:focus { border-color: var(--color-acento); box-shadow: 0 0 0 3px rgba(160,82,45,.15); }
+  .resp input:disabled { background: var(--color-neutro); color: var(--color-texto); }
+  .apartado.ok input { border-color: var(--color-correcto); }
+  .apartado.mal input { border-color: var(--color-incorrecto); }
+  .marca { width: 18px; font-weight: 700; font-size: 1.1rem; }
+  .apartado.ok .marca { color: var(--color-correcto); }
+  .apartado.mal .marca { color: var(--color-incorrecto); }
+
+  .acciones { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
+  .aviso-ej { color: var(--color-incorrecto); font-size: .85rem; font-weight: 700; margin-top: 8px; min-height: 0; }
+  .aviso-ej:empty { display: none; }
+
+  /* Botones */
+  .btn-primario {
+    background-color: var(--color-acento);
+    color: #FDFAF3;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 22px;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.03em;
+    transition: background-color 0.2s ease;
+  }
+  .btn-primario:hover { background-color: var(--color-acento-hover); }
+  .btn-secundario {
+    background-color: transparent;
+    color: var(--color-acento);
+    border: 2px solid var(--color-borde);
+    border-radius: 4px;
+    padding: 9px 20px;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-secundario:hover { border-color: var(--color-acento); color: var(--color-acento-hover); }
+  .btn-finalizar {
+    background-color: var(--color-cabecera);
+    color: var(--color-cabecera-txt);
+    border: 2px solid var(--color-borde);
+    border-radius: 4px;
+    padding: 12px 28px;
+    font-family: 'Libre Baskerville', serif;
+    font-size: 0.98rem;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    transition: background-color 0.2s;
+  }
+  .btn-finalizar:hover { background-color: #2C1A0A; }
+  .pie { text-align: center; margin-top: 30px; padding-top: 22px; border-top: 1px solid var(--color-borde-suave); }
+
+  /* Feedback */
+  .feedback:empty { display: none; }
+  .feedback { margin-top: 16px; }
+  .fb { border-radius: 4px; padding: 12px 16px; font-size: .92rem; }
+  .fb-ok { background-color: #EAF4EC; border: 1.5px solid var(--color-correcto); color: var(--color-texto); }
+  .fb-ok > strong { color: var(--color-correcto); }
+  .fb-mal { background-color: #F9EAEA; border: 1.5px solid var(--color-incorrecto); color: var(--color-texto); }
+  .fb-mal > strong { color: var(--color-incorrecto); }
+  .fb ul { list-style: none; padding: 0; margin: 10px 0 0; }
+  .fb li { padding: 8px 0; border-top: 1px dashed rgba(44,31,14,.15); }
+  .fb li .cab { font-weight: 700; }
+  .fb li.bien .cab { color: var(--color-correcto); }
+  .fb li.fallo .cab { color: var(--color-incorrecto); }
+  .diag { margin: 4px 0; }
+  .diag::before { content: '🔍 '; }
+  .sol { margin-top: 4px; font-style: italic; color: var(--color-texto-suave); }
+  .sol::before { content: '✏️ '; font-style: normal; }
+  .tip { display: block; margin-top: 3px; font-size: .85rem; color: var(--color-texto-suave); }
+  .concepto { margin: 8px 0 0; }
+  .concepto::before { content: '💡 '; }
+  .fb-progreso { margin-top: 10px; font-size: .88rem; color: var(--color-texto-suave); }
+  .fb-superado {
+    margin-top: 10px;
+    background: var(--color-correcto); color: #fff;
+    border-radius: 4px; padding: 8px 14px;
+    font-family: 'Libre Baskerville', serif; font-weight: 700;
+  }
+
+  /* Árbol (feedback) */
+  .pregunta-comun { margin-top: 12px !important; }
+  .arbol-fb {
+    margin-top: 12px;
+    background: var(--color-fondo-card);
+    border: 1px solid var(--color-borde-suave);
+    border-radius: 6px;
+    padding: 12px 14px;
+  }
+  .arbol-enunciado {
+    margin: 0 0 16px;
+    background: var(--color-fondo-card);
+    border: 1px dashed var(--color-borde);
+    border-radius: 6px;
+    padding: 12px 14px;
+    text-align: center;
+  }
+  .arbol-enunciado svg.arbol { max-width: 420px; }
+  .arbol-titulo { font-family: 'Libre Baskerville', serif; font-size: .9rem; color: var(--color-texto); margin-bottom: 6px; }
+  svg.arbol { display: block; width: 100%; height: auto; margin: 0 auto; }
+  .arbol-ancho svg.arbol { max-width: 680px; }
+  .arbol-compacto { display: none; }
+  .arbol-compacto svg.arbol { max-width: 360px; }
+  .arbol-lista { list-style: none; padding: 0; margin: 8px 0 0; font-size: .86rem; color: var(--color-texto-suave); }
+  .arbol-lista li { padding: 3px 0; border-top: none !important; }
+  .arbol-lista li.marcado { color: var(--color-acento); font-weight: 700; }
+  @media (max-width: 640px) {
+    .arbol-ancho { display: none; }
+    .arbol-compacto { display: block; }
+  }
+
+  /* Fracciones */
+  .frac {
+    display: inline-flex; flex-direction: column;
+    vertical-align: middle; text-align: center;
+    margin: 0 .15em; font-size: .9em; line-height: 1.15;
+  }
+  .frac > span:first-child { border-bottom: 1.4px solid currentColor; padding: 0 .25em; }
+  .frac > span:last-child { padding: 0 .25em; }
+
+  /* Modal */
+  .overlay {
+    position: fixed; inset: 0; z-index: 1000;
+    background: rgba(44, 31, 14, 0.55);
+    display: flex; align-items: center; justify-content: center;
+    padding: 16px;
+  }
+  .modal-calificacion {
+    position: relative;
+    border: 3px solid var(--color-borde);
+    border-radius: 8px;
+    font-family: 'Libre Baskerville', serif;
+    box-shadow: 0 6px 24px rgba(44, 31, 14, 0.35);
+    padding: 28px 30px;
+    width: 100%; max-width: 520px;
+    max-height: 92vh; overflow-y: auto;
+    text-align: center;
+  }
+  .modal-cerrar {
+    position: absolute; top: 8px; right: 12px;
+    background: none; border: none; color: inherit;
+    font-size: 1.4rem; cursor: pointer; opacity: .8;
+  }
+  .m-titulo { font-size: 1.35rem; font-weight: 700; margin: 0; }
+  .m-sub { font-style: italic; font-size: .88rem; margin: 2px 0 0; opacity: .9; }
+  .m-sep { border: none; border-top: 1.5px solid currentColor; opacity: .35; margin: 14px 0; }
+  .m-informe { font-size: .8rem; letter-spacing: .12em; text-transform: uppercase; opacity: .85; }
+  .m-nombre { font-size: 1.05rem; font-weight: 700; margin-top: 4px; }
+  .m-nota { font-size: 3rem; font-weight: 700; margin: 6px 0; line-height: 1.1; }
+  .m-datos {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
+    font-family: 'Lato', sans-serif; font-size: .85rem; margin-bottom: 14px;
+  }
+  .m-datos div { background: rgba(255,255,255,.14); border-radius: 4px; padding: 6px 4px; }
+  .m-datos span { display: block; font-size: .7rem; opacity: .85; text-transform: uppercase; letter-spacing: .06em; }
+  table.m-tabla {
+    width: 100%; border-collapse: collapse;
+    font-family: 'Lato', sans-serif; font-size: .82rem; text-align: left;
+  }
+  table.m-tabla th, table.m-tabla td { padding: 6px 6px; border-bottom: 1px solid rgba(255,255,255,.25); }
+  table.m-tabla th { font-size: .72rem; text-transform: uppercase; letter-spacing: .05em; opacity: .85; }
+  table.m-tabla td.num, table.m-tabla th.num { text-align: center; }
+  .m-texto-oscuro table.m-tabla th, .m-texto-oscuro table.m-tabla td { border-bottom-color: rgba(0,0,0,.18); }
+  .m-texto-oscuro .m-datos div { background: rgba(0,0,0,.07); }
+  .m-resumen { font-family: 'Lato', sans-serif; font-size: .85rem; margin-top: 12px; }
+  .m-pie { font-size: .7rem; margin-top: 14px; opacity: .8; }
+  .m-boton {
+    margin-top: 16px;
+    background: rgba(255,255,255,.18); color: inherit;
+    border: 1.5px solid currentColor; border-radius: 4px;
+    padding: 8px 18px; font-family: 'Lato', sans-serif; font-weight: 700; cursor: pointer;
+  }
+</style>
+</head>
+<body>
+  <div class="cabecera">Material elaborado por Marta López de Letona Sánchez</div>
+
+  <main class="ficha-container">
+    <h1 class="titulo-ficha">Probabilidad</h1>
+    <p class="subtitulo">3.º ESO · Regla de Laplace y diagramas de árbol</p>
+
+    <div class="barra" id="barra">
+      <label for="nombre">Alumno/a:</label>
+      <input type="text" id="nombre" placeholder="Nombre y apellidos" autocomplete="off">
+      <span class="dato">Nota: <b id="marcador-nota">0,0</b> / 10</span>
+      <span class="dato">Superados: <b id="marcador-sup">0</b> / 4</span>
+      <span class="dato">Fallos: <b id="marcador-fallos">0</b></span>
+      <div class="aviso-nombre" id="aviso-nombre">Escribe tu nombre antes de continuar.</div>
+    </div>
+
+    <section class="instrucciones">
+      <h2>Cómo funciona esta ficha</h2>
+      <ul>
+        <li>Hay <strong>4 tipos de ejercicio</strong>. Cada tipo se supera con <strong>2 aciertos entre tus 3 últimos intentos</strong> y vale 2,5 puntos.</li>
+        <li>Un intento es correcto solo si aciertas <strong>todos</strong> sus apartados. Tras cada intento aparece otro ejercicio del mismo tipo con números nuevos.</li>
+        <li>Cada intento fallido resta <strong>0,5 puntos</strong>.</li>
+        <li>Escribe las probabilidades como <strong>fracción</strong> (<code>5/12</code>) o como <strong>decimal</strong> redondeado al menos a centésimas (<code>0,42</code>).</li>
+      </ul>
+    </section>
+
+    <section class="ejercicio-card" id="card-bolsa"></section>
+    <section class="ejercicio-card" id="card-con"></section>
+    <section class="ejercicio-card" id="card-sin"></section>
+    <section class="ejercicio-card" id="card-baraja"></section>
+
+    <div class="pie">
+      <button class="btn-finalizar" onclick="finalizar()">Finalizar y Calificar</button>
+    </div>
+  </main>
+
+  <div id="modal"></div>
+
+<script>
+// ============================================================
+// AZAR — seed fija solo para QA (?seed=123); en producción, aleatorio real
+// ============================================================
+const params = new URLSearchParams(location.search);
+let rand = Math.random;
+if (params.get('seed') !== null) {
+  let s = (parseInt(params.get('seed'), 10) || 1) >>> 0;
+  rand = function () {
+    s = (s + 0x6D2B79F5) >>> 0;
+    let t = s;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const ri = (a, b) => a + Math.floor(rand() * (b - a + 1));
+const elegir = arr => arr[Math.floor(rand() * arr.length)];
+
+// ============================================================
+// UTILIDADES
+// ============================================================
+const LETRAS = 'abcdefgh';
+const gcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b) [a, b] = [b, a % b]; return a || 1; };
+function fr(n, d) { return `<span class="frac"><span>${n}</span><span>${d}</span></span>`; }
+function frS(n, d) {
+  const g = gcd(n, d);
+  return g > 1 ? `${fr(n, d)} = ${fr(n / g, d / g)}` : fr(n, d);
+}
+function esc(v) {
+  return String(v ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+const fmt = x => x.toFixed(1).replace('.', ',');
+
+function parsear(raw) {
+  let s = String(raw ?? '').trim().replace(/\s+/g, '').replace(',', '.');
+  if (!s) return { vacio: true };
+  let pct = false;
+  if (s.endsWith('%')) { pct = true; s = s.slice(0, -1); }
+  if (/[*·×x]/.test(s) && !pct) {
+    let n = 1, d = 1;
+    for (const f of s.split(/[*·×x]/)) {
+      const mf = f.match(/^(\d+)(?:\/(\d+))?$/);
+      if (!mf || mf[2] === '0') return { invalido: true };
+      n *= +mf[1]; d *= mf[2] ? +mf[2] : 1;
+    }
+    return { frac: { n, d }, valor: n / d };
+  }
+  const m = s.match(/^(-?\d+)\/(\d+)$/);
+  if (m && !pct) {
+    const n = +m[1], d = +m[2];
+    if (d === 0) return { invalido: true };
+    return { frac: { n, d }, valor: n / d };
+  }
+  if (/^-?(\d+\.?\d*|\.\d+)$/.test(s)) {
+    let v = parseFloat(s);
+    if (pct) v /= 100;
+    return { valor: v, decimal: true };
+  }
+  return { invalido: true };
+}
+// Fracción: equivalencia exacta. Decimal: se admite el redondeo a centésimas.
+function igual(p, num, den) {
+  if (p.frac) return p.frac.n * den === num * p.frac.d;
+  return Math.abs(p.valor - num / den) <= 0.0051;
+}
+
+const MSG_COLORES = 'Hay tres colores, pero no son igual de probables porque no hay el mismo número de bolas de cada uno. La regla de Laplace cuenta <b>bolas</b>, no colores.';
+
+// ============================================================
+// GENERADORES DE EJERCICIOS
+// ============================================================
+function bolsaSVG(grupos) {
+  const bolas = [];
+  grupos.forEach(g => { for (let i = 0; i < g.n; i++) bolas.push(g); });
+  const porFila = 6, r = 12.5, paso = 28;
+  const filas = Math.ceil(bolas.length / porFila);
+  const y0 = 150 - (filas - 1) * paso / 2;
+  let circulos = '';
+  bolas.forEach((g, i) => {
+    const fila = Math.floor(i / porFila);
+    const enFila = Math.min(porFila, bolas.length - fila * porFila);
+    const col = i % porFila;
+    const x = 130 - (enFila - 1) * paso / 2 + col * paso;
+    const y = y0 + fila * paso;
+    circulos += `<circle cx="${x}" cy="${y}" r="${r}" fill="${g.fill}" stroke="${g.stroke}" stroke-width="1.5"/>` +
+      `<text x="${x}" y="${y + 4}" text-anchor="middle" font-family="Lato, sans-serif" font-size="11" font-weight="700" fill="${g.txt}">${g.letra}</text>`;
+  });
+  return `<svg viewBox="0 0 260 230" role="img" aria-label="Bolsa con bolas">
+    <path d="M78 62 C 20 90 14 200 56 214 L 204 214 C 246 200 240 90 182 62 Z" fill="#E4CFA3" stroke="#A0805A" stroke-width="2.5"/>
+    <path d="M88 62 Q 80 34 100 30 L 160 30 Q 180 34 172 62 Z" fill="#D9C08E" stroke="#A0805A" stroke-width="2.5"/>
+    <path d="M84 60 Q 130 72 176 60" fill="none" stroke="#7B3B1E" stroke-width="4" stroke-linecap="round"/>
+    <path d="M60 110 C 50 140 52 180 66 200" fill="none" stroke="#F3E6C8" stroke-width="5" stroke-linecap="round" opacity=".7"/>
+    ${circulos}
+  </svg>`;
+}
+
+const BOLA = {
+  roja: { fill: '#C0503F', stroke: '#8B2E22', txt: '#fff', letra: 'R' },
+  verde: { fill: '#5A8F5A', stroke: '#3A6A3A', txt: '#fff', letra: 'V' },
+  amarilla: { fill: '#E6BC45', stroke: '#A8841C', txt: '#4A3608', letra: 'A' },
+  blanca: { fill: '#FFFDF7', stroke: '#8A7A60', txt: '#6B4F35', letra: 'B' },
+  negra: { fill: '#2C2620', stroke: '#000', txt: '#fff', letra: 'N' }
+};
+
+function genBolsa() {
+  let r, v, a;
+  do { r = ri(3, 8); v = ri(2, 7); a = ri(2, 6); } while (new Set([r, v, a]).size < 3);
+  const t = r + v + a;
+  return {
+    firma: `${r}-${v}-${a}`,
+    ilustracion: `<div class="ilustracion">${bolsaSVG([
+      { n: r, ...BOLA.roja }, { n: v, ...BOLA.verde }, { n: a, ...BOLA.amarilla }
+    ])}</div>`,
+    enunciado: `<p>Una bolsa contiene <b>${r} bolas rojas</b>, <b>${v} verdes</b> y <b>${a} amarillas</b>.</p>
+      <p>Se extrae una bola al azar. Calcula la probabilidad de que la bola:</p>`,
+    apartados: [
+      {
+        texto: 'sea roja', num: r, den: t,
+        explic: `Casos posibles: todas las bolas, ${r} + ${v} + ${a} = ${t}. Casos favorables: las ${r} rojas. P(roja) = ${frS(r, t)}.`,
+        distractores: [
+          { num: r, den: v + a, msg: 'Has dividido entre las bolas que no son rojas. Los casos posibles son <b>todas</b> las bolas de la bolsa.' },
+          { num: 1, den: 3, msg: MSG_COLORES },
+          { num: 1, den: t, msg: 'Has contado un solo caso favorable, pero cualquiera de las rojas vale.' }
+        ]
+      },
+      {
+        texto: 'no sea roja', num: v + a, den: t,
+        explic: `Es el suceso contrario de «roja»: P(no roja) = 1 − ${fr(r, t)} = ${frS(v + a, t)}. También contando: ${v} + ${a} = ${v + a} bolas no son rojas.`,
+        distractores: [
+          { num: r, den: t, msg: 'Ese resultado es P(roja). Te piden el suceso contrario: P(no roja) = 1 − P(roja).' },
+          { num: v + a, den: r, msg: 'Has dividido entre las rojas. Los casos posibles son todas las bolas.' },
+          { num: 2, den: 3, msg: MSG_COLORES }
+        ]
+      },
+      {
+        texto: 'sea roja o verde', num: r + v, den: t,
+        explic: `Una bola no puede ser roja y verde a la vez (sucesos incompatibles), así que se suman los favorables: ${r} + ${v} = ${r + v}. P(roja o verde) = ${frS(r + v, t)}.`,
+        distractores: [
+          { num: r * v, den: t * t, msg: 'Has multiplicado P(roja) · P(verde). Con «o» y una sola extracción no se multiplica: se <b>suman</b> los casos favorables.' },
+          { num: a, den: t, msg: 'Ese resultado corresponde a las amarillas, que es justo el suceso contrario.' },
+          { num: 2, den: 3, msg: MSG_COLORES }
+        ]
+      },
+      {
+        texto: 'no sea ni roja ni verde', num: a, den: t,
+        explic: `«Ni roja ni verde» significa que es amarilla: ${a} casos favorables. P = ${frS(a, t)}. Es el contrario del apartado c): 1 − ${fr(r + v, t)}.`,
+        distractores: [
+          { num: r + v, den: t, msg: 'Ese resultado es P(roja o verde). «Ni roja ni verde» es justo lo contrario: solo valen las amarillas.' },
+          { num: 1, den: 3, msg: MSG_COLORES }
+        ]
+      }
+    ],
+    conceptoOK: 'Regla de Laplace: casos favorables entre casos posibles, contando bolas y no colores. Fíjate en que b) es el contrario de a) y d) el contrario de c): cada pareja suma 1.'
+  };
+}
+
+function procesoHTML(devuelve) {
+  return `<div class="proceso">
+    <div class="paso"><span class="n">1</span>Se saca una bola y se anota su color.</div>
+    <div class="paso clave"><span class="n">2</span>${devuelve ? '↺ La bola se devuelve a la bolsa.' : '✕ La bola NO se devuelve.'}</div>
+    <div class="paso"><span class="n">3</span>Se saca la segunda bola.</div>
+  </div>`;
+}
+
+// ---------- Dos extracciones: regla del producto en el árbol ----------
+const NOMBRE_COLOR = { B: 'blanca', N: 'negra' };
+const PLURAL_COLOR = { B: 'blancas', N: 'negras' };
+const COMBOS = ['BN', 'NB', 'NN', 'BB'];
+
+function textoCombo(c) {
+  if (c[0] === c[1]) return `las dos bolas sean <b>${PLURAL_COLOR[c[0]]}</b>`;
+  return `la 1.ª bola sea <b>${NOMBRE_COLOR[c[0]]}</b> y la 2.ª <b>${NOMBRE_COLOR[c[1]]}</b>`;
+}
+
+// Probabilidades de cada rama como [numerador, denominador]
+function ramas(b, n, reemp) {
+  const t = b + n, cuenta = { B: b, N: n };
+  return {
+    p1: X => [cuenta[X], t],
+    p2: (X, Y) => reemp ? [cuenta[Y], t] : [cuenta[Y] - (X === Y ? 1 : 0), t - 1]
+  };
+}
+
+function arbolSVG(b, n, reemp, marcados, compacto, vacio = false) {
+  const { p1, p2 } = ramas(b, n, reemp);
+  const f = ([a, c]) => `${a}/${c}`;
+  // Geometría: la versión compacta (móvil) deja los resultados en una lista aparte
+  // El árbol vacío del enunciado lleva huecos en las ramas y solo el nombre de cada camino
+  const G = vacio
+    ? { w: 400, raiz: 30, x1: 165, x2: 305 }
+    : compacto
+      ? { w: 340, raiz: 26, x1: 150, x2: 286 }
+      : { w: 640, raiz: 46, x1: 214, x2: 384 };
+  const raiz = [G.raiz, 150];
+  const n1 = { B: [G.x1, 80], N: [G.x1, 220] };
+  const n2 = { BB: [G.x2, 36], BN: [G.x2, 116], NB: [G.x2, 184], NN: [G.x2, 264] };
+  const tinta = '#6B4F35', acento = '#A0522D';
+  const nodo = (x, y, X) => {
+    const s = X === 'B' ? BOLA.blanca : BOLA.negra;
+    return `<circle cx="${x}" cy="${y}" r="15" fill="${s.fill}" stroke="${s.stroke}" stroke-width="1.6"/>` +
+      `<text x="${x}" y="${y + 4.5}" text-anchor="middle" font-size="12" font-weight="700" fill="${s.txt}">${X}</text>`;
+  };
+  const etiqueta = (x1, y1, x2, y2, txt, marcado) => {
+    const mx = (x1 + x2) / 2, my = (y1 + y2) / 2 + (y2 < y1 ? -9 : 17);
+    if (vacio) {
+      return `<rect x="${mx - 20}" y="${my - 16}" width="40" height="22" rx="5" fill="#FFFDF7" stroke="#C9A96E" stroke-width="1.4" stroke-dasharray="4 3"/>` +
+        `<text x="${mx}" y="${my}" text-anchor="middle" font-size="13" font-weight="700" fill="#C9A96E">?</text>`;
+    }
+    return `<text x="${mx}" y="${my}" text-anchor="middle" font-size="${compacto ? 15 : 13.5}" font-weight="700" fill="${marcado ? acento : tinta}"
+      paint-order="stroke" stroke="#FDFAF3" stroke-width="5">${txt}</text>`;
+  };
+  const rama = (a, c, marcado) =>
+    `<line x1="${a[0]}" y1="${a[1]}" x2="${c[0]}" y2="${c[1]}" stroke="${marcado ? acento : '#C9A96E'}" stroke-width="${marcado ? 3.5 : 2}" stroke-linecap="round"/>`;
+
+  let lineas = '', textos = '', nodos = '', lista = '';
+  ['B', 'N'].forEach(X => {
+    const m1 = COMBOS.some(c => c[0] === X && marcados[c]);
+    lineas += rama(raiz, n1[X], m1);
+    textos += etiqueta(raiz[0], raiz[1], n1[X][0], n1[X][1], f(p1(X)), m1);
+    nodos += nodo(n1[X][0], n1[X][1], X);
+    ['B', 'N'].forEach(Y => {
+      const c = X + Y, m2 = !!marcados[c], pos = n2[c];
+      lineas += rama(n1[X], pos, m2);
+      textos += etiqueta(n1[X][0], n1[X][1], pos[0], pos[1], f(p2(X, Y)), m2);
+      nodos += nodo(pos[0], pos[1], Y);
+      const [a1, d1] = p1(X), [a2, d2] = p2(X, Y);
+      const num = a1 * a2, den = d1 * d2, g = gcd(num, den);
+      const res = `${a1}/${d1} · ${a2}/${d2} = ${num}/${den}${g > 1 && num ? ` = ${num / g}/${den / g}` : ''}`;
+      const estilo = m2 ? `font-weight="700" fill="${acento}"` : `fill="${tinta}"`;
+      if (vacio) {
+        textos += `<text x="${pos[0] + 24}" y="${pos[1] + 5}" font-size="14" fill="${tinta}">P(${c})</text>`;
+      } else if (compacto) {
+        textos += `<text x="${pos[0] + 24}" y="${pos[1] + 5}" font-size="15" ${estilo}>${m2 ? marcados[c] + ')' : ''}</text>`;
+        lista += `<li class="${m2 ? 'marcado' : ''}">${m2 ? `<b>${marcados[c]})</b> ` : ''}P(${c}) = ${res}</li>`;
+      } else {
+        textos += `<text x="${pos[0] + 28}" y="${pos[1] + 5}" font-size="13.5" ${estilo}>${m2 ? `${marcados[c]})  ` : ''}P(${c}) = ${res}</text>`;
+      }
+    });
+  });
+  const svg = `<svg class="arbol" viewBox="0 0 ${G.w} 290" role="img" aria-label="Diagrama de árbol de las dos extracciones" font-family="Lato, sans-serif">
+    <text x="${G.x1}" y="12" text-anchor="middle" font-size="11" fill="${tinta}" letter-spacing="1">1.ª EXTRACCIÓN</text>
+    <text x="${G.x2}" y="12" text-anchor="middle" font-size="11" fill="${tinta}" letter-spacing="1">2.ª EXTRACCIÓN</text>
+    ${lineas}
+    <circle cx="${raiz[0]}" cy="${raiz[1]}" r="6" fill="#A0805A"/>
+    <text x="${raiz[0]}" y="${raiz[1] + 24}" text-anchor="middle" font-size="11" fill="${tinta}">bolsa</text>
+    ${textos}${nodos}
+  </svg>`;
+  return compacto && !vacio ? `${svg}<ul class="arbol-lista">${lista}</ul>` : svg;
+}
+
+function genDos(reemp) {
+  let b, n;
+  do { b = ri(2, 7); n = ri(2, 7); } while (b === n);
+  const t = b + n, cuenta = { B: b, N: n };
+  const { p1, p2 } = ramas(b, n, reemp);
+  // 3 de los 4 caminos, en orden aleatorio
+  const combos = [...COMBOS];
+  for (let i = combos.length - 1; i > 0; i--) { const j = Math.floor(rand() * (i + 1)); [combos[i], combos[j]] = [combos[j], combos[i]]; }
+  const elegidos = combos.slice(0, 3);
+  const marcados = {};
+  elegidos.forEach((c, i) => { marcados[c] = LETRAS[i]; });
+
+  const apartados = elegidos.map(c => {
+    const [X, Y] = c;
+    const [a1, d1] = p1(X), [a2, d2] = p2(X, Y);
+    const num = a1 * a2, den = d1 * d2;
+    let paso2;
+    if (reemp) {
+      paso2 = `La bola se devuelve, así que en la 2.ª extracción la bolsa está igual: P(2.ª ${NOMBRE_COLOR[Y]}) = ${fr(a2, d2)}.`;
+    } else {
+      const qb = b - (X === 'B' ? 1 : 0), qn = n - (X === 'N' ? 1 : 0);
+      paso2 = `La ${NOMBRE_COLOR[X]} no se devuelve: quedan ${qb} ${qb === 1 ? 'blanca' : 'blancas'} y ${qn} ${qn === 1 ? 'negra' : 'negras'} (${t - 1} bolas), así que P(2.ª ${NOMBRE_COLOR[Y]}) = ${fr(a2, d2)}.`;
+    }
+    const explic = `Camino ${X} → ${Y} del árbol. P(1.ª ${NOMBRE_COLOR[X]}) = ${fr(a1, d1)}. ${paso2} Se multiplican las ramas: ${fr(a1, d1)} · ${fr(a2, d2)} = ${frS(num, den)}.`;
+
+    const distractores = [];
+    if (reemp) {
+      const sa = cuenta[Y] - (X === Y ? 1 : 0);
+      distractores.push({ num: a1 * sa, den: d1 * (t - 1), msg: 'Has quitado la 1.ª bola de la bolsa, pero aquí <b>se devuelve</b>: las ramas de la 2.ª extracción son iguales que las de la 1.ª.' });
+    } else {
+      distractores.push({ num: a1 * cuenta[Y], den: d1 * t, msg: 'Has calculado como si la bola se devolviera. Sin reemplazamiento, en la 2.ª rama hay una bola menos en total' + (X === Y ? ' y también una menos de ese color.' : '.') });
+      if (X === Y) {
+        distractores.push({ num: a1 * cuenta[Y], den: d1 * (t - 1), msg: `Has restado una bola del total, pero no de las ${PLURAL_COLOR[Y]}. La 1.ª era ${NOMBRE_COLOR[X]}, así que en la 2.ª rama también hay una ${NOMBRE_COLOR[Y]} menos.` });
+      } else {
+        distractores.push({ num: a1 * (cuenta[Y] - 1), den: d1 * (t - 1), msg: `Has quitado una ${NOMBRE_COLOR[Y]}, pero la 1.ª bola fue ${NOMBRE_COLOR[X]}: las ${PLURAL_COLOR[Y]} siguen siendo ${cuenta[Y]}.` });
+      }
+      distractores.push({ num: a1 * a2, den: d1 * t, msg: 'Has ajustado los casos favorables de la 2.ª rama, pero el total también baja en 1.' });
+    }
+    if (X !== Y) {
+      distractores.push({ num: 2 * num, den: den, msg: `Has sumado también el camino ${Y} → ${X}. Aquí el orden importa: la 1.ª tiene que ser ${NOMBRE_COLOR[X]} y la 2.ª ${NOMBRE_COLOR[Y]}; es un solo camino del árbol.` });
+    }
+    distractores.push({ num: a1 * d2 + a2 * d1, den: d1 * d2, msg: 'Has <b>sumado</b> las probabilidades de las dos ramas. A lo largo de un camino del árbol se <b>multiplican</b>.' });
+    distractores.push({ num: a1, den: d1, msg: 'Solo has calculado la 1.ª rama. Falta multiplicar por la probabilidad de la 2.ª extracción.' });
+    distractores.push({ num: a2, den: d2, msg: 'Solo has calculado la 2.ª rama. Falta multiplicar por la probabilidad de la 1.ª extracción.' });
+    return { texto: `que ${textoCombo(c)}`, num, den, explic, distractores };
+  });
+
+  return {
+    firma: `${b}-${n}-${elegidos.join('')}`,
+    ilustracion: `<div class="ilustracion">${bolsaSVG([{ n: b, ...BOLA.blanca }, { n, ...BOLA.negra }])}</div>`,
+    enunciado: `<p>Una bolsa tiene <b>${b} bolas blancas</b> y <b>${n} negras</b>. Se hacen dos extracciones <b>${reemp ? 'con' : 'sin'} reemplazamiento</b>:</p>${procesoHTML(reemp)}
+      <p class="pregunta-comun">Calcula la probabilidad de:</p>`,
+    apartados,
+    esquema: `<div class="arbol-enunciado"><div class="arbol-titulo">🌳 Ayúdate del diagrama de árbol: ¿qué probabilidad va en cada rama?</div>
+      ${arbolSVG(b, n, reemp, {}, true, true)}</div>`,
+    extraFeedback: `<div class="arbol-fb"><div class="arbol-titulo">🌳 Diagrama de árbol: la probabilidad de cada camino es el <b>producto</b> de sus ramas</div>
+      <div class="arbol-ancho">${arbolSVG(b, n, reemp, marcados, false)}</div>
+      <div class="arbol-compacto">${arbolSVG(b, n, reemp, marcados, true)}</div></div>`,
+    conceptoOK: reemp
+      ? 'Regla del producto: la probabilidad de un camino del árbol es el producto de las probabilidades de sus ramas. Con reemplazamiento, las ramas de la 2.ª extracción son iguales que las de la 1.ª: los sucesos son <b>independientes</b>.'
+      : 'Regla del producto: la probabilidad de un camino del árbol es el producto de las probabilidades de sus ramas. Sin reemplazamiento, las ramas de la 2.ª extracción cambian según lo que salió en la 1.ª: los sucesos son <b>dependientes</b>.'
+  };
+}
+const genCon = () => genDos(true);
+const genSin = () => genDos(false);
+
+const PALOS = ['oros', 'copas', 'espadas', 'bastos'];
+const CARTAS = [
+  { un: 'un rey', el: 'el rey', plural: 'reyes' },
+  { un: 'una sota', el: 'la sota', plural: 'sotas' },
+  { un: 'un caballo', el: 'el caballo', plural: 'caballos' },
+  { un: 'un as', el: 'el as', plural: 'ases' }
+];
+
+function barajaHTML() {
+  const cols = ['1', '2', '3', '4', '5', '6', '7', 'S', 'C', 'R'];
+  const color = { oros: '#C9A227', copas: '#B5483B', espadas: '#4F6E8A', bastos: '#5A8F5A' };
+  const filas = PALOS.map(p => `<tr class="p-${p}"><th class="palo" scope="row"><span class="punto" style="background:${color[p]}"></span>${p[0].toUpperCase() + p.slice(1)}</th>${cols.map(c => `<td>${c}</td>`).join('')}</tr>`).join('');
+  return `<div class="ilustracion"><div class="baraja-wrap"><table class="baraja" aria-label="Composición de la baraja española">${filas}</table></div>
+    <div class="leyenda">40 cartas: 4 palos de 10 cartas. 1 = as · S = sota · C = caballo · R = rey</div></div>`;
+}
+
+function genBaraja() {
+  const palo = elegir(PALOS);
+  const c = elegir(CARTAS);
+  return {
+    firma: `${palo}-${c.un}`,
+    ancho: true,
+    ilustracion: barajaHTML(),
+    enunciado: `<p>De una baraja española de <b>40 cartas</b> se extrae una carta al azar. Calcula la probabilidad de:</p>`,
+    apartados: [
+      {
+        texto: `sacar una carta de <b>${palo}</b>`, num: 10, den: 40,
+        explic: `Cada palo tiene 10 cartas (del 1 al 7, sota, caballo y rey). P(${palo}) = ${frS(10, 40)}.`,
+        distractores: [
+          { num: 10, den: 48, msg: 'La baraja española de esta ficha tiene 40 cartas, no 48.' },
+          { num: 1, den: 40, msg: `No hay una sola carta de ${palo}: el palo completo tiene 10.` },
+          { num: 4, den: 40, msg: `Hay 4 palos, pero las cartas de ${palo} son 10.` }
+        ]
+      },
+      {
+        texto: `sacar <b>${c.un}</b>`, num: 4, den: 40,
+        explic: `Hay ${c.un.split(' ')[1] === 'sota' ? 'una' : 'uno'} en cada palo: 4 ${c.plural}. P = ${frS(4, 40)}.`,
+        distractores: [
+          { num: 1, den: 40, msg: `Hay ${c.un.split(' ')[1] === 'sota' ? 'una' : 'uno'} en cada palo, así que son 4 ${c.plural}, no 1.` },
+          { num: 10, den: 40, msg: `10 son las cartas de un palo; ${c.plural} hay 4.` },
+          { num: 4, den: 48, msg: 'La baraja española de esta ficha tiene 40 cartas, no 48.' }
+        ]
+      },
+      {
+        texto: `sacar <b>${c.el} de ${palo}</b>`, num: 1, den: 40,
+        explic: `Solo hay una carta que sea a la vez ${c.un.split(' ')[1]} y de ${palo}. P = ${fr(1, 40)}.`,
+        distractores: [
+          { num: 4, den: 40, msg: `Has contado todos los ${c.plural}, pero solo uno de ellos es de ${palo}.` },
+          { num: 10, den: 40, msg: `Has contado todas las cartas de ${palo}, pero solo una es ${c.un.split(' ')[1]}.` },
+          { num: 14, den: 40, msg: `Has contado «${c.un.split(' ')[1]} <b>o</b> ${palo}». Aquí la carta tiene que cumplir las dos cosas a la vez.` },
+          { num: 13, den: 40, msg: `Has contado «${c.un.split(' ')[1]} <b>o</b> ${palo}». Aquí la carta tiene que cumplir las dos cosas a la vez.` }
+        ]
+      },
+      {
+        texto: `sacar <b>${c.un} o una carta de ${palo}</b>`, num: 13, den: 40,
+        explic: `${c.plural[0].toUpperCase() + c.plural.slice(1)}: 4. Cartas de ${palo}: 10. Pero ${c.el} de ${palo} está en los dos grupos y no se puede contar dos veces: 10 + 4 − 1 = 13. P = ${fr(13, 40)}.`,
+        distractores: [
+          { num: 14, den: 40, msg: `Has sumado 10 + 4 contando dos veces ${c.el} de ${palo}, que está en los dos grupos. Hay que restarlo una vez: 10 + 4 − 1 = 13.` },
+          { num: 1, den: 40, msg: `Ese resultado es «${c.un.split(' ')[1]} <b>y</b> ${palo}». Con «o» basta con que se cumpla una de las dos condiciones.` }
+        ]
+      }
+    ],
+    conceptoOK: 'Con «y» la carta cumple las dos condiciones a la vez; con «o» basta con una, pero sin contar dos veces las cartas que cumplen ambas.'
+  };
+}
+
+// ============================================================
+// ESTADO — modelo por tipos, ventana móvil 2 de 3
+// ============================================================
+const TIPOS = {
+  bolsa: { nombre: 'Extracción simple de una bolsa', generar: genBolsa },
+  con: { nombre: 'Dos extracciones con reemplazamiento', generar: genCon },
+  sin: { nombre: 'Dos extracciones sin reemplazamiento', generar: genSin },
+  baraja: { nombre: 'Baraja española', generar: genBaraja }
+};
+const ORDEN = Object.keys(TIPOS);
+const PUNTO_POR_TIPO = 10 / ORDEN.length;
+const PENALIZACION_FALLO = 0.5;
+
+const state = { fallosTotales: 0, tipos: {}, inicio: Date.now() };
+ORDEN.forEach(k => {
+  state.tipos[k] = {
+    intentos: [], superado: false, cerrado: false,
+    fallos: 0, aciertos: 0, nIntentos: 0,
+    instancia: null, respondida: false,
+    respuestas: [], marcas: [], ultimoFeedback: ''
+  };
+});
+
+function nuevaInstancia(k) {
+  const anterior = state.tipos[k].instancia;
+  let ins, guarda = 0;
+  do { ins = TIPOS[k].generar(); guarda++; } while (anterior && ins.firma === anterior.firma && guarda < 50);
+  return ins;
+}
+
+function calcularNota() {
+  const superados = Object.values(state.tipos).filter(t => t.superado).length;
+  const bruta = superados * PUNTO_POR_TIPO - state.fallosTotales * PENALIZACION_FALLO;
+  return Math.round(Math.min(10, Math.max(0, bruta)) * 100) / 100;
+}
+
+function registrarIntento(k, correcto) {
+  const t = state.tipos[k];
+  if (t.cerrado) return;
+  t.intentos.push(correcto);
+  if (t.intentos.length > 3) t.intentos.shift();
+  if (!correcto) { t.fallos++; state.fallosTotales++; }
+  if (!t.superado && t.intentos.filter(Boolean).length >= 2) {
+    t.superado = true;
+    t.cerrado = true;
+  }
+}
+
+// ============================================================
+// CORRECCIÓN
+// ============================================================
+function evaluar(a, p) {
+  if (igual(p, a.num, a.den)) {
+    let tip = '';
+    if (p.frac) {
+      const g = gcd(p.frac.n, p.frac.d);
+      if (g > 1) tip = `Puedes simplificar: ${fr(p.frac.n, p.frac.d)} = ${fr(p.frac.n / g, p.frac.d / g)}.`;
+    }
+    return { ok: true, tip };
+  }
+  const d = a.distractores.find(d => d.num * a.den !== a.num * d.den && igual(p, d.num, d.den));
+  let diag;
+  if (d) diag = d.msg;
+  else if (p.valor > 1) diag = 'Una probabilidad nunca es mayor que 1. ¿Has puesto los casos al revés (posibles entre favorables) o un número de casos en lugar de la probabilidad?';
+  else if (p.valor < 0) diag = 'Una probabilidad nunca es negativa: siempre está entre 0 y 1.';
+  else diag = 'Revisa cuántos casos son favorables y cuántos son posibles en esta situación.';
+  return { ok: false, diag };
+}
+
+function nombreOK() {
+  const inp = document.getElementById('nombre');
+  const aviso = document.getElementById('aviso-nombre');
+  if (inp.value.trim()) return true;
+  inp.classList.add('falta');
+  aviso.classList.add('visible');
+  inp.focus();
+  return false;
+}
+
+function comprobar(k) {
+  const t = state.tipos[k];
+  if (t.cerrado || t.respondida) return;
+  if (!nombreOK()) return;
+  const ins = t.instancia;
+  const raws = ins.apartados.map((_, i) => document.getElementById(`in-${k}-${i}`).value);
+  const parsed = raws.map(parsear);
+  const aviso = document.getElementById('aviso-' + k);
+  if (parsed.some(p => p.vacio)) {
+    aviso.textContent = 'Completa todos los apartados antes de comprobar (esto no cuenta como fallo).';
+    return;
+  }
+  const inval = parsed.findIndex(p => p.invalido);
+  if (inval >= 0) {
+    aviso.textContent = `No entiendo «${raws[inval]}» en el apartado ${LETRAS[inval]}). Escribe una fracción (3/8) o un decimal (0,375). No cuenta como fallo.`;
+    return;
+  }
+  const res = ins.apartados.map((a, i) => evaluar(a, parsed[i]));
+  const todoBien = res.every(r => r.ok);
+  t.respuestas = raws;
+  t.marcas = res.map(r => r.ok ? 'ok' : 'mal');
+  t.respondida = true;
+  t.nIntentos++;
+  if (todoBien) t.aciertos++;
+  registrarIntento(k, todoBien);
+  t.ultimoFeedback = feedbackHTML(k, res, raws, todoBien);
+  renderCard(k);
+  actualizarBarra();
+}
+
+function feedbackHTML(k, res, raws, todoBien) {
+  const t = state.tipos[k], ins = t.instancia;
+  const aciertosVentana = t.intentos.filter(Boolean).length;
+  const items = ins.apartados.map((a, i) => {
+    const r = res[i];
+    if (r.ok) {
+      return `<li class="bien"><span class="cab">${LETRAS[i]}) ✓ Correcto.</span>${r.tip ? `<span class="tip">${r.tip}</span>` : ''}</li>`;
+    }
+    return `<li class="fallo"><span class="cab">${LETRAS[i]}) ✗ Tu respuesta: ${esc(raws[i])}</span>
+      <div class="diag">${r.diag}</div>
+      <div class="sol">${a.explic}</div></li>`;
+  }).join('');
+
+  let progreso;
+  if (t.superado) {
+    progreso = `<div class="fb-superado">🏅 Tipo superado: +${fmt(PUNTO_POR_TIPO)} puntos</div>`;
+  } else {
+    progreso = `<div class="fb-progreso">Llevas ${aciertosVentana} acierto${aciertosVentana === 1 ? '' : 's'} entre tus últimos intentos; necesitas 2. Pulsa «Otro ejercicio» para seguir con números nuevos.</div>`;
+  }
+
+  if (todoBien) {
+    const tips = res.filter(r => r.tip).length ? `<ul>${items}</ul>` : '';
+    return `<div class="fb fb-ok"><strong>✓ ¡Todo correcto!</strong>
+      <p class="concepto">${ins.conceptoOK}</p>${tips}${ins.extraFeedback || ''}${progreso}</div>`;
+  }
+  return `<div class="fb fb-mal"><strong>✗ Hay ${res.filter(r => !r.ok).length === 1 ? 'un apartado' : res.filter(r => !r.ok).length + ' apartados'} mal.</strong> Este intento cuenta como fallo (−${fmt(PENALIZACION_FALLO)}).
+    <ul>${items}</ul>${ins.extraFeedback || ''}${progreso}</div>`;
+}
+
+function otro(k) {
+  const t = state.tipos[k];
+  if (t.cerrado) return;
+  t.instancia = nuevaInstancia(k);
+  t.respondida = false;
+  t.respuestas = [];
+  t.marcas = [];
+  t.ultimoFeedback = '';
+  renderCard(k);
+  const primero = document.getElementById(`in-${k}-0`);
+  if (primero) primero.focus({ preventScroll: true });
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+function ventanaHTML(t) {
+  let dots = '';
+  for (let i = 0; i < 3; i++) {
+    const v = t.intentos[i];
+    dots += v === undefined ? '<span class="dot"></span>'
+      : v ? '<span class="dot ok">✓</span>' : '<span class="dot mal">✗</span>';
+  }
+  return `<div class="ventana"><span>Últimos intentos:</span><span class="dots">${dots}</span>
+    <span>· se supera con 2 aciertos de 3</span></div>`;
+}
+
+function renderCard(k) {
+  const t = state.tipos[k], ins = t.instancia;
+  const el = document.getElementById('card-' + k);
+  const bloqueado = t.respondida || t.cerrado;
+  el.className = 'ejercicio-card' + (t.superado ? ' superado' : '');
+  let acciones = '';
+  if (!t.cerrado) {
+    acciones = t.respondida
+      ? `<button class="btn-primario" onclick="otro('${k}')">Otro ejercicio →</button>`
+      : `<button class="btn-primario" onclick="comprobar('${k}')">Comprobar</button>`;
+  }
+  const apartados = ins.apartados.map((a, i) => {
+    const m = t.marcas[i] || '';
+    return `<li class="apartado ${m}">
+      <label for="in-${k}-${i}"><span class="letra">${LETRAS[i]})</span> ${a.texto}</label>
+      <span class="resp">
+        <input id="in-${k}-${i}" type="text" autocomplete="off" spellcheck="false" placeholder="p. ej. 3/8"
+          value="${esc(t.respuestas[i] || '')}" ${bloqueado ? 'disabled' : ''}>
+        <span class="marca" aria-hidden="true">${m === 'ok' ? '✓' : m === 'mal' ? '✗' : ''}</span>
+      </span></li>`;
+  }).join('');
+  el.innerHTML = `
+    <div class="ej-head">
+      <span class="ej-num">${ORDEN.indexOf(k) + 1}</span>
+      <h2 class="ej-titulo">${TIPOS[k].nombre}</h2>
+      ${t.superado ? '<span class="badge-ok">✓ Superado</span>' : ''}
+    </div>
+    ${ventanaHTML(t)}
+    <div class="ej-cuerpo${ins.ancho ? ' ancho' : ''}">${ins.ilustracion}<div class="enunciado">${ins.enunciado}</div></div>
+    ${ins.esquema || ''}
+    <ol class="apartados">${apartados}</ol>
+    <div class="aviso-ej" id="aviso-${k}" aria-live="polite"></div>
+    <div class="acciones">${acciones}</div>
+    <div class="feedback" aria-live="polite">${t.ultimoFeedback}</div>`;
+}
+
+function actualizarBarra() {
+  document.getElementById('marcador-nota').textContent = fmt(calcularNota());
+  document.getElementById('marcador-sup').textContent = ORDEN.filter(k => state.tipos[k].superado).length;
+  document.getElementById('marcador-fallos').textContent = state.fallosTotales;
+}
+
+// ============================================================
+// FINALIZAR Y CALIFICAR
+// ============================================================
+function tiempoEmpleado() {
+  const minutos = Math.ceil((Date.now() - state.inicio) / 60000);
+  return `${String(Math.floor(minutos / 60)).padStart(2, '0')}:${String(minutos % 60).padStart(2, '0')}`;
+}
+
+function colorNota(nota) {
+  if (nota >= 10) return ['#1a7a1a', '#fff'];
+  if (nota >= 9) return ['#6dbf6d', '#fff'];
+  if (nota >= 8) return ['#1a4f8a', '#fff'];
+  if (nota >= 7) return ['#5b9bd5', '#fff'];
+  if (nota >= 6) return ['#c05c00', '#fff'];
+  if (nota >= 5) return ['#f5a623', '#1a1208'];
+  return ['#c0392b', '#fff'];
+}
+
+function finalizar() {
+  if (!nombreOK()) { window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+  const nota = calcularNota();
+  const [bg, fg] = colorNota(nota);
+  const ahora = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  const fecha = `${pad(ahora.getDate())}/${pad(ahora.getMonth() + 1)}/${ahora.getFullYear()}`;
+  const hora = `${pad(ahora.getHours())}:${pad(ahora.getMinutes())}:${pad(ahora.getSeconds())}`;
+  const titulo = document.querySelector('.titulo-ficha').textContent;
+  const subtitulo = document.querySelector('.subtitulo').textContent;
+  const superados = ORDEN.filter(k => state.tipos[k].superado).length;
+  const filas = ORDEN.map(k => {
+    const t = state.tipos[k];
+    return `<tr><td>${TIPOS[k].nombre}</td><td>${t.superado ? '✓ Superado' : 'No superado'}</td>
+      <td class="num">${t.nIntentos}</td><td class="num">${t.aciertos}</td><td class="num">${t.fallos}</td></tr>`;
+  }).join('');
+  document.body.classList.toggle('ficha-verde', nota >= 10);
+  document.getElementById('modal').innerHTML = `
+    <div class="overlay" onclick="if(event.target===this)cerrarModal()">
+      <div class="modal-calificacion${fg !== '#fff' ? ' m-texto-oscuro' : ''}" role="dialog" aria-modal="true" aria-label="Informe de la actividad" style="background:${bg};color:${fg}">
+        <button class="modal-cerrar" onclick="cerrarModal()" aria-label="Cerrar">✕</button>
+        <p class="m-titulo">${esc(titulo)}</p>
+        <p class="m-sub">${esc(subtitulo)}</p>
+        <hr class="m-sep">
+        <div class="m-informe">Informe de la actividad</div>
+        <div class="m-nombre">${esc(document.getElementById('nombre').value.trim())}</div>
+        <div class="m-nota">${fmt(nota)} / 10</div>
+        <div class="m-datos">
+          <div><span>Fecha</span>${fecha}</div>
+          <div><span>Hora</span>${hora}</div>
+          <div><span>Tiempo</span>${tiempoEmpleado()}</div>
+        </div>
+        <table class="m-tabla">
+          <thead><tr><th>Tipo</th><th>Estado</th><th class="num">Int.</th><th class="num">✓</th><th class="num">✗</th></tr></thead>
+          <tbody>${filas}</tbody>
+        </table>
+        <div class="m-resumen">Tipos superados: ${superados}/4 · Fallos totales: ${state.fallosTotales} · Penalización: −${fmt(state.fallosTotales * PENALIZACION_FALLO)}</div>
+        <button class="m-boton" onclick="cerrarModal()">Seguir practicando</button>
+        <div class="m-pie">Material elaborado por Marta López de Letona Sánchez</div>
+      </div>
+    </div>`;
+}
+
+function cerrarModal() { document.getElementById('modal').innerHTML = ''; }
+
+// ============================================================
+// EVENTOS E INICIO
+// ============================================================
+document.getElementById('nombre').addEventListener('input', e => {
+  if (e.target.value.trim()) {
+    e.target.classList.remove('falta');
+    document.getElementById('aviso-nombre').classList.remove('visible');
+  }
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') cerrarModal();
+  if (e.key === 'Enter' && e.target.id && e.target.id.startsWith('in-')) {
+    e.preventDefault();
+    comprobar(e.target.id.split('-')[1]);
+  }
+});
+document.addEventListener('input', e => {
+  if (e.target.id && e.target.id.startsWith('in-')) {
+    const aviso = document.getElementById('aviso-' + e.target.id.split('-')[1]);
+    if (aviso) aviso.textContent = '';
+  }
+});
+
+ORDEN.forEach(k => { state.tipos[k].instancia = nuevaInstancia(k); renderCard(k); });
+actualizarBarra();
+</script>
+</body>
+</html>
+

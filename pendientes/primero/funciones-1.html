@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Funciones · Coordenadas, Gráficas y Rectas</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --color-fondo: #F5F0E8;
+  --color-fondo-card: #FDFAF3;
+  --color-texto: #2C1F0E;
+  --color-texto-suave: #6B4F35;
+  --color-acento: #A0522D;
+  --color-acento-hover: #7B3B1E;
+  --color-borde: #C9A96E;
+  --color-borde-suave: #E0CEAA;
+  --color-cabecera: #3B2510;
+  --color-cabecera-txt: #F5EDD8;
+  --color-correcto: #2E6B3E;
+  --color-incorrecto: #8B1A1A;
+  --color-neutro: #E8DFC8;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: 'Lato', sans-serif;
+  font-size: 15px;
+  color: var(--color-texto);
+  background-color: var(--color-fondo);
+  transition: background-color .5s ease;
+}
+body.nota-perfecta { background-color: #eafaea; }
+
+.cabecera {
+  background-color: var(--color-cabecera);
+  color: var(--color-cabecera-txt);
+  font-family: 'Libre Baskerville', serif;
+  text-align: center;
+  padding: 12px 20px;
+  border-bottom: 3px solid var(--color-borde);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+}
+
+.ficha-container {
+  max-width: 1100px;
+  margin: 28px auto;
+  background: var(--color-fondo-card);
+  border: 2px solid var(--color-borde);
+  border-radius: 6px;
+  box-shadow: 0 3px 12px rgba(44, 31, 14, 0.15);
+  padding: 28px 32px;
+}
+.ficha-container.completa-verde { background: #eafaea; }
+
+.titulo-ficha {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 1.6rem;
+  color: var(--color-texto);
+  text-align: center;
+  border-bottom: 2px solid var(--color-borde);
+  padding-bottom: 10px;
+  margin-bottom: 24px;
+}
+.titulo-ficha::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 3px;
+  background: var(--color-borde);
+  margin: 8px auto 0;
+  border-radius: 2px;
+}
+
+.fila-alumno {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+.fila-alumno label { font-family: 'Libre Baskerville', serif; font-size: 0.9rem; }
+
+input[type="text"], input[type="number"], select {
+  background-color: var(--color-fondo);
+  border: 1.5px solid var(--color-borde);
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-family: 'Lato', sans-serif;
+  font-size: 0.95rem;
+  color: var(--color-texto);
+  outline: none;
+  transition: border-color 0.2s;
+}
+input[type="text"]:focus, input[type="number"]:focus, select:focus {
+  border-color: var(--color-acento);
+}
+#nombreAlumno { flex: 1; min-width: 180px; }
+input:disabled, select:disabled { background-color: var(--color-neutro); cursor: not-allowed; }
+
+.marcador-general {
+  background: var(--color-fondo);
+  border-radius: 20px;
+  padding: 8px 16px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 0.78rem;
+  border: 1px solid var(--color-borde-suave);
+}
+
+.ejercicio-card {
+  background: var(--color-fondo);
+  border: 1.5px solid var(--color-borde-suave);
+  border-left: 4px solid var(--color-borde);
+  border-radius: 4px;
+  padding: 18px 22px;
+  margin-bottom: 22px;
+}
+.ejercicio-card.superado { border-left-color: var(--color-correcto); background: #F0F7EE; }
+
+.encabezado-ej {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+  border-bottom: 1px dotted var(--color-borde);
+  padding-bottom: 6px;
+}
+.encabezado-ej h3 { font-family: 'Libre Baskerville', serif; font-size: 1.05rem; margin: 0; color: var(--color-acento); }
+.estado-ej { font-size: 0.72rem; font-weight: 700; }
+
+.enunciado {
+  background: var(--color-fondo-card);
+  border-left: 3px solid var(--color-borde);
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-bottom: 14px;
+  font-size: 0.85rem;
+}
+
+.fila-dos-columnas { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; }
+.col-grafica { flex: 1 1 320px; min-width: 260px; text-align: center; }
+.col-panel { flex: 1 1 260px; min-width: 220px; }
+
+canvas {
+  display: block;
+  margin: 0 auto;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid var(--color-borde-suave);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  max-width: 100%;
+  height: auto;
+  touch-action: none;
+}
+canvas.interactivo { cursor: crosshair; }
+canvas.bloqueado { cursor: default; }
+
+.panel-interactivo { background: var(--color-fondo-card); border-radius: 8px; padding: 12px; margin-bottom: 10px; }
+.fila-inputs { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; align-items: center; }
+.fila-inputs label { font-size: 0.85rem; }
+.fila-inputs input[type=number], .fila-inputs input[type=text] { width: 75px; }
+
+.fila-botones { display: flex; gap: 10px; justify-content: center; margin-top: 12px; flex-wrap: wrap; }
+
+.btn-primario {
+  background-color: var(--color-acento);
+  color: #FDFAF3;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 20px;
+  font-family: 'Lato', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: background-color 0.2s ease, opacity .2s;
+}
+.btn-primario:hover { background-color: var(--color-acento-hover); }
+.btn-primario:disabled { background-color: var(--color-neutro); color: var(--color-texto-suave); cursor: not-allowed; }
+
+.btn-secundario {
+  background-color: transparent;
+  color: var(--color-acento);
+  border: 2px solid var(--color-borde);
+  border-radius: 4px;
+  padding: 7px 18px;
+  font-family: 'Lato', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, opacity .2s;
+}
+.btn-secundario:hover { border-color: var(--color-acento); color: var(--color-acento-hover); }
+.btn-secundario:disabled { opacity: .45; cursor: not-allowed; }
+
+.btn-finalizar {
+  background-color: var(--color-cabecera);
+  color: var(--color-cabecera-txt);
+  border: 2px solid var(--color-borde);
+  border-radius: 4px;
+  padding: 10px 26px;
+  font-family: 'Libre Baskerville', serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  transition: background-color 0.2s;
+}
+.btn-finalizar:hover { background-color: #2C1A0A; }
+
+.feedback-local {
+  margin-top: 10px;
+  border-radius: 4px;
+  padding: 9px 13px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  min-height: 1px;
+}
+.feedback-correcto { background-color: #EAF4EC; border: 1.5px solid var(--color-correcto); color: var(--color-correcto); font-weight: 700; }
+.feedback-incorrecto { background-color: #F9EAEA; border: 1.5px solid var(--color-incorrecto); color: var(--color-incorrecto); }
+.feedback-aviso { background-color: #FCF3E3; border: 1.5px solid var(--color-borde); color: var(--color-texto-suave); }
+
+.contenedor-ej3 { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; }
+.preguntas-ej3 { flex: 1 1 320px; min-width: 260px; max-height: 340px; overflow-y: auto; padding-right: 6px; }
+.grafica-ej3 { flex: 0 1 360px; min-width: 260px; }
+.pregunta-item { background: var(--color-fondo-card); border: 1px solid var(--color-borde-suave); border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; }
+.pregunta-item strong { display: block; margin-bottom: 6px; font-weight: 700; font-size: .85rem; }
+.pregunta-item.acertada { border-color: var(--color-correcto); background: #EAF4EC; }
+
+.tabla-valores { border-collapse: collapse; margin: 6px auto; background: white; border-radius: 6px; overflow: hidden; }
+.tabla-valores th, .tabla-valores td { border: 1px solid var(--color-borde); padding: 7px 14px; text-align: center; font-size: .85rem; }
+
+.overlay { position: fixed; inset: 0; background: rgba(44, 31, 14, 0.55); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 16px; }
+.overlay.show { display: flex; }
+.modal-calificacion {
+  border: 3px solid var(--color-borde);
+  border-radius: 8px;
+  font-family: 'Libre Baskerville', serif;
+  box-shadow: 0 6px 24px rgba(44, 31, 14, 0.35);
+  padding: 28px 32px;
+  min-width: 300px;
+  max-width: 92vw;
+  text-align: center;
+  background: white;
+}
+.nota-grande { font-size: 2.1rem; font-weight: 700; margin: 10px 0; }
+.resumen-ejercicios { text-align: left; margin: 14px 0; font-size: 0.82rem; font-family: 'Lato', sans-serif; border-top: 1px solid rgba(0,0,0,.15); padding-top: 10px; }
+.resumen-ejercicios div { margin-bottom: 3px; }
+</style>
+</head>
+<body>
+<div class="cabecera">Material elaborado por Marta L Letona S. Basado en el trabajo de Javier Cayetano</div>
+<div class="ficha-container" id="fichaContainer">
+  <h1 class="titulo-ficha">Funciones · Coordenadas, Gráficas y Rectas</h1>
+
+  <div class="fila-alumno">
+    <label for="nombreAlumno">👤 Nombre:</label>
+    <input type="text" id="nombreAlumno" placeholder="Escribe tu nombre">
+  </div>
+
+  <div class="marcador-general" id="marcadorGeneral"></div>
+
+  <!-- EJERCICIO 1 -->
+  <div class="ejercicio-card" id="card1">
+    <div class="encabezado-ej"><h3>📌 1. Situar un punto (arrastra)</h3><span class="estado-ej" id="estado1"></span></div>
+    <div class="enunciado" id="enunciado1"></div>
+    <div class="fila-dos-columnas">
+      <div class="col-grafica"><div id="grafica1-container"></div></div>
+      <div class="col-panel">
+        <div class="panel-interactivo"><p style="text-align:center;margin:0;">🖐️ Haz clic y arrastra el punto verde</p></div>
+        <div class="fila-botones">
+          <button class="btn-primario" id="btnCorregir1">✓ Corregir</button>
+          <button class="btn-secundario" id="btnNuevo1">🔄 Nuevo</button>
+        </div>
+        <div id="feedback1" class="feedback-local" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EJERCICIO 2 -->
+  <div class="ejercicio-card" id="card2">
+    <div class="encabezado-ej"><h3>📍 2. Leer coordenadas</h3><span class="estado-ej" id="estado2"></span></div>
+    <div class="enunciado" id="enunciado2"></div>
+    <div class="fila-dos-columnas">
+      <div class="col-grafica"><div id="grafica2-container"></div></div>
+      <div class="col-panel">
+        <div class="panel-interactivo">
+          <div class="fila-inputs">
+            <label for="x2">x =</label><input type="text" autocomplete="off" id="x2">
+            <label for="y2">y =</label><input type="text" autocomplete="off" id="y2">
+          </div>
+        </div>
+        <div class="fila-botones">
+          <button class="btn-primario" id="btnCorregir2">✓ Corregir</button>
+          <button class="btn-secundario" id="btnNuevo2">🔄 Nuevo</button>
+        </div>
+        <div id="feedback2" class="feedback-local" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EJERCICIO 3 -->
+  <div class="ejercicio-card" id="card3">
+    <div class="encabezado-ej"><h3>📈 3. Gráfica distancia-tiempo</h3><span class="estado-ej" id="estado3"></span></div>
+    <div class="enunciado" id="enunciado3"></div>
+    <div class="contenedor-ej3">
+      <div class="preguntas-ej3" id="preguntas3-container"></div>
+      <div class="grafica-ej3" id="grafica3-container"></div>
+    </div>
+    <div class="fila-botones"><button class="btn-secundario" id="btnNuevo3">🔄 Nuevo recorrido</button></div>
+  </div>
+
+  <!-- EJERCICIO 4 -->
+  <div class="ejercicio-card" id="card4">
+    <div class="encabezado-ej"><h3>📐 4. Función lineal</h3><span class="estado-ej" id="estado4"></span></div>
+    <div class="enunciado" id="enunciado4"></div>
+    <div class="fila-dos-columnas">
+      <div class="col-grafica"><div id="grafica4-container"></div></div>
+      <div class="col-panel">
+        <div class="panel-interactivo">
+          <div class="fila-inputs">
+            <label for="p4">Pendiente:</label><input type="text" autocomplete="off" id="p4">
+            <label for="o4">Ordenada:</label><input type="text" autocomplete="off" id="o4">
+          </div>
+          <div class="fila-inputs" style="margin-top:8px;">
+            <label for="mono4">Monotonía:</label>
+            <select id="mono4">
+              <option value="">--</option>
+              <option value="creciente">Creciente 📈</option>
+              <option value="decreciente">Decreciente 📉</option>
+            </select>
+          </div>
+        </div>
+        <div class="fila-botones">
+          <button class="btn-primario" id="btnCorregir4">✓ Corregir</button>
+          <button class="btn-secundario" id="btnNuevo4">🔄 Nueva función</button>
+        </div>
+        <div id="feedback4" class="feedback-local" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EJERCICIO 5 -->
+  <div class="ejercicio-card" id="card5">
+    <div class="encabezado-ej"><h3>📊 5. Tabla de valores y gráfica</h3><span class="estado-ej" id="estado5"></span></div>
+    <div class="enunciado" id="enunciado5"></div>
+    <div class="fila-dos-columnas">
+      <div class="col-panel" style="text-align:center;"><div id="tabla5-container"></div></div>
+      <div class="col-grafica"><div id="grafica5-container"></div></div>
+    </div>
+    <div class="fila-botones">
+      <button class="btn-primario" id="btnCorregir5">✓ Comprobar</button>
+      <button class="btn-secundario" id="btnNuevo5">🔄 Nueva función</button>
+    </div>
+    <div id="feedback5" class="feedback-local" aria-live="polite"></div>
+  </div>
+
+  <div class="fila-botones" style="margin-top:8px;">
+    <button class="btn-secundario" id="btnReiniciar">🔄 Nueva ficha</button>
+    <button class="btn-finalizar" id="btnFinalizar">Finalizar y Calificar</button>
+  </div>
+</div>
+
+<div class="overlay" id="overlayConfirmar">
+  <div class="modal-calificacion">
+    <h3 style="margin-top:0;">⚠️ Atención</h3>
+    <p style="font-family:'Lato',sans-serif;">Si finalizas la ficha, <strong>ya no podrás seguir sumando puntos</strong> en esta sesión.<br>¿Deseas continuar y ver tu calificación?</p>
+    <div class="fila-botones">
+      <button class="btn-secundario" id="btnCancelarFinal">Cancelar</button>
+      <button class="btn-primario" id="btnConfirmarFinal">Sí, finalizar</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlayResultado">
+  <div class="modal-calificacion" id="modalResultado">
+    <h2 style="margin-top:0;">📊 Resultado de la ficha</h2>
+    <div id="resNombre"></div>
+    <div>📋 Ficha: Funciones · Coordenadas, Gráficas y Rectas</div>
+    <div class="nota-grande" id="resNota"></div>
+    <div id="resFecha"></div>
+    <div id="resHora"></div>
+    <div id="resTiempo"></div>
+    <div style="margin:12px 0;padding:8px;background:rgba(0,0,0,.06);border-radius:8px;font-family:'Lato',sans-serif;font-size:.85rem;">
+      📸 <strong>Haz una captura de pantalla y entrégala en Google Classroom.</strong>
+    </div>
+    <div class="resumen-ejercicios" id="resResumen"></div>
+    <button class="btn-primario" id="btnCerrarResultado" style="background:#fff;color:#333;">Cerrar y seguir practicando</button>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------- Utilidades numéricas ---------- */
+function randInt(min, max){ return Math.floor(Math.random()*(max-min+1))+min; }
+function randNonZero(min, max){ let v=0; while(v===0) v=randInt(min,max); return v; }
+function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
+function round1(v){ return Math.round(v*10)/10; }
+// Número escrito con coma o punto decimal y signo menos (también «−»); NaN si no es un número
+function leerNum(texto){
+  const t = String(texto ?? '').trim().replace(/[−–]/g,'-').replace(',', '.');
+  return /^-?\d+(\.\d+)?$/.test(t) ? parseFloat(t) : NaN;
+}
+const SIN_FALLO = ' No cuenta como fallo.';
+// Otro punto distinto del anterior
+function puntoDistinto(prev){
+  let p;
+  do { p = { x: randInt(-DOM_GRID,DOM_GRID), y: randInt(-DOM_GRID,DOM_GRID) }; }
+  while(prev && p.x===prev.x && p.y===prev.y);
+  return p;
+}
+// Recta distinta de la anterior
+function lineal4Distinta(prevExpr){
+  let g; do { g = generarLineal(-DOM_GRID,DOM_GRID); } while(g.expr===prevExpr); return g;
+}
+
+/* ---------- Estado global ---------- */
+const DOM_GRID = 6; // dominio -6..6 para ejercicios 1,2,4,5
+let startTime = Date.now();
+let finalizado = false;
+
+const ex1 = { superado:false, fallos:0, racha:0, objetivo:2, objetivoActivo:null };
+const ex2 = { superado:false, fallos:0, racha:0, objetivo:2, objetivoActivo:null };
+const ex3 = { superado:false, fallos:0, preguntas:[], recorrido:null, acertadas:{} };
+const ex4 = { superado:false, fallos:0, racha:0, objetivo:2, m:0, b:0, expr:'' };
+const ex5 = { superado:false, fallos:0, racha:0, objetivo:2, m:0, b:0, expr:'', puntosCorrectos:[], puntosUsuario:[null,null,null] };
+
+/* ---------- Dibujo de cuadrícula genérica (canvas 300x300, dominio -DOM..DOM) ---------- */
+function nuevoCanvas(id){
+  const c = document.createElement('canvas');
+  c.width = 300; c.height = 300; c.id = id;
+  return c;
+}
+function toPx(v, size){ return 40 + (v+DOM_GRID)/(2*DOM_GRID) * (size-80); }
+function toVal(px, size){ return Math.round(-DOM_GRID + (px-40)/(size-80) * (2*DOM_GRID)); }
+// El eje Y necesita su propia conversión INVERTIDA: el píxel del canvas crece hacia abajo,
+// pero el valor matemático de Y crece hacia arriba. Sin esto, los valores positivos de Y
+// se dibujan por debajo del eje X (al revés de la convención cartesiana estándar).
+function toPxY(v, size){ return 40 + (DOM_GRID-v)/(2*DOM_GRID) * (size-80); }
+function toValY(px, size){ return Math.round(DOM_GRID - (px-40)/(size-80) * (2*DOM_GRID)); }
+
+function dibujarCuadricula(ctx, size){
+  ctx.fillStyle = '#FFF'; ctx.fillRect(0,0,size,size);
+  ctx.beginPath(); ctx.strokeStyle = '#DDD2C0'; ctx.lineWidth = 0.8;
+  for(let i=-DOM_GRID;i<=DOM_GRID;i++){
+    const px = toPx(i,size), py = toPxY(i,size);
+    ctx.moveTo(px,40); ctx.lineTo(px,size-40);
+    ctx.moveTo(40,py); ctx.lineTo(size-40,py);
+  }
+  ctx.stroke();
+  ctx.beginPath(); ctx.lineWidth = 1.5; ctx.strokeStyle = '#3B2510';
+  ctx.moveTo(toPx(0,size),40); ctx.lineTo(toPx(0,size),size-40);
+  ctx.moveTo(40,toPxY(0,size)); ctx.lineTo(size-40,toPxY(0,size));
+  ctx.stroke();
+  ctx.fillStyle = '#6B4F35'; ctx.font = '9px Lato';
+  for(let i=-DOM_GRID;i<=DOM_GRID;i++){
+    if(i===0) continue;
+    ctx.fillText(String(i), toPx(i,size)-4, toPxY(0,size)-3);
+    ctx.fillText(String(i), toPx(0,size)+3, toPxY(i,size)+3);
+  }
+}
+function dibujarPunto(ctx,size,x,y,color){
+  ctx.beginPath(); ctx.fillStyle = color;
+  ctx.arc(toPx(x,size), toPxY(y,size), 6, 0, 2*Math.PI); ctx.fill();
+}
+
+/* ============================================================
+   EJERCICIO 1: arrastrar un punto hasta una coordenada dada
+   ============================================================ */
+function ex1Nuevo(){
+  if(ex1.superado) return;
+  ex1.objetivoActivo = puntoDistinto(ex1.objetivoActivo);
+  document.getElementById('feedback1').innerHTML = '';
+  ex1Render();
+}
+let ex1Actual = { x:null, y:null };
+function ex1Render(){
+  ex1Actual = { x:null, y:null };
+  const cont = document.getElementById('grafica1-container');
+  cont.innerHTML = '';
+  const c = nuevoCanvas('c1');
+  c.className = ex1.superado ? 'bloqueado' : 'interactivo';
+  cont.appendChild(c);
+  const ctx = c.getContext('2d');
+  dibujarCuadricula(ctx,300);
+  let dragging = false;
+  function redraw(marcaCorrecta){
+    dibujarCuadricula(ctx,300);
+    if(ex1Actual.x!==null) dibujarPunto(ctx,300,ex1Actual.x,ex1Actual.y,'#1E6F5C');
+    if(marcaCorrecta){
+      ctx.beginPath(); ctx.fillStyle='#D9534F';
+      ctx.arc(toPx(marcaCorrecta.x,300), toPxY(marcaCorrecta.y,300), 8, 0, 2*Math.PI); ctx.fill();
+    }
+  }
+  function coordsFromEvent(evt){
+    const rect = c.getBoundingClientRect();
+    const scaleX = c.width/rect.width, scaleY = c.height/rect.height;
+    const px = (evt.clientX-rect.left)*scaleX, py = (evt.clientY-rect.top)*scaleY;
+    return { x: clamp(toVal(clamp(px,40,260),300), -DOM_GRID, DOM_GRID), y: clamp(toValY(clamp(py,40,260),300), -DOM_GRID, DOM_GRID) };
+  }
+  if(!ex1.superado){
+    c.addEventListener('pointerdown', e=>{ dragging=true; const p=coordsFromEvent(e); ex1Actual=p; redraw(); });
+    c.addEventListener('pointermove', e=>{ if(!dragging) return; const p=coordsFromEvent(e); ex1Actual=p; redraw(); });
+    window.addEventListener('pointerup', ()=>{ dragging=false; });
+  }
+  document.getElementById('btnCorregir1').disabled = ex1.superado;
+  document.getElementById('btnNuevo1').disabled = ex1.superado;
+  document.getElementById('btnCorregir1').onclick = ()=>{
+    if(ex1.superado) return;
+    if(ex1Actual.x===null){
+      mostrarFeedback('feedback1','Primero arrastra el punto hasta una posición.','aviso');
+      return;
+    }
+    const ok = ex1Actual.x===ex1.objetivoActivo.x && ex1Actual.y===ex1.objetivoActivo.y;
+    if(ok){
+      ex1.racha++;
+      if(ex1.racha>=ex1.objetivo){ ex1.superado=true; }
+      mostrarFeedback('feedback1',`✅ Correcto (${ex1.racha}/${ex1.objetivo})`,'correcto');
+      if(ex1.superado){ actualizarCabeceras(); pintarMarcador(); return; }
+      document.getElementById('btnCorregir1').disabled = true;
+      document.getElementById('btnNuevo1').disabled = true;
+      setTimeout(ex1Nuevo, 1100);
+    } else {
+      ex1.fallos++;
+      ex1.racha = 0;
+      // Se enseña la solución y se plantea otro punto
+      const msg1 = `❌ Incorrecto. Solución del ejercicio anterior: el punto correcto era (${ex1.objetivoActivo.x}, ${ex1.objetivoActivo.y}). Pista: la primera coordenada (x) indica cuántos cuadritos te mueves en horizontal (derecha si es positiva, izquierda si es negativa) y la segunda (y) cuántos en vertical (arriba si es positiva, abajo si es negativa). 👉 Ahora inténtalo con este nuevo.`;
+      ex1Nuevo();
+      mostrarFeedback('feedback1', msg1, 'incorrecto');
+    }
+    pintarMarcador();
+  };
+  document.getElementById('btnNuevo1').onclick = ()=>{ if(!ex1.superado){ ex1.racha=0; ex1Nuevo(); } };
+  actualizarEnunciado1();
+}
+function actualizarEnunciado1(){
+  const div = document.getElementById('enunciado1');
+  if(ex1.superado){ div.textContent = '✅ Superado'; return; }
+  div.textContent = `🎯 Arrastra el punto verde hasta (${ex1.objetivoActivo.x}, ${ex1.objetivoActivo.y}). Aciertos: ${ex1.racha}/${ex1.objetivo}`;
+}
+
+/* ============================================================
+   EJERCICIO 2: leer coordenadas de un punto fijo
+   ============================================================ */
+function ex2Nuevo(){
+  if(ex2.superado) return;
+  ex2.objetivoActivo = puntoDistinto(ex2.objetivoActivo);
+  document.getElementById('feedback2').innerHTML = '';
+  document.getElementById('x2').value=''; document.getElementById('y2').value='';
+  ex2Render();
+}
+function ex2Render(){
+  const cont = document.getElementById('grafica2-container');
+  cont.innerHTML='';
+  const c = nuevoCanvas('c2');
+  cont.appendChild(c);
+  const ctx = c.getContext('2d');
+  dibujarCuadricula(ctx,300);
+  dibujarPunto(ctx,300, ex2.objetivoActivo.x, ex2.objetivoActivo.y, '#1E6F5C');
+  const x2 = document.getElementById('x2'), y2 = document.getElementById('y2');
+  const btn = document.getElementById('btnCorregir2');
+  x2.disabled = y2.disabled = ex2.superado;
+  btn.disabled = ex2.superado;
+  function comprobar(){
+    if(ex2.superado) return;
+    const vx = leerNum(x2.value), vy = leerNum(y2.value);
+    if(!Number.isInteger(vx)||!Number.isInteger(vy)){ mostrarFeedback('feedback2','⚠️ Introduce dos números enteros.'+SIN_FALLO,'aviso'); return; }
+    if(vx===ex2.objetivoActivo.x && vy===ex2.objetivoActivo.y){
+      ex2.racha++;
+      if(ex2.racha>=ex2.objetivo) ex2.superado=true;
+      mostrarFeedback('feedback2',`✅ Correcto (${ex2.racha}/${ex2.objetivo})`,'correcto');
+      if(ex2.superado){ actualizarCabeceras(); pintarMarcador(); return; }
+      btn.disabled = true; x2.disabled = true; y2.disabled = true;
+      setTimeout(ex2Nuevo, 1100);
+    } else {
+      ex2.fallos++; ex2.racha=0;
+      const msg2 = `❌ Incorrecto. Solución del ejercicio anterior: el punto estaba en (${ex2.objetivoActivo.x}, ${ex2.objetivoActivo.y}). Pista: cuenta las casillas desde el origen en horizontal (esa es la x, con signo según el lado) y luego en vertical (esa es la y). 👉 Ahora inténtalo con este nuevo.`;
+      ex2Nuevo();
+      mostrarFeedback('feedback2', msg2, 'incorrecto');
+    }
+    pintarMarcador();
+  }
+  btn.onclick = comprobar;
+  [x2,y2].forEach(inp=> inp.onkeydown = e=>{ if(e.key==='Enter') comprobar(); });
+  document.getElementById('btnNuevo2').onclick = ()=>{ if(!ex2.superado){ ex2.racha=0; ex2Nuevo(); } };
+  actualizarEnunciado2();
+}
+function actualizarEnunciado2(){
+  const div = document.getElementById('enunciado2');
+  div.textContent = ex2.superado ? '✅ Superado' : `🔍 Escribe las coordenadas del punto verde. Aciertos: ${ex2.racha}/${ex2.objetivo}`;
+}
+
+/* ============================================================
+   EJERCICIO 3: gráfica distancia-tiempo con 5 subpreguntas
+   ============================================================ */
+function generarRecorrido(){
+  const escenarios = [
+    {nombre:'Marta', actividad:'una excursión en bicicleta', lugar:'por el carril bici del río'},
+    {nombre:'Pablo', actividad:'un paseo a pie', lugar:'por el parque'},
+    {nombre:'Lucía', actividad:'una carrera de entrenamiento', lugar:'por el polideportivo'},
+    {nombre:'Diego', actividad:'un trayecto en patinete', lugar:'por el barrio'}
+  ];
+  const esc = escenarios[randInt(0,escenarios.length-1)];
+  let puntos = [{t:0,d:0}], t=0, d=0, paradas=[];
+  function subir(min,step){ t+=20*min; d=Math.min(800,d+100*step); puntos.push({t,d}); }
+  function bajar(min,step){ t+=20*min; d=Math.max(0,d-100*step); puntos.push({t,d}); }
+  function parar(min){ t+=20*min; paradas.push(20*min); puntos.push({t,d}); }
+  const vueltas = randInt(2,3);
+  for(let i=0;i<vueltas;i++){
+    subir(randInt(1,2), randInt(1,2));
+    if(Math.random()<0.7) parar(randInt(1,2));
+    if(i<vueltas-1 && Math.random()<0.5) bajar(randInt(1,2), randInt(1,2));
+  }
+  while(d>0) bajar(1, Math.min(3, Math.ceil(d/100)));
+  if(puntos[puntos.length-1].d!==0) puntos.push({t,d:0});
+  const tMax = puntos[puntos.length-1].t;
+  const dMax = Math.max(...puntos.map(p=>p.d));
+  const tDeMax = puntos.find(p=>p.d===dMax).t;
+  const totalParado = paradas.reduce((a,b)=>a+b,0);
+  function valorEn(tiempo){
+    for(let i=0;i<puntos.length-1;i++){
+      const a=puntos[i], b=puntos[i+1];
+      if(tiempo>=a.t && tiempo<=b.t){
+        if(b.t===a.t) return a.d;
+        return a.d + (b.d-a.d)*(tiempo-a.t)/(b.t-a.t);
+      }
+    }
+    return puntos[puntos.length-1].d;
+  }
+  const candidatos = [];
+  for(let m=20;m<tMax;m+=20) candidatos.push(m);
+  const preg1min = candidatos.length ? candidatos[randInt(0,candidatos.length-1)] : 20;
+
+  const preguntas = [
+    { texto:`${esc.nombre} hace ${esc.actividad}. ¿A qué distancia de casa estaba a los ${preg1min} minutos de haber salido?`, resp:Math.round(valorEn(preg1min)), unidad:'m',
+      pista:'Localiza ese minuto en el eje horizontal y lee la altura (distancia) de la gráfica justo ahí.' },
+    { texto:`¿Cuál fue la distancia máxima a la que llegó ${esc.nombre} de su casa durante todo el recorrido?`, resp:dMax, unidad:'m',
+      pista:'Busca el punto más alto de la gráfica y lee su altura.' },
+    { texto:`¿En qué minuto alcanzó ${esc.nombre} esa distancia máxima?`, resp:tDeMax, unidad:'min',
+      pista:'Mira a qué minuto corresponde el punto más alto en el eje horizontal.' },
+    { texto:`Mientras hacía ${esc.actividad} ${esc.lugar}, ${esc.nombre} se detuvo alguna vez. ¿Cuántos minutos en total estuvo parado/a?`, resp:totalParado, unidad:'min',
+      pista:'Un tramo parado se ve como una línea horizontal en la gráfica (la distancia no cambia). Suma esos tramos.' },
+    { texto:`¿Cuánto tiempo total estuvo ${esc.nombre} fuera de casa?`, resp:tMax, unidad:'min',
+      pista:'Es el minuto en el que la gráfica vuelve a tocar el eje horizontal (distancia 0 m).' }
+  ];
+  return { escenario:esc, puntos, preguntas, tMax };
+}
+function dibujarRecorridoSVG(rec){
+  const dMaxEje = 800, tMaxEje = Math.ceil(rec.tMax/20)*20;
+  const ax = t=> 45 + t/tMaxEje*280, ay = d=> 225 - d/dMaxEje*210;
+  let s = '<svg viewBox="0 0 340 260" style="border-radius:8px;background:#FDFAF3;max-width:100%;height:auto;">';
+  for(let t=0;t<=tMaxEje;t+=20) s += `<line x1="${ax(t)}" y1="15" x2="${ax(t)}" y2="225" stroke="#E0CEAA"/><text x="${ax(t)}" y="237" font-size="8" fill="#6B4F35" text-anchor="middle">${t}</text>`;
+  for(let d=0;d<=dMaxEje;d+=100) s += `<line x1="45" y1="${ay(d)}" x2="325" y2="${ay(d)}" stroke="#E0CEAA"/><text x="41" y="${ay(d)+2}" font-size="8" fill="#6B4F35">${d}</text>`;
+  s += `<text x="170" y="256" font-size="8" fill="#3B2510" text-anchor="middle">Tiempo (min)</text>`;
+  s += `<line x1="45" y1="15" x2="45" y2="225" stroke="#3B2510" stroke-width="1.2"/><line x1="45" y1="225" x2="325" y2="225" stroke="#3B2510" stroke-width="1.2"/>`;
+  const pts = rec.puntos.map(p=>`${ax(p.t)},${ay(p.d)}`).join(' ');
+  s += `<polyline points="${pts}" fill="none" stroke="#A0522D" stroke-width="2"/></svg>`;
+  return s;
+}
+function ex3Nuevo(){
+  if(ex3.superado) return;
+  ex3.recorrido = generarRecorrido();
+  ex3.preguntas = ex3.recorrido.preguntas;
+  ex3.acertadas = {};
+  ex3Render();
+}
+function ex3Render(){
+  document.getElementById('grafica3-container').innerHTML = dibujarRecorridoSVG(ex3.recorrido);
+  const cont = document.getElementById('preguntas3-container');
+  cont.innerHTML = '';
+  ex3.preguntas.forEach((p,i)=>{
+    const div = document.createElement('div');
+    div.className = 'pregunta-item' + (ex3.acertadas[i] ? ' acertada' : '');
+    div.innerHTML = `<strong>${i+1}. ${p.texto}</strong>
+      <input type="text" autocomplete="off" id="r3_${i}" ${ex3.acertadas[i]||ex3.superado?'disabled':''}> ${p.unidad}
+      <button class="btn-primario" id="b3_${i}" style="margin-left:8px;padding:5px 14px;" ${ex3.acertadas[i]||ex3.superado?'disabled':''}>✓</button>
+      <div id="fb3_${i}" class="feedback-local" aria-live="polite" style="margin-top:6px;"></div>`;
+    cont.appendChild(div);
+    function comprobar(){
+      if(ex3.acertadas[i] || ex3.superado) return;
+      const v = leerNum(document.getElementById(`r3_${i}`).value);
+      const fb = document.getElementById(`fb3_${i}`);
+      if(isNaN(v)){ fb.innerHTML = '<div class="feedback-aviso">⚠️ Introduce un número válido.'+SIN_FALLO+'</div>'; return; }
+      if(Math.abs(v-p.resp)<=0.5){
+        ex3.acertadas[i]=true;
+        fb.innerHTML = `<div class="feedback-correcto">✅ Correcto (${p.resp} ${p.unidad})</div>`;
+        div.classList.add('acertada');
+        document.getElementById(`r3_${i}`).disabled = true;
+        document.getElementById(`b3_${i}`).disabled = true;
+        if(Object.keys(ex3.acertadas).length === ex3.preguntas.length){
+          ex3.superado = true; actualizarCabeceras(); pintarMarcador();
+        }
+      } else {
+        ex3.fallos++;
+        fb.innerHTML = `<div class="feedback-incorrecto">❌ La respuesta correcta era ${p.resp} ${p.unidad}. Pista: ${p.pista}</div>`;
+      }
+      pintarMarcador();
+    }
+    document.getElementById(`b3_${i}`).onclick = comprobar;
+    document.getElementById(`r3_${i}`).onkeydown = e=>{ if(e.key==='Enter') comprobar(); };
+  });
+  actualizarEnunciado3();
+  document.getElementById('btnNuevo3').onclick = ()=>{ if(!ex3.superado) ex3Nuevo(); };
+}
+function actualizarEnunciado3(){
+  const div = document.getElementById('enunciado3');
+  if(ex3.superado){ div.textContent = '✅ Superado'; return; }
+  const e = ex3.recorrido.escenario;
+  div.textContent = `📈 ${e.nombre} sale de casa y hace ${e.actividad} ${e.lugar}, alejándose y acercándose varias veces antes de volver. La gráfica muestra la distancia a su casa (en metros) según pasan los minutos. Responde todas las preguntas.`;
+}
+
+/* ============================================================
+   EJERCICIO 4: función lineal — pendiente, ordenada, monotonía
+   ============================================================ */
+function generarLineal(minB, maxB){
+  const m = randNonZero(-DOM_GRID, DOM_GRID);
+  const b = randInt(minB, maxB);
+  const expr = b>=0 ? `f(x) = ${m}·x + ${b}` : `f(x) = ${m}·x - ${Math.abs(b)}`;
+  return { m, b, expr };
+}
+function dibujarRectaCanvas(ctx,size,m,b){
+  dibujarCuadricula(ctx,size);
+  const D = DOM_GRID;
+  let pts = [];
+  [-D,D].forEach(x=>{ const y=m*x+b; if(y>=-D&&y<=D) pts.push({x,y}); });
+  [-D,D].forEach(y=>{ const x=(y-b)/m; if(x>=-D&&x<=D) pts.push({x,y}); });
+  pts = pts.filter((p,i)=> !pts.slice(0,i).some(q=>Math.abs(q.x-p.x)<1e-6 && Math.abs(q.y-p.y)<1e-6));
+  if(pts.length>=2){
+    pts.sort((a,b2)=>a.x-b2.x);
+    const a=pts[0], c=pts[pts.length-1];
+    ctx.beginPath(); ctx.strokeStyle='#A0522D'; ctx.lineWidth=2.5;
+    ctx.moveTo(toPx(a.x,size),toPxY(a.y,size)); ctx.lineTo(toPx(c.x,size),toPxY(c.y,size)); ctx.stroke();
+  }
+}
+function ex4Nuevo(){
+  if(ex4.superado) return;
+  const g = lineal4Distinta(ex4.expr);
+  ex4.m=g.m; ex4.b=g.b; ex4.expr=g.expr;
+  document.getElementById('feedback4').innerHTML='';
+  document.getElementById('p4').value=''; document.getElementById('o4').value=''; document.getElementById('mono4').value='';
+  ex4Render();
+}
+function ex4Render(){
+  const cont = document.getElementById('grafica4-container'); cont.innerHTML='';
+  const c = nuevoCanvas('c4'); cont.appendChild(c);
+  dibujarRectaCanvas(c.getContext('2d'),300,ex4.m,ex4.b);
+  const p4=document.getElementById('p4'), o4=document.getElementById('o4'), mono4=document.getElementById('mono4');
+  const btn = document.getElementById('btnCorregir4');
+  [p4,o4,mono4].forEach(el=> el.disabled = ex4.superado);
+  btn.disabled = ex4.superado;
+  function comprobar(){
+    if(ex4.superado) return;
+    const vp=leerNum(p4.value), vo=leerNum(o4.value), vm=mono4.value;
+    if(isNaN(vp)||isNaN(vo)||!vm){
+      mostrarFeedback('feedback4','⚠️ Escribe la pendiente y la ordenada (solo números) y elige si es creciente o decreciente.'+SIN_FALLO,'aviso');
+      return;
+    }
+    const errores=[];
+    if(vp!==ex4.m) errores.push(`pendiente = ${ex4.m}`);
+    if(vo!==ex4.b) errores.push(`ordenada = ${ex4.b}`);
+    const monoCorrecta = ex4.m>0 ? 'creciente' : 'decreciente';
+    if(vm!==monoCorrecta) errores.push(`la recta es ${monoCorrecta}`);
+    if(errores.length===0){
+      ex4.racha++;
+      if(ex4.racha>=ex4.objetivo) ex4.superado=true;
+      mostrarFeedback('feedback4',`✅ Correcto (${ex4.racha}/${ex4.objetivo})`,'correcto');
+      if(ex4.superado){ actualizarCabeceras(); pintarMarcador(); return; }
+      [p4,o4,mono4].forEach(el=> el.disabled = true); btn.disabled = true;
+      setTimeout(ex4Nuevo, 1100);
+    } else {
+      ex4.fallos++; ex4.racha=0;
+      const msg4 = `❌ Incorrecto. Solución del ejercicio anterior: ${ex4.expr} → pendiente = ${ex4.m}, ordenada = ${ex4.b}, la recta es ${monoCorrecta}. Pista: en f(x) = m·x + b, la pendiente (m) multiplica a la x y la ordenada (b) es el valor de y cuando x = 0. La recta es creciente si m es positiva y decreciente si m es negativa. 👉 Ahora inténtalo con este nuevo.`;
+      ex4Nuevo();
+      mostrarFeedback('feedback4', msg4, 'incorrecto');
+    }
+    pintarMarcador();
+  }
+  btn.onclick = comprobar;
+  [p4,o4].forEach(inp=> inp.onkeydown = e=>{ if(e.key==='Enter') comprobar(); });
+  document.getElementById('btnNuevo4').onclick = ()=>{ if(!ex4.superado){ ex4.racha=0; ex4Nuevo(); } };
+  actualizarEnunciado4();
+}
+function actualizarEnunciado4(){
+  const div = document.getElementById('enunciado4');
+  div.textContent = ex4.superado ? '✅ Superado' : `📐 ${ex4.expr} — Calcula: pendiente, ordenada y si es creciente/decreciente. Aciertos: ${ex4.racha}/${ex4.objetivo}`;
+}
+
+/* ============================================================
+   EJERCICIO 5: tabla de valores + marcar puntos en la gráfica
+   ============================================================ */
+function ex5Nuevo(){
+  if(ex5.superado) return;
+  const g = generarLineal(-4,4);
+  // aseguramos pendiente también acotada a [-4,4]\{0} para tabla más manejable
+  g.m = randNonZero(-4,4);
+  g.expr = g.b>=0 ? `f(x) = ${g.m}·x + ${g.b}` : `f(x) = ${g.m}·x - ${Math.abs(g.b)}`;
+  if(g.expr===ex5.expr){ ex5Nuevo(); return; }
+  ex5.m=g.m; ex5.b=g.b; ex5.expr=g.expr;
+  ex5.puntosCorrectos = [-1,0,1].map(x=>({x,y:g.m*x+g.b}));
+  ex5.puntosUsuario = [null,null,null];
+  document.getElementById('feedback5').innerHTML='';
+  ex5Render();
+}
+function ex5Render(){
+  const xs = [-1,0,1];
+  let tabla = '<table class="tabla-valores"><tr><th>x</th><th>y = f(x)</th></tr>';
+  xs.forEach(x=>{ tabla += `<tr><td style="font-weight:bold;">${x}</td><td><input type="text" autocomplete="off" id="val_y_${x}" style="width:70px;" ${ex5.superado?'disabled':''}></td></tr>`; });
+  tabla += '</table><p style="font-size:0.72rem;margin-top:8px;">💡 Haz clic en el gráfico para marcar los puntos (x = -1, 0, 1)</p>';
+  document.getElementById('tabla5-container').innerHTML = tabla;
+
+  const cont = document.getElementById('grafica5-container'); cont.innerHTML='';
+  const c = nuevoCanvas('c5'); c.className = ex5.superado ? 'bloqueado' : 'interactivo'; cont.appendChild(c);
+  const ctx = c.getContext('2d');
+  function redraw(){
+    dibujarCuadricula(ctx,300);
+    ex5.puntosUsuario.forEach(p=>{ if(p) dibujarPunto(ctx,300,p.x,p.y,'#1E6F5C'); });
+  }
+  redraw();
+  if(!ex5.superado){
+    c.addEventListener('pointerdown', e=>{
+      const rect=c.getBoundingClientRect();
+      const scaleX=c.width/rect.width, scaleY=c.height/rect.height;
+      const px=(e.clientX-rect.left)*scaleX, py=(e.clientY-rect.top)*scaleY;
+      if(px<40||px>260||py<40||py>260) return;
+      const vx = toVal(px,300), idx = xs.indexOf(vx);
+      if(idx===-1) return;
+      const vy = toValY(py,300);
+      ex5.puntosUsuario[idx] = { x:vx, y:vy };
+      redraw();
+    });
+  }
+  const btn = document.getElementById('btnCorregir5'); btn.disabled = ex5.superado;
+  function comprobar(){
+    if(ex5.superado) return;
+    const vals = xs.map(x=> leerNum(document.getElementById(`val_y_${x}`).value));
+    if(vals.some(v=>isNaN(v)) || ex5.puntosUsuario.some(p=>!p)){
+      mostrarFeedback('feedback5','⚠️ Completa la tabla (solo números) y marca los tres puntos en la gráfica.'+SIN_FALLO,'aviso');
+      return;
+    }
+    let tablaOk = true;
+    xs.forEach((x,i)=>{
+      const v = vals[i];
+      if(isNaN(v) || Math.abs(v-ex5.puntosCorrectos[i].y)>0.1) tablaOk=false;
+    });
+    let graficaOk = true;
+    xs.forEach((x,i)=>{
+      const p = ex5.puntosUsuario[i];
+      if(!p || Math.abs(p.y-ex5.puntosCorrectos[i].y)>0.5) graficaOk=false;
+    });
+    if(tablaOk && graficaOk){
+      ex5.racha++;
+      if(ex5.racha>=ex5.objetivo) ex5.superado=true;
+      mostrarFeedback('feedback5',`✅ Correcto (${ex5.racha}/${ex5.objetivo})`,'correcto');
+      if(ex5.superado){
+        // dibuja la recta y los puntos correctos como confirmación visual
+        dibujarRectaCanvas(ctx,300,ex5.m,ex5.b);
+        ex5.puntosCorrectos.forEach(p=>dibujarPunto(ctx,300,p.x,p.y,'#1E6F5C'));
+        actualizarCabeceras(); pintarMarcador(); return;
+      }
+      btn.disabled = true;
+      xs.forEach(x=> document.getElementById(`val_y_${x}`).disabled = true);
+      setTimeout(ex5Nuevo, 1100);
+    } else {
+      ex5.fallos++; ex5.racha=0;
+      const msg5 = `❌ Incorrecto. Solución del ejercicio anterior: ${ex5.expr} → y = ${ex5.puntosCorrectos.map(p=>p.y).join(', ')} para x = -1, 0, 1. Pista: para cada x, sustitúyela en ${ex5.expr} (primero multiplica por m, después suma o resta b) para obtener y. Luego desplázate ese valor de x en horizontal y el de y en vertical desde el origen. 👉 Ahora inténtalo con este nuevo.`;
+      ex5Nuevo();
+      mostrarFeedback('feedback5', msg5, 'incorrecto');
+    }
+    pintarMarcador();
+  }
+  btn.onclick = comprobar;
+  xs.forEach(x=> document.getElementById(`val_y_${x}`).onkeydown = e=>{ if(e.key==='Enter') comprobar(); });
+  document.getElementById('btnNuevo5').onclick = ()=>{ if(!ex5.superado){ ex5.racha=0; ex5Nuevo(); } };
+  actualizarEnunciado5();
+}
+function actualizarEnunciado5(){
+  const div = document.getElementById('enunciado5');
+  div.textContent = ex5.superado ? '✅ Superado' : `📊 Función: ${ex5.expr} — Completa la tabla y marca los puntos. Aciertos: ${ex5.racha}/${ex5.objetivo}`;
+}
+
+/* ---------- Feedback helper ---------- */
+function mostrarFeedback(id, texto, tipo){
+  const div = document.getElementById(id);
+  const clase = tipo==='correcto' ? 'feedback-correcto' : tipo==='incorrecto' ? 'feedback-incorrecto' : 'feedback-aviso';
+  div.innerHTML = `<div class="${clase}">${texto}</div>`;
+}
+
+/* ---------- Marcador general y cabeceras de ejercicio ---------- */
+function pintarMarcador(){
+  const m = document.getElementById('marcadorGeneral');
+  const iconos = [ex1.superado, ex2.superado, ex3.superado, ex4.superado, ex5.superado];
+  const nombres = ['Ej1','Ej2','Ej3','Ej4','Ej5'];
+  m.innerHTML = nombres.map((n,i)=>`<span>${n}: ${iconos[i]?'✅':'🔘'}</span>`).join('');
+}
+function actualizarCabeceras(){
+  [1,2,3,4,5].forEach(i=>{
+    const superado = window['ex'+i].superado;
+    document.getElementById('card'+i).classList.toggle('superado', superado);
+    document.getElementById('estado'+i).textContent = superado ? '✅ Superado' : '⚪ Pendiente';
+  });
+}
+window.ex1=ex1; window.ex2=ex2; window.ex3=ex3; window.ex4=ex4; window.ex5=ex5;
+
+/* ---------- Puntuación ---------- */
+function valorEjercicio(ex){
+  if(!ex.superado) return 0;
+  return Math.max(0, round1(2 - 0.5*ex.fallos));
+}
+function calcularNota(){
+  return round1(valorEjercicio(ex1)+valorEjercicio(ex2)+valorEjercicio(ex3)+valorEjercicio(ex4)+valorEjercicio(ex5));
+}
+function colorPorNota(nota){
+  if(nota===10) return {bg:'#1a7a1a', txt:'white'};
+  if(nota>=9)   return {bg:'#6dbf6d', txt:'white'};
+  if(nota>=8)   return {bg:'#1a4f8a', txt:'white'};
+  if(nota>=7)   return {bg:'#5b9bd5', txt:'white'};
+  if(nota>=6)   return {bg:'#c05c00', txt:'white'};
+  if(nota>=5)   return {bg:'#f5a623', txt:'black'};
+  return {bg:'#c0392b', txt:'white'};
+}
+function formatoTiempo(segundos){
+  const totalMin = Math.max(1, Math.ceil(segundos/60)); // redondeo hacia arriba
+  const h = Math.floor(totalMin/60), m = totalMin%60;
+  const pad = n=> String(n).padStart(2,'0');
+  return `${pad(h)}:${pad(m)}`;
+}
+
+/* ---------- Finalizar y Calificar ---------- */
+document.getElementById('btnFinalizar').onclick = ()=>{
+  const nombre = document.getElementById('nombreAlumno').value.trim();
+  if(!nombre){ alertaNombre(); return; }
+  document.getElementById('overlayConfirmar').classList.add('show');
+};
+function alertaNombre(){
+  const campo = document.getElementById('nombreAlumno');
+  campo.style.borderColor = 'var(--color-incorrecto)';
+  campo.placeholder = 'Escribe tu nombre antes de finalizar';
+  campo.focus();
+  setTimeout(()=>{ campo.style.borderColor=''; }, 2500);
+}
+document.getElementById('btnCancelarFinal').onclick = ()=> document.getElementById('overlayConfirmar').classList.remove('show');
+document.getElementById('btnConfirmarFinal').onclick = ()=>{
+  document.getElementById('overlayConfirmar').classList.remove('show');
+  finalizado = true;
+  const nombre = document.getElementById('nombreAlumno').value.trim();
+  const ahora = new Date();
+  const fecha = `${String(ahora.getDate()).padStart(2,'0')}/${String(ahora.getMonth()+1).padStart(2,'0')}/${ahora.getFullYear()}`;
+  const hora = `${String(ahora.getHours()).padStart(2,'0')}:${String(ahora.getMinutes()).padStart(2,'0')}:${String(ahora.getSeconds()).padStart(2,'0')}`;
+  const segundos = (Date.now()-startTime)/1000;
+  const tiempo = formatoTiempo(segundos);
+  const nota = calcularNota();
+  const color = colorPorNota(nota);
+
+  document.getElementById('resNombre').innerHTML = `<strong>${nombre}</strong>`;
+  document.getElementById('resNota').textContent = `${nota} / 10`;
+  document.getElementById('resFecha').textContent = `📅 Fecha: ${fecha}`;
+  document.getElementById('resHora').textContent = `⏰ Hora: ${hora}`;
+  document.getElementById('resTiempo').textContent = `⏱️ Tiempo empleado: ${tiempo}`;
+  document.getElementById('resResumen').innerHTML = [1,2,3,4,5].map(i=>{
+    const ex = window['ex'+i];
+    return `<div>${i}. ${ex.superado ? '✅ Superado ('+valorEjercicio(ex).toFixed(1)+'/2)' : '🔘 Pendiente (0/2)'}</div>`;
+  }).join('');
+  const modal = document.getElementById('modalResultado');
+  modal.style.backgroundColor = color.bg; modal.style.color = color.txt;
+  if(nota===10) document.body.classList.add('nota-perfecta');
+  document.getElementById('overlayResultado').classList.add('show');
+};
+document.getElementById('btnCerrarResultado').onclick = ()=> document.getElementById('overlayResultado').classList.remove('show');
+
+/* ---------- Reinicio global ("Nueva ficha") ---------- */
+function reiniciarTodo(){
+  [ex1,ex2,ex4,ex5].forEach(e=>{ e.superado=false; e.fallos=0; e.racha=0; });
+  ex3.superado=false; ex3.fallos=0; ex3.acertadas={};
+  startTime = Date.now();
+  finalizado = false;
+  document.body.classList.remove('nota-perfecta');
+  document.getElementById('fichaContainer').classList.remove('completa-verde');
+  document.getElementById('overlayResultado').classList.remove('show');
+  document.getElementById('overlayConfirmar').classList.remove('show');
+  document.getElementById('nombreAlumno').value = '';
+  ex1Nuevo(); ex2Nuevo(); ex3Nuevo(); ex4Nuevo(); ex5Nuevo();
+  actualizarCabeceras(); pintarMarcador();
+}
+document.getElementById('btnReiniciar').onclick = reiniciarTodo;
+
+/* ---------- Arranque ---------- */
+ex1Nuevo(); ex2Nuevo(); ex3Nuevo(); ex4Nuevo(); ex5Nuevo();
+actualizarCabeceras(); pintarMarcador();
+
+})();
+</script>
+</body>
+</html>

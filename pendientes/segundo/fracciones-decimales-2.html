@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fracciones y Decimales · 2º ESO</title>
+<style>
+  :root {
+    --color-fondo: #F5F0E8;
+    --color-fondo-card: #FDFAF3;
+    --color-texto: #2C1F0E;
+    --color-texto-suave: #6B4F35;
+    --color-acento: #A0522D;
+    --color-acento-hover: #7B3B1E;
+    --color-borde: #C9A96E;
+    --color-borde-suave: #E0CEAA;
+    --color-cabecera: #3B2510;
+    --color-cabecera-txt: #F5EDD8;
+    --color-correcto: #2E6B3E;
+    --color-incorrecto: #8B1A1A;
+    --color-neutro: #E8DFC8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--color-fondo);
+    font-family: 'Lato', 'DM Sans', sans-serif;
+    color: var(--color-texto);
+    min-height: 100vh;
+    transition: background 0.3s;
+  }
+  body.all-green { background: #eaf7ea; }
+
+  .autoria {
+    background: var(--color-cabecera);
+    text-align: center;
+    padding: 6px;
+    font-size: 10px;
+    color: rgba(245, 240, 232, 0.7);
+  }
+
+  .ficha-wrapper { max-width: 1100px; margin: 0 auto; padding: 2rem 1rem; }
+
+  .header {
+    background: var(--color-cabecera);
+    border-radius: 1.5rem;
+    padding: 1.8rem 2rem;
+    margin-bottom: 1.8rem;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  }
+  .header h1 { font-family: 'Libre Baskerville', serif; font-size: 2.1rem; font-weight: 700; color: var(--color-cabecera-txt); margin: 0 0 0.5rem; }
+  .header p { color: #C9B896; font-size: 0.9rem; margin: 0; }
+  .header-badges { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem; }
+  .header-badge { background: rgba(255,255,255,0.08); padding: 0.25rem 0.75rem; border-radius: 40px; font-size: 0.7rem; color: #E0CEAA; }
+
+  .info-bar {
+    background: var(--color-fondo-card);
+    border-radius: 1.2rem;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    border: 1px solid var(--color-borde);
+  }
+  .info-item { display: flex; align-items: center; gap: 0.6rem; font-size: 0.85rem; font-weight: 500; color: var(--color-texto-suave); }
+  .info-icon { width: 30px; height: 30px; background: var(--color-fondo); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+  .info-value { font-weight: 700; font-size: 1rem; color: var(--color-texto); }
+
+  .name-section {
+    background: var(--color-fondo-card);
+    border-radius: 1rem;
+    padding: 0.8rem 1.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    border: 1px solid var(--color-borde-suave);
+  }
+  .name-label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--color-texto-suave); }
+  .name-input { flex: 1; max-width: 280px; border: none; border-bottom: 2px solid var(--color-borde); padding: 0.5rem 0.25rem; font-size: 0.95rem; background: transparent; color: var(--color-texto); outline: none; }
+  .name-input:focus { border-bottom-color: var(--color-acento); }
+
+  .ejercicio-card {
+    background: var(--color-fondo-card);
+    border-radius: 1.2rem;
+    padding: 1.5rem;
+    margin-bottom: 1.2rem;
+    border: 1px solid var(--color-borde);
+    transition: all 0.2s;
+  }
+  .ejercicio-card.superado { border-left: 5px solid var(--color-correcto); background: #FAF8F0; }
+
+  .ejercicio-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap; }
+  .ejercicio-num { min-width: 32px; height: 32px; padding: 0 6px; background: var(--color-acento); color: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; flex-shrink: 0; }
+  .ejercicio-titulo { font-weight: 600; font-size: 1rem; }
+  .badge-superado { background: var(--color-correcto); color: white; padding: 0.2rem 0.7rem; border-radius: 40px; font-size: 0.65rem; font-weight: 600; margin-left: 0.5rem; }
+
+  .enunciado {
+    background: var(--color-fondo);
+    padding: 0.8rem 1.2rem;
+    border-radius: 1rem;
+    font-size: 1rem;
+    margin-bottom: 1.2rem;
+    border: 1px solid var(--color-borde-suave);
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .enunciado-texto {
+    background: var(--color-fondo);
+    padding: 1rem 1.2rem;
+    border-radius: 1rem;
+    margin-bottom: 1.2rem;
+    border: 1px solid var(--color-borde-suave);
+    font-family: 'Lato', sans-serif;
+    font-size: 1rem;
+    line-height: 1.55;
+  }
+  .enunciado-fraccion {
+    background: var(--color-fondo);
+    padding: 1rem 1.2rem;
+    border-radius: 1rem;
+    margin-bottom: 1.2rem;
+    border: 1px solid var(--color-borde-suave);
+    font-family: 'Lato', sans-serif;
+    font-size: 1.05rem;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 2px;
+  }
+
+  /* Fracción visual (numerador / línea / denominador) */
+  .frac-visual { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; margin: 0 6px; font-family: 'JetBrains Mono', monospace; line-height: 1.2; font-size: 1.05rem; }
+  .frac-visual .frac-num { border-bottom: 1.5px solid var(--color-texto); padding: 0 6px 3px; }
+  .frac-visual .frac-den { padding: 3px 6px 0; }
+  .frac-op { font-weight: 700; margin: 0 6px; font-size: 1.15rem; color: var(--color-texto-suave); }
+
+  /* Campos de respuesta tipo fracción */
+  .frac-input { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .frac-input-num, .frac-input-den {
+    width: 84px; text-align: center; border: 2px solid var(--color-borde); border-radius: 8px;
+    padding: 6px 4px; font-size: 1rem; font-family: 'JetBrains Mono', monospace; background: white; color: var(--color-texto);
+  }
+  .frac-input-num:focus, .frac-input-den:focus { outline: 2px solid var(--color-acento); border-color: var(--color-acento); }
+  .frac-input-linea { width: 84px; height: 2px; background: var(--color-texto); margin: 2px 0; }
+
+  .campo-label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--color-texto-suave); margin-bottom: 4px; }
+  .input-area { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; margin: 1rem 0; }
+  .campo-grupo { display: flex; flex-direction: column; }
+  .text-input, .number-input, .select-input {
+    border: 2px solid var(--color-borde);
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-size: 0.9rem;
+    width: 200px;
+    font-family: 'JetBrains Mono', monospace;
+    background: white;
+    color: var(--color-texto);
+  }
+  .text-input:focus, .number-input:focus, .select-input:focus { outline: 2px solid var(--color-acento); border-color: var(--color-acento); }
+  .number-input { width: 140px; text-align: center; }
+  .select-input { width: auto; min-width: 160px; cursor: pointer; }
+  .btn-primary, .btn-secondary, .btn-large, .btn-outline, .btn-flecha {
+    font-family: inherit; cursor: pointer; border: none;
+  }
+  .btn-primary {
+    background: var(--color-acento);
+    color: white;
+    padding: 8px 22px;
+    border-radius: 40px;
+    font-weight: 600;
+    transition: 0.2s;
+  }
+  .btn-primary:hover:not(:disabled) { background: var(--color-acento-hover); transform: scale(0.97); }
+  .btn-primary:disabled { background: #C9A96E; cursor: not-allowed; }
+  .btn-secondary {
+    background: #C9A96E;
+    color: var(--color-texto);
+    padding: 8px 22px;
+    border-radius: 40px;
+    font-weight: 600;
+  }
+  .feedback { margin-top: 10px; font-size: 0.85rem; font-weight: 500; min-height: 1.2rem; }
+  .feedback-correcto { color: var(--color-correcto); background: rgba(46,107,62,0.1); padding: 6px 14px; border-radius: 30px; display: inline-block; }
+  .feedback-error { color: var(--color-incorrecto); background: rgba(139,26,26,0.08); padding: 6px 14px; border-radius: 30px; display: inline-block; }
+  .feedback-aviso { color: var(--color-texto-suave); background: var(--color-neutro); padding: 6px 14px; border-radius: 30px; display: inline-block; }
+  hr.separador { margin: 0.5rem 0; border: none; border-top: 1px solid var(--color-borde-suave); }
+  .action-buttons { display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; flex-wrap: wrap; }
+  .btn-large { background: var(--color-acento); color: white; padding: 12px 36px; font-size: 0.95rem; font-weight: 600; border-radius: 50px; }
+  .btn-large:hover { background: var(--color-acento-hover); }
+  .btn-outline { background: transparent; border: 2px solid var(--color-borde) !important; color: var(--color-texto-suave); padding: 10px 28px; border-radius: 50px; }
+  .btn-outline:hover { border-color: var(--color-acento) !important; color: var(--color-acento-hover); }
+
+  /* Ejercicio de ordenar (arrastrar) */
+  .frac-orden-lista { display: flex; flex-direction: column; gap: 10px; margin: 1rem 0; }
+  .frac-orden-item {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--color-fondo); border: 2px solid var(--color-borde-suave); border-radius: 12px;
+    padding: 10px 16px; cursor: grab; transition: 0.15s;
+  }
+  .frac-orden-item:hover { border-color: var(--color-borde); }
+  .frac-orden-item.arrastrando { opacity: 0.4; border-color: var(--color-acento); }
+  .frac-orden-handle { color: var(--color-texto-suave); font-size: 1.1rem; user-select: none; }
+  .frac-orden-flechas { margin-left: auto; display: flex; gap: 4px; }
+  .btn-flecha {
+    background: var(--color-neutro); border: 1px solid var(--color-borde); border-radius: 6px;
+    width: 28px; height: 28px; cursor: pointer; font-size: 0.75rem; color: var(--color-texto-suave);
+  }
+  .btn-flecha:hover { background: var(--color-borde-suave); color: var(--color-texto); }
+
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(44,31,14,0.55); align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
+  .modal-overlay.show { display: flex; }
+  .modal-card {
+    border-radius: 12px; padding: 32px; max-width: 460px; width: 90%; text-align: center;
+    border: 3px solid var(--color-borde); animation: modalIn 0.3s ease;
+    font-family: 'Libre Baskerville', serif;
+    background: var(--color-fondo-card); color: var(--color-texto);
+  }
+  .modal-card-name { background: var(--color-fondo-card); border-radius: 12px; padding: 32px; max-width: 420px; width: 90%; border: 2px solid var(--color-incorrecto); }
+  @keyframes modalIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+  .modal-close { float: right; background: none; border: none; font-size: 24px; cursor: pointer; color: inherit; opacity: 0.7; }
+  .modal-close:hover { opacity: 1; }
+  .modal-grade { font-size: 52px; font-weight: 900; margin: 12px 0; font-family: 'Libre Baskerville', serif; }
+  .modal-stats { border: 1.5px solid var(--color-borde); border-radius: 10px; padding: 12px; margin-bottom: 14px; font-family: monospace; font-size: 12px; text-align: left; background: rgba(0,0,0,0.03); color: var(--color-texto); }
+  .recordatorio { font-size: 12px; margin-top: 8px; background: var(--color-neutro); border-radius: 20px; padding: 6px; color: var(--color-texto-suave); }
+  .modal-footer { font-size: 10px; margin-top: 10px; opacity: 0.7; }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+</style>
+</head>
+<body>
+
+<div class="autoria">Material elaborado por Marta L. Letona S. Basado en el trabajo de Javier Cayetano</div>
+
+<div class="ficha-wrapper">
+  <div class="header">
+    <h1>🧮 Fracciones y Decimales</h1>
+    <p>Fracción generatriz, operaciones con fracciones y decimales, orden, redondeo y problemas · 2º ESO</p>
+    <div class="header-badges">
+      <span class="header-badge">🎯 Se supera con 2 aciertos entre los últimos 3 intentos</span>
+      <span class="header-badge">💡 Cada fallo resta 0,1 puntos dentro de su ejercicio</span>
+      <span class="header-badge">⚠️ Si el valor es correcto pero falta simplificar, no se penaliza</span>
+    </div>
+  </div>
+
+  <div class="info-bar">
+    <div class="info-item"><span class="info-icon" aria-hidden="true">📊</span><span>Progreso: <span id="progresoCount" class="info-value">0</span>/10</span></div>
+    <div class="info-item"><span class="info-icon" aria-hidden="true">🔥</span><span>Racha: <span id="rachaActual" class="info-value">0</span></span></div>
+    <div class="info-item"><span class="info-icon" aria-hidden="true">❌</span><span>Fallos: <span id="fallosCount" class="info-value">0</span></span></div>
+    <div class="info-item"><span class="info-icon" aria-hidden="true">⭐</span><span>Nota: <span id="notaActual" class="info-value">0.0</span>/10</span></div>
+  </div>
+
+  <div class="name-section">
+    <label for="nombreAlumnoInput" class="name-label">👤 Alumno/a</label>
+    <input type="text" id="nombreAlumnoInput" class="name-input" placeholder="Escribe tu nombre...">
+  </div>
+
+  <div id="ejerciciosContainer"></div>
+
+  <div class="action-buttons">
+    <button class="btn-large" id="btnFinalizar">📋 Finalizar y calificar</button>
+    <button class="btn-outline" id="btnReset">🔄 Nueva ficha</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalNombre">
+  <div class="modal-card-name">
+    <h3 style="color:var(--color-incorrecto); margin-top:0;">✏️ Falta tu nombre</h3>
+    <p style="margin:10px 0;">Para calificar necesitas identificarte.</p>
+    <label for="modalNombreInput" class="sr-only">Nombre completo</label>
+    <input type="text" id="modalNombreInput" placeholder="Nombre completo"
+      style="width:100%; padding:8px; margin:10px 0; border:1px solid var(--color-borde); border-radius:6px; font-family:inherit;">
+    <button id="btnConfirmarNombre" class="btn-primary" style="width:100%;">Continuar</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalConfirmarReset">
+  <div class="modal-card-name" style="border-color:var(--color-acento);">
+    <h3 style="margin-top:0; color:var(--color-texto);">🔄 ¿Reiniciar toda la ficha?</h3>
+    <p id="modalConfirmarResetTexto" style="margin:10px 0; font-family:'Lato',sans-serif; color:var(--color-texto-suave);"></p>
+    <div style="display:flex; gap:10px; margin-top:16px;">
+      <button id="btnCancelarReset" class="btn-outline" style="flex:1;">Cancelar</button>
+      <button id="btnConfirmarReset" class="btn-primary" style="flex:1;">Sí, reiniciar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalIncompleto">
+  <div class="modal-card-name" style="border-color:var(--color-acento);">
+    <h3 style="margin-top:0; color:var(--color-texto);">⚠️ Ficha incompleta</h3>
+    <p id="modalIncompletoTexto" style="margin:10px 0; font-family:'Lato',sans-serif; color:var(--color-texto-suave);"></p>
+    <div style="display:flex; gap:10px; margin-top:16px;">
+      <button id="btnSeguirTrabajando" class="btn-outline" style="flex:1;">Seguir trabajando</button>
+      <button id="btnFinalizarIgual" class="btn-primary" style="flex:1;">Finalizar igualmente</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalResultados">
+  <div class="modal-card" id="modalCard">
+    <button class="modal-close" id="btnCerrarModal" aria-label="Cerrar">✕</button>
+    <div id="modalNombreAlumno" style="font-weight:600;"></div>
+    <div style="font-size:0.85rem;">🧮 Fracciones y Decimales · 2º ESO</div>
+    <div class="modal-grade" id="modalNota">0.0 / 10</div>
+    <div id="modalMensaje" style="font-weight:600;"></div>
+    <div class="modal-stats" id="modalStats"></div>
+    <div class="recordatorio">📸 Haz una captura de pantalla y entrégala en Google Classroom.</div>
+    <div class="modal-footer">Material elaborado por Marta L. Letona S. Basado en el trabajo de Javier Cayetano</div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---------- Estado global ----------
+  var rachaGlobal = 0;
+  var nombreAlumno = '';
+  var startTime = Date.now();
+  var ejercicios = [];
+  var dragState = { idx: null, pos: null };
+
+  // ---------- Utilidades generales ----------
+  function el(id) { return document.getElementById(id); }
+  function firmaDe(valor) { return (valor === null || valor === undefined) ? '' : String(valor).trim().replace(/[\u2212\u2013\u2014]/g, '-'); }
+
+  // Enunciado actual y solución actual de un ejercicio, para que el siguiente cambie de las dos cosas
+  function firmaEj(ej) {
+    switch (ej.tipo) {
+      case 1: return ej.actual.texto;
+      case 2: case 3: case 4: return JSON.stringify(ej.datos);
+      case 5: return JSON.stringify(ej.items.map(function (it) { return it.n + '/' + it.d; }));
+      case 6: return JSON.stringify([ej.n1.valor, ej.n2.valor, ej.n3.valor, ej.s2, ej.s3]);
+      case 7: case 8: return JSON.stringify([ej.a1.valor, ej.a2.valor]);
+      case 9: return ej.numeroStr + '|' + ej.lugar;
+      default: return ej.datos.texto;
+    }
+  }
+  function solucionEj(ej) {
+    switch (ej.tipo) {
+      case 1: return ej.actual.num + '/' + ej.actual.den;
+      case 2: case 3: return ej.datos.num + '/' + ej.datos.den;
+      case 4: return ej.datos.n0 + '/' + ej.datos.d0;
+      case 5: return JSON.stringify(ej.items.slice().sort(function (a, b) { return a.valor - b.valor; }).map(function (it) { return it.n + '/' + it.d; }));
+      case 6: case 7: case 8: case 9: return String(ej.resultado);
+      default: return String(ej.datos.respuesta);
+    }
+  }
+  // Genera otro ejercicio con enunciado distinto Y otra solución: lo ya revelado o acertado no sirve para el siguiente
+  function regenerarDistinto(ej) {
+    var antes = firmaEj(ej), solAntes = solucionEj(ej), i = 0;
+    do { ej.generarNuevo(); i++; } while ((firmaEj(ej) === antes || solucionEj(ej) === solAntes) && i < 80);
+    for (var k = 0; k < 40 && firmaEj(ej) === antes; k++) ej.generarNuevo();
+  }
+  function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+  function mezclarArray(arr) {
+    for (var i = arr.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    }
+    return arr;
+  }
+  function ov(txt) { return '<span style="text-decoration:overline;">' + txt + '</span>'; }
+  function signoTexto(s) { return s > 0 ? '+' : '−'; }
+
+  // ---------- Utilidades de fracciones ----------
+  function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { var t = b; b = a % b; a = t; } return a || 1; }
+  function menorFactorComun(n) { for (var p = 2; p * p <= n; p++) { if (n % p === 0) return p; } return n; }
+  function simplifyFrac(n, d) { if (d < 0) { n = -n; d = -d; } var g = gcd(n, d); return [n / g, d / g]; }
+  function sumarFrac(a, b) { var n = a.n * b.d + b.n * a.d, d = a.d * b.d; var s = simplifyFrac(n, d); return { n: s[0], d: s[1] }; }
+  function mulFrac(a, b) { var n = a.n * b.n, d = a.d * b.d; var s = simplifyFrac(n, d); return { n: s[0], d: s[1] }; }
+  function divFrac(a, b) { return mulFrac(a, { n: b.d, d: b.n }); }
+  function fracHTML(n, d) { return '<span class="frac-visual"><span class="frac-num">' + n + '</span><span class="frac-den">' + d + '</span></span>'; }
+
+  function fracInputHTML(idx, disabled) {
+    var dis = disabled ? 'disabled' : '';
+    return (
+      '<div class="campo-grupo">' +
+        '<label class="campo-label" for="e' + idx + '_num">Tu respuesta (fracción simplificada)</label>' +
+        '<div class="frac-input">' +
+          '<input type="text" inputmode="text" autocomplete="off" id="e' + idx + '_num" class="frac-input-num" placeholder="num" ' + dis + '>' +
+          '<div class="frac-input-linea"></div>' +
+          '<label class="sr-only" for="e' + idx + '_den">Denominador</label>' +
+          '<input type="text" inputmode="text" autocomplete="off" id="e' + idx + '_den" class="frac-input-den" placeholder="den" ' + dis + '>' +
+        '</div>' +
+      '</div>'
+    );
+  }
+
+  // Procesa una respuesta numérica de forma centralizada
+  function procesarNumerica(ej, valorCrudo, solucionNum, tolerancia, mensajeErrorFn) {
+    var limpio = firmaDe(valorCrudo);
+    if (limpio === '') return { estado: 'vacio', msg: '⚠️ Escribe una respuesta antes de comprobar. No cuenta como fallo.' };
+    if (!/^[+-]?\d+([.,]\d+)?$/.test(limpio)) return { estado: 'formato', msg: '⚠️ Ese valor no se reconoce como número. Usa solo cifras, y coma o punto para los decimales. No cuenta como fallo.' };
+    var valor = parseFloat(limpio.replace(',', '.'));
+    // Se acepta el valor redondeado al paso de la solución (tolerancia/2): con "< tolerancia" una respuesta
+    // desviada una milésima o una centésima podía darse por buena según el error de coma flotante.
+    var ok = Math.abs(valor - solucionNum) <= tolerancia / 2 + 1e-9;
+    if (ok) {
+      ej.historial.push(true);
+      var aciertosRecientes = ej.historial.slice(-3).filter(Boolean).length;
+      if (aciertosRecientes >= 2) { ej.superado = true; return { estado: 'superado', msg: '🎉 ¡Superado!' }; }
+      regenerarDistinto(ej);
+      return { estado: 'parcial', msg: '✓ Correcto (' + aciertosRecientes + '/2 en tus últimos intentos). Nuevo ejercicio.' };
+    }
+    ej.historial.push(false);
+    var msg = mensajeErrorFn();
+    // Ya NO se regenera aquí: el ejercicio queda bloqueado (ej.bloqueado) con el mismo
+    // enunciado hasta que el alumno pulse "Nuevo". Solo entonces se genera otra
+    // instancia y se borra el feedback, así no puede reenviar la respuesta ya
+    // revelada, pero tampoco cambia de ejercicio sin que él lo decida.
+    return { estado: 'incorrecto', msg: msg };
+  }
+
+  // Procesa una respuesta de fracción (numerador/denominador), avisando si falta simplificar
+  function procesarFraccion(ej, numStr, denStr, targetN, targetD, mensajeErrorFn, mensajeSimplificarFn) {
+    var nStr = firmaDe(numStr), dStr = firmaDe(denStr);
+    if (nStr === '' || dStr === '') return { estado: 'vacio', msg: '⚠️ Completa el numerador y el denominador antes de comprobar. No cuenta como fallo.' };
+    if (!/^-?\d+$/.test(nStr) || !/^-?\d+$/.test(dStr)) return { estado: 'formato', msg: '⚠️ Numerador y denominador deben ser números enteros. No cuenta como fallo.' };
+    var num = parseInt(nStr, 10), den = parseInt(dStr, 10);
+    if (den === 0) return { estado: 'formato', msg: '⚠️ El denominador no puede ser 0. No cuenta como fallo.' };
+    var valor = num / den, valorObjetivo = targetN / targetD;
+    if (Math.abs(valor - valorObjetivo) >= 1e-9) {
+      ej.historial.push(false);
+      var msgError = mensajeErrorFn();
+      // El ejercicio queda bloqueado hasta pulsar "Nuevo" (ver comprobarFraccion).
+      return { estado: 'incorrecto', msg: msgError };
+    }
+    var g = gcd(num, den);
+    if (g !== 1) return { estado: 'no_simplificada', msg: mensajeSimplificarFn(num, den, g) };
+    ej.historial.push(true);
+    var aciertosRecientes = ej.historial.slice(-3).filter(Boolean).length;
+    if (aciertosRecientes >= 2) { ej.superado = true; return { estado: 'superado', msg: '🎉 ¡Superado!' }; }
+    regenerarDistinto(ej);
+    return { estado: 'parcial', msg: '✓ Correcto y simplificada (' + aciertosRecientes + '/2 en tus últimos intentos). Nuevo ejercicio.' };
+  }
+
+  function generarDecimal(min, max, decimalesMax) {
+    var decimales = 1 + Math.floor(Math.random() * decimalesMax);
+    var factor = Math.pow(10, decimales);
+    var minEsc = Math.round(min * factor), maxEsc = Math.round(max * factor);
+    var entero = Math.floor(Math.random() * (maxEsc - minEsc + 1)) + minEsc;
+    return { valor: entero / factor, decimales: decimales, factor: factor };
+  }
+
+  // ================= EJERCICIO 1: Fracción generatriz =================
+  function crearEjercicio1() {
+    var banco = [
+      { texto: '0,5', num: 1, den: 2, tipo: 'exacto' },
+      { texto: '0,25', num: 1, den: 4, tipo: 'exacto' },
+      { texto: '0,75', num: 3, den: 4, tipo: 'exacto' },
+      { texto: '0,2', num: 1, den: 5, tipo: 'exacto' },
+      { texto: '0,4', num: 2, den: 5, tipo: 'exacto' },
+      { texto: '0,8', num: 4, den: 5, tipo: 'exacto' },
+      { texto: '0,125', num: 1, den: 8, tipo: 'exacto' },
+      { texto: '0,375', num: 3, den: 8, tipo: 'exacto' },
+      { texto: '0,15', num: 3, den: 20, tipo: 'exacto' },
+      { texto: '1,5', num: 3, den: 2, tipo: 'exacto' },
+      { texto: '2,25', num: 9, den: 4, tipo: 'exacto' },
+      { texto: '3,2', num: 16, den: 5, tipo: 'exacto' },
+      { texto: '0,' + ov('3'), num: 1, den: 3, tipo: 'puro' },
+      { texto: '0,' + ov('6'), num: 2, den: 3, tipo: 'puro' },
+      { texto: '0,' + ov('1'), num: 1, den: 9, tipo: 'puro' },
+      { texto: '0,' + ov('4'), num: 4, den: 9, tipo: 'puro' },
+      { texto: '0,' + ov('18'), num: 2, den: 11, tipo: 'puro' },
+      { texto: '0,' + ov('09'), num: 1, den: 11, tipo: 'puro' },
+      { texto: '1,' + ov('3'), num: 4, den: 3, tipo: 'puro' },
+      { texto: '2,' + ov('7'), num: 25, den: 9, tipo: 'puro' },
+      { texto: '0,1' + ov('6'), num: 1, den: 6, tipo: 'mixto' },
+      { texto: '0,2' + ov('3'), num: 7, den: 30, tipo: 'mixto' },
+      { texto: '0,08' + ov('3'), num: 1, den: 12, tipo: 'mixto' },
+      { texto: '0,1' + ov('3'), num: 2, den: 15, tipo: 'mixto' },
+      { texto: '0,4' + ov('5'), num: 41, den: 90, tipo: 'mixto' },
+      { texto: '0,58' + ov('3'), num: 7, den: 12, tipo: 'mixto' },
+      { texto: '0,3' + ov('6'), num: 11, den: 30, tipo: 'mixto' }
+    ];
+    var pistas = {
+      exacto: 'En un decimal exacto, el numerador es el número sin la coma y el denominador es un 1 seguido de tantos ceros como cifras decimales tenga.',
+      puro: 'En un decimal periódico puro, el numerador es el número formado por la parte entera seguida del periodo (sin la coma), menos la parte entera; el denominador tiene tantos nueves como cifras tenga el periodo.',
+      mixto: 'En un decimal periódico mixto, el numerador es el número completo sin coma menos la parte no periódica; el denominador tiene tantos nueves como cifras del periodo, seguidos de tantos ceros como cifras no periódicas.'
+    };
+    var ej = { tipo: 1, superado: false, historial: [], fallos: 0, bloqueado: false };
+    ej.generarNuevo = function () {
+      var opciones = banco;
+      if (ej.actual) {
+        var distintas = banco.filter(function (it) { return it.tipo !== ej.actual.tipo; });
+        if (distintas.length > 0) opciones = distintas;
+      }
+      ej.actual = opciones[Math.floor(Math.random() * opciones.length)];
+    };
+    ej.verificarFraccion = function (numStr, denStr) {
+      var it = ej.actual;
+      return procesarFraccion(ej, numStr, denStr, it.num, it.den,
+        function () {
+          var s = simplifyFrac(it.num, it.den);
+          return '❌ La fracción generatriz de ' + it.texto + ' es ' + s[0] + '/' + s[1] + '. ' + pistas[it.tipo];
+        },
+        function (n, d, g) {
+          var factor = menorFactorComun(g); return '⚠️ El valor es correcto, pero la fracción no está simplificada: numerador y denominador son ambos múltiplos de ' + factor + '. Redúcela y vuelve a comprobar. (No se penaliza)';
+        }
+      );
+    };
+    ej.render = function (idx) {
+      return (
+        '<div class="ejercicio-header"><span class="ejercicio-num">1</span><span class="ejercicio-titulo">Fracción generatriz</span>' +
+          (ej.superado ? '<span class="badge-superado">✓ Superado</span>' : '') + '</div>' +
+        '<div class="enunciado">Escribe la fracción generatriz de: <strong>' + ej.actual.texto + '</strong></div>' +
+        '<div class="input-area">' + fracInputHTML(idx, ej.superado || ej.bloqueado) +
+          '<button class="btn-primary" data-accion="comprobar-fraccion" data-idx="' + idx + '" ' + ((ej.superado || ej.bloqueado) ? 'disabled' : '') + '>Comprobar</button>' +
+          (!ej.superado ? '<button class="btn-secondary" data-accion="nuevo" data-idx="' + idx + '">🔄 Nuevo decimal</button>' : '') +
+        '</div>' +
+        '<div class="feedback" id="fb_' + idx + '" aria-live="polite"></div>'
+      );
+    };
+    ej.generarNuevo();
+    return ej;
+  }
+
+  // ================= EJERCICIO 2: Suma y resta de tres fracciones =================
+  function generarFraccionesSumaResta() {
+    for (var intento = 0; intento < 40; intento++) {
+      var f1 = { n: randInt(1, 9), d: randInt(2, 10) };
+      var f2 = { n: randInt(1, 9), d: randInt(2, 10) };
+      var f3 = { n: randInt(1, 9), d: randInt(2, 10) };
+      var s2 = Math.random() < 0.5 ? 1 : -1;
+      var s3 = Math.random() < 0.5 ? 1 : -1;
+      var acc = { n: f1.n, d: f1.d };
+      acc = sumarFrac(acc, { n: s2 * f2.n, d: f2.d });
+      acc = sumarFrac(acc, { n: s3 * f3.n, d: f3.d });
+      if (acc.d !== 1 && acc.n !== 0 && Math.abs(acc.n) < 150 && acc.d < 150) {
+        return { f1: f1, f2: f2, f3: f3, s2: s2, s3: s3, num: acc.n, den: acc.d };
+      }
+    }
+    return { f1: { n: 1, d: 2 }, f2: { n: 1, d: 4 }, f3: { n: 1, d: 8 }, s2: 1, s3: -1, num: 5, den: 8 };
+  }
+  function crearEjercicio2() {
+    var ej = { tipo: 2, superado: false, historial: [], fallos: 0, bloqueado: false };
+    ej.generarNuevo = function () { ej.datos = generarFraccionesSumaResta(); };
+    ej.verificarFraccion = function (numStr, denStr) {
+      var d = ej.datos;
+      return procesarFraccion(ej, numStr, denStr, d.num, d.den,
+        function () {
+          return '❌ El resultado correcto es ' + d.num + '/' + d.den + '. Cálculo: ' + d.f1.n + '/' + d.f1.d + ' ' + signoTexto(d.s2) + ' ' + d.f2.n + '/' + d.f2.d + ' ' + signoTexto(d.s3) + ' ' + d.f3.n + '/' + d.f3.d + '. Pista: busca el mínimo común múltiplo de los denominadores, convierte cada fracción y suma o resta los numeradores.';
+        },
+        function (n, den2, g) {
+          var factor = menorFactorComun(g); return '⚠️ El valor es correcto, pero la fracción no está simplificada: numerador y denominador son ambos múltiplos de ' + factor + '. Redúcela y vuelve a comprobar. (No se penaliza)';
+        }
+      );
+    };
+    ej.render = function (idx) {
+      var d = ej.datos;
+      var expresion = fracHTML(d.f1.n, d.f1.d) + '<span class="frac-op">' + signoTexto(d.s2) + '</span>' + fracHTML(d.f2.n, d.f2.d) + '<span class="frac-op">' + signoTexto(d.s3) + '</span>' + fracHTML(d.f3.n, d.f3.d);
+      return (
+        '<div class="ejercicio-header"><span class="ejercicio-num">2</span><span class="ejercicio-titulo">Suma y resta de fracciones</span>' +
+          (ej.superado ? '<span class="badge-superado">✓ Superado</span>' : '') + '</div>' +
+        '<div class="enunciado-fraccion">' + expresion + '</div>' +
+        '<div class="input-area">' + fracInputHTML(idx, ej.superado || ej.bloqueado) +
+          '<button class="btn-primary" data-accion="comprobar-fraccion" data-idx="' + idx + '" ' + ((ej.superado || ej.bloqueado) ? 'disabled' : '') + '>Comprobar</button>' +
+          (!ej.superado ? '<button class="btn-secondary" data-accion="nuevo" data-idx="' + idx + '">🔄 Nuevas fracciones</button>' : '') +
+        '</div>' +
+        '<div class="feedback" id="fb_' + idx + '" aria-live="polite"></div>'
+      );
+    };
+    ej.generarNuevo();
+    return ej;
+  }
+
+  // ================= EJERCICIO 3: Multiplicación y división de tres fracciones =================
+  function generarFraccionesMulDiv() {
+    for (var intento = 0; intento < 40; intento++) {
+      var f1 = { n: randInt(1, 9), d: randInt(2, 9) };
+      var f2 = { n: randInt(1, 9), d: randInt(2, 9) };
+      var f3 = { n: randInt(1, 9), d: randInt(2, 9) };
+      var o1 = Math.random() < 0.5 ? '×' : '÷';
+      var o2 = Math.random() < 0.5 ? '×' : '÷';
+      var acc = { n: f1.n, d: f1.d };
+      acc = (o1 === '×') ? mulFrac(acc, f2) : divFrac(acc, f2);
+      acc = (o2 === '×') ? mulFrac(acc, f3) : divFrac(acc, f3);
+      if (acc.d !== 1 && acc.n !== 0 && Math.abs(acc.n) < 300 && acc.d < 300) {
+        return { f1: f1, f2: f2, f3: f3, o1: o1, o2: o2, num: acc.n, den: acc.d };
+      }
+    }
+    return { f1: { n: 2, d: 3 }, f2: { n: 3, d: 5 }, f3: { n: 1, d: 2 }, o1: '×', o2: '÷', num: 4, den: 3 };
+  }
+  function crearEjercicio3() {
+    var ej = { tipo: 3, superado: false, historial: [], fallos: 0, bloqueado: false };
+    ej.generarNuevo = function () { ej.datos = generarFraccionesMulDiv(); };
+    ej.verificarFraccion = function (numStr, denStr) {
+      var d = ej.datos;
+      return procesarFraccion(ej, numStr, denStr, d.num, d.den,
+        function () {
+          return '❌ El resultado correcto es ' + d.num + '/' + d.den + '. Cálculo: ' + d.f1.n + '/' + d.f1.d + ' ' + d.o1 + ' ' + d.f2.n + '/' + d.f2.d + ' ' + d.o2 + ' ' + d.f3.n + '/' + d.f3.d + '. Pista: para multiplicar, numerador por numerador y denominador por denominador; para dividir, multiplica por la fracción inversa (recíproca) del divisor.';
+        },
+        function (n, den2, g) {
+          var factor = menorFactorComun(g); return '⚠️ El valor es correcto, pero la fracción no está simplificada: numerador y denominador son ambos múltiplos de ' + factor + '. Redúcela y vuelve a comprobar. (No se penaliza)';
+        }
+      );
+    };
+    ej.render = function (idx) {
+      var d = ej.datos;
+      var expresion = fracHTML(d.f1.n, d.f1.d) + '<span class="frac-op">' + d.o1 + '</span>' + fracHTML(d.f2.n, d.f2.d) + '<span class="frac-op">' + d.o2 + '</span>' + fracHTML(d.f3.n, d.f3.d);
+      return (
+        '<div class="ejercicio-header"><span class="ejercicio-num">3</span><span class="ejercicio-titulo">Multiplicación y división de fracciones</span>' +
+          (ej.superado ? '<span class="badge-superado">✓ Superado</span>' : '') + '</div>' +
+        '<div class="enunciado-fraccion">' + expresion + '</div>' +
+        '<div class="input-area">' + fracInputHTML(idx, ej.superado || ej.bloqueado) +
+          '<button class="btn-primary" data-accion="comprobar-fraccion" data-idx="' + idx + '" ' + ((ej.superado || ej.bloqueado) ? 'disabled' : '') + '>Comprobar</button>' +
+          (!ej.superado ? '<button class="btn-secondary" data-accion="nuevo" data-idx="' + idx + '">🔄 Nuevas fracciones</button>' : '') +
+        '</div>' +
+        '<div class="feedback" id="fb_' + idx + '" aria-live="polite"></div>'
+      );
+    };
+    ej.generarNuevo();
+    return ej;
+  }
+
+  // ================= EJERCICIO 4: Simplificar una fracción =================
+  function generarSimplificar() {
+    var d0 = randInt(2, 10);
+    var n0 = randInt(1, d0 - 1);
+    while (gcd(n0, d0) !== 1) { n0 = randInt(1, d0 - 1); }
+    var k = randInt(2, 6);
+    return { n0: n0, d0: d0, k: k, n: n0 * k, d: d0 * k };
+  }
+  function crearEjercicio4() {
+    var ej = { tipo: 4, superado: false, historial: [], fallos: 0, bloqueado: false };
+    ej.generarNuevo = function () { ej.datos = generarSimplificar(); };
+    ej.verificarFraccion = function (numStr, denStr) {
+      var d = ej.datos;
+      return procesarFraccion(ej, numStr, denStr, d.n0, d.d0,
+        function () {
+          return '❌ ' + d.n + '/' + d.d + ' simplificada es ' + d.n0 + '/' + d.d0 + ' (numerador y denominador son ambos múltiplos de ' + d.k + '). Pista: busca un número que divida exactamente al numerador y al denominador, y divide ambos entre él.';
+        },
+        function (n, den2, g) {
+          var factor2 = menorFactorComun(g);
+          return '⚠️ El valor es correcto, pero todavía se puede simplificar más: numerador y denominador son ambos múltiplos de ' + factor2 + '. Redúcela del todo y vuelve a comprobar. (No se penaliza)';
+        }
+      );
+    };
+    ej.render = function (idx) {
+      var d = ej.datos;
+      return (
+        '<div class="ejercicio-header"><span class="ejercicio-num">4</span><span class="ejercicio-titulo">Simplificar una fracción</span>' +
+          (ej.superado ? '<span class="badge-superado">✓ Superado</span>' : '') + '</div>' +
+        '<div class="enunciado-fraccion">Simplifica: ' + fracHTML(d.n, d.d) + '</div>' +
+        '<div class="input-area">' + fracInputHTML(idx, ej.superado || ej.bloqueado) +
+          '<button class="btn-primary" data-accion="comprobar-fraccion" data-idx="' + idx + '" ' + ((ej.superado || ej.bloqueado) ? 'disabled' : '') + '>Comprobar</button>' +
+          (!ej.superado ? '<button class="btn-secondary" data-accion="nuevo" data-idx="' + idx + '">🔄 Nueva fracción</button>' : '') +
+        '</div>' +
+        '<div class="feedback" id="fb_' + idx + '" aria-live="polite"></div>'
+      );
+    };
+    ej.generarNuevo();
+    return ej;
+  }
+
+  // ================= EJERCICIO 5: Ordenar cuatro fracciones (arrastrar) =================
+  function esOrdenAscendente(orden, items) {
+    for (var i = 0; i < orden.length - 1; i++) {
+      if (items[orden[i]].valor > items[orden[i + 1]].valor) return false;
+    }
+    return true;
+  }
+  function crearEjercicio5() {
+    var ej = { tipo: 5, superado: false, historial: [], fallos: 0, bloqueado: false };
+    ej.generarNuevo = function () {
+      var items = [], vistos = {};
+      while (items.length < 4) {
+        var n = randInt(1, 12), d = randInt(2, 12);
+        var v = (n / d).toFixed(4);
+        if (!vistos[v]) { vistos[v] = true; items.push({ n: n, d: d, valor: n / d }); }
+      }
+      ej.items = items;
+      var orden = [0, 1, 2, 3];
+      var vueltas = 0;
+      do { orden = mezclarArray(orden.slice()); vueltas++; } while (esOrdenAscendente(orden, ej.items) && vueltas < 20);
+      ej.orden = orden;
+    };
+    ej.verificarOrden = function () {
+      if (esOrdenAscendente(ej.orden, ej.items)) {
+        ej.historial.push(true);
+        var aciertosRecientes = ej.historial.slice(-3).filter(Boolean).length;
+        if (aciertosRecientes >= 2) { ej.superado = true; return { estado: 'superado', msg: '🎉 ¡Superado! Ordenas las fracciones correctamente.' }; }
+        regenerarDistinto(ej);
+        return { estado: 'parcial', msg: '✓ Orden correcto (' + aciertosRecientes + '/2 en tus últimos intentos). Nuevas fracciones.' };
+      }
+      ej.historial.push(false);
+      var ordenCorrecto = [0, 1, 2, 3].sort(function (a, b) { return ej.items[a].valor - ej.items[b].valor; });
+      var texto = ordenCorrecto.map(function (i) { return ej.items[i].n + '/' + ej.items[i].d; }).join(' < ');
+      var msg = '❌ El orden correcto de menor a mayor es: ' + texto + '. Pista: convierte cada fracción a decimal (numerador ÷ denominador) para comparar más fácilmente.';
+      // El ejercicio queda bloqueado (arrastre y flechas deshabilitados) hasta que se
+      // pulse "Nuevo": así el orden revelado no se puede copiar sobre las mismas
+      // fracciones, pero tampoco cambian de fracciones sin que el alumno lo decida.
+      return { estado: 'incorrecto', msg: msg };
+    };
+    ej.render = function (idx) {
+      var itemsHTML = ej.orden.map(function (itemIdx, pos) {
+        var it = ej.items[itemIdx];
+        var interactivo = !(ej.superado || ej.bloqueado);
+        return (
+          '<div class="frac-orden-item" draggable="' + (interactivo ? 'true' : 'false') + '" data-idx="' + idx + '" data-pos="' + pos + '">' +
+            '<span class="frac-orden-handle" aria-hidden="true">⠿</span>' +
+            fracHTML(it.n, it.d) +
+            (interactivo ?
+              '<span class="frac-orden-flechas">' +
+                '<button type="button" class="btn-flecha" data-accion="mover-arriba" data-idx="' + idx + '" data-pos="' + pos + '" aria-label="Mover arriba">▲</button>' +
+                '<button type="button" class="btn-flecha" data-accion="mover-abajo" data-idx="' + idx + '" data-pos="' + pos + '" aria-label="Mover abajo">▼</button>' +
+              '</span>' : '') +
+          '</div>'
+        );
+      }).join('');
+      return (
+        '<div class="ejercicio-header"><span class="ejercicio-num">5</span><span class="ejercicio-titulo">Ordena las fracciones</span>' +
+          (ej.superado ? '<span class="badge-superado">✓ Superado</span>' : '') + '</div>' +
+        '<div class="enunciado-texto">Arrastra las fracciones (o usa las flechas ▲▼) para colocarlas de <strong>menor a mayor</strong>.</div>' +
+        '<div class="frac-orden-lista" id="orden-lista-' + idx + '">' + itemsHTML + '</div>' +
+        '<div class="input-area">' +
+          '<button class="btn-primary" data-accion="comprobar-orden" data-idx="' + idx + '" ' + ((ej.superado || ej.bloqueado) ? 'disabled' : '') + '>✅ Comprobar orden</button>' +
+          (!ej.superado ? '<button class="btn-secondary" data-accion="nuevo" data-idx="' + idx + '">🔄 Nuevas fracciones</button>' : '') +
+        '</div>' +
+        '<div class="feedback" id="fb_' + idx + '" aria-live="polite"></div>'
+      );
+    };
+    ej.generarNuevo();
+    return ej;
+  }
+
+  // ================= EJERCICIO 6: Suma y resta de tres decimales =================
+  function crearEjercicio6() {
+    var ej = { tipo: 6, superado: false, historial: [], fallos: 0, bloqueado: false };
+    ej.generarNuevo = function () {
+      ej.n1 = generarDecimal(10, 200, 3);
+      ej.n2 = generarDecimal(1, 100, 3);
+      ej.n3 = generarDecimal(1, 150, 3);
+      ej.s2 = Math.random() < 0.5 ? 1 : -1;
+      ej.s3 = Math.random() < 0.5 ? 1 : -1;
+      var milesimas = Math.round(ej.n1.valor * 1000) + ej.s2 * Math.round(ej.n2.valor * 1000) + ej.s3 * Math.round(ej.n3.valor * 1000);
+      ej.resultado = milesimas / 1000;
+    };
+    ej.verificar = function (valor) {
+      if (ej.superado) return { estado: 'superado', msg: '' };
+      return procesarNumerica(ej, valor, ej.resultado, 1e-3, function () {
+        return '❌ Resultado: ' + ej.resultado + '. Pista: alinea las comas en columna y suma o resta cifra a cifra, completando con ceros donde falten decimales.';
+      });
+    };
+    ej.render = function (idx) {
+      var expresion = ej.n1.valor.toFixed(ej.n1.decimales) + ' ' + signoTexto(ej.s2) + ' ' + ej.n2.valor.toFixed(ej.n2.decimales) + ' ' + signoTexto(ej.s3) + ' ' + ej.n3.valor.toFixed(ej.n3.decimales);
+      return (
+        '<div class="ejercicio-header"><span class="ejercicio-num">6</span><span class="ejercicio-titulo">Suma y resta de decimales</span>' +
+          (ej.superado ? '<span class="badge-superado">✓ Superado</span>' : '') + '</div>' +
+        '<div class="enunciado">' + expresion + '</div>' +
+        '<div class="input-area">' +
+          '<div class="campo-grupo">' +
+            '<label class="campo-label" for="e' + idx + '_resp">Resultado</label>' +
+            '<input type="text" inputmode="text" autocomplete="off" id="e' + idx + '_resp" class="number-input" placeholder="Resultado" ' + ((ej.superado || ej.bloqueado) ? 'disabled' : '') + '>' +
+          '</div>' +
+          '<button class="btn-primary" data-accion="comprobar" data-idx="' + idx + '" ' + ((ej.superado || ej.bloqueado) ? 'disabled' : '') + '>Comprobar</button>' +
+          (!ej.superado ? '<button class="btn-secondary" data-accion="nuevo" data-idx="' + idx + '">🔄 Nueva</button>' : '') +
+        '</div>' +
+        '<div class="feedback" id="fb_' + idx + '" aria-live="polite"></div>'
+      );
+    };
+    ej.generarNuevo();
+    return ej;
+  }
+
+  // ================= EJERCICIO 7: Multiplicación de decimales =================
+  function crearEjercicio7() {
+    var ej = { tipo: 7, superado: false, historial: [], fallos: 0, bloqueado: false };
+    ej.generarNuevo = function () {
+      ej.a1 = generarDecimal(1, 90, 2);
+      ej.a2 = generarDecimal(1, 20, 1);
+      var i1 = Math.round(ej.a1.valor * ej.a1.factor), i2 = Math.round(ej.a2.valor * ej.a2.factor);
+      ej.resultado = (i1 * i2) / (ej.a1.factor * ej.a2.factor);
+    };
+    ej.verificar = function (valor) {
+      if (ej.superado) return { estado: 'superado', msg: '' };
+      return procesarNumerica(ej, valor, ej.resultado, 1e-3, function () {
+        return '❌ Resultado: ' + ej.resultado.toFixed(ej.a1.decimales + ej.a2.decimales) + '. Pista: multiplica los números como si fueran enteros (sin la coma) y, al final, coloca la coma contando tantas cifras decimales como tengan los dos factores juntos.';
+      });
+    };
+    ej.render = function (idx) {
+      return (
+        '<div class="ejercicio-header"><span class="ejercicio-num">7</span><span class="ejercicio-titulo">Multiplicación de decimales</span>' +
+          (ej.superado ? '<span class="badge-superado">✓ Superado</span>' : '') + '</div>' +
+        '<div class="enunciado">' + ej.a1.valor.toFixed(ej.a1.decimales) + ' · ' + ej.a2.valor.toFixed(ej.a2.decimales) + '</div>' +
+        '<div class="input-area">' +
+          '<div class="campo-grupo">' +
+            '<label class="campo-label" for="e' + idx + '_resp">Resultado</label>' +
+            '<input type="text" inputmode="text" autocomplete="off" id="e' + idx + '_resp" class="number-input" placeholder="Resultado" ' + ((ej.superado || ej.bloqueado) ? 'disabled' : '') + '>' +
+          '</div>' +
+          '<button class="btn-primary" data-accion="comprobar" data-idx="' + idx + '" ' + ((ej.superado || ej.bloqueado) ? 'disabled' : '') + '>Comprobar</button>' +
+          (!ej.superado ? '<button class="btn-secondary" data-accion="nuevo" data-idx="' + idx + '">🔄 Nueva</button>' : '') +
+        '</div>' +
+        '<div class="feedback" id="fb_' + idx + '" aria-live="polite"></div>'
+      );
+    };
+    ej.generarNuevo();
+    return ej;
+  }
+
+  // ================= EJERCICIO 8: División de decimales =================
+  function crearEjercicio8() {
+    var ej = { tipo: 8, superado: false, historial: [], fallos: 0, bloqueado: false };
+    ej.generarNuevo = function () {
+      ej.a1 = generarDecimal(10, 990, 2);
+      ej.a2 = generarDecimal(1, 9, 1);
+      // Reconstrucción con enteros: dividir directamente ej.a1.valor / ej.a2.valor
+      // arrastra el error de representación en coma flotante de ambos decimales
+      // (p.ej. 957.4 / 8.0 da 119.674999... en vez de 119.675) y toFixed(2)
+      // redondea mal en la última cifra en un porcentaje pequeño de los casos.
+      // Escalando a enteros antes de dividir se evita ese arrastre de error.
+      var enteroA1 = Math.round(ej.a1.valor * ej.a1.factor);
+      var enteroA2 = Math.round(ej.a2.valor * ej.a2.factor);
+      var numerador = enteroA1 * ej.a2.factor * 100;
+      var denominador = ej.a1.factor * enteroA2;
+      ej.resultado = Math.round(numerador / denominador) / 100;
+    };
+    ej.verificar = function (valor) {
+      if (ej.superado) return { estado: 'superado', msg: '' };
+      return procesarNumerica(ej, valor, ej.resultado, 0.01, function () {
+        return '❌ Resultado (redondeado a las centésimas): ' + ej.resultado + '. Pista: multiplica dividendo y divisor por la misma potencia de 10 hasta que el divisor sea entero, y después divide normalmente.';
+      });
+    };
+    ej.render = function (idx) {
+      return (
+        '<div class="ejercicio-header"><span class="ejercicio-num">8</span><span class="ejercicio-titulo">División de decimales</span>' +
+          (ej.superado ? '<span class="badge-superado">✓ Superado</span>' : '') + '</div>' +
+        '<div class="enunciado">' + ej.a1.valor.toFixed(ej.a1.decimales) + ' : ' + ej.a2.valor.toFixed(ej.a2.decimales) + '</div>' +
+        '<div class="input-area">' +
+          '<div class="campo-grupo">' +
+            '<label class="campo-label" for="e' + idx + '_resp">Resultado</label>' +
+            '<input type="text" inputmode="text" autocomplete="off" id="e' + idx + '_resp" class="number-input" placeholder="Resultado" ' + ((ej.superado || ej.bloqueado) ? 'disabled' : '') + '>' +
+          '</div>' +
+          '<button class="btn-primary" data-accion="comprobar" data-idx="' + idx + '" ' + ((ej.superado || ej.bloqueado) ? 'disabled' : '') + '>Comprobar</button>' +
+          (!ej.superado ? '<button class="btn-secondary" data-accion="nuevo" data-idx="' + idx + '">🔄 Nueva</button>' : '') +
+        '</div>' +
+        '<div class="feedback" id="fb_' + idx + '" aria-live="polite"></div>'
+      );
+    };
+    ej.generarNuevo();
+    return ej;
+  }
+
+  // ================= EJERCICIO 9: Redondeo de decimales =================
+  var NOMBRE_LUGAR = { 1: 'décimas', 2: 'centésimas', 3: 'milésimas' };
+  function crearEjercicio9() {
+    var ej = { tipo: 9, superado: false, historial: [], fallos: 0, bloqueado: false };
+    ej.generarNuevo = function () {
+      var entero = randInt(1, 900);
+      var lugar = 1 + Math.floor(Math.random() * 3);
+      var numDecimales = lugar + 1;
+      var decDigits = '';
+      for (var i = 0; i < numDecimales; i++) decDigits += String(randInt(0, 9));
+      var numeroStr = entero + '.' + decDigits;
+      var digitoDecisivo = parseInt(decDigits.charAt(lugar), 10);
+      var parteConservada = decDigits.substring(0, lugar) || '0';
+      var factor = Math.pow(10, lugar);
+      var baseEscalada = Math.round(parseFloat(entero + '.' + parteConservada) * factor);
+      if (digitoDecisivo >= 5) baseEscalada += 1;
+      ej.numero = parseFloat(numeroStr);
+      ej.numeroStr = numeroStr;
+      ej.lugar = lugar;
+      ej.resultado = baseEscalada / factor;
+    };
+    ej.verificar = function (valor) {
+      if (ej.superado) return { estado: 'superado', msg: '' };
+      return procesarNumerica(ej, valor, ej.resultado, 1e-6, function () {
+        return '❌ ' + ej.numeroStr + ' redondeado a las ' + NOMBRE_LUGAR[ej.lugar] + ' es ' + ej.resultado.toFixed(ej.lugar) + '. Pista: fíjate en la cifra siguiente al lugar pedido; si es 5 o más, la cifra anterior sube una unidad, y se eliminan las cifras posteriores.';
+      });
+    };
+    ej.render = function (idx) {
+      return (
+        '<div class="ejercicio-header"><span class="ejercicio-num">9</span><span class="ejercicio-titulo">Redondeo de decimales</span>' +
+          (ej.superado ? '<span class="badge-superado">✓ Superado</span>' : '') + '</div>' +
+        '<div class="enunciado">Redondea a las <strong>' + NOMBRE_LUGAR[ej.lugar] + '</strong>: ' + ej.numeroStr + '</div>' +
+        '<div class="input-area">' +
+          '<div class="campo-grupo">' +
+            '<label class="campo-label" for="e' + idx + '_resp">Resultado</label>' +
+            '<input type="text" inputmode="text" autocomplete="off" id="e' + idx + '_resp" class="number-input" placeholder="Resultado" ' + ((ej.superado || ej.bloqueado) ? 'disabled' : '') + '>' +
+          '</div>' +
+          '<button class="btn-primary" data-accion="comprobar" data-idx="' + idx + '" ' + ((ej.superado || ej.bloqueado) ? 'disabled' : '') + '>Comprobar</button>' +
+          (!ej.superado ? '<button class="btn-secondary" data-accion="nuevo" data-idx="' + idx + '">🔄 Nuevo</button>' : '') +
+        '</div>' +
+        '<div class="feedback" id="fb_' + idx + '" aria-live="polite"></div>'
+      );
+    };
+    ej.generarNuevo();
+    return ej;
+  }
+
+  // ================= EJERCICIO 10: Problema =================
+  var NOMBRES_PROBLEMA = ['Pablo', 'Marta', 'Lucía', 'Diego', 'Sara', 'Iván', 'Elena', 'Carlos', 'Ana', 'Rubén'];
+  function generarProblemaDinero() {
+    var denominadores = [3, 4, 5, 6, 8, 10];
+    var d = denominadores[randInt(0, denominadores.length - 1)];
+    var n = randInt(1, d - 1);
+    var g = gcd(n, d); n = n / g; d = d / g;
+    var k = randInt(3, 25);
+    var total = d * k;
+    if (total < 20) total = d * (k + 5);
+    var gasto = total * n / d;
+    var resto = total - gasto;
+    var nombre = NOMBRES_PROBLEMA[randInt(0, NOMBRES_PROBLEMA.length - 1)];
+    return {
+      texto: nombre + ' tiene <strong>' + total + ' €</strong> ahorrados. Si se gasta ' + fracHTML(n, d) + ' de sus ahorros, ¿cuántos euros le quedan?',
+      unidad: '€',
+      respuesta: resto,
+      tolerancia: 0.01,
+      explicacion: '❌ ' + total + ' € · ' + n + '/' + d + ' = ' + gasto + ' € gastados. ' + total + ' − ' + gasto + ' = ' + resto + ' € le quedan. Pista: calcula primero la parte que se gasta multiplicando el total por la fracción, y réstala del total.'
+    };
+  }
+  function generarProblemaLeche() {
+    var fracciones = [[1, 2], [1, 4], [3, 4], [1, 3], [2, 3], [1, 5], [2, 5], [3, 5], [1, 8], [3, 8], [1, 6], [5, 6]];
+    var f = fracciones[randInt(0, fracciones.length - 1)];
+    var personas = randInt(2, 6);
+    var periodos = [{ texto: 'una semana', dias: 7 }, { texto: 'un mes (30 días)', dias: 30 }];
+    var periodo = periodos[randInt(0, periodos.length - 1)];
+    var necesario = parseFloat((f[0] / f[1] * periodo.dias).toFixed(2));
+    return {
+      texto: 'Una familia de <strong>' + personas + ' personas</strong> gasta diariamente ' + fracHTML(f[0], f[1]) + ' de litros de leche. ¿Cuántos litros necesitan para ' + periodo.texto + '?',
+      unidad: 'litros',
+      respuesta: necesario,
+      tolerancia: 0.01,
+      explicacion: '❌ ' + f[0] + '/' + f[1] + ' L × ' + periodo.dias + ' días = ' + necesario + ' L. Pista: multiplica el consumo diario por el número de días del periodo.'
+    };
+  }
+  function crearEjercicio10() {
+    var ej = { tipo: 10, superado: false, historial: [], fallos: 0, bloqueado: false };
+    ej.generarNuevo = function () { ej.datos = Math.random() < 0.5 ? generarProblemaDinero() : generarProblemaLeche(); };
+    ej.verificar = function (valor) {
+      if (ej.superado) return { estado: 'superado', msg: '' };
+      return procesarNumerica(ej, valor, ej.datos.respuesta, ej.datos.tolerancia, function () { return ej.datos.explicacion; });
+    };
+    ej.render = function (idx) {
+      return (
+        '<div class="ejercicio-header"><span class="ejercicio-num">10</span><span class="ejercicio-titulo">Problema</span>' +
+          (ej.superado ? '<span class="badge-superado">✓ Superado</span>' : '') + '</div>' +
+        '<div class="enunciado-texto">' + ej.datos.texto + '</div>' +
+        '<div class="input-area">' +
+          '<div class="campo-grupo">' +
+            '<label class="campo-label" for="e' + idx + '_resp">Resultado (' + ej.datos.unidad + ')</label>' +
+            '<input type="text" inputmode="text" autocomplete="off" id="e' + idx + '_resp" class="number-input" placeholder="Resultado" ' + ((ej.superado || ej.bloqueado) ? 'disabled' : '') + '>' +
+          '</div>' +
+          '<button class="btn-primary" data-accion="comprobar" data-idx="' + idx + '" ' + ((ej.superado || ej.bloqueado) ? 'disabled' : '') + '>Comprobar</button>' +
+          (!ej.superado ? '<button class="btn-secondary" data-accion="nuevo" data-idx="' + idx + '">🔄 Nuevo problema</button>' : '') +
+        '</div>' +
+        '<div class="feedback" id="fb_' + idx + '" aria-live="polite"></div>'
+      );
+    };
+    ej.generarNuevo();
+    return ej;
+  }
+
+  function initEjercicios() {
+    return [
+      crearEjercicio1(), crearEjercicio2(), crearEjercicio3(), crearEjercicio4(), crearEjercicio5(),
+      crearEjercicio6(), crearEjercicio7(), crearEjercicio8(), crearEjercicio9(), crearEjercicio10()
+    ];
+  }
+
+  // ---------- Render general ----------
+  function renderTodo() {
+    var contenedor = el('ejerciciosContainer');
+    var html = '';
+    for (var i = 0; i < ejercicios.length; i++) {
+      html += '<div class="ejercicio-card' + (ejercicios[i].superado ? ' superado' : '') + '" id="card-' + i + '">' + ejercicios[i].render(i) + '</div>';
+      if (i < ejercicios.length - 1) html += '<hr class="separador">';
+    }
+    contenedor.innerHTML = html;
+  }
+  function renderCard(idx) {
+    var card = el('card-' + idx);
+    card.className = 'ejercicio-card' + (ejercicios[idx].superado ? ' superado' : '');
+    card.innerHTML = ejercicios[idx].render(idx);
+  }
+  function actualizarUI() {
+    var superados = 0;
+    var totalFallos = 0;
+    var notaFinal = 0;
+    var puntoPorEjercicio = 10 / ejercicios.length;
+    var DEDUCCION_POR_FALLO = 0.1;
+    for (var i = 0; i < ejercicios.length; i++) {
+      totalFallos += ejercicios[i].fallos;
+      if (ejercicios[i].superado) {
+        superados++;
+        var valorEjercicio = puntoPorEjercicio - ejercicios[i].fallos * DEDUCCION_POR_FALLO;
+        if (valorEjercicio < 0) valorEjercicio = 0;
+        notaFinal += valorEjercicio;
+      }
+    }
+    if (notaFinal > 10) notaFinal = 10;
+    el('progresoCount').innerText = String(superados);
+    el('rachaActual').innerText = String(rachaGlobal);
+    el('fallosCount').innerText = String(totalFallos);
+    el('notaActual').innerText = notaFinal.toFixed(1);
+    return { superados: superados, notaFinal: notaFinal, totalFallos: totalFallos };
+  }
+
+  // ---------- Manejo de respuestas ----------
+  function mostrarFeedback(idx, tipo, msg) {
+    var fb = el('fb_' + idx);
+    if (!fb) return;
+    var clase = (tipo === 'incorrecto' || tipo === 'simplificar') ? 'feedback-error'
+      : (tipo === 'vacio' || tipo === 'formato' || tipo === 'duplicado') ? 'feedback-aviso'
+      : 'feedback-correcto';
+    fb.innerHTML = '<span class="' + clase + '">' + msg + '</span>';
+  }
+
+  function comprobar(idx) {
+    var ej = ejercicios[idx];
+    if (ej.superado || ej.bloqueado) return;
+    var input = el('e' + idx + '_resp');
+    var valor = input ? input.value : '';
+    var resultado = ej.verificar(valor);
+    if (resultado.estado === 'incorrecto') {
+      ej.fallos++;
+      ej.bloqueado = true;
+      rachaGlobal = 0;
+      // El ejercicio queda bloqueado (mismo enunciado, inputs y "Comprobar"
+      // deshabilitados) hasta que el alumno pulse "Nuevo": solo entonces se genera
+      // otro enunciado y se borra este feedback.
+      renderCard(idx);
+      mostrarFeedback(idx, 'incorrecto', resultado.msg + ' 👉 Pulsa "Nuevo" para continuar.');
+    } else if (resultado.estado === 'vacio' || resultado.estado === 'formato') {
+      mostrarFeedback(idx, resultado.estado, resultado.msg);
+      return;
+    } else if (resultado.estado === 'parcial') {
+      rachaGlobal++;
+      renderCard(idx);
+      mostrarFeedback(idx, 'correcto', resultado.msg);
+      var fbTemp = el('fb_' + idx);
+      setTimeout(function () { if (fbTemp) fbTemp.innerHTML = ''; }, 2200);
+    } else if (resultado.estado === 'superado') {
+      rachaGlobal++;
+      renderCard(idx);
+      mostrarFeedback(idx, 'correcto', resultado.msg);
+    }
+    actualizarUI();
+  }
+
+  function comprobarFraccion(idx) {
+    var ej = ejercicios[idx];
+    if (ej.superado || ej.bloqueado) return;
+    var inputNum = el('e' + idx + '_num'), inputDen = el('e' + idx + '_den');
+    var numVal = inputNum ? inputNum.value : '', denVal = inputDen ? inputDen.value : '';
+    var resultado = ej.verificarFraccion(numVal, denVal);
+    if (resultado.estado === 'incorrecto') {
+      ej.fallos++;
+      ej.bloqueado = true;
+      rachaGlobal = 0;
+      renderCard(idx);
+      mostrarFeedback(idx, 'incorrecto', resultado.msg + ' 👉 Pulsa "Nuevo" para continuar.');
+    } else if (resultado.estado === 'no_simplificada') {
+      mostrarFeedback(idx, 'simplificar', resultado.msg);
+      actualizarUI();
+      return;
+    } else if (resultado.estado === 'vacio' || resultado.estado === 'formato') {
+      mostrarFeedback(idx, resultado.estado, resultado.msg);
+      return;
+    } else if (resultado.estado === 'parcial') {
+      rachaGlobal++;
+      renderCard(idx);
+      mostrarFeedback(idx, 'correcto', resultado.msg);
+      var fbTemp = el('fb_' + idx);
+      setTimeout(function () { if (fbTemp) fbTemp.innerHTML = ''; }, 2200);
+    } else if (resultado.estado === 'superado') {
+      rachaGlobal++;
+      renderCard(idx);
+      mostrarFeedback(idx, 'correcto', resultado.msg);
+    }
+    actualizarUI();
+  }
+
+  function comprobarOrden(idx) {
+    var ej = ejercicios[idx];
+    if (ej.superado || ej.bloqueado) return;
+    var resultado = ej.verificarOrden();
+    if (resultado.estado === 'incorrecto') {
+      ej.fallos++;
+      ej.bloqueado = true;
+      rachaGlobal = 0;
+      renderCard(idx);
+      mostrarFeedback(idx, 'incorrecto', resultado.msg + ' 👉 Pulsa "Nuevo" para continuar.');
+    } else if (resultado.estado === 'parcial') {
+      rachaGlobal++;
+      renderCard(idx);
+      mostrarFeedback(idx, 'correcto', resultado.msg);
+      var fbTemp = el('fb_' + idx);
+      setTimeout(function () { if (fbTemp) fbTemp.innerHTML = ''; }, 2200);
+    } else if (resultado.estado === 'superado') {
+      rachaGlobal++;
+      renderCard(idx);
+      mostrarFeedback(idx, 'correcto', resultado.msg);
+    }
+    actualizarUI();
+  }
+
+  function moverItem(idx, pos, direccion) {
+    var ej = ejercicios[idx];
+    if (ej.superado || ej.bloqueado) return;
+    var nuevaPos = pos + direccion;
+    if (nuevaPos < 0 || nuevaPos >= ej.orden.length) return;
+    var tmp = ej.orden[pos];
+    ej.orden[pos] = ej.orden[nuevaPos];
+    ej.orden[nuevaPos] = tmp;
+    renderCard(idx);
+  }
+
+  function nuevoEjercicio(idx) {
+    var ej = ejercicios[idx];
+    if (ej.superado) return;
+    regenerarDistinto(ej);
+    ej.bloqueado = false;
+    // El historial de últimos 3 intentos NO se reinicia aquí: es una ventana
+    // deslizante que debe conservar el fallo que acaba de bloquear el ejercicio
+    // (o cualquier acierto previo), tanto si "Nuevo" se pulsa tras fallar como si
+    // el alumno lo pulsa voluntariamente para cambiar de enunciado.
+    renderCard(idx);
+    actualizarUI();
+  }
+
+  // ---------- Delegación de eventos ----------
+  var contenedorEl = el('ejerciciosContainer');
+
+  contenedorEl.addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-accion]');
+    if (!btn) return;
+    var idx = parseInt(btn.getAttribute('data-idx'), 10);
+    var accion = btn.getAttribute('data-accion');
+    if (accion === 'comprobar') comprobar(idx);
+    else if (accion === 'comprobar-fraccion') comprobarFraccion(idx);
+    else if (accion === 'comprobar-orden') comprobarOrden(idx);
+    else if (accion === 'nuevo') nuevoEjercicio(idx);
+    else if (accion === 'mover-arriba') moverItem(idx, parseInt(btn.getAttribute('data-pos'), 10), -1);
+    else if (accion === 'mover-abajo') moverItem(idx, parseInt(btn.getAttribute('data-pos'), 10), 1);
+  });
+
+  contenedorEl.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter') return;
+    var target = e.target;
+    if (target.tagName === 'INPUT') {
+      var m1 = target.id.match(/^e(\d+)_resp$/);
+      if (m1) { e.preventDefault(); comprobar(parseInt(m1[1], 10)); return; }
+      var m2 = target.id.match(/^e(\d+)_(num|den)$/);
+      if (m2) { e.preventDefault(); comprobarFraccion(parseInt(m2[1], 10)); }
+    }
+  });
+
+  // Arrastrar y soltar para el ejercicio de ordenar
+  contenedorEl.addEventListener('dragstart', function (e) {
+    var item = e.target.closest ? e.target.closest('.frac-orden-item') : null;
+    if (!item) return;
+    dragState.idx = parseInt(item.getAttribute('data-idx'), 10);
+    dragState.pos = parseInt(item.getAttribute('data-pos'), 10);
+    if (e.dataTransfer) e.dataTransfer.effectAllowed = 'move';
+    item.classList.add('arrastrando');
+  });
+  contenedorEl.addEventListener('dragend', function (e) {
+    var item = e.target.closest ? e.target.closest('.frac-orden-item') : null;
+    if (item) item.classList.remove('arrastrando');
+  });
+  contenedorEl.addEventListener('dragover', function (e) {
+    if (e.target.closest && e.target.closest('.frac-orden-item')) e.preventDefault();
+  });
+  contenedorEl.addEventListener('drop', function (e) {
+    var item = e.target.closest ? e.target.closest('.frac-orden-item') : null;
+    if (!item || dragState.idx === null) return;
+    e.preventDefault();
+    var targetIdx = parseInt(item.getAttribute('data-idx'), 10);
+    var targetPos = parseInt(item.getAttribute('data-pos'), 10);
+    if (targetIdx !== dragState.idx) { dragState.idx = null; dragState.pos = null; return; }
+    var ej = ejercicios[targetIdx];
+    if (!ej.superado && !ej.bloqueado) {
+      var tmp = ej.orden[dragState.pos];
+      ej.orden[dragState.pos] = ej.orden[targetPos];
+      ej.orden[targetPos] = tmp;
+      renderCard(targetIdx);
+    }
+    dragState.idx = null; dragState.pos = null;
+  });
+
+  // ---------- Nombre del alumno ----------
+  el('nombreAlumnoInput').addEventListener('input', function (e) { nombreAlumno = e.target.value; });
+
+  // ---------- Tiempo transcurrido ----------
+  function getTiempo() {
+    var elapsedMs = Date.now() - startTime;
+    var elapsedSec = Math.ceil(elapsedMs / 1000);
+    var totalMinutos = Math.ceil(elapsedSec / 60);
+    var h = Math.floor(totalMinutos / 60), m = totalMinutos % 60;
+    return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
+  }
+
+  function colorPorNota(nota) {
+    if (nota >= 10) return { bg: '#1a7a1a', texto: '#ffffff', allGreen: true };
+    if (nota >= 9) return { bg: '#6dbf6d', texto: '#ffffff' };
+    if (nota >= 8) return { bg: '#1a4f8a', texto: '#ffffff' };
+    if (nota >= 7) return { bg: '#5b9bd5', texto: '#ffffff' };
+    if (nota >= 6) return { bg: '#c05c00', texto: '#ffffff' };
+    if (nota >= 5) return { bg: '#f5a623', texto: '#000000' };
+    return { bg: '#c0392b', texto: '#ffffff' };
+  }
+
+  function mostrarResultados(nombre) {
+    var datos = actualizarUI();
+    var nota = datos.notaFinal, superados = datos.superados;
+    var fecha = new Date().toLocaleDateString('es-ES');
+    var hora = new Date().toLocaleTimeString('es-ES');
+    var tiempo = getTiempo();
+    var color = colorPorNota(nota);
+
+    el('modalNombreAlumno').innerText = nombre.toUpperCase();
+    el('modalNota').innerText = nota.toFixed(1) + ' / 10';
+    el('modalMensaje').innerText = nota >= 7 ? '👍 Muy bien' : (nota >= 5 ? '📘 Aprobado' : '📚 Repasa');
+    el('modalStats').innerHTML =
+      '<p>📅 ' + fecha + '&nbsp;&nbsp;🕐 ' + hora + '</p>' +
+      '<p>⏱️ Tiempo: ' + tiempo + '</p>' +
+      '<p>✅ Ejercicios superados: ' + superados + '/' + ejercicios.length + '</p>' +
+      '<p>❌ Fallos: ' + datos.totalFallos + '</p>' +
+      '<p>⭐ Nota: ' + nota.toFixed(1) + '/10</p>';
+
+    var modalCard = el('modalCard');
+    modalCard.style.background = color.bg;
+    modalCard.style.color = color.texto;
+    modalCard.style.borderColor = color.bg;
+
+    el('modalResultados').classList.add('show');
+    if (color.allGreen) document.body.classList.add('all-green');
+    else document.body.classList.remove('all-green');
+  }
+
+  function finalizar() {
+    if (!nombreAlumno.trim()) { el('modalNombre').classList.add('show'); return; }
+    var datos = actualizarUI();
+    if (datos.superados < ejercicios.length) {
+      var faltan = ejercicios.length - datos.superados;
+      el('modalIncompletoTexto').innerText =
+        'Todavía tienes ' + faltan + ' ejercicio' + (faltan === 1 ? '' : 's') + ' sin superar. ' +
+        'Si finalizas ahora, tu nota quedará en ' + datos.notaFinal.toFixed(1) + '/10. ' +
+        '¿Quieres finalizar igualmente o seguir trabajando?';
+      el('modalIncompleto').classList.add('show');
+      return;
+    }
+    mostrarResultados(nombreAlumno);
+  }
+
+  // ¿Hay progreso (puntos ya ganados, o una racha a medias) que se perdería al reiniciar?
+  function hayProgresoQuePerder() {
+    for (var i = 0; i < ejercicios.length; i++) {
+      if (ejercicios[i].superado || ejercicios[i].historial.length > 0 || ejercicios[i].fallos > 0) return true;
+    }
+    return false;
+  }
+
+  function ejecutarReset() {
+    rachaGlobal = 0;
+    ejercicios = initEjercicios();
+    startTime = Date.now();
+    document.body.classList.remove('all-green');
+    renderTodo();
+    actualizarUI();
+  }
+
+  function resetearTodo() {
+    if (!hayProgresoQuePerder()) { ejecutarReset(); return; }
+    var datos = actualizarUI();
+    el('modalConfirmarResetTexto').innerText =
+      'Vas a perder tu progreso actual: ' + datos.superados + ' de ' + ejercicios.length +
+      ' ejercicios superados y una nota de ' + datos.notaFinal.toFixed(1) + '/10. Esta acción no se puede deshacer.';
+    el('modalConfirmarReset').classList.add('show');
+  }
+
+  // ---------- Listeners de botones y modales ----------
+  el('btnFinalizar').addEventListener('click', finalizar);
+  el('btnReset').addEventListener('click', resetearTodo);
+  el('btnCerrarModal').addEventListener('click', function () { el('modalResultados').classList.remove('show'); });
+  el('btnConfirmarNombre').addEventListener('click', function () {
+    var valor = el('modalNombreInput').value.trim();
+    if (!valor) return;
+    nombreAlumno = valor;
+    el('nombreAlumnoInput').value = valor;
+    el('modalNombre').classList.remove('show');
+    mostrarResultados(valor);
+  });
+  el('modalNombreInput').addEventListener('keydown', function (e) { if (e.key === 'Enter') el('btnConfirmarNombre').click(); });
+  el('btnCancelarReset').addEventListener('click', function () { el('modalConfirmarReset').classList.remove('show'); });
+  el('btnConfirmarReset').addEventListener('click', function () { el('modalConfirmarReset').classList.remove('show'); ejecutarReset(); });
+  el('btnSeguirTrabajando').addEventListener('click', function () { el('modalIncompleto').classList.remove('show'); });
+  el('btnFinalizarIgual').addEventListener('click', function () { el('modalIncompleto').classList.remove('show'); mostrarResultados(nombreAlumno); });
+
+  // ---------- Arranque ----------
+  ejercicios = initEjercicios();
+  renderTodo();
+  actualizarUI();
+})();
+</script>
+</body>
+</html>
