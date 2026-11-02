@@ -94,8 +94,8 @@
 
 <div class="cabecera">
   <div class="autoria">Material elaborado por Marta L de Letona S. · Basado en ejercicios de J. Cayetano</div>
-  <h1>Derivadas II · Ficha Interactiva</h1>
-  <div class="subtitulo">Tipos: exponenciales · logaritmos · potencias y raíces · producto y cociente</div>
+  <h1>Derivadas III · Ficha Interactiva</h1>
+  <div class="subtitulo">Tipos: trigonométricas · funciones elevadas a funciones (derivación logarítmica)</div>
 </div>
 
 <div class="top-bar">
@@ -114,15 +114,22 @@
   <div class="barra-wrap"><div class="barra-fill" id="barra" style="width:0%"></div></div>
 
   <div class="card">
-    <div class="card-tipo">🧮 5 EJERCICIOS · 2 PUNTOS CADA UNO · -0,75 PTS POR FALLO</div>
+    <div class="card-tipo">📐 5 EJERCICIOS · 2 PUNTOS CADA UNO · -0,75 PTS POR FALLO</div>
     <div class="enunciado-global">
-      📐 <strong>Instrucciones:</strong> Calcula la derivada de cada función aplicando la regla de la cadena.<br>
-      • <strong>Potencia/raíz de f(x):</strong> \([f(x)^n]' = n \cdot f(x)^{n-1} \cdot f'(x)\) &nbsp; (ej: \(\sqrt{x^2+1} = (x^2+1)^{1/2}\)).<br>
-      • <strong>Exponencial:</strong> \([e^{f(x)}]' = e^{f(x)} \cdot f'(x)\) &nbsp; ; &nbsp; \([a^{f(x)}]' = a^{f(x)} \cdot \ln a \cdot f'(x)\).<br>
-      • <strong>Logaritmo:</strong> \([\ln f(x)]' = \dfrac{f'(x)}{f(x)}\) &nbsp; ; &nbsp; \([\log_a f(x)]' = \dfrac{f'(x)}{f(x) \cdot \ln a}\).<br>
-      • <strong>Producto:</strong> \((u \cdot v)' = u'v + uv'\).<br>
-      • <strong>Cociente:</strong> \(\left(\dfrac{u}{v}\right)' = \dfrac{u'v - uv'}{v^2}\).<br><br>
-      ✏️ <strong>Notación aceptada:</strong> <code>-x/sqrt(1-x^2)</code> , <code>-x/(1-x^2)^(1/2)</code> , <code>2x*e^{x^2}</code> , <code>(2x)/(x^2+1)</code>
+      📐 <strong>Reglas de derivación incluidas:</strong><br><br>
+      
+      <strong>🔷 TRIGONOMÉTRICAS:</strong><br>
+      • \( [\sin f(x)]' = \cos f(x) \cdot f'(x) \)<br>
+      • \( [\cos f(x)]' = -\sin f(x) \cdot f'(x) \)<br>
+      • \( [\tan f(x)]' = \sec^2 f(x) \cdot f'(x) \)<br>
+      • \( [\sec f(x)]' = \sec f(x) \cdot \tan f(x) \cdot f'(x) \)<br>
+      • \( [\csc f(x)]' = -\csc f(x) \cdot \cot f(x) \cdot f'(x) \)<br>
+      • \( [\cot f(x)]' = -\csc^2 f(x) \cdot f'(x) \)<br><br>
+      
+      <strong>🔶 FUNCIÓN ELEVADA A OTRA FUNCIÓN (Derivación logarítmica):</strong><br>
+      • \( [u(x)^{v(x)}]' = u(x)^{v(x)} \cdot \left[ v'(x) \cdot \ln u(x) + \dfrac{v(x) \cdot u'(x)}{u(x)} \right] \)<br><br>
+      
+      ✏️ <strong>Notación aceptada:</strong> <code>cos(x)*e^x</code> , <code>2x*sen(x^2)</code> , <code>x^x*(ln(x)+1)</code>
     </div>
 
     <div class="pasos" id="pasosContainer"></div>
@@ -159,91 +166,87 @@
 
 <script>
 // ======================== BANCO DE DERIVADAS ========================
-// SOLO tipos: exponencial, logaritmo, potencia/raiz, producto, cociente
-// SIN sen/cos
+// Tipos: trigonométricas simples, trigonométricas compuestas, funciones elevadas a funciones
 const BANCO = [
-  // Exponenciales con f(x)
-  { latex:"f(x) = e^{x^2}", sol:"e^{x^2}*2x", solMostrar:"e^{x²}·2x", categoria:"exponencial", alternativas:["2x e^{x^2}","2x*e^{x^2}","2x e^(x^2)","2x*e^(x^2)"] },
-  { latex:"f(x) = e^{3x+1}", sol:"e^{3x+1}*3", solMostrar:"3·e^{3x+1}", categoria:"exponencial", alternativas:["3e^{3x+1}","3 e^(3x+1)"] },
-  { latex:"f(x) = e^{x^3 - x}", sol:"e^{x^3 - x}*(3x^2-1)", solMostrar:"(3x²-1)·e^{x³-x}", categoria:"exponencial", alternativas:["(3x^2-1)e^{x^3-x}"] },
-  { latex:"f(x) = e^{x^2+2x}", sol:"e^{x^2+2x}*(2x+2)", solMostrar:"(2x+2)·e^{x²+2x}", categoria:"exponencial" },
-  { latex:"f(x) = 2^{x^2+1}", sol:"2^{x^2+1}*ln(2)*(2x)", solMostrar:"2x·ln2·2^{x²+1}", categoria:"exponencial" },
-  { latex:"f(x) = 3^{2x-1}", sol:"3^{2x-1}*ln(3)*2", solMostrar:"2·ln3·3^{2x-1}", categoria:"exponencial" },
+  // ========== TRIGONOMÉTRICAS ==========
+  { latex:"f(x) = \\sin(x^2)", sol:"cos(x^2)*2x", solMostrar:"2x·cos(x²)", categoria:"trigonometrica", alternativas:["2x cos(x^2)","2x*cos(x^2)"] },
+  { latex:"f(x) = \\cos(3x)", sol:"-sin(3x)*3", solMostrar:"-3·sen(3x)", categoria:"trigonometrica", alternativas:["-3sin(3x)","-3*sin(3x)"] },
+  { latex:"f(x) = \\tan(2x+1)", sol:"sec^2(2x+1)*2", solMostrar:"2·sec²(2x+1)", categoria:"trigonometrica", alternativas:["2sec^2(2x+1)","2*sec(2x+1)^2","2*sec^2(2x+1)"] },
+  { latex:"f(x) = \\sec(x^3)", sol:"sec(x^3)*tan(x^3)*3x^2", solMostrar:"3x²·sec(x³)·tan(x³)", categoria:"trigonometrica", alternativas:["3x^2 sec(x^3) tan(x^3)","3x^2*sec(x^3)*tan(x^3)"] },
+  { latex:"f(x) = \\csc(2x)", sol:"-csc(2x)*cot(2x)*2", solMostrar:"-2·csc(2x)·cot(2x)", categoria:"trigonometrica", alternativas:["-2csc(2x)cot(2x)","-2*csc(2x)*cot(2x)"] },
+  { latex:"f(x) = \\cot(x^2+1)", sol:"-csc^2(x^2+1)*2x", solMostrar:"-2x·csc²(x²+1)", categoria:"trigonometrica", alternativas:["-2x csc^2(x^2+1)","-2x*csc^2(x^2+1)"] },
+  { latex:"f(x) = \\sin(x) · e^{x}", sol:"cos(x)*e^{x} + sin(x)*e^{x}", solMostrar:"eˣ(cos x + sen x)", categoria:"trigonometrica", alternativas:["e^x(cos(x)+sin(x))","e^x*cos(x)+e^x*sin(x)"] },
+  { latex:"f(x) = \\cos(x^2+2x)", sol:"-sin(x^2+2x)*(2x+2)", solMostrar:"-(2x+2)·sen(x²+2x)", categoria:"trigonometrica", alternativas:["-(2x+2)sin(x^2+2x)","-2(x+1)sin(x^2+2x)"] },
+  { latex:"f(x) = \\tan(\\sqrt{x})", sol:"sec^2(\\sqrt{x})*(1/(2\\sqrt{x}))", solMostrar:"sec²(√x)/(2√x)", categoria:"trigonometrica", alternativas:["sec(sqrt(x))^2/(2sqrt(x))","sec^2(sqrt(x))/(2sqrt(x))"] },
+  { latex:"f(x) = \\frac{\\sin(x)}{x}", sol:"(x*cos(x) - sin(x))/x^2", solMostrar:"(x·cos x - sen x)/x²", categoria:"trigonometrica", alternativas:["(xcos(x)-sin(x))/x^2"] },
+  { latex:"f(x) = \\ln(\\sin(x))", sol:"cos(x)/sin(x)", solMostrar:"cot x", categoria:"trigonometrica", alternativas:["cot(x)","cos(x)/sin(x)"] },
+  { latex:"f(x) = e^{\\sin(x)}", sol:"e^{\\sin(x)}*cos(x)", solMostrar:"e^{sen x}·cos x", categoria:"trigonometrica", alternativas:["cos(x)e^{sin(x)}","e^{sin(x)}cos(x)"] },
   
-  // Logaritmos con f(x)
-  { latex:"f(x) = \\ln(x^2+1)", sol:"(2x)/(x^2+1)", solMostrar:"2x/(x²+1)", categoria:"logaritmo", alternativas:["2x/(x^2+1)"] },
-  { latex:"f(x) = \\ln(3x^2-2)", sol:"(6x)/(3x^2-2)", solMostrar:"6x/(3x²-2)", categoria:"logaritmo" },
-  { latex:"f(x) = \\ln(x^3+2x)", sol:"(3x^2+2)/(x^3+2x)", solMostrar:"(3x²+2)/(x³+2x)", categoria:"logaritmo" },
-  { latex:"f(x) = \\log_{10}(x^3+4x)", sol:"(3x^2+4)/((x^3+4x)*ln(10))", solMostrar:"(3x²+4)/[(x³+4x)·ln10]", categoria:"logaritmo" },
-  { latex:"f(x) = \\ln(\\sqrt{x^2+1})", sol:"x/(x^2+1)", solMostrar:"x/(x²+1)", categoria:"logaritmo" },
-  { latex:"f(x) = \\log_{2}(x^2+5x)", sol:"(2x+5)/((x^2+5x)*ln(2))", solMostrar:"(2x+5)/[(x²+5x)·ln2]", categoria:"logaritmo" },
-  
-  // Raíces y potencias de polinomios
-  { latex:"f(x) = \\sqrt{x^2+4}", sol:"x/\\sqrt{x^2+4}", solMostrar:"x/√(x²+4)", categoria:"raiz", alternativas:["x/(sqrt(x^2+4))","x/(x^2+4)^(1/2)","x/(x^2+4)^0.5"] },
-  { latex:"f(x) = \\sqrt{1-x^2}", sol:"-x/\\sqrt{1-x^2}", solMostrar:"-x/√(1-x²)", categoria:"raiz", alternativas:["-x/sqrt(1-x^2)","-x/(1-x^2)^(1/2)","-x/(sqrt(1-x^2))","-x/(1-x^2)^0.5"] },
-  { latex:"f(x) = (x^2+1)^3", sol:"3*(x^2+1)^2*2x", solMostrar:"6x·(x²+1)²", categoria:"potencia", alternativas:["6x(x^2+1)^2","6x*(x^2+1)^2"] },
-  { latex:"f(x) = (2x^3+5)^4", sol:"4*(2x^3+5)^3*6x^2", solMostrar:"24x²·(2x³+5)³", categoria:"potencia", alternativas:["24x^2(2x^3+5)^3"] },
-  { latex:"f(x) = \\sqrt[3]{x^3-8}", sol:"x^2/((x^3-8)^{2/3})", solMostrar:"x²/∛(x³-8)²", categoria:"raiz", alternativas:["x^2/(x^3-8)^(2/3)"] },
-  { latex:"f(x) = \\sqrt{x^2+2x+1}", sol:"(x+1)/\\sqrt{x^2+2x+1}", solMostrar:"(x+1)/√(x²+2x+1)", categoria:"raiz" },
-  
-  // Producto
-  { latex:"f(x) = x^2 · e^{x^2}", sol:"2x*e^{x^2} + 2x^3*e^{x^2}", solMostrar:"2x·e^{x²} + 2x³·e^{x²}", categoria:"producto", alternativas:["2xe^{x^2}+2x^3e^{x^2}"] },
-  { latex:"f(x) = x · \\ln(x^2+1)", sol:"\\ln(x^2+1) + x*(2x)/(x^2+1)", solMostrar:"ln(x²+1) + 2x²/(x²+1)", categoria:"producto" },
-  { latex:"f(x) = e^{3x} · \\ln x", sol:"3e^{3x}*\\ln x + e^{3x}*(1/x)", solMostrar:"e^{3x}[3ln x + 1/x]", categoria:"producto" },
-  { latex:"f(x) = x^3 · e^{2x}", sol:"3x^2*e^{2x} + x^3*2e^{2x}", solMostrar:"3x²·e^{2x} + 2x³·e^{2x}", categoria:"producto" },
-  { latex:"f(x) = \\sqrt{x^2+1} · \\ln x", sol:"(x/\\sqrt{x^2+1})*\\ln x + \\sqrt{x^2+1}*(1/x)", solMostrar:"(x ln x)/√(x²+1) + √(x²+1)/x", categoria:"producto" },
-  
-  // Cociente
-  { latex:"f(x) = \\dfrac{e^{2x}}{x^2+1}", sol:"(2e^{2x}(x^2+1) - 2x e^{2x})/(x^2+1)^2", solMostrar:"[2e^{2x}(x²+1-x)]/(x²+1)²", categoria:"cociente" },
-  { latex:"f(x) = \\dfrac{\\ln(x^2)}{x^3}", sol:"(2 - 3\\ln(x^2))/x^4", solMostrar:"[2-3ln(x²)]/x⁴", categoria:"cociente" },
-  { latex:"f(x) = \\dfrac{x^2}{e^{2x}}", sol:"(2x*e^{2x} - x^2*2e^{2x})/e^{4x}", solMostrar:"(2x - 2x²)/e^{2x}", categoria:"cociente" },
-  { latex:"f(x) = \\dfrac{\\sqrt{x^2+1}}{x^2}", sol:"(x^3/\\sqrt{x^2+1} - 2x\\sqrt{x^2+1})/x^4", solMostrar:"[x³/√(x²+1) - 2x√(x²+1)]/x⁴", categoria:"cociente" },
-  { latex:"f(x) = \\dfrac{x}{\\ln(x^2+1)}", sol:"(\\ln(x^2+1) - x*(2x/(x^2+1)))/(\\ln(x^2+1))^2", solMostrar:"[ln(x²+1) - 2x²/(x²+1)]/[ln(x²+1)]²", categoria:"cociente" }
+  // ========== FUNCIÓN ELEVADA A OTRA FUNCIÓN (derivación logarítmica) ==========
+  { latex:"f(x) = x^{x}", sol:"x^{x}*(ln(x)+1)", solMostrar:"xˣ·(ln x + 1)", categoria:"potencia_funcion", alternativas:["x^x*(ln(x)+1)","x^x*(1+ln(x))"] },
+  { latex:"f(x) = (2x)^{3x}", sol:"(2x)^{3x}*(3*ln(2x)+3)", solMostrar:"(2x)^{3x}·[3·ln(2x)+3]", categoria:"potencia_funcion", alternativas:["(2x)^(3x)*(3ln(2x)+3)"] },
+  { latex:"f(x) = (\\ln x)^{x}", sol:"(\\ln x)^{x}*(ln(ln(x))+1/ln(x))", solMostrar:"(ln x)ˣ·[ln(ln x) + 1/ln x]", categoria:"potencia_funcion", alternativas:["(ln(x))^x*(ln(ln(x))+1/ln(x))"] },
+  { latex:"f(x) = x^{\\sin(x)}", sol:"x^{\\sin(x)}*(cos(x)*ln(x)+sin(x)/x)", solMostrar:"x^{sen x}·[cos x·ln x + sen x/x]", categoria:"potencia_funcion", alternativas:["x^(sin(x))*(cos(x)*ln(x)+sin(x)/x)"] },
+  { latex:"f(x) = (\\sin x)^{\\cos x}", sol:"(\\sin x)^{\\cos x}*(-sin(x)*ln(sin(x))+cos^2(x)/sin(x))", solMostrar:"(sen x)^{cos x}·[-sen x·ln(sen x) + cos²x/sen x]", categoria:"potencia_funcion", alternativas:["(sin(x))^(cos(x))*(-sin(x)*ln(sin(x))+cos(x)^2/sin(x))"] },
+  { latex:"f(x) = (x^2+1)^{x}", sol:"(x^2+1)^{x}*(ln(x^2+1)+(2x^2)/(x^2+1))", solMostrar:"(x²+1)ˣ·[ln(x²+1) + 2x²/(x²+1)]", categoria:"potencia_funcion", alternativas:["(x^2+1)^x*(ln(x^2+1)+2x^2/(x^2+1))"] },
+  { latex:"f(x) = (e^{x})^{x}", sol:"e^{x^2}*2x", solMostrar:"2x·e^{x²}", categoria:"potencia_funcion", alternativas:["2x e^{x^2}","2x*e^(x^2)"] },
+  { latex:"f(x) = x^{\\ln x}", sol:"x^{\\ln x}*(2\\ln x/x)", solMostrar:"2x^{ln x-1}·ln x", categoria:"potencia_funcion", alternativas:["x^(ln(x))*(2ln(x)/x)","2x^(ln(x)-1)ln(x)"] }
 ];
 
 const LABELS = {
-  potencia: "Potencia", raiz: "Raíz", exponencial: "Exponencial", logaritmo: "Logaritmo", producto: "Producto", cociente: "Cociente"
+  trigonometrica: "Trigonométrica",
+  potencia_funcion: "f(x)^{g(x)}"
 };
 
 function generarTanda() {
-  // Tipos fijos: exponencial, logaritmo, potencia/raiz, producto, cociente (SIN sen/cos)
-  const tipos = ["exponencial", "logaritmo", "potencia", "producto", "cociente"];
-  let tanda = tipos.map(t => {
-    let pool = BANCO.filter(l => l.categoria === t);
-    // Para potencia usamos también raiz como variante
-    if(t === "potencia") {
-      let raices = BANCO.filter(l => l.categoria === "raiz");
-      pool = [...pool, ...raices];
-    }
-    return pool[Math.floor(Math.random() * pool.length)];
-  });
+  // 5 ejercicios: 3 trigonométricas y 2 de potencia_funcion
+  let trigonometricas = BANCO.filter(l => l.categoria === "trigonometrica");
+  let potencias = BANCO.filter(l => l.categoria === "potencia_funcion");
+  
+  let tanda = [];
+  
+  // 3 trigonométricas aleatorias
+  let trigCopy = [...trigonometricas];
+  for(let i = 0; i < 3 && trigCopy.length > 0; i++) {
+    let idx = Math.floor(Math.random() * trigCopy.length);
+    tanda.push(trigCopy[idx]);
+    trigCopy.splice(idx, 1);
+  }
+  
+  // 2 potencias aleatorias
+  let potCopy = [...potencias];
+  for(let i = 0; i < 2 && potCopy.length > 0; i++) {
+    let idx = Math.floor(Math.random() * potCopy.length);
+    tanda.push(potCopy[idx]);
+    potCopy.splice(idx, 1);
+  }
+  
   // Barajar el orden
   for(let i = tanda.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [tanda[i], tanda[j]] = [tanda[j], tanda[i]];
   }
+  
   return tanda;
 }
 
 // ======================== MOTOR DE EVALUACION NUMERICA ========================
-// Sustituye a la comparacion por texto (fragil: no reconocia formas equivalentes
-// como distinto orden de terminos, multiplicacion explicita 2*x*e en vez de 2x e,
-// o formas factorizadas/simplificadas). En vez de comparar cadenas normalizadas,
-// se compilan ambas expresiones a funciones reales de x y se comparan sus valores
-// numericos en varios puntos: cualquier forma algebraicamente equivalente coincide,
-// sin necesidad de mantener listas de "alternativas" a mano por ejercicio.
+// Mismo motor que en Derivadas II (sustituye a la comparacion por texto, fragil ante
+// reordenacion de terminos/factores, multiplicacion explicita o sec(x)^2 vs sec^2(x)),
+// extendido aqui con sec, csc y cot para las trigonometricas de esta ficha.
 function prepararExpresion(s){
   let str = s.trim().toLowerCase();
   str = str.replace(/\s+/g, '');
   str = str.replace(/,/g, '.');
   str = str.replace(/·/g, '*').replace(/×/g, '*');
   str = str.replace(/−/g, '-');
+  str = str.replace(/sen/g, 'sin');
   str = str.replace(/\\/g, '');
   str = str.replace(/\{/g, '(').replace(/\}/g, ')');
   return str;
 }
 
-const FUNCIONES_MOTOR = ['sqrt','ln','log','exp','cbrt','sin','cos','tan'];
+const FUNCIONES_MOTOR = ['sqrt','ln','log','exp','cbrt','sec','csc','cot','sin','cos','tan'];
 
 function tokenizarExpresion(str){
   const tokens = [];
@@ -287,6 +290,14 @@ function crearParserExpresion(tokens){
     if(t.type==='('){ pos++; const e=parseSuma(); if(peek() && peek().type===')') pos++; else throw new Error('falta )'); return e; }
     if(t.type==='FUNC'){
       pos++;
+      // notacion func^n(arg): sec^2(x), csc^2(x) -> significa (func(arg))^n
+      if(peek() && peek().type==='^'){
+        pos++;
+        const exp = parsePrimario();
+        if(peek() && peek().type==='('){ pos++; const e=parseSuma(); if(peek() && peek().type===')') pos++; else throw new Error('falta )'); return {op:'pow', base:{op:'func', name:t.value, arg:e}, exp}; }
+        if(empiezaPrimario(peek())){ return {op:'pow', base:{op:'func', name:t.value, arg: parsePrimario()}, exp}; }
+        throw new Error('funcion sin argumento tras exponente');
+      }
       if(peek() && peek().type==='('){ pos++; const e=parseSuma(); if(peek() && peek().type===')') pos++; else throw new Error('falta )'); return {op:'func', name:t.value, arg:e}; }
       if(empiezaPrimario(peek())){ return {op:'func', name:t.value, arg: parsePrimario()}; }
       throw new Error('funcion sin argumento');
@@ -308,7 +319,7 @@ function crearParserExpresion(tokens){
     while(peek() && (peek().type==='*'||peek().type==='/'|| empiezaPrimario(peek()))){
       if(peek().type==='*'){ pos++; izq={op:'mul', a:izq, b:parseUnario()}; }
       else if(peek().type==='/'){ pos++; izq={op:'div', a:izq, b:parseUnario()}; }
-      else { izq={op:'mul', a:izq, b:parseUnario()}; } // multiplicacion implicita (2x, x e, )( ... )
+      else { izq={op:'mul', a:izq, b:parseUnario()}; }
     }
     return izq;
   }
@@ -348,6 +359,9 @@ function evaluarNodo(node, x){
         case 'sin': return Math.sin(v);
         case 'cos': return Math.cos(v);
         case 'tan': return Math.tan(v);
+        case 'sec': return 1/Math.cos(v);
+        case 'csc': return 1/Math.sin(v);
+        case 'cot': return 1/Math.tan(v);
       }
     }
   }
@@ -364,8 +378,9 @@ function compilarExpresion(raw){
   }catch(e){ return null; }
 }
 
-const PUNTOS_PRUEBA_NUMERICA = [0.3,0.5,0.7,1.3,1.7,2.2,2.7,3.4,4.1,-0.4,-0.6,-1.3,-2.1];
-const TOLERANCIA_RELATIVA = 1e-4;
+// Puntos de prueba evitando asintotas de tan/sec/cot (multiplos de pi/2) y dominios negativos de ln
+const PUNTOS_PRUEBA_NUMERICA = [0.4,0.6,0.9,1.1,1.3,1.9,2.2,2.6,3.1,3.6];
+const TOLERANCIA_RELATIVA = 1e-3;
 const MIN_COMPARACIONES_VALIDAS = 3;
 
 function sonEquivalentes(respuestaAlumno, solucionCorrecta){
@@ -392,12 +407,11 @@ function esCorrecta(resp, lim){
 
 let currentDerivs=[], stepState={}, totalPoints=0, startTime=Date.now();
 const STEP_POINTS=2;
+const MAX_POINTS = 10;
 const DEDUCCION_POR_FALLO=0.75;
 
 function renderMath(){ if(window.MathJax) MathJax.typesetPromise().catch(()=>{}); }
 
-// Potencial maximo que un ejercicio todavia puede aportar, dados los fallos acumulados
-// (no la puntuacion ya lograda): se usa para decidir si el ejercicio se agota.
 function potencialRestante(st){
   return STEP_POINTS - st.fails * DEDUCCION_POR_FALLO;
 }
@@ -423,7 +437,7 @@ function updateTotalPoints(){
   document.getElementById('s-pts').innerText=totalPoints.toFixed(2);
   const ok=Object.values(stepState).filter(s=>s.resuelto).length;
   document.getElementById('barra').style.width=`${(ok/currentDerivs.length)*100}%`;
-  document.getElementById('prog-label').innerHTML=`Correctas: ${ok}/${currentDerivs.length} | Puntos: ${totalPoints.toFixed(2)}/10`;
+  document.getElementById('prog-label').innerHTML=`Correctas: ${ok}/${currentDerivs.length} | Puntos: ${totalPoints.toFixed(2)}/${MAX_POINTS}`;
 }
 
 function insertarEnInput(idx, texto){
@@ -441,10 +455,11 @@ function insertarEnInput(idx, texto){
 function crearMiniTeclado(idx){
   const teclas = [
     {simbolo:"x", texto:"x"}, {simbolo:"x²", texto:"x^2"}, {simbolo:"x³", texto:"x^3"},
-    {simbolo:"xⁿ", texto:"x^n"}, {simbolo:"√", texto:"sqrt("}, {simbolo:"e^", texto:"e^{"},
-    {simbolo:"ln(", texto:"ln("}, {simbolo:"+", texto:"+"}, {simbolo:"-", texto:"-"},
-    {simbolo:"*", texto:"*"}, {simbolo:"/", texto:"/"}, {simbolo:"(", texto:"("},
-    {simbolo:")", texto:")"}, {simbolo:"^", texto:"^"}, 
+    {simbolo:"sen", texto:"sin("}, {simbolo:"cos", texto:"cos("}, {simbolo:"tan", texto:"tan("},
+    {simbolo:"sec", texto:"sec("}, {simbolo:"csc", texto:"csc("}, {simbolo:"cot", texto:"cot("},
+    {simbolo:"ln", texto:"ln("}, {simbolo:"e^", texto:"e^{"}, {simbolo:"^", texto:"^"},
+    {simbolo:"+", texto:"+"}, {simbolo:"-", texto:"-"}, {simbolo:"*", texto:"*"},
+    {simbolo:"/", texto:"/"}, {simbolo:"(", texto:"("}, {simbolo:")", texto:")"},
     {simbolo:"⬅", texto:"BACK", especial:"back"}, {simbolo:"C", texto:"CLEAR", especial:"clear"}
   ];
   const div = document.createElement('div');
@@ -477,13 +492,11 @@ function checkStep(idx){
   const fb=document.getElementById(`fb_${idx}`);
   const paso=document.getElementById(`paso_${idx}`);
 
-  // Ejercicio ya resuelto: no permitir sumar de nuevo (evita inflar la nota reclicando)
   if(st.resuelto){
     fb.innerHTML=`✅ Este ejercicio ya está superado (${st.pointsEarned.toFixed(2)} pts). No se puede volver a puntuar.`;
     fb.className='fb ok';
     return;
   }
-  // Ejercicio agotado por fallos acumulados: no admite mas intentos
   if(st.cerrado){
     fb.innerHTML='🔒 Este ejercicio se ha cerrado: agotaste los puntos posibles tras varios fallos.';
     fb.className='fb fail';
@@ -508,7 +521,7 @@ function checkStep(idx){
       st.cerrado=true;
       fb.innerHTML=`❌ Incorrecto. Con este fallo se agotan los puntos posibles de este ejercicio (0 pts). La derivada correcta era <strong>${d.solMostrar}</strong>.`;
     } else {
-      fb.innerHTML=`❌ Incorrecto (fallo ${st.fails}, -${DEDUCCION_POR_FALLO.toFixed(2)} pts). Si aciertas ahora, quedan ${restante.toFixed(2)} pts posibles.<br>💡 Repasa la regla de la cadena antes de volver a intentarlo.`;
+      fb.innerHTML=`❌ Incorrecto (fallo ${st.fails}, -${DEDUCCION_POR_FALLO.toFixed(2)} pts). Si aciertas ahora, quedan ${restante.toFixed(2)} pts posibles.<br>💡 Repasa la regla aplicable antes de volver a intentarlo.`;
     }
     fb.className='fb fail';paso.classList.add('fail');paso.classList.remove('ok');
   }
@@ -551,7 +564,7 @@ function renderizarDerivadas(){
   document.querySelectorAll('.btn-check').forEach(btn=>{
     btn.addEventListener('click',()=>checkStep(parseInt(btn.getAttribute('data-idx'))));
   });
-  for(let i=0;i<5;i++){
+  for(let i=0;i<currentDerivs.length;i++){
     const inp=document.getElementById(`resp_${i}`);
     if(inp){
       inp.value='';
@@ -571,7 +584,6 @@ function resetAndNew(){
   totalPoints=0;updateTotalPoints();
 }
 
-// Hay progreso que perder si algun ejercicio se ha intentado (acertado o fallado)
 function hayProgresoQuePerder(){
   return Object.values(stepState).some(s => s.resuelto || s.fails>0);
 }
@@ -582,7 +594,7 @@ function solicitarNuevaTanda(){
     return;
   }
   document.getElementById('confirmTexto').innerHTML =
-    `Vas a perder la puntuación actual (<strong>${totalPoints.toFixed(2)}/10</strong>) y se generarán 5 derivadas nuevas. Esta acción no se puede deshacer.`;
+    `Vas a perder la puntuación actual (<strong>${totalPoints.toFixed(2)}/${MAX_POINTS}</strong>) y se generarán 5 derivadas nuevas. Esta acción no se puede deshacer.`;
   document.getElementById('confirmOverlay').classList.add('show');
 }
 
@@ -600,11 +612,11 @@ function finalizar(){
   const segs=String(elapsed%60).padStart(2,'0');
   const ok=Object.values(stepState).filter(s=>s.resuelto).length;
   document.getElementById('m-alumno').innerHTML=nombre;
-  document.getElementById('m-nota').innerHTML=`${totalPoints.toFixed(2)} / 10`;
+  document.getElementById('m-nota').innerHTML=`${totalPoints.toFixed(2)} / ${MAX_POINTS}`;
   document.getElementById('m-meta').innerHTML=
     `📅 ${now.toLocaleDateString('es-ES')} &nbsp;🕐 ${now.toTimeString().slice(0,8)}<br>`+
     `⏱ Tiempo: ${mins}:${segs}<br>✅ Derivadas correctas: ${ok}/${currentDerivs.length}<br>`+
-    `🎯 Puntos obtenidos: ${totalPoints.toFixed(2)}/10`;
+    `🎯 Puntos obtenidos: ${totalPoints.toFixed(2)}/${MAX_POINTS}`;
   const nota=totalPoints;
   let bg,textColor='white',titulo;
   if(nota>=10){bg='#1a7a1a';titulo='🏆 ¡Excelente!';}
