@@ -1,0 +1,1481 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Isla de las Fracciones</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+<style>
+:root {
+  --color-fondo: #FAF6EE; --color-papel: #FFFDF8; --color-texto: #2E2A24; --color-texto-suave: #6B6157;
+  --color-acento: #B5543C; --color-dorado: #C9A24B; --color-borde: #DDD0B6; --color-barra: #F3E9D6;
+  --color-ok: #2E7D4F; --color-ok-fondo: #EAF5EE; --color-error: #A8321F; --color-error-fondo: #FBECE8;
+  --color-apagado: #A8998A; --color-apagado-fondo: #F3EFE6;
+  --color-azul: #3E7CA6; --color-morado: #7B3FA0;
+  --color-cabecera: #2E2A24; --color-cabecera-texto: #EFE6D4; --color-fondo-perfecta: #d9eed9; --color-error-halo: #f4c7bd;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--color-fondo); color: var(--color-texto); font-family: 'Lato', sans-serif; transition: background .4s; }
+body.ficha-perfecta { background: var(--color-fondo-perfecta); }
+.autoria { background: var(--color-cabecera); color: var(--color-cabecera-texto); font-size: .8rem; text-align: center; padding: 8px 16px; letter-spacing: .02em; }
+.contenedor { max-width: 900px; margin: 0 auto; padding: 18px 16px 40px; }
+.titulo-ficha { font-family: 'Playfair Display', serif; font-size: 2rem; margin: 6px 0 2px; text-align: center; }
+.subtitulo { text-align: center; color: var(--color-texto-suave); margin: 0 0 14px; }
+.barra-alumno { position: sticky; top: 0; z-index: 20; background: var(--color-barra); border: 1px solid var(--color-dorado);
+  border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; }
+.barra-fila { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; }
+.barra-fila label { font-weight: 700; }
+.barra-fila input { font: inherit; padding: 5px 8px; border: 1px solid var(--color-borde); border-radius: 4px; min-width: 200px; background: #fff; }
+.barra-fila input.falta { border-color: var(--color-error); box-shadow: 0 0 0 2px var(--color-error-halo); }
+.dato b { color: var(--color-acento); font-size: 1.1rem; }
+.aviso-nombre { color: var(--color-error); font-size: .85rem; margin-top: 6px; display: none; }
+.instrucciones { background: var(--color-papel); border: 1px solid var(--color-borde); border-radius: 8px; padding: 10px 16px; font-size: .92rem; margin-bottom: 14px; }
+.instrucciones ul { margin: 6px 0; padding-left: 20px; }
+.instrucciones summary { cursor: pointer; font-weight: 700; font-family: 'Playfair Display', serif; font-size: 1.05rem; list-style: none; display: flex; align-items: center; gap: 8px; }
+.instrucciones summary::-webkit-details-marker { display: none; }
+.instrucciones summary::before { content: '▸'; color: var(--color-acento); transition: transform .2s; }
+.instrucciones[open] summary { margin-bottom: 6px; }
+.instrucciones[open] summary::before { transform: rotate(90deg); }
+#mundo { border: 2px solid var(--color-dorado); border-radius: 8px; overflow: hidden; background: #2f78a8; aspect-ratio: 8 / 5; }
+#mundo canvas { display: block; }
+.panel-reto { background: var(--color-papel); border: 1px solid var(--color-borde); border-left: 5px solid var(--color-acento);
+  border-radius: 8px; padding: 14px 18px; margin-top: 14px; min-height: 90px; }
+.panel-reto h2 { font-family: 'Playfair Display', serif; margin: 0 0 4px; font-size: 1.3rem; }
+.panel-reto .progreso { font-size: .85rem; color: var(--color-texto-suave); margin-bottom: 10px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.bolitas { display: inline-flex; gap: 6px; }
+.bolita { width: 18px; height: 18px; border-radius: 50%; background: #fff; border: 2px solid var(--color-borde); transition: background .3s, border-color .3s; }
+.bolita.ok { background: var(--color-ok); border-color: var(--color-ok); }
+.bolita.fallo { background: var(--color-error); border-color: var(--color-error); }
+.enunciado { font-size: 1.15rem; display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin: 8px 0 12px; }
+.frac { display: inline-flex; flex-direction: column; align-items: center; line-height: 1.1; font-size: 1.25rem; }
+.frac span:first-child { border-bottom: 2px solid var(--color-texto); padding: 0 4px; }
+.frac input { width: 64px; text-align: center; font: inherit; font-size: 1.1rem; padding: 2px; border: 1px solid var(--color-borde); border-radius: 4px; }
+.frac input:first-child { margin-bottom: 4px; }
+.entrada-num { width: 80px; text-align: center; font: inherit; font-size: 1.1rem; padding: 4px; border: 1px solid var(--color-borde); border-radius: 4px; }
+.btn { font: inherit; font-weight: 700; padding: 8px 18px; border-radius: 6px; border: none; cursor: pointer; background: var(--color-acento); color: #fff; }
+.btn:hover:not(:disabled) { filter: brightness(1.08); }
+.btn:disabled { opacity: .5; cursor: default; }
+.btn-sec { background: transparent; color: var(--color-acento); border: 1px solid var(--color-acento); }
+.feedback { margin-top: 12px; padding: 10px 14px; border-radius: 6px; font-size: .95rem; line-height: 1.45; }
+.feedback-ok { background: var(--color-ok-fondo); border-left: 4px solid var(--color-ok); }
+.feedback-error { background: var(--color-error-fondo); border-left: 4px solid var(--color-error); }
+.feedback-solucion { background: var(--color-apagado-fondo); border: 1px dashed var(--color-apagado); }
+.diagrama { display: block; width: 290px; max-width: 100%; height: auto; margin: 8px 0; }
+.diagrama text { font-family: 'Lato', sans-serif; font-size: 22px; font-weight: 700; text-anchor: middle; dominant-baseline: central; fill: var(--color-texto); }
+.diagrama .op { font-size: 26px; font-weight: 700; paint-order: stroke; stroke: var(--color-papel); stroke-width: 5px; stroke-linejoin: round; }
+.diagrama .arr { fill: var(--color-acento); }
+.diagrama .abj { fill: var(--color-azul); }
+.diagrama .trazo { stroke: var(--color-dorado); stroke-width: 3; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.diagrama .trazo.arr { stroke: var(--color-acento); }
+.diagrama .trazo.abj { stroke: var(--color-azul); }
+.diagrama .dulce { fill: #F6C3D5; }
+.diagrama .lazo { fill: #FBE1EA; }
+.diagrama .barra { stroke: var(--color-texto); stroke-width: 2; }
+.paso-factores { margin: 4px 0 6px; }
+.diagrama-mcm { width: 300px; }
+.diagrama-eq { width: 220px; }
+.flecha-eq { fill: none; stroke: var(--color-acento); stroke-width: 2.5; stroke-linecap: round; }
+.punta-eq { fill: var(--color-acento); }
+.diagrama .etq-eq { fill: var(--color-acento); font-size: 22px; }
+.hueco-sol { fill: var(--color-ok-fondo); stroke: var(--color-ok); stroke-width: 2; stroke-dasharray: 4 3; }
+.diagrama .sol { fill: var(--color-ok); }
+.flecha-mcm { fill: none; stroke: var(--color-morado); stroke-width: 2.5; stroke-linecap: round; }
+.punta-mcm { fill: var(--color-morado); }
+.diagrama .etq-mcm { fill: var(--color-morado); font-size: 24px; }
+.mcm-bloque { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 4px 6px; margin: 6px 0; }
+.mcm-cadena { padding-bottom: 20px; }
+.tachado { text-decoration: line-through; text-decoration-color: var(--color-error); text-decoration-thickness: 2px; color: var(--color-texto-suave); }
+.recordatorio { margin-top: 8px; padding: 6px 10px; background: var(--color-barra); border-radius: 4px; font-size: .9rem; }
+.acciones { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+.pie { display: flex; flex-direction: column; align-items: center; gap: 16px; margin-top: 26px; }
+.btn-soluciones { background: transparent; color: var(--color-apagado); border: 1px solid #DDD0B6; border-radius: 4px; padding: 5px 14px;
+  font-family: 'Lato', sans-serif; font-size: .78rem; font-weight: 400; cursor: pointer; transition: color .2s, border-color .2s; }
+.btn-soluciones:hover:not(:disabled) { color: var(--color-texto-suave); border-color: var(--color-borde); }
+.btn-soluciones:disabled { opacity: .4; cursor: default; }
+.modal-fondo { position: fixed; inset: 0; background: rgba(30,25,20,.55); display: none; align-items: center; justify-content: center; z-index: 100; padding: 16px; }
+.modal-fondo.abierto { display: flex; }
+.modal { background: var(--color-papel); border-radius: 10px; max-width: 640px; width: 100%; max-height: 92vh; overflow: auto; padding: 22px; box-shadow: 0 10px 40px rgba(0,0,0,.3); }
+.modal h3 { font-family: 'Playfair Display', serif; margin-top: 0; }
+.informe-cabecera { text-align: center; border-bottom: 2px solid var(--color-dorado); padding-bottom: 10px; margin-bottom: 12px; }
+.informe-cabecera .t { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; }
+.informe-cabecera .s { color: var(--color-texto-suave); }
+.nota-caja { border-radius: 8px; padding: 14px; text-align: center; margin: 10px 0 14px; }
+.nota-caja .n { font-size: 2.4rem; font-weight: 700; }
+.datos-informe { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; font-size: .95rem; }
+.tabla-wrap { overflow-x: auto; margin-top: 14px; }
+table.desglose { width: 100%; border-collapse: collapse; font-size: .88rem; }
+table.desglose th, table.desglose td { border: 1px solid var(--color-borde); padding: 5px 7px; text-align: center; }
+table.desglose th { background: var(--color-barra); }
+table.desglose td:first-child { text-align: left; }
+.oculto { display: none !important; }
+/* Reto entre alumnos */
+.modos { display: flex; justify-content: center; gap: 6px; background: var(--color-barra); border: 1px solid var(--color-borde); border-radius: 999px; padding: 4px; margin: 0 auto 12px; width: fit-content; max-width: 100%; flex-wrap: wrap; }
+.modos button { font: inherit; font-weight: 700; color: var(--color-texto-suave); background: none; border: 0; border-radius: 999px; padding: 8px 16px; cursor: pointer; }
+.modos button[aria-selected="true"] { background: var(--color-acento); color: #fff; }
+.modos button:disabled { opacity: .5; cursor: default; }
+.tarjeta-reto { background: var(--color-papel); border: 1px solid var(--color-borde); border-left: 5px solid var(--color-acento); border-radius: 8px; padding: 16px 18px; }
+.tarjeta-reto h2 { font-family: 'Playfair Display', serif; margin: 0 0 6px; font-size: 1.35rem; }
+.btn-ancho { display: block; width: 100%; margin-top: 12px; padding: 12px; font-size: 1.05rem; }
+.pestanas { display: inline-flex; background: var(--color-barra); border: 1px solid var(--color-borde); border-radius: 999px; padding: 3px; margin: 10px 0; flex-wrap: wrap; }
+.pestanas button { font: inherit; font-weight: 700; font-size: .9rem; color: var(--color-texto-suave); background: none; border: 0; border-radius: 999px; padding: 6px 14px; cursor: pointer; }
+.pestanas button[aria-selected="true"] { background: var(--color-azul); color: #fff; }
+.rejilla-zonas { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.zona-chip { font: inherit; font-weight: 700; text-align: left; padding: 10px 12px; border-radius: 8px; border: 2px solid var(--color-borde); background: #fff; color: var(--color-texto-suave); cursor: pointer; }
+.zona-chip[aria-pressed="true"] { border-color: var(--color-ok); background: var(--color-ok-fondo); color: var(--color-texto); }
+.zona-chip span { display: block; font-weight: 400; font-size: .8rem; }
+.codigo-grande { font-family: 'Playfair Display', serif; font-weight: 700; font-size: clamp(2rem, 9vw, 2.8rem); letter-spacing: .14em; text-align: center; color: var(--color-azul);
+  background: var(--color-barra); border: 2px dashed var(--color-azul); border-radius: 12px; padding: 6px; margin: 12px 0 6px; }
+#codigoUnir { width: 100%; font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.7rem; letter-spacing: .12em; text-align: center; text-transform: uppercase;
+  border-radius: 10px; border: 2px solid var(--color-borde); background: #fff; color: var(--color-texto); padding: 6px; margin-top: 4px; }
+#codigoUnir:focus { outline: none; border-color: var(--color-azul); box-shadow: 0 0 0 3px #c9dcea; }
+.nota-duelo { font-size: .9rem; color: var(--color-texto-suave); margin: 6px 0; }
+.aviso-entrada { color: var(--color-error); font-size: .9rem; min-height: 1.2em; margin-top: 4px; }
+.aviso-entrada.bien { color: var(--color-ok); }
+.duelo-cab { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.chip { background: var(--color-barra); border: 1px solid var(--color-borde); border-radius: 999px; padding: 4px 12px; font-weight: 700; font-size: .88rem; }
+.duelo-reloj { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.4rem; font-variant-numeric: tabular-nums; color: var(--color-azul); }
+.duelo-barra { height: 8px; border-radius: 999px; background: var(--color-barra); border: 1px solid var(--color-borde); overflow: hidden; margin-bottom: 10px; }
+.duelo-barra i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--color-dorado), var(--color-acento)); transition: width .3s; }
+.duelo-tipo { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.1rem; color: var(--color-acento); }
+.resultado-duelo { text-align: center; }
+.rd-cifra { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 3rem; line-height: 1; color: var(--color-azul); }
+.rd-fila { display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; margin: 10px 0; }
+.rd-fila span { display: block; font-size: .78rem; color: var(--color-texto-suave); text-transform: uppercase; letter-spacing: .06em; }
+.rd-fila b { font-family: 'Playfair Display', serif; font-size: 1.3rem; }
+.clasif { margin-top: 14px; text-align: left; background: var(--color-barra); border: 1px solid var(--color-borde); border-radius: 10px; padding: 12px 14px; }
+.clasif-cab { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; }
+.clasif ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.clasif li { display: grid; grid-template-columns: 32px 1fr auto; align-items: center; gap: 10px; background: var(--color-papel); border: 1px solid var(--color-borde); border-radius: 8px; padding: 6px 10px; }
+.clasif li.yo { border-color: var(--color-azul); box-shadow: 0 0 0 2px #c9dcea; }
+.clasif .med { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; color: #2E2A24; }
+.clasif .m1 { background: #E3B23C; } .clasif .m2 { background: #C9CED4; } .clasif .m3 { background: #D08A55; }
+.clasif .dat { font-size: .82rem; color: var(--color-texto-suave); white-space: nowrap; }
+.clasif .tu { margin: 8px 0 0; font-weight: 700; color: var(--color-azul); }
+.btn-mini { font: inherit; font-weight: 700; font-size: .82rem; color: var(--color-texto); background: var(--color-papel); border: 1px solid var(--color-borde); border-radius: 999px; padding: 4px 12px; cursor: pointer; }
+.informe-reto { font-family: 'Playfair Display', serif; margin: 16px 0 4px; }
+@media (max-width: 520px) { .clasif li { grid-template-columns: 30px 1fr; } .clasif .dat { grid-column: 2; white-space: normal; } }
+.estado-envio { font-size: .85rem; margin-top: 8px; color: var(--color-texto-suave); min-height: 1.2em; }
+@media (max-width: 600px) { .titulo-ficha { font-size: 1.5rem; } .barra-fila input { min-width: 0; width: 100%; } }
+</style>
+</head>
+<body>
+<div class="autoria">Material elaborado por Marta L Letona S. Basado en el trabajo de Javier Cayetano</div>
+
+<div class="contenedor">
+  <h1 class="titulo-ficha">La Isla de las Fracciones</h1>
+  <p class="subtitulo">1.º ESO · Fracciones equivalentes, operaciones y fracción de una cantidad</p>
+
+  <div class="barra-alumno">
+    <div class="barra-fila">
+      <label for="nombre">Alumno/a:</label>
+      <input id="nombre" type="text" placeholder="Nombre y apellidos" autocomplete="off">
+      <span class="dato">Nota: <b id="m-nota">0</b>/10</span>
+      <span class="dato">Zonas superadas: <b id="m-zonas">0/5</b></span>
+      <span class="dato">Fallos: <b id="m-fallos">0</b></span>
+    </div>
+    <div class="aviso-nombre" id="aviso-nombre">Escribe tu nombre antes de continuar.</div>
+  </div>
+
+  <details class="instrucciones" open>
+    <summary>Cómo se juega</summary>
+    Mueve al explorador con las flechas (o WASD) o pulsando sobre el mapa. Si estás escribiendo una respuesta, pulsa Esc o toca el mapa para volver a moverte. Cada zona de la isla tiene un tipo de reto:
+    <ul>
+      <li>Superas una zona con <b>4 aciertos en tus últimos 5 intentos</b>. Entonces se cierra y gana su estrella.</li>
+      <li>Hay 5 zonas y cada una vale 2 puntos. Cada fallo resta 0,5 (aunque la zona ya esté superada).</li>
+      <li>Recuerda: <b>se multiplica en línea</b> y <b>se divide en caramelo</b>.</li>
+      <li>Si usas «Mostrar soluciones», ese reto no cuenta para la nota (ni suma ni resta más).</li>
+    </ul>
+  </details>
+
+  <div class="modos" role="tablist" aria-label="Modo de juego">
+    <button type="button" role="tab" id="modo-isla" aria-selected="true">🏝️ Explorar la isla</button>
+    <button type="button" role="tab" id="modo-reto" aria-selected="false">⚔️ Reto entre alumnos</button>
+  </div>
+
+  <div id="vista-isla">
+    <div id="mundo"></div>
+
+    <div class="panel-reto" id="panel">
+      <h2>Bienvenido/a a la isla</h2>
+      <div>Camina hasta una de las cinco zonas para empezar un reto.</div>
+    </div>
+  </div>
+
+  <div id="vista-reto" class="oculto">
+    <!-- Elegir o unirse a un reto -->
+    <section id="pantallaSelector" class="tarjeta-reto">
+      <h2>⚔️ Reto entre alumnos</h2>
+      <p class="nota-duelo">Con el mismo código, todos reciben <b>las mismas 10 preguntas</b> en el mismo orden. Gana quien más acierte; si hay empate, quien tarde menos. Solo cuenta tu primer intento. <b>El reto no cambia tu nota.</b></p>
+      <div class="pestanas" role="tablist" aria-label="Crear o unirse a un reto">
+        <button type="button" role="tab" id="tabCrear" aria-selected="true">Crear un reto</button>
+        <button type="button" role="tab" id="tabUnir" aria-selected="false">Unirme con un código</button>
+      </div>
+      <div id="zonaCrear">
+        <p class="nota-duelo">Elige las zonas que entran en el reto:</p>
+        <div class="rejilla-zonas" id="rejillaZonas"></div>
+        <button type="button" class="btn btn-ancho" id="btnCrearCodigo">Generar el código del reto</button>
+        <div id="codigoCreado" class="oculto">
+          <div class="codigo-grande" id="codigoTexto" aria-live="polite"></div>
+          <p class="nota-duelo" id="codigoAyuda"></p>
+        </div>
+      </div>
+      <div id="zonaUnir" class="oculto">
+        <label for="codigoUnir" class="nota-duelo">Escribe el código que te han dado</label>
+        <input id="codigoUnir" type="text" autocomplete="off" maxlength="9" placeholder="ABC-1234" spellcheck="false">
+        <div class="aviso-entrada" id="avisoCodigo" aria-live="polite"></div>
+      </div>
+      <button type="button" class="btn btn-ancho oculto" id="btnEmpezar">Empezar el reto</button>
+    </section>
+
+    <!-- Partida del reto -->
+    <section id="pantallaDuelo" class="tarjeta-reto oculto">
+      <div class="duelo-cab">
+        <span class="chip" id="dueloChip">Reto</span>
+        <span class="chip" id="dueloNum">Pregunta 1 de 10</span>
+        <span class="duelo-reloj" id="dueloReloj" aria-label="Tiempo del reto">00:00</span>
+      </div>
+      <div class="duelo-barra" aria-hidden="true"><i id="dueloBarra"></i></div>
+      <div id="dueloJuego">
+        <div class="duelo-tipo" id="dueloTipo"></div>
+        <div id="dueloZona"></div>
+        <div class="aviso-entrada" id="dueloAviso" aria-live="polite"></div>
+        <div id="dueloFeedback" aria-live="polite"></div>
+        <div class="acciones oculto" id="dueloAcciones"><button type="button" class="btn" id="dueloSiguiente">Siguiente</button></div>
+      </div>
+      <div id="dueloFinal" class="oculto resultado-duelo"></div>
+      <p class="nota-duelo" id="dueloRegla" style="text-align:center">Gana quien más acierte. Si hay empate, gana quien tarde menos.</p>
+    </section>
+  </div>
+
+  <div class="pie">
+    <button class="btn btn-sec oculto" id="btnCambiar">Abandonar el reto</button>
+    <button class="btn" id="btn-finalizar">Finalizar y Calificar</button>
+    <button class="btn-soluciones" id="btn-soluciones" disabled>Mostrar soluciones</button>
+  </div>
+</div>
+
+<!-- Modal: aviso de soluciones -->
+<div class="modal-fondo" id="modal-sol">
+  <div class="modal" role="dialog" aria-modal="true">
+    <h3>¿Mostrar las soluciones?</h3>
+    <p>Verás resuelto, con su explicación, el <b>reto en curso</b>. <b>Ese reto no contará para la nota.</b>
+      Los fallos que ya hayas cometido en él siguen restando. Después podrás seguir con un reto nuevo.</p>
+    <div class="acciones">
+      <button class="btn" id="sol-volver">Volver al ejercicio</button>
+      <button class="btn btn-sec" id="sol-si">Sí, mostrar soluciones</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: abandonar el reto -->
+<div class="modal-fondo" id="modal-abandono">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="abandono-titulo">
+    <h3 id="abandono-titulo">¿Abandonar el reto?</h3>
+    <p>Si sales ahora, <b>este intento cuenta igualmente</b>: si vuelves a jugar con el mismo código, no entrará en la clasificación.</p>
+    <div class="acciones">
+      <button class="btn" id="abandono-seguir">Seguir jugando</button>
+      <button class="btn btn-sec" id="abandono-si">Sí, abandonar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: informe -->
+<div class="modal-fondo" id="modal-informe">
+  <div class="modal" role="dialog" aria-modal="true" id="informe"></div>
+</div>
+
+<script>
+/* ===================== CONFIGURACIÓN ===================== */
+// URL de la aplicación web de Apps Script (ver apps-script-informes.gs). Vacía = el informe no muestra el botón de envío.
+const SHEET_URL = '';
+const PENALIZACION_FALLO = 0.5;
+const VENTANA = 5, ACIERTOS_PARA_SUPERAR = 4;   // se supera un tipo con 4 aciertos en los últimos 5 intentos
+
+/* ===================== Seed (QA: ?seed=123) ===================== */
+const SEED = new URLSearchParams(location.search).get('seed');
+function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a);
+  t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const rng = SEED !== null ? mulberry32(Number(SEED) || 1) : Math.random;
+// Los generadores usan siempre azar(): el reto entre alumnos cambia la fuente por la de su código
+let fuenteAzar = rng;
+const azar = () => fuenteAzar();
+const ent = (a, b) => a + Math.floor(azar() * (b - a + 1));
+const mcd = (a, b) => b ? mcd(b, a % b) : Math.abs(a);
+const mcm = (a, b) => a / mcd(a, b) * b;
+const fr = (n, d) => `<span class="frac"><span>${n}</span><span>${d}</span></span>`;
+
+const simplificar = (n, d) => { const g = mcd(n, d); return { n: n / g, d: d / g }; };
+const RECORDATORIO = '<div class="recordatorio">Recuerda: <b>se multiplica en línea</b> y <b>se divide en caramelo</b>.</div>';
+
+const factorizar = n => { const f = []; for (let p = 2; n > 1; p++) while (n % p === 0) { f.push(p); n /= p; } return f; };
+
+// Cálculo de un producto de fracciones ya colocado (nums arriba, dens abajo).
+// Si hay factores comunes, se descomponen en primos y se tachan ANTES de multiplicar.
+function cadenaProducto(enunciado, nums, dens) {
+  const n = nums[0] * nums[1], d = dens[0] * dens[1];
+  const producto = `${enunciado} = ${fr(nums.join(' · '), dens.join(' · '))}`;
+  if (mcd(n, d) === 1) return `${producto} = ${fr(n, d)}.`;
+  const fn = nums.flatMap(factorizar), fd = dens.flatMap(factorizar);
+  const tachD = fd.map(() => false);
+  const tachN = fn.map(p => { const i = fd.findIndex((q, j) => q === p && !tachD[j]); if (i < 0) return false; tachD[i] = true; return true; });
+  const pinta = (fs, tach) => fs.length ? fs.map((p, i) => tach[i] ? `<s class="tachado">${p}</s>` : p).join(' · ') : '1';
+  const rn = fn.filter((_, i) => !tachN[i]), rd = fd.filter((_, i) => !tachD[i]);
+  const pn = rn.reduce((x, y) => x * y, 1), pd = rd.reduce((x, y) => x * y, 1);
+  const intermedio = rn.length > 1 || rd.length > 1 ? ` = ${fr(rn.join(' · ') || '1', rd.join(' · ') || '1')}` : '';
+  return `<div class="paso-factores">Hay factores comunes, así que <b>antes de multiplicar</b> descomponemos cada número en factores primos y tachamos los que se repiten arriba y abajo. Así el resultado sale ya simplificado.</div>` +
+    `${producto} = ${fr(pinta(fn, tachN), pinta(fd, tachD))}${intermedio} = ${fr(pn, pd)}` + (pd === 1 ? ` = ${pn}.` : '.');
+}
+
+// Corrige una respuesta en forma de fracción. `errores`: [n, d, mensaje] de errores típicos
+// (se reconocen aunque el alumno los haya simplificado).
+function corregirFraccion(r, s, pasos, errores, idea) {
+  if (r.d === 0) return { ok: false, html: `<b>Incorrecto: el denominador no puede ser 0.</b> ${pasos}` };
+  if (r.n === s.n && r.d === s.d) return { ok: true, html: `<b>Correcto.</b> ${pasos}` };
+  if (r.n * s.d === s.n * r.d) return { ok: false, html: `<b>Casi: el valor es correcto, pero la fracción no está simplificada.</b> Para no tener que simplificar al final, descompón en factores primos y tacha los comunes <b>antes de multiplicar</b>. ${pasos}` };
+  const tipico = errores.find(([n, d]) => r.n * d === n * r.d);
+  return { ok: false, html: `${tipico ? tipico[2] : '<b>Incorrecto.</b> ' + idea} ${pasos}` };
+}
+
+// Esquema visual: líneas paralelas para multiplicar, caramelo (V y V invertida) para dividir
+function diagramaOperacion(tipo, { a, b, c, d }) {
+  const div = tipo === 'division';
+  // En línea: fila de arriba con fila de arriba. En caramelo: extremos (a, d) arriba y medios (b, c) abajo.
+  const [ca, cb, cc, cd] = div ? ['arr', 'abj', 'abj', 'arr'] : ['arr', 'abj', 'arr', 'abj'];
+  // Caramelo alrededor de la segunda fracción, cruzando por «:» (80, 51) y por «=» (180, 51):
+  //  V:          numerador a → bajo el denominador d → numerador del resultado (a · d)
+  //  V invertida: denominador b → sobre el numerador c → denominador del resultado (b · c)
+  const trazos = div
+    ? '<polygon class="lazo" points="46,22 46,80 80,51"/><polygon class="lazo" points="204,31 204,71 180,51"/>' +
+      '<polygon class="dulce" points="80,51 130,97 180,51 130,5"/>' +
+      '<polyline class="trazo arr" points="46,22 130,97 204,31"/><polyline class="trazo abj" points="46,80 130,5 204,71"/>'
+    : '<line class="trazo arr" x1="46" y1="26" x2="114" y2="26"/><line class="trazo abj" x1="46" y1="76" x2="114" y2="76"/>';
+  const [rn, rd] = div ? [`${a} · ${d}`, `${b} · ${c}`] : [`${a} · ${c}`, `${b} · ${d}`];
+  const t = (x, y, txt, cl) => `<text x="${x}" y="${y}" class="${cl}">${txt}</text>`;
+  const barra = (x1, x2) => `<line class="barra" x1="${x1}" y1="51" x2="${x2}" y2="51"/>`;
+  return `<svg class="diagrama" viewBox="0 0 290 102" role="img" aria-label="${div ? 'Esquema del caramelo para dividir' : 'Esquema en línea para multiplicar'}">` +
+    trazos + t(30, 26, a, ca) + barra(18, 42) + t(30, 76, b, cb) + t(80, 51, div ? ':' : '·', 'op') +
+    t(130, 26, c, cc) + barra(118, 142) + t(130, 76, d, cd) + t(180, 51, '=', 'op') +
+    t(250, 26, rn, 'arr') + barra(214, 286) + t(250, 76, rd, 'abj') + '</svg>';
+}
+
+// Paso a denominador común: «se divide por el de abajo y se multiplica por el de arriba»,
+// con la fila de partida arriba y la de denominador común debajo, como en la pizarra.
+let idFlecha = 0;
+function diagramaMcm({ a, b, c, d }, L, n1, n2) {
+  const id = 'flecha-mcm-' + (++idFlecha);
+  const t = (x, y, txt, cl = '') => `<text x="${x}" y="${y}" class="${cl}">${txt}</text>`;
+  const frac = (X, y0, n, dd) => t(X, y0, n) + `<line class="barra" x1="${X - 16}" y1="${y0 + 22}" x2="${X + 16}" y2="${y0 + 22}"/>` + t(X, y0 + 44, dd);
+  const flechas = X =>
+    `<path class="flecha-mcm" marker-end="url(#${id})" d="M ${X - 12} 176 C ${X - 58} 166, ${X - 58} 84, ${X - 16} 74"/>` +
+    `<path class="flecha-mcm" marker-end="url(#${id})" d="M ${X - 13} 68 C ${X - 40} 62, ${X - 40} 34, ${X - 16} 28"/>` +
+    t(X - 55, 125, ':', 'etq-mcm') + t(X - 42, 22, '×', 'etq-mcm');
+  return `<svg class="diagrama diagrama-mcm" viewBox="0 0 300 196" role="img" aria-label="Paso a denominador común: se divide por el de abajo y se multiplica por el de arriba">` +
+    `<defs><marker id="${id}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="punta-mcm"/></marker></defs>` +
+    flechas(90) + flechas(232) +
+    frac(90, 28, a, b) + t(146, 50, '+', 'op') + frac(232, 28, c, d) + t(284, 50, '=', 'op') +
+    frac(90, 128, n1, L) + t(146, 150, '+', 'op') + frac(232, 128, n2, L) + '</svg>';
+}
+
+// Fracción equivalente: arco arriba (numerador → numerador) y arco abajo (denominador → denominador),
+// los dos con «× k». La solución aparece en un recuadro verde en el lugar del hueco.
+function diagramaEquivalencia({ a, b, k, faltaNum }) {
+  const id = 'flecha-eq-' + (++idFlecha);
+  const t = (x, y, txt, cl = '') => `<text x="${x}" y="${y}" class="${cl}">${txt}</text>`;
+  const barra = x => `<line class="barra" x1="${x - 20}" y1="92" x2="${x + 20}" y2="92"/>`;
+  const hueco = (x, y, v) => `<rect class="hueco-sol" x="${x - 23}" y="${y - 17}" width="46" height="34" rx="6"/>` + t(x, y, v, 'sol');
+  const arco = d => `<path class="flecha-eq" marker-end="url(#${id})" d="${d}"/>`;
+  const [n2, d2] = [a * k, b * k];
+  return `<svg class="diagrama diagrama-eq" viewBox="0 0 220 190" role="img" aria-label="Arriba y abajo se multiplica por ${k}">` +
+    `<defs><marker id="${id}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="punta-eq"/></marker></defs>` +
+    arco('M 58 50 Q 110 2 160 50') + t(110, 12, `× ${k}`, 'etq-eq') +
+    arco('M 58 134 Q 110 182 160 134') + t(110, 176, `× ${k}`, 'etq-eq') +
+    t(50, 70, a) + barra(50) + t(50, 114, b) + t(110, 92, '=', 'op') +
+    (faltaNum ? hueco(170, 70, n2) : t(170, 70, n2)) + barra(170) + (faltaNum ? t(170, 114, d2) : hueco(170, 114, d2)) + '</svg>';
+}
+
+// Suma ya con denominador común y, si hace falta, simplificación tachando el factor común
+function cadenaSuma(suma, L) {
+  const g = mcd(suma, L), x = `<s class="tachado">${g}</s>`;
+  if (g === 1) return `= ${fr(suma, L)}.`;
+  return `= ${fr(suma, L)} = ${fr(`${x} · ${suma / g}`, `${x} · ${L / g}`)} = ${fr(suma / g, L / g)}` + (L / g === 1 ? ` = ${suma / g}.` : '.');
+}
+
+/* ===================== Tipos de ejercicio ===================== */
+const TIPOS = {
+  equivalentes: {
+    nombre: 'Molino de las Equivalencias',
+    generar() {
+      const b = ent(2, 9), a = ent(1, b - 1), k = ent(2, 6);
+      return { a, b, k, faltaNum: azar() < 0.6 };
+    },
+    pintar(e) {
+      const hueco = '<input class="entrada-num" data-campo="x" inputmode="numeric">';
+      return `Completa la fracción equivalente: ${fr(e.a, e.b)} = ` +
+        (e.faltaNum ? fr(hueco, e.b * e.k) : fr(e.a * e.k, hueco));
+    },
+    solucion(e) { return { x: e.faltaNum ? e.a * e.k : e.b * e.k }; },
+    validar(e, r) {
+      const x = r.x, sol = this.solucion(e).x;
+      // Feedback muy visual: una línea corta + los dos arcos «× k»
+      const dibujo = diagramaEquivalencia(e) + `<div class="recordatorio">Arriba y abajo, <b>× ${e.k}</b>.</div>`;
+      if (x === sol) return { ok: true, html: `<b>Correcto.</b>${dibujo}` };
+      const sumaMal = e.faltaNum ? e.a + (e.b * e.k - e.b) : e.b + (e.a * e.k - e.a);
+      if (x === sumaMal) return { ok: false, html: `<b>Incorrecto: has sumado.</b> Hay que <b>multiplicar</b>.${dibujo}` };
+      return { ok: false, html: `<b>Incorrecto.</b>${dibujo}` };
+    }
+  },
+  suma: {
+    nombre: 'Puente de las Sumas',
+    generar() {
+      let b, d; do { b = ent(2, 10); d = ent(2, 10); } while (b === d);
+      return { a: ent(1, b - 1), b, c: ent(1, d - 1), d };
+    },
+    pintar(e) {
+      return `Calcula y simplifica: ${fr(e.a, e.b)} + ${fr(e.c, e.d)} = ` +
+        fr('<input data-campo="n" inputmode="numeric">', '<input data-campo="d" inputmode="numeric">');
+    },
+    solucion(e) {
+      const n = e.a * e.d + e.c * e.b, d = e.b * e.d, g = mcd(n, d);
+      return { n: n / g, d: d / g };
+    },
+    validar(e, r) {
+      const s = this.solucion(e), L = mcm(e.b, e.d), n1 = e.a * (L / e.b), n2 = e.c * (L / e.d), suma = n1 + n2;
+      const k1 = L / e.b, k2 = L / e.d;
+      const pasos = `Denominador común: m.c.m.(${e.b}, ${e.d}) = ${L}. Para pasar cada fracción a denominador ${L}, ` +
+        `<b>se divide por el de abajo</b> y <b>se multiplica por el de arriba</b>: ${L} : ${e.b} = ${k1} y ${k1} · ${e.a} = ${n1}; ` +
+        `${L} : ${e.d} = ${k2} y ${k2} · ${e.c} = ${n2}. Con el mismo denominador, ya se pueden sumar los numeradores:` +
+        `<div class="mcm-bloque">${diagramaMcm(e, L, n1, n2)}<span class="mcm-cadena">${cadenaSuma(suma, L)}</span></div>`;
+      if (r.d === 0) return { ok: false, html: `<b>Incorrecto: el denominador no puede ser 0.</b> ${pasos}` };
+      const equivalente = r.n * s.d === s.n * r.d;
+      if (equivalente && r.n === s.n && r.d === s.d) return { ok: true, html: `<b>Correcto.</b> ${pasos} Solo se suman numeradores cuando los trozos son del mismo tamaño, por eso primero se busca el denominador común.` };
+      if (equivalente) return { ok: false, html: `<b>Casi: el valor es correcto, pero la fracción no está simplificada.</b> ${fr(r.n, r.d)} aún se puede dividir arriba y abajo entre ${mcd(r.n, r.d)}. ${pasos}` };
+      if (r.n === e.a + e.c && r.d === e.b + e.d) return { ok: false, html: `<b>Incorrecto: has sumado numeradores y denominadores por separado.</b> Eso nunca es válido: por ejemplo, 1/2 + 1/2 daría 2/4 = 1/2, cuando debe ser 1. Hay que expresar las dos fracciones con el mismo denominador. ${pasos}` };
+      if (r.d === e.b * e.d && r.n === e.a + e.c) return { ok: false, html: `<b>Incorrecto: has cambiado el denominador sin ajustar los numeradores.</b> Al pasar a denominador común, cada numerador se multiplica por lo mismo que su denominador. ${pasos}` };
+      return { ok: false, html: `<b>Incorrecto.</b> ${pasos}` };
+    }
+  },
+  multiplicacion: {
+    nombre: 'Huerto de las Multiplicaciones',
+    generar() {
+      const b = ent(2, 9), d = ent(2, 9);
+      return { a: ent(1, b - 1), b, c: ent(1, d - 1), d };
+    },
+    pintar(e) {
+      return `Calcula y simplifica: ${fr(e.a, e.b)} · ${fr(e.c, e.d)} = ` +
+        fr('<input data-campo="n" inputmode="numeric">', '<input data-campo="d" inputmode="numeric">');
+    },
+    solucion(e) { return simplificar(e.a * e.c, e.b * e.d); },
+    validar(e, r) {
+      const n = e.a * e.c, s = this.solucion(e);
+      const pasos = `Se multiplica <b>en línea</b>: numerador por numerador y denominador por denominador.` +
+        diagramaOperacion('multiplicacion', e) + cadenaProducto(`${fr(e.a, e.b)} · ${fr(e.c, e.d)}`, [e.a, e.c], [e.b, e.d]) + RECORDATORIO;
+      return corregirFraccion(r, s, pasos, [
+        [e.a * e.d, e.b * e.c, '<b>Incorrecto: has multiplicado en caramelo, que es como se divide.</b> Para multiplicar no se cruza nada.'],
+        [n, e.b, '<b>Incorrecto: has multiplicado los numeradores pero no los denominadores.</b>'],
+        [n, e.d, '<b>Incorrecto: has multiplicado los numeradores pero no los denominadores.</b>']
+      ], 'Al multiplicar, cada fila se multiplica por su fila: arriba con arriba y abajo con abajo.');
+    }
+  },
+  division: {
+    nombre: 'Dulcería de las Divisiones',
+    generar() {
+      let a, b, c, d;
+      do { b = ent(2, 9); d = ent(2, 9); a = ent(1, b - 1); c = ent(1, d - 1); } while (a * d === b * c); // evita dividir fracciones iguales
+      return { a, b, c, d };
+    },
+    pintar(e) {
+      return `Calcula y simplifica: ${fr(e.a, e.b)} : ${fr(e.c, e.d)} = ` +
+        fr('<input data-campo="n" inputmode="numeric">', '<input data-campo="d" inputmode="numeric">');
+    },
+    solucion(e) { return simplificar(e.a * e.d, e.b * e.c); },
+    validar(e, r) {
+      const s = this.solucion(e);
+      const pasos = `Se divide <b>en caramelo</b>: el numerador del resultado es el producto de los extremos (${e.a} · ${e.d}) y el denominador, el producto de los medios (${e.b} · ${e.c}).` +
+        diagramaOperacion('division', e) + cadenaProducto(`${fr(e.a, e.b)} : ${fr(e.c, e.d)}`, [e.a, e.d], [e.b, e.c]) + RECORDATORIO;
+      return corregirFraccion(r, s, pasos, [
+        [e.a * e.c, e.b * e.d, '<b>Incorrecto: has dividido en línea, que es como se multiplica.</b> Para dividir hay que hacer el caramelo.'],
+        [e.b * e.c, e.a * e.d, '<b>Incorrecto: has hecho el caramelo al revés.</b> Los extremos van al numerador y los medios, al denominador.']
+      ], 'Al dividir se cruzan los términos formando el caramelo: extremos arriba, medios abajo.');
+    }
+  },
+  cantidad: {
+    nombre: 'Mercado de las Cantidades',
+    generar() {
+      const b = ent(2, 10), a = ent(1, b - 1), m = ent(2, 12);
+      const cosas = ['manzanas', 'monedas', 'peces', 'conchas', 'cocos', 'cuerdas'];
+      return { a, b, N: b * m, cosa: cosas[ent(0, cosas.length - 1)] };
+    },
+    pintar(e) {
+      return `En el mercado hay ${e.N} ${e.cosa}. ¿Cuánto es ${fr(e.a, e.b)} de ${e.N}? ` +
+        '<input class="entrada-num" data-campo="x" inputmode="numeric">';
+    },
+    solucion(e) { return { x: e.N / e.b * e.a }; },
+    validar(e, r) {
+      const parte = e.N / e.b, sol = parte * e.a;
+      const pasos = `El denominador dice en cuántas partes iguales se reparte: ${e.N} : ${e.b} = ${parte}. El numerador dice cuántas partes se toman: ${parte} · ${e.a} = <b>${sol}</b>.`;
+      if (r.x === sol) return { ok: true, html: `<b>Correcto.</b> ${pasos}` };
+      if (r.x === parte && e.a !== 1) return { ok: false, html: `<b>Incorrecto: te has quedado en una sola parte.</b> ${parte} es 1/${e.b} de ${e.N}; faltaba tomar ${e.a} partes. ${pasos}` };
+      if (r.x === e.N * e.a) return { ok: false, html: `<b>Incorrecto: has multiplicado por el numerador pero no has dividido entre el denominador.</b> El resultado no puede ser mayor que ${e.N}, porque ${e.a}/${e.b} es menos que la unidad. ${pasos}` };
+      if (e.N % e.a === 0 && r.x === e.N / e.a * e.b) return { ok: false, html: `<b>Incorrecto: has intercambiado numerador y denominador.</b> Se divide entre el denominador (${e.b}) y se multiplica por el numerador (${e.a}). ${pasos}` };
+      return { ok: false, html: `<b>Incorrecto.</b> ${pasos}` };
+    }
+  }
+};
+
+/* ===================== Estado ===================== */
+const state = { fallosTotales: 0, tipos: {}, inicio: Date.now(), tipoActivo: null, ex: {}, duelos: [] };
+for (const t in TIPOS) state.tipos[t] = { intentos: [], historial: [], superado: false, cerrado: false, fallos: 0, aciertos: 0, solucionesVistas: 0 };
+const PUNTO_POR_TIPO = 10 / Object.keys(state.tipos).length;
+
+function calcularNota() {
+  const superados = Object.values(state.tipos).filter(t => t.superado).length;
+  const bruta = superados * PUNTO_POR_TIPO - state.fallosTotales * PENALIZACION_FALLO;
+  return Math.round(Math.min(10, Math.max(0, bruta)) * 100) / 100;
+}
+
+function registrarIntento(tipo, correcto) {
+  const t = state.tipos[tipo];
+  if (t.cerrado) return;
+  t.intentos.push(correcto);
+  if (t.intentos.length > VENTANA) t.intentos.shift();
+  t.historial.push(correcto ? 'ok' : 'fallo');
+  if (correcto) t.aciertos++; else { t.fallos++; state.fallosTotales++; }
+  if (!t.superado && t.intentos.filter(Boolean).length >= ACIERTOS_PARA_SUPERAR) {
+    t.superado = true; t.cerrado = true;
+    window.mundoZonaSuperada && window.mundoZonaSuperada(tipo);
+  }
+  window.mundoBolitas && window.mundoBolitas(tipo);
+  actualizarMarcador();
+}
+
+function actualizarMarcador() {
+  const nota = calcularNota();
+  document.getElementById('m-nota').textContent = nota.toLocaleString('es-ES');
+  const sup = Object.values(state.tipos).filter(t => t.superado).length;
+  document.getElementById('m-zonas').textContent = `${sup}/${Object.keys(state.tipos).length}`;
+  document.getElementById('m-fallos').textContent = state.fallosTotales;
+  const ex = state.ex[state.tipoActivo];
+  document.getElementById('btn-soluciones').disabled = !(ex && !ex.terminado && !state.tipos[state.tipoActivo].cerrado);
+}
+
+/* ===================== Nombre ===================== */
+const inpNombre = document.getElementById('nombre');
+function exigirNombre() {
+  const ok = inpNombre.value.trim().length > 0;
+  inpNombre.classList.toggle('falta', !ok);
+  document.getElementById('aviso-nombre').style.display = ok ? 'none' : 'block';
+  if (!ok) inpNombre.focus();
+  return ok;
+}
+inpNombre.addEventListener('input', () => { if (inpNombre.value.trim()) exigirNombre(); });
+
+/* ===================== Panel de reto ===================== */
+const panel = document.getElementById('panel');
+
+function entrarZona(tipo) {
+  state.tipoActivo = tipo;
+  const t = state.tipos[tipo];
+  if (t.cerrado) {
+    panel.innerHTML = `<h2>${TIPOS[tipo].nombre} ⭐</h2><div>Zona superada. Busca otra zona de la isla sin estrella.</div>`;
+    actualizarMarcador(); return;
+  }
+  if (!state.ex[tipo] || state.ex[tipo].terminado) nuevoEjercicio(tipo); else pintarEjercicio();
+}
+
+function nuevoEjercicio(tipo) {
+  state.ex[tipo] = { tipo, datos: TIPOS[tipo].generar(), terminado: false, revelado: false };
+  pintarEjercicio();
+}
+
+// Una bolita por intento de la ventana: verde acierto, roja fallo, blanca pendiente
+function textoProgreso(t) {
+  const aciertos = t.intentos.filter(Boolean).length, fallos = t.intentos.length - aciertos;
+  const bolitas = Array.from({ length: VENTANA }, (_, i) =>
+    `<span class="bolita${i < t.intentos.length ? (t.intentos[i] ? ' ok' : ' fallo') : ''}"></span>`).join('');
+  return `<span class="bolitas" role="img" aria-label="${aciertos} aciertos y ${fallos} fallos en los últimos ${VENTANA} intentos">${bolitas}</span>` +
+    `<span>Necesitas <b>${ACIERTOS_PARA_SUPERAR} verdes</b> de ${VENTANA}</span>`;
+}
+
+function pintarEjercicio() {
+  const tipo = state.tipoActivo, ex = state.ex[tipo], T = TIPOS[tipo];
+  panel.innerHTML = `<h2>${T.nombre}</h2><div class="progreso">${textoProgreso(state.tipos[tipo])}</div>
+    <div class="enunciado">${T.pintar(ex.datos)}</div>
+    <div class="acciones"><button class="btn" id="btn-corregir">Comprobar</button></div>
+    <div id="fb" aria-live="polite"></div><div class="acciones" id="tras"></div>`;
+  const etiquetas = { x: 'Respuesta', n: 'Numerador del resultado', d: 'Denominador del resultado' };
+  panel.querySelectorAll('[data-campo]').forEach(i => i.setAttribute('aria-label', etiquetas[i.dataset.campo]));
+  panel.querySelectorAll('input').forEach(i => i.addEventListener('keydown', ev => { if (ev.key === 'Enter') corregir(); }));
+  document.getElementById('btn-corregir').onclick = corregir;
+  const primero = panel.querySelector('input'); if (primero) primero.focus({ preventScroll: true });
+  actualizarMarcador();
+}
+
+function leerRespuesta() {
+  const r = {}; let vacio = false;
+  panel.querySelectorAll('[data-campo]').forEach(i => {
+    const v = i.value.trim().replace(',', '.');
+    if (v === '' || isNaN(Number(v))) vacio = true;
+    r[i.dataset.campo] = Number(v);
+  });
+  return vacio ? null : r;
+}
+
+function corregir() {
+  const tipo = state.tipoActivo, ex = state.ex[tipo];
+  if (!ex || ex.terminado) return;
+  if (!exigirNombre()) return;
+  const r = leerRespuesta();
+  const fb = document.getElementById('fb');
+  if (!r) { fb.innerHTML = '<div class="feedback feedback-error">Rellena todas las casillas con números antes de comprobar.</div>'; return; }
+  const res = TIPOS[tipo].validar(ex.datos, r);
+  ex.terminado = true;
+  registrarIntento(tipo, res.ok);
+  fb.innerHTML = `<div class="feedback ${res.ok ? 'feedback-ok' : 'feedback-error'}">${res.html}</div>`;
+  cerrarEjercicio();
+}
+
+function cerrarEjercicio(revelado) {
+  const tipo = state.tipoActivo, t = state.tipos[tipo];
+  panel.querySelectorAll('input, #btn-corregir').forEach(el => el.disabled = true);
+  panel.querySelector('.progreso').innerHTML = textoProgreso(t);
+  const tras = document.getElementById('tras');
+  const neutro = revelado ? '<div style="flex-basis:100%;color:var(--color-texto-suave)">Soluciones mostradas · ejercicio sin calificar</div>' : '';
+  if (t.cerrado) {
+    tras.innerHTML = neutro + '<div style="flex-basis:100%"><b>⭐ ¡Zona superada!</b> Camina hasta otra zona de la isla.</div>';
+  } else {
+    tras.innerHTML = neutro + '<button class="btn" id="btn-otro">Otro reto aquí</button>';
+    document.getElementById('btn-otro').onclick = () => nuevoEjercicio(tipo);
+  }
+  actualizarMarcador();
+}
+
+/* ===================== Mostrar soluciones ===================== */
+const modalSol = document.getElementById('modal-sol');
+document.getElementById('btn-soluciones').onclick = () => { modalSol.classList.add('abierto'); document.getElementById('sol-volver').focus(); };
+document.getElementById('sol-volver').onclick = () => modalSol.classList.remove('abierto');
+modalSol.addEventListener('click', e => { if (e.target === modalSol) modalSol.classList.remove('abierto'); });
+document.getElementById('sol-si').onclick = () => { modalSol.classList.remove('abierto'); revelarSoluciones(); };
+
+function revelarSoluciones() {
+  const tipo = state.tipoActivo, ex = state.ex[tipo];
+  if (!ex || ex.terminado || state.tipos[tipo].cerrado) return;
+  const sol = TIPOS[tipo].solucion(ex.datos);
+  panel.querySelectorAll('[data-campo]').forEach(i => i.value = sol[i.dataset.campo]);
+  const r = TIPOS[tipo].validar(ex.datos, sol);
+  if (!r.ok) console.error('El validador rechaza su propia solución', tipo, ex.datos);
+  document.getElementById('fb').innerHTML = `<div class="feedback feedback-solucion">${r.html.replace('<b>Correcto.</b>', '<b>Solución.</b>')}</div>`;
+  ex.terminado = true; ex.revelado = true;           // no se llama a registrarIntento()
+  state.tipos[tipo].solucionesVistas++;
+  state.tipos[tipo].historial.push('revelado');
+  cerrarEjercicio(true);
+}
+
+/* ===================== Informe ===================== */
+const modalInf = document.getElementById('modal-informe');
+const pad = n => String(n).padStart(2, '0');
+function colorNota(n) {
+  const e = Math.floor(n);
+  if (n >= 10) return ['#1a7a1a', '#fff']; if (e === 9) return ['#6dbf6d', '#fff'];
+  if (e === 8) return ['#1a4f8a', '#fff']; if (e === 7) return ['#5b9bd5', '#fff'];
+  if (e === 6) return ['#c05c00', '#fff']; if (e === 5) return ['#f5a623', '#000'];
+  return ['#c0392b', '#fff'];
+}
+
+function datosInforme() {
+  const ahora = new Date(), min = Math.ceil((Date.now() - state.inicio) / 60000);
+  return {
+    titulo: document.querySelector('.titulo-ficha').textContent.trim(),
+    subtitulo: document.querySelector('.subtitulo').textContent.trim(),
+    alumno: inpNombre.value.trim(),
+    nota: calcularNota(),
+    fecha: `${pad(ahora.getDate())}/${pad(ahora.getMonth() + 1)}/${ahora.getFullYear()}`,
+    hora: `${pad(ahora.getHours())}:${pad(ahora.getMinutes())}:${pad(ahora.getSeconds())}`,
+    tiempo: `${pad(Math.floor(min / 60))}:${pad(min % 60)}`,
+    tipos: Object.keys(TIPOS).map(k => {
+      const t = state.tipos[k];
+      return { nombre: TIPOS[k].nombre, superado: t.superado, intentos: t.aciertos + t.fallos, aciertos: t.aciertos, fallos: t.fallos, soluciones: t.solucionesVistas };
+    })
+  };
+}
+
+// Una fila por informe: estas columnas son las que llegan a la hoja.
+function filaHoja(d) {
+  const cabecera = ['Fecha', 'Hora', 'Alumno/a', 'Ficha', 'Nota', 'Tiempo (hh:mm)', 'Fallos totales'];
+  const fila = [d.fecha, d.hora, d.alumno, d.titulo, d.nota, d.tiempo, state.fallosTotales];
+  d.tipos.forEach(t => {
+    cabecera.push(`${t.nombre} · superado`, `${t.nombre} · intentos`, `${t.nombre} · aciertos`, `${t.nombre} · fallos`, `${t.nombre} · soluciones vistas`);
+    fila.push(t.superado ? 'Sí' : 'No', t.intentos, t.aciertos, t.fallos, t.soluciones);
+  });
+  cabecera.push('Reto entre alumnos');
+  fila.push(state.duelos.map(r => `${verCodigo(r.codigo)}: ${r.aciertos}/${RETO_N} en ${fmtPreciso(r.ms)}, ${r.estado}${r.puesto ? ', ' + r.puesto : ''}`).join(' | ') || '—');
+  return { cabecera, fila };
+}
+
+function abrirInforme() {
+  if (!exigirNombre()) return;
+  const d = datosInforme(), [bg, fg] = colorNota(d.nota);
+  document.body.classList.toggle('ficha-perfecta', d.nota >= 10);
+  document.getElementById('informe').innerHTML = `
+    <div class="informe-cabecera"><div class="t">${d.titulo}</div><div class="s">${d.subtitulo}</div></div>
+    <h3>Informe de la actividad</h3>
+    <div class="datos-informe">
+      <b>Alumno/a:</b><span>${d.alumno.replace(/</g, '&lt;')}</span>
+      <b>Fecha:</b><span>${d.fecha}</span>
+      <b>Hora:</b><span>${d.hora}</span>
+      <b>Tiempo total:</b><span>${d.tiempo}</span>
+    </div>
+    <div class="nota-caja" style="background:${bg};color:${fg}"><div>Nota</div><div class="n">${d.nota.toLocaleString('es-ES')} / 10</div></div>
+    <div class="tabla-wrap"><table class="desglose">
+      <tr><th>Zona</th><th>Estado</th><th>Intentos</th><th>Aciertos</th><th>Fallos</th><th>Soluciones vistas</th></tr>
+      ${d.tipos.map(t => `<tr><td>${t.nombre}</td><td>${t.superado ? '✅ Superado' : '— No superado'}</td><td>${t.intentos}</td><td>${t.aciertos}</td><td>${t.fallos}</td><td>${t.soluciones}</td></tr>`).join('')}
+    </table></div>
+    ${htmlRetosInforme()}
+    <div class="acciones" style="margin-top:16px">
+      ${SHEET_URL ? '<button class="btn" id="inf-enviar">Enviar a la hoja de la profe</button>' : ''}
+      <button class="btn btn-sec" id="inf-cerrar">Cerrar y seguir practicando</button>
+    </div>
+    <div class="estado-envio" id="estado-envio"></div>`;
+  modalInf.classList.add('abierto');
+  const { cabecera, fila } = filaHoja(d), estado = document.getElementById('estado-envio');
+  document.getElementById('inf-cerrar').onclick = () => modalInf.classList.remove('abierto');
+  const btnEnviar = document.getElementById('inf-enviar');
+  if (btnEnviar) btnEnviar.onclick = async () => {
+    btnEnviar.disabled = true; estado.textContent = 'Enviando…';
+    try {
+      // text/plain evita la petición previa CORS; Apps Script lee e.postData.contents
+      await fetch(SHEET_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ cabecera, fila }) });
+      estado.textContent = '✅ Informe enviado a la hoja.';
+    } catch { btnEnviar.disabled = false; estado.textContent = 'No se pudo enviar (¿sin conexión?). Inténtalo de nuevo en un momento.'; }
+  };
+}
+document.getElementById('btn-finalizar').onclick = abrirInforme;
+modalInf.addEventListener('click', e => { if (e.target === modalInf) modalInf.classList.remove('abierto'); });
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  const habiaModal = document.querySelector('.modal-fondo.abierto');
+  modalSol.classList.remove('abierto'); modalInf.classList.remove('abierto'); document.getElementById('modal-abandono').classList.remove('abierto');
+  if (!habiaModal) document.activeElement?.blur();   // Esc devuelve el teclado al explorador
+});
+
+/* ===================== Reto entre alumnos (skill duelo-galactico) ===================== */
+// URL /exec del Apps Script del reto (carpeta reto-servidor). Vacía = el reto se juega igual, pero sin panel ni clasificación.
+const URL_DUELOS = '';
+// ⚠️ Todos los alumnos deben usar la misma versión de la ficha: cambiar los generadores de TIPOS invalida los códigos repartidos.
+const RETO_N = 10;
+const RETO_TIPOS = ['equivalentes', 'cantidad', 'suma', 'multiplicacion', 'division'];      // bit i del código ↔ zona i, de menos a más difícil
+const RETO_NOMBRES = ['Equivalencias', 'Cantidades', 'Sumas', 'Multiplicar', 'Dividir'];    // = CONFIG.OPCIONES del servidor
+const ALFA = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';   // sin 0/O ni 1/I para evitar confusiones al dictarlo
+const $ = id => document.getElementById(id);
+const dos = n => String(n).padStart(2, '0');
+const listaY = a => a.length > 1 ? a.slice(0, -1).join(', ') + ' y ' + a[a.length - 1] : String(a[0] || '');
+const escapar = t => String(t).replace(/[<>&"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]));
+const fmtTiempo = ms => { const s = Math.floor(ms / 1000); return `${dos(Math.floor(s / 60))}:${dos(s % 60)}`; };
+const fmtPreciso = ms => { const d = Math.round(ms / 100), s = Math.floor(d / 10); return `${Math.floor(s / 60)}:${dos(s % 60)},${d % 10}`; };
+const punteroFino = () => window.matchMedia('(pointer: fine)').matches;
+const textoZonas = tipos => tipos.length === RETO_TIPOS.length ? 'todas las zonas' : listaY(tipos.map(t => RETO_NOMBRES[RETO_TIPOS.indexOf(t)]));
+const digitoControl = s => ALFA[[...s].reduce((acc, c, i) => acc + ALFA.indexOf(c) * (2 * i + 1), 0) % 32];   // pesos impares: detecta cualquier carácter mal copiado
+const verCodigo = s => s.slice(0, 3) + '-' + s.slice(3);
+
+function crearCodigo(tipos) {
+  const mascara = tipos.reduce((m, t) => m | (1 << RETO_TIPOS.indexOf(t)), 0);   // qué zonas entran
+  const semilla = Math.floor(Math.random() * 2 ** 21);                           // fija los números y el orden
+  let v = mascara * 2 ** 21 + semilla, s = '';
+  for (let i = 0; i < 6; i++) { s = ALFA[v % 32] + s; v = Math.floor(v / 32); }
+  return s + digitoControl(s);
+}
+function leerCodigo(txt) {
+  const s = String(txt || '').toUpperCase().replace(/[^0-9A-Z]/g, '');
+  if (s.length !== 7 || [...s].some(c => !ALFA.includes(c)) || digitoControl(s.slice(0, 6)) !== s[6]) return null;
+  let v = 0; for (const c of s.slice(0, 6)) v = v * 32 + ALFA.indexOf(c);
+  const mascara = Math.floor(v / 2 ** 21), semilla = v % 2 ** 21;
+  if (mascara >= 1 << RETO_TIPOS.length) return null;
+  const tipos = RETO_TIPOS.filter((_, i) => mascara & (1 << i));
+  return tipos.length ? { codigo: s, tipos, semilla, mascara } : null;
+}
+function generadorDe(n) {   // mulberry32 propio del reto: no comparte estado con el resto de la ficha
+  let s = n >>> 0;
+  return () => { s += 0x6D2B79F5; let t = s; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+}
+// 10 preguntas repartidas entre las zonas elegidas, en bloques de menos a más difícil (con las 5 zonas, 2 de cada).
+// Usa los mismos generadores que la isla, pero alimentados solo con el generador del código.
+function preguntasDuelo(d) {
+  const r = generadorDe(d.semilla + d.mascara * 2 ** 21), previa = fuenteAzar, vistos = new Set(), qs = [];
+  fuenteAzar = r;
+  try {
+    for (let i = 0; i < RETO_N; i++) {
+      const tipo = d.tipos[Math.floor(i * d.tipos.length / RETO_N)];
+      let datos, clave, k = 0;
+      do { datos = TIPOS[tipo].generar(); clave = tipo + JSON.stringify(datos); } while (vistos.has(clave) && ++k < 30);
+      vistos.add(clave);
+      qs.push({ tipo, datos });
+    }
+  } finally { fuenteAzar = previa; }
+  return qs;
+}
+
+/* ---- Modos: isla / reto ---- */
+function cambiarModo(modo) {
+  const reto = modo === 'reto';
+  $('modo-isla').setAttribute('aria-selected', String(!reto)); $('modo-reto').setAttribute('aria-selected', String(reto));
+  $('vista-isla').classList.toggle('oculto', reto); $('vista-reto').classList.toggle('oculto', !reto);
+  $('btn-soluciones').classList.toggle('oculto', reto);
+  $('btnCambiar').classList.toggle('oculto', !reto || !D);
+  if (reto) game.scene.pause('isla'); else { game.scene.resume('isla'); game.scale.refresh(); }
+}
+$('modo-isla').addEventListener('click', () => cambiarModo('isla'));
+$('modo-reto').addEventListener('click', () => cambiarModo('reto'));
+
+/* ---- Selector: pestañas, zonas y código ---- */
+let retoTab = 'crear', dueloListo = null;
+const seleccion = new Set(RETO_TIPOS);
+$('rejillaZonas').innerHTML = RETO_TIPOS.map((t, i) =>
+  `<button type="button" class="zona-chip" data-t="${t}" aria-pressed="true">${RETO_NOMBRES[i]}<span>${TIPOS[t].nombre}</span></button>`).join('');
+$('rejillaZonas').addEventListener('click', e => {
+  const b = e.target.closest('.zona-chip'); if (!b) return;
+  seleccion.has(b.dataset.t) ? seleccion.delete(b.dataset.t) : seleccion.add(b.dataset.t);
+  b.setAttribute('aria-pressed', String(seleccion.has(b.dataset.t)));
+  dueloListo = null; pintarSelector();   // al cambiar las zonas, el código anterior deja de valer
+});
+function pintarSelector() {
+  const crear = retoTab === 'crear';
+  $('tabCrear').setAttribute('aria-selected', String(crear)); $('tabUnir').setAttribute('aria-selected', String(!crear));
+  $('zonaCrear').classList.toggle('oculto', !crear); $('zonaUnir').classList.toggle('oculto', crear);
+  $('btnCrearCodigo').disabled = seleccion.size < 1;
+  $('codigoCreado').classList.toggle('oculto', !(crear && dueloListo));
+  $('btnEmpezar').classList.toggle('oculto', !dueloListo);
+}
+$('tabCrear').addEventListener('click', () => { retoTab = 'crear'; dueloListo = null; pintarSelector(); });
+$('tabUnir').addEventListener('click', () => { retoTab = 'unir'; dueloListo = leerCodigo($('codigoUnir').value); pintarSelector(); $('codigoUnir').focus(); });
+$('codigoUnir').addEventListener('input', () => {
+  const txt = $('codigoUnir').value, limpio = txt.toUpperCase().replace(/[^0-9A-Z]/g, '');
+  dueloListo = leerCodigo(txt);
+  $('avisoCodigo').classList.toggle('bien', !!dueloListo);
+  $('avisoCodigo').textContent = dueloListo ? `✓ Reto de ${textoZonas(dueloListo.tipos)} · ${RETO_N} preguntas`
+    : limpio.length >= 7 ? 'Ese código no es válido. Revisa que lo hayas copiado bien.' : '';
+  pintarSelector();
+});
+$('codigoUnir').addEventListener('keydown', e => { if (e.key === 'Enter' && dueloListo) $('btnEmpezar').click(); });
+$('btnCrearCodigo').addEventListener('click', () => {
+  if (seleccion.size < 1) return;
+  dueloListo = leerCodigo(crearCodigo(RETO_TIPOS.filter(t => seleccion.has(t))));
+  $('codigoTexto').textContent = verCodigo(dueloListo.codigo);
+  $('codigoAyuda').innerHTML = `Díctalo a tus rivales: abren esta ficha en la web de clase (sites.google.com/educarex.es/ejercicios-interactivos-marta/adaptaciones/fracciones), pulsan <b>«Reto entre alumnos» › «Unirme con un código»</b> y lo escriben. Cuando estéis todos, pulsad «Empezar el reto». Zonas: ${textoZonas(dueloListo.tipos)} · ${RETO_N} preguntas.`;
+  pintarSelector();
+  $('codigoCreado').scrollIntoView({ behavior: 'smooth', block: 'center' });
+});
+$('btnEmpezar').addEventListener('click', () => { if (dueloListo) empezarDuelo(dueloListo); });
+
+/* ---- Conexión con el panel (Apps Script) ---- */
+const idPartida = () => (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 12);
+async function enviarPanel(datos, reintentos = 0) {
+  if (!URL_DUELOS) return null;
+  for (let k = 0; k <= reintentos; k++) {
+    try {
+      // text/plain evita la petición previa CORS, que Apps Script no responde
+      const r = await fetch(URL_DUELOS, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(datos) });
+      return await r.json();
+    } catch (e) {
+      if (k < reintentos) await new Promise(ok => setTimeout(ok, 1500 * (k + 1)));
+    }
+  }
+  return null;
+}
+async function pedirRanking(codigo, id) {
+  if (!URL_DUELOS) return null;
+  try {
+    const r = await fetch(`${URL_DUELOS}?accion=ranking&codigo=${encodeURIComponent(codigo)}&id=${encodeURIComponent(id)}`);
+    return await r.json();
+  } catch (e) { return null; }
+}
+
+/* ---- Partida ---- */
+let D = null;   // reto en curso
+function empezarDuelo(d) {
+  if (!exigirNombre()) return;
+  const previos = state.duelos.filter(x => x.codigo === d.codigo).length;
+  D = { ...d, qs: preguntasDuelo(d), i: 0, aciertos: 0, acum: 0, tramo: null, respondida: false, fallos: {}, intento: previos + 1,
+    timer: null, terminado: false, id: idPartida(), nombre: inpNombre.value.trim(), finEnviado: false };
+  $('pantallaSelector').classList.add('oculto'); $('pantallaDuelo').classList.remove('oculto');
+  $('btnCambiar').classList.remove('oculto'); $('btnCambiar').textContent = 'Abandonar el reto';
+  $('modo-isla').disabled = true;
+  $('dueloChip').textContent = `${verCodigo(d.codigo)} · ${textoZonas(d.tipos)}`;
+  $('dueloJuego').classList.remove('oculto'); $('dueloFinal').classList.add('oculto'); $('dueloRegla').classList.remove('oculto');
+  D.timer = setInterval(pintarRelojDuelo, 200);
+  const partida = D;
+  enviarPanel({ evento: 'inicio', id: D.id, codigo: D.codigo, nombre: D.nombre }, 1).then(r => { if (r && r.ok && r.intento) partida.intentoPanel = r.intento; });
+  pintarPreguntaDuelo();
+  $('vista-reto').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+// El reloj solo corre mientras hay una pregunta sin responder: leer la corrección no cuenta.
+const msDuelo = () => D.acum + (D.tramo ? Date.now() - D.tramo : 0);
+function pintarRelojDuelo() { if (D) $('dueloReloj').textContent = fmtTiempo(msDuelo()); }
+function pintarPreguntaDuelo() {
+  const q = D.qs[D.i];
+  $('dueloNum').textContent = `Pregunta ${D.i + 1} de ${RETO_N}`;
+  $('dueloBarra').style.width = `${(D.i / RETO_N * 100).toFixed(1)}%`;
+  $('dueloTipo').textContent = TIPOS[q.tipo].nombre;
+  $('dueloZona').innerHTML = `<div class="enunciado">${TIPOS[q.tipo].pintar(q.datos)}</div><button type="button" class="btn" id="dueloComprobar">Comprobar</button>`;
+  const etiquetas = { x: 'Respuesta', n: 'Numerador del resultado', d: 'Denominador del resultado' };
+  document.querySelectorAll('#dueloZona [data-campo]').forEach(i => i.setAttribute('aria-label', etiquetas[i.dataset.campo]));
+  $('dueloAviso').textContent = ''; $('dueloFeedback').innerHTML = '';
+  $('dueloAcciones').classList.add('oculto');
+  D.respondida = false; D.tramo = Date.now();
+  const primero = document.querySelector('#dueloZona input');
+  if (primero && punteroFino()) primero.focus({ preventScroll: true });
+}
+function comprobarDuelo() {
+  if (!D || D.respondida || D.terminado) return;
+  const q = D.qs[D.i], inputs = [...document.querySelectorAll('#dueloZona [data-campo]')], r = {};
+  for (const inp of inputs) {
+    const v = inp.value.trim().replace(',', '.');
+    if (v === '' || isNaN(Number(v))) { $('dueloAviso').textContent = 'Rellena todas las casillas con números antes de comprobar.'; inp.focus(); return; }
+    r[inp.dataset.campo] = Number(v);
+  }
+  const res = TIPOS[q.tipo].validar(q.datos, r);   // mismo feedback gráfico que en la isla
+  D.acum += Date.now() - D.tramo; D.tramo = null; D.respondida = true;
+  if (res.ok) D.aciertos++; else D.fallos[q.tipo] = (D.fallos[q.tipo] || 0) + 1;
+  inputs.forEach(i => i.disabled = true);
+  $('dueloComprobar').disabled = true;
+  $('dueloAviso').textContent = '';
+  $('dueloFeedback').innerHTML = `<div class="feedback ${res.ok ? 'feedback-ok' : 'feedback-error'}">${res.html}</div>`;
+  $('dueloSiguiente').textContent = D.i === RETO_N - 1 ? 'Ver mi resultado' : 'Siguiente';
+  $('dueloAcciones').classList.remove('oculto');
+  if (punteroFino()) $('dueloSiguiente').focus({ preventScroll: true });
+  pintarRelojDuelo();
+  if (D.i < RETO_N - 1) enviarPanel({ evento: 'progreso', id: D.id, codigo: D.codigo, nombre: D.nombre, respondidas: D.i + 1, aciertos: D.aciertos });
+}
+$('dueloZona').addEventListener('click', e => { if (e.target.id === 'dueloComprobar') comprobarDuelo(); });
+$('dueloZona').addEventListener('keydown', e => {   // Enter salta a la siguiente casilla vacía; si no queda ninguna, corrige
+  if (e.key !== 'Enter' || !e.target.dataset || !e.target.dataset.campo) return;
+  e.preventDefault();
+  const vacia = [...document.querySelectorAll('#dueloZona [data-campo]')].find(i => i.value.trim() === '');
+  vacia ? vacia.focus() : comprobarDuelo();
+});
+$('dueloSiguiente').addEventListener('click', () => {
+  if (!D || !D.respondida) return;
+  D.i++;
+  D.i >= RETO_N ? terminarDuelo(false) : pintarPreguntaDuelo();
+});
+function terminarDuelo(abandonado) {
+  clearInterval(D.timer);
+  if (D.tramo) { D.acum += Date.now() - D.tramo; D.tramo = null; }
+  const respondidas = abandonado ? D.i + (D.respondida ? 1 : 0) : RETO_N;
+  const registro = { id: D.id, codigo: D.codigo, tipos: D.tipos, aciertos: D.aciertos, respondidas, ms: D.acum, intento: D.intento, estado: abandonado ? 'abandonado' : 'terminado', puesto: '' };
+  state.duelos.push(registro);
+  D.terminado = true; D.registro = registro;
+  $('modo-isla').disabled = false;
+  const partida = D;
+  const envio = { evento: abandonado ? 'abandono' : 'fin', id: D.id, codigo: D.codigo, nombre: D.nombre, respondidas, aciertos: D.aciertos, ms: Math.round(D.acum) };
+  partida.envioFin = envio;
+  const promesa = enviarPanel(envio, 2).then(r => { partida.respFin = r; if (r && r.ok) partida.finEnviado = true; return r; });
+  if (abandonado) { volverSelector(); return; }
+  $('dueloBarra').style.width = '100%';
+  $('dueloJuego').classList.add('oculto'); $('dueloRegla').classList.add('oculto'); $('dueloFinal').classList.remove('oculto');
+  $('btnCambiar').textContent = 'Elegir otro reto';
+  const a = D.aciertos;
+  const valoracion = a === RETO_N ? '¡Pleno! Ningún fallo.' : a >= RETO_N - 2 ? 'Muy buen reto.' : a >= RETO_N / 2 ? 'Buen intento: repasa las zonas que has fallado.' : 'Te conviene practicar más en la isla antes del próximo reto.';
+  const repasar = Object.entries(D.fallos).map(([t, n]) => `${TIPOS[t].nombre} (${n})`).join(' · ');
+  $('dueloFinal').innerHTML = `
+    <div class="duelo-tipo">Reto terminado</div>
+    <div class="rd-cifra">${a}<span style="font-size:1.4rem;color:var(--color-texto-suave)"> / ${RETO_N}</span></div>
+    <div class="nota-duelo">aciertos</div>
+    <div class="rd-fila"><div><span>Fallos</span><b style="color:var(--color-error)">${RETO_N - a}</b></div><div><span>Tiempo</span><b class="duelo-reloj" style="font-size:1.3rem">${fmtPreciso(D.acum)}</b></div><div><span>Código</span><b style="letter-spacing:.08em">${verCodigo(D.codigo)}</b></div></div>
+    <p>${valoracion}</p>
+    ${repasar ? `<p class="nota-duelo">Para repasar: ${repasar}</p>` : ''}
+    ${URL_DUELOS ? '<div class="clasif" id="dueloClasif" aria-live="polite"><p class="nota-duelo">Enviando tu resultado al panel…</p></div>'
+      : '<p class="nota-duelo">Comparad vuestras pantallas: gana quien tenga más aciertos y, si empatáis, quien haya tardado menos. El resultado queda guardado en tu informe.</p>'}`;
+  if (URL_DUELOS) promesa.then(() => cargarClasificacion(partida));
+}
+function volverSelector() {
+  if (D && !D.terminado) return;
+  D = null; dueloListo = retoTab === 'unir' ? leerCodigo($('codigoUnir').value) : null;
+  $('pantallaDuelo').classList.add('oculto'); $('pantallaSelector').classList.remove('oculto');
+  $('btnCambiar').classList.add('oculto');
+  pintarSelector();
+}
+const modalAbandono = $('modal-abandono');
+$('btnCambiar').addEventListener('click', () => {
+  if (D && !D.terminado) { modalAbandono.classList.add('abierto'); $('abandono-seguir').focus(); }
+  else volverSelector();
+});
+$('abandono-seguir').addEventListener('click', () => modalAbandono.classList.remove('abierto'));
+modalAbandono.addEventListener('click', e => { if (e.target === modalAbandono) modalAbandono.classList.remove('abierto'); });
+$('abandono-si').addEventListener('click', () => { modalAbandono.classList.remove('abierto'); if (D && !D.terminado) terminarDuelo(true); });
+
+const ordinal = n => `${n}.º`;
+async function cargarClasificacion(partida) {
+  const caja = () => (D === partida ? $('dueloClasif') : null);   // si el alumno ya ha salido, no se pinta nada
+  if (!caja()) return;
+  if (!partida.finEnviado) {   // el envío falló o fue rechazado: se reintenta antes de pedir la clasificación
+    const r = await enviarPanel(partida.envioFin, 1);
+    partida.respFin = r || partida.respFin;
+    if (r && r.ok) partida.finEnviado = true;
+  }
+  if (!caja()) return;
+  if (!partida.finEnviado) {
+    const motivo = partida.respFin && partida.respFin.error ? ` El panel ha respondido: «${escapar(String(partida.respFin.error))}».` : ' Puede que no haya conexión.';
+    caja().innerHTML = `<div class="clasif-cab"><b>Clasificación</b><button type="button" class="btn-mini" id="clasifAct">Reintentar</button></div><p class="nota-duelo">No se ha podido enviar tu resultado al panel.${motivo} Tu resultado sí está guardado en tu informe.</p>`;
+    $('clasifAct').addEventListener('click', () => cargarClasificacion(partida));
+    return;
+  }
+  const r = await pedirRanking(partida.codigo, partida.id);
+  if (!caja()) return;
+  if (!r || !r.ok) {
+    caja().innerHTML = `<div class="clasif-cab"><b>Clasificación</b><button type="button" class="btn-mini" id="clasifAct">Actualizar</button></div><p class="nota-duelo">Tu resultado se ha enviado, pero no se ha podido leer la clasificación. Prueba a actualizar.</p>`;
+    $('clasifAct').addEventListener('click', () => cargarClasificacion(partida));
+    return;
+  }
+  const lista = r.podio.map((p, k) => `<li class="${p.yo ? 'yo' : ''}"><span class="med m${k + 1}">${k + 1}</span><b>${escapar(p.nombre)}</b><span class="dat">${p.aciertos} ✓ · ${p.fallos} ✗ · ${fmtPreciso(p.ms)}</span></li>`).join('');
+  let tu;
+  if (r.tu && r.tu.cuenta && r.tu.posicion) tu = `Tu puesto: ${ordinal(r.tu.posicion)} de ${r.terminados} que han terminado.`;
+  else if (r.tu && !r.tu.cuenta) tu = `Este es tu intento n.º ${r.tu.intento} con este código: solo cuenta el primero, así que no entra en la clasificación.`;
+  else tu = 'Tu resultado se está registrando.';
+  partida.registro.puesto = r.tu && r.tu.cuenta && r.tu.posicion ? `${ordinal(r.tu.posicion)} de ${r.terminados}` : r.tu && !r.tu.cuenta ? `No cuenta (intento ${r.tu.intento})` : '';
+  caja().innerHTML = `<div class="clasif-cab"><b>Clasificación del reto</b><button type="button" class="btn-mini" id="clasifAct">Actualizar</button></div>
+    ${lista ? `<ol>${lista}</ol>` : '<p class="nota-duelo">Todavía no ha terminado nadie.</p>'}
+    <p class="tu">${tu}</p>
+    <p class="nota-duelo">${r.enJuego ? `Todavía ${r.enJuego === 1 ? 'juega 1 compañero' : `juegan ${r.enJuego} compañeros`}: actualiza en un rato. ` : ''}Gana quien más acierte; si hay empate, quien tarde menos.</p>`;
+  $('clasifAct').addEventListener('click', () => cargarClasificacion(partida));
+}
+
+// Sección del informe final
+function htmlRetosInforme() {
+  if (!state.duelos.length) return '';
+  return `<h4 class="informe-reto">Reto entre alumnos</h4><div class="tabla-wrap"><table class="desglose">
+    <tr><th>Código</th><th>Zonas</th><th>Intento</th><th>Aciertos</th><th>Tiempo</th><th>Estado</th><th>Puesto (última consulta)</th></tr>
+    ${state.duelos.map(r => `<tr><td>${verCodigo(r.codigo)}</td><td>${textoZonas(r.tipos)}</td><td>${r.intento}</td><td>${r.aciertos}/${RETO_N}</td><td>${fmtPreciso(r.ms)}</td><td>${r.estado}</td><td>${r.puesto || '—'}</td></tr>`).join('')}
+  </table></div><p class="nota-duelo">El reto no cambia la nota de la ficha.</p>`;
+}
+pintarSelector();
+
+/* ===================== Mundo Phaser ===================== */
+const ZONAS = [
+  { tipo: 'equivalentes',   x: 220, y: 170, color: 0xC9A24B, icono: '½ = ²⁄₄', etiqueta: 'Equivalencias', etiquetaY: 214 },
+  { tipo: 'suma',           x: 590, y: 170, color: 0xB5543C, icono: '⅓ + ¼',  etiqueta: 'Sumas',         etiquetaY: 214 },
+  { tipo: 'multiplicacion', x: 190, y: 325, color: 0x5E9A3E, icono: '⅔ · ¾',  etiqueta: 'Multiplicar',   etiquetaY: 369 },
+  { tipo: 'division',       x: 610, y: 325, color: 0xC2477A, icono: '½ : ¼',  etiqueta: 'Dividir',       etiquetaY: 369 },
+  { tipo: 'cantidad',       x: 400, y: 400, color: 0x3E7CA6, icono: '¾ de 20', etiqueta: 'Cantidades',    etiquetaY: 446, etiquetaX: 365 }
+];
+const ISLA = { cx: 400, cy: 252, rx: 375, ry: 228 };
+const PASEO = { rx: 318, ry: 192 };          // elipse por la que puede caminar el explorador
+const PLAZA = { x: 400, y: 258 };
+const HUERTO = { x: 88, y: 228, w: 76, h: 44 };
+const CONTROL_CAMINO = { equivalentes: [300, 250], suma: [500, 250], multiplicacion: [290, 300], division: [510, 300], cantidad: [385, 330] };
+
+function contornoIsla(escala, n = 96) {
+  const pts = [];
+  for (let i = 0; i < n; i++) {
+    const a = i / n * Math.PI * 2;
+    const r = escala * (1 + 0.04 * Math.sin(3 * a + 1) + 0.025 * Math.sin(5 * a + 2) + 0.015 * Math.sin(7 * a));
+    pts.push({ x: ISLA.cx + ISLA.rx * r * Math.cos(a), y: ISLA.cy + ISLA.ry * r * Math.sin(a) });
+  }
+  return pts;
+}
+function textura(escena, clave, w, h, dibujar) {
+  const g = escena.make.graphics({ add: false }); dibujar(g); g.generateTexture(clave, w, h); g.destroy();
+}
+// Rellena un polígono dado en coordenadas locales, girado `ang` y trasladado a (cx, cy)
+function poligono(g, pts, ang = 0, cx = 0, cy = 0) {
+  const c = Math.cos(ang), s = Math.sin(ang);
+  g.fillPoints(pts.map(([x, y]) => ({ x: cx + x * c - y * s, y: cy + x * s + y * c })), true);
+}
+function dentroPaseo(x, y) {
+  const ex = (x - ISLA.cx) / PASEO.rx, ey = (y - ISLA.cy) / PASEO.ry, d = Math.hypot(ex, ey);
+  return d <= 1 ? { x, y } : { x: ISLA.cx + ex / d * PASEO.rx, y: ISLA.cy + ey / d * PASEO.ry };
+}
+
+function crearTexturas(e) {
+  textura(e, 'explorador', 34, 46, g => {
+    g.fillStyle(0x7A4E2A).fillRoundedRect(4, 19, 10, 16, 3); g.fillStyle(0x5C3A1E).fillRect(5, 25, 8, 2);   // mochila
+    g.fillStyle(0xC2A36B).fillRect(11, 32, 5, 8).fillRect(18, 32, 5, 8);                                     // piernas
+    g.fillStyle(0x4A3324).fillRoundedRect(10, 39, 7, 5, 2).fillRoundedRect(17, 39, 7, 5, 2);                 // botas
+    g.fillStyle(0x3E7D5A).fillRoundedRect(9, 19, 16, 15, 5);                                                 // camisa
+    g.fillStyle(0x2F6446).fillRect(9, 29, 16, 2); g.fillStyle(0xC9A24B).fillRect(16, 29, 3, 2);              // cinturón
+    g.fillStyle(0x3E7D5A).fillRoundedRect(6, 20, 5, 8, 2).fillRoundedRect(23, 20, 5, 8, 2);                  // mangas
+    g.fillStyle(0xF1C9A0).fillCircle(8.5, 29, 2.6).fillCircle(25.5, 29, 2.6);                                 // manos
+    g.fillStyle(0xF1C9A0).fillCircle(17, 13, 8);                                                             // cara
+    g.fillStyle(0x2E2A24).fillCircle(14, 14, 1.3).fillCircle(20, 14, 1.3);
+    g.fillStyle(0xE8968A, 0.7).fillCircle(11.8, 16.5, 1.6).fillCircle(22.2, 16.5, 1.6);
+    g.lineStyle(1, 0x8B4A3A); g.beginPath(); g.arc(17, 16.2, 2.4, 0.3, Math.PI - 0.3); g.strokePath();
+    g.fillStyle(0xC99B55).fillEllipse(17, 7.5, 27, 7);                                                       // sombrero
+    g.fillStyle(0xD9B26F).fillRoundedRect(10, 0, 14, 8, { tl: 5, tr: 5, bl: 0, br: 0 });
+    g.fillStyle(0xB5543C).fillRect(10, 5, 14, 2);
+  });
+  textura(e, 'sombra', 30, 10, g => g.fillStyle(0x000000, 0.28).fillEllipse(15, 5, 28, 8));
+
+  textura(e, 'arbol', 56, 66, g => {
+    g.fillStyle(0x000000, 0.2).fillEllipse(30, 60, 42, 11);
+    g.fillStyle(0x6B4226).fillRect(24, 38, 8, 22); g.fillStyle(0x553319).fillRect(29, 38, 3, 22);
+    g.fillStyle(0x2F6B3A).fillCircle(18, 32, 14).fillCircle(38, 32, 14).fillCircle(28, 20, 17);
+    g.fillStyle(0x3F8A4A).fillCircle(20, 27, 11).fillCircle(35, 27, 11).fillCircle(27, 16, 12);
+    g.fillStyle(0x6BB05E).fillCircle(23, 12, 6).fillCircle(32, 19, 4).fillCircle(17, 24, 3);
+  });
+  textura(e, 'palmera', 64, 84, g => {
+    g.fillStyle(0x000000, 0.18).fillEllipse(38, 79, 36, 9);
+    for (let i = 0; i <= 12; i++) {                                         // tronco curvo por segmentos
+      const t = i / 12, x = 30 + 8 * Math.sin(t * 1.6), y = 78 - t * 50;
+      g.fillStyle(i % 2 ? 0x8B6B3E : 0xA07C48).fillEllipse(x, y, 9, 6);
+    }
+    const hoja = [[0, 0], [10, -6], [24, -5], [32, 3], [18, 0]];
+    for (let k = 0; k < 7; k++) {
+      const a = -Math.PI + k * (Math.PI * 1.15 / 6) - 0.1;
+      g.fillStyle(0x2C6E33); poligono(g, hoja, a + 0.08, 38, 29);
+      g.fillStyle(k % 2 ? 0x3E8E41 : 0x4FA04C); poligono(g, hoja, a, 38, 27);
+    }
+    g.fillStyle(0x5C3A1E).fillCircle(35, 31, 3).fillCircle(41, 32, 3).fillCircle(38, 35, 3);
+  });
+  textura(e, 'arbusto', 34, 24, g => {
+    g.fillStyle(0x000000, 0.18).fillEllipse(17, 20, 30, 7);
+    g.fillStyle(0x3A7D3F).fillCircle(10, 14, 7).fillCircle(24, 14, 7).fillCircle(17, 10, 8);
+    g.fillStyle(0x58A052).fillCircle(14, 8, 3.5).fillCircle(22, 11, 2.5);
+    g.fillStyle(0xD94B4B).fillCircle(9, 13, 1.6).fillCircle(20, 15, 1.6).fillCircle(26, 11, 1.6);
+  });
+  textura(e, 'roca', 28, 20, g => {
+    g.fillStyle(0x000000, 0.18).fillEllipse(15, 16, 26, 7);
+    g.fillStyle(0x8F8A84); poligono(g, [[3, 15], [6, 6], [13, 2], [22, 4], [26, 14]]);
+    g.fillStyle(0xB9B4AC); poligono(g, [[7, 8], [13, 3.5], [19, 5], [14, 9]]);
+  });
+
+  textura(e, 'molino', 100, 132, g => {
+    g.fillStyle(0x000000, 0.22).fillEllipse(54, 126, 70, 12);
+    g.fillStyle(0xE6D9BE); poligono(g, [[30, 127], [70, 127], [62, 52], [38, 52]]);
+    g.fillStyle(0xCDBE9E); poligono(g, [[52, 127], [70, 127], [62, 52], [52, 52]]);
+    g.lineStyle(1, 0xB5A584, 0.8);
+    for (let y = 62; y < 127; y += 9) { const w = 12 + (y - 52) / 75 * 8; g.lineBetween(50 - w, y, 50 + w, y); }
+    g.fillStyle(0x6B4226).fillRect(44, 110, 12, 17).fillCircle(50, 110, 6);
+    g.fillStyle(0x3B2A1A).fillRect(46, 76, 8, 10); g.fillStyle(0xF2D37A, 0.6).fillRect(47, 77, 3, 4);
+    g.fillStyle(0xA0442C); poligono(g, [[31, 55], [69, 55], [50, 22]]);
+    g.fillStyle(0x7E3320); poligono(g, [[50, 55], [69, 55], [50, 22]]);
+  });
+  textura(e, 'aspas', 124, 124, g => {
+    for (let k = 0; k < 4; k++) {
+      const a = k * Math.PI / 2;
+      g.fillStyle(0x6B4226); poligono(g, [[0, -2], [58, -2], [58, 2], [0, 2]], a, 62, 62);
+      g.fillStyle(0xF4ECDA); poligono(g, [[12, 3], [56, 3], [56, 15], [16, 15]], a, 62, 62);
+      g.fillStyle(0xD9CBAE); poligono(g, [[14, 8], [56, 8], [56, 10], [15, 10]], a, 62, 62);
+      g.fillStyle(0xD9CBAE); poligono(g, [[34, 3], [36, 3], [36, 15], [34, 15]], a, 62, 62);
+    }
+    g.fillStyle(0x5C3A1E).fillCircle(62, 62, 6); g.fillStyle(0x8B6B3E).fillCircle(61, 61, 2.5);
+  });
+  textura(e, 'puente', 164, 66, g => {
+    const arco = t => ({ x: 12 + t * 140, y: 38 - 16 * Math.sin(Math.PI * t) });
+    const baranda = dy => { const pts = []; for (let i = 0; i <= 20; i++) { const p = arco(i / 20); pts.push({ x: p.x, y: p.y + dy }); } return pts; };
+    g.lineStyle(3, 0x6B4226); g.strokePoints(baranda(-22));                  // baranda de atrás
+    for (let i = 0; i <= 4; i++) { const p = arco(i / 4); g.fillStyle(0x6B4226).fillRect(p.x - 2, p.y - 24, 4, 16); }
+    for (let i = 0; i <= 16; i++) {                                          // tablones
+      const p = arco(i / 16);
+      g.fillStyle(i % 2 ? 0xA87545 : 0x96653A).fillRect(p.x - 5, p.y - 10, 10, 22);
+      g.lineStyle(1, 0x5C3A1E, 0.6).strokeRect(p.x - 5, p.y - 10, 10, 22);
+    }
+    for (let i = 0; i <= 4; i++) { const p = arco(i / 4); g.fillStyle(0x5C3A1E).fillRect(p.x - 2, p.y - 2, 4, 18); }
+    g.lineStyle(3, 0x7A4E2A); g.strokePoints(baranda(0));                    // baranda delantera
+  });
+  textura(e, 'mercado', 150, 122, g => {
+    g.fillStyle(0x000000, 0.22).fillEllipse(75, 116, 146, 14);
+    g.fillStyle(0x7A4E2A).fillRect(12, 30, 5, 84).fillRect(133, 30, 5, 84);
+    g.fillStyle(0xB98A55).fillRect(17, 48, 116, 36);
+    g.fillStyle(0x8A5D32).fillRect(17, 62, 116, 3);
+    for (let i = 0; i < 9; i++) g.fillStyle([0xE8902A, 0xC8302A, 0x9CC54A][i % 3]).fillCircle(26 + i * 12, 58, 4.5);
+    g.fillStyle(0xA0703F).fillRect(8, 84, 134, 30);
+    g.lineStyle(1, 0x8A5D32); for (let x = 20; x < 142; x += 12) g.lineBetween(x, 86, x, 113);
+    g.fillStyle(0xC8975E).fillRect(6, 80, 138, 6);
+    for (let i = 0; i < 5; i++) { g.fillStyle(0xC8302A).fillCircle(18 + i * 9, 75, 5); g.fillStyle(0xFFFFFF, 0.5).fillCircle(16.5 + i * 9, 73.5, 1.5); }
+    for (let i = 0; i < 4; i++) g.fillStyle(0xE8902A).fillCircle(72 + i * 9, 75, 5);
+    g.fillStyle(0xD9A35A).fillEllipse(120, 75, 18, 9).fillEllipse(134, 76, 14, 8);
+    g.fillStyle(0x6B4226).fillRect(2, 14, 146, 5);
+    for (let i = 0; i < 10; i++) {                                           // toldo a rayas con festón
+      const x0 = 4 + i * 14.2, c = i % 2 ? 0xF6EBD4 : 0xC8483A;
+      g.fillStyle(c); poligono(g, [[x0 + 2, 19], [x0 + 16.2, 19], [x0 + 14.2, 42], [x0, 42]]);
+      g.fillCircle(x0 + 7.1, 42, 7.1);
+    }
+  });
+  textura(e, 'caja', 30, 26, g => {
+    g.fillStyle(0x000000, 0.2).fillEllipse(15, 23, 28, 6);
+    g.fillStyle(0xA0703F).fillRect(2, 9, 26, 14); g.lineStyle(1, 0x7A4E2A).strokeRect(2, 9, 26, 14).lineBetween(2, 16, 28, 16);
+    for (let i = 0; i < 4; i++) g.fillStyle(i % 2 ? 0x9CC54A : 0xE8902A).fillCircle(7 + i * 5.5, 8, 3.5);
+  });
+  textura(e, 'barril', 22, 28, g => {
+    g.fillStyle(0x000000, 0.2).fillEllipse(11, 25, 20, 6);
+    g.fillStyle(0x8B5A2B).fillRoundedRect(2, 3, 18, 22, 6);
+    g.fillStyle(0x5C3A1E).fillRect(2, 8, 18, 2).fillRect(2, 18, 18, 2);
+    g.fillStyle(0xA87545).fillEllipse(11, 4, 16, 5);
+  });
+  textura(e, 'poste', 52, 56, g => {
+    g.fillStyle(0x000000, 0.2).fillEllipse(26, 52, 20, 6);
+    g.fillStyle(0x6B4226).fillRect(24, 8, 4, 44);
+    g.fillStyle(0xC9A24B); poligono(g, [[4, 10], [36, 10], [42, 15], [36, 20], [4, 20]]);
+    g.fillStyle(0xB5543C); poligono(g, [[48, 24], [16, 24], [10, 29], [16, 34], [48, 34]]);
+    g.fillStyle(0x3E7CA6); poligono(g, [[8, 38], [40, 38], [46, 43], [40, 48], [8, 48]]);
+  });
+  textura(e, 'barca', 52, 50, g => {
+    g.fillStyle(0x7A4E2A); poligono(g, [[3, 36], [49, 36], [42, 47], [10, 47]]);
+    g.fillStyle(0xB5543C).fillRect(7, 38, 39, 3);
+    g.fillStyle(0x5C3A1E).fillRect(25, 4, 2, 33);
+    g.fillStyle(0xF6EBD4); poligono(g, [[28, 6], [28, 33], [45, 31]]);
+    g.fillStyle(0xE9DCC0); poligono(g, [[24, 10], [24, 33], [12, 31]]);
+    g.fillStyle(0xC9A24B); poligono(g, [[27, 2], [35, 4], [27, 6]]);
+  });
+  textura(e, 'gaviota', 22, 10, g => {
+    g.lineStyle(2, 0xFFFFFF); g.beginPath(); g.moveTo(1, 7); g.lineTo(6, 2); g.lineTo(11, 7); g.lineTo(16, 2); g.lineTo(21, 7); g.strokePath();
+  });
+  textura(e, 'nube', 190, 90, g => {
+    g.fillStyle(0x10301F, 0.06);
+    g.fillEllipse(70, 50, 110, 50).fillEllipse(120, 42, 110, 56).fillEllipse(95, 60, 150, 40);
+  });
+  textura(e, 'ola', 20, 8, g => {
+    g.lineStyle(2, 0xFFFFFF, 0.85); g.beginPath(); g.arc(10, 11, 8, Math.PI * 1.2, Math.PI * 1.8); g.strokePath();
+  });
+  textura(e, 'brillo', 6, 6, g => g.fillStyle(0xFFFFFF).fillCircle(3, 3, 2));
+  textura(e, 'chispa', 10, 10, g => g.fillStyle(0xFFE58A).fillCircle(5, 5, 4));
+  textura(e, 'estrella', 44, 42, g => {
+    const pts = esc => Array.from({ length: 10 }, (_, k) => {
+      const r = (k % 2 ? 8 : 19) * esc, a = -Math.PI / 2 + k * Math.PI / 5;
+      return { x: 22 + r * Math.cos(a), y: 22 + r * Math.sin(a) };
+    });
+    g.fillStyle(0xF2C230).fillPoints(pts(1), true);
+    g.lineStyle(2, 0xB8860B).strokePoints(pts(1), true);
+    g.fillStyle(0xFFF0A0).fillPoints(pts(0.4).map(p => ({ x: p.x - 3, y: p.y - 3 })), true);
+  });
+  textura(e, 'caramelo', 100, 74, g => {
+    g.fillStyle(0x000000, 0.22).fillEllipse(50, 70, 64, 9);
+    g.fillStyle(0x9A958E).fillRect(30, 50, 40, 20); g.fillStyle(0xBDB8B0).fillRect(30, 50, 40, 5);   // pedestal
+    // Caramelo hecho con la V (terracota) y la V invertida (azul), como en el esquema de dividir
+    g.fillStyle(0xF6C3D5); poligono(g, [[8, 12], [8, 46], [25, 29]]); poligono(g, [[92, 12], [92, 46], [75, 29]]);
+    g.fillStyle(0xE8789C); poligono(g, [[25, 29], [50, 54], [75, 29], [50, 4]]);
+    g.fillStyle(0xFFFFFF, 0.55); poligono(g, [[34, 26], [50, 10], [56, 16], [40, 32]]);
+    g.lineStyle(4, 0xB5543C).strokePoints([{ x: 8, y: 12 }, { x: 50, y: 54 }, { x: 92, y: 12 }], false);
+    g.lineStyle(4, 0x3E7CA6).strokePoints([{ x: 8, y: 46 }, { x: 50, y: 4 }, { x: 92, y: 46 }], false);
+  });
+}
+
+class Isla extends Phaser.Scene {
+  constructor() { super('isla'); }
+  create() {
+    crearTexturas(this);
+    const azar = mulberry32(2024);                 // decoración fija, no consume el rng de los ejercicios
+    const rnd = (a, b) => a + azar() * (b - a);
+
+    // --- Mar con degradado por franjas ---
+    const mar = this.add.graphics().setDepth(-30);
+    const arriba = Phaser.Display.Color.ValueToColor(0x3C8CC2), abajo = Phaser.Display.Color.ValueToColor(0x2A6898);
+    for (let i = 0; i < 30; i++) {
+      const c = Phaser.Display.Color.Interpolate.ColorWithColor(arriba, abajo, 29, i);
+      mar.fillStyle(Phaser.Display.Color.GetColor(c.r, c.g, c.b)).fillRect(0, i * 17, 800, 18);
+    }
+    const islaExt = new Phaser.Geom.Polygon(contornoIsla(1.14));
+    for (let i = 0; i < 46; i++) {
+      let x, y; do { x = rnd(0, 800); y = rnd(0, 500); } while (Phaser.Geom.Polygon.Contains(islaExt, x, y));
+      const ola = this.add.image(x, y, 'ola').setDepth(-25).setAlpha(0.5);
+      this.tweens.add({ targets: ola, x: x + 8, alpha: 0.05, yoyo: true, repeat: -1, duration: rnd(1400, 2600), delay: rnd(0, 2000), ease: 'Sine.inOut' });
+    }
+    for (let i = 0; i < 30; i++) {
+      let x, y; do { x = rnd(0, 800); y = rnd(0, 500); } while (Phaser.Geom.Polygon.Contains(islaExt, x, y));
+      const b = this.add.image(x, y, 'brillo').setDepth(-25).setAlpha(0);
+      this.tweens.add({ targets: b, alpha: 0.9, yoyo: true, repeat: -1, duration: 500, delay: rnd(0, 5000), repeatDelay: rnd(1500, 5000) });
+    }
+
+    // --- Isla: aguas someras, espuma, arena y césped ---
+    const suelo = this.add.graphics().setDepth(-20);
+    suelo.fillStyle(0x5FB3D3, 0.55).fillPoints(contornoIsla(1.11), true);
+    suelo.fillStyle(0x86CDE0, 0.7).fillPoints(contornoIsla(1.05), true);
+    const espuma = this.add.graphics({ x: ISLA.cx, y: ISLA.cy }).setDepth(-19);
+    espuma.lineStyle(3, 0xFFFFFF, 0.75).strokePoints(contornoIsla(1.025).map(p => ({ x: p.x - ISLA.cx, y: p.y - ISLA.cy })), true);
+    this.tweens.add({ targets: espuma, scaleX: 1.015, scaleY: 1.025, alpha: 0.4, yoyo: true, repeat: -1, duration: 2200, ease: 'Sine.inOut' });
+    const tierra = this.add.graphics().setDepth(-18);
+    tierra.fillStyle(0xD7BD86).fillPoints(contornoIsla(1.0), true);
+    tierra.fillStyle(0xEFDDB0).fillPoints(contornoIsla(0.965), true);
+    tierra.fillStyle(0x6FA64C).fillPoints(contornoIsla(0.885), true);
+    tierra.fillStyle(0x86BE5A).fillPoints(contornoIsla(0.87), true);
+    const cesped = new Phaser.Geom.Polygon(contornoIsla(0.85));
+    const enCesped = () => { let x, y; do { x = rnd(60, 740); y = rnd(40, 480); } while (!Phaser.Geom.Polygon.Contains(cesped, x, y)); return [x, y]; };
+    for (let i = 0; i < 26; i++) { const [x, y] = enCesped(); tierra.fillStyle(0x9ACB6A, 0.45).fillEllipse(x, y, rnd(40, 90), rnd(18, 36)); }
+    for (let i = 0; i < 380; i++) {
+      const [x, y] = enCesped(); tierra.lineStyle(1.4, i % 3 ? 0x5E9A3E : 0x6FAF4A, 0.9);
+      tierra.lineBetween(x, y, x - 2, y - 4); tierra.lineBetween(x, y, x + 2, y - 4);
+    }
+    for (let i = 0; i < 8; i++) { const [x, y] = [rnd(100, 700), rnd(450, 490)]; if (Phaser.Geom.Polygon.Contains(new Phaser.Geom.Polygon(contornoIsla(0.96)), x, y)) tierra.fillStyle(0xF6EAD0).fillEllipse(x, y, 5, 3); }
+
+    // --- Caminos de tierra desde la plaza ---
+    const caminos = ZONAS.map(z => new Phaser.Curves.QuadraticBezier(
+      new Phaser.Math.Vector2(PLAZA.x, PLAZA.y), new Phaser.Math.Vector2(...CONTROL_CAMINO[z.tipo]), new Phaser.Math.Vector2(z.x, z.y)).getPoints(40));
+    const caminoPts = caminos.flat();
+    caminoPts.forEach(p => tierra.fillStyle(0xB08A52).fillCircle(p.x, p.y + 1.5, 13));
+    caminoPts.forEach(p => tierra.fillStyle(0xD8BA82).fillCircle(p.x, p.y, 11));
+    caminoPts.forEach((p, i) => { if (i % 3 === 0) tierra.fillStyle(0xC4A26E).fillEllipse(p.x + rnd(-7, 7), p.y + rnd(-5, 5), 4, 2.5); });
+
+    // Plaza central con rosa de los vientos
+    tierra.fillStyle(0xA89C88).fillCircle(PLAZA.x, PLAZA.y + 2, 40);
+    tierra.fillStyle(0xCFC4B0).fillCircle(PLAZA.x, PLAZA.y, 38);
+    tierra.lineStyle(1, 0xB3A792);
+    for (let k = 0; k < 12; k++) { const a = k * Math.PI / 6; tierra.lineBetween(PLAZA.x + Math.cos(a) * 20, PLAZA.y + Math.sin(a) * 20, PLAZA.x + Math.cos(a) * 38, PLAZA.y + Math.sin(a) * 38); }
+    tierra.strokeCircle(PLAZA.x, PLAZA.y, 20);
+    const rosa = (r1, r2, rot, c) => { tierra.fillStyle(c); for (let k = 0; k < 4; k++) poligono(tierra, [[0, -r1], [r2, 0], [0, r1 * 0.12], [-r2, 0]], rot + k * Math.PI / 2, PLAZA.x, PLAZA.y); };
+    rosa(17, 4, Math.PI / 4, 0xC9A24B); rosa(24, 5, 0, 0xB5543C);
+    tierra.fillStyle(0xF6EBD4).fillCircle(PLAZA.x, PLAZA.y, 3);
+
+    // Estanque de la zona de sumas
+    const est = { x: 625, y: 140 };
+    tierra.fillStyle(0xC9B27A).fillEllipse(est.x, est.y + 2, 178, 66);
+    tierra.fillStyle(0x3F88B8).fillEllipse(est.x, est.y, 166, 56);
+    tierra.fillStyle(0x6FB3D8, 0.8).fillEllipse(est.x - 10, est.y - 6, 120, 30);
+    [[565, 128], [680, 140], [660, 118]].forEach(([x, y]) => { tierra.fillStyle(0x4E9A45).fillCircle(x, y, 6); tierra.fillStyle(0xF29BB5).fillCircle(x + 1, y - 1, 2); });
+    tierra.lineStyle(2, 0x5E8C3A);
+    [[548, 120], [553, 117], [700, 125], [704, 130]].forEach(([x, y]) => tierra.lineBetween(x, y, x + rnd(-2, 2), y - 14));
+
+    // Huerto de las multiplicaciones: surcos paralelos («en línea»)
+    const H = HUERTO;
+    tierra.fillStyle(0x6E4A2E).fillRoundedRect(H.x - 2, H.y + 2, H.w + 4, H.h + 2, 6);
+    tierra.fillStyle(0x8B5E3C).fillRoundedRect(H.x, H.y, H.w, H.h, 6);
+    for (let f = 0; f < 4; f++) {
+      const y = H.y + 7 + f * 10;
+      tierra.lineStyle(3, 0x6E4A2E).lineBetween(H.x + 5, y + 3, H.x + H.w - 5, y + 3);
+      for (let x = H.x + 9; x < H.x + H.w - 4; x += 10) {
+        if (f % 2) { tierra.fillStyle(0x4F9A3E).fillCircle(x, y, 3.6); tierra.fillStyle(0x7CC25E).fillCircle(x - 1, y - 1, 1.6); }
+        else { tierra.fillStyle(0xE8902A).fillTriangle(x - 2, y, x + 2, y, x, y + 4); tierra.fillStyle(0x5E9A3E).fillTriangle(x - 3, y - 4, x + 3, y - 4, x, y); }
+      }
+    }
+    tierra.fillStyle(0x7A4E2A);
+    for (let x = H.x - 4; x <= H.x + H.w + 4; x += 13) tierra.fillRect(x, H.y - 7, 3, 9);
+    tierra.lineStyle(2, 0x7A4E2A).lineBetween(H.x - 4, H.y - 4, H.x + H.w + 6, H.y - 4);
+
+    // --- Edificios de cada zona ---
+    const ocupados = [{ x: PLAZA.x, y: PLAZA.y, r: 55 }, { x: 165, y: 125, r: 50 }, { x: est.x, y: est.y, r: 92 }, { x: 505, y: 390, r: 78 },
+      { x: H.x + H.w / 2, y: H.y + H.h / 2, r: 52 }, { x: 690, y: 255, r: 50 }];
+    ZONAS.forEach(z => ocupados.push({ x: z.x, y: z.y, r: 55 }, { x: z.etiquetaX ?? z.x, y: z.etiquetaY, r: 40 }));
+    this.add.image(165, 160, 'molino').setOrigin(0.5, 1).setDepth(160);
+    const aspas = this.add.image(165, 68, 'aspas').setDepth(161).setScale(0.85);
+    this.tweens.add({ targets: aspas, angle: 360, duration: 7000, repeat: -1 });
+    this.add.image(est.x, est.y + 4, 'puente').setOrigin(0.5, 0.6).setDepth(est.y);
+    this.add.image(505, 440, 'mercado').setOrigin(0.5, 1).setDepth(440).setScale(0.9);
+    this.add.image(588, 440, 'caja').setOrigin(0.5, 1).setDepth(440);
+    this.add.image(598, 422, 'barril').setOrigin(0.5, 1).setDepth(422);
+    this.add.image(690, 284, 'caramelo').setOrigin(0.5, 1).setDepth(284);
+    this.add.image(442, 252, 'poste').setOrigin(0.5, 1).setDepth(252);
+    ocupados.push({ x: 442, y: 245, r: 22 }, { x: 590, y: 432, r: 20 });
+
+    // --- Vegetación (sin pisar caminos, plaza ni edificios) ---
+    const libre = (x, y, m) => ocupados.every(o => Phaser.Math.Distance.Between(x, y, o.x, o.y) > o.r + m) &&
+      caminoPts.every(p => Phaser.Math.Distance.Between(x, y, p.x, p.y) > 20 + m);
+    const colocar = (clave, x, y, m) => { this.add.image(x, y, clave).setOrigin(0.5, 0.92).setDepth(y); ocupados.push({ x, y, r: m }); };
+    for (let i = 0, n = 0; i < 400 && n < 15; i++) {          // palmeras junto a la orilla
+      const a = rnd(0, Math.PI * 2), s = rnd(0.84, 0.93), p = contornoIsla(s, 360)[Math.floor(a / (Math.PI * 2) * 360)];
+      if (p.y > 80 && libre(p.x, p.y, 22)) { colocar('palmera', p.x, p.y, 18); n++; }
+    }
+    const interior = new Phaser.Geom.Polygon(contornoIsla(0.78));
+    const sembrar = (clave, cuantos, m) => {
+      for (let i = 0, n = 0; i < 600 && n < cuantos; i++) {
+        const x = rnd(80, 720), y = rnd(50, 470);
+        if (Phaser.Geom.Polygon.Contains(interior, x, y) && libre(x, y, m)) { colocar(clave, x, y, m); n++; }
+      }
+    };
+    sembrar('arbol', 14, 18); sembrar('arbusto', 14, 10); sembrar('roca', 9, 8);
+    for (let i = 0; i < 90; i++) {                             // flores
+      const [x, y] = enCesped();
+      if (!libre(x, y, 0)) continue;
+      tierra.fillStyle([0xFFFFFF, 0xF7D84A, 0xF29BB5, 0xC59BF2][i % 4]).fillCircle(x, y, 2.2);
+      tierra.fillStyle(0xF2C230).fillCircle(x, y, 0.9);
+    }
+
+    // --- Zonas: aro en el suelo, marcador flotante y cartel ---
+    this.zonas = ZONAS.map(z => {
+      const aro = this.add.ellipse(z.x, z.y, 96, 42, z.color, 0.18).setStrokeStyle(3, z.color, 0.9).setDepth(-5);
+      this.tweens.add({ targets: aro, scaleX: 1.08, scaleY: 1.08, alpha: 0.6, yoyo: true, repeat: -1, duration: 1000, ease: 'Sine.inOut' });
+      const txt = this.add.text(0, 0, z.icono, { fontFamily: 'Lato', fontSize: '13px', fontStyle: 'bold', color: '#ffffff' }).setOrigin(0.5);
+      const w = txt.width + 18, fondo = this.add.graphics();
+      fondo.fillStyle(0x000000, 0.25).fillRoundedRect(-w / 2, -12, w, 26, 13);
+      fondo.fillStyle(z.color).fillRoundedRect(-w / 2, -14, w, 26, 13).lineStyle(2, 0xffffff).strokeRoundedRect(-w / 2, -14, w, 26, 13);
+      fondo.fillStyle(z.color).fillTriangle(-6, 11, 6, 11, 0, 18);
+      txt.setY(-1);
+      const marca = this.add.container(z.x, z.y - 46, [fondo, txt]).setDepth(2000);
+      this.tweens.add({ targets: marca, y: z.y - 52, yoyo: true, repeat: -1, duration: 900, ease: 'Sine.inOut' });
+      const nombre = this.add.text(z.etiquetaX ?? z.x, z.etiquetaY, z.etiqueta, { fontFamily: 'Playfair Display', fontSize: '14px', fontStyle: 'bold', color: '#3B2A1A' }).setOrigin(0.5).setDepth(2001);
+      const b = nombre.getBounds(), cartel = this.add.graphics().setDepth(2000);
+      cartel.fillStyle(0x000000, 0.22).fillRoundedRect(b.x - 10, b.y - 1, b.width + 20, b.height + 6, 6);
+      cartel.fillStyle(0xF6E7C1).fillRoundedRect(b.x - 10, b.y - 4, b.width + 20, b.height + 6, 6);
+      cartel.lineStyle(2, 0x8B5A2B).strokeRoundedRect(b.x - 10, b.y - 4, b.width + 20, b.height + 6, 6);
+      const estrella = this.add.image(z.x, z.y - 50, 'estrella').setDepth(2002).setVisible(false);
+      const bolitas = this.add.graphics({ x: b.centerX, y: b.bottom + 14 }).setDepth(2001);
+      return { ...z, aro, marca, estrella, bolitas };
+    });
+
+    // --- Ambiente: barca, gaviotas, sombras de nubes ---
+    const barca = this.add.image(70, 465, 'barca').setDepth(-10);
+    this.tweens.add({ targets: barca, y: 459, angle: 4, yoyo: true, repeat: -1, duration: 1600, ease: 'Sine.inOut' });
+    this.gaviotas = [0, 1, 2].map(i => {
+      const g = this.add.image(rnd(0, 800), rnd(20, 80), 'gaviota').setDepth(3001).setScale(0.9 - i * 0.15);
+      this.tweens.add({ targets: g, scaleY: 0.4, yoyo: true, repeat: -1, duration: 260 + i * 40 });
+      g.vel = 0.035 + i * 0.01; g.base = g.y; return g;
+    });
+    this.nubes = [0, 1, 2].map(i => { const n = this.add.image(rnd(0, 800), 90 + i * 150, 'nube').setDepth(3000); n.vel = 0.008 + i * 0.003; return n; });
+
+    // --- Explorador ---
+    this.sombra = this.add.image(PLAZA.x, PLAZA.y, 'sombra').setDepth(-1).setScale(1.25);
+    this.jugador = this.add.image(PLAZA.x, PLAZA.y, 'explorador').setOrigin(0.5, 0.95).setDepth(PLAZA.y).setScale(1.25);
+    this.destino = null; this.zonaActual = null; this.paso = 0;
+
+    this.teclas = this.input.keyboard.addKeys('UP,DOWN,LEFT,RIGHT,W,A,S,D', false);
+    // Phaser cancela el mousedown y el campo enfocado no pierde el foco: se suelta a mano
+    this.input.on('pointerdown', ptr => { document.activeElement?.blur(); const d = dentroPaseo(ptr.worldX, ptr.worldY); this.destino = new Phaser.Math.Vector2(d.x, d.y); });
+    // Cinco bolitas bajo cada cartel con los últimos intentos de la zona
+    window.mundoBolitas = tipo => {
+      const z = this.zonas.find(z => z.tipo === tipo), g = z.bolitas, intentos = state.tipos[tipo].intentos;
+      const paso = 14, ancho = VENTANA * paso + 8, x0 = -(VENTANA - 1) * paso / 2;
+      g.clear();
+      g.fillStyle(0x000000, 0.2).fillRoundedRect(-ancho / 2, -9, ancho, 20, 10);
+      g.fillStyle(0xF6E7C1).fillRoundedRect(-ancho / 2, -11, ancho, 20, 10);
+      g.lineStyle(1.5, 0x8B5A2B).strokeRoundedRect(-ancho / 2, -11, ancho, 20, 10);
+      for (let i = 0; i < VENTANA; i++) {
+        const vacia = i >= intentos.length, c = vacia ? 0xFFFFFF : intentos[i] ? 0x2E7D4F : 0xA8321F;
+        g.fillStyle(c).fillCircle(x0 + i * paso, -1, 5);
+        g.lineStyle(1.5, vacia ? 0xC9B48A : c).strokeCircle(x0 + i * paso, -1, 5);
+      }
+    };
+    this.zonas.forEach(z => window.mundoBolitas(z.tipo));
+    window.mundoZonaSuperada = tipo => {
+      const z = this.zonas.find(z => z.tipo === tipo);
+      z.marca.setVisible(false); z.aro.setFillStyle(0xF2C230, 0.25).setStrokeStyle(3, 0xF2C230, 1);
+      z.estrella.setVisible(true);
+      this.tweens.add({ targets: z.estrella, scale: { from: 0, to: 1 }, angle: { from: -180, to: 0 }, duration: 700, ease: 'Back.out',
+        onComplete: () => this.tweens.add({ targets: z.estrella, y: z.y - 56, yoyo: true, repeat: -1, duration: 1000, ease: 'Sine.inOut' }) });
+      this.add.particles(z.x, z.y - 50, 'chispa', { speed: { min: 60, max: 180 }, lifespan: 800, scale: { start: 1, end: 0 }, emitting: false }).setDepth(2003).explode(30);
+    };
+  }
+  update(_, dt) {
+    const v = 0.2 * dt, k = this.teclas, j = this.jugador, x0 = j.x, y0 = j.y;
+    const escribiendo = ['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName);
+    let dx = 0, dy = 0;
+    if (!escribiendo) {
+      dx = (k.RIGHT.isDown || k.D.isDown) - (k.LEFT.isDown || k.A.isDown);
+      dy = (k.DOWN.isDown || k.S.isDown) - (k.UP.isDown || k.W.isDown);
+    }
+    if (dx || dy) { this.destino = null; const l = Math.hypot(dx, dy); j.x += dx / l * v; j.y += dy / l * v; }
+    else if (this.destino) {
+      const d = Phaser.Math.Distance.Between(j.x, j.y, this.destino.x, this.destino.y);
+      if (d < v) { j.setPosition(this.destino.x, this.destino.y); this.destino = null; }
+      else { const a = Phaser.Math.Angle.Between(j.x, j.y, this.destino.x, this.destino.y); j.x += Math.cos(a) * v; j.y += Math.sin(a) * v; }
+    }
+    const p = dentroPaseo(j.x, j.y); j.setPosition(p.x, p.y);
+    if (Math.hypot(j.x - x0, j.y - y0) > 0.05) {               // balanceo al andar y giro según la dirección
+      this.paso += dt;
+      if (Math.abs(j.x - x0) > 0.05) j.setFlipX(j.x < x0);
+      j.setAngle(Math.sin(this.paso / 70) * 7);
+    } else j.setAngle(0);
+    j.setDepth(j.y); this.sombra.setPosition(j.x, j.y);
+
+    this.gaviotas.forEach(g => { g.x += g.vel * dt; if (g.x > 830) g.x = -30; g.y = g.base + Math.sin(g.x / 40) * 6; });
+    this.nubes.forEach(n => { n.x += n.vel * dt; if (n.x > 900) n.x = -100; });
+
+    const z = this.zonas.find(z => Phaser.Math.Distance.Between(j.x, j.y, z.x, z.y) < 50);
+    if (z && z !== this.zonaActual) entrarZona(z.tipo);
+    this.zonaActual = z || null;
+  }
+}
+
+const game = new Phaser.Game({ type: Phaser.AUTO, parent: 'mundo', width: 800, height: 500, backgroundColor: '#2f78a8',
+  scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_HORIZONTALLY }, scene: Isla });
+actualizarMarcador();
+</script>
+</body>
+</html>
