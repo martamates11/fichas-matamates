@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Números Reales 3º ESO · Ficha interactiva</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script" async></script>
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --color-fondo: #F5F0E8;
+    --color-fondo-card: #FDFAF3;
+    --color-texto: #2C1F0E;
+    --color-texto-suave: #6B4F35;
+    --color-acento: #A0522D;
+    --color-acento-hover: #7B3B1E;
+    --color-borde: #C9A96E;
+    --color-borde-suave: #E0CEAA;
+    --color-cabecera: #3B2510;
+    --color-cabecera-txt: #F5EDD8;
+    --color-correcto: #2E6B3E;
+    --color-incorrecto: #8B1A1A;
+    --color-neutro: #E8DFC8;
+    --color-arrastre: #C9A96E;
+}
+
+body {
+    background: var(--color-fondo);
+    font-family: 'DM Sans', 'Inter', sans-serif;
+    color: var(--color-texto);
+    min-height: 100vh;
+}
+
+.recta-container {
+    background: var(--color-neutro);
+    border-radius: 1.5rem;
+    padding: 1rem;
+    margin: 1rem 0;
+    overflow-x: auto;
+    overflow-y: visible !important;
+}
+.recta-wrapper {
+    min-width: 650px;
+    position: relative;
+    margin: 20px 0;
+    overflow: visible !important;
+}
+.recta-linea {
+    position: relative;
+    height: 2px;
+    background: var(--color-texto);
+    width: 100%;
+    margin: 30px 0 20px 0;
+}
+.marcadores {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    top: -8px;
+    min-height: 60px !important;
+}
+.palito-wrapper {
+    position: relative;
+    width: 40px;
+    text-align: center;
+    display: inline-block;
+    min-height: 50px !important;
+    vertical-align: top;
+}
+.palito {
+    width: 1px;
+    height: 12px;
+    background: var(--color-texto);
+    position: relative;
+    top: 6px;
+    margin: 0 auto !important;
+}
+.palito.cero {
+    background: var(--color-acento);
+    height: 18px;
+    width: 2px;
+}
+.etiqueta-cero {
+    position: absolute;
+    bottom: -22px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: var(--color-acento);
+    white-space: nowrap;
+}
+.drop-zone-invisible {
+    position: absolute;
+    width: 40px;
+    height: 48px;
+    background: transparent;
+    top: -20px;
+    left: 0;
+    cursor: pointer;
+    z-index: 10 !important;
+    border-radius: 12px;
+}
+.drop-zone-invisible:hover {
+    background: rgba(160, 82, 45, 0.15);
+}
+.numero-colocado {
+    position: absolute;
+    top: -32px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--color-correcto);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    white-space: nowrap;
+    pointer-events: none;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    z-index: 20 !important;
+}
+
+.autoria {
+    background: var(--color-cabecera);
+    text-align: center;
+    padding: 6px;
+    font-size: 10px;
+    color: rgba(245, 240, 232, 0.7);
+}
+
+.ficha-wrapper {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.header {
+    background: var(--color-cabecera);
+    border-radius: 1.5rem;
+    padding: 1.8rem 2rem;
+    margin-bottom: 1.8rem;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.header h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--color-cabecera-txt);
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+}
+
+.header p { color: #C9B896; font-size: 0.9rem; }
+
+.header-badges {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+}
+
+.header-badge {
+    background: rgba(255,255,255,0.08);
+    padding: 0.25rem 0.75rem;
+    border-radius: 40px;
+    font-size: 0.7rem;
+    color: #E0CEAA;
+}
+
+.info-bar {
+    background: var(--color-fondo-card);
+    border-radius: 1.2rem;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    border: 1px solid var(--color-borde);
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--color-texto-suave);
+}
+
+.info-icon {
+    width: 30px;
+    height: 30px;
+    background: var(--color-fondo);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+
+.info-value {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--color-texto);
+}
+
+.name-section {
+    background: var(--color-fondo-card);
+    border-radius: 1rem;
+    padding: 0.8rem 1.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    border: 1px solid var(--color-borde-suave);
+}
+
+.name-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-texto-suave);
+}
+
+.name-input {
+    flex: 1;
+    max-width: 280px;
+    border: none;
+    border-bottom: 2px solid var(--color-borde);
+    padding: 0.5rem 0.25rem;
+    font-size: 0.95rem;
+    background: transparent;
+    color: var(--color-texto);
+}
+
+.name-input:focus {
+    outline: none;
+    border-bottom-color: var(--color-acento);
+}
+
+.ejercicio-card {
+    background: var(--color-fondo-card);
+    border-radius: 1.2rem;
+    padding: 1.5rem;
+    margin-bottom: 1.2rem;
+    border: 1px solid var(--color-borde);
+    transition: all 0.2s;
+}
+
+.ejercicio-card.superado {
+    border-left: 5px solid var(--color-correcto);
+    background: #FAF8F0;
+}
+
+.ejercicio-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.ejercicio-num {
+    background: var(--color-acento);
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.ejercicio-titulo {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.badge-superado {
+    background: var(--color-correcto);
+    color: white;
+    padding: 0.2rem 0.7rem;
+    border-radius: 40px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    margin-left: 0.5rem;
+}
+
+.racha-indicador {
+    margin-left: 10px;
+    font-size: 0.7rem;
+    color: var(--color-correcto);
+    background: rgba(46,107,62,0.15);
+    padding: 2px 10px;
+    border-radius: 20px;
+}
+
+.preguntas-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+.pregunta-item {
+    background: var(--color-fondo);
+    border-radius: 1rem;
+    padding: 1rem;
+    border: 1px solid var(--color-borde-suave);
+}
+.pregunta-enunciado {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+.pregunta-input {
+    border: 2px solid var(--color-borde);
+    border-radius: 10px;
+    padding: 6px 12px;
+    font-size: 0.9rem;
+    width: 120px;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.enunciado {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    margin: 0.8rem 0;
+    line-height: 1.6;
+}
+
+.checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin: 1rem 0;
+}
+.checkbox-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--color-fondo);
+    border: 1.5px solid var(--color-borde);
+    border-radius: 30px;
+    padding: 7px 16px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+}
+.checkbox-chip input { accent-color: var(--color-acento); cursor: pointer; }
+
+.select-signo {
+    border: 2px solid var(--color-borde);
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    background: white;
+    margin: 0 8px;
+    color: var(--color-texto);
+}
+
+.input-area {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin: 1rem 0;
+}
+.text-input, .number-input {
+    border: 2px solid var(--color-borde);
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-size: 0.9rem;
+    width: 200px;
+    font-family: 'JetBrains Mono', monospace;
+    background: white;
+}
+.number-input { width: 120px; text-align: center; }
+.btn-primary {
+    background: var(--color-acento);
+    border: none;
+    color: white;
+    padding: 8px 22px;
+    border-radius: 40px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.btn-primary:hover:not(:disabled) { background: var(--color-acento-hover); transform: scale(0.97); }
+.btn-primary:disabled { background: #C9A96E; cursor: not-allowed; }
+.btn-success {
+    background: var(--color-correcto);
+    border: none;
+    color: white;
+    padding: 8px 22px;
+    border-radius: 40px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.btn-success:disabled { background: #9CBBA3; cursor: not-allowed; }
+.sr-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--color-texto-suave);
+    display: block;
+    width: 100%;
+    margin-bottom: 4px;
+}
+.feedback {
+    margin-top: 10px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+.feedback-correcto { color: var(--color-correcto); background: rgba(46,107,62,0.1); padding: 6px 14px; border-radius: 30px; display: inline-block; }
+.feedback-error { color: var(--color-incorrecto); background: rgba(139,26,26,0.08); padding: 10px 16px; border-radius: 14px; display: inline-block; line-height:1.5; }
+hr { margin: 0.5rem 0; border: none; border-top: 1px solid var(--color-borde-suave); }
+.action-buttons { display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; flex-wrap: wrap; }
+.btn-large { background: var(--color-acento); color: white; border: none; padding: 12px 36px; font-size: 0.95rem; font-weight: 600; border-radius: 50px; cursor: pointer; }
+.btn-outline { background: transparent; border: 2px solid var(--color-borde); color: var(--color-texto-suave); padding: 10px 28px; border-radius: 50px; cursor: pointer; }
+
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+}
+.modal-overlay.show { display: flex; }
+.modal-card {
+    background: var(--color-fondo-card);
+    border-radius: 12px;
+    padding: 32px;
+    max-width: 460px;
+    width: 90%;
+    text-align: center;
+    border: 2px solid var(--color-borde);
+    animation: modalIn 0.3s ease;
+}
+.modal-card-name { background: var(--color-fondo-card); border-radius: 12px; padding: 32px; max-width: 420px; width: 90%; border: 2px solid var(--color-incorrecto); }
+@keyframes modalIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+.modal-close { float: right; background: none; border: none; font-size: 24px; cursor: pointer; color: var(--color-texto-suave); }
+.modal-grade { font-size: 52px; font-weight: 900; margin: 12px 0; }
+.modal-stats { border: 1.5px solid var(--color-borde); border-radius: 10px; padding: 12px; margin-bottom: 14px; font-family: monospace; font-size: 12px; text-align: left; background: rgba(0,0,0,0.02); }
+.recordatorio { font-size: 12px; margin-top: 8px; background: var(--color-neutro); border-radius: 20px; padding: 6px; color: var(--color-texto-suave); }
+</style>
+</head>
+<body>
+<div class="autoria">Material elaborado por Marta López de Letona Sánchez</div>
+<div class="ficha-wrapper">
+    <div class="header">
+        <h1>🔢 Números Reales</h1>
+        <p>Clasificación, recta real, fracciones, decimales y redondeo · 3º ESO</p>
+        <div class="header-badges"><span class="header-badge">🎯 2 aciertos consecutivos por tipo → superado</span><span class="header-badge">💡 Cada fallo resta 0.25 puntos</span></div>
+    </div>
+    <div class="info-bar">
+        <div class="info-item"><span class="info-icon">📊</span><span>Progreso: <span id="progresoCount" class="info-value">0</span>/8</span></div>
+        <div class="info-item"><span class="info-icon">❌</span><span>Fallos: <span id="fallosCount" class="info-value">0</span></span></div>
+        <div class="info-item"><span class="info-icon">⭐</span><span>Nota: <span id="notaActual" class="info-value">0.0</span>/10</span></div>
+    </div>
+    <div class="name-section"><label class="name-label" for="nombreAlumno">👤 ALUMNO/A</label><input type="text" id="nombreAlumno" class="name-input" placeholder="Escribe tu nombre..."></div>
+    <div id="ejerciciosContainer"></div>
+    <div class="action-buttons"><button class="btn-large" id="btnFinalizar">📋 Finalizar y calificar</button><button class="btn-outline" id="btnResetear">🔄 Nueva ficha</button></div>
+</div>
+
+<div id="modalNombre" class="modal-overlay"><div class="modal-card-name"><h3 style="color:var(--color-incorrecto);">✏️ Falta tu nombre</h3><p style="margin:10px 0">Para calificar necesitas identificarte.</p><input type="text" id="modalNombreInput" placeholder="Nombre completo" style="width:100%; padding:8px; margin:10px 0; border:1px solid var(--color-borde); border-radius:6px;"><button id="btnConfirmarNombre" style="background:var(--color-acento); color:white; padding:8px; width:100%; border:none; border-radius:6px; cursor:pointer;">Continuar</button></div></div>
+<div id="modalReset" class="modal-overlay"><div class="modal-card-name"><h3 style="color:var(--color-incorrecto);">🔄 ¿Reiniciar la ficha?</h3><p style="margin:10px 0">Se perderá todo el progreso actual: puntos, rachas y fallos. Esta acción no se puede deshacer.</p><div style="display:flex; gap:10px; margin-top:14px;"><button id="btnCancelarReset" style="flex:1; background:transparent; border:2px solid var(--color-borde); color:var(--color-texto-suave); padding:8px; border-radius:6px; cursor:pointer; font-weight:600;">Cancelar</button><button id="btnConfirmarReset" style="flex:1; background:var(--color-incorrecto); color:white; padding:8px; border:none; border-radius:6px; cursor:pointer; font-weight:600;">Sí, reiniciar</button></div></div></div>
+<div id="modalResultados" class="modal-overlay"><div class="modal-card" id="modalCard"><button class="modal-close" id="closeModal">✕</button><div id="modalNombreMostrar" style="font-weight:600;"></div><div style="font-size:0.85rem;">🔢 Números Reales · 3º ESO</div><div class="modal-grade" id="modalNota"></div><div class="modal-message" id="modalMensaje"></div><div class="modal-stats" id="modalStats"></div><div class="recordatorio">📸 Haz una captura de pantalla y entrégala en Google Classroom.</div><div class="modal-footer">Material elaborado por Marta López de Letona Sánchez</div></div></div>
+
+<script>
+let ejercicios = [];
+let fallosGlobales = 0;
+let rachaGlobal = 0;
+const startTime = Date.now();
+
+// ---------- utilidades de fracciones ----------
+function gcd(a,b){ a=Math.abs(a); b=Math.abs(b); while(b){ [a,b]=[b,a%b]; } return a||1; }
+function simplificar(n,d){
+    if(d<0){ n=-n; d=-d; }
+    const g = gcd(n,d);
+    return [n/g, d/g];
+}
+function parseFraccion(str){
+    if(str===undefined) return null;
+    const s = String(str).trim();
+    if(s==='') return null;
+    if(/^-?\d+\/-?\d+$/.test(s)){
+        const [n,d] = s.split('/').map(Number);
+        if(d===0) return null;
+        return [n,d];
+    }
+    if(/^-?\d+$/.test(s)){
+        return [parseInt(s,10), 1];
+    }
+    return null;
+}
+function fraccionesIguales(f1,f2){
+    if(!f1 || !f2) return false;
+    return f1[0]*f2[1] === f2[0]*f1[1];
+}
+function formatFraccion(n,d){
+    const [ns,ds] = simplificar(n,d);
+    return ds===1 ? `${ns}` : `${ns}/${ds}`;
+}
+// ---------- helpers de renderizado LaTeX (MathJax) ----------
+function TF(n,d){
+    // fracción SIMPLIFICADA en LaTeX
+    const [ns,ds] = simplificar(n,d);
+    if(ds===1) return `\\(${ns}\\)`;
+    const signo = ns<0 ? '-' : '';
+    return `\\(${signo}\\dfrac{${Math.abs(ns)}}{${ds}}\\)`;
+}
+function TFcompact(n,d){
+    // fracción compacta (\frac, no \dfrac) para espacios pequeños como la etiqueta sobre la recta
+    const [ns,ds] = simplificar(n,d);
+    if(ds===1) return `\\(${ns}\\)`;
+    const signo = ns<0 ? '-' : '';
+    return `\\(${signo}\\frac{${Math.abs(ns)}}{${ds}}\\)`;
+}
+function TFraw(n,d){
+    // fracción TAL CUAL se genera, sin simplificar, para mostrar el enunciado
+    const signo = (n<0) !== (d<0) ? '-' : '';
+    return `\\(${signo}\\dfrac{${Math.abs(n)}}{${Math.abs(d)}}\\)`;
+}
+function TDperiodicoPuro(entero, periodo){
+    return `\\(${entero},\\overline{${periodo}}\\)`;
+}
+function TDperiodicoMixto(entero, noPeriodica, periodo){
+    return `\\(${entero},${noPeriodica}\\overline{${periodo}}\\)`;
+}
+function tipearMath(){
+    if(window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+}
+
+/* Tras un fallo que enseña la solución: otro enunciado (y otra solución, si se pide),
+   para que copiar la solución mostrada no cuente como acierto. */
+const PASA_A_OTRO = '<br><br>👉 Ahora inténtalo con este nuevo.';
+const CLAVES_ESTADO = ['racha','superado','requiereDosAciertos','yaComprobado','colocado','posicionActual'];
+function regenerarDistinto(ej, solucion){
+    const firma = () => JSON.stringify(ej, (k,v) => CLAVES_ESTADO.includes(k) ? undefined : v);
+    const f0 = firma(), s0 = solucion ? solucion() : null;
+    for(let n=0;n<50;n++){
+        ej.generarNuevo();
+        if(firma() !== f0 && (!solucion || solucion() !== s0)) return;
+    }
+}
+const valorFr = f => String(f[0]/f[1]);
+
+class EjercicioBase {
+    constructor(requiereDosAciertos = true) {
+        this.racha = 0;
+        this.superado = false;
+        this.requiereDosAciertos = requiereDosAciertos;
+        this.generarNuevo();
+    }
+    generarNuevo() {}
+}
+
+// ---------- Ejercicio 1: clasificar números ----------
+class Ejercicio1 extends EjercicioBase {
+    generarNuevo() {
+        const categorias = ['natural','entero','decimalExacto','periodicoPuro','periodicoMixto','fraccion','irracional'];
+        const anterior = this.categoria;
+        let nueva;
+        do {
+            nueva = categorias[Math.floor(Math.random()*categorias.length)];
+        } while (nueva === anterior);
+        this.categoria = nueva;
+        this.yaComprobado = false;
+        switch(this.categoria){
+            case 'natural': {
+                const n = Math.floor(Math.random()*90)+1;
+                this.display = `${n}`;
+                this.correctas = ['N','Z','Q'];
+                this.explicacion = `📖 <strong>${n}</strong> es un número natural (positivo y sin decimales), por lo que también es entero y racional. No es irracional: se puede escribir como fracción exacta (${n}/1).`;
+                break;
+            }
+            case 'entero': {
+                const n = -(Math.floor(Math.random()*50)+1);
+                this.display = `${n}`;
+                this.correctas = ['Z','Q'];
+                this.explicacion = `📖 <strong>${n}</strong> es un número entero negativo. No es natural (los naturales son 0, 1, 2, 3...). Sí es racional porque se puede escribir como ${n}/1.`;
+                break;
+            }
+            case 'decimalExacto': {
+                const parteEntera = Math.floor(Math.random()*20);
+                const numDecimales = Math.floor(Math.random()*3)+1;
+                let dec = '';
+                for(let i=0;i<numDecimales;i++) dec += Math.floor(Math.random()*10);
+                if(dec.endsWith('0')) dec = dec.slice(0,-1) + (Math.floor(Math.random()*9)+1);
+                this.display = `${parteEntera},${dec}`;
+                this.correctas = ['Q'];
+                this.explicacion = `📖 <strong>${this.display}</strong> es un decimal exacto (tiene un número finito de cifras decimales), por lo que es racional. No es entero porque tiene parte decimal distinta de cero.`;
+                break;
+            }
+            case 'periodicoPuro': {
+                const parteEntera = Math.floor(Math.random()*10);
+                const periodoLen = Math.floor(Math.random()*2)+1;
+                let periodo = '';
+                for(let i=0;i<periodoLen;i++) periodo += Math.floor(Math.random()*10);
+                if(periodo.endsWith('0')) periodo = periodo.slice(0,-1) + (Math.floor(Math.random()*9)+1);
+                this.display = TDperiodicoPuro(parteEntera, periodo);
+                this.correctas = ['Q'];
+                this.explicacion = `📖 Es un decimal periódico puro (el periodo empieza justo tras la coma). Todo decimal periódico es racional: siempre se puede escribir como fracción.`;
+                break;
+            }
+            case 'periodicoMixto': {
+                const parteEntera = Math.floor(Math.random()*10);
+                const noPeriodica = `${Math.floor(Math.random()*9)+1}`;
+                const periodoLen = Math.floor(Math.random()*2)+1;
+                let periodo = '';
+                for(let i=0;i<periodoLen;i++) periodo += Math.floor(Math.random()*10);
+                if(periodo.endsWith('0')) periodo = periodo.slice(0,-1) + (Math.floor(Math.random()*9)+1);
+                this.display = TDperiodicoMixto(parteEntera, noPeriodica, periodo);
+                this.correctas = ['Q'];
+                this.explicacion = `📖 Es un decimal periódico mixto (hay cifras entre la coma y el periodo). Sigue siendo racional: todo decimal periódico se puede escribir como fracción.`;
+                break;
+            }
+            case 'fraccion': {
+                let num = Math.floor(Math.random()*20)-10;
+                while(num===0) num = Math.floor(Math.random()*20)-10;
+                const den = Math.floor(Math.random()*9)+2;
+                this.display = TFraw(num,den);
+                this.correctas = ['Q'];
+                this.explicacion = `📖 Una fracción con numerador y denominador enteros (denominador ≠ 0) es, por definición, un número racional.`;
+                break;
+            }
+            case 'irracional': {
+                const opciones = ['\\(\\pi\\)','\\(\\sqrt{2}\\)','\\(\\sqrt{3}\\)','\\(\\sqrt{5}\\)','\\(\\sqrt{6}\\)','\\(\\sqrt{7}\\)','\\(\\sqrt{10}\\)','1,101001000100001...'];
+                this.display = opciones[Math.floor(Math.random()*opciones.length)];
+                this.correctas = ['I'];
+                this.explicacion = `📖 <strong>${this.display}</strong> tiene infinitas cifras decimales que no se repiten en ningún periodo, por lo que no puede escribirse como fracción: es irracional.`;
+                break;
+            }
+        }
+    }
+    verificar(seleccion) {
+        if(this.superado) return {correcto:false, superado:true};
+        if(!seleccion || seleccion.length===0) return {correcto:false, superado:false, msg:"⚠️ Marca al menos una casilla antes de comprobar. No cuenta como fallo."};
+        const setSel = [...new Set(seleccion)].sort().join('');
+        const setCorr = [...this.correctas].sort().join('');
+        if(setSel === setCorr && !this.yaComprobado){
+            this.yaComprobado = true;
+            return {correcto:true, superado:false, msg:"✓ ¡Correcto! Ahora pulsa '➡️ Siguiente número'."};
+        } else if(setSel !== setCorr) {
+            this.yaComprobado = false;
+            this.racha = 0; rachaGlobal = 0; fallosGlobales++;
+            const msg = `❌ Solución del ejercicio anterior: la clasificación correcta es <strong>${this.correctas.join(', ')}</strong>.<br>${this.explicacion}`;
+            // Pocas clasificaciones posibles: cambia el número, no se exige otra clasificación
+            regenerarDistinto(this);
+            return {correcto:false, superado:false, msg: msg + PASA_A_OTRO, nuevoEnunciado:true};
+        } else {
+            return {correcto:false, superado:false, msg:"⚠️ Ya has comprobado este número. Pulsa 'Siguiente número' para continuar."};
+        }
+    }
+    siguiente() {
+        if(this.superado) return {superado:true};
+        if(this.yaComprobado){
+            this.racha++; rachaGlobal = this.racha; this.yaComprobado = false;
+            if(this.racha>=2){
+                this.superado = true;
+                return {superado:true, msg:"🎉 ¡Superado! Distingues bien los conjuntos numéricos."};
+            }
+            this.generarNuevo();
+            return {superado:false, msg:`✓ ¡Correcto! (${this.racha}/2) → Nuevo número.`, nuevoEjercicio:true};
+        }
+        return {superado:false, msg:"⚠️ Primero comprueba tu clasificación."};
+    }
+    getHTML(idx) {
+        const st = ejercicios[idx];
+        const letras = [['N','Natural'],['Z','Entero'],['Q','Racional'],['I','Irracional']];
+        return `<div class="ejercicio-card ${st.superado ? 'superado' : ''}">
+            <div class="ejercicio-header">
+                <span class="ejercicio-num">1</span>
+                <span class="ejercicio-titulo">Clasificar números</span>
+                ${st.superado ? '<span class="badge-superado">✓ Superado</span>' : ''}
+                ${!st.superado && st.racha>0 ? `<span class="racha-indicador">🎯 Racha: ${st.racha}/2</span>` : ''}
+                ${st.yaComprobado ? `<span class="racha-indicador" style="background:#2E6B3E; color:white;">✅ Acierto pendiente - pulsa "Siguiente número"</span>` : ''}
+            </div>
+            <div class="enunciado">Marca todos los conjuntos a los que pertenece: <strong style="font-size:1.2rem;">${st.display}</strong></div>
+            <div class="checkbox-group">
+                ${letras.map(([code,nombre]) => `<label class="checkbox-chip"><input type="checkbox" value="${code}" class="chk-e1" ${st.superado||st.yaComprobado?'disabled':''}> ${code} · ${nombre}</label>`).join('')}
+            </div>
+            <div class="input-area">
+                <button class="btn-primary" onclick="verificarEjercicio(0)" ${st.superado||st.yaComprobado?'disabled':''}>✅ Comprobar clasificación</button>
+                <button class="btn-success" onclick="siguienteEj1()" ${st.superado?'disabled':''}>➡️ Siguiente número</button>
+            </div>
+            <div class="feedback" id="fb_e1" aria-live="polite"></div>
+        </div>`;
+    }
+}
+
+// ---------- Ejercicio 2: ubicar una fracción en la recta ----------
+class Ejercicio2 extends EjercicioBase {
+    generarNuevo() {
+        const denominadores = [2,3,4,5,6];
+        this.den = denominadores[Math.floor(Math.random()*denominadores.length)];
+        let k;
+        do { k = Math.floor(Math.random()*(2*this.den+1)) - this.den; } while(k===0 || k===this.den || k===-this.den);
+        this.num = k;
+        this.colocado = false;
+        this.posicionActual = null;
+        this.yaComprobado = false;
+    }
+    verificar() {
+        if(this.superado) return {correcto:false, superado:true};
+        if(!this.colocado) return {correcto:false, superado:false, msg:"⚠️ Haz clic en el punto de la recta donde va la fracción antes de comprobar. No cuenta como fallo."};
+        if(this.posicionActual === this.num && !this.yaComprobado){
+            this.yaComprobado = true;
+            return {correcto:true, superado:false, msg:"✓ ¡Correcto! Ahora pulsa '➡️ Siguiente fracción'."};
+        } else if(this.posicionActual !== this.num) {
+            this.yaComprobado = false;
+            this.racha = 0; rachaGlobal = 0; fallosGlobales++;
+            return {correcto:false, superado:false, msg:`❌ Esa no es la posición de ${TF(this.num,this.den)}. Divide cada unidad en ${this.den} partes iguales y cuenta ${Math.abs(this.num)} de esas partes hacia la ${this.num<0?'izquierda':'derecha'} del 0.`};
+        } else {
+            return {correcto:false, superado:false, msg:"⚠️ Ya has comprobado esta posición. Pulsa 'Siguiente fracción' para continuar."};
+        }
+    }
+    siguiente() {
+        if(this.superado) return {superado:true};
+        if(this.yaComprobado){
+            this.racha++; rachaGlobal = this.racha; this.yaComprobado = false;
+            if(this.racha>=2){
+                this.superado = true;
+                return {superado:true, msg:"🎉 ¡Superado! Sitúas bien las fracciones en la recta."};
+            }
+            this.generarNuevo();
+            return {superado:false, msg:`✓ ¡Correcto! (${this.racha}/2) → Nueva fracción.`, nuevoEjercicio:true};
+        }
+        return {superado:false, msg:"⚠️ Primero coloca la fracción y pulsa 'Comprobar posición'."};
+    }
+    getHTML(idx) {
+        const st = ejercicios[idx];
+        const posiciones = [];
+        for(let i=-st.den; i<=st.den; i++) posiciones.push(i);
+        return `<div class="ejercicio-card ${st.superado?'superado':''}">
+            <div class="ejercicio-header">
+                <span class="ejercicio-num">2</span>
+                <span class="ejercicio-titulo">Ubicar una fracción en la recta</span>
+                ${st.superado?'<span class="badge-superado">✓ Superado</span>':''}
+                ${!st.superado && st.racha>0 ? `<span class="racha-indicador">🎯 Racha: ${st.racha}/2</span>` : ''}
+                ${st.yaComprobado ? `<span class="racha-indicador" style="background:#2E6B3E; color:white;">✅ Acierto pendiente - pulsa "Siguiente fracción"</span>` : ''}
+            </div>
+            <div class="enunciado">Haz clic en el punto de la recta que corresponde a: <strong style="font-size:1.2rem;">${TF(st.num, st.den)}</strong></div>
+            <div class="recta-container">
+                <div class="recta-wrapper">
+                    <div class="recta-linea"></div>
+                    <div class="marcadores">
+                        ${posiciones.map(i => {
+                            const esEntero = i % st.den === 0;
+                            const valorEntero = i / st.den;
+                            const marcado = st.colocado && st.posicionActual === i;
+                            return `<div class="palito-wrapper">
+                                <div class="palito ${esEntero ? 'cero' : ''}"></div>
+                                ${esEntero ? `<div class="etiqueta-cero">${valorEntero}</div>` : ''}
+                                ${marcado ? `<div class="numero-colocado">${TFcompact(st.num, st.den)}</div>` : ''}
+                                <div class="drop-zone-invisible" onclick="seleccionarPosicionEj2(${i})"></div>
+                            </div>`;
+                        }).join('')}
+                    </div>
+                </div>
+                <div class="input-area">
+                    <button class="btn-primary" onclick="verificarEjercicio(1)" ${st.superado||st.yaComprobado?'disabled':''}>✅ Comprobar posición</button>
+                    <button class="btn-success" onclick="siguienteEj2()" ${st.superado?'disabled':''}>➡️ Siguiente fracción</button>
+                </div>
+                <div class="feedback" id="fb_e2" aria-live="polite"></div>
+            </div>
+        </div>`;
+    }
+}
+
+// ---------- Ejercicio 3: comparar fracciones ----------
+class Ejercicio3 extends EjercicioBase {
+    generarNuevo(){
+        this.p1 = this.generarPar();
+        this.p2 = this.generarPar();
+        this.yaComprobado = false;
+    }
+    generarPar(){
+        const signo = Math.random()<0.5 ? 1 : -1;
+        const den1 = Math.floor(Math.random()*10)+2;
+        let den2 = Math.floor(Math.random()*10)+2;
+        while(den2===den1) den2 = Math.floor(Math.random()*10)+2;
+        const num1 = signo*(Math.floor(Math.random()*7)+1);
+        const num2 = signo*(Math.floor(Math.random()*7)+1);
+        const val1 = num1/den1, val2 = num2/den2;
+        const correcto = val1 === val2 ? '=' : (val1 > val2 ? '>' : '<');
+        const comun = den1*den2;
+        const num1Com = num1*den2, num2Com = num2*den1;
+        const explicacion = `📖 Reducimos a común denominador (${comun}): ${TFraw(num1,den1)} = ${TFraw(num1Com,comun)} y ${TFraw(num2,den2)} = ${TFraw(num2Com,comun)}. Comparando numeradores: ${num1Com} ${correcto} ${num2Com}.`;
+        return {num1,den1,num2,den2,correcto,explicacion};
+    }
+    verificar(r1,r2){
+        if(this.superado) return {correcto:false, superado:true};
+        if(!r1 || !r2) return {correcto:false, superado:false, msg:"⚠️ Selecciona el signo en las dos comparaciones antes de comprobar. No cuenta como fallo."};
+        const ok1 = r1===this.p1.correcto, ok2 = r2===this.p2.correcto;
+        if(ok1 && ok2 && !this.yaComprobado){
+            this.yaComprobado = true;
+            return {correcto:true, superado:false, msg:"✓ ¡Correcto! Ahora pulsa '➡️ Siguiente ronda'."};
+        } else if(!ok1 || !ok2){
+            this.yaComprobado = false; this.racha=0; rachaGlobal=0; fallosGlobales++;
+            let errores = [];
+            if(!ok1) errores.push(`${TFraw(this.p1.num1,this.p1.den1)} __ ${TFraw(this.p1.num2,this.p1.den2)} → signo correcto: ${this.p1.correcto}<br>${this.p1.explicacion}`);
+            if(!ok2) errores.push(`${TFraw(this.p2.num1,this.p2.den1)} __ ${TFraw(this.p2.num2,this.p2.den2)} → signo correcto: ${this.p2.correcto}<br>${this.p2.explicacion}`);
+            // Solo tres signos posibles: cambian las fracciones, no se exige otro signo
+            regenerarDistinto(this);
+            return {correcto:false, superado:false, msg:`❌ Solución del ejercicio anterior:<br>${errores.join('<br><br>')}` + PASA_A_OTRO, nuevoEnunciado:true};
+        } else {
+            return {correcto:false, superado:false, msg:"⚠️ Ya has comprobado estas comparaciones. Pulsa 'Siguiente ronda' para continuar."};
+        }
+    }
+    siguienteRonda(){
+        if(this.superado) return {superado:true};
+        if(this.yaComprobado){
+            this.racha++; rachaGlobal=this.racha; this.yaComprobado=false;
+            if(this.racha>=2){ this.superado=true; return {superado:true, msg:"🎉 ¡Superado! Comparas bien fracciones."}; }
+            this.generarNuevo();
+            return {superado:false, msg:`✓ ¡Correcto! (${this.racha}/2) → Nueva ronda.`, nuevoEjercicio:true};
+        }
+        return {superado:false, msg:"⚠️ Responde las dos comparaciones y pulsa 'Comprobar ambas'."};
+    }
+    getHTML(idx){
+        const st = ejercicios[idx];
+        if(st.superado){
+            return `<div class="ejercicio-card superado"><div class="ejercicio-header"><span class="ejercicio-num">3</span><span class="ejercicio-titulo">Comparar fracciones</span><span class="badge-superado">✓ Superado</span></div><div class="feedback-correcto">🎉 Ejercicio superado. ¡Bien hecho!</div></div>`;
+        }
+        return `<div class="ejercicio-card">
+            <div class="ejercicio-header">
+                <span class="ejercicio-num">3</span>
+                <span class="ejercicio-titulo">Comparar fracciones</span>
+                ${st.racha>0 ? `<span class="racha-indicador">🎯 Racha: ${st.racha}/2</span>` : ''}
+                ${st.yaComprobado ? `<span class="racha-indicador" style="background:#2E6B3E; color:white;">✅ Acierto pendiente - pulsa "Siguiente ronda"</span>` : '<span class="racha-indicador" style="background:#E8DFC8; color:#6B4F35;">📝 Responde las 2 comparaciones</span>'}
+            </div>
+            <div class="preguntas-container">
+                <div class="pregunta-item">
+                    <div class="pregunta-enunciado">⚖️ ${TFraw(st.p1.num1,st.p1.den1)} <select id="e3_signo1" aria-label="Signo de comparación 1" class="select-signo" ${st.yaComprobado?'disabled':''}><option value="">?</option><option value="<">&lt;</option><option value="=">=</option><option value=">">&gt;</option></select> ${TFraw(st.p1.num2,st.p1.den2)}</div>
+                </div>
+                <div class="pregunta-item">
+                    <div class="pregunta-enunciado">⚖️ ${TFraw(st.p2.num1,st.p2.den1)} <select id="e3_signo2" aria-label="Signo de comparación 2" class="select-signo" ${st.yaComprobado?'disabled':''}><option value="">?</option><option value="<">&lt;</option><option value="=">=</option><option value=">">&gt;</option></select> ${TFraw(st.p2.num2,st.p2.den2)}</div>
+                </div>
+            </div>
+            <div class="input-area">
+                <button class="btn-primary" onclick="verificarEjercicio(2)" ${st.yaComprobado?'disabled':''}>✅ Comprobar ambas</button>
+                <button class="btn-success" onclick="siguienteRondaEj3()">➡️ Siguiente ronda</button>
+            </div>
+            <div class="feedback" id="fb_e3" aria-live="polite"></div>
+        </div>`;
+    }
+}
+
+// ---------- Ejercicio 4: suma y resta de 3 fracciones ----------
+class Ejercicio4 extends EjercicioBase {
+    generarNuevo(){
+        const randDen = () => [2,3,4,5,6,8,9,10][Math.floor(Math.random()*8)];
+        this.d1 = randDen();
+        let d2 = randDen(); while(d2===this.d1) d2 = randDen();
+        let d3 = randDen(); while(d3===this.d1 || d3===d2) d3 = randDen();
+        this.d2 = d2; this.d3 = d3;
+        this.n1 = Math.floor(Math.random()*9)+1;
+        this.n2 = Math.floor(Math.random()*9)+1;
+        this.n3 = Math.floor(Math.random()*9)+1;
+        this.op1 = Math.random()<0.5?'+':'-';
+        this.op2 = Math.random()<0.5?'+':'-';
+        const comun = this.d1*this.d2*this.d3;
+        const t1 = this.n1*(comun/this.d1);
+        const t2 = this.n2*(comun/this.d2);
+        const t3 = this.n3*(comun/this.d3);
+        const numerador = t1 + (this.op1==='+'?1:-1)*t2 + (this.op2==='+'?1:-1)*t3;
+        const [ns,ds] = simplificar(numerador, comun);
+        this.resultado = [ns,ds];
+        this.expresion = `${TFraw(this.n1,this.d1)} ${this.op1} ${TFraw(this.n2,this.d2)} ${this.op2} ${TFraw(this.n3,this.d3)}`;
+        this.explicacion = `📖 Común denominador: ${comun}.<br>🔢 ${t1} ${this.op1} ${t2} ${this.op2} ${t3} = ${numerador} → ${TFraw(numerador,comun)} = ${TF(ns,ds)}`;
+        this.yaComprobado = false;
+    }
+    verificar(r){
+        if(this.superado) return {correcto:false, superado:true};
+        const f = parseFraccion(r);
+        if(!f) return {correcto:false, superado:false, msg:"⚠️ Escribe el resultado como fracción, formato num/den (ej: 7/12). No cuenta como fallo."};
+        const ok = fraccionesIguales(f, this.resultado);
+        if(ok && !this.yaComprobado){
+            this.yaComprobado = true;
+            return {correcto:true, superado:false, msg:"✓ ¡Correcto! Ahora pulsa '➡️ Siguiente pregunta'."};
+        } else if(!ok){
+            this.yaComprobado = false; this.racha=0; rachaGlobal=0; fallosGlobales++;
+            const msg = `❌ Solución del ejercicio anterior: el resultado correcto es ${TF(this.resultado[0],this.resultado[1])} (vale también sin simplificar).<br>${this.explicacion}`;
+            regenerarDistinto(this, () => valorFr(this.resultado));
+            return {correcto:false, superado:false, msg: msg + PASA_A_OTRO, nuevoEnunciado:true};
+        } else {
+            return {correcto:false, superado:false, msg:"⚠️ Ya has comprobado esta pregunta. Pulsa 'Siguiente pregunta' para continuar."};
+        }
+    }
+    siguiente(){
+        if(this.superado) return {superado:true};
+        if(this.yaComprobado){
+            this.racha++; rachaGlobal=this.racha; this.yaComprobado=false;
+            if(this.racha>=2){ this.superado=true; return {superado:true, msg:"🎉 ¡Superado! Manejas bien la suma y resta de fracciones."}; }
+            this.generarNuevo();
+            return {superado:false, msg:`✓ ¡Correcto! (${this.racha}/2) → Nueva pregunta.`, nuevoEjercicio:true};
+        }
+        return {superado:false, msg:"⚠️ Primero responde y pulsa 'Comprobar'."};
+    }
+    getHTML(idx){
+        const st = ejercicios[idx];
+        return `<div class="ejercicio-card ${st.superado?'superado':''}">
+            <div class="ejercicio-header">
+                <span class="ejercicio-num">4</span>
+                <span class="ejercicio-titulo">Suma y resta de fracciones</span>
+                ${st.superado?'<span class="badge-superado">✓ Superado</span>':''}
+                ${!st.superado && st.racha>0 ? `<span class="racha-indicador">🎯 Racha: ${st.racha}/2</span>` : ''}
+                ${st.yaComprobado ? `<span class="racha-indicador" style="background:#2E6B3E; color:white;">✅ Acierto pendiente - pulsa "Siguiente pregunta"</span>` : ''}
+            </div>
+            <div class="enunciado">${st.expresion} =</div>
+            <div class="input-area">
+                <label class="sr-label" for="e4_resp">Resultado (formato num/den):</label>
+                <input type="text" id="e4_resp" class="text-input" placeholder="ej: 7/12" ${st.yaComprobado||st.superado?'disabled':''}>
+                <button class="btn-primary" onclick="verificarEjercicio(3)" ${st.yaComprobado||st.superado?'disabled':''}>✅ Comprobar</button>
+                <button class="btn-success" onclick="siguienteEj4()" ${st.superado?'disabled':''}>➡️ Siguiente pregunta</button>
+            </div>
+            <div class="feedback" id="fb_e4" aria-live="polite"></div>
+        </div>`;
+    }
+}
+
+// ---------- Ejercicio 5: multiplicación y división de fracciones ----------
+class Ejercicio5 extends EjercicioBase {
+    generarNuevo(){
+        this.mult = this.generarMultiplicacion();
+        this.div = this.generarDivision();
+        this.yaComprobado = false;
+    }
+    generarMultiplicacion(){
+        const n1=Math.floor(Math.random()*9)+1, d1=Math.floor(Math.random()*9)+2;
+        const n2=Math.floor(Math.random()*9)+1, d2=Math.floor(Math.random()*9)+2;
+        const [ns,ds] = simplificar(n1*n2, d1*d2);
+        return {n1,d1,n2,d2,resultado:[ns,ds], explicacion:`📖 Se multiplican numeradores y denominadores: (${n1}·${n2})/(${d1}·${d2}) = ${TFraw(n1*n2,d1*d2)} = ${TF(ns,ds)}`};
+    }
+    generarDivision(){
+        const n1=Math.floor(Math.random()*9)+1, d1=Math.floor(Math.random()*9)+2;
+        const n2=Math.floor(Math.random()*9)+1, d2=Math.floor(Math.random()*9)+2;
+        const [ns,ds] = simplificar(n1*d2, d1*n2);
+        return {n1,d1,n2,d2,resultado:[ns,ds], explicacion:`📖 Se multiplica en cruz (se invierte la segunda fracción): (${n1}·${d2})/(${d1}·${n2}) = ${TFraw(n1*d2,d1*n2)} = ${TF(ns,ds)}`};
+    }
+    verificar(r1,r2){
+        if(this.superado) return {correcto:false, superado:true};
+        const f1 = parseFraccion(r1), f2 = parseFraccion(r2);
+        if(!f1 || !f2) return {correcto:false, superado:false, msg:"⚠️ Escribe las dos respuestas como fracción, formato num/den, antes de comprobar. No cuenta como fallo."};
+        const ok1 = fraccionesIguales(f1, this.mult.resultado);
+        const ok2 = fraccionesIguales(f2, this.div.resultado);
+        if(ok1 && ok2 && !this.yaComprobado){
+            this.yaComprobado = true;
+            return {correcto:true, superado:false, msg:"✓ ¡Correcto! Ahora pulsa '➡️ Siguiente ronda'."};
+        } else if(!ok1 || !ok2){
+            this.yaComprobado = false; this.racha=0; rachaGlobal=0; fallosGlobales++;
+            let errores=[];
+            if(!ok1) errores.push(`Multiplicación ${TFraw(this.mult.n1,this.mult.d1)} · ${TFraw(this.mult.n2,this.mult.d2)} → resultado correcto: ${TF(this.mult.resultado[0],this.mult.resultado[1])} (vale también sin simplificar)<br>${this.mult.explicacion}`);
+            if(!ok2) errores.push(`División ${TFraw(this.div.n1,this.div.d1)} : ${TFraw(this.div.n2,this.div.d2)} → resultado correcto: ${TF(this.div.resultado[0],this.div.resultado[1])} (vale también sin simplificar)<br>${this.div.explicacion}`);
+            regenerarDistinto(this, () => JSON.stringify([valorFr(this.mult.resultado), valorFr(this.div.resultado)]));
+            return {correcto:false, superado:false, msg:`❌ Solución del ejercicio anterior:<br>${errores.join('<br><br>')}` + PASA_A_OTRO, nuevoEnunciado:true};
+        } else {
+            return {correcto:false, superado:false, msg:"⚠️ Ya has comprobado estas operaciones. Pulsa 'Siguiente ronda' para continuar."};
+        }
+    }
+    siguienteRonda(){
+        if(this.superado) return {superado:true};
+        if(this.yaComprobado){
+            this.racha++; rachaGlobal=this.racha; this.yaComprobado=false;
+            if(this.racha>=2){ this.superado=true; return {superado:true, msg:"🎉 ¡Superado! Dominas la multiplicación y división de fracciones."}; }
+            this.generarNuevo();
+            return {superado:false, msg:`✓ ¡Correcto! (${this.racha}/2) → Nueva ronda.`, nuevoEjercicio:true};
+        }
+        return {superado:false, msg:"⚠️ Responde las dos operaciones y pulsa 'Comprobar ambas'."};
+    }
+    getHTML(idx){
+        const st = ejercicios[idx];
+        if(st.superado){
+            return `<div class="ejercicio-card superado"><div class="ejercicio-header"><span class="ejercicio-num">5</span><span class="ejercicio-titulo">Multiplicación y división de fracciones</span><span class="badge-superado">✓ Superado</span></div><div class="feedback-correcto">🎉 Ejercicio superado. ¡Bien hecho!</div></div>`;
+        }
+        return `<div class="ejercicio-card">
+            <div class="ejercicio-header">
+                <span class="ejercicio-num">5</span>
+                <span class="ejercicio-titulo">Multiplicación y división de fracciones</span>
+                ${st.racha>0 ? `<span class="racha-indicador">🎯 Racha: ${st.racha}/2</span>` : ''}
+                ${st.yaComprobado ? `<span class="racha-indicador" style="background:#2E6B3E; color:white;">✅ Acierto pendiente - pulsa "Siguiente ronda"</span>` : '<span class="racha-indicador" style="background:#E8DFC8; color:#6B4F35;">📝 Responde las 2 operaciones</span>'}
+            </div>
+            <div class="preguntas-container">
+                <div class="pregunta-item">
+                    <div class="pregunta-enunciado">✖️ ${TFraw(st.mult.n1,st.mult.d1)} · ${TFraw(st.mult.n2,st.mult.d2)} =</div>
+                    <label class="sr-label" for="e5_resp1">Resultado (num/den):</label>
+                    <input type="text" id="e5_resp1" class="pregunta-input" placeholder="num/den" ${st.yaComprobado?'disabled':''}>
+                </div>
+                <div class="pregunta-item">
+                    <div class="pregunta-enunciado">➗ ${TFraw(st.div.n1,st.div.d1)} : ${TFraw(st.div.n2,st.div.d2)} =</div>
+                    <label class="sr-label" for="e5_resp2">Resultado (num/den):</label>
+                    <input type="text" id="e5_resp2" class="pregunta-input" placeholder="num/den" ${st.yaComprobado?'disabled':''}>
+                </div>
+            </div>
+            <div class="input-area">
+                <button class="btn-primary" onclick="verificarEjercicio(4)" ${st.yaComprobado?'disabled':''}>✅ Comprobar ambas</button>
+                <button class="btn-success" onclick="siguienteRondaEj5()">➡️ Siguiente ronda</button>
+            </div>
+            <div class="feedback" id="fb_e5" aria-live="polite"></div>
+        </div>`;
+    }
+}
+
+// ---------- Ejercicio 6: decimal a fracción ----------
+class Ejercicio6 extends EjercicioBase {
+    generarNuevo(){
+        const tipos = ['exacto','puro','mixto'];
+        const t1 = tipos[Math.floor(Math.random()*tipos.length)];
+        let t2 = tipos[Math.floor(Math.random()*tipos.length)];
+        while(t2===t1) t2 = tipos[Math.floor(Math.random()*tipos.length)];
+        this.p1 = this.generarDecimal(t1);
+        this.p2 = this.generarDecimal(t2);
+        this.yaComprobado = false;
+    }
+    generarDecimal(tipo){
+        if(tipo==='exacto'){
+            const E = Math.floor(Math.random()*9);
+            const dLen = Math.floor(Math.random()*2)+1;
+            let D = '';
+            for(let i=0;i<dLen;i++) D += Math.floor(Math.random()*10);
+            if(D.endsWith('0')) D = D.slice(0,-1)+(Math.floor(Math.random()*9)+1);
+            const num = parseInt(`${E}${D}`,10);
+            const den = Math.pow(10, dLen);
+            const [ns,ds] = simplificar(num,den);
+            return {tipo, display:`\\(${E},${D}\\)`, resultado:[ns,ds], explicacion:`📖 Decimal exacto: el número sin la coma sobre un 1 seguido de tantos ceros como cifras decimales: ${TFraw(parseInt(`${E}${D}`,10),den)} = ${TF(ns,ds)}`};
+        }
+        if(tipo==='puro'){
+            const E = Math.floor(Math.random()*9);
+            const pLen = Math.floor(Math.random()*2)+1;
+            let P = '';
+            for(let i=0;i<pLen;i++) P += Math.floor(Math.random()*10);
+            if(P.endsWith('0')) P = P.slice(0,-1) + (Math.floor(Math.random()*9)+1);
+            const num = parseInt(`${E}${P}`,10) - E;
+            const den = Math.pow(10,pLen)-1;
+            const [ns,ds] = simplificar(num,den);
+            return {tipo, display:TDperiodicoPuro(E,P), resultado:[ns,ds], explicacion:`📖 Periódico puro: numerador = parte entera+periodo menos parte entera (${E}${P} − ${E} = ${num}); denominador = tantos 9 como cifras del periodo (${den}) → ${TFraw(num,den)} = ${TF(ns,ds)}`};
+        }
+        const E = Math.floor(Math.random()*9);
+        const nLen = Math.floor(Math.random()*2)+1;
+        let N = '';
+        for(let i=0;i<nLen;i++) N += Math.floor(Math.random()*10);
+        const pLen = Math.floor(Math.random()*2)+1;
+        let P = '';
+        for(let i=0;i<pLen;i++) P += Math.floor(Math.random()*10);
+        if(P.endsWith('0')) P = P.slice(0,-1) + (Math.floor(Math.random()*9)+1);
+        const EN = parseInt(`${E}${N}`,10);
+        const ENP = parseInt(`${E}${N}${P}`,10);
+        const num = ENP - EN;
+        const den = Math.pow(10,nLen+pLen) - Math.pow(10,nLen);
+        const [ns,ds] = simplificar(num,den);
+        return {tipo, display:TDperiodicoMixto(E,N,P), resultado:[ns,ds], explicacion:`📖 Periódico mixto: numerador = (entera+no periódica+periodo) − (entera+no periódica) = ${ENP} − ${EN} = ${num}; denominador = tantos 9 como cifras del periodo seguidos de tantos 0 como cifras no periódicas (${den}) → ${TFraw(num,den)} = ${TF(ns,ds)}`};
+    }
+    verificar(r1,r2){
+        if(this.superado) return {correcto:false, superado:true};
+        const f1=parseFraccion(r1), f2=parseFraccion(r2);
+        if(!f1||!f2) return {correcto:false, superado:false, msg:"⚠️ Escribe las dos respuestas como fracción, formato num/den. No cuenta como fallo."};
+        const ok1 = fraccionesIguales(f1,this.p1.resultado);
+        const ok2 = fraccionesIguales(f2,this.p2.resultado);
+        if(ok1 && ok2 && !this.yaComprobado){
+            this.yaComprobado = true;
+            return {correcto:true, superado:false, msg:"✓ ¡Correcto! Ahora pulsa '➡️ Siguiente ronda'."};
+        } else if(!ok1||!ok2){
+            this.yaComprobado = false; this.racha=0; rachaGlobal=0; fallosGlobales++;
+            let errores=[];
+            if(!ok1) errores.push(`${this.p1.display} → resultado correcto: ${TF(this.p1.resultado[0],this.p1.resultado[1])}<br>${this.p1.explicacion}`);
+            if(!ok2) errores.push(`${this.p2.display} → resultado correcto: ${TF(this.p2.resultado[0],this.p2.resultado[1])}<br>${this.p2.explicacion}`);
+            regenerarDistinto(this, () => JSON.stringify([valorFr(this.p1.resultado), valorFr(this.p2.resultado)]));
+            return {correcto:false, superado:false, msg:`❌ Solución del ejercicio anterior:<br>${errores.join('<br><br>')}` + PASA_A_OTRO, nuevoEnunciado:true};
+        } else {
+            return {correcto:false, superado:false, msg:"⚠️ Ya has comprobado estas conversiones. Pulsa 'Siguiente ronda' para continuar."};
+        }
+    }
+    siguienteRonda(){
+        if(this.superado) return {superado:true};
+        if(this.yaComprobado){
+            this.racha++; rachaGlobal=this.racha; this.yaComprobado=false;
+            if(this.racha>=2){ this.superado=true; return {superado:true, msg:"🎉 ¡Superado! Conviertes bien decimales a fracción."}; }
+            this.generarNuevo();
+            return {superado:false, msg:`✓ ¡Correcto! (${this.racha}/2) → Nueva ronda.`, nuevoEjercicio:true};
+        }
+        return {superado:false, msg:"⚠️ Responde las dos conversiones y pulsa 'Comprobar ambas'."};
+    }
+    getHTML(idx){
+        const st = ejercicios[idx];
+        if(st.superado){
+            return `<div class="ejercicio-card superado"><div class="ejercicio-header"><span class="ejercicio-num">6</span><span class="ejercicio-titulo">Decimal a fracción</span><span class="badge-superado">✓ Superado</span></div><div class="feedback-correcto">🎉 Ejercicio superado. ¡Bien hecho!</div></div>`;
+        }
+        return `<div class="ejercicio-card">
+            <div class="ejercicio-header">
+                <span class="ejercicio-num">6</span>
+                <span class="ejercicio-titulo">Expresa en forma de fracción</span>
+                ${st.racha>0 ? `<span class="racha-indicador">🎯 Racha: ${st.racha}/2</span>` : ''}
+                ${st.yaComprobado ? `<span class="racha-indicador" style="background:#2E6B3E; color:white;">✅ Acierto pendiente - pulsa "Siguiente ronda"</span>` : '<span class="racha-indicador" style="background:#E8DFC8; color:#6B4F35;">📝 Responde las 2 conversiones</span>'}
+            </div>
+            <div class="preguntas-container">
+                <div class="pregunta-item">
+                    <div class="pregunta-enunciado">🔁 ${st.p1.display}</div>
+                    <label class="sr-label" for="e6_resp1">Fracción (num/den):</label>
+                    <input type="text" id="e6_resp1" class="pregunta-input" placeholder="num/den" ${st.yaComprobado?'disabled':''}>
+                </div>
+                <div class="pregunta-item">
+                    <div class="pregunta-enunciado">🔁 ${st.p2.display}</div>
+                    <label class="sr-label" for="e6_resp2">Fracción (num/den):</label>
+                    <input type="text" id="e6_resp2" class="pregunta-input" placeholder="num/den" ${st.yaComprobado?'disabled':''}>
+                </div>
+            </div>
+            <div class="input-area">
+                <button class="btn-primary" onclick="verificarEjercicio(5)" ${st.yaComprobado?'disabled':''}>✅ Comprobar ambas</button>
+                <button class="btn-success" onclick="siguienteRondaEj6()">➡️ Siguiente ronda</button>
+            </div>
+            <div class="feedback" id="fb_e6" aria-live="polite"></div>
+        </div>`;
+    }
+}
+
+// ---------- Ejercicio 7: redondeo ----------
+class Ejercicio7 extends EjercicioBase {
+    generarNuevo(){
+        const parteEntera = Math.floor(Math.random()*90)+1;
+        let decimales = '';
+        for(let i=0;i<4;i++) decimales += Math.floor(Math.random()*10);
+        this.parteEntera = parteEntera;
+        this.decimalesStr = decimales;
+        this.numero = parseFloat(`${parteEntera}.${decimales}`);
+        const lugares = ['décimas','centésimas','milésimas'];
+        this.lugar = lugares[Math.floor(Math.random()*lugares.length)];
+        const posiciones = {'décimas':1, 'centésimas':2, 'milésimas':3};
+        this.pos = posiciones[this.lugar];
+        const factor = Math.pow(10,this.pos);
+        this.resultado = Math.round(this.numero*factor)/factor;
+        const cifraSiguiente = decimales[this.pos];
+        this.explicacion = `📖 Para redondear a las ${this.lugar} miramos la cifra siguiente (${cifraSiguiente}). ${parseInt(cifraSiguiente)>=5 ? 'Como es 5 o más, la cifra anterior sube una unidad.' : 'Como es menor que 5, la cifra anterior se mantiene igual.'}`;
+        this.yaComprobado = false;
+    }
+    verificar(r){
+        if(this.superado) return {correcto:false, superado:true};
+        if(r===undefined || String(r).trim()==='') return {correcto:false, superado:false, msg:"⚠️ Escribe el número redondeado antes de comprobar. No cuenta como fallo."};
+        const valor = parseFloat(String(r).trim().replace(',','.'));
+        const ok = !isNaN(valor) && Math.abs(valor - this.resultado) < 1e-9;
+        if(ok && !this.yaComprobado){
+            this.yaComprobado = true;
+            return {correcto:true, superado:false, msg:"✓ ¡Correcto! Ahora pulsa '➡️ Siguiente número'."};
+        } else if(!ok){
+            this.yaComprobado = false; this.racha=0; rachaGlobal=0; fallosGlobales++;
+            const msg = `❌ Solución del ejercicio anterior: el resultado correcto es ${String(this.resultado).replace('.',',')}<br>${this.explicacion}`;
+            regenerarDistinto(this, () => String(this.resultado));
+            return {correcto:false, superado:false, msg: msg + PASA_A_OTRO, nuevoEnunciado:true};
+        } else {
+            return {correcto:false, superado:false, msg:"⚠️ Ya has comprobado esta pregunta. Pulsa 'Siguiente número' para continuar."};
+        }
+    }
+    siguiente(){
+        if(this.superado) return {superado:true};
+        if(this.yaComprobado){
+            this.racha++; rachaGlobal=this.racha; this.yaComprobado=false;
+            if(this.racha>=2){ this.superado=true; return {superado:true, msg:"🎉 ¡Superado! Redondeas bien decimales."}; }
+            this.generarNuevo();
+            return {superado:false, msg:`✓ ¡Correcto! (${this.racha}/2) → Nuevo número.`, nuevoEjercicio:true};
+        }
+        return {superado:false, msg:"⚠️ Primero responde y pulsa 'Comprobar'."};
+    }
+    getHTML(idx){
+        const st = ejercicios[idx];
+        return `<div class="ejercicio-card ${st.superado?'superado':''}">
+            <div class="ejercicio-header">
+                <span class="ejercicio-num">7</span>
+                <span class="ejercicio-titulo">Redondear</span>
+                ${st.superado?'<span class="badge-superado">✓ Superado</span>':''}
+                ${!st.superado && st.racha>0 ? `<span class="racha-indicador">🎯 Racha: ${st.racha}/2</span>` : ''}
+                ${st.yaComprobado ? `<span class="racha-indicador" style="background:#2E6B3E; color:white;">✅ Acierto pendiente - pulsa "Siguiente número"</span>` : ''}
+            </div>
+            <div class="enunciado">Redondea <strong>${st.parteEntera},${st.decimalesStr}</strong> a las <strong>${st.lugar}</strong></div>
+            <div class="input-area">
+                <label class="sr-label" for="e7_resp">Resultado:</label>
+                <input type="text" id="e7_resp" class="number-input" placeholder="ej: 3,4" ${st.yaComprobado||st.superado?'disabled':''}>
+                <button class="btn-primary" onclick="verificarEjercicio(6)" ${st.yaComprobado||st.superado?'disabled':''}>✅ Comprobar</button>
+                <button class="btn-success" onclick="siguienteEj7()" ${st.superado?'disabled':''}>➡️ Siguiente número</button>
+            </div>
+            <div class="feedback" id="fb_e7" aria-live="polite"></div>
+        </div>`;
+    }
+}
+
+// ---------- Ejercicio 8: problema ----------
+class Ejercicio8 extends EjercicioBase {
+    constructor(){ super(false); this.generarNuevo(); this.yaComprobado = false; }
+    generarNuevo(){
+        const denominadoresPosibles = [3,4,5,6,7,8,9];
+        let ok = false;
+        while(!ok){
+            this.d1 = denominadoresPosibles[Math.floor(Math.random()*denominadoresPosibles.length)];
+            this.n1 = Math.floor(Math.random()*(this.d1-1))+1;
+            this.d2 = denominadoresPosibles[Math.floor(Math.random()*denominadoresPosibles.length)];
+            this.n2 = Math.floor(Math.random()*(this.d2-1))+1;
+            if((this.n1/this.d1)+(this.n2/this.d2) < 1) ok = true;
+        }
+        const comun = this.d1*this.d2;
+        const t1 = this.n1*(comun/this.d1), t2 = this.n2*(comun/this.d2);
+        const numRestante = comun - t1 - t2;
+        const [ns,ds] = simplificar(numRestante, comun);
+        this.resultado = [ns,ds];
+        this.explicacion = `📖 María se come ${TFraw(this.n1,this.d1)} y Andrés ${TFraw(this.n2,this.d2)}. Con común denominador ${comun}: ${TFraw(this.n1,this.d1)} = ${TFraw(t1,comun)}, ${TFraw(this.n2,this.d2)} = ${TFraw(t2,comun)}. Entre los dos se comen ${TFraw(t1+t2,comun)}. Sobra: ${TFraw(comun,comun)} − ${TFraw(t1+t2,comun)} = ${TFraw(numRestante,comun)} = ${TF(ns,ds)}.`;
+    }
+    verificar(r){
+        if(this.superado) return {correcto:false, superado:true};
+        const f = parseFraccion(r);
+        if(!f) return {correcto:false, superado:false, msg:"⚠️ Escribe la fracción de pizza que sobra, formato num/den. No cuenta como fallo."};
+        const ok = fraccionesIguales(f, this.resultado);
+        if(ok){
+            this.superado = true;
+            return {correcto:true, superado:true, msg:`🧩 ¡Correcto! Sobra ${TF(this.resultado[0],this.resultado[1])} de pizza (vale también sin simplificar).`};
+        }
+        fallosGlobales++;
+        const msg = `❌ Incorrecto. Solución del ejercicio anterior:<br>${this.explicacion}`;
+        regenerarDistinto(this, () => valorFr(this.resultado));
+        return {correcto:false, superado:false, msg: msg + PASA_A_OTRO, nuevoEnunciado:true};
+    }
+    getHTML(idx){
+        const st = ejercicios[idx];
+        return `<div class="ejercicio-card ${st.superado?'superado':''}">
+            <div class="ejercicio-header">
+                <span class="ejercicio-num">8</span>
+                <span class="ejercicio-titulo">Problema</span>
+                ${st.superado?'<span class="badge-superado">✓ Superado</span>':''}
+            </div>
+            <div class="enunciado" style="font-family:'DM Sans',sans-serif;">🍕 María y Andrés se compran una pizza para cenar. Si María se come las ${TFraw(st.n1,st.d1)} partes, y Andrés las ${TFraw(st.n2,st.d2)} partes, ¿qué fracción de pizza sobra?</div>
+            <div class="input-area">
+                <label class="sr-label" for="e8_resp">Fracción que sobra (num/den):</label>
+                <input type="text" id="e8_resp" class="text-input" placeholder="num/den" ${st.superado?'disabled':''}>
+                <button class="btn-primary" onclick="verificarEjercicio(7)" ${st.superado?'disabled':''}>✅ Comprobar</button>
+            </div>
+            <div class="feedback" id="fb_e8" aria-live="polite"></div>
+        </div>`;
+    }
+}
+
+// ---------- motor común ----------
+function actualizarUI() {
+    let superados = ejercicios.filter(e => e.superado).length;
+    let notaBase = superados - (fallosGlobales * 0.2);
+    if(notaBase < 0) notaBase = 0;
+    let notaFinal = (notaBase / ejercicios.length) * 10;
+    if(notaFinal > 10) notaFinal = 10;
+    document.getElementById('progresoCount').innerText = superados;
+    document.getElementById('fallosCount').innerText = fallosGlobales;
+    document.getElementById('notaActual').innerText = notaFinal.toFixed(1);
+}
+
+function configurarEnterKey() {
+    const mapa = {
+        'e4_resp': 3,
+        'e5_resp1': 4, 'e5_resp2': 4,
+        'e6_resp1': 5, 'e6_resp2': 5,
+        'e7_resp': 6,
+        'e8_resp': 7
+    };
+    Object.keys(mapa).forEach(id => {
+        const el = document.getElementById(id);
+        // Cada campo recibe el atajo una sola vez (al repintar una tarjeta, las demás ya lo tienen)
+        if(el && !el.dataset.enter){
+            el.dataset.enter = '1';
+            el.addEventListener('keydown', function(e){
+                if(e.key === 'Enter'){ e.preventDefault(); verificarEjercicio(mapa[id]); }
+            });
+        }
+    });
+}
+
+/* Repinta solo la tarjeta del ejercicio idx: no se borra lo escrito en las demás. */
+function renderizarTarjeta(idx) {
+    const container = document.getElementById('ejerciciosContainer');
+    const card = container.querySelectorAll(':scope > .ejercicio-card')[idx];
+    if(!card){ renderizarTodo(); return; }
+    const tmp = document.createElement('div');
+    tmp.innerHTML = ejercicios[idx].getHTML(idx);
+    card.replaceWith(tmp.firstElementChild);
+    actualizarUI();
+    setTimeout(configurarEnterKey, 50);
+    tipearMath();
+}
+
+function renderizarTodo() {
+    const container = document.getElementById('ejerciciosContainer');
+    let html = '';
+    for(let i=0;i<ejercicios.length;i++){
+        html += ejercicios[i].getHTML(i);
+        if(i < ejercicios.length-1) html += '<hr>';
+    }
+    container.innerHTML = html;
+    actualizarUI();
+    setTimeout(configurarEnterKey, 50);
+    tipearMath();
+}
+
+window.seleccionarPosicionEj2 = function(valor){
+    const ej2 = ejercicios[1];
+    if(ej2.superado || ej2.yaComprobado) return;
+    ej2.colocado = true;
+    ej2.posicionActual = valor;
+    renderizarTodo();
+};
+
+window.verificarEjercicio = function(idx){
+    const ej = ejercicios[idx];
+    let resultado;
+    switch(idx){
+        case 0: {
+            const seleccion = Array.from(document.querySelectorAll('.chk-e1:checked')).map(el=>el.value);
+            resultado = ej.verificar(seleccion);
+            break;
+        }
+        case 1:
+            resultado = ej.verificar();
+            break;
+        case 2:
+            resultado = ej.verificar(document.getElementById('e3_signo1')?.value, document.getElementById('e3_signo2')?.value);
+            break;
+        case 3:
+            resultado = ej.verificar(document.getElementById('e4_resp')?.value);
+            break;
+        case 4:
+            resultado = ej.verificar(document.getElementById('e5_resp1')?.value, document.getElementById('e5_resp2')?.value);
+            break;
+        case 5:
+            resultado = ej.verificar(document.getElementById('e6_resp1')?.value, document.getElementById('e6_resp2')?.value);
+            break;
+        case 6:
+            resultado = ej.verificar(document.getElementById('e7_resp')?.value);
+            break;
+        case 7:
+            resultado = ej.verificar(document.getElementById('e8_resp')?.value);
+            break;
+        default: return;
+    }
+    if(resultado.nuevoEnunciado){
+        // Fallo que enseña la solución: enunciado nuevo en esta tarjeta y, debajo, la solución anterior
+        renderizarTarjeta(idx);
+        const fb = document.getElementById(`fb_e${idx+1}`);
+        if(fb) fb.innerHTML = `<span class="feedback-error">${resultado.msg}</span>`;
+        tipearMath();
+    } else if(resultado.nuevoEjercicio || resultado.correcto){
+        renderizarTodo();
+    } else {
+        const fb = document.getElementById(`fb_e${idx+1}`);
+        if(fb) fb.innerHTML = `<span class="feedback-error">${resultado.msg}</span>`;
+        tipearMath();
+        if(resultado.superado) renderizarTodo(); else actualizarUI();
+    }
+};
+
+function manejarSiguiente(resultado, fbId){
+    if(resultado.nuevoEjercicio || resultado.superado){
+        renderizarTodo();
+    } else {
+        const fb = document.getElementById(fbId);
+        if(fb) fb.innerHTML = `<span class="feedback-error">${resultado.msg}</span>`;
+        tipearMath();
+    }
+    actualizarUI();
+}
+
+window.siguienteEj1 = function(){ manejarSiguiente(ejercicios[0].siguiente(), 'fb_e1'); };
+window.siguienteEj2 = function(){ manejarSiguiente(ejercicios[1].siguiente(), 'fb_e2'); };
+window.siguienteRondaEj3 = function(){ manejarSiguiente(ejercicios[2].siguienteRonda(), 'fb_e3'); };
+window.siguienteEj4 = function(){ manejarSiguiente(ejercicios[3].siguiente(), 'fb_e4'); };
+window.siguienteRondaEj5 = function(){ manejarSiguiente(ejercicios[4].siguienteRonda(), 'fb_e5'); };
+window.siguienteRondaEj6 = function(){ manejarSiguiente(ejercicios[5].siguienteRonda(), 'fb_e6'); };
+window.siguienteEj7 = function(){ manejarSiguiente(ejercicios[6].siguiente(), 'fb_e7'); };
+
+function calcularNotaFinal(){
+    let superados = ejercicios.filter(e => e.superado).length;
+    let notaBase = superados - (fallosGlobales * 0.2);
+    if(notaBase < 0) notaBase = 0;
+    let notaFinal = (notaBase / ejercicios.length) * 10;
+    if(notaFinal > 10) notaFinal = 10;
+    return {notaFinal, superados, notaBase};
+}
+
+function getTiempo(){
+    let elapsedMs = Date.now() - startTime;
+    let minutosTotales = Math.ceil(elapsedMs / 60000);
+    let h = Math.floor(minutosTotales / 60);
+    let m = minutosTotales % 60;
+    return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`;
+}
+
+function mostrarResultados(nombre){
+    let {notaFinal, superados} = calcularNotaFinal();
+    let fecha = new Date().toLocaleDateString('es-ES');
+    let horaCompleta = new Date().toLocaleTimeString('es-ES');
+    let tiempo = getTiempo();
+    document.getElementById('modalNombreMostrar').innerHTML = nombre.toUpperCase();
+    document.getElementById('modalNota').innerHTML = notaFinal.toFixed(1) + " / 10";
+    document.getElementById('modalMensaje').innerHTML = notaFinal >= 7 ? "👍 ¡Muy bien!" : (notaFinal >= 5 ? "📘 ¡Aprobado!" : "📚 ¡Ánimo! Repasa los contenidos");
+    document.getElementById('modalStats').innerHTML = `<p>📅 ${fecha}  🕐 ${horaCompleta}</p><p>⏱️ Tiempo: ${tiempo}</p><p>✅ Ejercicios superados: ${superados}/${ejercicios.length}</p><p>❌ Fallos totales: ${fallosGlobales}</p><p>⭐ Nota: ${notaFinal.toFixed(1)}/10</p>`;
+    const modalCard = document.getElementById('modalCard');
+    let color = notaFinal >= 10 ? '#1a7a1a' : notaFinal >= 9 ? '#6dbf6d' : notaFinal >= 8 ? '#1a4f8a' : notaFinal >= 7 ? '#5b9bd5' : notaFinal >= 6 ? '#c05c00' : notaFinal >= 5 ? '#f5a623' : '#c0392b';
+    modalCard.style.backgroundColor = color;
+    modalCard.style.color = (notaFinal >= 5 && notaFinal < 6) ? '#1e2a3a' : 'white';
+    document.getElementById('modalResultados').classList.add('show');
+}
+
+function finalizar(){
+    let n = document.getElementById('nombreAlumno').value.trim();
+    if(!n){ document.getElementById('modalNombre').classList.add('show'); return; }
+    mostrarResultados(n);
+}
+
+function hayProgresoPuntuable(){
+    return fallosGlobales > 0 || ejercicios.some(e => e.superado || e.racha > 0 || e.yaComprobado);
+}
+
+function resetearTodo(){
+    if(!hayProgresoPuntuable()){ location.reload(); return; }
+    document.getElementById('modalReset').classList.add('show');
+}
+
+function cerrarModales(){
+    document.getElementById('modalResultados').classList.remove('show');
+    document.getElementById('modalNombre').classList.remove('show');
+    document.getElementById('modalReset').classList.remove('show');
+}
+
+function confirmarNombre(){
+    let nom = document.getElementById('modalNombreInput').value.trim();
+    if(nom){
+        document.getElementById('nombreAlumno').value = nom;
+        document.getElementById('modalNombre').classList.remove('show');
+        mostrarResultados(nom);
+    }
+}
+
+ejercicios = [new Ejercicio1(), new Ejercicio2(), new Ejercicio3(), new Ejercicio4(), new Ejercicio5(), new Ejercicio6(), new Ejercicio7(), new Ejercicio8()];
+renderizarTodo();
+
+document.getElementById('btnFinalizar').addEventListener('click', finalizar);
+document.getElementById('btnResetear').addEventListener('click', resetearTodo);
+document.getElementById('closeModal').addEventListener('click', cerrarModales);
+document.getElementById('btnConfirmarNombre').addEventListener('click', confirmarNombre);
+document.getElementById('btnConfirmarReset').addEventListener('click', function(){ location.reload(); });
+document.getElementById('btnCancelarReset').addEventListener('click', function(){ document.getElementById('modalReset').classList.remove('show'); });
+</script>
+</body>
+</html>

@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Álgebra 1º ESO · Ficha interactiva</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script" async></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#F5F0E8;font-family:'DM Sans',Inter,sans-serif;color:#2C1F0E;min-height:100vh}
+.autoria{background:#3B2510;text-align:center;padding:6px;font-size:10px;color:rgba(245,240,232,0.7)}
+.ficha-wrapper{max-width:1000px;margin:0 auto;padding:2rem 1rem}
+.header{background:#3B2510;border-radius:1.5rem;padding:1.8rem 2rem;margin-bottom:1.8rem;box-shadow:0 8px 20px rgba(0,0,0,0.1)}
+.header h1{font-size:2.2rem;font-weight:700;color:#F5EDD8;margin-bottom:0.5rem}
+.header p{color:#C9B896;font-size:0.9rem}
+.header-badges{display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:1rem}
+.header-badge{background:rgba(255,255,255,0.08);padding:0.25rem 0.75rem;border-radius:40px;font-size:0.7rem;color:#E0CEAA}
+.info-bar{background:#FDFAF3;border-radius:1.2rem;padding:1rem 1.5rem;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;border:1px solid #C9A96E}
+.info-item{display:flex;align-items:center;gap:0.6rem;font-size:0.85rem;font-weight:500;color:#6B4F35}
+.info-icon{width:30px;height:30px;background:#F5F0E8;border-radius:10px;display:flex;align-items:center;justify-content:center}
+.info-value{font-weight:700;font-size:1rem;color:#2C1F0E}
+.name-section{background:#FDFAF3;border-radius:1rem;padding:0.8rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;border:1px solid #E0CEAA}
+.name-label{font-size:0.75rem;font-weight:600;text-transform:uppercase;color:#6B4F35}
+.name-input{flex:1;max-width:280px;border:none;border-bottom:2px solid #C9A96E;padding:0.5rem 0.25rem;font-size:0.95rem;background:transparent}
+.name-input:focus{outline:none;border-bottom-color:#A0522D}
+.ejercicio-card{background:#FDFAF3;border-radius:1.2rem;padding:1.5rem;margin-bottom:1.2rem;border:1px solid #C9A96E}
+.ejercicio-card.superado{border-left:5px solid #2E6B3E;background:#FAF8F0}
+.ejercicio-header{display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;flex-wrap:wrap}
+.ejercicio-num{background:#A0522D;color:white;width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700}
+.ejercicio-titulo{font-weight:600}
+.ejercicio-nota{font-size:0.72rem;color:#6B4F35;font-weight:500}
+.badge-superado{background:#2E6B3E;color:white;padding:0.2rem 0.7rem;border-radius:40px;font-size:0.65rem;font-weight:600;margin-left:0.5rem}
+.enunciado,.enunciado-latex{background:#F5F0E8;padding:0.8rem 1.2rem;border-radius:1rem;font-size:1rem;margin-bottom:1.2rem;border:1px solid #E0CEAA;display:inline-block;font-family:'JetBrains Mono',monospace}
+.enunciado-texto{background:#F5F0E8;padding:0.8rem 1.2rem;border-radius:1rem;font-size:0.95rem;margin-bottom:1.2rem;border:1px solid #E0CEAA;font-family:'DM Sans',sans-serif}
+.text-input,.number-input{border:2px solid #C9A96E;border-radius:10px;padding:8px 14px;font-size:0.9rem;width:280px;background:white}
+.number-input{width:120px;text-align:center}
+.input-area{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:0.8rem}
+.campos-monomio{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.feedback{margin-top:10px;font-size:0.85rem;min-height:50px}
+.feedback-correcto{color:#2E6B3E;background:rgba(46,107,62,0.1);padding:6px 14px;border-radius:30px;display:inline-block}
+.feedback-error{color:#8B1A1A;background:rgba(139,26,26,0.08);padding:6px 14px;border-radius:18px;display:inline-block}
+.btn-primary{background:#A0522D;border:none;color:white;padding:8px 22px;border-radius:40px;font-weight:600;cursor:pointer}
+.btn-primary:hover:not(:disabled){background:#7B3B1E;transform:scale(0.97)}
+.btn-primary:disabled{background:#C9A96E;cursor:not-allowed}
+.btn-secondary{background:#C9A96E;border:none;color:#2C1F0E;padding:8px 22px;border-radius:40px;font-weight:600;cursor:pointer}
+.btn-potencia{background:#E0CEAA;border:none;color:#3B2510;padding:8px 14px;border-radius:40px;font-weight:600;cursor:pointer;font-size:0.8rem}
+.btn-raiz{background:#C9A96E;border:none;color:#3B2510;padding:8px 14px;border-radius:40px;font-weight:600;cursor:pointer;font-size:0.8rem}
+.btn-large{background:#A0522D;color:white;border:none;padding:12px 36px;font-size:0.95rem;font-weight:600;border-radius:50px;cursor:pointer}
+.btn-outline{background:transparent;border:2px solid #C9A96E;color:#6B4F35;padding:10px 28px;border-radius:50px;cursor:pointer}
+.action-buttons{display:flex;gap:1rem;justify-content:center;margin-top:2rem;flex-wrap:wrap}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(4px)}
+.modal-overlay.show{display:flex}
+.modal-card{background:#fffdf7;border-radius:12px;padding:32px;max-width:460px;width:90%;text-align:center;border:2px solid #1a1008;animation:modalIn 0.3s ease}
+.modal-card-name{background:#fffdf7;border-radius:12px;padding:32px;max-width:420px;width:90%;text-align:center;border:2px solid #c8401a}
+.modal-card-aviso{background:#fffdf7;border-radius:12px;padding:28px;max-width:440px;width:90%;text-align:left;border:2px solid #A0522D}
+@keyframes modalIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
+.modal-close{float:right;background:none;border:none;font-size:24px;cursor:pointer}
+.modal-grade{font-size:52px;font-weight:900;margin:12px 0 8px}
+.modal-stats{border:1.5px solid rgba(0,0,0,0.2);border-radius:10px;padding:12px;margin-bottom:14px;font-family:'DM Mono',monospace;font-size:12px;text-align:left}
+.modal-aviso-botones{display:flex;gap:10px;margin-top:18px}
+.btn-aviso-cancelar{flex:1;background:#C9A96E;border:none;color:#2C1F0E;padding:10px;border-radius:8px;cursor:pointer;font-weight:600}
+.btn-aviso-confirmar{flex:1;background:#A0522D;border:none;color:white;padding:10px;border-radius:8px;cursor:pointer;font-weight:600}
+hr{margin:0.5rem 0;border:none;border-top:1px solid #E0CEAA}
+.recordatorio{font-size:12px;margin-top:8px;font-weight:500;background:rgba(0,0,0,0.1);border-radius:20px;padding:6px;display:inline-block}
+.modal-footer{font-size:10px;margin-top:12px;opacity:0.7}
+.input-con-potencia{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media (max-width:520px){
+.ficha-wrapper{padding:1rem 0.6rem}
+.header{padding:1.2rem 1rem}
+.header h1{font-size:1.6rem}
+.ejercicio-card{padding:1rem 0.8rem}
+.text-input{width:100%!important;max-width:100%}
+.input-con-potencia{width:100%}
+.input-con-potencia .text-input{flex:1 1 100%}
+.enunciado,.enunciado-latex{max-width:100%;overflow-x:auto}
+}
+</style>
+</head>
+<body>
+<div class="autoria">Material elaborado por Marta López de Letona Sánchez</div>
+<div class="ficha-wrapper">
+<div class="header">
+<h1>📐 Álgebra · 1º ESO</h1>
+<p>Lenguaje algebraico, valor numérico, monomios y ecuaciones</p>
+<div class="header-badges">
+<span class="header-badge">🎯 2 aciertos consecutivos → superado (el problema se supera con un acierto)</span>
+<span class="header-badge">⭐ Cada ejercicio superado vale 1,25 puntos</span>
+<span class="header-badge">💡 Cada fallo resta 0,25 puntos de la nota</span>
+</div>
+</div>
+<div class="info-bar">
+<div class="info-item"><span class="info-icon">📊</span><span>Progreso: <span id="progresoCount" class="info-value">0</span>/8</span></div>
+<div class="info-item"><span class="info-icon">🔥</span><span>Racha: <span id="rachaActual" class="info-value">0</span></span></div>
+<div class="info-item"><span class="info-icon">❌</span><span>Fallos: <span id="fallosCount" class="info-value">0</span></span></div>
+<div class="info-item"><span class="info-icon">⭐</span><span>Nota: <span id="notaActual" class="info-value">0.0</span>/10</span></div>
+</div>
+<div class="name-section">
+<span class="name-label">👤 ALUMNO/A</span>
+<label for="nombreAlumno" class="sr-only">Nombre y apellidos del alumno o alumna</label>
+<input type="text" id="nombreAlumno" class="name-input" placeholder="Escribe tu nombre...">
+</div>
+<div id="ejerciciosContainer"></div>
+<div class="action-buttons">
+<button class="btn-large" id="btnFinalizar">📋 Finalizar y calificar</button>
+<button class="btn-outline" id="btnResetear">🔄 Reiniciar toda la ficha</button>
+</div>
+</div>
+
+<div id="modalNombre" class="modal-overlay">
+<div class="modal-card-name">
+<h3 style="color:#c8401a;">✏️ Falta tu nombre</h3>
+<p style="font-size:13px;margin-bottom:16px;">Para calificar necesitas identificarte.</p>
+<label for="modalNombreInput" class="sr-only">Nombre completo</label>
+<input type="text" id="modalNombreInput" placeholder="Nombre completo" style="width:100%;border:1.5px solid #d4c4a0;border-radius:6px;padding:10px;margin:16px 0;">
+<button id="btnConfirmarNombre" style="background:#c8401a;color:#fff;border:none;padding:10px;width:100%;border-radius:6px;cursor:pointer;font-weight:600;">Continuar →</button>
+</div>
+</div>
+
+<div id="modalResultados" class="modal-overlay">
+<div class="modal-card" id="modalCard">
+<button class="modal-close" id="closeModal">✕</button>
+<div id="modalNombreMostrar" style="font-size:1rem;font-weight:600;"></div>
+<div style="font-size:0.85rem;opacity:0.8;">📐 Álgebra · 1º ESO</div>
+<div class="modal-grade" id="modalNota"></div>
+<div class="modal-message" id="modalMensaje"></div>
+<div class="modal-stats" id="modalStats"></div>
+<div class="recordatorio">📸 Captura y entrega en Google Classroom.</div>
+<div class="modal-footer">Material elaborado por Marta López de Letona Sánchez</div>
+</div>
+</div>
+
+<div id="modalConfirmarReset" class="modal-overlay">
+<div class="modal-card-aviso">
+<h3 style="color:#A33A2E;">🔄 ¿Reiniciar toda la ficha?</h3>
+<p style="font-size:0.85rem;margin-top:10px;" id="textoAvisoReset"></p>
+<div class="modal-aviso-botones">
+<button class="btn-aviso-cancelar" id="btnCancelarReset">Cancelar</button>
+<button class="btn-aviso-confirmar" id="btnConfirmarReset">Sí, reiniciar</button>
+</div>
+</div>
+</div>
+
+<script>
+const startTime = Date.now();
+let ejercicios = [];
+let fallosGlobales = 0, rachaGlobal = 0;
+
+/* ---------- Utilidades generales ---------- */
+
+function aleatorio(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+function aleatorioNoCero(min, max) { let v; do { v = aleatorio(min, max); } while (v === 0); return v; }
+function elegir(lista) { return lista[Math.floor(Math.random() * lista.length)]; }
+
+/* Normaliza lo que escribe el alumno: quita espacios, pasa a minúsculas y
+   convierte los signos tipográficos (− · ×) en los de teclado. */
+function normalizar(s) {
+    if (!s) return "";
+    return String(s).trim().replace(/\s+/g, '').toLowerCase()
+        .replace(/[−–]/g, '-').replace(/[·×]/g, '*');
+}
+
+/* Entero estricto: acepta "-5", "+3", "−5"; rechaza "3abc" (parseInt lo aceptaría). */
+function leerEntero(s) {
+    const t = normalizar(s);
+    if (!/^[+-]?\d+$/.test(t)) return null;
+    return parseInt(t, 10);
+}
+
+/* Número con signo menos tipográfico, para los mensajes de corrección. */
+function num(n) { return n < 0 ? '−' + Math.abs(n) : String(n); }
+
+function latexify(expr) {
+    return expr.replace(/\^(\d+)/g, '^{$1}').replace(/\*/g, '\\cdot ');
+}
+
+function insertarPotencia(idInput) {
+    let input = document.getElementById(idInput);
+    if (input) {
+        let cursorPos = input.selectionStart ?? input.value.length;
+        let valor = input.value;
+        input.value = valor.slice(0, cursorPos) + '^' + valor.slice(cursorPos);
+        input.focus();
+        input.setSelectionRange(cursorPos + 1, cursorPos + 1);
+    }
+}
+
+function insertarRaiz(idInput) {
+    let input = document.getElementById(idInput);
+    if (input) {
+        let cursorPos = input.selectionStart ?? input.value.length;
+        let valor = input.value;
+        input.value = valor.slice(0, cursorPos) + 'sqrt()' + valor.slice(cursorPos);
+        input.focus();
+        input.setSelectionRange(cursorPos + 5, cursorPos + 5);
+    }
+}
+
+/* ---------- Evaluación numérica de expresiones en x ---------- */
+
+const PUNTOS_PRUEBA_X = [1, 2, 3, 5, 7];
+
+function evaluarNumerico(expr, xVal) {
+    let e = normalizar(expr);
+    if (e === '') return null;
+    if (!/^[0-9x+\-*/^().]+$/.test(e.replace(/sqrt/g, ''))) return null;
+    let js = e.replace(/sqrt/g, 'Math.sqrt').replace(/\^/g, '**');
+    js = js.replace(/(\d)x/g, '$1*x').replace(/\)x/g, ')*x').replace(/x\(/g, 'x*(');
+    js = js.replace(/x/g, '(' + xVal + ')');
+    js = js.replace(/(\d)\(/g, '$1*(').replace(/\)\(/g, ')*(').replace(/\)(\d)/g, ')*$1');
+    try {
+        let val = Function('"use strict"; return (' + js + ')')();
+        if (typeof val !== 'number' || !isFinite(val)) return null;
+        return val;
+    } catch (err) {
+        return null;
+    }
+}
+
+function expresionesEquivalentes(e1, e2) {
+    let n1 = normalizar(e1), n2 = normalizar(e2);
+    if (n1 === '' || n2 === '') return false;
+    if (n1 === n2) return true;
+    for (const xv of PUNTOS_PRUEBA_X) {
+        let v1 = evaluarNumerico(n1, xv), v2 = evaluarNumerico(n2, xv);
+        if (v1 === null || v2 === null) return false;
+        if (Math.abs(v1 - v2) > 1e-6) return false;
+    }
+    return true;
+}
+
+/* ---------- Monomios: formato y lectura ---------- */
+
+function fmtLiteral(mapa) {
+    return Object.keys(mapa).filter(l => mapa[l] > 0).sort()
+        .map(l => l + (mapa[l] > 1 ? '^' + mapa[l] : '')).join('');
+}
+
+function fmtMonomio(coef, mapa) {
+    const lit = fmtLiteral(mapa);
+    if (lit === '') return String(coef);
+    if (coef === 1) return lit;
+    if (coef === -1) return '-' + lit;
+    return String(coef) + lit;
+}
+
+function leerLiteral(s) {
+    if (!/^(?:[a-z](?:\^\d+)?)+$/.test(s)) return null;
+    const mapa = {};
+    for (const m of s.matchAll(/([a-z])(?:\^(\d+))?/g)) {
+        const e = m[2] === undefined ? 1 : parseInt(m[2], 10);
+        mapa[m[1]] = (mapa[m[1]] || 0) + e;
+    }
+    for (const l in mapa) if (mapa[l] === 0) delete mapa[l];
+    return mapa;
+}
+
+/* Lee un monomio como "-3x^2y", "+x y^3" o "7". Devuelve {coef, mapa} o null. */
+function leerMonomio(str) {
+    const s = normalizar(str);
+    const m = s.match(/^([+-]?)(\d*)((?:[a-z](?:\^\d+)?)*)$/);
+    if (!m || (m[2] === '' && m[3] === '')) return null;
+    const signo = m[1] === '-' ? -1 : 1;
+    const coef = (m[2] === '' ? 1 : parseInt(m[2], 10)) * signo;
+    const mapa = m[3] === '' ? {} : leerLiteral(m[3]);
+    if (!mapa) return null;
+    return { coef: coef, mapa: mapa };
+}
+
+function mapasIguales(a, b) {
+    const ka = Object.keys(a).filter(k => a[k]), kb = Object.keys(b).filter(k => b[k]);
+    if (ka.length !== kb.length) return false;
+    return ka.every(k => a[k] === b[k]);
+}
+
+function monomiosIguales(m1, m2) {
+    if (!m1 || !m2) return false;
+    if (m1.coef !== m2.coef) return false;
+    if (m1.coef === 0) return true;
+    return mapasIguales(m1.mapa, m2.mapa);
+}
+
+const LITERALES = [{x:1,y:1},{a:1,b:1},{x:2},{m:1,n:1},{y:3},{x:1},{a:2,b:1},{x:1,y:2},{m:2,n:1},{p:1,q:1}];
+const LETRAS = ['x','y','z','a','b','m','n'];
+const GRUPOS_LETRAS = [['x'],['a'],['y'],['x','y'],['a','b'],['m','n'],['p']];
+
+/* ---------- Clase base ---------- */
+
+class EjercicioBase {
+    constructor() {
+        this.racha = 0;
+        this.superado = false;
+        this.objetivo = 2;
+        this.ultimoFeedback = null;
+        this.generarNuevo();
+    }
+    generarNuevo() {}
+    firma() { return ''; }
+
+    /* Genera un enunciado distinto del actual. Se usa tras un acierto parcial
+       (para que la segunda tanda no sea la misma) y tras un fallo (porque el
+       feedback de error muestra la solución: si el enunciado no cambiara,
+       bastaría con copiarla). */
+    avanzarTanda() {
+        const anterior = this.firma(), solAntes = this.claveSolucion();
+        let intentos = 0;
+        do { this.generarNuevo(); intentos++; }
+        while ((this.firma() === anterior || this.claveSolucion() === solAntes) && intentos < 60);
+        // si no hubo manera de cambiar también la solución, al menos otro enunciado
+        for (let i = 0; i < 40 && this.firma() === anterior; i++) this.generarNuevo();
+    }
+
+    /* Respuesta correcta del enunciado actual: se exige que cambie también, para
+       que copiar o repetir la respuesta anterior no valga. */
+    claveSolucion() {
+        return JSON.stringify([this.respCorrecta, this.respCorrecta2, this.resultado, this.coef,
+            this.parteLiteral, this.grado, this.sol, this.solCoef]);
+    }
+
+    /* Lógica común del criterio «2 aciertos consecutivos». */
+    procesar(ok, msgFallo) {
+        if (ok) {
+            this.racha++;
+            rachaGlobal = this.racha;
+            if (this.racha >= this.objetivo) {
+                this.superado = true;
+                return { correcto: true, superado: true, msg: "✓ ¡Correcto! Has superado el ejercicio." };
+            }
+            this.avanzarTanda();
+            return { correcto: true, superado: false, msg: "✓ ¡Correcto! (" + this.racha + "/2 aciertos consecutivos). Ahora resuelve este con otros datos." };
+        }
+        this.racha = 0;
+        rachaGlobal = 0;
+        fallosGlobales++;
+        this.avanzarTanda();
+        return { correcto: false, superado: false, msg: etiquetarFallo(msgFallo) + " 👉 Ahora inténtalo con este nuevo." };
+    }
+
+    nuevoEjercicio() {
+        if (this.superado) return false;
+        this.avanzarTanda();
+        this.racha = 0;
+        rachaGlobal = 0;
+        this.ultimoFeedback = null;
+        return true;
+    }
+}
+
+/* «❌ Incorrecto. En 3x: …» → «❌ Incorrecto. Solución del ejercicio anterior: en 3x: …» */
+function etiquetarFallo(msg) {
+    const m = msg.match(/^(❌ (?:Incorrecto|Ecuación incorrecta|Solución incorrecta)\.) (.*)$/);
+    if (!m) return msg;
+    let resto = m[2];
+    if (/^[A-ZÁÉÍÓÚÑ][a-záéíóúñ]/.test(resto)) resto = resto.charAt(0).toLowerCase() + resto.slice(1);
+    return m[1] + ' Solución del ejercicio anterior: ' + resto;
+}
+
+function cabecera(i, e, titulo, nota) {
+    return '<div class="ejercicio-header"><span class="ejercicio-num">' + (i + 1) + '</span><span class="ejercicio-titulo">' + titulo + '</span>' +
+        (nota ? '<span class="ejercicio-nota">' + nota + '</span>' : '') +
+        (e.superado ? '<span class="badge-superado">✓ Superado</span>' : '') + '</div>';
+}
+
+function pie(i, e, conComprobar) {
+    const dis = e.superado ? 'disabled' : '';
+    let fb = '';
+    if (e.ultimoFeedback) fb = '<span class="' + (e.ultimoFeedback.correcto ? 'feedback-correcto' : 'feedback-error') + '">' + e.ultimoFeedback.msg + '</span>';
+    return (conComprobar ? '<div class="input-area"><button class="btn-primary" data-accion="comprobar" data-ej="' + i + '" ' + dis + '>Comprobar</button>' +
+        (!e.superado ? '<button class="btn-secondary" data-accion="nuevo" data-ej="' + i + '">🔄 Nuevo</button>' : '') + '</div>' : '') +
+        '<div class="feedback" id="fb_e' + (i + 1) + '" aria-live="polite">' + fb + '</div>';
+}
+
+function botonPotencia(e, destino) {
+    return !e.superado ? '<button class="btn-potencia" data-accion="potencia" data-destino="' + destino + '">🔣 ^</button>' : '';
+}
+
+/* ---------- Ejercicio 1: Lenguaje algebraico ---------- */
+
+const frases1 = ["el doble de un número más tres unidades","2x+3","la tercera parte de un número disminuido en 8","x/3-8","el cuadrado de la suma de un número más uno","(x+1)^2","un número más su mitad","x+x/2","el triple de un número menos cinco","3x-5","la suma de dos números consecutivos","x+(x+1)","el producto de un número por sí mismo más cuatro","x^2+4","la diferencia entre el doble de un número y siete","2x-7","el cuadrado de un número más el triple del mismo","x^2+3x","la raíz cuadrada de la suma de un número y nueve","sqrt(x+9)"];
+
+class Ejercicio1 extends EjercicioBase {
+    generarNuevo() {
+        let i = Math.floor(Math.random() * 10) * 2;
+        let j;
+        do { j = Math.floor(Math.random() * 10) * 2; } while (j === i);
+        this.fraseEsp = frases1[i]; this.respCorrecta = frases1[i + 1];
+        this.fraseEsp2 = frases1[j]; this.respCorrecta2 = frases1[j + 1];
+    }
+    firma() { return [this.fraseEsp, this.fraseEsp2].sort().join('|'); }
+    /* Se exige que cambien las DOS frases respecto a la tanda anterior. */
+    avanzarTanda() {
+        const f1 = this.fraseEsp, f2 = this.fraseEsp2;
+        let intentos = 0;
+        do { this.generarNuevo(); intentos++; }
+        while (([f1, f2].includes(this.fraseEsp) || [f1, f2].includes(this.fraseEsp2)) && intentos < 200);
+    }
+    verificar(r1, r2) {
+        if (this.superado) return { correcto: false, superado: true, msg: "Ejercicio ya superado" };
+        if (!normalizar(r1) || !normalizar(r2)) return { correcto: false, superado: false, sinCambio: true, msg: "⚠️ Completa las dos respuestas antes de comprobar. No cuenta como fallo." };
+        const ok = expresionesEquivalentes(r1, this.respCorrecta) && expresionesEquivalentes(r2, this.respCorrecta2);
+        const msg = "❌ Incorrecto. «" + this.fraseEsp + "» → " + this.respCorrecta + "; «" + this.fraseEsp2 + "» → " + this.respCorrecta2 + ".";
+        return this.procesar(ok, msg);
+    }
+    getHTML(i) {
+        let e = this, dis = e.superado ? 'disabled' : '';
+        let btns = d => !e.superado ? '<button class="btn-potencia" data-accion="potencia" data-destino="' + d + '">🔣 ^</button><button class="btn-raiz" data-accion="raiz" data-destino="' + d + '">√</button>' : '';
+        return '<div class="ejercicio-card ' + (e.superado ? 'superado' : '') + '">' + cabecera(i, e, 'Lenguaje algebraico (dos frases)') +
+            '<div class="enunciado">📝 1) ' + e.fraseEsp + '</div><label for="e1_r1" class="sr-only">Expresión algebraica para la frase 1</label><div class="input-con-potencia" style="margin-bottom:0.8rem"><input type="text" id="e1_r1" class="text-input" placeholder="Ej: 2x+3" autocomplete="off" ' + dis + '>' + btns('e1_r1') + '</div>' +
+            '<div class="enunciado">📝 2) ' + e.fraseEsp2 + '</div><label for="e1_r2" class="sr-only">Expresión algebraica para la frase 2</label><div class="input-con-potencia" style="margin-bottom:0.8rem"><input type="text" id="e1_r2" class="text-input" placeholder="Ej: 2x+3" autocomplete="off" ' + dis + '>' + btns('e1_r2') + '</div>' +
+            pie(i, e, true) + '</div>';
+    }
+}
+
+/* ---------- Ejercicio 2: Valor numérico ---------- */
+
+class Ejercicio2 extends EjercicioBase {
+    /* Con coeficiente y valor de x positivos o negativos: son los casos en los
+       que más se falla al sustituir (p. ej. 3·(−2) o (−3)²). */
+    generarNuevo() {
+        const conSigno = (min, max) => aleatorio(min, max) * (Math.random() < 0.5 ? -1 : 1);
+        const forma = elegir(['ax+b', 'ax-b', 'x^2+b']);
+        const b = aleatorio(1, 9);
+        if (forma === 'x^2+b') {
+            this.x = conSigno(1, 6);
+            this.expresion = 'x^2+' + b;
+            this.resultado = this.x * this.x + b;
+            const xt = this.x < 0 ? '(' + num(this.x) + ')' : String(this.x);
+            this.calculo = xt + '² + ' + b + ' = ' + (this.x * this.x) + ' + ' + b + ' = ' + this.resultado;
+        } else {
+            const a = conSigno(2, 9);
+            this.x = conSigno(1, 9);
+            const signo = forma === 'ax+b' ? 1 : -1;
+            this.expresion = a + 'x' + (signo > 0 ? '+' : '-') + b;
+            this.resultado = a * this.x + signo * b;
+            const xt = this.x < 0 ? '(' + num(this.x) + ')' : String(this.x);
+            this.calculo = num(a) + '·' + xt + (signo > 0 ? ' + ' : ' − ') + b + ' = ' + num(a * this.x) + (signo > 0 ? ' + ' : ' − ') + b + ' = ' + num(this.resultado);
+        }
+    }
+    firma() { return this.expresion + '|' + this.x; }
+    verificar(v) {
+        if (this.superado) return { correcto: false, superado: true, msg: "Ejercicio ya superado" };
+        const num = leerEntero(v);
+        if (num === null) return { correcto: false, superado: false, sinCambio: true, msg: "⚠️ Introduce un número entero. No cuenta como fallo." };
+        return this.procesar(num === this.resultado, "❌ Incorrecto. Sustituye x por " + this.x + ": " + this.calculo + ".");
+    }
+    getHTML(i) {
+        let e = this, dis = e.superado ? 'disabled' : '';
+        return '<div class="ejercicio-card ' + (e.superado ? 'superado' : '') + '">' + cabecera(i, e, 'Valor numérico') +
+            '<div class="enunciado-latex">\\( ' + latexify(e.expresion) + ' \\) para \\( x=' + e.x + ' \\)</div>' +
+            '<div class="input-area"><label for="e2_resp" class="sr-only">Resultado del valor numérico</label><input type="text" id="e2_resp" class="number-input" placeholder="Resultado" autocomplete="off" ' + dis + '></div>' +
+            pie(i, e, true) + '</div>';
+    }
+}
+
+/* ---------- Ejercicio 3: Elementos del monomio ---------- */
+
+class Ejercicio3 extends EjercicioBase {
+    generarNuevo() {
+        const nLetras = aleatorio(1, 3);
+        const letras = [...LETRAS].sort(() => Math.random() - 0.5).slice(0, nLetras);
+        const mapa = {};
+        letras.forEach(l => { mapa[l] = aleatorio(1, 4); });
+        this.coef = aleatorioNoCero(-9, 10);
+        this.mapa = mapa;
+        this.parteLiteral = fmtLiteral(mapa);
+        this.monomio = fmtMonomio(this.coef, mapa);
+        this.grado = Object.values(mapa).reduce((s, v) => s + v, 0);
+    }
+    firma() { return this.monomio; }
+    verificar(c, pl, g) {
+        if (this.superado) return { correcto: false, superado: true, msg: "Ejercicio ya superado" };
+        if (!normalizar(c) || !normalizar(pl) || !normalizar(g)) return { correcto: false, superado: false, sinCambio: true, msg: "⚠️ Completa los tres campos antes de comprobar. No cuenta como fallo." };
+        const coefOk = leerEntero(c) === this.coef;
+        const mapaAlumno = leerLiteral(normalizar(pl));
+        const plOk = !!mapaAlumno && mapasIguales(mapaAlumno, this.mapa);
+        const gradoOk = leerEntero(g) === this.grado;
+        const msg = "❌ Incorrecto. En " + this.monomio + ": coeficiente " + num(this.coef) + ", parte literal " + this.parteLiteral + ", grado " + this.grado + " (suma de los exponentes de las letras).";
+        return this.procesar(coefOk && plOk && gradoOk, msg);
+    }
+    getHTML(i) {
+        let e = this, dis = e.superado ? 'disabled' : '';
+        return '<div class="ejercicio-card ' + (e.superado ? 'superado' : '') + '">' + cabecera(i, e, 'Elementos del monomio') +
+            '<div class="enunciado-latex">\\( ' + latexify(e.monomio) + ' \\)</div>' +
+            '<div class="campos-monomio"><label for="e3_coef" class="sr-only">Coeficiente del monomio</label><input type="text" id="e3_coef" class="number-input" placeholder="Coeficiente" autocomplete="off" ' + dis + '>' +
+            '<div class="input-con-potencia"><label for="e3_pl" class="sr-only">Parte literal del monomio</label><input type="text" id="e3_pl" class="text-input" style="width:150px;" placeholder="Parte literal" autocomplete="off" ' + dis + '>' + botonPotencia(e, 'e3_pl') + '</div>' +
+            '<label for="e3_grado" class="sr-only">Grado del monomio</label><input type="text" inputmode="numeric" id="e3_grado" class="number-input" placeholder="Grado" autocomplete="off" ' + dis + '></div>' +
+            pie(i, e, true) + '</div>';
+    }
+}
+
+/* ---------- Ejercicio 4: Sumas y restas de monomios semejantes ---------- */
+
+class Ejercicio4 extends EjercicioBase {
+    generarNuevo() {
+        let c1, c2, op, res;
+        do {
+            c1 = aleatorioNoCero(-9, 12);
+            c2 = aleatorio(1, 9);
+            op = Math.random() < 0.5 ? '+' : '-';
+            res = op === '+' ? c1 + c2 : c1 - c2;
+        } while (res === 0);
+        this.mapa = elegir(LITERALES);
+        this.op = fmtMonomio(c1, this.mapa) + op + fmtMonomio(c2, this.mapa);
+        this.solCoef = res;
+        this.sol = fmtMonomio(res, this.mapa);
+    }
+    firma() { return this.op; }
+    verificar(r) {
+        if (this.superado) return { correcto: false, superado: true, msg: "Ejercicio ya superado" };
+        if (!normalizar(r)) return { correcto: false, superado: false, sinCambio: true, msg: "⚠️ Escribe tu respuesta antes de comprobar. No cuenta como fallo." };
+        const ok = monomiosIguales(leerMonomio(r), { coef: this.solCoef, mapa: this.mapa });
+        return this.procesar(ok, "❌ Incorrecto. Se suman o restan los coeficientes y la parte literal se mantiene: " + this.op + " = " + this.sol + ".");
+    }
+    getHTML(i) {
+        let e = this, dis = e.superado ? 'disabled' : '';
+        return '<div class="ejercicio-card ' + (e.superado ? 'superado' : '') + '">' + cabecera(i, e, 'Sumas y restas de monomios') +
+            '<div class="enunciado-latex">\\( ' + latexify(e.op) + ' = \\)</div>' +
+            '<label for="e4_resp" class="sr-only">Resultado de la suma o resta de monomios</label><div class="input-con-potencia" style="margin-bottom:0.8rem"><input type="text" id="e4_resp" class="text-input" placeholder="Ej: 5xy" autocomplete="off" ' + dis + '>' + botonPotencia(e, 'e4_resp') + '</div>' +
+            pie(i, e, true) + '</div>';
+    }
+}
+
+/* ---------- Ejercicio 5: Multiplicación de monomios ---------- */
+
+class Ejercicio5 extends EjercicioBase {
+    generarNuevo() {
+        const letras = elegir(GRUPOS_LETRAS);
+        const m1 = {}, m2 = {};
+        letras.forEach(l => { m1[l] = aleatorio(1, 3); m2[l] = aleatorio(1, 3); });
+        const c1 = aleatorioNoCero(-6, 9), c2 = aleatorioNoCero(-5, 8);
+        const t1 = fmtMonomio(c1, m1), t2 = fmtMonomio(c2, m2);
+        this.op = (c1 < 0 ? '(' + t1 + ')' : t1) + '*' + (c2 < 0 ? '(' + t2 + ')' : t2);
+        this.solCoef = c1 * c2;
+        this.solMapa = {};
+        letras.forEach(l => { this.solMapa[l] = m1[l] + m2[l]; });
+        this.sol = fmtMonomio(this.solCoef, this.solMapa);
+    }
+    firma() { return this.op; }
+    verificar(r) {
+        if (this.superado) return { correcto: false, superado: true, msg: "Ejercicio ya superado" };
+        if (!normalizar(r)) return { correcto: false, superado: false, sinCambio: true, msg: "⚠️ Escribe tu respuesta antes de comprobar. No cuenta como fallo." };
+        const ok = monomiosIguales(leerMonomio(r), { coef: this.solCoef, mapa: this.solMapa });
+        return this.procesar(ok, "❌ Incorrecto. Se multiplican los coeficientes (cuidado con los signos) y se suman los exponentes de cada letra: " + this.op.replace(/\*/g, '·') + " = " + this.sol + ".");
+    }
+    getHTML(i) {
+        let e = this, dis = e.superado ? 'disabled' : '';
+        return '<div class="ejercicio-card ' + (e.superado ? 'superado' : '') + '">' + cabecera(i, e, 'Multiplicación de monomios') +
+            '<div class="enunciado-latex">\\( ' + latexify(e.op) + ' \\)</div>' +
+            '<label for="e5_resp" class="sr-only">Resultado de la multiplicación de monomios</label><div class="input-con-potencia" style="margin-bottom:0.8rem"><input type="text" id="e5_resp" class="text-input" placeholder="Ej: 40x^3" autocomplete="off" ' + dis + '>' + botonPotencia(e, 'e5_resp') + '</div>' +
+            pie(i, e, true) + '</div>';
+    }
+}
+
+/* ---------- Ejercicio 6: Ecuaciones sencillas ---------- */
+
+class Ejercicio6 extends EjercicioBase {
+    generarNuevo() {
+        const b = aleatorio(1, 12);
+        this.sol = aleatorioNoCero(-9, 15);
+        if (Math.random() < 0.5) {
+            this.c = this.sol + b;
+            this.ecuacion = 'x+' + b + '=' + this.c;
+            this.texto = 'x + ' + b + ' = ' + num(this.c);
+            this.explicacion = 'x = ' + num(this.c) + ' − ' + b + ' = ' + num(this.sol);
+        } else {
+            this.c = this.sol - b;
+            this.ecuacion = 'x-' + b + '=' + this.c;
+            this.texto = 'x − ' + b + ' = ' + num(this.c);
+            this.explicacion = 'x = ' + num(this.c) + ' + ' + b + ' = ' + num(this.sol);
+        }
+    }
+    firma() { return this.ecuacion; }
+    verificar(v) {
+        if (this.superado) return { correcto: false, superado: true, msg: "Ejercicio ya superado" };
+        const num = leerEntero(v);
+        if (num === null) return { correcto: false, superado: false, sinCambio: true, msg: "⚠️ Introduce un número entero. No cuenta como fallo." };
+        return this.procesar(num === this.sol, "❌ Incorrecto. Pasa el número al otro miembro con la operación contraria: " + this.texto + " → " + this.explicacion + ".");
+    }
+    getHTML(i) {
+        let e = this, dis = e.superado ? 'disabled' : '';
+        return '<div class="ejercicio-card ' + (e.superado ? 'superado' : '') + '">' + cabecera(i, e, 'Ecuaciones sencillas') +
+            '<div class="enunciado-latex">\\( ' + e.ecuacion + ' \\)</div>' +
+            '<div class="input-area"><label for="e6_resp" class="sr-only">Valor de x</label><input type="text" id="e6_resp" class="number-input" placeholder="x =" autocomplete="off" ' + dis + '></div>' +
+            pie(i, e, true) + '</div>';
+    }
+}
+
+/* ---------- Ejercicio 7: Ecuaciones con paréntesis ---------- */
+
+class Ejercicio7 extends EjercicioBase {
+    generarNuevo() {
+        const a = aleatorio(2, 7), b = aleatorio(1, 9);
+        const suma = Math.random() < 0.5;
+        this.sol = suma ? aleatorio(1, 10) : b + aleatorio(1, 8);
+        const c = suma ? a * (this.sol + b) : a * (this.sol - b);
+        this.ecuacion = a + '(x' + (suma ? '+' : '-') + b + ')=' + c;
+        const sinPar = a + 'x' + (suma ? ' + ' : ' − ') + (a * b) + ' = ' + c;
+        const despeje = a + 'x = ' + c + (suma ? ' − ' : ' + ') + (a * b) + ' = ' + (suma ? c - a * b : c + a * b);
+        this.explicacion = 'Quitamos paréntesis: ' + sinPar + ' → ' + despeje + ' → x = ' + this.sol;
+    }
+    firma() { return this.ecuacion; }
+    verificar(v) {
+        if (this.superado) return { correcto: false, superado: true, msg: "Ejercicio ya superado" };
+        const num = leerEntero(v);
+        if (num === null) return { correcto: false, superado: false, sinCambio: true, msg: "⚠️ Introduce un número entero. No cuenta como fallo." };
+        return this.procesar(num === this.sol, "❌ Incorrecto. " + this.ecuacion + ". " + this.explicacion + ".");
+    }
+    getHTML(i) {
+        let e = this, dis = e.superado ? 'disabled' : '';
+        return '<div class="ejercicio-card ' + (e.superado ? 'superado' : '') + '">' + cabecera(i, e, 'Ecuaciones con paréntesis') +
+            '<div class="enunciado-latex">\\( ' + e.ecuacion + ' \\)</div>' +
+            '<div class="input-area"><label for="e7_resp" class="sr-only">Valor de x</label><input type="text" id="e7_resp" class="number-input" placeholder="x =" autocomplete="off" ' + dis + '></div>' +
+            pie(i, e, true) + '</div>';
+    }
+}
+
+/* ---------- Ejercicio 8: Problema (plantear y resolver) ---------- */
+
+const MULTIPLOS = { 2: 'doble', 3: 'triple', 4: 'cuádruple', 5: 'quíntuple' };
+
+/* Comprueba si la ecuación del alumno es la del enunciado: un miembro debe
+   tener a·x y el otro c·x, y ambas ecuaciones deben ser la misma (en
+   cualquier orden de miembros y de términos). Rechaza escribir directamente
+   la solución («x=7»), porque eso no es plantear el problema. */
+function ecuacionPlanteadaOk(texto, a, b, c, d) {
+    const t = normalizar(texto);
+    const partes = t.split('=');
+    if (partes.length !== 2 || !partes[0] || !partes[1]) return false;
+    const L = x => evaluarNumerico(partes[0], x), R = x => evaluarNumerico(partes[1], x);
+    for (const x of [0, 1, 2, 5]) if (L(x) === null || R(x) === null) return false;
+    const pendL = L(1) - L(0), pendR = R(1) - R(0);
+    if (Math.abs((L(5) - L(0)) - 5 * pendL) > 1e-9 || Math.abs((R(5) - R(0)) - 5 * pendR) > 1e-9) return false;
+    let signo;
+    if (pendL === a && pendR === c) signo = 1;
+    else if (pendL === c && pendR === a) signo = -1;
+    else return false;
+    const objetivo = x => (a * x - b) - (c * x + d);
+    return [0, 1, 2, 5].every(x => Math.abs((L(x) - R(x)) - signo * objetivo(x)) < 1e-9);
+}
+
+class Ejercicio8 extends EjercicioBase {
+    constructor() { super(); this.objetivo = 1; }
+    generarNuevo() {
+        let a, c, x, b, d;
+        do {
+            a = aleatorio(3, 5);
+            c = aleatorio(2, a - 1);
+            x = aleatorio(2, 12);
+            b = aleatorio(1, 9);
+            d = (a - c) * x - b;
+        } while (d < 1);
+        this.a = a; this.b = b; this.c = c; this.d = d; this.sol = x;
+        this.problema = "Halla un número cuyo " + MULTIPLOS[a] + " menos " + b + " sea igual a su " + MULTIPLOS[c] + " más " + d + ".";
+        this.ecuacionCorrecta = a + "x-" + b + "=" + c + "x+" + d;
+        this.paso = 1;
+    }
+    firma() { return this.problema; }
+    fallar(msg) {
+        fallosGlobales++;
+        rachaGlobal = 0;
+        this.avanzarTanda();
+        return { correcto: false, superado: false, msg: etiquetarFallo(msg) + " 👉 Ahora inténtalo con este nuevo problema." };
+    }
+    verificarEcuacion(ecuacion) {
+        if (this.superado) return { correcto: false, superado: true, msg: "Problema ya superado" };
+        if (!normalizar(ecuacion)) return { correcto: false, superado: false, sinCambio: true, msg: "⚠️ Escribe la ecuación antes de comprobar. No cuenta como fallo." };
+        if (ecuacionPlanteadaOk(ecuacion, this.a, this.b, this.c, this.d)) {
+            this.paso = 2;
+            return { correcto: true, superado: false, msg: "✓ Ecuación correcta. Ahora resuélvela: ¿cuánto vale x?" };
+        }
+        return this.fallar("❌ Ecuación incorrecta. La ecuación era " + this.a + "x − " + this.b + " = " + this.c + "x + " + this.d + ".");
+    }
+    verificarSolucion(solucion) {
+        if (this.superado) return { correcto: false, superado: true, msg: "Problema ya superado" };
+        const num = leerEntero(solucion);
+        if (num === null) return { correcto: false, superado: false, sinCambio: true, msg: "⚠️ Introduce un número entero. No cuenta como fallo." };
+        if (num === this.sol) {
+            this.superado = true;
+            return { correcto: true, superado: true, msg: "✓ ¡Correcto! Has superado el problema." };
+        }
+        return this.fallar("❌ Solución incorrecta. Agrupando las x en un miembro y los números en el otro: " + (this.a - this.c) + "x = " + (this.d + this.b) + " → x = " + this.sol + ".");
+    }
+    getHTML(i) {
+        let e = this, dis = e.superado ? 'disabled' : '';
+        let p1 = (e.paso === 1 && !e.superado) ? 'flex' : 'none';
+        let p2 = (e.paso === 2 && !e.superado) ? 'flex' : 'none';
+        return '<div class="ejercicio-card ' + (e.superado ? 'superado' : '') + '">' + cabecera(i, e, 'Problema', '(se supera con un acierto)') +
+            '<div class="enunciado-texto">📦 ' + e.problema + '</div>' +
+            '<div class="input-area" id="paso1_e8" style="display:' + p1 + '"><label for="e8_ecuacion" class="sr-only">Ecuación planteada</label><div class="input-con-potencia"><input type="text" id="e8_ecuacion" class="text-input" placeholder="Plantea la ecuación con x" autocomplete="off" ' + dis + '>' + botonPotencia(e, 'e8_ecuacion') + '</div><button class="btn-primary" data-accion="ecuacion" ' + dis + '>Comprobar ecuación</button></div>' +
+            '<div class="input-area" id="paso2_e8" style="display:' + p2 + '"><label for="e8_resp" class="sr-only">Valor de x</label><input type="text" id="e8_resp" class="number-input" placeholder="Valor de x" autocomplete="off" ' + dis + '><button class="btn-primary" data-accion="solucion" ' + dis + '>Comprobar solución</button></div>' +
+            (!e.superado ? '<div class="input-area"><button class="btn-secondary" data-accion="nuevo" data-ej="' + i + '">🔄 Nuevo problema</button></div>' : '') +
+            pie(i, e, false) + '</div>';
+    }
+}
+
+/* ---------- Nota y representación ---------- */
+
+function calcularNotaFinal() {
+    let s = ejercicios.filter(e => e.superado).length;
+    let nb = s - (fallosGlobales * 0.2);
+    if (nb < 0) nb = 0;
+    let nf = (nb / 8) * 10;
+    if (nf > 10) nf = 10;
+    return { notaFinal: nf, superados: s };
+}
+
+function actualizarUI() {
+    let { notaFinal, superados } = calcularNotaFinal();
+    document.getElementById('progresoCount').innerText = superados;
+    document.getElementById('rachaActual').innerText = rachaGlobal;
+    document.getElementById('fallosCount').innerText = fallosGlobales;
+    document.getElementById('notaActual').innerText = notaFinal.toFixed(1);
+}
+
+function tipografiar(nodo) {
+    if (window.MathJax && typeof MathJax.typesetPromise === 'function') {
+        MathJax.typesetPromise([nodo]).catch(() => {});
+    }
+}
+
+/* Cada tarjeta va en su propio contenedor para poder repintarla sola,
+   sin borrar lo que el alumno esté escribiendo en otros ejercicios. */
+function renderizarTodo() {
+    let c = document.getElementById('ejerciciosContainer');
+    let h = '';
+    for (let i = 0; i < ejercicios.length; i++) {
+        h += '<div id="wrap_e' + i + '">' + ejercicios[i].getHTML(i) + '</div>';
+        if (i < ejercicios.length - 1) h += '<hr>';
+    }
+    c.innerHTML = h;
+    actualizarUI();
+    tipografiar(c);
+}
+
+function renderizarEjercicio(i) {
+    let w = document.getElementById('wrap_e' + i);
+    if (!w) { renderizarTodo(); return; }
+    w.innerHTML = ejercicios[i].getHTML(i);
+    actualizarUI();
+    tipografiar(w);
+}
+
+/* Muestra el resultado: si el enunciado ha cambiado (acierto, fallo o
+   superado) se repinta la tarjeta; si solo faltaba algún dato, se conserva
+   lo escrito y solo se muestra el aviso. */
+function mostrarResultado(i, r) {
+    ejercicios[i].ultimoFeedback = { correcto: r.correcto, msg: r.msg };
+    if (r.sinCambio) {
+        document.getElementById('fb_e' + (i + 1)).innerHTML = '<span class="feedback-error">' + r.msg + '</span>';
+        actualizarUI();
+        return;
+    }
+    renderizarEjercicio(i);
+}
+
+const valor = id => document.getElementById(id)?.value;
+
+function verificarEjercicio(i) {
+    let ej = ejercicios[i], r;
+    switch (i) {
+        case 0: r = ej.verificar(valor('e1_r1'), valor('e1_r2')); break;
+        case 1: r = ej.verificar(valor('e2_resp')); break;
+        case 2: r = ej.verificar(valor('e3_coef'), valor('e3_pl'), valor('e3_grado')); break;
+        case 3: r = ej.verificar(valor('e4_resp')); break;
+        case 4: r = ej.verificar(valor('e5_resp')); break;
+        case 5: r = ej.verificar(valor('e6_resp')); break;
+        case 6: r = ej.verificar(valor('e7_resp')); break;
+        default: return;
+    }
+    mostrarResultado(i, r);
+}
+
+function nuevoEjercicio(i) {
+    if (ejercicios[i] && ejercicios[i].nuevoEjercicio()) renderizarEjercicio(i);
+}
+
+/* ---------- Calificación, nombre y reinicio ---------- */
+
+function getTiempo() {
+    let elapsedSec = Math.floor((Date.now() - startTime) / 1000);
+    let minutosRedondeados = Math.ceil(elapsedSec / 60);
+    let h = Math.floor(minutosRedondeados / 60);
+    let m = minutosRedondeados % 60;
+    return h.toString().padStart(2, '0') + ':' + m.toString().padStart(2, '0');
+}
+
+function mostrarResultados(n) {
+    let { notaFinal, superados } = calcularNotaFinal();
+    let fecha = new Date().toLocaleDateString('es-ES');
+    let hora = new Date().toLocaleTimeString('es-ES');
+    document.getElementById('modalNombreMostrar').innerText = n.toUpperCase();
+    document.getElementById('modalNota').innerText = notaFinal.toFixed(1) + '/10';
+    let msg = notaFinal >= 9 ? "🌟 Excelente" : (notaFinal >= 7 ? "👍 Muy bien" : (notaFinal >= 5 ? "📘 Aprobado" : "📚 Repasa"));
+    document.getElementById('modalMensaje').innerText = msg;
+    document.getElementById('modalStats').innerHTML = '<p>📅 ' + fecha + ' 🕐 ' + hora + '</p><p>⏱️ Tiempo: ' + getTiempo() + '</p><p>🎯 Superados: ' + superados + '/8</p><p>❌ Fallos: ' + fallosGlobales + '</p><p>⭐ Nota: ' + notaFinal.toFixed(1) + '</p>';
+    let mc = document.getElementById('modalCard');
+    let bgColor, textColor;
+    if (notaFinal >= 10) { bgColor = '#1a7a1a'; textColor = 'white'; }
+    else if (notaFinal >= 9) { bgColor = '#6dbf6d'; textColor = 'white'; }
+    else if (notaFinal >= 8) { bgColor = '#1a4f8a'; textColor = 'white'; }
+    else if (notaFinal >= 7) { bgColor = '#5b9bd5'; textColor = 'white'; }
+    else if (notaFinal >= 6) { bgColor = '#c05c00'; textColor = 'white'; }
+    else if (notaFinal >= 5) { bgColor = '#f5a623'; textColor = 'black'; }
+    else { bgColor = '#c0392b'; textColor = 'white'; }
+    mc.style.backgroundColor = bgColor;
+    mc.style.color = textColor;
+    document.getElementById('modalResultados').classList.add('show');
+}
+
+function finalizar() {
+    let n = document.getElementById('nombreAlumno').value.trim();
+    if (!n) {
+        document.getElementById('modalNombre').classList.add('show');
+        return;
+    }
+    mostrarResultados(n);
+}
+
+function hayProgresoQuePerder() {
+    return fallosGlobales > 0 || ejercicios.some(e => e.superado || e.racha > 0 || e.paso === 2);
+}
+
+/* Modal propio en lugar de confirm(): el diálogo nativo puede quedar
+   silenciado cuando la ficha está incrustada en Google Sites. */
+function resetear() {
+    if (!hayProgresoQuePerder()) { location.reload(); return; }
+    let { notaFinal } = calcularNotaFinal();
+    document.getElementById('textoAvisoReset').innerText = 'Se perderá toda la nota actual (' + notaFinal.toFixed(1) + '/10) y el progreso de todos los ejercicios.';
+    document.getElementById('modalConfirmarReset').classList.add('show');
+}
+
+function cerrarModales() {
+    ['modalResultados', 'modalNombre', 'modalConfirmarReset'].forEach(id => document.getElementById(id).classList.remove('show'));
+}
+
+function confirmarNombre() {
+    let n = document.getElementById('modalNombreInput').value.trim();
+    if (n) {
+        document.getElementById('nombreAlumno').value = n;
+        document.getElementById('modalNombre').classList.remove('show');
+        mostrarResultados(n);
+    }
+}
+
+/* ---------- Arranque ---------- */
+
+const clases = [Ejercicio1, Ejercicio2, Ejercicio3, Ejercicio4, Ejercicio5, Ejercicio6, Ejercicio7, Ejercicio8];
+ejercicios = clases.map(C => new C());
+renderizarTodo();
+
+document.getElementById('btnFinalizar').addEventListener('click', finalizar);
+document.getElementById('btnResetear').addEventListener('click', resetear);
+document.getElementById('closeModal').addEventListener('click', cerrarModales);
+document.getElementById('btnConfirmarNombre').addEventListener('click', confirmarNombre);
+document.getElementById('btnCancelarReset').addEventListener('click', cerrarModales);
+document.getElementById('btnConfirmarReset').addEventListener('click', () => location.reload());
+
+/* Delegación de eventos: sustituye a los onclick en línea, que se bloquean
+   cuando la página se sirve con una política de seguridad (CSP) estricta. */
+document.getElementById('ejerciciosContainer').addEventListener('click', function(e) {
+    const btn = e.target.closest('button[data-accion]');
+    if (!btn || btn.disabled) return;
+    const accion = btn.dataset.accion;
+    if (accion === 'comprobar') verificarEjercicio(Number(btn.dataset.ej));
+    else if (accion === 'nuevo') nuevoEjercicio(Number(btn.dataset.ej));
+    else if (accion === 'potencia') insertarPotencia(btn.dataset.destino);
+    else if (accion === 'raiz') insertarRaiz(btn.dataset.destino);
+    else if (accion === 'ecuacion') mostrarResultado(7, ejercicios[7].verificarEcuacion(valor('e8_ecuacion')));
+    else if (accion === 'solucion') mostrarResultado(7, ejercicios[7].verificarSolucion(valor('e8_resp')));
+});
+
+document.getElementById('ejerciciosContainer').addEventListener('keydown', function(e) {
+    if (e.key !== 'Enter' || e.target.tagName !== 'INPUT') return;
+    e.preventDefault();
+    const card = e.target.closest('.ejercicio-card');
+    if (!card) return;
+    for (const boton of card.querySelectorAll('.btn-primary')) {
+        const areaPadre = boton.closest('.input-area');
+        const areaVisible = !areaPadre || areaPadre.style.display !== 'none';
+        if (!boton.disabled && areaVisible) { boton.click(); break; }
+    }
+});
+
+document.getElementById('modalNombreInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') { e.preventDefault(); confirmarNombre(); }
+});
+</script>
+</body>
+</html>

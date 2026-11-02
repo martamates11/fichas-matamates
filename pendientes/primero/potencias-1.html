@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Potencias y Raíces 1º ESO · Ficha interactiva</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+    --color-fondo: #F5F0E8;
+    --color-fondo-card: #FDFAF3;
+    --color-texto: #2C1F0E;
+    --color-texto-suave: #6B4F35;
+    --color-acento: #A0522D;
+    --color-acento-hover: #7B3B1E;
+    --color-borde: #C9A96E;
+    --color-borde-suave: #E0CEAA;
+    --color-cabecera: #3B2510;
+    --color-cabecera-txt: #F5EDD8;
+    --color-correcto: #2E6B3E;
+    --color-incorrecto: #8B1A1A;
+    --color-neutro: #E8DFC8;
+    --color-aviso: #D4A259;
+    --color-nuevo: #4A6FA5;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background: var(--color-fondo);
+    font-family: 'DM Sans', 'Inter', sans-serif;
+    color: var(--color-texto);
+    min-height: 100vh;
+    transition: background 0.5s ease;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.autoria {
+    background: var(--color-cabecera);
+    text-align: center;
+    padding: 6px;
+    font-size: 10px;
+    color: rgba(245, 240, 232, 0.7);
+}
+
+.ficha-wrapper {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.header {
+    background: var(--color-cabecera);
+    border-radius: 1.5rem;
+    padding: 1.8rem 2rem;
+    margin-bottom: 1.8rem;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.header h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--color-cabecera-txt);
+    margin-bottom: 0.5rem;
+}
+
+.header p { color: #C9B896; font-size: 0.9rem; }
+
+.header-badges {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+}
+
+.header-badge {
+    background: rgba(255,255,255,0.08);
+    padding: 0.25rem 0.75rem;
+    border-radius: 40px;
+    font-size: 0.7rem;
+    color: #E0CEAA;
+}
+
+.info-bar {
+    background: var(--color-fondo-card);
+    border-radius: 1.2rem;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    border: 1px solid var(--color-borde);
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--color-texto-suave);
+}
+
+.info-icon {
+    width: 30px;
+    height: 30px;
+    background: var(--color-fondo);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.info-value {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--color-texto);
+}
+
+.name-section {
+    background: var(--color-fondo-card);
+    border-radius: 1rem;
+    padding: 0.8rem 1.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    border: 1px solid var(--color-borde-suave);
+}
+
+.name-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--color-texto-suave);
+}
+
+.name-input {
+    flex: 1;
+    max-width: 280px;
+    border: none;
+    border-bottom: 2px solid var(--color-borde);
+    padding: 0.5rem 0.25rem;
+    font-size: 0.95rem;
+    background: transparent;
+}
+
+.name-input:focus { outline: none; border-bottom-color: var(--color-acento); }
+
+.ejercicio-card {
+    background: var(--color-fondo-card);
+    border-radius: 1.2rem;
+    padding: 1.5rem;
+    margin-bottom: 1.2rem;
+    border: 1px solid var(--color-borde);
+    transition: all 0.2s;
+}
+
+.ejercicio-card.superado {
+    border-left: 5px solid var(--color-correcto);
+    background: #E8F5E9;
+    opacity: 0.85;
+}
+
+.ejercicio-card.bloqueado {
+    border-left: 5px solid var(--color-aviso);
+}
+
+.ejercicio-card.superado .pregunta-item {
+    opacity: 0.6;
+}
+
+.ejercicio-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.ejercicio-titulo-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.ejercicio-num {
+    background: var(--color-acento);
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+.ejercicio-titulo {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.btn-nuevo-ejercicio {
+    background: var(--color-nuevo);
+    border: none;
+    color: white;
+    padding: 6px 14px;
+    border-radius: 40px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-nuevo-ejercicio:hover { background: #3a5a82; transform: scale(0.96); }
+
+.pregunta-item {
+    background: var(--color-fondo);
+    border-radius: 1rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid var(--color-borde-suave);
+}
+
+.enunciado {
+    background: transparent;
+    padding: 0.5rem 0;
+    font-size: 1rem;
+    margin-bottom: 0.8rem;
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.enunciado-formula {
+    background: transparent;
+    padding: 0.5rem 0;
+    font-size: 1.15rem;
+    margin-bottom: 0.8rem;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.enunciado-formula sup {
+    font-size: 0.65em;
+    margin-left: 1px;
+}
+
+.fraccion {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    vertical-align: middle;
+    margin: 0 6px;
+    font-size: 0.85em;
+    line-height: 1.15;
+}
+
+.fraccion .num {
+    padding: 0 4px 2px;
+    border-bottom: 1.5px solid currentColor;
+}
+
+.fraccion .den {
+    padding: 2px 4px 0;
+}
+
+.radical {
+    white-space: nowrap;
+}
+
+.radical .radicando {
+    border-top: 1.5px solid currentColor;
+    padding: 1px 3px 0;
+    margin-left: 1px;
+}
+
+.base-exp-alto {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 4px;
+    background: transparent;
+    padding: 0;
+}
+
+.base-input-alto {
+    width: 70px;
+    padding: 6px 8px;
+    font-size: 0.9rem;
+    text-align: center;
+    border: 2px solid var(--color-borde);
+    border-radius: 10px;
+    font-weight: 500;
+    background: white;
+}
+
+.exp-input-alto {
+    width: 60px;
+    padding: 4px 4px;
+    font-size: 0.75rem;
+    text-align: center;
+    border: 2px solid var(--color-borde);
+    border-radius: 10px;
+    background: white;
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+.text-input {
+    border: 2px solid var(--color-borde);
+    border-radius: 10px;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    width: 200px;
+    font-family: 'JetBrains Mono', monospace;
+    background: white;
+}
+
+.number-input {
+    border: 2px solid var(--color-borde);
+    border-radius: 10px;
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    width: 100px;
+    text-align: center;
+    font-weight: 500;
+    background: white;
+}
+
+input:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.btn-primary {
+    background: var(--color-acento);
+    border: none;
+    color: white;
+    padding: 8px 18px;
+    border-radius: 40px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-primary:hover:not(:disabled) { background: var(--color-acento-hover); transform: scale(0.97); }
+.btn-primary:disabled { background: #C9A96E; cursor: not-allowed; }
+
+.btn-large {
+    background: var(--color-acento);
+    color: white;
+    border: none;
+    padding: 12px 36px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-large:hover { background: var(--color-acento-hover); transform: translateY(-2px); }
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid var(--color-borde);
+    color: var(--color-texto-suave);
+    padding: 10px 28px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-outline:hover { border-color: var(--color-acento); color: var(--color-acento); }
+
+.input-area {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 0.8rem;
+}
+
+.feedback { margin-top: 10px; font-size: 0.85rem; font-weight: 500; min-height: 1px; }
+.feedback-correcto { color: var(--color-correcto); background: rgba(46,107,62,0.1); padding: 6px 14px; border-radius: 30px; display: inline-block; }
+.feedback-error { color: var(--color-incorrecto); background: rgba(139,26,26,0.08); padding: 6px 14px; border-radius: 30px; display: inline-block; }
+.feedback-pedagogico { color: var(--color-acento); background: rgba(160,82,45,0.1); padding: 6px 14px; border-radius: 30px; display: block; margin-top: 5px; font-size: 0.8rem; }
+.feedback-necesita-nuevo { color: var(--color-aviso); background: rgba(212,162,89,0.15); padding: 6px 14px; border-radius: 30px; display: inline-block; font-weight: 600; }
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+}
+
+/* Modales de confirmación */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+}
+
+.modal-overlay.show { display: flex; }
+
+.modal-confirm-card {
+    background: #fffdf7;
+    border-radius: 12px;
+    padding: 28px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    position: relative;
+}
+
+.modal-result-card {
+    border-radius: 16px;
+    padding: 28px;
+    max-width: 450px;
+    width: 90%;
+    text-align: center;
+    position: relative;
+    transition: all 0.3s;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    opacity: 0.7;
+    position: absolute;
+    top: 12px;
+    right: 15px;
+}
+
+.modal-close:hover { opacity: 1; }
+
+.modal-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.btn-confirm {
+    background: var(--color-correcto);
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 30px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-cancel {
+    background: var(--color-incorrecto);
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 30px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.modal-grade { font-size: 52px; font-weight: 900; margin: 12px 0 8px; }
+.modal-message { font-size: 14px; margin-bottom: 16px; }
+.modal-stats { border-radius: 10px; padding: 12px; margin-bottom: 14px; font-size: 13px; text-align: left; background: rgba(255,255,255,0.2); }
+.modal-stats p { padding: 4px 0; }
+.modal-footer { font-size: 10px; margin-top: 12px; opacity: 0.8; }
+.recordatorio { font-size: 12px; margin-top: 8px; font-weight: 600; background: rgba(255,255,255,0.3); border-radius: 20px; padding: 8px; }
+
+/* Colores del modal de resultados */
+.bg-nota-10 { background: #1a7a1a; color: white; }
+.bg-nota-9 { background: #6dbf6d; color: white; }
+.bg-nota-8 { background: #1a4f8a; color: white; }
+.bg-nota-7 { background: #5b9bd5; color: white; }
+.bg-nota-6 { background: #c05c00; color: white; }
+.bg-nota-5 { background: #f5a623; color: black; }
+.bg-nota-4 { background: #c0392b; color: white; }
+</style>
+</head>
+<body>
+<div class="autoria">Material elaborado por Marta López de Letona Sánchez</div>
+
+<div class="ficha-wrapper">
+    <div class="header">
+        <h1>⚡ Potencias y Raíces</h1>
+        <p>Ejercicios interactivos · 1º ESO</p>
+        <div class="header-badges">
+            <span class="header-badge">🎯 Acertar las 2 preguntas → superado</span>
+            <span class="header-badge">💡 Cada fallo resta 0.2 puntos</span>
+            <span class="header-badge">📚 Feedback pedagógico en cada error</span>
+            <span class="header-badge">🔄 Si fallas, verás la solución y unas preguntas nuevas para volver a intentarlo</span>
+        </div>
+    </div>
+
+    <div class="info-bar">
+        <div class="info-item"><span class="info-icon" aria-hidden="true">📊</span><span>Progreso: <span id="progresoCount" class="info-value">0</span>/<span id="totalEjerciciosTxt">10</span></span></div>
+        <div class="info-item"><span class="info-icon" aria-hidden="true">❌</span><span>Fallos: <span id="fallosCount" class="info-value">0</span></span></div>
+        <div class="info-item"><span class="info-icon" aria-hidden="true">⭐</span><span>Nota: <span id="notaActual" class="info-value">0.0</span>/10</span></div>
+        <div class="info-item"><span class="info-icon" aria-hidden="true">⏱️</span><span>Tiempo: <span id="tiempoTranscurrido" class="info-value">00:00</span></span></div>
+    </div>
+
+    <div class="name-section">
+        <span class="name-label" id="labelNombre">👤 ALUMNO/A</span>
+        <label for="nombreAlumno" class="sr-only">Nombre y apellidos del alumno o alumna</label>
+        <input type="text" id="nombreAlumno" class="name-input" placeholder="Escribe tu nombre..." aria-labelledby="labelNombre">
+    </div>
+
+    <div id="ejerciciosContainer"></div>
+
+    <div class="action-buttons">
+        <button class="btn-large" id="btnFinalizar">🏆 Finalizar y Calificar</button>
+        <button class="btn-outline" id="btnResetear">🔄 Reiniciar toda la ficha</button>
+    </div>
+</div>
+
+<!-- Modal de confirmación de finalizar -->
+<div id="modalConfirmacion" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="tituloModalConfirmacion">
+    <div class="modal-confirm-card">
+        <button class="modal-close" onclick="cerrarModalConfirmacion()" aria-label="Cerrar">✕</button>
+        <h3 id="tituloModalConfirmacion" style="color: var(--color-aviso); margin-bottom: 12px;">⚠️ ¿Finalizar ficha?</h3>
+        <p style="margin-bottom: 16px;">Si finalizas la ficha, ya no podrás seguir sumando puntos ni modificar tus respuestas. ¿Estás seguro de que quieres continuar?</p>
+        <div class="modal-buttons">
+            <button class="btn-confirm" onclick="confirmarFinalizar()">✅ Sí, finalizar</button>
+            <button class="btn-cancel" onclick="cerrarModalConfirmacion()">❌ Seguir practicando</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmación de reinicio total -->
+<div id="modalConfirmarReinicio" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="tituloModalReinicio">
+    <div class="modal-confirm-card">
+        <button class="modal-close" onclick="cerrarModalReinicio()" aria-label="Cerrar">✕</button>
+        <h3 id="tituloModalReinicio" style="color: var(--color-aviso); margin-bottom: 12px;">⚠️ ¿Reiniciar toda la ficha?</h3>
+        <p style="margin-bottom: 16px;">Se borrarán tus fallos, tu nota y el progreso de todos los ejercicios. Esta acción no se puede deshacer. ¿Quieres continuar?</p>
+        <div class="modal-buttons">
+            <button class="btn-confirm" onclick="confirmarReinicio()">✅ Sí, reiniciar</button>
+            <button class="btn-cancel" onclick="cerrarModalReinicio()">❌ Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de resultados -->
+<div id="modalResultados" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalNombreMostrar">
+    <div id="modalResultCard" class="modal-result-card">
+        <button class="modal-close" onclick="cerrarModalResultados()" aria-label="Cerrar">✕</button>
+        <div id="modalNombreMostrar" style="font-size: 1.2rem; font-weight: 600; margin-bottom: 5px;"></div>
+        <div style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 12px;">⚡ Potencias y Raíces · 1º ESO</div>
+        <div class="modal-grade" id="modalNota"></div>
+        <div class="modal-stats" id="modalStats"></div>
+        <div class="recordatorio">📸 Haz una captura de pantalla y entrégala en Google Classroom.</div>
+        <div class="modal-footer">Material elaborado por Marta López de Letona Sánchez</div>
+    </div>
+</div>
+
+<script>
+let fallosGlobales = 0;
+let finalizado = false;
+let ejercicios = [];
+const TOTAL_EJERCICIOS = 10;
+let tiempoInicio = null;
+let intervaloReloj = null;
+
+// ============ RENDER DE FÓRMULAS SIN DEPENDENCIAS EXTERNAS ============
+// Antes se usaba MathJax vía CDN. Se ha retirado por completo: si el centro
+// bloquea o no tiene acceso a cdn.jsdelivr.net, la ficha quedaba inutilizable
+// (el alumno veía el código LaTeX en bruto). Ahora todo se pinta con HTML/CSS
+// puro y funciona siempre, con o sin conexión a internet.
+function fmtPot(base, exp) {
+    return `${base}<sup>${exp}</sup>`;
+}
+function fmtFrac(numHTML, denHTML) {
+    return `<span class="fraccion"><span class="num">${numHTML}</span><span class="den">${denHTML}</span></span>`;
+}
+function fmtRaiz(n) {
+    return `<span class="radical">√<span class="radicando">${n}</span></span>`;
+}
+function fmtPotPot(base, expA, expB) {
+    return `(${fmtPot(base, expA)})<sup>${expB}</sup>`;
+}
+
+// ============ TIMER CON REDONDEO HACIA ARRIBA AL MINUTO ============
+function detenerTimer() {
+    if (intervaloReloj) {
+        clearInterval(intervaloReloj);
+        intervaloReloj = null;
+    }
+}
+
+function iniciarTimer() {
+    detenerTimer();
+    tiempoInicio = new Date();
+    intervaloReloj = setInterval(actualizarTiempo, 1000);
+    actualizarTiempo();
+}
+
+function calcularHHMM() {
+    if (!tiempoInicio) return "00:00";
+    const ahora = new Date();
+    const diffMs = ahora - tiempoInicio;
+    const totalSegundos = Math.ceil(diffMs / 1000);
+    // Redondeo hacia arriba AL MINUTO: 3:45 debe mostrarse como 00:04, no 00:03.
+    const totalMinutosRedondeados = Math.ceil(totalSegundos / 60);
+    const diffHoras = Math.floor(totalMinutosRedondeados / 60);
+    const diffMinutos = totalMinutosRedondeados % 60;
+    return `${diffHoras.toString().padStart(2, '0')}:${diffMinutos.toString().padStart(2, '0')}`;
+}
+
+function actualizarTiempo() {
+    const tiempoSpan = document.getElementById('tiempoTranscurrido');
+    if (tiempoSpan) tiempoSpan.innerText = calcularHHMM();
+}
+
+function obtenerTiempoFormateado() {
+    return calcularHHMM();
+}
+
+function obtenerFechaHoraActual() {
+    const ahora = new Date();
+    const fecha = `${ahora.getDate().toString().padStart(2, '0')}/${(ahora.getMonth()+1).toString().padStart(2, '0')}/${ahora.getFullYear()}`;
+    const hora = `${ahora.getHours().toString().padStart(2, '0')}:${ahora.getMinutes().toString().padStart(2, '0')}:${ahora.getSeconds().toString().padStart(2, '0')}`;
+    return { fecha, hora };
+}
+
+// ============ CLASES DE EJERCICIOS ============
+class EjercicioDosPreguntas {
+    constructor(id) {
+        this.id = id;
+        this.superado = false;
+        this.bloqueado = false;
+        this.feedbackClass = "feedback";
+        this.feedbackHTML = "";
+        this.generarPreguntas();
+    }
+    
+    generarPreguntas() {}
+    
+    reiniciar() {
+        this.superado = false;
+        this.bloqueado = false;
+        this.feedbackClass = "feedback";
+        this.feedbackHTML = "";
+        this.generarPreguntas();
+    }
+    
+    // Foto de los datos del enunciado (todo salvo el estado), para comprobar que cambian
+    datosEnunciado() {
+        const { id, superado, bloqueado, feedbackClass, feedbackHTML, ...datos } = this;
+        return JSON.stringify(datos);
+    }
+
+    // Regenera las preguntas hasta que difieran de las actuales (con tope)
+    regenerarDistintas() {
+        const antes = this.datosEnunciado();
+        for (let i = 0; i < 50; i++) {
+            this.reiniciar();
+            if (this.datosEnunciado() !== antes) break;
+        }
+    }
+
+    verificarPreguntas(respuesta1, respuesta2) {
+        if (this.superado || finalizado) return { correcto: false, superado: true, msg: "Ejercicio ya superado." };
+        
+        const resultado1 = this.comprobarPregunta1(respuesta1);
+        const resultado2 = this.comprobarPregunta2(respuesta2);
+        
+        const ambasCorrectas = resultado1.correcto && resultado2.correcto;
+        
+        if (ambasCorrectas) {
+            this.superado = true;
+            actualizarUI();
+            return { correcto: true, superado: true, msg: "🎉 ¡Ejercicio superado!", feedback: "correcto" };
+        } else {
+            fallosGlobales++;
+            this.bloqueado = true;
+            actualizarUI();
+            
+            let mensaje = "❌ Has fallado en alguna pregunta. ";
+            let explicacion = "";
+            
+            if (!resultado1.correcto && !resultado2.correcto) {
+                explicacion = `Pregunta 1: ${resultado1.explicacion} | Pregunta 2: ${resultado2.explicacion}`;
+            } else if (!resultado1.correcto) {
+                explicacion = `Pregunta 1: ${resultado1.explicacion}`;
+            } else {
+                explicacion = `Pregunta 2: ${resultado2.explicacion}`;
+            }
+            
+            return { correcto: false, superado: false, msg: mensaje, explicacion: explicacion, feedback: "error" };
+        }
+    }
+    
+    comprobarPregunta1(r) { return { correcto: false, explicacion: "" }; }
+    comprobarPregunta2(r) { return { correcto: false, explicacion: "" }; }
+    getHTML() { return ""; }
+}
+
+// EJERCICIO 1
+class Ejercicio1 extends EjercicioDosPreguntas {
+    generarPreguntas() {
+        const nums = ['cero', 'uno', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve', 'diez', 'once', 'doce', 'trece', 'catorce', 'quince'];
+        this.base1 = Math.floor(Math.random() * 8) + 2; this.exp1 = Math.floor(Math.random() * 4) + 2;
+        this.base2 = Math.floor(Math.random() * 8) + 2; this.exp2 = Math.floor(Math.random() * 4) + 2;
+        this.texto1 = `${nums[this.base1]} elevado a ${nums[this.exp1]}`;
+        this.texto2 = `${nums[this.base2]} elevado a ${nums[this.exp2]}`;
+    }
+    comprobarPregunta1(r) { return (parseInt(r.base) === this.base1 && parseInt(r.exp) === this.exp1) ? { correcto: true } : { correcto: false, explicacion: `La base es ${this.base1} y el exponente es ${this.exp1}.` }; }
+    comprobarPregunta2(r) { return (parseInt(r.base) === this.base2 && parseInt(r.exp) === this.exp2) ? { correcto: true } : { correcto: false, explicacion: `La base es ${this.base2} y el exponente es ${this.exp2}.` }; }
+    getHTML() {
+        const dis = (this.superado || this.bloqueado) ? 'disabled' : '';
+        return `<div class="ejercicio-card ${this.superado ? 'superado' : (this.bloqueado ? 'bloqueado' : '')}" id="ej-card-1"><div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">1</span><span class="ejercicio-titulo">Identificar Base y Exponente</span></div><button class="btn-nuevo-ejercicio" onclick="reiniciarEjercicio(0)">🔄 Nuevo</button></div><div class="pregunta-item"><div class="enunciado">📖 ${this.texto1}</div><div class="input-area"><div class="base-exp-alto"><label for="e1_b1" class="sr-only">Base de la primera potencia</label><input type="number" id="e1_b1" class="base-input-alto" placeholder="Base" ${dis}><label for="e1_e1" class="sr-only">Exponente de la primera potencia</label><input type="number" id="e1_e1" class="exp-input-alto" placeholder="Exp" ${dis}></div></div></div><div class="pregunta-item"><div class="enunciado">📖 ${this.texto2}</div><div class="input-area"><div class="base-exp-alto"><label for="e1_b2" class="sr-only">Base de la segunda potencia</label><input type="number" id="e1_b2" class="base-input-alto" placeholder="Base" ${dis}><label for="e1_e2" class="sr-only">Exponente de la segunda potencia</label><input type="number" id="e1_e2" class="exp-input-alto" placeholder="Exp" ${dis}></div></div></div><div class="input-area" style="justify-content: center; margin-top: 10px;"><button class="btn-primary" ${dis} onclick='procesarEjercicioCompleto(0, {base1: document.getElementById("e1_b1").value, exp1: document.getElementById("e1_e1").value, base2: document.getElementById("e1_b2").value, exp2: document.getElementById("e1_e2").value}, "fb_1")'>✅ Comprobar ejercicio</button></div><div id="fb_1" class="${this.feedbackClass}" aria-live="polite" style="text-align: center;">${this.feedbackHTML}</div></div>`;
+    }
+}
+
+// EJERCICIO 2
+class Ejercicio2 extends EjercicioDosPreguntas {
+    generarPreguntas() {
+        this.base1 = Math.floor(Math.random() * 5) + 2; this.exp1 = Math.floor(Math.random() * 3) + 3;
+        this.base2 = Math.floor(Math.random() * 5) + 2; this.exp2 = Math.floor(Math.random() * 3) + 3;
+    }
+    comprobarPregunta1(r) { return r.replace(/\s/g, '') === Array(this.exp1).fill(this.base1).join('*') ? { correcto: true } : { correcto: false, explicacion: `Escribe ${this.base1} repetido ${this.exp1} veces separado por *` }; }
+    comprobarPregunta2(r) { return r.replace(/\s/g, '') === Array(this.exp2).fill(this.base2).join('*') ? { correcto: true } : { correcto: false, explicacion: `Escribe ${this.base2} repetido ${this.exp2} veces separado por *` }; }
+    getHTML() {
+        const dis = (this.superado || this.bloqueado) ? 'disabled' : '';
+        return `<div class="ejercicio-card ${this.superado ? 'superado' : (this.bloqueado ? 'bloqueado' : '')}" id="ej-card-2"><div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">2</span><span class="ejercicio-titulo">Potencia en forma de Producto</span></div><button class="btn-nuevo-ejercicio" onclick="reiniciarEjercicio(1)">🔄 Nuevo</button></div><div class="pregunta-item"><div class="enunciado-formula">${fmtPot(this.base1, this.exp1)} como producto (usa *)</div><div class="input-area"><label for="e2_r1" class="sr-only">Producto equivalente a la primera potencia</label><input type="text" id="e2_r1" class="text-input" placeholder="Ej: 2*2*2" ${dis}></div></div><div class="pregunta-item"><div class="enunciado-formula">${fmtPot(this.base2, this.exp2)} como producto (usa *)</div><div class="input-area"><label for="e2_r2" class="sr-only">Producto equivalente a la segunda potencia</label><input type="text" id="e2_r2" class="text-input" placeholder="Ej: 3*3*3" ${dis}></div></div><div class="input-area" style="justify-content: center; margin-top: 10px;"><button class="btn-primary" ${dis} onclick='procesarEjercicioCompleto(1, {r1: document.getElementById("e2_r1").value, r2: document.getElementById("e2_r2").value}, "fb_2")'>✅ Comprobar ejercicio</button></div><div id="fb_2" class="${this.feedbackClass}" aria-live="polite" style="text-align: center;">${this.feedbackHTML}</div></div>`;
+    }
+}
+
+// EJERCICIO 3
+class Ejercicio3 extends EjercicioDosPreguntas {
+    generarPreguntas() {
+        this.base = Math.floor(Math.random() * 7) + 2; this.expA = Math.floor(Math.random() * 4) + 1; this.expB = Math.floor(Math.random() * 4) + 1;
+        this.base2 = Math.floor(Math.random() * 7) + 2; this.exp2A = Math.floor(Math.random() * 4) + 1; this.exp2B = Math.floor(Math.random() * 4) + 1;
+    }
+    comprobarPregunta1(r) { return (parseInt(r.base) === this.base && parseInt(r.exp) === (this.expA + this.expB)) ? { correcto: true } : { correcto: false, explicacion: `Base = ${this.base}, exponente = ${this.expA} + ${this.expB} = ${this.expA + this.expB}` }; }
+    comprobarPregunta2(r) { return (parseInt(r.base) === this.base2 && parseInt(r.exp) === (this.exp2A + this.exp2B)) ? { correcto: true } : { correcto: false, explicacion: `Base = ${this.base2}, exponente = ${this.exp2A} + ${this.exp2B} = ${this.exp2A + this.exp2B}` }; }
+    getHTML() {
+        const dis = (this.superado || this.bloqueado) ? 'disabled' : '';
+        return `<div class="ejercicio-card ${this.superado ? 'superado' : (this.bloqueado ? 'bloqueado' : '')}" id="ej-card-3"><div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">3</span><span class="ejercicio-titulo">Producto de Potencias (Misma Base)</span></div><button class="btn-nuevo-ejercicio" onclick="reiniciarEjercicio(2)">🔄 Nuevo</button></div><div class="pregunta-item"><div class="enunciado-formula">${fmtPot(this.base, this.expA)} · ${fmtPot(this.base, this.expB)}</div><div class="input-area"><div class="base-exp-alto"><label for="e3_b1" class="sr-only">Base del resultado</label><input type="number" id="e3_b1" class="base-input-alto" placeholder="Base" ${dis}><label for="e3_e1" class="sr-only">Exponente del resultado</label><input type="number" id="e3_e1" class="exp-input-alto" placeholder="Exp" ${dis}></div></div></div><div class="pregunta-item"><div class="enunciado-formula">${fmtPot(this.base2, this.exp2A)} · ${fmtPot(this.base2, this.exp2B)}</div><div class="input-area"><div class="base-exp-alto"><label for="e3_b2" class="sr-only">Base del resultado (segunda pregunta)</label><input type="number" id="e3_b2" class="base-input-alto" placeholder="Base" ${dis}><label for="e3_e2" class="sr-only">Exponente del resultado (segunda pregunta)</label><input type="number" id="e3_e2" class="exp-input-alto" placeholder="Exp" ${dis}></div></div></div><div class="input-area" style="justify-content: center; margin-top: 10px;"><button class="btn-primary" ${dis} onclick='procesarEjercicioCompleto(2, {base1: document.getElementById("e3_b1").value, exp1: document.getElementById("e3_e1").value, base2: document.getElementById("e3_b2").value, exp2: document.getElementById("e3_e2").value}, "fb_3")'>✅ Comprobar ejercicio</button></div><div id="fb_3" class="${this.feedbackClass}" aria-live="polite" style="text-align: center;">${this.feedbackHTML}</div></div>`;
+    }
+}
+
+// EJERCICIO 4
+class Ejercicio4 extends EjercicioDosPreguntas {
+    generarPreguntas() {
+        // Los rangos garantizan expA (5-8) > expB (1-3) siempre, por lo que el
+        // exponente resultante nunca es negativo. No hace falta un bucle de
+        // reintento: se deja documentado aquí en vez de un `while` muerto.
+        this.base = Math.floor(Math.random() * 6) + 2; this.expA = Math.floor(Math.random() * 4) + 5; this.expB = Math.floor(Math.random() * 3) + 1;
+        this.base2 = Math.floor(Math.random() * 6) + 2; this.exp2A = Math.floor(Math.random() * 4) + 5; this.exp2B = Math.floor(Math.random() * 3) + 1;
+    }
+    comprobarPregunta1(r) { return (parseInt(r.base) === this.base && parseInt(r.exp) === (this.expA - this.expB)) ? { correcto: true } : { correcto: false, explicacion: `Base = ${this.base}, exponente = ${this.expA} - ${this.expB} = ${this.expA - this.expB}` }; }
+    comprobarPregunta2(r) { return (parseInt(r.base) === this.base2 && parseInt(r.exp) === (this.exp2A - this.exp2B)) ? { correcto: true } : { correcto: false, explicacion: `Base = ${this.base2}, exponente = ${this.exp2A} - ${this.exp2B} = ${this.exp2A - this.exp2B}` }; }
+    getHTML() {
+        const dis = (this.superado || this.bloqueado) ? 'disabled' : '';
+        return `<div class="ejercicio-card ${this.superado ? 'superado' : (this.bloqueado ? 'bloqueado' : '')}" id="ej-card-4"><div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">4</span><span class="ejercicio-titulo">Cociente de Potencias (Misma Base)</span></div><button class="btn-nuevo-ejercicio" onclick="reiniciarEjercicio(3)">🔄 Nuevo</button></div><div class="pregunta-item"><div class="enunciado-formula">${fmtFrac(fmtPot(this.base, this.expA), fmtPot(this.base, this.expB))}</div><div class="input-area"><div class="base-exp-alto"><label for="e4_b1" class="sr-only">Base del resultado</label><input type="number" id="e4_b1" class="base-input-alto" placeholder="Base" ${dis}><label for="e4_e1" class="sr-only">Exponente del resultado</label><input type="number" id="e4_e1" class="exp-input-alto" placeholder="Exp" ${dis}></div></div></div><div class="pregunta-item"><div class="enunciado-formula">${fmtFrac(fmtPot(this.base2, this.exp2A), fmtPot(this.base2, this.exp2B))}</div><div class="input-area"><div class="base-exp-alto"><label for="e4_b2" class="sr-only">Base del resultado (segunda pregunta)</label><input type="number" id="e4_b2" class="base-input-alto" placeholder="Base" ${dis}><label for="e4_e2" class="sr-only">Exponente del resultado (segunda pregunta)</label><input type="number" id="e4_e2" class="exp-input-alto" placeholder="Exp" ${dis}></div></div></div><div class="input-area" style="justify-content: center; margin-top: 10px;"><button class="btn-primary" ${dis} onclick='procesarEjercicioCompleto(3, {base1: document.getElementById("e4_b1").value, exp1: document.getElementById("e4_e1").value, base2: document.getElementById("e4_b2").value, exp2: document.getElementById("e4_e2").value}, "fb_4")'>✅ Comprobar ejercicio</button></div><div id="fb_4" class="${this.feedbackClass}" aria-live="polite" style="text-align: center;">${this.feedbackHTML}</div></div>`;
+    }
+}
+
+// EJERCICIO 5
+class Ejercicio5 extends EjercicioDosPreguntas {
+    generarPreguntas() {
+        this.base = Math.floor(Math.random() * 5) + 2; this.expA = Math.floor(Math.random() * 3) + 2; this.expB = Math.floor(Math.random() * 3) + 2;
+        this.base2 = Math.floor(Math.random() * 5) + 2; this.exp2A = Math.floor(Math.random() * 3) + 2; this.exp2B = Math.floor(Math.random() * 3) + 2;
+    }
+    comprobarPregunta1(r) { return (parseInt(r.base) === this.base && parseInt(r.exp) === (this.expA * this.expB)) ? { correcto: true } : { correcto: false, explicacion: `Base = ${this.base}, exponente = ${this.expA} × ${this.expB} = ${this.expA * this.expB}` }; }
+    comprobarPregunta2(r) { return (parseInt(r.base) === this.base2 && parseInt(r.exp) === (this.exp2A * this.exp2B)) ? { correcto: true } : { correcto: false, explicacion: `Base = ${this.base2}, exponente = ${this.exp2A} × ${this.exp2B} = ${this.exp2A * this.exp2B}` }; }
+    getHTML() {
+        const dis = (this.superado || this.bloqueado) ? 'disabled' : '';
+        return `<div class="ejercicio-card ${this.superado ? 'superado' : (this.bloqueado ? 'bloqueado' : '')}" id="ej-card-5"><div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">5</span><span class="ejercicio-titulo">Potencia de una Potencia</span></div><button class="btn-nuevo-ejercicio" onclick="reiniciarEjercicio(4)">🔄 Nuevo</button></div><div class="pregunta-item"><div class="enunciado-formula">${fmtPotPot(this.base, this.expA, this.expB)}</div><div class="input-area"><div class="base-exp-alto"><label for="e5_b1" class="sr-only">Base del resultado</label><input type="number" id="e5_b1" class="base-input-alto" placeholder="Base" ${dis}><label for="e5_e1" class="sr-only">Exponente del resultado</label><input type="number" id="e5_e1" class="exp-input-alto" placeholder="Exp" ${dis}></div></div></div><div class="pregunta-item"><div class="enunciado-formula">${fmtPotPot(this.base2, this.exp2A, this.exp2B)}</div><div class="input-area"><div class="base-exp-alto"><label for="e5_b2" class="sr-only">Base del resultado (segunda pregunta)</label><input type="number" id="e5_b2" class="base-input-alto" placeholder="Base" ${dis}><label for="e5_e2" class="sr-only">Exponente del resultado (segunda pregunta)</label><input type="number" id="e5_e2" class="exp-input-alto" placeholder="Exp" ${dis}></div></div></div><div class="input-area" style="justify-content: center; margin-top: 10px;"><button class="btn-primary" ${dis} onclick='procesarEjercicioCompleto(4, {base1: document.getElementById("e5_b1").value, exp1: document.getElementById("e5_e1").value, base2: document.getElementById("e5_b2").value, exp2: document.getElementById("e5_e2").value}, "fb_5")'>✅ Comprobar ejercicio</button></div><div id="fb_5" class="${this.feedbackClass}" aria-live="polite" style="text-align: center;">${this.feedbackHTML}</div></div>`;
+    }
+}
+
+// EJERCICIO 6
+class Ejercicio6 extends EjercicioDosPreguntas {
+    generarPreguntas() {
+        this.fA = Math.floor(Math.random() * 8) + 2; this.fB = Math.floor(Math.random() * 8) + 2; this.exp = Math.floor(Math.random() * 5) + 2;
+        this.f2A = Math.floor(Math.random() * 8) + 2; this.f2B = Math.floor(Math.random() * 8) + 2; this.exp2 = Math.floor(Math.random() * 5) + 2;
+    }
+    comprobarPregunta1(r) { return (parseInt(r.base) === (this.fA * this.fB) && parseInt(r.exp) === this.exp) ? { correcto: true } : { correcto: false, explicacion: `Multiplica las bases: ${this.fA} × ${this.fB} = ${this.fA * this.fB}, exponente = ${this.exp}` }; }
+    comprobarPregunta2(r) { return (parseInt(r.base) === (this.f2A * this.f2B) && parseInt(r.exp) === this.exp2) ? { correcto: true } : { correcto: false, explicacion: `Multiplica las bases: ${this.f2A} × ${this.f2B} = ${this.f2A * this.f2B}, exponente = ${this.exp2}` }; }
+    getHTML() {
+        const dis = (this.superado || this.bloqueado) ? 'disabled' : '';
+        return `<div class="ejercicio-card ${this.superado ? 'superado' : (this.bloqueado ? 'bloqueado' : '')}" id="ej-card-6"><div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">6</span><span class="ejercicio-titulo">Producto de Potencias (Mismo Exponente)</span></div><button class="btn-nuevo-ejercicio" onclick="reiniciarEjercicio(5)">🔄 Nuevo</button></div><div class="pregunta-item"><div class="enunciado-formula">${fmtPot(this.fA, this.exp)} · ${fmtPot(this.fB, this.exp)}</div><div class="input-area"><div class="base-exp-alto"><label for="e6_b1" class="sr-only">Base del resultado</label><input type="number" id="e6_b1" class="base-input-alto" placeholder="Base" ${dis}><label for="e6_e1" class="sr-only">Exponente del resultado</label><input type="number" id="e6_e1" class="exp-input-alto" placeholder="Exp" ${dis}></div></div></div><div class="pregunta-item"><div class="enunciado-formula">${fmtPot(this.f2A, this.exp2)} · ${fmtPot(this.f2B, this.exp2)}</div><div class="input-area"><div class="base-exp-alto"><label for="e6_b2" class="sr-only">Base del resultado (segunda pregunta)</label><input type="number" id="e6_b2" class="base-input-alto" placeholder="Base" ${dis}><label for="e6_e2" class="sr-only">Exponente del resultado (segunda pregunta)</label><input type="number" id="e6_e2" class="exp-input-alto" placeholder="Exp" ${dis}></div></div></div><div class="input-area" style="justify-content: center; margin-top: 10px;"><button class="btn-primary" ${dis} onclick='procesarEjercicioCompleto(5, {base1: document.getElementById("e6_b1").value, exp1: document.getElementById("e6_e1").value, base2: document.getElementById("e6_b2").value, exp2: document.getElementById("e6_e2").value}, "fb_6")'>✅ Comprobar ejercicio</button></div><div id="fb_6" class="${this.feedbackClass}" aria-live="polite" style="text-align: center;">${this.feedbackHTML}</div></div>`;
+    }
+}
+
+// EJERCICIO 7
+class Ejercicio7 extends EjercicioDosPreguntas {
+    generarPreguntas() {
+        this.fB = Math.floor(Math.random() * 4) + 2; this.fA = this.fB * (Math.floor(Math.random() * 4) + 2); this.exp = Math.floor(Math.random() * 5) + 2;
+        this.f2B = Math.floor(Math.random() * 4) + 2; this.f2A = this.f2B * (Math.floor(Math.random() * 4) + 2); this.exp2 = Math.floor(Math.random() * 5) + 2;
+    }
+    comprobarPregunta1(r) { return (parseInt(r.base) === (this.fA / this.fB) && parseInt(r.exp) === this.exp) ? { correcto: true } : { correcto: false, explicacion: `Divide las bases: ${this.fA} ÷ ${this.fB} = ${this.fA / this.fB}, exponente = ${this.exp}` }; }
+    comprobarPregunta2(r) { return (parseInt(r.base) === (this.f2A / this.f2B) && parseInt(r.exp) === this.exp2) ? { correcto: true } : { correcto: false, explicacion: `Divide las bases: ${this.f2A} ÷ ${this.f2B} = ${this.f2A / this.f2B}, exponente = ${this.exp2}` }; }
+    getHTML() {
+        const dis = (this.superado || this.bloqueado) ? 'disabled' : '';
+        return `<div class="ejercicio-card ${this.superado ? 'superado' : (this.bloqueado ? 'bloqueado' : '')}" id="ej-card-7"><div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">7</span><span class="ejercicio-titulo">Cociente de Potencias (Mismo Exponente)</span></div><button class="btn-nuevo-ejercicio" onclick="reiniciarEjercicio(6)">🔄 Nuevo</button></div><div class="pregunta-item"><div class="enunciado-formula">${fmtFrac(fmtPot(this.fA, this.exp), fmtPot(this.fB, this.exp))}</div><div class="input-area"><div class="base-exp-alto"><label for="e7_b1" class="sr-only">Base del resultado</label><input type="number" id="e7_b1" class="base-input-alto" placeholder="Base" ${dis}><label for="e7_e1" class="sr-only">Exponente del resultado</label><input type="number" id="e7_e1" class="exp-input-alto" placeholder="Exp" ${dis}></div></div></div><div class="pregunta-item"><div class="enunciado-formula">${fmtFrac(fmtPot(this.f2A, this.exp2), fmtPot(this.f2B, this.exp2))}</div><div class="input-area"><div class="base-exp-alto"><label for="e7_b2" class="sr-only">Base del resultado (segunda pregunta)</label><input type="number" id="e7_b2" class="base-input-alto" placeholder="Base" ${dis}><label for="e7_e2" class="sr-only">Exponente del resultado (segunda pregunta)</label><input type="number" id="e7_e2" class="exp-input-alto" placeholder="Exp" ${dis}></div></div></div><div class="input-area" style="justify-content: center; margin-top: 10px;"><button class="btn-primary" ${dis} onclick='procesarEjercicioCompleto(6, {base1: document.getElementById("e7_b1").value, exp1: document.getElementById("e7_e1").value, base2: document.getElementById("e7_b2").value, exp2: document.getElementById("e7_e2").value}, "fb_7")'>✅ Comprobar ejercicio</button></div><div id="fb_7" class="${this.feedbackClass}" aria-live="polite" style="text-align: center;">${this.feedbackHTML}</div></div>`;
+    }
+}
+
+// EJERCICIO 8
+class Ejercicio8 extends EjercicioDosPreguntas {
+    generarPreguntas() {
+        this.base = Math.floor(Math.random() * 90) + 11;
+        this.base2 = Math.floor(Math.random() * 500) + 100;
+    }
+    comprobarPregunta1(r) { return parseInt(r) === 1 ? { correcto: true } : { correcto: false, explicacion: "Cualquier número elevado a 0 es igual a 1." }; }
+    comprobarPregunta2(r) { return parseInt(r) === 1 ? { correcto: true } : { correcto: false, explicacion: "Cualquier número elevado a 0 es igual a 1." }; }
+    getHTML() {
+        const dis = (this.superado || this.bloqueado) ? 'disabled' : '';
+        return `<div class="ejercicio-card ${this.superado ? 'superado' : (this.bloqueado ? 'bloqueado' : '')}" id="ej-card-8"><div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">8</span><span class="ejercicio-titulo">Exponente Especial Cero (0)</span></div><button class="btn-nuevo-ejercicio" onclick="reiniciarEjercicio(7)">🔄 Nuevo</button></div><div class="pregunta-item"><div class="enunciado-formula">Calcular: ${fmtPot(this.base, 0)} =</div><div class="input-area"><label for="e8_r1" class="sr-only">Resultado de la primera potencia elevada a cero</label><input type="number" id="e8_r1" class="number-input" ${dis}></div></div><div class="pregunta-item"><div class="enunciado-formula">Calcular: ${fmtPot(this.base2, 0)} =</div><div class="input-area"><label for="e8_r2" class="sr-only">Resultado de la segunda potencia elevada a cero</label><input type="number" id="e8_r2" class="number-input" ${dis}></div></div><div class="input-area" style="justify-content: center; margin-top: 10px;"><button class="btn-primary" ${dis} onclick='procesarEjercicioCompleto(7, {r1: document.getElementById("e8_r1").value, r2: document.getElementById("e8_r2").value}, "fb_8")'>✅ Comprobar ejercicio</button></div><div id="fb_8" class="${this.feedbackClass}" aria-live="polite" style="text-align: center;">${this.feedbackHTML}</div></div>`;
+    }
+}
+
+// EJERCICIO 9
+class Ejercicio9 extends EjercicioDosPreguntas {
+    generarPreguntas() {
+        this.base = Math.floor(Math.random() * 8) + 2; this.exp = Math.floor(Math.random() * 2) + 2;
+        this.base2 = Math.floor(Math.random() * 5) + 2; this.exp2 = 3;
+    }
+    comprobarPregunta1(r) { const val = Math.pow(this.base, this.exp); return parseInt(r) === val ? { correcto: true } : { correcto: false, explicacion: `${this.base}^${this.exp} = ${val}` }; }
+    comprobarPregunta2(r) { const val = Math.pow(this.base2, this.exp2); return parseInt(r) === val ? { correcto: true } : { correcto: false, explicacion: `${this.base2}^${this.exp2} = ${val}` }; }
+    getHTML() {
+        const dis = (this.superado || this.bloqueado) ? 'disabled' : '';
+        return `<div class="ejercicio-card ${this.superado ? 'superado' : (this.bloqueado ? 'bloqueado' : '')}" id="ej-card-9"><div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">9</span><span class="ejercicio-titulo">Cálculo del Valor de Potencias</span></div><button class="btn-nuevo-ejercicio" onclick="reiniciarEjercicio(8)">🔄 Nuevo</button></div><div class="pregunta-item"><div class="enunciado-formula">Calcula: ${fmtPot(this.base, this.exp)}</div><div class="input-area"><label for="e9_r1" class="sr-only">Resultado de la primera potencia</label><input type="number" id="e9_r1" class="number-input" ${dis}></div></div><div class="pregunta-item"><div class="enunciado-formula">Calcula: ${fmtPot(this.base2, this.exp2)}</div><div class="input-area"><label for="e9_r2" class="sr-only">Resultado de la segunda potencia</label><input type="number" id="e9_r2" class="number-input" ${dis}></div></div><div class="input-area" style="justify-content: center; margin-top: 10px;"><button class="btn-primary" ${dis} onclick='procesarEjercicioCompleto(8, {r1: document.getElementById("e9_r1").value, r2: document.getElementById("e9_r2").value}, "fb_9")'>✅ Comprobar ejercicio</button></div><div id="fb_9" class="${this.feedbackClass}" aria-live="polite" style="text-align: center;">${this.feedbackHTML}</div></div>`;
+    }
+}
+
+// EJERCICIO 10
+class Ejercicio10 extends EjercicioDosPreguntas {
+    generarPreguntas() {
+        this.raizExactaSol = Math.floor(Math.random() * 9) + 4;
+        this.radicando1 = this.raizExactaSol * this.raizExactaSol;
+        this.raizEnteraSol = Math.floor(Math.random() * 8) + 3;
+        let maxResto = (this.raizEnteraSol * 2);
+        this.restoSol = Math.floor(Math.random() * maxResto) + 1;
+        this.radicando2 = (this.raizEnteraSol * this.raizEnteraSol) + this.restoSol;
+    }
+    comprobarPregunta1(r) { return parseInt(r) === this.raizExactaSol ? { correcto: true } : { correcto: false, explicacion: `√${this.radicando1} = ${this.raizExactaSol}` }; }
+    comprobarPregunta2(r) { 
+        const okRaiz = parseInt(r.raiz) === this.raizEnteraSol;
+        const okResto = parseInt(r.resto) === this.restoSol;
+        if(okRaiz && okResto) return { correcto: true };
+        return { correcto: false, explicacion: `Raíz = ${this.raizEnteraSol}, Resto = ${this.restoSol}` };
+    }
+    getHTML() {
+        const dis = (this.superado || this.bloqueado) ? 'disabled' : '';
+        return `<div class="ejercicio-card ${this.superado ? 'superado' : (this.bloqueado ? 'bloqueado' : '')}" id="ej-card-10"><div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">10</span><span class="ejercicio-titulo">Raíz Cuadrada Exacta y Entera</span></div><button class="btn-nuevo-ejercicio" onclick="reiniciarEjercicio(9)">🔄 Nuevo</button></div><div class="pregunta-item"><div class="enunciado-formula">Raíz exacta: ${fmtRaiz(this.radicando1)} =</div><div class="input-area"><label for="e10_r1" class="sr-only">Resultado de la raíz exacta</label><input type="number" id="e10_r1" class="number-input" ${dis}></div></div><div class="pregunta-item"><div class="enunciado-formula">Raíz entera y resto: ${fmtRaiz(this.radicando2)}</div><div class="input-area"><label for="e10_r2_raiz" class="sr-only">Raíz entera</label><input type="number" id="e10_r2_raiz" class="number-input" placeholder="Raíz entera" ${dis}><label for="e10_r2_resto" class="sr-only">Resto de la raíz entera</label><input type="number" id="e10_r2_resto" class="number-input" placeholder="Resto" ${dis}></div></div><div class="input-area" style="justify-content: center; margin-top: 10px;"><button class="btn-primary" ${dis} onclick='procesarEjercicioCompleto(9, {r1: document.getElementById("e10_r1").value, raiz: document.getElementById("e10_r2_raiz").value, resto: document.getElementById("e10_r2_resto").value}, "fb_10")'>✅ Comprobar ejercicio</button></div><div id="fb_10" class="${this.feedbackClass}" aria-live="polite" style="text-align: center;">${this.feedbackHTML}</div></div>`;
+    }
+}
+
+// ============ FUNCIONES PRINCIPALES ============
+function reiniciarEjercicio(index) {
+    if (finalizado) {
+        mostrarModalAdvertencia("La ficha ya ha sido finalizada. Usa 'Reiniciar toda la ficha' para continuar practicando.");
+        return;
+    }
+    ejercicios[index].reiniciar();
+    renderizarUnEjercicio(index);
+    actualizarUI();
+}
+
+function procesarEjercicioCompleto(indexEj, respuestas, idFeedback) {
+    if(finalizado) {
+        mostrarModalAdvertencia("La ficha ya ha sido finalizada. Reinicia para seguir practicando.");
+        return;
+    }
+
+    const ej = ejercicios[indexEj];
+
+    if (ej.superado) {
+        ej.feedbackClass = "feedback feedback-correcto";
+        ej.feedbackHTML = "✅ Este ejercicio ya estaba superado. ¡Sigue con el siguiente!";
+        renderizarUnEjercicio(indexEj);
+        return;
+    }
+
+    if (ej.bloqueado) {
+        mostrarModalAdvertencia('Este ejercicio está bloqueado tras el fallo anterior. Pulsa "🔄 Nuevo" para generar números distintos y volver a intentarlo.');
+        return;
+    }
+    
+    let vacio = false;
+    if (indexEj === 9) {
+        vacio = !respuestas.r1 || !respuestas.raiz || !respuestas.resto;
+    } else if (indexEj === 0 || indexEj === 2 || indexEj === 3 || indexEj === 4 || indexEj === 5 || indexEj === 6) {
+        vacio = !respuestas.base1 || !respuestas.exp1 || !respuestas.base2 || !respuestas.exp2;
+    } else {
+        vacio = !respuestas.r1 || !respuestas.r2;
+    }
+    
+    if (vacio) {
+        mostrarModalAdvertencia("Por favor, rellena todos los campos vacíos antes de comprobar la respuesta.");
+        return;
+    }
+    
+    let resultado;
+    
+    if (indexEj === 9) {
+        resultado = ej.verificarPreguntas(
+            respuestas.r1,
+            {raiz: respuestas.raiz, resto: respuestas.resto}
+        );
+    } else if (indexEj === 0 || indexEj === 2 || indexEj === 3 || indexEj === 4 || indexEj === 5 || indexEj === 6) {
+        resultado = ej.verificarPreguntas(
+            {base: respuestas.base1, exp: respuestas.exp1},
+            {base: respuestas.base2, exp: respuestas.exp2}
+        );
+    } else {
+        resultado = ej.verificarPreguntas(
+            respuestas.r1,
+            respuestas.r2
+        );
+    }
+    
+    if (resultado.correcto) {
+        ej.feedbackClass = "feedback feedback-correcto";
+        ej.feedbackHTML = resultado.msg;
+    } else {
+        // La explicación ya se calculó con los datos fallados; ahora se regeneran
+        ej.regenerarDistintas();
+        ej.feedbackClass = "feedback feedback-necesita-nuevo";
+        ej.feedbackHTML = `${resultado.msg}<br><span class="feedback-pedagogico">📘 Solución del ejercicio anterior: ${resultado.explicacion}</span><br><strong>👉 Ahora inténtalo con estas preguntas nuevas.</strong>`;
+    }
+    renderizarUnEjercicio(indexEj);
+}
+
+function calcularNota() {
+    let superados = ejercicios.filter(e => e.superado).length;
+    let nota = (superados * (10 / TOTAL_EJERCICIOS)) - (fallosGlobales * 0.2);
+    if(nota < 0) nota = 0;
+    return { nota, superados };
+}
+
+function actualizarUI() {
+    let superados = ejercicios.filter(e => e.superado).length;
+    document.getElementById('progresoCount').innerText = superados;
+    document.getElementById('totalEjerciciosTxt').innerText = TOTAL_EJERCICIOS;
+    document.getElementById('fallosCount').innerText = fallosGlobales;
+    
+    let { nota } = calcularNota();
+    document.getElementById('notaActual').innerText = nota.toFixed(1);
+}
+
+function mostrarModalAdvertencia(msg) {
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay show';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.innerHTML = `<div class="modal-warning-card" style="position: relative; background: #fffdf7; border-radius:12px; padding:28px; max-width:400px; width:90%; text-align:center;"><button class="modal-close" onclick="this.closest('.modal-overlay').remove()" aria-label="Cerrar">✕</button><h3 style="color: var(--color-aviso); margin-bottom: 8px;">⚠️ Aviso</h3><p style="font-size: 13px; margin-bottom: 16px;">${msg}</p><button onclick="this.closest('.modal-overlay').remove()" style="background:var(--color-aviso); color:#2C1F0E; border:none; padding:10px; width:100%; border-radius:6px; cursor:pointer; font-weight:600;">Entendido</button></div>`;
+    document.body.appendChild(modal);
+}
+
+function cerrarModalConfirmacion() {
+    document.getElementById('modalConfirmacion').classList.remove('show');
+}
+
+function cerrarModalResultados() {
+    document.getElementById('modalResultados').classList.remove('show');
+}
+
+function abrirModalReinicio() {
+    document.getElementById('modalConfirmarReinicio').classList.add('show');
+}
+
+function cerrarModalReinicio() {
+    document.getElementById('modalConfirmarReinicio').classList.remove('show');
+}
+
+function confirmarReinicio() {
+    cerrarModalReinicio();
+    inicializarFicha();
+}
+
+// ============ COLOR POR NOTA: UNA SOLA FUENTE DE VERDAD ============
+// Antes existían dos sitios distintos con los mismos umbrales (una función
+// que devolvía la clase CSS, y un if/else aparte con los hex para el fondo
+// del body). Se unifican aquí para que un futuro cambio de paleta solo haya
+// que hacerlo en un sitio.
+const TRAMOS_NOTA = [
+    { min: 10, clase: 'bg-nota-10', hex: '#1a7a1a' },
+    { min: 9,  clase: 'bg-nota-9',  hex: '#6dbf6d' },
+    { min: 8,  clase: 'bg-nota-8',  hex: '#1a4f8a' },
+    { min: 7,  clase: 'bg-nota-7',  hex: '#5b9bd5' },
+    { min: 6,  clase: 'bg-nota-6',  hex: '#c05c00' },
+    { min: 5,  clase: 'bg-nota-5',  hex: '#f5a623' },
+    { min: 0,  clase: 'bg-nota-4',  hex: '#c0392b' },
+];
+function obtenerInfoNota(nota) {
+    for (const tramo of TRAMOS_NOTA) {
+        if (nota >= tramo.min) return tramo;
+    }
+    return TRAMOS_NOTA[TRAMOS_NOTA.length - 1];
+}
+
+function confirmarFinalizar() {
+    cerrarModalConfirmacion();
+    
+    let nombre = document.getElementById('nombreAlumno').value.trim();
+    if (!nombre) {
+        mostrarModalAdvertencia("Debes introducir tu nombre y apellidos antes de finalizar la ficha.");
+        return;
+    }
+    
+    finalizado = true;
+    let { nota, superados } = calcularNota();
+    let { fecha, hora } = obtenerFechaHoraActual();
+    let tiempo = obtenerTiempoFormateado();
+
+    const info = obtenerInfoNota(nota);
+    document.body.style.background = info.hex;
+
+    const modalCard = document.getElementById('modalResultCard');
+    modalCard.className = `modal-result-card ${info.clase}`;
+    
+    document.getElementById('modalNombreMostrar').innerHTML = `👤 ${nombre}`;
+    document.getElementById('modalNota').innerHTML = `${nota.toFixed(1)} / 10`;
+    
+    let mensaje = "";
+    if (nota >= 10) mensaje = "🏆 ¡PERFECTO! Dominas todas las propiedades.";
+    else if (nota >= 9) mensaje = "🌟 ¡EXCELENTE! Casi perfecto.";
+    else if (nota >= 7) mensaje = "👍 ¡MUY BIEN! Sigue así.";
+    else if (nota >= 5) mensaje = "📚 ¡APROBADO! Repasa los fallos para mejorar.";
+    else mensaje = "📖 Sigue practicando, ¡tú puedes!";
+    
+    document.getElementById('modalStats').innerHTML = `
+        <p>📊 Ejercicios superados: <strong>${superados} de ${TOTAL_EJERCICIOS}</strong></p>
+        <p>❌ Fallos totales: <strong>${fallosGlobales}</strong></p>
+        <p>📅 Fecha: <strong>${fecha}</strong></p>
+        <p>⏰ Hora: <strong>${hora}</strong></p>
+        <p>⏱️ Tiempo empleado: <strong>${tiempo}</strong></p>
+        <p style="margin-top: 8px;">💬 ${mensaje}</p>
+    `;
+    
+    document.getElementById('modalResultados').classList.add('show');
+}
+
+function renderizarEjercicios() {
+    const contenedor = document.getElementById('ejerciciosContainer');
+    contenedor.innerHTML = ejercicios.map((e, i) => `<div class="ej-slot" id="slot-${i}">${e.getHTML()}</div>`).join('');
+}
+
+// Corrige el bug de la versión anterior: al completar o regenerar UN ejercicio
+// se reconstruía el HTML de los 10, borrando respuestas sin enviar en otras
+// tarjetas. Ahora solo se toca el contenedor del ejercicio afectado.
+function renderizarUnEjercicio(index) {
+    const slot = document.getElementById('slot-' + index);
+    if (slot) slot.innerHTML = ejercicios[index].getHTML();
+}
+
+function inicializarFicha() {
+    detenerTimer();
+    
+    ejercicios = [
+        new Ejercicio1(1), new Ejercicio2(2), new Ejercicio3(3),
+        new Ejercicio4(4), new Ejercicio5(5), new Ejercicio6(6),
+        new Ejercicio7(7), new Ejercicio8(8), new Ejercicio9(9),
+        new Ejercicio10(10)
+    ];
+    fallosGlobales = 0;
+    finalizado = false;
+    document.body.style.background = '';
+    actualizarUI();
+    renderizarEjercicios();
+    
+    iniciarTimer();
+}
+
+document.getElementById('btnFinalizar').addEventListener('click', () => {
+    document.getElementById('modalConfirmacion').classList.add('show');
+});
+
+document.getElementById('btnResetear').addEventListener('click', () => {
+    abrirModalReinicio();
+});
+
+// Soporte de tecla Enter: si el foco está en un input dentro de una tarjeta
+// de ejercicio, Enter dispara el botón "Comprobar ejercicio" de esa tarjeta
+// (delegación de eventos sobre el contenedor estable, funciona tras cada
+// re-render sin tener que volver a engancharlo).
+document.getElementById('ejerciciosContainer').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && e.target.tagName === 'INPUT') {
+        e.preventDefault();
+        const card = e.target.closest('.ejercicio-card');
+        if (card) {
+            const btn = card.querySelector('.btn-primary');
+            if (btn && !btn.disabled) btn.click();
+        }
+    }
+});
+
+window.onload = () => {
+    inicializarFicha();
+};
+</script>
+</body>
+</html>

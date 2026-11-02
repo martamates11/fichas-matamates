@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Semejanza - 2º ESO</title>
+<style>
+:root {
+  --color-fondo: #F5F0E8;
+  --color-fondo-card: #FDFAF3;
+  --color-texto: #2C1F0E;
+  --color-texto-suave: #6B4F35;
+  --color-acento: #A0522D;
+  --color-acento-hover: #7B3B1E;
+  --color-borde: #C9A96E;
+  --color-borde-suave: #E0CEAA;
+  --color-cabecera: #3B2510;
+  --color-cabecera-txt: #F5EDD8;
+  --color-correcto: #2E6B3E;
+  --color-incorrecto: #8B1A1A;
+  --color-neutro: #E8DFC8;
+}
+body { background: var(--color-fondo); font-family: -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; color: var(--color-texto); margin: 0; padding: 0; transition: background 0.4s; }
+body.all-green { background: #eaf7ea; }
+h1, h2, h3, .ejercicio-titulo, .titulo-ficha { font-family: Georgia, 'Times New Roman', serif; }
+.autoria { background: var(--color-cabecera); text-align: center; padding: 6px; font-size: 10px; color: rgba(245, 240, 232, 0.7); }
+.ficha-wrapper { max-width: 1100px; margin: 0 auto; padding: 2rem 1rem; }
+.header { background: var(--color-cabecera); border-radius: 1.5rem; padding: 1.8rem 2rem; margin-bottom: 1.8rem; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); }
+.header h1 { font-size: 2.2rem; font-weight: 700; color: var(--color-cabecera-txt); margin: 0 0 0.5rem; }
+.header p { color: #C9B896; font-size: 0.9rem; margin: 0; }
+.header-badges { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem; }
+.header-badge { background: rgba(255,255,255,0.08); padding: 0.25rem 0.75rem; border-radius: 40px; font-size: 0.7rem; color: #E0CEAA; }
+.info-bar { background: var(--color-fondo-card); border-radius: 1.2rem; padding: 1rem 1.5rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; border: 1px solid var(--color-borde); }
+.info-item { display: flex; align-items: center; gap: 0.6rem; font-size: 0.85rem; font-weight: 500; color: var(--color-texto-suave); }
+.info-icon { width: 30px; height: 30px; background: var(--color-fondo); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+.info-value { font-weight: 700; font-size: 1rem; color: var(--color-texto); }
+.name-section { background: var(--color-fondo-card); border-radius: 1rem; padding: 0.8rem 1.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; border: 1px solid var(--color-borde-suave); }
+.name-label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--color-texto-suave); }
+.name-input { flex: 1; max-width: 280px; border: none; border-bottom: 2px solid var(--color-borde); padding: 0.5rem 0.25rem; font-size: 0.95rem; background: transparent; color: var(--color-texto); outline: none; }
+.name-input:focus { border-bottom-color: var(--color-acento); }
+.ejercicio-card { background: var(--color-fondo-card); border-radius: 1.2rem; padding: 1.5rem; margin-bottom: 1.2rem; border: 1px solid var(--color-borde); transition: all 0.2s; }
+.ejercicio-card.superado { border-left: 5px solid var(--color-correcto); background: #FAF8F0; }
+.ejercicio-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap; }
+.ejercicio-num { background: var(--color-acento); color: white; width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; }
+.ejercicio-titulo { font-weight: 600; font-size: 1.05rem; }
+.badge-superado { background: var(--color-correcto); color: white; padding: 0.2rem 0.7rem; border-radius: 40px; font-size: 0.65rem; font-weight: 600; margin-left: 0.5rem; }
+.enunciado { background: var(--color-fondo); padding: 0.8rem 1.2rem; border-radius: 1rem; font-size: 1rem; margin-bottom: 1.2rem; border: 1px solid var(--color-borde-suave); display: inline-block; }
+.fraccion { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; margin: 0 4px; line-height: 1.15; font-family: monospace; }
+.fraccion-num { padding: 0 4px 1px; border-bottom: 1.5px solid currentColor; }
+.fraccion-den { padding: 1px 4px 0; }
+.input-area { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; margin: 1rem 0; }
+.campo { display: flex; flex-direction: column; gap: 4px; }
+.campo label { font-size: 0.72rem; font-weight: 600; color: var(--color-texto-suave); }
+.number-input { border: 2px solid var(--color-borde); border-radius: 10px; padding: 8px 14px; font-size: 0.9rem; font-family: monospace; background: white; width: 100px; text-align: center; }
+.number-input:focus, .select-input:focus { outline: 3px solid var(--color-acento); outline-offset: 1px; }
+.select-input { border: 2px solid var(--color-borde); border-radius: 10px; padding: 8px 14px; font-size: 0.9rem; font-family: monospace; background: white; width: auto; min-width: 220px; cursor: pointer; }
+.btn-primary { background: var(--color-acento); border: none; color: white; padding: 8px 22px; border-radius: 40px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+.btn-primary:hover:not(:disabled) { background: var(--color-acento-hover); transform: scale(0.97); }
+.btn-primary:disabled { background: #C9A96E; cursor: not-allowed; }
+.btn-secondary { background: #C9A96E; border: none; color: var(--color-texto); padding: 8px 22px; border-radius: 40px; font-weight: 600; cursor: pointer; }
+.feedback { margin-top: 10px; font-size: 0.85rem; font-weight: 500; }
+.feedback-correcto { color: var(--color-correcto); background: rgba(46,107,62,0.1); padding: 6px 14px; border-radius: 30px; display: inline-block; }
+.feedback-error { color: var(--color-incorrecto); background: rgba(139,26,26,0.08); padding: 6px 14px; border-radius: 30px; display: inline-block; }
+hr { margin: 0.5rem 0; border: none; border-top: 1px solid var(--color-borde-suave); }
+.action-buttons { display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; flex-wrap: wrap; }
+.btn-large { background: var(--color-acento); color: white; border: none; padding: 12px 36px; font-size: 0.95rem; font-weight: 600; border-radius: 50px; cursor: pointer; }
+.btn-outline { background: transparent; border: 2px solid var(--color-borde); color: var(--color-texto-suave); padding: 10px 28px; border-radius: 50px; cursor: pointer; }
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
+.modal-overlay.show { display: flex; }
+.modal-card { border-radius: 12px; padding: 32px; max-width: 460px; width: 90%; text-align: center; border: 2px solid var(--color-borde); }
+.modal-card-name { background: var(--color-fondo-card); border-radius: 12px; padding: 32px; max-width: 420px; width: 90%; border: 2px solid var(--color-incorrecto); }
+.modal-close { float: right; background: none; border: none; font-size: 24px; cursor: pointer; }
+.modal-grade { font-size: 52px; font-weight: 900; margin: 12px 0; }
+.modal-stats { border: 1.5px solid var(--color-borde); border-radius: 10px; padding: 12px; margin-bottom: 14px; font-family: monospace; font-size: 12px; text-align: left; background: rgba(255,255,255,0.5); }
+.recordatorio { font-size: 12px; margin-top: 8px; background: var(--color-neutro); border-radius: 20px; padding: 6px; color: var(--color-texto-suave); }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.figura-thales { display: inline-block; background: white; border-radius: 1rem; padding: 10px 20px; margin: 0.4rem 0 0.8rem; border: 1px solid var(--color-borde); }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+"use strict";
+
+// ---------------------------------------------------------------------------
+// Utilidades
+// ---------------------------------------------------------------------------
+function parseNumero(valor) {
+  if (valor === null || valor === undefined) return NaN;
+  // solo cifras, con coma o punto decimal (así «12abc» no se da por bueno)
+  const t = String(valor).trim().replace(",", ".");
+  return /^-?\d+(\.\d+)?$/.test(t) ? parseFloat(t) : NaN;
+}
+
+const AVISO = " No cuenta como fallo.";
+
+
+
+function elegirIndiceSinRepetir(longitud, ultimoIndice) {
+  if (longitud <= 1) return 0;
+  let indice;
+  do { indice = Math.floor(Math.random() * longitud); } while (indice === ultimoIndice);
+  return indice;
+}
+
+function fraccionHTML(n, d) {
+  return '<span class="fraccion"><span class="fraccion-num">' + n + '</span><span class="fraccion-den">' + d + '</span></span>';
+}
+
+function escaparHTML(texto) {
+  const div = document.createElement("div");
+  div.textContent = texto;
+  return div.innerHTML;
+}
+
+function mezclar(array) {
+  const copia = [...array];
+  for (let i = copia.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copia[i], copia[j]] = [copia[j], copia[i]];
+  }
+  return copia;
+}
+
+// Figura estática del teorema de Thales: dos rectas desde un vértice V,
+// cortadas por tres rectas paralelas que determinan A-B, C-D y E-F.
+const SVG_THALES = `
+<div class="figura-thales">
+<svg width="220" height="220" viewBox="0 0 250 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Dos rectas cortadas por tres rectas paralelas, que determinan los puntos A, B, C, D, E y F">
+  <line x1="120" y1="15" x2="30" y2="215" style="stroke:var(--color-texto-suave);stroke-width:1.5" />
+  <line x1="120" y1="15" x2="230" y2="195" style="stroke:var(--color-texto-suave);stroke-width:1.5" />
+  <line x1="93" y1="75" x2="153" y2="69" style="stroke:var(--color-acento);stroke-width:2" />
+  <line x1="66" y1="135" x2="186" y2="123" style="stroke:var(--color-acento);stroke-width:2" />
+  <line x1="39" y1="195" x2="219" y2="177" style="stroke:var(--color-acento);stroke-width:2" />
+  <circle cx="93" cy="75" r="3.5" fill="var(--color-texto)" />
+  <circle cx="153" cy="69" r="3.5" fill="var(--color-texto)" />
+  <circle cx="66" cy="135" r="3.5" fill="var(--color-texto)" />
+  <circle cx="186" cy="123" r="3.5" fill="var(--color-texto)" />
+  <circle cx="39" cy="195" r="3.5" fill="var(--color-texto)" />
+  <circle cx="219" cy="177" r="3.5" fill="var(--color-texto)" />
+  <text x="78" y="66" style="fill:var(--color-texto);font-size:14px;font-weight:700;font-family:Georgia,serif">A</text>
+  <text x="160" y="60" style="fill:var(--color-texto);font-size:14px;font-weight:700;font-family:Georgia,serif">B</text>
+  <text x="47" y="128" style="fill:var(--color-texto);font-size:14px;font-weight:700;font-family:Georgia,serif">C</text>
+  <text x="193" y="115" style="fill:var(--color-texto);font-size:14px;font-weight:700;font-family:Georgia,serif">D</text>
+  <text x="18" y="192" style="fill:var(--color-texto);font-size:14px;font-weight:700;font-family:Georgia,serif">E</text>
+  <text x="226" y="172" style="fill:var(--color-texto);font-size:14px;font-weight:700;font-family:Georgia,serif">F</text>
+</svg>
+</div>`;
+
+// ---------------------------------------------------------------------------
+// Clase base de ejercicio
+// ---------------------------------------------------------------------------
+class Ejercicio {
+  constructor() {
+    this.racha = 0;
+    this.superado = false;
+    this.feedback = null;
+    this.generarNuevo();
+  }
+  generarNuevo() {}
+  verificar() {}
+  // Datos del enunciado (sin estado, respuesta ni feedback), para ver que cambian
+  firma() {
+    const { racha, superado, feedback, selectedValue, input1, input2, inputValue, ultimoIndice, ...datos } = this;
+    return JSON.stringify(datos);
+  }
+  // Con muy pocas respuestas posibles (sí/no) exigir otra solución haría adivinable
+  // la siguiente; ahí solo se pide otro enunciado
+  exigeOtraSolucion() { return true; }
+  claveSolucion() {
+    return JSON.stringify([this.solucion, this.otro1, this.otro2, this.solRealKm, this.solPlanoCm]);
+  }
+  // Genera un enunciado distinto del actual y, si es posible, con otra solución
+  // (para que repetir o copiar la respuesta anterior no valga). No toca la racha.
+  regenerarDistinto() {
+    const antes = this.firma();
+    const solAntes = this.claveSolucion();
+    for (let i = 0; i < 50; i++) {
+      this.generarNuevo();
+      if (this.firma() !== antes && (!this.exigeOtraSolucion() || this.claveSolucion() !== solAntes)) return;
+    }
+    for (let i = 0; i < 50 && this.firma() === antes; i++) this.generarNuevo();
+  }
+  // «Nuevo» reinicia la racha; los fallos se conservan
+  nuevoEjercicio() {
+    if (this.superado) return false;
+    this.regenerarDistinto();
+    this.racha = 0;
+    return true;
+  }
+}
+
+function renderFeedback(ej) {
+  if (!ej.feedback) return "";
+  const clase = ej.feedback.correcto ? "feedback-correcto" : "feedback-error";
+  return `<div class="${clase}" role="status" aria-live="polite">${ej.feedback.msg}</div>`;
+}
+
+// ---------------------------------------------------------------------------
+// Ejercicio 1: Teorema de Thales
+// ---------------------------------------------------------------------------
+class EjThales extends Ejercicio {
+  generarNuevo() {
+    // Letras por nivel: nivel 0 = A/B, nivel 1 = C/D, nivel 2 = E/F
+    const izq = ["A", "C", "E"];
+    const der = ["B", "D", "F"];
+    const pares = [[0, 1], [0, 2], [1, 2]]; // las 3 combinaciones de niveles posibles
+
+    // orden de letras aleatorio dentro de cada segmento (AC o CA, DF o FD...)
+    const seg = (a, b) => (Math.random() < 0.5 ? a + b : b + a);
+
+    // Tipo de relación:
+    // 0/1: misma línea (izda->dcha o dcha->izda), con dos segmentos distintos de esa línea
+    // 2: cruzada entre líneas, mismo intervalo (AC/BD, CE/DF, AE/BF)
+    const tipo = Math.floor(Math.random() * 3);
+    this.tipo = tipo;
+
+    if (tipo === 0 || tipo === 1) {
+      const origen = tipo === 0 ? izq : der;
+      const destino = tipo === 0 ? der : izq;
+      // elegimos dos pares de niveles DISTINTOS (por índice, 0/1/2) para numerador y denominador
+      const combosIndices = [];
+      for (let i = 0; i < pares.length; i++) {
+        for (let j = 0; j < pares.length; j++) {
+          if (i !== j) combosIndices.push([i, j]);
+        }
+      }
+      const idx = Math.floor(Math.random() * combosIndices.length);
+      const [i, j] = combosIndices[idx];
+      const k = pares.findIndex((_, p) => p !== i && p !== j); // el tercer par (el no usado)
+      const [nA, nB] = pares[i]; // niveles del numerador
+      const [dA, dB] = pares[j]; // niveles del denominador
+      const [tA, tB] = pares[k]; // niveles del par no usado (para distractores)
+
+      this.actual = {
+        num: seg(origen[nA], origen[nB]),
+        den: seg(origen[dA], origen[dB]),
+      };
+      this.solucion = seg(destino[nA], destino[nB]) + "/" + seg(destino[dA], destino[dB]);
+      const distractores = [
+        seg(destino[dA], destino[dB]) + "/" + seg(destino[nA], destino[nB]), // invertido
+        seg(destino[nA], destino[nB]) + "/" + seg(origen[dA], origen[dB]), // mezcla de líneas
+        seg(origen[nA], origen[nB]) + "/" + seg(destino[dA], destino[dB]), // mezcla de líneas (otro lado)
+        seg(destino[tA], destino[tB]) + "/" + seg(destino[dA], destino[dB]), // par no correspondiente
+      ];
+      const otras = mezclar([...new Set(distractores)].filter((d) => d !== this.solucion));
+      this.opciones = mezclar([this.solucion, ...otras.slice(0, 3)]);
+    } else {
+      // Tipo 2: razón cruzada entre líneas, mismo intervalo (constante en las 3)
+      const nombres = pares.map(([i, j]) => ({
+        izq: seg(izq[i], izq[j]),
+        der: seg(der[i], der[j]),
+      }));
+      const g = Math.floor(Math.random() * 3); // intervalo dado
+      const c = (g + 1) % 3; // intervalo "siguiente": la respuesta correcta
+      const s = (g + 2) % 3; // intervalo excluido (también sería matemáticamente correcto: no se usa ni de correcto ni de incorrecto)
+      this.actual = { num: nombres[g].izq, den: nombres[g].der };
+      this.solucion = nombres[c].izq + "/" + nombres[c].der;
+      const distractores = [
+        nombres[g].der + "/" + nombres[g].izq, // recíproco del dado
+        nombres[c].der + "/" + nombres[c].izq, // recíproco del correcto
+        nombres[g].izq + "/" + nombres[s].der, // emparejamiento cruzado incorrecto
+        nombres[s].izq + "/" + nombres[g].der, // emparejamiento cruzado incorrecto
+      ];
+      const otras = mezclar([...new Set(distractores)].filter((d) => d !== this.solucion));
+      this.opciones = mezclar([this.solucion, ...otras.slice(0, 3)]);
+    }
+
+    this.selectedValue = "";
+    this.feedback = null;
+  }
+  verificar(valor) {
+    if (this.superado) return { correcto: false, superado: true };
+    if (valor === this.solucion) {
+      this.racha++;
+      if (this.racha >= 2) {
+        this.superado = true;
+        return { correcto: true, superado: true, msg: "🎉 ¡Superado! Aplicas bien el teorema de Thales." };
+      }
+      const rachaPrevia = this.racha;
+      this.regenerarDistinto();
+      this.racha = rachaPrevia;
+      return { correcto: true, superado: false, msg: `✅ ¡Correcto! (${rachaPrevia}/2 aciertos consecutivos). Aquí tienes otro ejercicio.` };
+    }
+    this.racha = 0;
+    const explicacion =
+      this.tipo === 2
+        ? `los segmentos correspondientes entre las dos rectas guardan siempre la misma razón, sea cual sea el tramo que se compare`
+        : `los segmentos que las paralelas determinan en una recta son proporcionales a los correspondientes en la otra`;
+    return {
+      correcto: false,
+      superado: false,
+      msg: `❌ Incorrecto. La respuesta correcta es ${this.solucion}. Por el teorema de Thales, ${explicacion}: ${this.actual.num}/${this.actual.den} = ${this.solucion}.`,
+    };
+  }
+  render(indice) {
+    const disabled = this.superado ? "disabled" : "";
+    const opcionesHTML = this.opciones
+      .map((o) => `<option value="${o}" ${this.selectedValue === o ? "selected" : ""}>${o}</option>`)
+      .join("");
+    return `
+      <div class="ejercicio-card ${this.superado ? "superado" : ""}" data-indice="${indice}">
+        <div class="ejercicio-header">
+          <span class="ejercicio-num">1</span>
+          <span class="ejercicio-titulo">Teorema de Thales</span>
+          ${this.superado ? '<span class="badge-superado">✓ Superado</span>' : ""}
+        </div>
+        <div class="enunciado" style="display:block;">
+          <div style="margin-bottom:0.6rem;">📐 Dos rectas están cortadas por tres rectas paralelas, que determinan los puntos A, B, C, D, E y F, como se muestra en la figura:</div>
+          ${SVG_THALES}
+          <div style="margin-top:0.4rem;">Completa la igualdad: <strong>${this.actual.num}/${this.actual.den} = ___</strong></div>
+        </div>
+        <div class="input-area">
+          <div class="campo">
+            <label for="ej${indice}-select">Respuesta</label>
+            <select id="ej${indice}-select" class="select-input" data-accion="select" data-indice="${indice}" ${disabled}>
+              <option value="" ${this.selectedValue === "" ? "selected" : ""}>Selecciona</option>
+              ${opcionesHTML}
+            </select>
+          </div>
+          <button class="btn-primary" data-accion="comprobar" data-indice="${indice}" ${disabled}>Comprobar</button>
+          <button class="btn-secondary" data-accion="nuevo" data-indice="${indice}" ${disabled}>🔄 Nuevo</button>
+        </div>
+        ${renderFeedback(this)}
+      </div>`;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Ejercicio 2: Segmentos proporcionales
+// ---------------------------------------------------------------------------
+class EjSegmentosProporcionales extends Ejercicio {
+  generarNuevo() {
+    const ratios = [[3,5],[2,5],[2,3],[3,4],[4,5],[3,7],[4,7],[5,6],[5,7],[5,8],[2,7],[3,8]];
+    const idx = elegirIndiceSinRepetir(ratios.length, this.ultimoIndice);
+    this.ultimoIndice = idx;
+    const [p, q] = ratios[idx];
+    this.p = p;
+    this.q = q;
+    const k = 2 + Math.floor(Math.random() * 10); // 2..11
+    this.L = p * k;
+    this.otro1 = q * k; // si L corresponde al término p (resultado exacto)
+    this.otro2 = +((p * this.L) / q).toFixed(2); // si L corresponde al término q
+    this.input1 = "";
+    this.input2 = "";
+    this.feedback = null;
+  }
+  verificar(v1, v2) {
+    if (this.superado) return { correcto: false, superado: true };
+    const x1 = parseNumero(v1);
+    const x2 = parseNumero(v2);
+    const coincide = (a, b) => Math.abs(a - b) < 0.05;
+    const acierto =
+      (coincide(x1, this.otro1) && coincide(x2, this.otro2)) ||
+      (coincide(x1, this.otro2) && coincide(x2, this.otro1));
+    if (acierto) {
+      this.racha++;
+      if (this.racha >= 2) {
+        this.superado = true;
+        return { correcto: true, superado: true, msg: "🎉 ¡Superado! Manejas bien los segmentos proporcionales." };
+      }
+      const rachaPrevia = this.racha;
+      this.regenerarDistinto();
+      this.racha = rachaPrevia;
+      return { correcto: true, superado: false, msg: `✅ ¡Correcto! (${rachaPrevia}/2). Aquí tienes otro ejercicio.` };
+    }
+    this.racha = 0;
+    return {
+      correcto: false,
+      superado: false,
+      msg: `❌ Incorrecto. Como no se dice a qué término de la razón corresponde el segmento de ${this.L} cm, hay dos casos posibles: si corresponde al término ${this.p}, el otro mide (${this.q}/${this.p}) × ${this.L} = ${this.otro1} cm; si corresponde al término ${this.q}, el otro mide (${this.p}/${this.q}) × ${this.L} = ${this.otro2} cm.`,
+    };
+  }
+  render(indice) {
+    const disabled = this.superado ? "disabled" : "";
+    return `
+      <div class="ejercicio-card ${this.superado ? "superado" : ""}" data-indice="${indice}">
+        <div class="ejercicio-header">
+          <span class="ejercicio-num">2</span>
+          <span class="ejercicio-titulo">Segmentos proporcionales</span>
+          ${this.superado ? '<span class="badge-superado">✓ Superado</span>' : ""}
+        </div>
+        <div class="enunciado">📏 De dos segmentos proporcionales cuya razón es ${fraccionHTML(this.p, this.q)}, uno de ellos mide ${this.L} cm. ¿Cuáles pueden ser las medidas del otro? Indica las dos posibilidades.</div>
+        <div class="input-area">
+          <div class="campo">
+            <label for="ej${indice}-input1">Posibilidad 1 (cm)</label>
+            <input id="ej${indice}-input1" type="text" inputmode="decimal" class="number-input" placeholder="cm" data-accion="input-doble" data-campo="1" data-indice="${indice}" value="${escaparHTML(this.input1 || "")}" ${disabled}>
+          </div>
+          <div class="campo">
+            <label for="ej${indice}-input2">Posibilidad 2 (cm)</label>
+            <input id="ej${indice}-input2" type="text" inputmode="decimal" class="number-input" placeholder="cm" data-accion="input-doble" data-campo="2" data-indice="${indice}" value="${escaparHTML(this.input2 || "")}" ${disabled}>
+          </div>
+          <button class="btn-primary" data-accion="comprobar" data-indice="${indice}" ${disabled}>Comprobar</button>
+          <button class="btn-secondary" data-accion="nuevo" data-indice="${indice}" ${disabled}>🔄 Nuevo</button>
+        </div>
+        ${renderFeedback(this)}
+      </div>`;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Ejercicio 3: Semejanza de triángulos (criterio de lados)
+// ---------------------------------------------------------------------------
+function trianguloAleatorio(min, max) {
+  let a, b, c, intentos = 0;
+  do {
+    a = min + Math.floor(Math.random() * (max - min + 1));
+    b = min + Math.floor(Math.random() * (max - min + 1));
+    c = min + Math.floor(Math.random() * (max - min + 1));
+    intentos++;
+  } while (!(a + b > c && a + c > b && b + c > a) && intentos < 200);
+  return [a, b, c];
+}
+
+class EjTrianguloLados extends Ejercicio {
+  exigeOtraSolucion() { return false; }
+  generarNuevo() {
+    this.t1 = trianguloAleatorio(4, 12);
+    this.esSemejante = Math.random() < 0.5;
+    const factores = [0.5, 2, 1.5, 3, 2 / 3];
+    const k = factores[Math.floor(Math.random() * factores.length)];
+    let t2 = this.t1.map((x) => +(x * k).toFixed(1));
+
+    if (!this.esSemejante) {
+      let intentos = 0, valido = false;
+      while (!valido && intentos < 100) {
+        const i = Math.floor(Math.random() * 3);
+        const delta = (Math.random() < 0.5 ? -1 : 1) * (1 + Math.floor(Math.random() * 3));
+        const candidato = [...t2];
+        candidato[i] = +(candidato[i] + delta).toFixed(1);
+        const [x, y, z] = candidato;
+        if (x > 0.5 && y > 0.5 && z > 0.5 && x + y > z && x + z > y && y + z > x) {
+          const r1 = x / this.t1[0], r2 = y / this.t1[1], r3 = z / this.t1[2];
+          if (!(Math.abs(r1 - r2) < 0.02 && Math.abs(r2 - r3) < 0.02)) {
+            t2 = candidato;
+            valido = true;
+          }
+        }
+        intentos++;
+      }
+    }
+    this.t2 = t2;
+    this.solucion = this.esSemejante;
+    this.selectedValue = "";
+    this.feedback = null;
+  }
+  verificar(valor) {
+    if (this.superado) return { correcto: false, superado: true };
+    if (valor === this.solucion) {
+      this.racha++;
+      if (this.racha >= 2) {
+        this.superado = true;
+        return { correcto: true, superado: true, msg: "🎉 ¡Superado! Identificas bien la semejanza por el criterio de lados." };
+      }
+      const rachaPrevia = this.racha;
+      this.regenerarDistinto();
+      this.racha = rachaPrevia;
+      return { correcto: true, superado: false, msg: `✅ ¡Correcto! (${rachaPrevia}/2). Aquí tienes otro ejercicio.` };
+    }
+    this.racha = 0;
+    const r = this.t2.map((x, i) => (x / this.t1[i]).toFixed(2));
+    const explicacion = this.esSemejante
+      ? `sí son semejantes: los tres lados guardan la misma razón (${this.t2[0]}/${this.t1[0]} = ${r[0]}, ${this.t2[1]}/${this.t1[1]} = ${r[1]}, ${this.t2[2]}/${this.t1[2]} = ${r[2]})`
+      : `no son semejantes: los lados no guardan la misma razón (${this.t2[0]}/${this.t1[0]} = ${r[0]}, ${this.t2[1]}/${this.t1[1]} = ${r[1]}, ${this.t2[2]}/${this.t1[2]} = ${r[2]}, no coinciden)`;
+    return {
+      correcto: false,
+      superado: false,
+      msg: `❌ Incorrecto: ${explicacion}. Dos triángulos son semejantes por el criterio de lados cuando sus tres lados son proporcionales entre sí (misma razón en los tres casos).`,
+    };
+  }
+  render(indice) {
+    const disabled = this.superado ? "disabled" : "";
+    return `
+      <div class="ejercicio-card ${this.superado ? "superado" : ""}" data-indice="${indice}">
+        <div class="ejercicio-header">
+          <span class="ejercicio-num">3</span>
+          <span class="ejercicio-titulo">Semejanza de triángulos (lados)</span>
+          ${this.superado ? '<span class="badge-superado">✓ Superado</span>' : ""}
+        </div>
+        <div class="enunciado">🔺 Indica si los siguientes triángulos son o no semejantes:<br>
+          Triángulo 1 → lados de ${this.t1[0]}, ${this.t1[1]} y ${this.t1[2]} cm.<br>
+          Triángulo 2 → lados de ${this.t2[0]}, ${this.t2[1]} y ${this.t2[2]} cm.
+        </div>
+        <div class="input-area">
+          <div class="campo">
+            <label for="ej${indice}-select">Respuesta</label>
+            <select id="ej${indice}-select" class="select-input" data-accion="select" data-indice="${indice}" ${disabled}>
+              <option value="" ${this.selectedValue === "" ? "selected" : ""}>Selecciona</option>
+              <option value="true" ${this.selectedValue === "true" ? "selected" : ""}>✅ Sí, son semejantes</option>
+              <option value="false" ${this.selectedValue === "false" ? "selected" : ""}>❌ No, no son semejantes</option>
+            </select>
+          </div>
+          <button class="btn-primary" data-accion="comprobar" data-indice="${indice}" ${disabled}>Comprobar</button>
+          <button class="btn-secondary" data-accion="nuevo" data-indice="${indice}" ${disabled}>🔄 Nuevo</button>
+        </div>
+        ${renderFeedback(this)}
+      </div>`;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Ejercicio 4: Semejanza de triángulos (criterio de ángulos)
+// ---------------------------------------------------------------------------
+function generarTernaAngulos() {
+  const x = 20 + Math.floor(Math.random() * 90); // 20-109
+  const y = 20 + Math.floor(Math.random() * (150 - x)); // deja al menos ~20-21 para z
+  const z = 180 - x - y;
+  return [x, y, z];
+}
+function mismoConjunto(a, b) {
+  const sa = [...a].sort((m, n) => m - n).join(",");
+  const sb = [...b].sort((m, n) => m - n).join(",");
+  return sa === sb;
+}
+function elegirDos(terna) {
+  const idxs = mezclar([0, 1, 2]);
+  return [idxs[0], idxs[1]].sort((a, b) => a - b).map((i) => terna[i]);
+}
+
+class EjTrianguloAngulos extends Ejercicio {
+  exigeOtraSolucion() { return false; }
+  generarNuevo() {
+    const terna1 = generarTernaAngulos();
+    this.esSemejante = Math.random() < 0.5;
+    let terna2;
+    if (this.esSemejante) {
+      terna2 = [...terna1];
+    } else {
+      let intentos = 0;
+      do {
+        terna2 = generarTernaAngulos();
+        intentos++;
+      } while (mismoConjunto(terna1, terna2) && intentos < 40);
+    }
+    this.t1completa = terna1;
+    this.t2completa = terna2;
+    this.t1mostrados = elegirDos(terna1);
+    this.t2mostrados = elegirDos(terna2);
+    this.solucion = this.esSemejante;
+    this.selectedValue = "";
+    this.feedback = null;
+  }
+  verificar(valor) {
+    if (this.superado) return { correcto: false, superado: true };
+    if (valor === this.solucion) {
+      this.racha++;
+      if (this.racha >= 2) {
+        this.superado = true;
+        return { correcto: true, superado: true, msg: "🎉 ¡Superado! Identificas bien la semejanza por el criterio de ángulos (AA)." };
+      }
+      const rachaPrevia = this.racha;
+      this.regenerarDistinto();
+      this.racha = rachaPrevia;
+      return { correcto: true, superado: false, msg: `✅ ¡Correcto! (${rachaPrevia}/2). Aquí tienes otro ejercicio.` };
+    }
+    this.racha = 0;
+    const z1 = 180 - this.t1mostrados[0] - this.t1mostrados[1];
+    const z2 = 180 - this.t2mostrados[0] - this.t2mostrados[1];
+    const explicacion = this.esSemejante
+      ? `sí son semejantes: el tercer ángulo de cada triángulo es 180° − suma de los otros dos (${z1}° y ${z2}°), y los dos triángulos tienen los mismos tres ángulos`
+      : `no son semejantes: el tercer ángulo de cada triángulo es 180° − suma de los otros dos (${z1}° y ${z2}°), y los dos triángulos no comparten los mismos tres ángulos`;
+    return {
+      correcto: false,
+      superado: false,
+      msg: `❌ Incorrecto: ${explicacion}. Por el criterio AA, dos triángulos son semejantes si tienen dos ángulos iguales (el tercero queda determinado, pues los tres suman 180°).`,
+    };
+  }
+  render(indice) {
+    const disabled = this.superado ? "disabled" : "";
+    return `
+      <div class="ejercicio-card ${this.superado ? "superado" : ""}" data-indice="${indice}">
+        <div class="ejercicio-header">
+          <span class="ejercicio-num">4</span>
+          <span class="ejercicio-titulo">Semejanza de triángulos (ángulos)</span>
+          ${this.superado ? '<span class="badge-superado">✓ Superado</span>' : ""}
+        </div>
+        <div class="enunciado">📐 Indica si los siguientes triángulos son o no semejantes:<br>
+          Triángulo 1 → ángulos de ${this.t1mostrados[0]}° y ${this.t1mostrados[1]}°.<br>
+          Triángulo 2 → ángulos de ${this.t2mostrados[0]}° y ${this.t2mostrados[1]}°.
+        </div>
+        <div class="input-area">
+          <div class="campo">
+            <label for="ej${indice}-select">Respuesta</label>
+            <select id="ej${indice}-select" class="select-input" data-accion="select" data-indice="${indice}" ${disabled}>
+              <option value="" ${this.selectedValue === "" ? "selected" : ""}>Selecciona</option>
+              <option value="true" ${this.selectedValue === "true" ? "selected" : ""}>✅ Sí, son semejantes</option>
+              <option value="false" ${this.selectedValue === "false" ? "selected" : ""}>❌ No, no son semejantes</option>
+            </select>
+          </div>
+          <button class="btn-primary" data-accion="comprobar" data-indice="${indice}" ${disabled}>Comprobar</button>
+          <button class="btn-secondary" data-accion="nuevo" data-indice="${indice}" ${disabled}>🔄 Nuevo</button>
+        </div>
+        ${renderFeedback(this)}
+      </div>`;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Ejercicio 5: Escala
+// ---------------------------------------------------------------------------
+class EjEscala extends Ejercicio {
+  generarNuevo() {
+    this.escala = 500; // 1:500
+    this.planoA = 4 + Math.floor(Math.random() * 36); // 4-39 cm
+    this.realKmB = 2 + Math.floor(Math.random() * 29); // 2-30 km
+    this.solRealKm = +((this.planoA * this.escala) / 100000).toFixed(3);
+    this.solPlanoCm = (this.realKmB * 100000) / this.escala;
+    this.input1 = "";
+    this.input2 = "";
+    this.feedback = null;
+  }
+  verificar(v1, v2) {
+    if (this.superado) return { correcto: false, superado: true };
+    const x1 = parseNumero(v1);
+    const x2 = parseNumero(v2);
+    const correcto = Math.abs(x1 - this.solRealKm) < 0.003 && Math.abs(x2 - this.solPlanoCm) < 0.5;
+    if (correcto) {
+      this.racha++;
+      if (this.racha >= 2) {
+        this.superado = true;
+        return { correcto: true, superado: true, msg: "🎉 ¡Superado! Manejas bien las escalas." };
+      }
+      const rachaPrevia = this.racha;
+      this.regenerarDistinto();
+      this.racha = rachaPrevia;
+      return { correcto: true, superado: false, msg: `✅ ¡Correcto! (${rachaPrevia}/2). Aquí tienes otro ejercicio.` };
+    }
+    this.racha = 0;
+    return {
+      correcto: false,
+      superado: false,
+      msg: `❌ Incorrecto. Con escala 1:${this.escala}, cada cm del plano equivale a ${this.escala} cm reales. Distancia real: ${this.planoA} cm × ${this.escala} = ${this.planoA * this.escala} cm = ${this.solRealKm} km. Distancia en el plano: (${this.realKmB} km × 100 000) ÷ ${this.escala} = ${this.solPlanoCm} cm.`,
+    };
+  }
+  render(indice) {
+    const disabled = this.superado ? "disabled" : "";
+    return `
+      <div class="ejercicio-card ${this.superado ? "superado" : ""}" data-indice="${indice}">
+        <div class="ejercicio-header">
+          <span class="ejercicio-num">5</span>
+          <span class="ejercicio-titulo">Escala</span>
+          ${this.superado ? '<span class="badge-superado">✓ Superado</span>' : ""}
+        </div>
+        <div class="enunciado">🗺️ En el plano que llevamos a la excursión, la escala es de 1:${this.escala}.<br>
+          a) Calcula los kilómetros recorridos si en el plano la distancia es de ${this.planoA} cm.<br>
+          b) ¿Qué longitud tendrá en el plano una distancia que en la realidad es de ${this.realKmB} km?
+        </div>
+        <div class="input-area">
+          <div class="campo">
+            <label for="ej${indice}-input1">a) Distancia real (km)</label>
+            <input id="ej${indice}-input1" type="text" inputmode="decimal" class="number-input" placeholder="km" data-accion="input-doble" data-campo="1" data-indice="${indice}" value="${escaparHTML(this.input1 || "")}" ${disabled}>
+          </div>
+          <div class="campo">
+            <label for="ej${indice}-input2">b) Distancia en el plano (cm)</label>
+            <input id="ej${indice}-input2" type="text" inputmode="decimal" class="number-input" placeholder="cm" data-accion="input-doble" data-campo="2" data-indice="${indice}" value="${escaparHTML(this.input2 || "")}" ${disabled}>
+          </div>
+          <button class="btn-primary" data-accion="comprobar" data-indice="${indice}" ${disabled}>Comprobar</button>
+          <button class="btn-secondary" data-accion="nuevo" data-indice="${indice}" ${disabled}>🔄 Nuevo</button>
+        </div>
+        ${renderFeedback(this)}
+      </div>`;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Ejercicio 6: Cuarto proporcional
+// ---------------------------------------------------------------------------
+class EjCuartoProporcional extends Ejercicio {
+  generarNuevo() {
+    // Construcción directa (no por ensayo-error): fijamos n = m * t, con t entero,
+    // lo que garantiza x = n·p/m = t·p entero sin sesgar la muestra hacia m=n o m=p
+    // (el filtro por divisibilidad al azar favorecía justo esos casos).
+    let m, n, p, t, intentos = 0;
+    do {
+      m = 2 + Math.floor(Math.random() * 8); // 2-9
+      t = 2 + Math.floor(Math.random() * 4); // 2-5
+      n = m * t;
+      p = 2 + Math.floor(Math.random() * 9); // 2-10
+      intentos++;
+    } while ((p === m || p === n) && intentos < 30);
+    this.m = m;
+    this.n = n;
+    this.p = p;
+    this.solucion = +((n * p) / m).toFixed(2);
+    this.inputValue = "";
+    this.feedback = null;
+  }
+  verificar(valor) {
+    if (this.superado) return { correcto: false, superado: true };
+    const x = parseNumero(valor);
+    if (!isNaN(x) && Math.abs(x - this.solucion) < 0.02) {
+      this.racha++;
+      if (this.racha >= 2) {
+        this.superado = true;
+        return { correcto: true, superado: true, msg: "🎉 ¡Superado! Calculas bien el cuarto proporcional." };
+      }
+      const rachaPrevia = this.racha;
+      this.regenerarDistinto();
+      this.racha = rachaPrevia;
+      return { correcto: true, superado: false, msg: `✅ ¡Correcto! (${rachaPrevia}/2). Aquí tienes otro ejercicio.` };
+    }
+    this.racha = 0;
+    return {
+      correcto: false,
+      superado: false,
+      msg: `❌ Incorrecto. El cuarto proporcional x cumple m/n = p/x, así que x = (n × p) ÷ m = (${this.n} × ${this.p}) ÷ ${this.m} = ${this.solucion} cm.`,
+    };
+  }
+  render(indice) {
+    const disabled = this.superado ? "disabled" : "";
+    return `
+      <div class="ejercicio-card ${this.superado ? "superado" : ""}" data-indice="${indice}">
+        <div class="ejercicio-header">
+          <span class="ejercicio-num">6</span>
+          <span class="ejercicio-titulo">Cuarto proporcional</span>
+          ${this.superado ? '<span class="badge-superado">✓ Superado</span>' : ""}
+        </div>
+        <div class="enunciado">🔢 Calcula el segmento cuarto proporcional a los tres dados: m = ${this.m} cm, n = ${this.n} cm y p = ${this.p} cm.</div>
+        <div class="input-area">
+          <div class="campo">
+            <label for="ej${indice}-input">x (cm)</label>
+            <input id="ej${indice}-input" type="text" inputmode="decimal" class="number-input" placeholder="x" data-accion="input" data-indice="${indice}" value="${escaparHTML(this.inputValue || "")}" ${disabled}>
+          </div>
+          <button class="btn-primary" data-accion="comprobar" data-indice="${indice}" ${disabled}>Comprobar</button>
+          <button class="btn-secondary" data-accion="nuevo" data-indice="${indice}" ${disabled}>🔄 Nuevo</button>
+        </div>
+        ${renderFeedback(this)}
+      </div>`;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Estado global y render principal
+// ---------------------------------------------------------------------------
+const TOTAL_EJERCICIOS = 6;
+
+const estado = {
+  ejercicios: [
+    new EjThales(),
+    new EjSegmentosProporcionales(),
+    new EjTrianguloLados(),
+    new EjTrianguloAngulos(),
+    new EjEscala(),
+    new EjCuartoProporcional(),
+  ],
+  fallos: 0,
+  racha: 0,
+  nombre: "",
+  pidiendoNombre: false,
+  pidiendoReinicio: false,
+  modalAbierto: false,
+  nombreTemporal: "",
+  inicio: Date.now(),
+};
+
+function bandaNota(nota) {
+  if (nota >= 10) return { bg: "#1a7a1a", texto: "#ffffff" };
+  if (nota >= 9) return { bg: "#6dbf6d", texto: "#ffffff" };
+  if (nota >= 8) return { bg: "#1a4f8a", texto: "#ffffff" };
+  if (nota >= 7) return { bg: "#5b9bd5", texto: "#ffffff" };
+  if (nota >= 6) return { bg: "#c05c00", texto: "#ffffff" };
+  if (nota >= 5) return { bg: "#f5a623", texto: "#000000" };
+  return { bg: "#c0392b", texto: "#ffffff" };
+}
+
+function formatearFecha(d) {
+  const dia = String(d.getDate()).padStart(2, "0");
+  const mes = String(d.getMonth() + 1).padStart(2, "0");
+  const anio = d.getFullYear();
+  return `${dia}/${mes}/${anio}`;
+}
+function formatearHora(d) {
+  const h = String(d.getHours()).padStart(2, "0");
+  const m = String(d.getMinutes()).padStart(2, "0");
+  const s = String(d.getSeconds()).padStart(2, "0");
+  return `${h}:${m}:${s}`;
+}
+
+function formatearTiempo(inicio) {
+  const segundos = Math.floor((Date.now() - inicio) / 1000);
+  const minutosTotales = Math.ceil(segundos / 60);
+  const horas = Math.floor(minutosTotales / 60);
+  const minutos = minutosTotales % 60;
+  return `${horas.toString().padStart(2, "0")}:${minutos.toString().padStart(2, "0")}`;
+}
+
+function superados() {
+  return estado.ejercicios.filter((e) => e.superado).length;
+}
+
+function nota() {
+  let valor = superados() - estado.fallos * 0.2;
+  if (valor < 0) valor = 0;
+  let escalado = (valor / TOTAL_EJERCICIOS) * 10;
+  if (escalado > 10) escalado = 10;
+  return escalado;
+}
+
+function render() {
+  const notaActual = nota();
+  document.body.classList.toggle("all-green", notaActual >= 10);
+
+  const banda = bandaNota(notaActual);
+  const totalSuperados = superados();
+
+  const tarjetasHTML = estado.ejercicios
+    .map((ej, i) => ej.render(i) + (i < estado.ejercicios.length - 1 ? "<hr>" : ""))
+    .join("");
+
+  document.getElementById("root").innerHTML = `
+    <div class="autoria">Material elaborado por Marta López de Letona Sánchez</div>
+    <div class="ficha-wrapper">
+      <div class="header">
+        <h1>📐 Semejanza</h1>
+        <p>Teorema de Thales, segmentos proporcionales, semejanza de triángulos, escalas y cuarto proporcional · 2º ESO</p>
+        <div class="header-badges">
+          <span class="header-badge">🎯 2 aciertos consecutivos → superado</span>
+          <span class="header-badge">💡 Cada fallo resta 0,33 puntos</span>
+        </div>
+      </div>
+
+      <div class="info-bar">
+        <div class="info-item"><span class="info-icon">📊</span><span>Progreso: <span class="info-value">${totalSuperados}</span>/${TOTAL_EJERCICIOS}</span></div>
+        <div class="info-item"><span class="info-icon">🔥</span><span>Racha: <span class="info-value">${estado.racha}</span></span></div>
+        <div class="info-item"><span class="info-icon">❌</span><span>Fallos: <span class="info-value">${estado.fallos}</span></span></div>
+        <div class="info-item"><span class="info-icon">⭐</span><span>Nota: <span class="info-value">${notaActual.toFixed(1)}</span>/10</span></div>
+      </div>
+
+      <div class="name-section">
+        <label for="nombre-alumno" class="name-label">👤 Alumno/a</label>
+        <input id="nombre-alumno" type="text" class="name-input" placeholder="Escribe tu nombre..." value="${escaparHTML(estado.nombre)}">
+      </div>
+
+      <div id="ejerciciosContainer">${tarjetasHTML}</div>
+
+      <div class="action-buttons">
+        <button class="btn-large" id="btn-finalizar">📋 Finalizar y calificar</button>
+        <button class="btn-outline" id="btn-reiniciar">🔄 Nueva ficha</button>
+      </div>
+    </div>
+
+    <div class="modal-overlay ${estado.pidiendoNombre ? "show" : ""}">
+      <div class="modal-card-name">
+        <h3 style="color:var(--color-incorrecto)">✏️ Falta tu nombre</h3>
+        <p style="margin:10px 0">Para calificar necesitas identificarte.</p>
+        <label for="nombre-temporal" class="visually-hidden">Nombre completo</label>
+        <input id="nombre-temporal" type="text" placeholder="Nombre completo"
+               style="width:100%;padding:8px;margin:10px 0;border:1px solid var(--color-borde);border-radius:6px"
+               value="${escaparHTML(estado.nombreTemporal)}">
+        <button id="btn-continuar-nombre"
+                style="background:var(--color-acento);color:white;padding:8px;width:100%;border:none;border-radius:6px;cursor:pointer">
+          Continuar
+        </button>
+      </div>
+    </div>
+
+    <div class="modal-overlay ${estado.pidiendoReinicio ? "show" : ""}">
+      <div class="modal-card-name">
+        <h3 style="color:var(--color-incorrecto)">⚠️ Reiniciar la ficha</h3>
+        <p style="margin:10px 0">Se borrarán todos los datos obtenidos hasta el momento (aciertos, fallos y nota) y se generará una ficha nueva. ¿Quieres continuar?</p>
+        <div style="display:flex;gap:10px;margin-top:14px;">
+          <button id="btn-confirmar-reinicio"
+                  style="flex:1;background:var(--color-incorrecto);color:white;padding:8px;border:none;border-radius:6px;cursor:pointer;font-weight:600">
+            Sí, reiniciar
+          </button>
+          <button id="btn-cancelar-reinicio"
+                  style="flex:1;background:transparent;color:var(--color-texto);padding:8px;border:2px solid var(--color-borde);border-radius:6px;cursor:pointer;font-weight:600">
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-overlay ${estado.modalAbierto ? "show" : ""}">
+      <div class="modal-card" style="background-color:${banda.bg};color:${banda.texto}">
+        <button class="modal-close" id="btn-cerrar-modal" style="color:${banda.texto}" aria-label="Cerrar">✕</button>
+        <div style="font-weight:600">${escaparHTML(estado.nombre.toUpperCase())}</div>
+        <div style="font-size:0.85rem">📐 Semejanza · 2º ESO</div>
+        <div class="modal-grade">${notaActual.toFixed(1)} / 10</div>
+        <div class="modal-message">${notaActual >= 7 ? "👍 Muy bien" : notaActual >= 5 ? "📘 Aprobado" : "📚 Repasa"}</div>
+        <div class="modal-stats" style="color:var(--color-texto)">
+          <p>📅 ${formatearFecha(new Date())}&nbsp;&nbsp;🕐 ${formatearHora(new Date())}</p>
+          <p>⏱️ Tiempo: ${formatearTiempo(estado.inicio)}</p>
+          <p>✅ Ejercicios superados: ${totalSuperados}/${TOTAL_EJERCICIOS}</p>
+          <p>❌ Fallos: ${estado.fallos}</p>
+          <p>⭐ Nota: ${notaActual.toFixed(1)}/10</p>
+        </div>
+        <div class="recordatorio" style="color:var(--color-texto)">📸 Haz una captura de pantalla y entrégala en Google Classroom.</div>
+        <div class="modal-footer">Material elaborado por Marta López de Letona Sánchez</div>
+      </div>
+    </div>`;
+
+  adjuntarEventos();
+}
+
+function adjuntarEventos() {
+  const root = document.getElementById("root");
+
+  const nombreInput = document.getElementById("nombre-alumno");
+  if (nombreInput) {
+    nombreInput.addEventListener("input", (e) => { estado.nombre = e.target.value; });
+  }
+
+  root.querySelectorAll('[data-accion="select"]').forEach((el) => {
+    el.addEventListener("change", (e) => {
+      const i = Number(e.target.dataset.indice);
+      estado.ejercicios[i].selectedValue = e.target.value;
+    });
+  });
+
+  root.querySelectorAll('[data-accion="input"]').forEach((el) => {
+    el.addEventListener("input", (e) => {
+      const i = Number(e.target.dataset.indice);
+      estado.ejercicios[i].inputValue = e.target.value;
+    });
+    el.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") { e.preventDefault(); comprobar(Number(e.target.dataset.indice)); }
+    });
+  });
+
+  root.querySelectorAll('[data-accion="input-doble"]').forEach((el) => {
+    el.addEventListener("input", (e) => {
+      const i = Number(e.target.dataset.indice);
+      const campo = e.target.dataset.campo;
+      if (campo === "1") estado.ejercicios[i].input1 = e.target.value;
+      else estado.ejercicios[i].input2 = e.target.value;
+    });
+    el.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") { e.preventDefault(); comprobar(Number(e.target.dataset.indice)); }
+    });
+  });
+
+  root.querySelectorAll('[data-accion="comprobar"]').forEach((el) => {
+    el.addEventListener("click", (e) => comprobar(Number(e.target.dataset.indice)));
+  });
+
+  root.querySelectorAll('[data-accion="nuevo"]').forEach((el) => {
+    el.addEventListener("click", (e) => nuevoEjercicio(Number(e.target.dataset.indice)));
+  });
+
+  const btnFinalizar = document.getElementById("btn-finalizar");
+  if (btnFinalizar) btnFinalizar.addEventListener("click", abrirModal);
+
+  const btnReiniciar = document.getElementById("btn-reiniciar");
+  if (btnReiniciar) btnReiniciar.addEventListener("click", pedirReinicio);
+
+  const btnConfirmarReinicio = document.getElementById("btn-confirmar-reinicio");
+  if (btnConfirmarReinicio) btnConfirmarReinicio.addEventListener("click", reiniciarFicha);
+
+  const btnCancelarReinicio = document.getElementById("btn-cancelar-reinicio");
+  if (btnCancelarReinicio) btnCancelarReinicio.addEventListener("click", () => { estado.pidiendoReinicio = false; render(); });
+
+  const nombreTempInput = document.getElementById("nombre-temporal");
+  if (nombreTempInput) {
+    nombreTempInput.addEventListener("input", (e) => { estado.nombreTemporal = e.target.value; });
+    nombreTempInput.addEventListener("keydown", (e) => { if (e.key === "Enter") confirmarNombre(); });
+  }
+
+  const btnContinuarNombre = document.getElementById("btn-continuar-nombre");
+  if (btnContinuarNombre) btnContinuarNombre.addEventListener("click", confirmarNombre);
+
+  const btnCerrarModal = document.getElementById("btn-cerrar-modal");
+  if (btnCerrarModal) btnCerrarModal.addEventListener("click", () => { estado.modalAbierto = false; render(); });
+}
+
+function comprobar(indice) {
+  const ej = estado.ejercicios[indice];
+  if (ej.superado) return;
+  let resultado;
+  const aviso = (msg) => {
+    // aviso sin contar como fallo ni cambiar de ejercicio
+    ej.feedback = { correcto: false, aviso: true, msg: "⚠️ " + msg + AVISO };
+    render();
+  };
+  const vacio = (v) => String(v ?? "").trim() === "";
+
+  if (indice === 0) {
+    // Thales: select con texto de la razón
+    if (!ej.selectedValue) return aviso("Selecciona una opción.");
+    resultado = ej.verificar(ej.selectedValue);
+  } else if (indice === 1 || indice === 4) {
+    // Segmentos proporcionales y Escala: dos respuestas numéricas
+    if (vacio(ej.input1) || vacio(ej.input2)) return aviso("Completa las dos respuestas.");
+    if (isNaN(parseNumero(ej.input1)) || isNaN(parseNumero(ej.input2))) return aviso("Escribe solo números (con coma o punto para los decimales).");
+    resultado = ej.verificar(ej.input1, ej.input2);
+  } else if (indice === 2 || indice === 3) {
+    // Triángulos (lados / ángulos): select sí/no
+    if (!ej.selectedValue) return aviso("Selecciona una opción.");
+    resultado = ej.verificar(ej.selectedValue === "true");
+  } else {
+    // Cuarto proporcional: una respuesta numérica
+    if (vacio(ej.inputValue)) return aviso("Introduce un valor.");
+    if (isNaN(parseNumero(ej.inputValue))) return aviso("Escribe un número (con coma o punto para los decimales).");
+    resultado = ej.verificar(ej.inputValue);
+  }
+
+  if (!resultado.correcto && !resultado.superado) {
+    estado.fallos++;
+    // Tras un fallo que enseña la solución: «Solución del ejercicio anterior» y otro enunciado
+    let resto = String(resultado.msg).replace(/^❌ Incorrecto[.:] /, "");
+    if (/^[A-ZÁÉÍÓÚ][a-záéíóúñ]/.test(resto)) resto = resto.charAt(0).toLowerCase() + resto.slice(1);
+    resultado = { ...resultado, msg: "❌ Incorrecto. Solución del ejercicio anterior: " + resto + " 👉 Ahora inténtalo con este nuevo." };
+    ej.regenerarDistinto();
+  }
+  estado.racha = resultado.correcto ? ej.racha : 0;
+  ej.feedback = resultado;
+  render();
+}
+
+function nuevoEjercicio(indice) {
+  const ej = estado.ejercicios[indice];
+  if (ej && !ej.superado) {
+    ej.nuevoEjercicio();
+    estado.racha = 0;
+    render();
+  }
+}
+
+function abrirModal() {
+  if (!estado.nombre.trim()) {
+    estado.pidiendoNombre = true;
+    render();
+    return;
+  }
+  estado.modalAbierto = true;
+  render();
+}
+
+function confirmarNombre() {
+  if (estado.nombreTemporal.trim()) {
+    estado.nombre = estado.nombreTemporal.trim();
+    estado.pidiendoNombre = false;
+    estado.modalAbierto = true;
+    render();
+  }
+}
+
+function pedirReinicio() {
+  estado.pidiendoReinicio = true;
+  render();
+}
+
+function reiniciarFicha() {
+  estado.ejercicios = [
+    new EjThales(),
+    new EjSegmentosProporcionales(),
+    new EjTrianguloLados(),
+    new EjTrianguloAngulos(),
+    new EjEscala(),
+    new EjCuartoProporcional(),
+  ];
+  estado.fallos = 0;
+  estado.racha = 0;
+  estado.nombre = "";
+  estado.nombreTemporal = "";
+  estado.pidiendoNombre = false;
+  estado.pidiendoReinicio = false;
+  estado.modalAbierto = false;
+  estado.inicio = Date.now();
+  render();
+}
+
+render();
+</script>
+</body>
+</html>

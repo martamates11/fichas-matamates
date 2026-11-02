@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Polinomios · 3º ESO · Ficha interactiva</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script" async></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#F5F0E8;font-family:'DM Sans',Inter,sans-serif;color:#2C1F0E;min-height:100vh}
+.autoria{background:#3B2510;text-align:center;padding:6px;font-size:10px;color:rgba(245,240,232,0.7)}
+.ficha-wrapper{max-width:1000px;margin:0 auto;padding:2rem 1rem}
+.header{background:#3B2510;border-radius:1.5rem;padding:1.8rem 2rem;margin-bottom:1.8rem;box-shadow:0 8px 20px rgba(0,0,0,0.1)}
+.header h1{font-size:2.2rem;font-weight:700;color:#F5EDD8;margin-bottom:0.5rem}
+.header p{color:#C9B896;font-size:0.9rem}
+.header-badges{display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:1rem}
+.header-badge{background:rgba(255,255,255,0.08);padding:0.25rem 0.75rem;border-radius:40px;font-size:0.7rem;color:#E0CEAA}
+.info-bar{background:#FDFAF3;border-radius:1.2rem;padding:1rem 1.5rem;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;border:1px solid #C9A96E}
+.info-item{display:flex;align-items:center;gap:0.6rem;font-size:0.85rem;font-weight:500;color:#6B4F35}
+.info-icon{width:30px;height:30px;background:#F5F0E8;border-radius:10px;display:flex;align-items:center;justify-content:center}
+.info-value{font-weight:700;font-size:1rem;color:#2C1F0E}
+.name-section{background:#FDFAF3;border-radius:1rem;padding:0.8rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;border:1px solid #E0CEAA}
+.name-label{font-size:0.75rem;font-weight:600;text-transform:uppercase;color:#6B4F35}
+.name-input{flex:1;max-width:280px;border:none;border-bottom:2px solid #C9A96E;padding:0.5rem 0.25rem;font-size:0.95rem;background:transparent}
+.name-input:focus{outline:none;border-bottom-color:#A0522D}
+.ejercicio-card{background:#FDFAF3;border-radius:1.2rem;padding:1.5rem;margin-bottom:1.2rem;border:1px solid #C9A96E}
+.ejercicio-card.superado{border-left:5px solid #2E6B3E;background:#FAF8F0}
+.ejercicio-card.agotado{border-left:5px solid #A33A2E;background:#FAF3F0}
+.ejercicio-header{display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;flex-wrap:wrap}
+.ejercicio-num{background:#A0522D;color:white;width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700}
+.ejercicio-titulo{font-weight:600}
+.ejercicio-nota{font-size:0.72rem;color:#6B4F35;font-weight:500}
+.badge-superado{background:#2E6B3E;color:white;padding:0.2rem 0.7rem;border-radius:40px;font-size:0.65rem;font-weight:600;margin-left:0.5rem}
+.badge-agotado{background:#A33A2E;color:white;padding:0.2rem 0.7rem;border-radius:40px;font-size:0.65rem;font-weight:600;margin-left:0.5rem}
+.puntos-info{font-size:0.7rem;color:#8A6B4A;font-weight:500;margin-left:auto}
+.enunciado,.enunciado-latex{background:#F5F0E8;padding:0.8rem 1.2rem;border-radius:1rem;font-size:1rem;margin-bottom:0.8rem;border:1px solid #E0CEAA;display:inline-block;font-family:'JetBrains Mono',monospace}
+.enunciado-texto{background:#F5F0E8;padding:0.8rem 1.2rem;border-radius:1rem;font-size:0.9rem;margin-bottom:1.2rem;border:1px solid #E0CEAA;font-family:'DM Sans',sans-serif}
+.text-input,.number-input{border:2px solid #C9A96E;border-radius:10px;padding:8px 14px;font-size:0.9rem;width:280px;background:white}
+.number-input{width:120px;text-align:center}
+.input-area{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:0.8rem}
+.feedback{margin-top:10px;font-size:0.85rem;min-height:50px}
+.feedback-correcto{color:#2E6B3E;background:rgba(46,107,62,0.1);padding:6px 14px;border-radius:30px;display:inline-block}
+.feedback-error{color:#8B1A1A;background:rgba(139,26,26,0.08);padding:6px 14px;border-radius:30px;display:inline-block}
+.feedback-agotado{color:#A33A2E;background:rgba(163,58,46,0.1);padding:6px 14px;border-radius:30px;display:inline-block}
+.btn-primary{background:#A0522D;border:none;color:white;padding:8px 22px;border-radius:40px;font-weight:600;cursor:pointer}
+.btn-primary:hover:not(:disabled){background:#7B3B1E;transform:scale(0.97)}
+.btn-primary:disabled{background:#C9A96E;cursor:not-allowed}
+.btn-secondary{background:#C9A96E;border:none;color:#2C1F0E;padding:8px 22px;border-radius:40px;font-weight:600;cursor:pointer}
+.btn-potencia{background:#E0CEAA;border:none;color:#3B2510;padding:8px 14px;border-radius:40px;font-weight:600;cursor:pointer;font-size:0.8rem}
+.btn-raiz{background:#C9A96E;border:none;color:#3B2510;padding:8px 14px;border-radius:40px;font-weight:600;cursor:pointer;font-size:0.8rem}
+.btn-large{background:#A0522D;color:white;border:none;padding:12px 36px;font-size:0.95rem;font-weight:600;border-radius:50px;cursor:pointer}
+.btn-outline{background:transparent;border:2px solid #C9A96E;color:#6B4F35;padding:10px 28px;border-radius:50px;cursor:pointer}
+.action-buttons{display:flex;gap:1rem;justify-content:center;margin-top:2rem;flex-wrap:wrap}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(4px)}
+.modal-overlay.show{display:flex}
+.modal-card{background:#fffdf7;border-radius:12px;padding:32px;max-width:460px;width:90%;text-align:center;border:2px solid #1a1008;animation:modalIn 0.3s ease}
+.modal-card-name{background:#fffdf7;border-radius:12px;padding:32px;max-width:420px;width:90%;text-align:center;border:2px solid #c8401a}
+.modal-card-aviso{background:#fffdf7;border-radius:12px;padding:28px;max-width:440px;width:90%;text-align:left;border:2px solid #A0522D}
+@keyframes modalIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
+.modal-close{float:right;background:none;border:none;font-size:24px;cursor:pointer}
+.modal-grade{font-size:52px;font-weight:900;margin:12px 0 8px}
+.modal-stats{border:1.5px solid rgba(0,0,0,0.2);border-radius:10px;padding:12px;margin-bottom:14px;font-family:'DM Mono',monospace;font-size:12px;text-align:left}
+hr{margin:0.5rem 0;border:none;border-top:1px solid #E0CEAA}
+.recordatorio{font-size:12px;margin-top:8px;font-weight:500;background:rgba(0,0,0,0.1);border-radius:20px;padding:6px;display:inline-block}
+.modal-footer{font-size:10px;margin-top:12px;opacity:0.7}
+.input-con-potencia{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:0.8rem}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.modal-aviso-lista{margin:14px 0;padding-left:20px;font-size:0.85rem;color:#6B4F35}
+.modal-aviso-botones{display:flex;gap:10px;margin-top:18px}
+.btn-aviso-cancelar{flex:1;background:#C9A96E;border:none;color:#2C1F0E;padding:10px;border-radius:8px;cursor:pointer;font-weight:600}
+.btn-aviso-confirmar{flex:1;background:#A0522D;border:none;color:white;padding:10px;border-radius:8px;cursor:pointer;font-weight:600}
+.tabla-polinomios{width:100%;border-collapse:separate;border-spacing:0;margin-bottom:0.8rem;border-radius:12px;overflow:hidden;border:1px solid #C9A96E}
+.tabla-polinomios th{background:#3B2510;color:#F5EDD8;font-size:0.78rem;font-weight:600;padding:10px 12px;text-align:center}
+.tabla-polinomios td{background:#FDFAF3;padding:10px 12px;text-align:center;border-top:1px solid #E0CEAA;font-size:0.9rem}
+.tabla-polinomios td:first-child{font-family:'JetBrains Mono',monospace;text-align:left;white-space:nowrap}
+.tabla-input{border:2px solid #C9A96E;border-radius:8px;padding:6px 4px;font-size:0.9rem;width:80px;text-align:center;background:white}
+.tabla-input::placeholder{color:#C9B896;opacity:0.7}
+.tabla-input.input-error{border-color:#A33A2E;background:rgba(163,58,46,0.08)}
+@media (max-width:520px){
+.ficha-wrapper{padding:1rem 0.6rem}
+.header{padding:1.2rem 1rem}
+.header h1{font-size:1.6rem}
+.ejercicio-card{padding:1rem 0.8rem}
+.text-input{width:100%!important;max-width:100%}
+.input-con-potencia .text-input{flex:1 1 100%}
+.enunciado,.enunciado-latex{max-width:100%;overflow-x:auto}
+.tabla-polinomios th,.tabla-polinomios td{padding:6px 4px;font-size:0.78rem}
+.tabla-polinomios td:first-child{white-space:normal;word-break:break-all}
+.tabla-input{width:52px;font-size:0.85rem}
+}
+</style>
+</head>
+<body>
+<div class="autoria">Material elaborado por Marta López de Letona Sánchez</div>
+<div class="ficha-wrapper">
+<div class="header">
+<h1>🧮 Polinomios · 3º ESO</h1>
+<p>Grado y término independiente, operaciones, identidades notables y factorización</p>
+<div class="header-badges">
+<span class="header-badge" id="badgeObjetivo">🎯 2 aciertos consecutivos → superado (los ejercicios 2 y 4 se superan con un único intento correcto)</span>
+<span class="header-badge" id="badgeDeduccion">💡 Cada fallo resta 0,2 puntos del ejercicio, hasta agotarlo (pulsar «Nuevo» no borra los fallos)</span>
+<span class="header-badge" id="badgePuntos">⭐ Cada ejercicio vale hasta 1,43 puntos</span>
+</div>
+</div>
+<div class="info-bar">
+<div class="info-item"><span class="info-icon">📊</span><span>Progreso: <span id="progresoCount" class="info-value">0</span>/7</span></div>
+<div class="info-item"><span class="info-icon">🔥</span><span>Racha: <span id="rachaActual" class="info-value">0</span></span></div>
+<div class="info-item"><span class="info-icon">❌</span><span>Fallos: <span id="fallosCount" class="info-value">0</span></span></div>
+<div class="info-item"><span class="info-icon">⭐</span><span>Nota: <span id="notaActual" class="info-value">0.0</span>/10</span></div>
+</div>
+<div class="name-section">
+<span class="name-label">👤 ALUMNO/A</span>
+<label for="nombreAlumno" class="sr-only">Nombre y apellidos del alumno o alumna</label>
+<input type="text" id="nombreAlumno" class="name-input" placeholder="Escribe tu nombre...">
+</div>
+<div id="ejerciciosContainer"></div>
+<div class="action-buttons">
+<button class="btn-large" id="btnFinalizar">📋 Finalizar y calificar</button>
+<button class="btn-outline" id="btnResetear">🔄 Reiniciar toda la ficha</button>
+</div>
+</div>
+
+<div id="modalNombre" class="modal-overlay">
+<div class="modal-card-name">
+<h3 style="color:#c8401a;">✏️ Falta tu nombre</h3>
+<p style="font-size:13px;margin-bottom:16px;">Para calificar necesitas identificarte.</p>
+<label for="modalNombreInput" class="sr-only">Nombre completo</label>
+<input type="text" id="modalNombreInput" placeholder="Nombre completo" style="width:100%;border:1.5px solid #d4c4a0;border-radius:6px;padding:10px;margin:16px 0;">
+<button id="btnConfirmarNombre" style="background:#c8401a;color:#fff;border:none;padding:10px;width:100%;border-radius:6px;cursor:pointer;font-weight:600;">Continuar →</button>
+</div>
+</div>
+
+<div id="modalResultados" class="modal-overlay">
+<div class="modal-card" id="modalCard">
+<button class="modal-close" id="closeModal">✕</button>
+<div id="modalNombreMostrar" style="font-size:1rem;font-weight:600;"></div>
+<div style="font-size:0.85rem;opacity:0.8;">🧮 Polinomios · 3º ESO</div>
+<div class="modal-grade" id="modalNota"></div>
+<div class="modal-message" id="modalMensaje"></div>
+<div class="modal-stats" id="modalStats"></div>
+<div class="recordatorio">📸 Captura y entrega en Google Classroom.</div>
+<div class="modal-footer">Material elaborado por Marta López de Letona Sánchez</div>
+</div>
+</div>
+
+<div id="modalAvisoIncompleto" class="modal-overlay">
+<div class="modal-card-aviso">
+<h3 style="color:#A0522D;">⚠️ Todavía tienes ejercicios sin resolver</h3>
+<p style="font-size:0.85rem;margin-top:10px;">Si finalizas ahora, estos ejercicios se quedarán sin puntuar:</p>
+<ul class="modal-aviso-lista" id="listaSinCompletar"></ul>
+<p style="font-size:0.85rem;">Nota si finalizas ahora: <strong id="notaProyectada"></strong>/10</p>
+<div class="modal-aviso-botones">
+<button class="btn-aviso-cancelar" id="btnSeguirTrabajando">✏️ Seguir trabajando</button>
+<button class="btn-aviso-confirmar" id="btnFinalizarDeTodasFormas">Finalizar de todas formas</button>
+</div>
+</div>
+</div>
+
+<div id="modalConfirmarReset" class="modal-overlay">
+<div class="modal-card-aviso">
+<h3 style="color:#A33A2E;">🔄 ¿Reiniciar toda la ficha?</h3>
+<p style="font-size:0.85rem;margin-top:10px;" id="textoAvisoReset"></p>
+<div class="modal-aviso-botones">
+<button class="btn-aviso-cancelar" id="btnCancelarReset">Cancelar</button>
+<button class="btn-aviso-confirmar" id="btnConfirmarReset">Sí, reiniciar</button>
+</div>
+</div>
+</div>
+
+<script>
+const startTime = Date.now();
+let ejercicios = [];
+let rachaGlobal = 0;
+
+/* ---------- Utilidades de formato ---------- */
+
+function formatPts(n) {
+    return n.toFixed(2).replace('.', ',').replace(/,00$/, '').replace(/(,\d)0$/, '$1');
+}
+
+function insertarPotencia(idInput) {
+    let input = document.getElementById(idInput);
+    if (input) {
+        let cursorPos = input.selectionStart;
+        let valor = input.value;
+        input.value = valor.slice(0, cursorPos) + '^' + valor.slice(cursorPos);
+        input.focus();
+        input.setSelectionRange(cursorPos + 1, cursorPos + 1);
+    }
+}
+
+function insertarRaiz(idInput) {
+    let input = document.getElementById(idInput);
+    if (input) {
+        let cursorPos = input.selectionStart;
+        let valor = input.value;
+        input.value = valor.slice(0, cursorPos) + 'sqrt()' + valor.slice(cursorPos);
+        input.focus();
+        input.setSelectionRange(cursorPos + 5, cursorPos + 5);
+    }
+}
+
+/* ---------- Ejercicio 1: lenguaje algebraico ---------- */
+
+const frases1 = ["el doble de un número más tres unidades","2x+3","la tercera parte de un número disminuido en 8","x/3-8","el cuadrado de la suma de un número más uno","(x+1)^2","un número más su mitad","x+x/2","el triple de un número menos cinco","3x-5","la suma de dos números consecutivos","x+(x+1)","el producto de un número por sí mismo más cuatro","x^2+4","la diferencia entre el doble de un número y siete","2x-7","el cuadrado de un número más el triple del mismo","x^2+3x","la raíz cuadrada de la suma de un número y nueve","sqrt(x+9)"];
+
+function normalizarExpresion(exp) {
+    if (!exp) return "";
+    return exp.trim().replace(/\s/g, '');
+}
+
+const PUNTOS_PRUEBA_X = [1, 2, 3, 5, 7];
+
+function evaluarNumerico(expr, xVal) {
+    let e = expr.trim().replace(/\s+/g, '');
+    if (e === '') return null;
+    const soloEstructura = e.replace(/sqrt/g, '');
+    if (!/^[0-9x+\-*/^().]+$/.test(soloEstructura)) return null;
+    let js = e.replace(/sqrt/g, 'Math.sqrt').replace(/\^/g, '**').replace(/x/g, '(' + xVal + ')');
+    js = js.replace(/(\d)\(/g, '$1*('); // multiplicación implícita: 2(1) -> 2*(1)
+    js = js.replace(/\)\(/g, ')*('); // multiplicación implícita: (x+1)(x+1) -> (x+1)*(x+1)
+    try {
+        let val = Function('"use strict"; return (' + js + ')')();
+        if (typeof val !== 'number' || !isFinite(val)) return null;
+        return val;
+    } catch (err) {
+        return null;
+    }
+}
+
+function expresionesEquivalentes(e1, e2) {
+    let n1 = normalizarExpresion(e1);
+    let n2 = normalizarExpresion(e2);
+    if (n1 === '' || n2 === '') return false;
+    if (n1 === n2) return true;
+    for (const xv of PUNTOS_PRUEBA_X) {
+        let v1 = evaluarNumerico(n1, xv);
+        let v2 = evaluarNumerico(n2, xv);
+        if (v1 === null || v2 === null) return false;
+        if (Math.abs(v1 - v2) > 1e-6) return false;
+    }
+    return true;
+}
+
+/* ---------- Utilidades para polinomios (ejercicios 2, 3, 4, 5, 7) ---------- */
+
+function buildPolyStr(map) {
+    const grados = Object.keys(map).map(Number).filter(d => map[d] !== 0).sort((a, b) => b - a);
+    if (grados.length === 0) return "0";
+    let str = "";
+    grados.forEach((d, idx) => {
+        let c = map[d];
+        let sign = c < 0 ? "-" : (idx === 0 ? "" : "+");
+        let abs = Math.abs(c);
+        let varPart = d === 0 ? "" : (d === 1 ? "x" : "x^" + d);
+        let coefPart = (abs === 1 && d !== 0) ? "" : String(abs);
+        str += sign + coefPart + varPart;
+    });
+    return str;
+}
+
+function latexify(expr) {
+    return expr.replace(/\^(\d+)/g, '^{$1}');
+}
+
+function parsePolyUserInput(str) {
+    if (!str) return null;
+    let s = str.trim().replace(/\s+/g, '');
+    if (s === '') return null;
+    if (!/^[0-9x\^+\-]+$/.test(s)) return null;
+    let terms = s.match(/[+-]?[^+-]+/g);
+    if (!terms) return null;
+    let map = {};
+    for (let t of terms) {
+        let sign = 1;
+        if (t[0] === '-') { sign = -1; t = t.slice(1); }
+        else if (t[0] === '+') { t = t.slice(1); }
+        if (t === '') return null;
+        if (t.includes('x')) {
+            let partes = t.split('x');
+            if (partes.length !== 2) return null;
+            let coefStr = partes[0];
+            let restStr = partes[1];
+            let coef = coefStr === '' ? 1 : parseInt(coefStr, 10);
+            if (isNaN(coef)) return null;
+            let deg;
+            if (restStr === '') { deg = 1; }
+            else if (restStr[0] === '^') {
+                deg = parseInt(restStr.slice(1), 10);
+                if (isNaN(deg)) return null;
+            } else return null;
+            coef *= sign;
+            map[deg] = (map[deg] || 0) + coef;
+        } else {
+            let coef = parseInt(t, 10);
+            if (isNaN(coef)) return null;
+            coef *= sign;
+            map[0] = (map[0] || 0) + coef;
+        }
+    }
+    return map;
+}
+
+function polyEquals(m1, m2) {
+    if (!m1 || !m2) return false;
+    let keys = new Set([...Object.keys(m1).map(Number), ...Object.keys(m2).map(Number)]);
+    for (let k of keys) {
+        let a = m1[k] || 0;
+        let b = m2[k] || 0;
+        if (a !== b) return false;
+    }
+    return true;
+}
+
+function scalePoly(map, factor) {
+    let r = {};
+    for (let d in map) r[d] = map[d] * factor;
+    return r;
+}
+
+function addPoly(m1, m2) {
+    let r = Object.assign({}, m1);
+    for (let d in m2) r[d] = (r[d] || 0) + m2[d];
+    return r;
+}
+
+function shiftPoly(map, shift) {
+    let r = {};
+    for (let d in map) r[Number(d) + shift] = map[d];
+    return r;
+}
+
+function parseFactoredUserInput(str) {
+    if (!str) return null;
+    let s = str.trim().replace(/\s+/g, '');
+    let m = s.match(/^([+-]?\d*)(x(\^(\d+))?)?\((.+)\)$/);
+    if (!m) return null;
+    let coefStr = m[1];
+    let xPart = m[2];
+    let expStr = m[4];
+    let inner = m[5];
+    let coef;
+    if (coefStr === '' || coefStr === '+') coef = 1;
+    else if (coefStr === '-') coef = -1;
+    else coef = parseInt(coefStr, 10);
+    if (isNaN(coef)) return null;
+    let power = 0;
+    if (xPart) power = expStr ? parseInt(expStr, 10) : 1;
+    let innerMap = parsePolyUserInput(inner);
+    if (!innerMap) return null;
+    return { coef: coef, power: power, innerMap: innerMap };
+}
+
+function parseFactorPair(str) {
+    if (!str) return null;
+    let s = str.trim().replace(/\s+/g, '');
+    let mSq = s.match(/^\(x([+-])(\d+)\)\^2$/);
+    if (mSq) return { tipo: 'cuadrado', signo: mSq[1], valor: parseInt(mSq[2], 10) };
+    let mProd = s.match(/^\(x([+-])(\d+)\)\(x([+-])(\d+)\)$/);
+    if (mProd) {
+        if (mProd[1] === mProd[3] && mProd[2] === mProd[4]) {
+            return { tipo: 'cuadrado', signo: mProd[1], valor: parseInt(mProd[2], 10) };
+        }
+        if (mProd[1] !== mProd[3] && mProd[2] === mProd[4]) {
+            return { tipo: 'diferencia', valor: parseInt(mProd[2], 10) };
+        }
+    }
+    return null;
+}
+
+/* ---------- Clase base: gestiona puntuación agotable por apartado ---------- */
+
+const DEDUCCION_POR_FALLO = 0.2;
+let PUNTOS_MAX_TIPO = 0;
+
+class EjercicioBase {
+    constructor() {
+        this.racha = 0;
+        this.superado = false;
+        this.agotado = false;
+        this.puntosObtenidos = 0;
+        this.fallosPropios = 0;
+        this.objetivo = 2;
+        this.ultimoFeedback = null;
+        this._ultimoFalloKey = null;
+        this.generarNuevo();
+    }
+    generarNuevo() {}
+    verificar(...a) {}
+
+    /* Huella del enunciado actual: sirve para garantizar que la siguiente
+       tanda no repite exactamente los mismos datos. */
+    firma() { return ''; }
+
+    /* Tras un acierto parcial (1/2) se genera un enunciado NUEVO y distinto,
+       conservando la racha y los fallos acumulados. */
+    avanzarTanda() {
+        const anterior = this.firma(), solAntes = this.claveSolucion();
+        let intentos = 0;
+        do {
+            this.generarNuevo();
+            intentos++;
+        } while ((this.firma() === anterior || this.claveSolucion() === solAntes) && intentos < 60);
+        // si no hubo manera de cambiar también la solución, al menos otro enunciado
+        for (let i = 0; i < 40 && this.firma() === anterior; i++) this.generarNuevo();
+        this._ultimoFalloKey = null;
+        this.ultimoIntento = null;
+    }
+
+    /* Respuesta correcta del enunciado actual: se exige que cambie también, para
+       que copiar o repetir la respuesta anterior no valga. */
+    claveSolucion() {
+        const sinCeros = v => {
+            if (!v || typeof v !== 'object') return v;
+            const r = {};
+            Object.keys(v).forEach(k => { if (v[k] !== 0) r[k] = v[k]; });
+            return r;
+        };
+        return JSON.stringify(['respCorrecta', 'respCorrecta2', 'expectedMap', 'sol1Map', 'sol2Map', 'factorCoef', 'factorPower',
+            'innerMap', 'signoCuadrado', 'bCuadrado', 'nDiferencia'].map(k => sinCeros(this[k])));
+    }
+
+    esReenvioIdentico(...args) {
+        const key = JSON.stringify(args.map(a => (a || '').trim().replace(/\s+/g, '')));
+        const identico = (key === this._ultimoFalloKey);
+        this._ultimoFalloKey = key;
+        return identico;
+    }
+
+    registrarFallo(...args) {
+        if (this.superado) return;
+        const reenvioIdentico = this.esReenvioIdentico(...args);
+        if (reenvioIdentico) return;
+        this.fallosPropios++;
+        const potencialRestante = PUNTOS_MAX_TIPO - this.fallosPropios * DEDUCCION_POR_FALLO;
+        if (potencialRestante <= 0 && !this.agotado) {
+            this.agotado = true;
+            this.puntosObtenidos = 0;
+        }
+        fallosTotalesDisplay++;
+    }
+
+    registrarAcierto() {
+        this._ultimoFalloKey = null;
+        if (this.agotado) return;
+        this.superado = true;
+        const potencialRestante = PUNTOS_MAX_TIPO - this.fallosPropios * DEDUCCION_POR_FALLO;
+        this.puntosObtenidos = Math.max(0, potencialRestante);
+    }
+
+    nuevoEjercicio() {
+        if (!this.superado) {
+            /* Cambia el enunciado y reinicia la racha, pero los fallos ya
+               cometidos (y el estado «agotado») se conservan: pulsar «Nuevo»
+               no borra penalizaciones. */
+            this.avanzarTanda();
+            this.racha = 0;
+            this.puntosObtenidos = 0;
+            this.ultimoFeedback = null;
+            this._ultimoFalloKey = null;
+            this.ultimoIntento = null;
+            return true;
+        }
+        return false;
+    }
+}
+
+let fallosTotalesDisplay = 0;
+
+class Ejercicio1 extends EjercicioBase {
+    generarNuevo() {
+        let i = Math.floor(Math.random() * 10) * 2;
+        this.fraseEsp = frases1[i];
+        this.respCorrecta = frases1[i+1];
+        let j = Math.floor(Math.random() * 10) * 2;
+        while (j === i) j = Math.floor(Math.random() * 10) * 2;
+        this.fraseEsp2 = frases1[j];
+        this.respCorrecta2 = frases1[j+1];
+    }
+    firma() { return [this.fraseEsp, this.fraseEsp2].sort().join('|'); }
+    verificar(r1, r2) {
+        if (this.superado) return { correcto: false, superado: true, agotado: this.agotado, msg: "Ejercicio ya superado" };
+        if (!r1 || !r1.trim() || !r2 || !r2.trim()) {
+            return { correcto: false, superado: false, agotado: this.agotado, msg: "⚠️ Completa las dos respuestas antes de comprobar. No cuenta como fallo." };
+        }
+        let ok1 = expresionesEquivalentes(r1, this.respCorrecta);
+        let ok2 = expresionesEquivalentes(r2, this.respCorrecta2);
+        if (ok1 && ok2) {
+            this.racha++;
+            rachaGlobal = this.racha;
+            if (this.racha >= 2) {
+                this.registrarAcierto();
+                if (this.agotado) {
+                    return { correcto: true, superado: false, agotado: true, msg: "✓ Correcto, pero este ejercicio ya agotó sus puntos: no suma a la nota. Puedes seguir practicando con \"Nuevo\"." };
+                }
+                return { correcto: true, superado: true, agotado: false, msg: "✓ ¡Correcto! Has superado el ejercicio (+" + formatPts(this.puntosObtenidos) + " pts)." };
+            } else {
+                this.avanzarTanda();
+                return { correcto: true, superado: false, agotado: this.agotado, msg: "✓ ¡Correcto! (" + this.racha + "/2 aciertos consecutivos). Ahora traduce estas dos frases nuevas." };
+            }
+        } else {
+            this.racha = 0;
+            rachaGlobal = 0;
+            this.registrarFallo(r1, r2);
+            let msgError = "❌ Incorrecto. Traduce cada palabra clave por su símbolo (doble→2x, triple→3x, mitad→x/2, cuadrado→(...)², consecutivo→x+1) y revisa el orden de las operaciones.";
+            if (this.agotado) msgError += " Este ejercicio ya ha agotado sus puntos y no sumará a la nota; puedes seguir practicando con \"Nuevo\".";
+            return { correcto: false, superado: false, agotado: this.agotado, msg: msgError };
+        }
+    }
+    getHTML(i) {
+        let e = ejercicios[i];
+        let disabledAttr = e.superado ? 'disabled' : '';
+        let btns = !e.superado ? '<button class="btn-potencia" data-accion="potencia" data-destino="e1_r1">🔣 ^</button><button class="btn-raiz" data-accion="raiz" data-destino="e1_r1">√</button>' : '';
+        let btns2 = !e.superado ? '<button class="btn-potencia" data-accion="potencia" data-destino="e1_r2">🔣 ^</button><button class="btn-raiz" data-accion="raiz" data-destino="e1_r2">√</button>' : '';
+        return buildCardHTML(i, e, disabledAttr,
+            '<div class="ejercicio-titulo">Lenguaje algebraico (dos frases)</div>',
+            '<div class="enunciado">📝 1) ' + e.fraseEsp + '</div><label for="e1_r1" class="sr-only">Expresión algebraica para la frase 1</label><div class="input-con-potencia"><input type="text" id="e1_r1" class="text-input" placeholder="Ej: 2x+3" ' + disabledAttr + '>' + btns + '</div><div class="enunciado">📝 2) ' + e.fraseEsp2 + '</div><label for="e1_r2" class="sr-only">Expresión algebraica para la frase 2</label><div class="input-con-potencia"><input type="text" id="e1_r2" class="text-input" placeholder="Ej: 2x+3" ' + disabledAttr + '>' + btns2 + '</div>',
+            0);
+    }
+}
+
+class Ejercicio2 extends EjercicioBase {
+    constructor() { super(); this.objetivo = 1; }
+    generarNuevo() {
+        const gradosPosibles = [2, 3, 4, 5];
+        let grados = [...gradosPosibles].sort(() => Math.random() - 0.5).slice(0, 3);
+        this.polinomios = grados.map(gradoMax => {
+            let map = {};
+            let coefLider;
+            do { coefLider = Math.floor(Math.random() * 17) - 8; } while (coefLider === 0);
+            map[gradoMax] = coefLider;
+            for (let g = gradoMax - 1; g >= 1; g--) {
+                if (Math.random() < 0.6) {
+                    let c;
+                    do { c = Math.floor(Math.random() * 17) - 8; } while (c === 0);
+                    map[g] = c;
+                }
+            }
+            if (Math.random() < 0.33) {
+                map[0] = 0;
+            } else {
+                let c;
+                do { c = Math.floor(Math.random() * 17) - 8; } while (c === 0);
+                map[0] = c;
+            }
+            return { map: map, grado: gradoMax, tind: map[0] || 0, str: buildPolyStr(map) };
+        });
+        this.ultimoIntento = null;
+    }
+    firma() { return this.polinomios.map(p => p.str).join('|'); }
+    verificar(valores) {
+        if (this.superado) return { correcto: false, superado: true, agotado: this.agotado, msg: "Ejercicio ya superado", correctos: [true, true, true, true, true, true] };
+        let correctos = [];
+        let hayVacio = false;
+        this.polinomios.forEach((p, idx) => {
+            let gStr = (valores[idx].grado || '').trim();
+            let tStr = (valores[idx].tind || '').trim().replace(/[−–]/g, '-');
+            if (gStr === '' || tStr === '') hayVacio = true;
+            let gOk = /^\d+$/.test(gStr) && parseInt(gStr, 10) === p.grado;
+            let tOk = /^[+-]?\d+$/.test(tStr) && parseInt(tStr, 10) === p.tind;
+            correctos.push(gOk, tOk);
+        });
+        this.ultimoIntento = { valores: valores.map(v => ({ grado: v.grado || '', tind: v.tind || '' })), correctos: correctos };
+        let todoOk = correctos.every(c => c);
+        if (todoOk) {
+            this.registrarAcierto();
+            if (this.agotado) return { correcto: true, superado: false, agotado: true, msg: "✓ Correcto, pero este ejercicio ya agotó sus puntos: no suma a la nota. Puedes seguir practicando con \"Nuevo\".", correctos: correctos };
+            return { correcto: true, superado: true, agotado: false, msg: "✓ ¡Correcto! Has superado el ejercicio (+" + formatPts(this.puntosObtenidos) + " pts).", correctos: correctos };
+        }
+        this.registrarFallo(JSON.stringify(valores));
+        let msg = hayVacio ? "❌ Faltan casillas por rellenar (revisa las celdas en rojo)." : "❌ Hay errores en la tabla (revisa las celdas en rojo). Recuerda: el grado es el mayor exponente de x que aparece, y el término independiente es el número sin x (0 si no aparece).";
+        if (this.agotado) msg += " Este ejercicio ya ha agotado sus puntos y no sumará a la nota; puedes seguir practicando con \"Nuevo\".";
+        return { correcto: false, superado: false, agotado: this.agotado, msg: msg, correctos: correctos };
+    }
+    getHTML(i) {
+        let e = ejercicios[i];
+        let disabledAttr = e.superado ? 'disabled' : '';
+        let ult = e.ultimoIntento;
+        let filas = e.polinomios.map((p, idx) => {
+            let vG = ult ? ult.valores[idx].grado : '';
+            let vT = ult ? ult.valores[idx].tind : '';
+            let errG = ult && !ult.correctos[idx * 2] ? ' input-error' : '';
+            let errT = ult && !ult.correctos[idx * 2 + 1] ? ' input-error' : '';
+            /* El término independiente puede ser negativo: no se usa inputmode="numeric",
+               porque en muchos móviles ese teclado no tiene signo menos. */
+            return '<tr><td>\\(' + latexify(p.str) + '\\)</td>' +
+                '<td><label for="e2_g' + idx + '" class="sr-only">Grado del polinomio ' + (idx + 1) + '</label><input type="text" inputmode="numeric" id="e2_g' + idx + '" class="tabla-input' + errG + '" value="' + vG + '" placeholder="grado" ' + disabledAttr + '></td>' +
+                '<td><label for="e2_t' + idx + '" class="sr-only">Término independiente del polinomio ' + (idx + 1) + '</label><input type="text" id="e2_t' + idx + '" class="tabla-input' + errT + '" value="' + vT + '" placeholder="t. ind." ' + disabledAttr + '></td></tr>';
+        }).join('');
+        let tabla = '<table class="tabla-polinomios"><thead><tr><th>Polinomio</th><th>Grado</th><th>Término independiente</th></tr></thead><tbody>' + filas + '</tbody></table>';
+        return buildCardHTML(i, e, disabledAttr,
+            '<div class="ejercicio-titulo">Grado y término independiente</div><span class="ejercicio-nota">(se supera con un único intento correcto)</span>',
+            tabla,
+            1);
+    }
+}
+
+class Ejercicio3 extends EjercicioBase {
+    generarNuevo() {
+        let m;
+        do { m = Math.floor(Math.random() * 11) - 5; } while (m === 0);
+        let p = Math.random() < 0.5 ? 1 : 2;
+        let n = Math.floor(Math.random() * 9) + 1;
+        if (Math.random() < 0.5) n = -n;
+        this.m = m; this.p = p; this.n = n;
+        let binomioMap = { 1: 1, 0: n };
+        this.expectedMap = scalePoly(shiftPoly(binomioMap, p), m);
+        this.monomioStr = this.buildMonomioStr(m, p);
+        this.binomioStr = "(x" + (n >= 0 ? "+" + n : n) + ")";
+        this.enunciado = this.monomioStr + this.binomioStr;
+    }
+    firma() { return this.enunciado; }
+    buildMonomioStr(m, p) {
+        let abs = Math.abs(m);
+        let sign = m < 0 ? "-" : "";
+        let coefPart = (abs === 1) ? "" : String(abs);
+        let varPart = p === 1 ? "x" : "x^" + p;
+        return sign + coefPart + varPart;
+    }
+    verificar(r) {
+        if (this.superado) return { correcto: false, superado: true, agotado: this.agotado, msg: "Ejercicio ya superado" };
+        if (!r || !r.trim()) return { correcto: false, superado: false, agotado: this.agotado, msg: "⚠️ Escribe el resultado antes de comprobar. No cuenta como fallo." };
+        let userMap = parsePolyUserInput(r);
+        if (!userMap) return { correcto: false, superado: false, agotado: this.agotado, msg: "❌ No se reconoce la expresión. Usa el formato 3x^2+15x" };
+        let ok = polyEquals(userMap, this.expectedMap);
+        if (ok) {
+            this.racha++;
+            rachaGlobal = this.racha;
+            if (this.racha >= this.objetivo) {
+                this.registrarAcierto();
+                if (this.agotado) return { correcto: true, superado: false, agotado: true, msg: "✓ Correcto, pero este ejercicio ya agotó sus puntos: no suma a la nota. Puedes seguir practicando con \"Nuevo\"." };
+                return { correcto: true, superado: true, agotado: false, msg: "✓ ¡Correcto! Has superado el ejercicio (+" + formatPts(this.puntosObtenidos) + " pts)." };
+            }
+            this.avanzarTanda();
+            return { correcto: true, superado: false, agotado: this.agotado, msg: "✓ ¡Correcto! (" + this.racha + "/2 aciertos consecutivos). Ahora resuelve esta nueva multiplicación." };
+        }
+        this.racha = 0;
+        rachaGlobal = 0;
+        this.registrarFallo(r);
+        let msg = "❌ Incorrecto. Multiplica el monomio por cada término del paréntesis (propiedad distributiva) y suma los exponentes de x. Revisa los signos.";
+        if (this.agotado) msg += " Este ejercicio ya ha agotado sus puntos y no sumará a la nota; puedes seguir practicando con \"Nuevo\".";
+        return { correcto: false, superado: false, agotado: this.agotado, msg: msg };
+    }
+    getHTML(i) {
+        let e = ejercicios[i];
+        let disabledAttr = e.superado ? 'disabled' : '';
+        let btns = !e.superado ? '<button class="btn-potencia" data-accion="potencia" data-destino="e3_resp">🔣 ^</button>' : '';
+        return buildCardHTML(i, e, disabledAttr,
+            '<div class="ejercicio-titulo">Multiplicación de un monomio por un binomio</div>',
+            '<div class="enunciado-latex">\\( ' + latexify(e.enunciado) + ' \\)</div><label for="e3_resp" class="sr-only">Resultado de la multiplicación</label><div class="input-con-potencia"><input type="text" id="e3_resp" class="text-input" placeholder="Ej: 3x^2+15x" ' + disabledAttr + '>' + btns + '</div>',
+            2);
+    }
+}
+
+class Ejercicio4 extends EjercicioBase {
+    constructor() { super(); this.objetivo = 1; }
+    generarNuevo() {
+        this.P = this.generarPoli();
+        this.Q = this.generarPoli();
+        this.R = this.generarPoli();
+        const plantillas = [
+            [1, -2, 1], [2, 1, -1], [1, 1, -3],
+            [-1, 2, 1], [2, -1, -2], [1, -3, 2]
+        ];
+        const t = plantillas[Math.floor(Math.random() * plantillas.length)];
+        this.ops = [
+            { nombre: 'P', mult: t[0], map: this.P },
+            { nombre: 'Q', mult: t[1], map: this.Q },
+            { nombre: 'R', mult: t[2], map: this.R }
+        ];
+        this.expectedMap = {};
+        this.ops.forEach(op => {
+            this.expectedMap = addPoly(this.expectedMap, scalePoly(op.map, op.mult));
+        });
+        this.operacionStr = this.buildOperacionStr();
+    }
+    firma() { return [buildPolyStr(this.P), buildPolyStr(this.Q), buildPolyStr(this.R), this.operacionStr].join('|'); }
+    generarPoli() {
+        let map = {};
+        [2, 1, 0].forEach(g => {
+            let c;
+            do { c = Math.floor(Math.random() * 13) - 6; } while (c === 0);
+            map[g] = c;
+        });
+        return map;
+    }
+    buildOperacionStr() {
+        let str = "";
+        this.ops.forEach((op, idx) => {
+            let abs = Math.abs(op.mult);
+            let coefPart = abs === 1 ? "" : String(abs);
+            let pieza = coefPart + op.nombre + "(x)";
+            if (idx === 0) {
+                str += (op.mult < 0 ? "-" : "") + pieza;
+            } else {
+                str += (op.mult < 0 ? " - " : " + ") + pieza;
+            }
+        });
+        return str;
+    }
+    verificar(r) {
+        if (this.superado) return { correcto: false, superado: true, agotado: this.agotado, msg: "Ejercicio ya superado" };
+        if (!r || !r.trim()) return { correcto: false, superado: false, agotado: this.agotado, msg: "⚠️ Escribe el polinomio resultante antes de comprobar. No cuenta como fallo." };
+        let userMap = parsePolyUserInput(r);
+        if (!userMap) return { correcto: false, superado: false, agotado: this.agotado, msg: "❌ No se reconoce la expresión. Usa el formato 3x^2+5x-7" };
+        let ok = polyEquals(userMap, this.expectedMap);
+        if (ok) {
+            this.registrarAcierto();
+            if (this.agotado) return { correcto: true, superado: false, agotado: true, msg: "✓ Correcto, pero este ejercicio ya agotó sus puntos: no suma a la nota. Puedes seguir practicando con \"Nuevo\"." };
+            return { correcto: true, superado: true, agotado: false, msg: "✓ ¡Correcto! Has superado el ejercicio (+" + formatPts(this.puntosObtenidos) + " pts)." };
+        }
+        this.registrarFallo(r);
+        let msg = "❌ Incorrecto. Sustituye cada polinomio por su expresión, multiplica por su coeficiente y suma término a término, vigilando los signos al restar.";
+        if (this.agotado) msg += " Este ejercicio ya ha agotado sus puntos y no sumará a la nota; puedes seguir practicando con \"Nuevo\".";
+        return { correcto: false, superado: false, agotado: this.agotado, msg: msg };
+    }
+    getHTML(i) {
+        let e = ejercicios[i];
+        let disabledAttr = e.superado ? 'disabled' : '';
+        let btns = !e.superado ? '<button class="btn-potencia" data-accion="potencia" data-destino="e4_resp">🔣 ^</button>' : '';
+        return buildCardHTML(i, e, disabledAttr,
+            '<div class="ejercicio-titulo">Operaciones con polinomios</div><span class="ejercicio-nota">(se supera con un solo acierto)</span>',
+            '<div class="enunciado-latex">\\( P(x)=' + latexify(buildPolyStr(e.P)) + ' \\)</div><div class="enunciado-latex">\\( Q(x)=' + latexify(buildPolyStr(e.Q)) + ' \\)</div><div class="enunciado-latex">\\( R(x)=' + latexify(buildPolyStr(e.R)) + ' \\)</div><div class="enunciado-texto">Calcula: <strong>' + e.operacionStr + '</strong></div><label for="e4_resp" class="sr-only">Resultado de la operación con polinomios</label><div class="input-con-potencia"><input type="text" id="e4_resp" class="text-input" style="width:320px;" placeholder="Ej: 3x^2+5x-7" ' + disabledAttr + '>' + btns + '</div>',
+            3);
+    }
+}
+
+class Ejercicio5 extends EjercicioBase {
+    generarNuevo() {
+        let b1;
+        do { b1 = Math.floor(Math.random() * 9) - 4; } while (b1 === 0);
+        let b2;
+        do { b2 = Math.floor(Math.random() * 9) - 4; } while (b2 === 0);
+        this.tipo = Math.random() < 0.5 ? 'suma' : 'resta';
+        if (this.tipo === 'suma') {
+            this.expr1 = "(x" + (b1 >= 0 ? "+" + b1 : b1) + ")^2";
+            this.sol1Map = { 2: 1, 1: 2 * b1, 0: b1 * b1 };
+        } else {
+            let ab = Math.abs(b1);
+            this.expr1 = "(x-" + ab + ")^2";
+            this.sol1Map = { 2: 1, 1: -2 * ab, 0: ab * ab };
+        }
+        let ab2 = Math.abs(b2);
+        this.expr2 = "(x+" + ab2 + ")(x-" + ab2 + ")";
+        this.sol2Map = { 2: 1, 0: -(ab2 * ab2) };
+    }
+    /* Se exige que cambien las DOS expresiones respecto a la tanda anterior. */
+    firma() { return this.expr1 + '|' + this.expr2; }
+    avanzarTanda() {
+        const e1 = this.expr1, e2 = this.expr2;
+        let intentos = 0;
+        do {
+            this.generarNuevo();
+            intentos++;
+        } while ((this.expr1 === e1 || this.expr2 === e2) && intentos < 50);
+        this._ultimoFalloKey = null;
+    }
+    verificar(r1, r2) {
+        if (this.superado) return { correcto: false, superado: true, agotado: this.agotado, msg: "Ejercicio ya superado" };
+        if (!r1 || !r1.trim() || !r2 || !r2.trim()) {
+            return { correcto: false, superado: false, agotado: this.agotado, msg: "⚠️ Completa las dos respuestas antes de comprobar. No cuenta como fallo." };
+        }
+        let m1 = parsePolyUserInput(r1);
+        let m2 = parsePolyUserInput(r2);
+        if (!m1 || !m2) return { correcto: false, superado: false, agotado: this.agotado, msg: "❌ No se reconoce alguna expresión. Usa el formato x^2+6x+9" };
+        let ok1 = polyEquals(m1, this.sol1Map);
+        let ok2 = polyEquals(m2, this.sol2Map);
+        if (ok1 && ok2) {
+            this.racha++;
+            rachaGlobal = this.racha;
+            if (this.racha >= this.objetivo) {
+                this.registrarAcierto();
+                if (this.agotado) return { correcto: true, superado: false, agotado: true, msg: "✓ Correcto, pero este ejercicio ya agotó sus puntos: no suma a la nota. Puedes seguir practicando con \"Nuevo\"." };
+                return { correcto: true, superado: true, agotado: false, msg: "✓ ¡Correcto! Has superado el ejercicio (+" + formatPts(this.puntosObtenidos) + " pts)." };
+            }
+            this.avanzarTanda();
+            return { correcto: true, superado: false, agotado: this.agotado, msg: "✓ ¡Correcto! (" + this.racha + "/2 aciertos consecutivos). Ahora desarrolla estas dos nuevas." };
+        }
+        this.racha = 0;
+        rachaGlobal = 0;
+        this.registrarFallo(r1, r2);
+        let msg = "❌ Incorrecto. Aplica la identidad correspondiente: (a+b)²=a²+2ab+b², (a-b)²=a²-2ab+b², (a+b)(a-b)=a²-b². Revisa los signos.";
+        if (this.agotado) msg += " Este ejercicio ya ha agotado sus puntos y no sumará a la nota; puedes seguir practicando con \"Nuevo\".";
+        return { correcto: false, superado: false, agotado: this.agotado, msg: msg };
+    }
+    getHTML(i) {
+        let e = ejercicios[i];
+        let disabledAttr = e.superado ? 'disabled' : '';
+        let btns1 = !e.superado ? '<button class="btn-potencia" data-accion="potencia" data-destino="e5_r1">🔣 ^</button>' : '';
+        let btns2 = !e.superado ? '<button class="btn-potencia" data-accion="potencia" data-destino="e5_r2">🔣 ^</button>' : '';
+        return buildCardHTML(i, e, disabledAttr,
+            '<div class="ejercicio-titulo">Identidades notables</div>',
+            '<div class="enunciado-latex">\\( ' + latexify(e.expr1) + ' \\)</div><label for="e5_r1" class="sr-only">Desarrollo de la primera identidad</label><div class="input-con-potencia"><input type="text" id="e5_r1" class="text-input" placeholder="Ej: x^2+6x+9" ' + disabledAttr + '>' + btns1 + '</div><div class="enunciado-latex">\\( ' + latexify(e.expr2) + ' \\)</div><label for="e5_r2" class="sr-only">Desarrollo de la segunda identidad</label><div class="input-con-potencia"><input type="text" id="e5_r2" class="text-input" placeholder="Ej: x^2-9" ' + disabledAttr + '>' + btns2 + '</div>',
+            4);
+    }
+}
+
+class Ejercicio6 extends EjercicioBase {
+    generarNuevo() {
+        this.signoCuadrado = Math.random() < 0.5 ? '+' : '-';
+        this.bCuadrado = Math.floor(Math.random() * 9) + 1;
+        let coefLineal = 2 * this.bCuadrado * (this.signoCuadrado === '+' ? 1 : -1);
+        this.expr1Map = { 2: 1, 1: coefLineal, 0: this.bCuadrado * this.bCuadrado };
+        this.expr1 = buildPolyStr(this.expr1Map);
+        this.nDiferencia = Math.floor(Math.random() * 9) + 1;
+        this.expr2Map = { 2: 1, 0: -(this.nDiferencia * this.nDiferencia) };
+        this.expr2 = buildPolyStr(this.expr2Map);
+    }
+    firma() { return this.expr1 + '|' + this.expr2; }
+    avanzarTanda() {
+        const e1 = this.expr1, e2 = this.expr2;
+        let intentos = 0;
+        do {
+            this.generarNuevo();
+            intentos++;
+        } while ((this.expr1 === e1 || this.expr2 === e2) && intentos < 50);
+        this._ultimoFalloKey = null;
+    }
+    verificar(r1, r2) {
+        if (this.superado) return { correcto: false, superado: true, agotado: this.agotado, msg: "Ejercicio ya superado" };
+        if (!r1 || !r1.trim() || !r2 || !r2.trim()) {
+            return { correcto: false, superado: false, agotado: this.agotado, msg: "⚠️ Completa las dos respuestas antes de comprobar. No cuenta como fallo." };
+        }
+        let p1 = parseFactorPair(r1);
+        let p2 = parseFactorPair(r2);
+        let ok1 = !!p1 && p1.tipo === 'cuadrado' && p1.signo === this.signoCuadrado && p1.valor === this.bCuadrado;
+        let ok2 = !!p2 && p2.tipo === 'diferencia' && p2.valor === this.nDiferencia;
+        if (ok1 && ok2) {
+            this.racha++;
+            rachaGlobal = this.racha;
+            if (this.racha >= this.objetivo) {
+                this.registrarAcierto();
+                if (this.agotado) return { correcto: true, superado: false, agotado: true, msg: "✓ Correcto, pero este ejercicio ya agotó sus puntos: no suma a la nota. Puedes seguir practicando con \"Nuevo\"." };
+                return { correcto: true, superado: true, agotado: false, msg: "✓ ¡Correcto! Has superado el ejercicio (+" + formatPts(this.puntosObtenidos) + " pts)." };
+            }
+            this.avanzarTanda();
+            return { correcto: true, superado: false, agotado: this.agotado, msg: "✓ ¡Correcto! (" + this.racha + "/2 aciertos consecutivos). Ahora factoriza estas dos nuevas." };
+        }
+        this.racha = 0;
+        rachaGlobal = 0;
+        this.registrarFallo(r1, r2);
+        let msg = "❌ Incorrecto. Usa las identidades notables en sentido inverso: x²+2bx+b²=(x+b)², x²-2bx+b²=(x-b)², x²-n²=(x+n)(x-n). Escribe el resultado como producto de dos binomios, con paréntesis.";
+        if (this.agotado) msg += " Este ejercicio ya ha agotado sus puntos y no sumará a la nota; puedes seguir practicando con \"Nuevo\".";
+        return { correcto: false, superado: false, agotado: this.agotado, msg: msg };
+    }
+    getHTML(i) {
+        let e = ejercicios[i];
+        let disabledAttr = e.superado ? 'disabled' : '';
+        let btns1 = !e.superado ? '<button class="btn-potencia" data-accion="potencia" data-destino="e6_r1">🔣 ^</button>' : '';
+        return buildCardHTML(i, e, disabledAttr,
+            '<div class="ejercicio-titulo">Factorización con identidades notables</div>',
+            '<div class="enunciado-latex">\\( ' + latexify(e.expr1) + ' \\)</div><label for="e6_r1" class="sr-only">Factorización de la primera expresión</label><div class="input-con-potencia"><input type="text" id="e6_r1" class="text-input" placeholder="Ej: (x+3)^2" ' + disabledAttr + '>' + btns1 + '</div><div class="enunciado-latex">\\( ' + latexify(e.expr2) + ' \\)</div><label for="e6_r2" class="sr-only">Factorización de la segunda expresión</label><div class="input-con-potencia"><input type="text" id="e6_r2" class="text-input" placeholder="Ej: (x+4)(x-4)" ' + disabledAttr + '></div>',
+            5);
+    }
+}
+
+class Ejercicio7 extends EjercicioBase {
+    generarNuevo() {
+        let factorCoef = Math.floor(Math.random() * 5) + 2;
+        let factorPower = [0, 1, 1, 2][Math.floor(Math.random() * 4)];
+        const gradosPosibles = [2, 1, 0];
+        const numTerminos = Math.random() < 0.5 ? 2 : 3;
+        let gradosElegidos = [...gradosPosibles].sort(() => Math.random() - 0.5).slice(0, numTerminos).sort((a, b) => b - a);
+        const minGrado = Math.min(...gradosElegidos);
+        if (minGrado > 0) {
+            factorPower += minGrado;
+            gradosElegidos = gradosElegidos.map((g) => g - minGrado);
+        }
+        let innerMap = {};
+        gradosElegidos.forEach((g, idx) => {
+            let c;
+            if (idx === 0) {
+                c = Math.random() < 0.5 ? 1 : -1;
+            } else {
+                do { c = Math.floor(Math.random() * 9) - 4; } while (c === 0);
+            }
+            innerMap[g] = c;
+        });
+        this.factorCoef = factorCoef;
+        this.factorPower = factorPower;
+        this.innerMap = innerMap;
+        this.originalMap = scalePoly(shiftPoly(innerMap, factorPower), factorCoef);
+        this.enunciado = buildPolyStr(this.originalMap);
+        this.factorStr = this.buildFactorStr();
+        this.innerStr = buildPolyStr(innerMap);
+    }
+    firma() { return this.enunciado; }
+    buildFactorStr() {
+        let abs = Math.abs(this.factorCoef);
+        let varPart = this.factorPower === 0 ? "" : (this.factorPower === 1 ? "x" : "x^" + this.factorPower);
+        return String(abs) + varPart;
+    }
+    verificar(r) {
+        if (this.superado) return { correcto: false, superado: true, agotado: this.agotado, msg: "Ejercicio ya superado" };
+        if (!r || !r.trim()) return { correcto: false, superado: false, agotado: this.agotado, msg: "⚠️ Escribe la expresión factorizada, con el paréntesis antes de comprobar. No cuenta como fallo." };
+        let parsed = parseFactoredUserInput(r);
+        if (!parsed) return { correcto: false, superado: false, agotado: this.agotado, msg: "❌ No se reconoce el formato. Usa el formato 3(2x^2-3x+4)" };
+        let okPositivo = parsed.coef === this.factorCoef && parsed.power === this.factorPower && polyEquals(parsed.innerMap, this.innerMap);
+        let okNegativo = parsed.coef === -this.factorCoef && parsed.power === this.factorPower && polyEquals(parsed.innerMap, scalePoly(this.innerMap, -1));
+        let ok = okPositivo || okNegativo;
+        if (ok) {
+            this.racha++;
+            rachaGlobal = this.racha;
+            if (this.racha >= this.objetivo) {
+                this.registrarAcierto();
+                if (this.agotado) return { correcto: true, superado: false, agotado: true, msg: "✓ Correcto, pero este ejercicio ya agotó sus puntos: no suma a la nota. Puedes seguir practicando con \"Nuevo\"." };
+                return { correcto: true, superado: true, agotado: false, msg: "✓ ¡Correcto! Has superado el ejercicio (+" + formatPts(this.puntosObtenidos) + " pts)." };
+            }
+            this.avanzarTanda();
+            return { correcto: true, superado: false, agotado: this.agotado, msg: "✓ ¡Correcto! (" + this.racha + "/2 aciertos consecutivos). Ahora saca factor común en esta nueva expresión." };
+        }
+        this.racha = 0;
+        rachaGlobal = 0;
+        this.registrarFallo(r);
+        let msg = "❌ Incorrecto. Busca el máximo común divisor de los coeficientes y la menor potencia de x común a todos los términos, y sácalos fuera del paréntesis.";
+        if (this.agotado) msg += " Este ejercicio ya ha agotado sus puntos y no sumará a la nota; puedes seguir practicando con \"Nuevo\".";
+        return { correcto: false, superado: false, agotado: this.agotado, msg: msg };
+    }
+    getHTML(i) {
+        let e = ejercicios[i];
+        let disabledAttr = e.superado ? 'disabled' : '';
+        let btns = !e.superado ? '<button class="btn-potencia" data-accion="potencia" data-destino="e7_resp">🔣 ^</button>' : '';
+        return buildCardHTML(i, e, disabledAttr,
+            '<div class="ejercicio-titulo">Factor común</div>',
+            '<div class="enunciado-latex">\\( ' + latexify(e.enunciado) + ' \\)</div><label for="e7_resp" class="sr-only">Expresión factorizada</label><div class="input-con-potencia"><input type="text" id="e7_resp" class="text-input" style="width:280px;" placeholder="Ej: 3(2x^2-3x+4)" ' + disabledAttr + '>' + btns + '</div>',
+            6);
+    }
+}
+
+function buildCardHTML(i, e, disabledAttr, headerHTML, bodyHTML, verificarIdx) {
+    let claseExtra = e.superado ? 'superado' : (e.agotado ? 'agotado' : '');
+    let badge = '';
+    if (e.superado) badge = '<span class="badge-superado">✓ Superado (+' + formatPts(e.puntosObtenidos) + ' pts)</span>';
+    else if (e.agotado) badge = '<span class="badge-agotado">⛔ Agotado (0 pts)</span>';
+    let puntosInfo = '<span class="puntos-info">Vale hasta ' + formatPts(PUNTOS_MAX_TIPO) + ' pts</span>';
+    let botonNuevo = !e.superado ? '<button class="btn-secondary" data-accion="nuevo" data-ej="' + verificarIdx + '">🔄 Nuevo</button>' : '';
+    let fbHtml = '';
+    if (e.ultimoFeedback) {
+        let clase = e.ultimoFeedback.correcto ? (e.ultimoFeedback.agotado ? 'feedback-agotado' : 'feedback-correcto') : (e.ultimoFeedback.agotado ? 'feedback-agotado' : 'feedback-error');
+        fbHtml = '<span class="' + clase + '">' + e.ultimoFeedback.msg + '</span>';
+    }
+    return '<div class="ejercicio-card ' + claseExtra + '"><div class="ejercicio-header"><span class="ejercicio-num">' + (verificarIdx + 1) + '</span>' + headerHTML + badge + puntosInfo + '</div>' + bodyHTML + '<div class="input-area"><button class="btn-primary" data-accion="comprobar" data-ej="' + verificarIdx + '" ' + disabledAttr + '>Comprobar</button>' + botonNuevo + '</div><div class="feedback" id="fb_e' + (verificarIdx + 1) + '" aria-live="polite">' + fbHtml + '</div></div>';
+}
+
+function calcularNotaFinal() {
+    let totalPuntos = ejercicios.reduce((acc, e) => acc + e.puntosObtenidos, 0);
+    let superados = ejercicios.filter(e => e.superado).length;
+    let nf = Math.min(10, totalPuntos);
+    return { notaFinal: nf, superados: superados };
+}
+
+function actualizarUI() {
+    let { notaFinal, superados } = calcularNotaFinal();
+    document.getElementById('progresoCount').innerText = superados;
+    document.getElementById('rachaActual').innerText = rachaGlobal;
+    document.getElementById('fallosCount').innerText = fallosTotalesDisplay;
+    document.getElementById('notaActual').innerText = notaFinal.toFixed(1);
+}
+
+function tipografiar(nodo) {
+    if (window.MathJax && typeof MathJax.typesetPromise === 'function') {
+        MathJax.typesetPromise([nodo]).catch(() => {});
+    }
+}
+
+/* Cada tarjeta va en su propio contenedor para poder repintarla sola,
+   sin borrar lo que el alumno esté escribiendo en otros ejercicios. */
+function renderizarTodo() {
+    let c = document.getElementById('ejerciciosContainer');
+    let h = '';
+    for (let i = 0; i < ejercicios.length; i++) {
+        h += '<div id="wrap_e' + i + '">' + ejercicios[i].getHTML(i) + '</div>';
+        if (i < ejercicios.length - 1) h += '<hr>';
+    }
+    c.innerHTML = h;
+    actualizarUI();
+    tipografiar(c);
+}
+
+function renderizarEjercicio(i) {
+    let w = document.getElementById('wrap_e' + i);
+    if (!w) { renderizarTodo(); return; }
+    w.innerHTML = ejercicios[i].getHTML(i);
+    actualizarUI();
+    tipografiar(w);
+}
+
+window.verificarEjercicio = function(i) {
+    let ej = ejercicios[i];
+    let r;
+    switch(i) {
+        case 0: r = ej.verificar(document.getElementById('e1_r1')?.value, document.getElementById('e1_r2')?.value); break;
+        case 1: {
+            let vals = [0, 1, 2].map(idx => ({
+                grado: document.getElementById('e2_g' + idx)?.value,
+                tind: document.getElementById('e2_t' + idx)?.value
+            }));
+            r = ej.verificar(vals);
+            break;
+        }
+        case 2: r = ej.verificar(document.getElementById('e3_resp')?.value); break;
+        case 3: r = ej.verificar(document.getElementById('e4_resp')?.value); break;
+        case 4: r = ej.verificar(document.getElementById('e5_r1')?.value, document.getElementById('e5_r2')?.value); break;
+        case 5: r = ej.verificar(document.getElementById('e6_r1')?.value, document.getElementById('e6_r2')?.value); break;
+        case 6: r = ej.verificar(document.getElementById('e7_resp')?.value); break;
+        default: return;
+    }
+    ej.ultimoFeedback = { correcto: r.correcto, agotado: r.agotado, msg: r.msg };
+    /* Si ha cambiado el enunciado (acierto parcial → nueva tanda) o el estado
+       de la tarjeta (superado/agotado), se repinta la tarjeta completa.
+       En un fallo normal se conserva lo escrito para que el alumno lo corrija. */
+    if (r.correcto || r.superado || r.agotado) {
+        renderizarEjercicio(i);
+        return;
+    }
+    if (i === 1 && r.correctos) {
+        for (let idx = 0; idx < 3; idx++) {
+            let gEl = document.getElementById('e2_g' + idx);
+            let tEl = document.getElementById('e2_t' + idx);
+            if (gEl) gEl.classList.toggle('input-error', !r.correctos[idx * 2]);
+            if (tEl) tEl.classList.toggle('input-error', !r.correctos[idx * 2 + 1]);
+        }
+    }
+    let fb = document.getElementById('fb_e' + (i+1));
+    fb.innerHTML = '<span class="feedback-error">' + r.msg + '</span>';
+    actualizarUI();
+};
+
+window.nuevoEjercicio = function(i) {
+    if (ejercicios[i] && !ejercicios[i].superado) {
+        ejercicios[i].nuevoEjercicio();
+        renderizarEjercicio(i);
+    }
+};
+
+function getTiempo() {
+    let elapsedSec = Math.floor((Date.now() - startTime) / 1000);
+    let minutosRedondeados = Math.ceil(elapsedSec / 60);
+    let h = Math.floor(minutosRedondeados / 60);
+    let m = minutosRedondeados % 60;
+    return h.toString().padStart(2,'0') + ':' + m.toString().padStart(2,'0');
+}
+
+function mostrarResultados(n) {
+    let { notaFinal, superados } = calcularNotaFinal();
+    let fecha = new Date().toLocaleDateString('es-ES');
+    let hora = new Date().toLocaleTimeString('es-ES');
+    let tiempo = getTiempo();
+    document.getElementById('modalNombreMostrar').innerText = n.toUpperCase();
+    document.getElementById('modalNota').innerHTML = notaFinal.toFixed(1) + '/10';
+    let msg = notaFinal >= 9 ? "🌟 Excelente" : (notaFinal >= 7 ? "👍 Muy bien" : (notaFinal >= 5 ? "📘 Aprobado" : "📚 Repasa"));
+    document.getElementById('modalMensaje').innerHTML = msg;
+    document.getElementById('modalStats').innerHTML = '<p>📅 ' + fecha + ' 🕐 ' + hora + '</p><p>⏱️ Tiempo: ' + tiempo + '</p><p>🎯 Superados: ' + superados + '/' + ejercicios.length + '</p><p>❌ Fallos: ' + fallosTotalesDisplay + '</p><p>⭐ Nota: ' + notaFinal.toFixed(1) + '</p>';
+    let mc = document.getElementById('modalCard');
+    let bgColor, textColor;
+    if (notaFinal >= 10) { bgColor = '#1a7a1a'; textColor = 'white'; }
+    else if (notaFinal >= 9) { bgColor = '#6dbf6d'; textColor = 'white'; }
+    else if (notaFinal >= 8) { bgColor = '#1a4f8a'; textColor = 'white'; }
+    else if (notaFinal >= 7) { bgColor = '#5b9bd5'; textColor = 'white'; }
+    else if (notaFinal >= 6) { bgColor = '#c05c00'; textColor = 'white'; }
+    else if (notaFinal >= 5) { bgColor = '#f5a623'; textColor = 'black'; }
+    else { bgColor = '#c0392b'; textColor = 'white'; }
+    mc.style.backgroundColor = bgColor;
+    mc.style.color = textColor;
+    document.getElementById('modalResultados').classList.add('show');
+}
+
+const nombresEjercicios = ['Lenguaje algebraico', 'Grado y término independiente', 'Monomio por binomio', 'Operaciones con polinomios', 'Identidades notables', 'Factorización con identidades notables', 'Factor común'];
+
+function haySinCompletar() {
+    return ejercicios.some(e => !e.superado);
+}
+
+function abrirAvisoIncompleto() {
+    let lista = document.getElementById('listaSinCompletar');
+    lista.innerHTML = '';
+    ejercicios.forEach((e, idx) => {
+        if (!e.superado) {
+            let li = document.createElement('li');
+            li.innerText = nombresEjercicios[idx] + (e.agotado ? ' (agotado, 0 pts)' : ' (sin resolver)');
+            lista.appendChild(li);
+        }
+    });
+    let { notaFinal } = calcularNotaFinal();
+    document.getElementById('notaProyectada').innerText = notaFinal.toFixed(1);
+    document.getElementById('modalAvisoIncompleto').classList.add('show');
+}
+
+function finalizar() {
+    let n = document.getElementById('nombreAlumno').value.trim();
+    if (!n) {
+        document.getElementById('modalNombre').classList.add('show');
+        return;
+    }
+    if (haySinCompletar()) {
+        abrirAvisoIncompleto();
+        return;
+    }
+    mostrarResultados(n);
+}
+
+function hayProgresoQuePerder() {
+    return ejercicios.some(e => e.superado || e.fallosPropios > 0 || e.agotado || e.racha > 0);
+}
+
+function resetear() {
+    if (!hayProgresoQuePerder()) {
+        location.reload();
+        return;
+    }
+    let { notaFinal } = calcularNotaFinal();
+    document.getElementById('textoAvisoReset').innerText = 'Se perderá toda la nota actual (' + notaFinal.toFixed(1) + '/10) y el progreso de todos los ejercicios.';
+    document.getElementById('modalConfirmarReset').classList.add('show');
+}
+
+function cerrarModales() {
+    document.getElementById('modalResultados').classList.remove('show');
+    document.getElementById('modalNombre').classList.remove('show');
+    document.getElementById('modalAvisoIncompleto').classList.remove('show');
+    document.getElementById('modalConfirmarReset').classList.remove('show');
+}
+
+function confirmarNombre() {
+    let n = document.getElementById('modalNombreInput').value.trim();
+    if (n) {
+        document.getElementById('nombreAlumno').value = n;
+        document.getElementById('modalNombre').classList.remove('show');
+        if (haySinCompletar()) {
+            abrirAvisoIncompleto();
+        } else {
+            mostrarResultados(n);
+        }
+    }
+}
+
+const clases = [Ejercicio1, Ejercicio2, Ejercicio3, Ejercicio4, Ejercicio5, Ejercicio6, Ejercicio7];
+PUNTOS_MAX_TIPO = 10 / clases.length;
+document.getElementById('badgePuntos').innerText = '⭐ Cada ejercicio vale hasta ' + formatPts(PUNTOS_MAX_TIPO) + ' puntos';
+ejercicios = clases.map(C => new C());
+renderizarTodo();
+
+document.getElementById('btnFinalizar').addEventListener('click', finalizar);
+document.getElementById('btnResetear').addEventListener('click', resetear);
+document.getElementById('closeModal').addEventListener('click', cerrarModales);
+document.getElementById('btnConfirmarNombre').addEventListener('click', confirmarNombre);
+document.getElementById('btnSeguirTrabajando').addEventListener('click', cerrarModales);
+document.getElementById('btnFinalizarDeTodasFormas').addEventListener('click', function() {
+    cerrarModales();
+    let n = document.getElementById('nombreAlumno').value.trim();
+    mostrarResultados(n);
+});
+document.getElementById('btnCancelarReset').addEventListener('click', cerrarModales);
+document.getElementById('btnConfirmarReset').addEventListener('click', function() {
+    location.reload();
+});
+
+/* Delegación de eventos: sustituye a los onclick en línea, que se bloquean
+   cuando la página se sirve con una política de seguridad (CSP) estricta. */
+document.getElementById('ejerciciosContainer').addEventListener('click', function(e) {
+    const btn = e.target.closest('button[data-accion]');
+    if (!btn || btn.disabled) return;
+    const accion = btn.dataset.accion;
+    if (accion === 'comprobar') verificarEjercicio(Number(btn.dataset.ej));
+    else if (accion === 'nuevo') nuevoEjercicio(Number(btn.dataset.ej));
+    else if (accion === 'potencia') insertarPotencia(btn.dataset.destino);
+    else if (accion === 'raiz') insertarRaiz(btn.dataset.destino);
+});
+
+document.getElementById('ejerciciosContainer').addEventListener('keydown', function(e) {
+    if (e.key !== 'Enter' || e.target.tagName !== 'INPUT') return;
+    e.preventDefault();
+    const card = e.target.closest('.ejercicio-card');
+    if (!card) return;
+    const botones = card.querySelectorAll('.btn-primary');
+    for (const boton of botones) {
+        const areaPadre = boton.closest('.input-area');
+        const areaVisible = !areaPadre || areaPadre.style.display !== 'none';
+        if (!boton.disabled && areaVisible) {
+            boton.click();
+            break;
+        }
+    }
+});
+
+document.getElementById('modalNombreInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        confirmarNombre();
+    }
+});
+</script>
+</body>
+</html>

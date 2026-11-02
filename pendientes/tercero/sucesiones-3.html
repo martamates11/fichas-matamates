@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sucesiones y progresiones — 3º ESO</title>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$', '$']], displayMath: [['$$', '$$']] },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.js" id="mathjax-script"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap');
+
+:root {
+  --color-fondo: #F5F0E8;
+  --color-fondo-card: #FDFAF3;
+  --color-barra: #EFE5CF;
+  --color-texto: #2C1F0E;
+  --color-texto-suave: #6B4F35;
+  --color-acento: #A0522D;
+  --color-acento-hover: #7B3B1E;
+  --color-borde: #C9A96E;
+  --color-borde-suave: #E0CEAA;
+  --color-cabecera: #3B2510;
+  --color-cabecera-txt: #F5EDD8;
+  --color-correcto: #2E6B3E;
+  --color-correcto-fondo: #EAF4EC;
+  --color-incorrecto: #8B1A1A;
+  --color-incorrecto-fondo: #F9EAEA;
+  --color-neutro: #E8DFC8;
+}
+
+* { box-sizing: border-box; }
+
+/* "clip" en vez de "hidden": evita el desbordamiento horizontal
+   sin crear un contenedor de scroll, que anularía la barra sticky. */
+html, body {
+  overflow-x: clip;
+  max-width: 100%;
+}
+
+body {
+  font-family: 'Lato', sans-serif;
+  font-size: 16px;
+  color: var(--color-texto);
+  background-color: var(--color-fondo);
+  margin: 0;
+  padding: 0 0 60px 0;
+}
+
+h1, h2, h3, .titulo-ficha { font-family: 'Libre Baskerville', serif; color: var(--color-texto); }
+
+.cabecera {
+  background-color: var(--color-cabecera);
+  color: var(--color-cabecera-txt);
+  font-family: 'Libre Baskerville', serif;
+  text-align: center;
+  padding: 12px 20px;
+  border-bottom: 3px solid var(--color-borde);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+}
+
+.ficha-container {
+  max-width: 980px;
+  margin: 28px auto;
+  background: var(--color-fondo-card);
+  border: 2px solid var(--color-borde);
+  border-radius: 6px;
+  box-shadow: 0 3px 12px rgba(44, 31, 14, 0.15);
+  padding: 32px 36px;
+}
+
+.titulo-ficha {
+  font-size: 1.6rem;
+  text-align: center;
+  border-bottom: 2px solid var(--color-borde);
+  padding-bottom: 10px;
+  margin-bottom: 6px;
+}
+.titulo-ficha::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 3px;
+  background: var(--color-borde);
+  margin: 8px auto 0;
+  border-radius: 2px;
+}
+
+.subtitulo-nombre {
+  text-align: center;
+  color: var(--color-texto-suave);
+  font-size: 0.88rem;
+  margin: 0 auto 22px auto;
+  max-width: 660px;
+  line-height: 1.55;
+}
+
+/* Barra del alumno: clara, sticky, nombre + marcador en la misma línea */
+.marcador {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  font-family: 'Libre Baskerville', serif;
+  font-size: 0.98rem;
+  color: var(--color-texto-suave);
+  background: var(--color-barra);
+  border: 1.5px solid var(--color-borde);
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(44, 31, 14, 0.12);
+  padding: 10px 16px;
+  margin-bottom: 22px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 18px;
+}
+.marcador span.cifra { color: var(--color-acento); font-weight: 700; }
+.marcador .datos-marcador { display: flex; flex-wrap: wrap; gap: 6px 18px; }
+.marcador .campo-nombre {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Lato', sans-serif;
+  font-size: 0.9rem;
+}
+.marcador .campo-nombre input[type="text"] {
+  background-color: var(--color-fondo-card);
+  border: 1.5px solid var(--color-borde);
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-family: 'Lato', sans-serif;
+  font-size: 0.95rem;
+  color: var(--color-texto);
+  outline: none;
+  min-width: 200px;
+}
+.marcador .campo-nombre input[type="text"]:focus { border-color: var(--color-acento); }
+.marcador .campo-nombre input[type="text"].incorrecta {
+  border-color: var(--color-incorrecto);
+  background-color: var(--color-incorrecto-fondo);
+}
+.aviso-nombre {
+  display: none;
+  color: var(--color-incorrecto);
+  font-size: 0.8rem;
+  font-weight: 700;
+  font-family: 'Lato', sans-serif;
+  width: 100%;
+}
+.aviso-nombre.visible { display: block; }
+
+.caja-formulas {
+  background: var(--color-neutro);
+  border: 1.5px solid var(--color-borde);
+  border-radius: 6px;
+  padding: 16px 22px;
+  margin-bottom: 28px;
+}
+.caja-formulas h3 {
+  font-size: 1.05rem;
+  margin: 0 0 10px 0;
+  color: var(--color-acento);
+}
+.caja-formulas .fila-formula {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 28px;
+  margin-bottom: 6px;
+  font-size: 1.02rem;
+}
+.caja-formulas .bloque-tipo { margin-bottom: 10px; }
+.caja-formulas .bloque-tipo:last-child { margin-bottom: 0; }
+.caja-formulas .etiqueta-tipo {
+  font-weight: 700;
+  color: var(--color-texto-suave);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 4px;
+}
+
+.seccion-ejercicio { margin-bottom: 36px; }
+.titulo-ejercicio {
+  font-size: 1.2rem;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.badge-superado {
+  display: none;
+  background: var(--color-correcto);
+  color: #fff;
+  font-family: 'Lato', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 12px;
+  letter-spacing: 0.03em;
+}
+.badge-superado.visible { display: inline-block; }
+
+.instrucciones-ejercicio {
+  color: var(--color-texto-suave);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-bottom: 14px;
+}
+
+.tabla-wrap { overflow-x: auto; position: relative; } /* position: relative evita que algo posicionado dentro de la tabla ensanche la página en el móvil */
+
+table.tabla-progresion {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--color-fondo-card);
+  margin-bottom: 6px;
+  min-width: 760px;
+}
+table.tabla-progresion th {
+  background: var(--color-cabecera);
+  color: var(--color-cabecera-txt);
+  font-family: 'Libre Baskerville', serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 8px 6px;
+  text-align: center;
+  border: 1px solid var(--color-borde);
+}
+table.tabla-progresion td {
+  border: 1px solid var(--color-borde-suave);
+  padding: 6px 5px;
+  text-align: center;
+  vertical-align: middle;
+}
+table.tabla-progresion td.celda-dato {
+  font-family: 'Libre Baskerville', serif;
+  font-weight: 700;
+  background: var(--color-neutro);
+  white-space: nowrap;
+}
+tr.fila-superada td.celda-dato { background: #DCEEDC; }
+tr.fila-bloqueada td.celda-dato { background: #F0E4E4; }
+tr.fila-nueva td.celda-dato { animation: resaltar 1.6s ease-out; }
+@keyframes resaltar {
+  0% { background: #F3D9A8; }
+  100% { background: var(--color-neutro); }
+}
+
+table.tabla-progresion input[type="text"] {
+  width: 100%;
+  min-width: 78px;
+  background-color: var(--color-fondo);
+  border: 1.5px solid var(--color-borde);
+  border-radius: 4px;
+  padding: 6px 6px;
+  font-family: 'Lato', sans-serif;
+  font-size: 0.95rem;
+  color: var(--color-texto);
+  outline: none;
+  text-align: center;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+table.tabla-progresion input[type="text"]:focus { border-color: var(--color-acento); }
+table.tabla-progresion input[type="text"].correcta {
+  border-color: var(--color-correcto);
+  background-color: var(--color-correcto-fondo);
+  color: var(--color-correcto);
+  font-weight: 700;
+}
+table.tabla-progresion input[type="text"].incorrecta {
+  border-color: var(--color-incorrecto);
+  background-color: var(--color-incorrecto-fondo);
+  color: var(--color-incorrecto);
+}
+table.tabla-progresion input[type="text"].vacia {
+  border-color: var(--color-acento);
+  border-style: dashed;
+  background-color: #FBF1E2;
+}
+table.tabla-progresion input[type="text"]:disabled {
+  opacity: 0.85;
+  cursor: not-allowed;
+}
+
+td.celda-accion { white-space: nowrap; }
+
+.btn-primario {
+  background-color: var(--color-acento);
+  color: #FDFAF3;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-family: 'Lato', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: background-color 0.2s ease;
+}
+.btn-primario:hover:not(:disabled) { background-color: var(--color-acento-hover); }
+.btn-primario:disabled { background-color: var(--color-borde-suave); cursor: not-allowed; color: var(--color-texto-suave); }
+
+.btn-secundario {
+  background-color: transparent;
+  color: var(--color-acento);
+  border: 2px solid var(--color-borde);
+  border-radius: 4px;
+  padding: 9px 20px;
+  font-family: 'Lato', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+.btn-secundario:hover { border-color: var(--color-acento); color: var(--color-acento-hover); }
+.modal-calificacion.coloreado .btn-secundario {
+  background-color: rgba(255,255,255,0.92);
+  border-color: rgba(255,255,255,0.92);
+  color: var(--color-cabecera);
+}
+
+.btn-finalizar {
+  background-color: var(--color-cabecera);
+  color: var(--color-cabecera-txt);
+  border: 2px solid var(--color-borde);
+  border-radius: 4px;
+  padding: 10px 24px;
+  font-family: 'Libre Baskerville', serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  transition: background-color 0.2s;
+  display: block;
+  margin: 30px auto 0 auto;
+}
+.btn-finalizar:hover { background-color: #2C1A0A; }
+
+.fila-feedback td {
+  border: none;
+  padding: 0;
+  text-align: left;
+}
+.feedback-fila {
+  display: none;
+  margin: 0 2px 12px 2px;
+  border-radius: 4px;
+  padding: 10px 14px;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+.feedback-fila.visible { display: block; }
+.feedback-fila.ok {
+  background-color: var(--color-correcto-fondo);
+  border: 1.5px solid var(--color-correcto);
+  color: var(--color-correcto);
+  font-weight: 700;
+}
+.feedback-fila.error {
+  background-color: var(--color-incorrecto-fondo);
+  border: 1.5px solid var(--color-incorrecto);
+  color: var(--color-texto);
+}
+.feedback-fila.aviso {
+  background-color: #FBF1E2;
+  border: 1.5px dashed var(--color-acento);
+  color: var(--color-texto);
+}
+.feedback-fila.aviso strong { color: var(--color-acento); }
+.feedback-fila.error ul { margin: 6px 0 0 0; padding-left: 20px; }
+.feedback-fila.error li { margin-bottom: 4px; }
+.feedback-fila.error strong { color: var(--color-incorrecto); }
+.feedback-fila .nota-nueva-fila {
+  margin-top: 8px;
+  font-style: italic;
+  color: var(--color-texto-suave);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap; border: 0;
+}
+
+/* Overlay modal calificación */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(44, 31, 14, 0.55);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 100;
+}
+.overlay.oculto { display: none; }
+
+.modal-calificacion {
+  border: 3px solid var(--color-borde);
+  border-radius: 8px;
+  font-family: 'Libre Baskerville', serif;
+  box-shadow: 0 6px 24px rgba(44, 31, 14, 0.35);
+  padding: 32px 36px;
+  min-width: 300px;
+  max-width: 560px;
+  width: 92vw;
+  text-align: center;
+  background: var(--color-fondo-card);
+  color: var(--color-texto);
+  max-height: 86vh;
+  overflow-y: auto;
+}
+.modal-calificacion.coloreado { color: #fff; }
+.modal-calificacion .nota-grande {
+  font-size: 3rem;
+  font-weight: 700;
+  margin: 6px 0 4px 0;
+}
+.modal-calificacion .datos-modal {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.9rem;
+  margin-bottom: 18px;
+}
+.desglose-tipo {
+  background: rgba(255,255,255,0.18);
+  border-radius: 6px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  text-align: left;
+  font-family: 'Lato', sans-serif;
+  font-size: 0.9rem;
+}
+.modal-calificacion:not(.coloreado) .desglose-tipo { background: var(--color-neutro); }
+.desglose-tipo h4 {
+  margin: 0 0 6px 0;
+  font-family: 'Libre Baskerville', serif;
+  font-size: 1rem;
+}
+.desglose-tipo .estado-superado { font-weight: 700; }
+
+@media (max-width: 600px) {
+  .ficha-container { padding: 20px 14px; margin: 12px; }
+  table.tabla-progresion { font-size: 0.85rem; }
+  .marcador { padding: 8px 10px; font-size: 0.88rem; }
+  .marcador .campo-nombre input[type="text"] { min-width: 0; width: 100%; }
+  .marcador .campo-nombre { width: 100%; }
+  .modal-calificacion { padding: 24px 18px; }
+}
+</style>
+</head>
+<body>
+
+<div class="cabecera">Material elaborado por Marta L Letona S. Basado en el trabajo de Javier Cayetano</div>
+
+<div class="ficha-container">
+  <h1 class="titulo-ficha">Sucesiones y progresiones</h1>
+  <p class="subtitulo-nombre">3º ESO — Empiezas con 0 puntos. Cada ejercicio superado suma 5 puntos: lo superas consiguiendo 2 filas completas y correctas, y en ese momento se cierra. Cada casilla con error resta 0,5 puntos.</p>
+
+  <div class="marcador" id="barraAlumno">
+    <div class="campo-nombre">
+      <label for="inputNombreAlumno">Nombre:</label>
+      <input type="text" id="inputNombreAlumno" placeholder="Nombre y apellidos" autocomplete="off">
+    </div>
+    <div class="datos-marcador">
+      <div>Superados: <span class="cifra" id="marcadorSuperados">0</span> / 2</div>
+      <div>Errores: <span class="cifra" id="marcadorErrores">0</span></div>
+      <div>Nota: <span class="cifra" id="marcadorNota">0,0</span> / 10</div>
+    </div>
+    <span class="aviso-nombre" id="avisoNombre" role="alert">Escribe tu nombre antes de corregir o calificar.</span>
+  </div>
+
+  <div class="caja-formulas">
+    <h3>Fórmulas de referencia</h3>
+    <div class="bloque-tipo">
+      <div class="etiqueta-tipo">Progresión aritmética</div>
+      <div class="fila-formula">
+        <div>Término enésimo: $a_n = a_1 + (n-1)\,d$</div>
+        <div>Suma de los $n$ primeros términos: $S_n = \dfrac{n(a_1+a_n)}{2}$</div>
+      </div>
+    </div>
+    <div class="bloque-tipo">
+      <div class="etiqueta-tipo">Progresión geométrica</div>
+      <div class="fila-formula">
+        <div>Término enésimo: $a_n = a_1 \cdot r^{\,n-1}$</div>
+        <div>Suma de los $n$ primeros términos: $S_n = \dfrac{a_1\,(r^{\,n}-1)}{r-1}$ &nbsp;($r \neq 1$)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EJERCICIO 1: ARITMÉTICAS -->
+  <section class="seccion-ejercicio" id="ejercicio-arit">
+    <h2 class="titulo-ejercicio">1. Progresiones aritméticas <span class="badge-superado" id="badge-arit">Superado</span></h2>
+    <p class="instrucciones-ejercicio">Completa cada fila a partir de los tres primeros términos de la progresión y pulsa «Corregir». <strong>Solo tienes un intento por fila</strong>: al corregir, la fila queda bloqueada. Si fallas, aparecerá al final de la tabla una progresión nueva con otros números. Necesitas dos filas completas y correctas para superar el ejercicio. Una fila con casillas vacías no se corrige.</p>
+    <div class="tabla-wrap">
+      <table class="tabla-progresion" id="tabla-arit">
+        <thead>
+          <tr>
+            <th>Progresión aritmética</th>
+            <th>Primer término<br>$a_1$</th>
+            <th>Diferencia<br>$d$</th>
+            <th>Término enésimo<br>$a_n$</th>
+            <th>Término vigésimo<br>$a_{20}$</th>
+            <th>Suma 20 primeros<br>$S_{20}$</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="cuerpo-arit"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- EJERCICIO 2: GEOMÉTRICAS -->
+  <section class="seccion-ejercicio" id="ejercicio-geo">
+    <h2 class="titulo-ejercicio">2. Progresiones geométricas <span class="badge-superado" id="badge-geo">Superado</span></h2>
+    <p class="instrucciones-ejercicio">Completa cada fila a partir de los tres primeros términos de la progresión y pulsa «Corregir». <strong>Solo tienes un intento por fila</strong>: al corregir, la fila queda bloqueada. Si fallas, aparecerá al final de la tabla una progresión nueva con otros números. Necesitas dos filas completas y correctas para superar el ejercicio. Una fila con casillas vacías no se corrige.</p>
+    <div class="tabla-wrap">
+      <table class="tabla-progresion" id="tabla-geo">
+        <thead>
+          <tr>
+            <th>Progresión geométrica</th>
+            <th>Primer término<br>$a_1$</th>
+            <th>Razón<br>$r$</th>
+            <th>Término enésimo<br>$a_n$</th>
+            <th>Término décimo<br>$a_{10}$</th>
+            <th>Suma 10 primeros<br>$S_{10}$</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="cuerpo-geo"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <button class="btn-finalizar" id="btnFinalizar">Finalizar y Calificar</button>
+</div>
+
+<!-- Modal calificación -->
+<div class="overlay oculto" id="overlayCalificacion">
+  <div class="modal-calificacion" id="modalCalificacion" role="dialog" aria-modal="true" aria-labelledby="notaModal">
+    <div id="nombreModal" style="font-family:'Lato',sans-serif;font-size:0.95rem;margin-bottom:4px;"></div>
+    <div class="nota-grande" id="notaModal">-</div>
+    <div class="datos-modal">
+      <div id="fechaModal"></div>
+      <div id="tiempoModal"></div>
+    </div>
+    <div class="desglose-tipo" id="desgloseArit"></div>
+    <div class="desglose-tipo" id="desgloseGeo"></div>
+    <button class="btn-secundario" id="btnCerrarModal">Seguir practicando</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---------- Configuración ----------
+  // Término y suma que se piden en cada tipo (en geométricas se usa n = 10
+  // para que los resultados no lleguen a órdenes de 10^12).
+  const N = { arit: 20, geo: 10 };
+  const PENALIZACION = 0.5;
+  const PUNTOS_POR_EJERCICIO = 5;
+  const FILAS_INICIALES = 4;
+  const CAMPOS = ["a1", "p2", "an", "ak", "sk"];
+
+  // ---------- Utilidades ----------
+  function enteroEntre(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  function barajar(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+    }
+    return arr;
+  }
+
+  function subindice(n) {
+    return String(n).replace(/\d/g, function (c) { return "₀₁₂₃₄₅₆₇₈₉"[Number(c)]; });
+  }
+
+  // Escribe "a + b" o "a − |b|" según el signo, sin dobles signos.
+  function masMenos(b) {
+    return b < 0 ? " − " + (-b) : " + " + b;
+  }
+
+  // ---------- Generación algorítmica (nunca repite una progresión en la misma sesión) ----------
+  const usados = { arit: new Set(), geo: new Set() };
+
+  function nuevaAritmetica(signo) {
+    let a1, d, clave, guarda = 0;
+    do {
+      d = signo * enteroEntre(1, 7);
+      a1 = enteroEntre(-12, 12);
+      clave = a1 + "_" + d;
+      guarda++;
+    } while (usados.arit.has(clave) && guarda < 500);
+    usados.arit.add(clave);
+    const n = N.arit;
+    return {
+      terminos: [a1, a1 + d, a1 + 2 * d],
+      a1: a1, p2: d,
+      ak: a1 + d * (n - 1),
+      sk: n / 2 * (2 * a1 + (n - 1) * d)
+    };
+  }
+
+  function nuevaGeometrica(signo) {
+    let a1, r, clave, guarda = 0;
+    do {
+      r = signo * enteroEntre(2, 3); // |r| ≤ 3; se excluyen −1, 0 y 1
+      do { a1 = enteroEntre(-6, 6); } while (a1 === 0);
+      clave = a1 + "_" + r;
+      guarda++;
+    } while (usados.geo.has(clave) && guarda < 500);
+    usados.geo.add(clave);
+    const n = N.geo;
+    return {
+      terminos: [a1, a1 * r, a1 * r * r],
+      a1: a1, p2: r,
+      ak: a1 * Math.pow(r, n - 1),
+      sk: a1 * (Math.pow(r, n) - 1) / (r - 1)
+    };
+  }
+
+  function nuevaProgresion(tipo, signo) {
+    if (signo === undefined) signo = Math.random() < 0.5 ? 1 : -1;
+    return tipo === "arit" ? nuevaAritmetica(signo) : nuevaGeometrica(signo);
+  }
+
+  // 4 filas iniciales por tipo: 2 con d/r positiva y 2 negativa, en orden aleatorio.
+  const datos = { arit: [], geo: [] };
+  ["arit", "geo"].forEach(function (tipo) {
+    barajar([1, 1, -1, -1]).forEach(function (s) { datos[tipo].push(nuevaProgresion(tipo, s)); });
+  });
+
+  // ---------- Comparación numérica y de expresiones ----------
+  function parseDecimal(str) {
+    if (typeof str !== "string") return NaN;
+    const limpio = str.trim().replace(/\s+/g, "").replace(",", ".").replace(/^\+/, "");
+    if (limpio === "" || !/^-?\d+(\.\d+)?$/.test(limpio)) return NaN;
+    return Number(limpio);
+  }
+
+  function numerosIguales(a, b, tolerancia) {
+    tolerancia = tolerancia === undefined ? 1e-6 : tolerancia;
+    return isFinite(a) && isFinite(b) && Math.abs(a - b) <= tolerancia;
+  }
+
+  function prepararExpresion(str) {
+    if (typeof str !== "string") return null;
+    let s = str.trim().toLowerCase().replace(/,/g, ".").replace(/\s+/g, "")
+      .replace(/[·×]/g, "*").replace(/[−–]/g, "-");
+    if (s === "") return null;
+    if (!/^[0-9n+\-*/^().]+$/.test(s)) return null;
+    s = s.replace(/(\d|n|\))(\(|n)/g, "$1*$2");
+    s = s.replace(/(\))(\d)/g, "$1*$2");
+    s = s.replace(/(n)(\d)/g, "$1*$2");
+    s = s.replace(/\^/g, "**");
+    return s;
+  }
+
+  function evalExpresion(str, nVal) {
+    const prep = prepararExpresion(str);
+    if (prep === null) return null;
+    const conN = prep.replace(/n/g, "(" + nVal + ")");
+    try {
+      // eslint-disable-next-line no-new-func
+      const val = Function('"use strict"; return (' + conN + ");")();
+      if (typeof val !== "number" || !isFinite(val)) return null;
+      return val;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function expresionesEquivalentes(strAlumno, strCorrecta) {
+    for (let n = -3; n <= 12; n++) {
+      const a = evalExpresion(strAlumno, n);
+      const b = evalExpresion(strCorrecta, n);
+      if (a === null || !numerosIguales(a, b)) return false;
+    }
+    return true;
+  }
+
+  // ---------- Estado y puntuación ----------
+  // Se parte de 0. Cada ejercicio superado suma 5. Cada casilla con error resta 0,5.
+  // La nota se recalcula siempre desde los contadores, acotada entre 0 y 10.
+  const state = {
+    nombre: "",
+    inicio: Date.now(),
+    ejercicios: {
+      arit: { superado: false, filasCorrectas: 0, filasCorregidas: 0, celdasCorrectas: 0, celdasIncorrectas: 0 },
+      geo:  { superado: false, filasCorrectas: 0, filasCorregidas: 0, celdasCorrectas: 0, celdasIncorrectas: 0 }
+    }
+  };
+
+  function totalSuperados() {
+    return (state.ejercicios.arit.superado ? 1 : 0) + (state.ejercicios.geo.superado ? 1 : 0);
+  }
+  function totalErrores() {
+    return state.ejercicios.arit.celdasIncorrectas + state.ejercicios.geo.celdasIncorrectas;
+  }
+  function calcularNota() {
+    const bruta = PUNTOS_POR_EJERCICIO * totalSuperados() - PENALIZACION * totalErrores();
+    return Math.min(10, Math.max(0, bruta));
+  }
+  function formatoNota(n) {
+    return n.toFixed(1).replace(".", ",");
+  }
+
+  // ---------- Construcción de filas ----------
+  function textoTermino(tipo) { return tipo === "arit" ? "vigésimo" : "décimo"; }
+
+  function construirFila(tipo, p, idx, esNueva) {
+    const cuerpo = document.getElementById("cuerpo-" + tipo);
+    const n = N[tipo];
+    const tr = document.createElement("tr");
+    tr.id = tipo + "-fila-" + idx;
+    if (esNueva) tr.className = "fila-nueva";
+
+    function celda(campo, etiqueta, extra) {
+      const id = tipo + "-" + campo + "-" + idx;
+      return '<td><label class="sr-only" for="' + id + '">' + etiqueta + ', fila ' + (idx + 1) + '</label>' +
+        '<input type="text" id="' + id + '" data-campo="' + campo + '" autocomplete="off"' + (extra || "") + '></td>';
+    }
+
+    tr.innerHTML =
+      '<td class="celda-dato">' + p.terminos.join(", ") + ", ..." + "</td>" +
+      celda("a1", "Primer término", ' inputmode="decimal"') +
+      celda("p2", tipo === "arit" ? "Diferencia" : "Razón", ' inputmode="decimal"') +
+      celda("an", "Término enésimo", ' placeholder="en función de n"') +
+      celda("ak", "Término " + textoTermino(tipo), ' inputmode="decimal"') +
+      celda("sk", "Suma de los " + n + " primeros términos", ' inputmode="decimal"') +
+      '<td class="celda-accion"><button class="btn-primario" data-accion="corregir" data-tipo="' + tipo + '" data-fila="' + idx + '">Corregir</button></td>';
+    cuerpo.appendChild(tr);
+
+    const trFeedback = document.createElement("tr");
+    trFeedback.className = "fila-feedback";
+    const td = document.createElement("td");
+    td.colSpan = 7;
+    const divFb = document.createElement("div");
+    divFb.className = "feedback-fila";
+    divFb.id = tipo + "-feedback-" + idx;
+    divFb.setAttribute("aria-live", "polite");
+    td.appendChild(divFb);
+    trFeedback.appendChild(td);
+    cuerpo.appendChild(trFeedback);
+  }
+
+  ["arit", "geo"].forEach(function (tipo) {
+    datos[tipo].forEach(function (p, idx) { construirFila(tipo, p, idx, false); });
+  });
+
+  // ---------- Textos de feedback ----------
+  function nombreCampo(tipo, campo) {
+    const n = N[tipo];
+    if (campo === "a1") return "el primer término";
+    if (campo === "p2") return tipo === "arit" ? "la diferencia" : "la razón";
+    if (campo === "an") return "el término enésimo";
+    if (campo === "ak") return "el término " + textoTermino(tipo);
+    if (campo === "sk") return "la suma de los " + n + " primeros términos";
+    return campo;
+  }
+
+  function explicacionError(tipo, campo, p) {
+    const n = N[tipo];
+    const an = "a" + subindice(n);
+    const sn = "S" + subindice(n);
+    if (tipo === "arit") {
+      switch (campo) {
+        case "a1": return "El primer término es, simplemente, el primero de los que te dan: a₁ = " + p.terminos[0] + ".";
+        case "p2": return "La diferencia d se calcula restando dos términos consecutivos (el segundo menos el primero): d = " + p.terminos[1] + " − (" + p.terminos[0] + ") = " + p.p2 + ".";
+        case "an": return "Usa aₙ = a₁ + (n−1)·d con a₁ = " + p.a1 + " y d = " + p.p2 + ". Por ejemplo: aₙ = " + p.a1 + masMenos(p.p2) + "(n−1).";
+        case "ak": return "Sustituye n = " + n + " en aₙ = a₁ + (n−1)·d: " + an + " = " + p.a1 + " + " + (n - 1) + "·(" + p.p2 + ") = " + p.ak + ".";
+        case "sk": return "Calcula primero " + an + " y usa " + sn + " = " + n + "·(a₁ + " + an + ")/2 = " + n + "·(" + p.a1 + " + (" + p.ak + "))/2 = " + p.sk + ".";
+      }
+    } else {
+      switch (campo) {
+        case "a1": return "El primer término es, simplemente, el primero de los que te dan: a₁ = " + p.terminos[0] + ".";
+        case "p2": return "La razón r se calcula dividiendo un término entre el anterior: r = (" + p.terminos[1] + ") / (" + p.terminos[0] + ") = " + p.p2 + ".";
+        case "an": return "Usa aₙ = a₁·r^(n−1) con a₁ = " + p.a1 + " y r = " + p.p2 + ". Por ejemplo: aₙ = " + p.a1 + "·(" + p.p2 + ")^(n−1).";
+        case "ak": return "Sustituye n = " + n + " en aₙ = a₁·r^(n−1): " + an + " = " + p.a1 + "·(" + p.p2 + ")^" + (n - 1) + " = " + p.ak + ". Cuidado con el signo si la razón es negativa.";
+        case "sk": return "Usa Sₙ = a₁·(rⁿ−1)/(r−1) con n = " + n + ": " + sn + " = " + p.a1 + "·((" + p.p2 + ")^" + n + " − 1)/(" + p.p2 + " − 1) = " + p.sk + ".";
+      }
+    }
+    return "";
+  }
+
+  // ---------- Nombre del alumno ----------
+  const inputNombre = document.getElementById("inputNombreAlumno");
+  const avisoNombre = document.getElementById("avisoNombre");
+
+  inputNombre.addEventListener("input", function () {
+    state.nombre = inputNombre.value.trim();
+    if (state.nombre !== "") {
+      inputNombre.classList.remove("incorrecta");
+      avisoNombre.classList.remove("visible");
+    }
+  });
+
+  function exigirNombre() {
+    if (state.nombre !== "") return true;
+    inputNombre.classList.add("incorrecta");
+    avisoNombre.classList.add("visible");
+    inputNombre.focus();
+    return false;
+  }
+
+  // ---------- Corrección de una fila ----------
+  function input(tipo, campo, idx) {
+    return document.getElementById(tipo + "-" + campo + "-" + idx);
+  }
+
+  function corregirFila(tipo, idx) {
+    const ej = state.ejercicios[tipo];
+    if (ej.superado) return;
+    const fila = document.getElementById(tipo + "-fila-" + idx);
+    if (!fila || fila.dataset.respondida === "1") return;
+    if (!exigirNombre()) return;
+
+    const p = datos[tipo][idx];
+    const feedback = document.getElementById(tipo + "-feedback-" + idx);
+
+    // Casillas vacías: no se corrige ni se penaliza.
+    const vacias = CAMPOS.filter(function (c) { return input(tipo, c, idx).value.trim() === ""; });
+    CAMPOS.forEach(function (c) { input(tipo, c, idx).classList.toggle("vacia", vacias.indexOf(c) !== -1); });
+    if (vacias.length > 0) {
+      feedback.className = "feedback-fila visible aviso";
+      feedback.innerHTML = "Esta fila todavía no se ha corregido porque " +
+        (vacias.length === 1 ? "tiene una casilla vacía: " : "tiene casillas vacías: ") +
+        "<strong>" + vacias.map(function (c) { return nombreCampo(tipo, c); }).join(", ") + "</strong>. " +
+        "Complétala y vuelve a pulsar «Corregir». No se ha restado ningún punto.";
+      input(tipo, vacias[0], idx).focus();
+      return;
+    }
+
+    let errores = 0;
+    const listaErrores = [];
+
+    CAMPOS.forEach(function (campo) {
+      const inp = input(tipo, campo, idx);
+      let correcto;
+      if (campo === "an") {
+        const expresionCorrecta = tipo === "arit"
+          ? p.a1 + "+(" + p.p2 + ")*(n-1)"
+          : p.a1 + "*(" + p.p2 + ")^(n-1)";
+        correcto = expresionesEquivalentes(inp.value, expresionCorrecta);
+      } else {
+        correcto = numerosIguales(parseDecimal(inp.value), p[campo]);
+      }
+      inp.classList.remove("correcta", "incorrecta", "vacia");
+      if (correcto) {
+        inp.classList.add("correcta");
+      } else {
+        inp.classList.add("incorrecta");
+        errores++;
+        listaErrores.push("<strong>" + nombreCampo(tipo, campo) + "</strong>: " + explicacionError(tipo, campo, p));
+      }
+    });
+
+    ej.filasCorregidas++;
+    ej.celdasCorrectas += CAMPOS.length - errores;
+    ej.celdasIncorrectas += errores;
+
+    // Un único intento por fila.
+    fila.dataset.respondida = "1";
+    CAMPOS.forEach(function (c) { input(tipo, c, idx).disabled = true; });
+    fila.querySelector('button[data-accion="corregir"]').disabled = true;
+
+    if (errores > 0) {
+      fila.classList.add("fila-bloqueada");
+      // Nueva instancia con otros números, para que siempre haya una oportunidad real.
+      const nueva = nuevaProgresion(tipo);
+      datos[tipo].push(nueva);
+      const idxNueva = datos[tipo].length - 1;
+      construirFila(tipo, nueva, idxNueva, true);
+
+      feedback.className = "feedback-fila visible error";
+      feedback.innerHTML = "Hay " + errores + " error" + (errores > 1 ? "es" : "") +
+        " en esta fila (cada uno resta 0,5 puntos). Esta fila ya no admite más intentos:<ul><li>" +
+        listaErrores.join("</li><li>") + "</li></ul>" +
+        '<div class="nota-nueva-fila">Tienes una progresión nueva al final de la tabla para volver a intentarlo.</div>';
+    } else {
+      fila.classList.add("fila-superada");
+      feedback.className = "feedback-fila visible ok";
+      ej.filasCorrectas++;
+      if (ej.filasCorrectas >= 2) {
+        ej.superado = true;
+        feedback.textContent = "¡Fila completa y correcta! Ejercicio superado: +5 puntos.";
+        document.getElementById("badge-" + tipo).classList.add("visible");
+        cerrarEjercicio(tipo);
+      } else {
+        feedback.textContent = "¡Fila completa y correcta! Te falta otra fila correcta para superar el ejercicio.";
+      }
+    }
+
+    actualizarMarcador();
+  }
+
+  function cerrarEjercicio(tipo) {
+    const tabla = document.getElementById("tabla-" + tipo);
+    tabla.querySelectorAll("input").forEach(function (inp) { inp.disabled = true; });
+    tabla.querySelectorAll('button[data-accion="corregir"]').forEach(function (btn) { btn.disabled = true; });
+  }
+
+  function actualizarMarcador() {
+    document.getElementById("marcadorNota").textContent = formatoNota(calcularNota());
+    document.getElementById("marcadorSuperados").textContent = totalSuperados();
+    document.getElementById("marcadorErrores").textContent = totalErrores();
+  }
+
+  // ---------- Delegación de eventos (sirve también para las filas añadidas) ----------
+  ["arit", "geo"].forEach(function (tipo) {
+    const cuerpo = document.getElementById("cuerpo-" + tipo);
+    cuerpo.addEventListener("click", function (e) {
+      const btn = e.target.closest('button[data-accion="corregir"]');
+      if (!btn) return;
+      corregirFila(btn.dataset.tipo, Number(btn.dataset.fila));
+    });
+    cuerpo.addEventListener("keydown", function (e) {
+      if (e.key !== "Enter") return;
+      const inp = e.target.closest("input[data-campo]");
+      if (!inp) return;
+      const btn = inp.closest("tr").querySelector('button[data-accion="corregir"]');
+      if (btn && !btn.disabled) btn.click();
+    });
+    cuerpo.addEventListener("input", function (e) {
+      if (e.target.matches("input.vacia") && e.target.value.trim() !== "") e.target.classList.remove("vacia");
+    });
+  });
+
+  // ---------- Finalizar y calificar ----------
+  const coloresNota = [
+    { min: 10, fondo: "#1a7a1a", texto: "#fff" },
+    { min: 9,  fondo: "#6dbf6d", texto: "#fff" },
+    { min: 8,  fondo: "#1a4f8a", texto: "#fff" },
+    { min: 7,  fondo: "#5b9bd5", texto: "#fff" },
+    { min: 6,  fondo: "#c05c00", texto: "#fff" },
+    { min: 5,  fondo: "#f5a623", texto: "#000" },
+    { min: -Infinity, fondo: "#c0392b", texto: "#fff" }
+  ];
+
+  function formatearFecha(d) {
+    const dd = String(d.getDate()).padStart(2, "0");
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const yyyy = d.getFullYear();
+    const hh = String(d.getHours()).padStart(2, "0");
+    const mi = String(d.getMinutes()).padStart(2, "0");
+    const ss = String(d.getSeconds()).padStart(2, "0");
+    return { fecha: dd + "/" + mm + "/" + yyyy, hora: hh + ":" + mi + ":" + ss };
+  }
+
+  function desgloseHTML(nombreEjercicio, ej) {
+    return "<h4>" + nombreEjercicio + " — <span class=\"estado-superado\">" +
+      (ej.superado ? "SUPERADO" : "NO SUPERADO") + "</span></h4>" +
+      "<div>Filas correctas: " + ej.filasCorrectas + " · Filas corregidas: " + ej.filasCorregidas + "</div>" +
+      "<div>Casillas correctas: " + ej.celdasCorrectas + " · Casillas con error: " + ej.celdasIncorrectas + "</div>" +
+      "<div>Puntos: " + (ej.superado ? "+5" : "+0") + " · Penalización: −" + formatoNota(PENALIZACION * ej.celdasIncorrectas) + "</div>";
+  }
+
+  document.getElementById("btnFinalizar").addEventListener("click", function () {
+    if (!exigirNombre()) return;
+
+    const nota = calcularNota();
+    const colorInfo = coloresNota.find(function (c) { return nota >= c.min; });
+
+    const ahora = new Date();
+    const fh = formatearFecha(ahora);
+    const minutosTotales = Math.ceil((ahora.getTime() - state.inicio) / 60000);
+    const horas = Math.floor(minutosTotales / 60);
+    const minutos = minutosTotales % 60;
+    const tiempoTexto = String(horas).padStart(2, "0") + ":" + String(minutos).padStart(2, "0");
+
+    document.getElementById("nombreModal").textContent = state.nombre;
+    document.getElementById("notaModal").textContent = formatoNota(nota);
+    document.getElementById("fechaModal").textContent = "Fecha: " + fh.fecha + "  ·  Hora: " + fh.hora;
+    document.getElementById("tiempoModal").textContent = "Tiempo empleado: " + tiempoTexto + " (h:min)";
+    document.getElementById("desgloseArit").innerHTML = desgloseHTML("1. Progresiones aritméticas", state.ejercicios.arit);
+    document.getElementById("desgloseGeo").innerHTML = desgloseHTML("2. Progresiones geométricas", state.ejercicios.geo);
+
+    const modal = document.getElementById("modalCalificacion");
+    const overlay = document.getElementById("overlayCalificacion");
+    overlay.style.background = nota >= 10 ? "rgba(26,122,26,0.35)" : "";
+    modal.classList.add("coloreado");
+    modal.style.backgroundColor = colorInfo.fondo;
+    modal.style.color = colorInfo.texto;
+    modal.style.borderColor = colorInfo.fondo;
+
+    overlay.classList.remove("oculto");
+  });
+
+  document.getElementById("btnCerrarModal").addEventListener("click", function () {
+    document.getElementById("overlayCalificacion").classList.add("oculto");
+  });
+
+  // Utilidades para pruebas automatizadas (QA)
+  window.__qaFicha = {
+    expresionesEquivalentes: expresionesEquivalentes,
+    parseDecimal: parseDecimal,
+    datos: datos,
+    nuevaProgresion: nuevaProgresion,
+    corregirFila: corregirFila,
+    calcularNota: calcularNota,
+    state: state,
+    N: N
+  };
+})();
+</script>
+</body>
+</html>

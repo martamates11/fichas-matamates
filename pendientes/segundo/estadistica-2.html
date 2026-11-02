@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Estadística · 2º ESO · Ficha interactiva</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!--
+  NOTAS DE DISEÑO (Fase 0, no visibles al alumno):
+  - 6 tipos de ejercicio, 10/6 puntos cada uno al superarse.
+  - Modelo de superación: 1 acierto cierra el tipo (override explícito pedido por Marta).
+  - Penalización: -0.5/10 por fallo, sin tope de intentos.
+  - Origen: algorítmico en todos los tipos. Tras un fallo, el intento queda BLOQUEADO
+    (no se puede reintentar la misma instancia: ya se han marcado en rojo los campos
+    erróneos y, salvo en el Ej.3, se ha revelado la solución). Solo al pulsar el botón
+    "Intentarlo de nuevo" se genera una instancia nueva y se libera el bloqueo. Esto
+    combina bloqueo + nueva instancia manual, y evita cambios automáticos no pedidos
+    por el alumno (regla 0.5b de fichas-interactivas).
+  - Ej.3 (sectores): NO se revela N en el enunciado ni en el feedback (pedido expreso
+    de Marta) — el alumno debe calcularlo sumando las f. El diagrama se construye
+    automáticamente solo tras acertar toda la tabla.
+  - Ej.4 (barras): arrastre real con Pointer Events, capturado en todo el .bar-track
+    (no solo en la barra) para que funcione también con valor 0 inicial; incluye
+    eje Y con números y líneas de cuadrícula, y línea base (eje X).
+-->
+<style>
+:root {
+    --color-fondo: #F5F0E8;
+    --color-fondo-card: #FDFAF3;
+    --color-texto: #2C1F0E;
+    --color-texto-suave: #6B4F35;
+    --color-acento: #A0522D;
+    --color-acento-hover: #7B3B1E;
+    --color-borde: #C9A96E;
+    --color-borde-suave: #E0CEAA;
+    --color-cabecera: #3B2510;
+    --color-cabecera-txt: #F5EDD8;
+    --color-correcto: #2E6B3E;
+    --color-incorrecto: #8B1A1A;
+    --color-neutro: #E8DFC8;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body { background: var(--color-fondo); font-family: 'DM Sans', 'Inter', sans-serif; color: var(--color-texto); min-height: 100vh; transition: background 0.3s; }
+body.all-green { background: #eaf7ea; }
+
+.autoria { background: var(--color-cabecera); text-align: center; padding: 6px; font-size: 10px; color: rgba(245, 240, 232, 0.7); }
+
+.ficha-wrapper { max-width: 1100px; margin: 0 auto; padding: 2rem 1rem; }
+
+.header { background: var(--color-cabecera); border-radius: 1.5rem; padding: 1.8rem 2rem; margin-bottom: 1.8rem; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); }
+.header h1 { font-size: 2.2rem; font-weight: 700; color: var(--color-cabecera-txt); margin-bottom: 0.5rem; }
+.header p { color: #C9B896; font-size: 0.9rem; }
+.header-badges { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem; }
+.header-badge { background: rgba(255,255,255,0.08); padding: 0.25rem 0.75rem; border-radius: 40px; font-size: 0.7rem; color: #E0CEAA; }
+
+.info-bar { background: var(--color-fondo-card); border-radius: 1.2rem; padding: 1rem 1.5rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; border: 1px solid var(--color-borde); }
+.info-item { display: flex; align-items: center; gap: 0.6rem; font-size: 0.85rem; font-weight: 500; color: var(--color-texto-suave); }
+.info-icon { width: 30px; height: 30px; background: var(--color-fondo); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+.info-value { font-weight: 700; font-size: 1rem; color: var(--color-texto); }
+
+.name-section { background: var(--color-fondo-card); border-radius: 1rem; padding: 0.8rem 1.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; border: 1px solid var(--color-borde-suave); }
+.name-label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--color-texto-suave); }
+.name-input { flex: 1; max-width: 280px; border: none; border-bottom: 2px solid var(--color-borde); padding: 0.5rem 0.25rem; font-size: 0.95rem; background: transparent; color: var(--color-texto); }
+.name-input:focus { outline: none; border-bottom-color: var(--color-acento); }
+
+.ejercicio-card { background: var(--color-fondo-card); border-radius: 1.2rem; padding: 1.5rem; margin-bottom: 1.2rem; border: 1px solid var(--color-borde); transition: all 0.2s; }
+.ejercicio-card.superado { border-left: 5px solid var(--color-correcto); background: #FAF8F0; }
+
+.ejercicio-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap; }
+.ejercicio-num { background: var(--color-acento); color: white; width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; }
+.ejercicio-titulo { font-weight: 600; font-size: 1rem; }
+.badge-superado { background: var(--color-correcto); color: white; padding: 0.2rem 0.7rem; border-radius: 40px; font-size: 0.65rem; font-weight: 600; margin-left: 0.5rem; }
+
+.enunciado { background: var(--color-fondo); padding: 0.8rem 1.2rem; border-radius: 1rem; font-size: 0.95rem; margin-bottom: 1.2rem; border: 1px solid var(--color-borde-suave); }
+
+.tabla-proporcional { overflow-x: auto; margin: 12px 0; max-width: 100%; }
+.tabla-proporcional table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.tabla-proporcional td, .tabla-proporcional th { border: 1px solid var(--color-borde-suave); padding: 6px 8px; text-align: center; background: var(--color-fondo-card); }
+.tabla-proporcional th { background: var(--color-neutro); font-weight: 700; color: var(--color-cabecera); }
+.tabla-proporcional .fila-total { background: var(--color-neutro); font-weight: 700; }
+.tabla-proporcional .number-input { border: 1.5px solid var(--color-borde); border-radius: 4px; padding: 4px 6px; font-size: 0.85rem; }
+
+.input-area { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin: 1rem 0; }
+.number-input { border: 2px solid var(--color-borde); border-radius: 10px; padding: 8px 12px; font-size: 0.9rem; font-family: 'JetBrains Mono', monospace; background: white; width: 100px; text-align: center; }
+.select-input { border: 2px solid var(--color-borde); border-radius: 10px; padding: 8px 14px; font-size: 0.9rem; font-family: 'JetBrains Mono', monospace; background: white; width: auto; min-width: 180px; cursor: pointer; }
+.campo-error { border-color: var(--color-incorrecto) !important; background: #FCEAEA !important; }
+
+.btn-primary { background: var(--color-acento); border: none; color: white; padding: 8px 22px; border-radius: 40px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+.btn-primary:hover:not(:disabled) { background: var(--color-acento-hover); transform: scale(0.97); }
+.btn-primary:disabled { background: #C9A96E; cursor: not-allowed; }
+.btn-reintentar { background: var(--color-incorrecto); border: none; color: white; padding: 8px 22px; border-radius: 40px; font-weight: 600; cursor: pointer; }
+.btn-reintentar:hover { background: #6e1414; }
+
+.feedback { margin-top: 10px; font-size: 0.85rem; font-weight: 500; }
+.feedback-correcto { color: var(--color-correcto); background: rgba(46,107,62,0.1); padding: 6px 14px; border-radius: 12px; display: inline-block; line-height: 1.5; }
+.feedback-error { color: var(--color-incorrecto); background: rgba(139,26,26,0.08); padding: 6px 14px; border-radius: 12px; display: inline-block; line-height: 1.5; }
+hr { margin: 0.5rem 0; border: none; border-top: 1px solid var(--color-borde-suave); }
+
+.action-buttons { display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; flex-wrap: wrap; }
+.btn-large { background: var(--color-acento); color: white; border: none; padding: 12px 36px; font-size: 0.95rem; font-weight: 600; border-radius: 50px; cursor: pointer; }
+.btn-outline { background: transparent; border: 2px solid var(--color-borde); color: var(--color-texto-suave); padding: 10px 28px; border-radius: 50px; cursor: pointer; }
+
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
+.modal-overlay.show { display: flex; }
+.modal-card { background: var(--color-fondo-card); border-radius: 12px; padding: 32px; max-width: 480px; width: 92%; text-align: center; border: 2px solid var(--color-borde); animation: modalIn 0.3s ease; max-height: 88vh; overflow-y: auto; }
+.modal-card-name { background: var(--color-fondo-card); border-radius: 12px; padding: 32px; max-width: 420px; width: 90%; border: 2px solid var(--color-incorrecto); }
+@keyframes modalIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+.modal-close { float: right; background: none; border: none; font-size: 24px; cursor: pointer; color: var(--color-texto-suave); }
+.modal-grade { font-size: 52px; font-weight: 900; margin: 12px 0; }
+.modal-stats { border: 1.5px solid var(--color-borde); border-radius: 10px; padding: 12px; margin-bottom: 14px; font-family: monospace; font-size: 12px; text-align: left; background: rgba(0,0,0,0.02); }
+.recordatorio { font-size: 12px; margin-top: 8px; background: var(--color-neutro); border-radius: 20px; padding: 6px; color: var(--color-texto-suave); }
+
+/* --- Componentes específicos de estadística --- */
+.svg-wrap { display: flex; gap: 24px; flex-wrap: wrap; align-items: center; margin-top: 6px; }
+.pie-legend { font-size: 0.85rem; }
+.legend-item { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+.legend-swatch { width: 14px; height: 14px; border-radius: 3px; display: inline-block; flex-shrink: 0; }
+
+.grafico-lectura { background: white; border: 1px solid var(--color-borde); border-radius: 12px; padding: 10px; display: inline-block; max-width: 100%; overflow-x: auto; }
+
+.bars-chart-wrap { display: flex; gap: 6px; align-items: flex-end; overflow-x: auto; padding-bottom: 4px; }
+.bars-axis { position: relative; width: 22px; height: 200px; font-size: 0.65rem; color: var(--color-texto-suave); flex-shrink: 0; }
+.bars-axis span { position: absolute; right: 2px; transform: translateY(-50%); }
+.bars-drag-wrap { display: flex; gap: 26px; align-items: flex-end; padding: 10px 14px 34px; background: white; border: 1px solid var(--color-borde); border-radius: 12px; }
+.bar-col { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.bar-track { position: relative; width: 46px; height: 200px; background-color: var(--color-fondo); background-image: repeating-linear-gradient(to top, var(--color-borde-suave) 0, var(--color-borde-suave) 1px, transparent 1px, transparent 20px); border: 1px solid var(--color-borde-suave); border-bottom: 2px solid var(--color-texto); border-radius: 4px 4px 0 0; display: flex; align-items: flex-end; touch-action: none; cursor: ns-resize; }
+.bar-track.campo-error { border-color: var(--color-incorrecto); border-width: 2px; }
+.bar-fill { width: 100%; background: var(--color-acento); border-radius: 3px 3px 0 0; position: relative; pointer-events: none; }
+.bar-fill.superado { background: var(--color-correcto); }
+.bar-value { position: absolute; top: -22px; left: 50%; transform: translateX(-50%); font-weight: 700; font-size: 0.8rem; color: var(--color-texto); }
+.bar-label { font-size: 0.72rem; color: var(--color-texto-suave); text-align: center; max-width: 80px; }
+</style>
+</head>
+<body>
+<div class="autoria">Material elaborado por Marta L Letona S. Basado en el trabajo de Javier Cayetano</div>
+<div class="ficha-wrapper">
+    <div class="header">
+        <h1>📊 Estadística</h1>
+        <p>Variables estadísticas, tablas de frecuencias, diagrama de sectores, gráfico de barras y cálculo de la media · 2º ESO</p>
+        <div class="header-badges"><span class="header-badge">🎯 1 acierto → tipo superado</span><span class="header-badge">💡 Cada fallo resta 0.5 puntos</span></div>
+    </div>
+    <div class="info-bar">
+        <div class="info-item"><span class="info-icon">📊</span><span>Progreso: <span id="progresoCount" class="info-value">0</span>/6</span></div>
+        <div class="info-item"><span class="info-icon">❌</span><span>Fallos: <span id="fallosCount" class="info-value">0</span></span></div>
+        <div class="info-item"><span class="info-icon">⭐</span><span>Nota: <span id="notaActual" class="info-value">0.0</span>/10</span></div>
+    </div>
+    <div class="name-section"><span class="name-label">👤 ALUMNO/A</span><input type="text" id="nombreAlumno" class="name-input" placeholder="Escribe tu nombre..."></div>
+    <div id="ejerciciosContainer"></div>
+    <div class="action-buttons"><button class="btn-large" id="btnFinalizar">📋 Finalizar y calificar</button><button class="btn-outline" id="btnResetear">🔄 Nueva ficha</button></div>
+</div>
+
+<div id="modalNombre" class="modal-overlay"><div class="modal-card-name"><h3 style="color:var(--color-incorrecto);">✏️ Falta tu nombre</h3><p style="margin:10px 0">Para calificar necesitas identificarte.</p><input type="text" id="modalNombreInput" placeholder="Nombre completo" style="width:100%; padding:8px; margin:10px 0; border:1px solid var(--color-borde); border-radius:6px;"><button id="btnConfirmarNombre" style="background:var(--color-acento); color:white; padding:8px; width:100%; border:none; border-radius:6px; cursor:pointer;">Continuar</button></div></div>
+<div id="modalReset" class="modal-overlay"><div class="modal-card-name"><h3 style="color:var(--color-incorrecto);">🔄 Reiniciar ficha</h3><p style="margin:10px 0">Vas a perder todo el progreso actual. ¿Seguro que quieres reiniciar?</p><div style="display:flex; gap:10px;"><button id="btnConfirmarReset" style="flex:1; background:var(--color-incorrecto); color:white; padding:8px; border:none; border-radius:6px; cursor:pointer;">Sí, reiniciar</button><button id="btnCancelarReset" style="flex:1; background:transparent; border:2px solid var(--color-borde); padding:8px; border-radius:6px; cursor:pointer;">Cancelar</button></div></div></div>
+<div id="modalResultados" class="modal-overlay"><div class="modal-card" id="modalCard"><button class="modal-close" id="closeModal">✕</button><div id="modalNombreMostrar" style="font-weight:600;"></div><div style="font-size:0.85rem;">📊 Estadística · 2º ESO</div><div class="modal-grade" id="modalNota"></div><div class="modal-message" id="modalMensaje"></div><div class="modal-stats" id="modalStats"></div><div class="recordatorio">📸 Haz una captura de pantalla y entrégala en Google Classroom.</div><div class="modal-footer">Material elaborado por Marta López de Letona Sánchez</div></div></div>
+
+<script>
+/* ===================== Utilidades ===================== */
+function randInt(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function shuffle(arr){ let a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function round2(n){ return Math.round(n*100)/100; }
+function fmtNum(n){ const r=Math.round(n*100)/100; return Number.isInteger(r) ? r.toString() : r.toFixed(2); }
+function partition(total, parts){
+    let arr = new Array(parts).fill(1);
+    let restante = total - parts;
+    while(restante > 0){ arr[randInt(0, parts-1)]++; restante--; }
+    return arr;
+}
+
+let ejercicios = [];
+let fallosGlobales = 0;
+let puntosGlobal = 0;
+const PUNTO_POR_TIPO = 10/6;
+const PENALIZACION = 0.5;
+
+// Nota = ejercicios superados × su valor − 0,5 por cada fallo, acotada a [0, 10] solo al final:
+// antes cada fallo se recortaba en 0 por separado y los primeros fallos no restaban.
+function recalcularPuntos(){
+    const superados = ejercicios.filter(e=>e.superado).length;
+    puntosGlobal = Math.min(10, Math.max(0, superados * PUNTO_POR_TIPO - fallosGlobales * PENALIZACION));
+}
+const startTime = Date.now();
+
+class EjercicioBase {
+    constructor(){
+        this.intentos=0; this.aciertos=0; this.fallos=0; this.superado=false;
+        this.bloqueado=false; this.ultimoMsg=""; this.ultimoCorrecto=false; this.erroresCampos=null; this.ultimoIntento=null;
+        this.generarNuevo();
+    }
+    generarNuevo(){}
+    acierto(msg, intento){
+        this.intentos++; this.aciertos++;
+        if(!this.superado){ this.superado=true; recalcularPuntos(); }
+        this.ultimoMsg=msg; this.ultimoCorrecto=true; this.erroresCampos=null; this.bloqueado=false;
+        if(intento!==undefined) this.ultimoIntento=intento;
+        return {correcto:true, superado:true, msg};
+    }
+    fallo(msg, campos, intento){
+        this.intentos++; this.fallos++; fallosGlobales++;
+        recalcularPuntos();
+        this.ultimoMsg=msg; this.ultimoCorrecto=false; this.erroresCampos=campos||null; this.bloqueado=true; this.ultimoIntento=intento||null;
+        return {correcto:false, superado:false, msg};
+    }
+    reintentar(){
+        this.generarNuevo();
+        this.bloqueado=false; this.ultimoMsg=""; this.ultimoCorrecto=false; this.erroresCampos=null; this.ultimoIntento=null;
+    }
+}
+
+/* ===================== Generadores de gráficos SVG ===================== */
+function crearSVGSectores(categorias, valores, colores){
+    const total = valores.reduce((a,b)=>a+b,0);
+    const cx=110, cy=110, r=95;
+    let anguloActual = -90, paths='', leyenda='';
+    for(let i=0;i<categorias.length;i++){
+        const valor = valores[i];
+        const angulo = valor/total*360;
+        const rad1 = anguloActual*Math.PI/180;
+        const x1 = cx + r*Math.cos(rad1), y1 = cy + r*Math.sin(rad1);
+        const anguloFin = anguloActual + angulo;
+        const rad2 = anguloFin*Math.PI/180;
+        const x2 = cx + r*Math.cos(rad2), y2 = cy + r*Math.sin(rad2);
+        const largeArc = angulo > 180 ? 1 : 0;
+        paths += `<path d="M${cx},${cy} L${x1.toFixed(2)},${y1.toFixed(2)} A${r},${r} 0 ${largeArc} 1 ${x2.toFixed(2)},${y2.toFixed(2)} Z" fill="${colores[i]}" stroke="white" stroke-width="2"/>`;
+        leyenda += `<div class="legend-item"><span class="legend-swatch" style="background:${colores[i]}"></span>${categorias[i]} (${valor})</div>`;
+        anguloActual = anguloFin;
+    }
+    return `<div class="svg-wrap"><svg width="220" height="220" viewBox="0 0 220 220">${paths}</svg><div class="pie-legend">${leyenda}</div></div>`;
+}
+
+function crearSVGBarrasLectura(categorias, valores, maxEscala){
+    const w=54, gap=34, baseY=190, scale=170/maxEscala;
+    let bars='', grid='';
+    for(let g=0; g<=maxEscala; g++){
+        const y = baseY-g*scale;
+        grid += `<line x1="28" y1="${y}" x2="${34+categorias.length*(w+gap)}" y2="${y}" stroke="#E0CEAA" stroke-width="1"/><text x="20" y="${y+4}" font-size="10" text-anchor="end" fill="#6B4F35">${g}</text>`;
+    }
+    categorias.forEach((cat,i)=>{
+        const val = valores[i];
+        const barH = val*scale;
+        const x = 40 + i*(w+gap);
+        bars += `<rect x="${x}" y="${baseY-barH}" width="${w}" height="${barH}" fill="#A0522D" stroke="#7B3B1E"/>`;
+        bars += `<text x="${x+w/2}" y="${baseY+18}" text-anchor="middle" font-size="12" fill="#2C1F0E">${cat}</text>`;
+    });
+    const totalW = 60+categorias.length*(w+gap);
+    return `<div class="grafico-lectura"><svg width="${totalW}" height="220" viewBox="0 0 ${totalW} 220">${grid}${bars}</svg></div>`;
+}
+
+/* ===================== Bancos de contenido ===================== */
+const BANCO_CUALICUANTI = [
+    {texto:"El color del pelo.", tipo:"cualitativa"},
+    {texto:"Los valores de la tirada de un dado.", tipo:"cuantitativa"},
+    {texto:"Las causas de los incendios forestales.", tipo:"cualitativa"},
+    {texto:"La estatura de un determinado colectivo.", tipo:"cuantitativa"},
+    {texto:"Las notas obtenidas en un examen.", tipo:"cuantitativa"},
+    {texto:"La marca de coche que prefieren tus compañeros.", tipo:"cualitativa"},
+    {texto:"El número de hermanos de cada alumno.", tipo:"cuantitativa"},
+    {texto:"El deporte favorito de los estudiantes.", tipo:"cualitativa"},
+    {texto:"El peso de los paquetes enviados por una empresa.", tipo:"cuantitativa"},
+    {texto:"El estado civil de los trabajadores de una fábrica.", tipo:"cualitativa"},
+    {texto:"El número de goles marcados en un partido.", tipo:"cuantitativa"},
+    {texto:"La profesión de los padres de los alumnos.", tipo:"cualitativa"},
+    {texto:"El tiempo, en minutos, que se tarda en llegar al instituto.", tipo:"cuantitativa"},
+    {texto:"El tipo de música preferido.", tipo:"cualitativa"},
+    {texto:"El número de libros leídos en un mes.", tipo:"cuantitativa"},
+    {texto:"La nacionalidad de los turistas de un hotel.", tipo:"cualitativa"},
+    {texto:"La temperatura registrada cada día de agosto.", tipo:"cuantitativa"},
+    {texto:"El medio de transporte utilizado para ir al trabajo.", tipo:"cualitativa"},
+    {texto:"El número de mensajes enviados al día.", tipo:"cuantitativa"},
+    {texto:"El color de ojos de un grupo de personas.", tipo:"cualitativa"}
+];
+
+const CONTEXTOS_TABLA = [
+    {contexto:"Gloria ha estado esperando a su amiga durante un rato y se ha entretenido en ir anotando el color del vestido de las chicas que pasaban delante de ella.", categorias:["Rojo","Azul","Verde","Negro"]},
+    {contexto:"En una heladería han anotado el sabor de helado elegido por los últimos clientes.", categorias:["Fresa","Chocolate","Vainilla","Limón"]},
+    {contexto:"Un profesor ha anotado el medio de transporte que usan sus alumnos para llegar al instituto.", categorias:["Andando","Autobús","Bicicleta","Coche"]},
+    {contexto:"En un cine se ha registrado el género de película elegido por los espectadores de una sesión.", categorias:["Comedia","Terror","Acción","Drama"]},
+    {contexto:"En una tienda de mascotas se ha anotado el tipo de animal que compraban los clientes en una semana.", categorias:["Perro","Gato","Pez","Pájaro"]}
+];
+
+const CONTEXTOS_SECTORES = [
+    {contexto:"Un grupo de 2º ESO ha votado su fruta favorita.", categorias:["Manzana","Plátano","Fresa"]},
+    {contexto:"En una clase se ha preguntado la asignatura favorita.", categorias:["Mates","Lengua","Ed. Física"]},
+    {contexto:"Se ha preguntado a un grupo de vecinos qué mascota tienen.", categorias:["Perro","Gato","Ninguna"]},
+    {contexto:"Un grupo de amigos ha elegido su estación del año favorita.", categorias:["Verano","Invierno","Primavera"]},
+    {contexto:"Se ha preguntado el medio de transporte favorito para viajar.", categorias:["Avión","Tren","Coche"]}
+];
+const NICE_N = [9,10,12,15,18,20];
+
+const CONTEXTOS_BARRAS = [
+    { categorias:["Canarias","Baleares","Pirineos","la Costa Valenciana"],
+      frase:(v)=>`Rodríguez está muy contento con su nueva agencia de viajes. Ya en la primera semana ha gestionado las vacaciones de ${v[0]} familias que irán a las Islas Canarias, ${v[1]} han preferido las Baleares, ${v[2]} han optado por los Pirineos y ${v[3]} prefieren las costas valencianas.` },
+    { categorias:["Novela","Cómic","Poesía","Ensayo"],
+      frase:(v)=>`Esta semana la librería del barrio ha vendido ${v[0]} novelas, ${v[1]} cómics, ${v[2]} libros de poesía y ${v[3]} ensayos.` },
+    { categorias:["Fútbol","Baloncesto","Natación","Atletismo"],
+      frase:(v)=>`En el polideportivo se han apuntado ${v[0]} alumnos a fútbol, ${v[1]} a baloncesto, ${v[2]} a natación y ${v[3]} a atletismo.` },
+    { categorias:["Manzanas","Naranjas","Plátanos","Peras"],
+      frase:(v)=>`Hoy la frutería ha vendido ${v[0]} kilos de manzanas, ${v[1]} de naranjas, ${v[2]} de plátanos y ${v[3]} de peras.` }
+];
+
+const CONTEXTOS_MEDIA = [
+    {contexto:"En una clase se ha preguntado a los alumnos cuántos hermanos tiene cada uno.", variable:"nº de hermanos", xVals:[0,1,2,3,4]},
+    {contexto:"Se ha anotado el número de goles marcados por un equipo en sus últimos partidos.", variable:"goles marcados", xVals:[0,1,2,3,4]},
+    {contexto:"Un grupo de amigos ha contado cuántos libros ha leído cada uno este trimestre.", variable:"libros leídos", xVals:[1,2,3,4,5]},
+    {contexto:"En una encuesta se ha preguntado cuántas horas semanales dedican los alumnos al deporte.", variable:"horas de deporte", xVals:[1,2,3,4,5]}
+];
+
+const CONTEXTOS_MEDIA_GRAFICO = [
+    {contexto:"Observa el gráfico con el número de goles marcados en cada partido de una temporada.", variable:"goles por partido", xVals:[0,1,2,3]},
+    {contexto:"Observa el gráfico con el número de días de lluvia registrados cada semana de un mes.", variable:"días de lluvia", xVals:[1,2,3,4]},
+    {contexto:"Observa el gráfico con el número de hermanos de los alumnos de una clase.", variable:"nº de hermanos", xVals:[0,1,2,3]},
+    {contexto:"Observa el gráfico con el número de veces que un grupo de amigos ha ido al cine este mes.", variable:"veces al cine", xVals:[0,1,2,3]}
+];
+
+/* ===================== TIPO 1: cualitativa / cuantitativa ===================== */
+class EjCualiCuanti extends EjercicioBase {
+    generarNuevo(){ this.items = shuffle(BANCO_CUALICUANTI).slice(0,5); }
+    verificar(respuestas){
+        if(this.superado || this.bloqueado) return {correcto:false, superado:this.superado};
+        let errores=[]; let campos=new Array(this.items.length).fill(false);
+        for(let i=0;i<this.items.length;i++){
+            if(respuestas[i] !== this.items[i].tipo){
+                campos[i]=true;
+                const razon = this.items[i].tipo === "cualitativa" ? "no se mide con números, es una cualidad o categoría" : "se puede medir y expresar con un número";
+                errores.push(`"${this.items[i].texto}" es <strong>${this.items[i].tipo}</strong> (${razon}).`);
+            }
+        }
+        if(errores.length===0) return this.acierto("🎉 ¡Superado! Distingues bien las variables cualitativas de las cuantitativas.", respuestas);
+        return this.fallo(`❌ Revisa las filas marcadas en rojo:<br>${errores.join("<br>")}`, campos, respuestas);
+    }
+    getHTML(idx){
+        let st = ejercicios[idx];
+        const bloq = st.superado || st.bloqueado;
+        const opt = (i, val)=>{
+            const sel = st.ultimoIntento && st.ultimoIntento[i] === val;
+            return `<option value="${val}" ${sel?"selected":""}>${val==="cualitativa"?"Cualitativa":"Cuantitativa"}</option>`;
+        };
+        let filas = st.items.map((it,i)=>{
+            const seleccionVacia = !(st.ultimoIntento && st.ultimoIntento[i]);
+            return `<tr><td style="text-align:left;">${String.fromCharCode(97+i)}) ${it.texto}</td><td><select id="cc_${idx}_${i}" class="select-input${st.erroresCampos && st.erroresCampos[i] ? " campo-error" : ""}" aria-label="Clasificación de la afirmación ${i+1}" ${bloq?"disabled":""}><option value="" ${seleccionVacia?"selected":""}>Selecciona</option>${opt(i,"cualitativa")}${opt(i,"cuantitativa")}</select></td></tr>`;
+        }).join("");
+        return `<div class="ejercicio-card ${st.superado?"superado":""}">
+            <div class="ejercicio-header"><span class="ejercicio-num">1</span><span class="ejercicio-titulo">Variables cualitativas y cuantitativas</span>${st.superado?'<span class="badge-superado">✓ Superado</span>':""}</div>
+            <div class="enunciado">🔍 Indica si cada variable estadística es cualitativa o cuantitativa:</div>
+            <div class="tabla-proporcional"><table>${filas}</table></div>
+            <div class="input-area">
+                ${!bloq ? `<button class="btn-primary" onclick="comprobarEjercicio(0)">Comprobar</button>` : ""}
+                ${st.bloqueado ? `<button class="btn-reintentar" onclick="reintentarEjercicio(0)">🔁 Intentarlo de nuevo</button>` : ""}
+            </div>
+            <div class="feedback" id="fb_e1" aria-live="polite">${st.ultimoMsg ? `<span class="feedback-${st.ultimoCorrecto?"correcto":"error"}">${st.ultimoMsg}</span>` : ""}</div>
+        </div>`;
+    }
+}
+
+/* ===================== TIPO 2: tabla de frecuencias ===================== */
+class EjTablaFrecuencias extends EjercicioBase {
+    generarNuevo(){
+        const t = pick(CONTEXTOS_TABLA);
+        this.contexto = t.contexto; this.categorias = t.categorias;
+        this.f = this.categorias.map(()=>randInt(2,9));
+        this.N = this.f.reduce((a,b)=>a+b,0);
+        this.F = []; let acum=0; this.f.forEach(v=>{acum+=v; this.F.push(acum);});
+        this.hExact = this.f.map(v=>v/this.N);
+        this.HExact = []; let acumh=0; this.hExact.forEach(v=>{acumh+=v; this.HExact.push(acumh);});
+    }
+    verificar(filas){
+        if(this.superado || this.bloqueado) return {correcto:false, superado:this.superado};
+        let errores=[]; let campos = this.categorias.map(()=>({f:false,F:false,h:false,H:false}));
+        filas.forEach((r,i)=>{
+            const fVal=parseFloat(r.f), FVal=parseFloat(r.F), hVal=parseFloat(r.h), HVal=parseFloat(r.H);
+            if(fVal!==this.f[i]){ campos[i].f=true; errores.push(`Fila "${this.categorias[i]}": f incorrecta (dato del enunciado: ${this.f[i]}).`); }
+            if(FVal!==this.F[i]){ campos[i].F=true; errores.push(`Fila "${this.categorias[i]}": F incorrecta — F es la suma acumulada de f (correcto: ${this.F[i]}).`); }
+            if(isNaN(hVal) || Math.abs(hVal-this.hExact[i])>0.01){ campos[i].h=true; errores.push(`Fila "${this.categorias[i]}": h incorrecta — h = f/N (correcto: ${fmtNum(this.hExact[i])}).`); }
+            if(isNaN(HVal) || Math.abs(HVal-this.HExact[i])>0.01){ campos[i].H=true; errores.push(`Fila "${this.categorias[i]}": H incorrecta — H es la suma acumulada de h (correcto: ${fmtNum(this.HExact[i])}).`); }
+        });
+        if(errores.length===0) return this.acierto("🎉 ¡Superado! Construyes bien la tabla de frecuencias.", filas);
+        return this.fallo(`❌ Hay errores marcados en rojo (N = ${this.N}):<br>${errores.slice(0,6).join("<br>")}`, campos, filas);
+    }
+    getHTML(idx){
+        let st = ejercicios[idx];
+        const bloq = st.superado || st.bloqueado;
+        const ce = (i,campo)=> st.erroresCampos && st.erroresCampos[i][campo] ? " campo-error" : "";
+        const val = (i,campo)=> st.ultimoIntento && st.ultimoIntento[i] && st.ultimoIntento[i][campo]!==undefined ? st.ultimoIntento[i][campo] : "";
+        let filas = st.categorias.map((c,i)=>`<tr><td>${c}</td>
+            <td><input type="number" id="tf_${idx}_f_${i}" class="number-input${ce(i,"f")}" style="width:65px;" value="${val(i,"f")}" ${bloq?"disabled":""}></td>
+            <td><input type="number" id="tf_${idx}_F_${i}" class="number-input${ce(i,"F")}" style="width:65px;" value="${val(i,"F")}" ${bloq?"disabled":""}></td>
+            <td><input type="number" step="0.01" id="tf_${idx}_h_${i}" class="number-input${ce(i,"h")}" style="width:75px;" value="${val(i,"h")}" ${bloq?"disabled":""}></td>
+            <td><input type="number" step="0.01" id="tf_${idx}_H_${i}" class="number-input${ce(i,"H")}" style="width:75px;" value="${val(i,"H")}" ${bloq?"disabled":""}></td></tr>`).join("");
+        return `<div class="ejercicio-card ${st.superado?"superado":""}">
+            <div class="ejercicio-header"><span class="ejercicio-num">2</span><span class="ejercicio-titulo">Tabla de frecuencias</span>${st.superado?'<span class="badge-superado">✓ Superado</span>':""}</div>
+            <div class="enunciado">📋 ${st.contexto} Finalmente: ${st.categorias.map((c,i)=>`${st.f[i]} de ${c.toLowerCase()}`).join(", ")}. Completa la tabla de frecuencias.</div>
+            <div class="tabla-proporcional"><table><tr><th>x</th><th>f</th><th>F</th><th>h</th><th>H</th></tr>${filas}</table></div>
+            <div class="input-area">
+                ${!bloq ? `<button class="btn-primary" onclick="comprobarEjercicio(1)">Comprobar tabla</button>` : ""}
+                ${st.bloqueado ? `<button class="btn-reintentar" onclick="reintentarEjercicio(1)">🔁 Intentarlo de nuevo</button>` : ""}
+            </div>
+            <div class="feedback" id="fb_e2" aria-live="polite">${st.ultimoMsg ? `<span class="feedback-${st.ultimoCorrecto?"correcto":"error"}">${st.ultimoMsg}</span>` : ""}</div>
+        </div>`;
+    }
+}
+
+/* ===================== TIPO 3: diagrama de sectores (sin revelar N) ===================== */
+class EjSectores extends EjercicioBase {
+    generarNuevo(){
+        const t = pick(CONTEXTOS_SECTORES);
+        this.contexto = t.contexto; this.categorias = t.categorias;
+        this.N = pick(NICE_N);
+        this.f = partition(this.N, this.categorias.length);
+        this.gradosExact = this.f.map(v=>v*(360/this.N));
+        this.svgHTML = "";
+    }
+    verificar(sumaFVal, gradosArr){
+        if(this.superado || this.bloqueado) return {correcto:false, superado:this.superado};
+        let errores=[]; let campos = {sumaF:false, grados:this.categorias.map(()=>false)};
+        const sumaF = parseFloat(sumaFVal);
+        if(sumaF !== this.N){ campos.sumaF = true; errores.push("La suma de las frecuencias (fila «Total») no es correcta."); }
+        gradosArr.forEach((g,i)=>{
+            const val = parseFloat(g);
+            if(val !== this.gradosExact[i]){ campos.grados[i]=true; errores.push(`"${this.categorias[i]}": los grados no son correctos.`); }
+        });
+        if(errores.length===0){
+            const colores=["#A0522D","#5b9bd5","#2E6B3E","#c05c00","#8B1A1A"];
+            this.svgHTML = crearSVGSectores(this.categorias, this.f, colores);
+            return this.acierto("🎉 ¡Superado! Aquí tienes el diagrama de sectores:", {sumaF:sumaFVal, grados:gradosArr});
+        }
+        return this.fallo(`❌ Revisa lo marcado en rojo. Recuerda: primero suma todas las f para obtener el total, y luego cada sector mide (f/total)×360 grados:<br>${errores.join("<br>")}`, campos, {sumaF:sumaFVal, grados:gradosArr});
+    }
+    getHTML(idx){
+        let st = ejercicios[idx];
+        const bloq = st.superado || st.bloqueado;
+        const valG = (i)=> st.ultimoIntento && st.ultimoIntento.grados && st.ultimoIntento.grados[i]!==undefined ? st.ultimoIntento.grados[i] : "";
+        const valSumaF = st.ultimoIntento && st.ultimoIntento.sumaF!==undefined ? st.ultimoIntento.sumaF : "";
+        let filas = st.categorias.map((c,i)=>`<tr><td>${c}</td><td>${st.f[i]}</td><td><input type="number" id="sec_${idx}_g_${i}" class="number-input${st.erroresCampos && st.erroresCampos.grados[i] ? " campo-error" : ""}" style="width:75px;" value="${valG(i)}" ${bloq?"disabled":""}></td></tr>`).join("");
+        const errSumaF = st.erroresCampos && st.erroresCampos.sumaF ? " campo-error" : "";
+        return `<div class="ejercicio-card ${st.superado?"superado":""}">
+            <div class="ejercicio-header"><span class="ejercicio-num">3</span><span class="ejercicio-titulo">Diagrama de sectores</span>${st.superado?'<span class="badge-superado">✓ Superado</span>':""}</div>
+            <div class="enunciado">🥧 Construye el diagrama de sectores: ${st.contexto} Calcula primero el total de datos (suma de las f) y después los grados que corresponden a cada sector.</div>
+            <div class="tabla-proporcional"><table><tr><th>x</th><th>f</th><th>grados</th></tr>${filas}
+            <tr class="fila-total"><td>Total</td><td><input type="number" id="sec_${idx}_sumaf" class="number-input${errSumaF}" style="width:70px;" value="${valSumaF}" aria-label="Suma de las frecuencias" ${bloq?"disabled":""}></td><td></td></tr>
+            </table></div>
+            <div class="input-area">
+                ${!bloq ? `<button class="btn-primary" onclick="comprobarEjercicio(2)">Comprobar</button>` : ""}
+                ${st.bloqueado ? `<button class="btn-reintentar" onclick="reintentarEjercicio(2)">🔁 Intentarlo de nuevo</button>` : ""}
+            </div>
+            <div class="feedback" id="fb_e3" aria-live="polite">${st.ultimoMsg ? `<span class="feedback-${st.ultimoCorrecto?"correcto":"error"}">${st.ultimoMsg}</span>` : ""}</div>
+            ${st.superado ? `<div style="margin-top:12px;">${st.svgHTML}</div>` : ""}
+        </div>`;
+    }
+}
+
+/* ===================== TIPO 4: gráfico de barras (arrastrando) ===================== */
+class EjBarras extends EjercicioBase {
+    generarNuevo(){
+        const t = pick(CONTEXTOS_BARRAS);
+        this.categorias = t.categorias; this.fraseFn = t.frase;
+        this.valores = this.categorias.map(()=>randInt(1,9));
+        this.frase = this.fraseFn(this.valores);
+        this.valoresActuales = this.categorias.map(()=>0);
+        this.maxEscala = 10;
+    }
+    verificar(){
+        if(this.superado || this.bloqueado) return {correcto:false, superado:this.superado};
+        let errores=[]; let campos = this.categorias.map(()=>false);
+        this.categorias.forEach((c,i)=>{
+            if(this.valoresActuales[i]!==this.valores[i]){ campos[i]=true; errores.push(`"${c}": tu barra marca ${this.valoresActuales[i]}, el valor correcto es ${this.valores[i]}.`); }
+        });
+        if(errores.length===0) return this.acierto("🎉 ¡Superado! El gráfico de barras es correcto.");
+        return this.fallo(`❌ Ajusta las barras marcadas en rojo:<br>${errores.join("<br>")}`, campos);
+    }
+    getHTML(idx){
+        let st = ejercicios[idx];
+        const bloq = st.superado || st.bloqueado;
+        let barras = st.categorias.map((c,i)=>{
+            const val = st.valoresActuales[i], h = val*20;
+            const err = st.erroresCampos && st.erroresCampos[i] ? " campo-error" : "";
+            return `<div class="bar-col">
+                <div class="bar-track${err}" ${bloq?"":`onpointerdown="iniciarDrag(event,${idx},${i})"`}>
+                    <div class="bar-fill ${st.superado?"superado":""}" id="bar_${idx}_${i}" style="height:${h}px;"><span class="bar-value" id="barval_${idx}_${i}">${val}</span></div>
+                </div>
+                <div class="bar-label">${c}</div>
+            </div>`;
+        }).join("");
+        const ejeY = Array.from({length:11},(_,n)=>10-n).map((n,i2)=>`<span style="top:${i2*20}px;">${n}</span>`).join("");
+        return `<div class="ejercicio-card ${st.superado?"superado":""}">
+            <div class="ejercicio-header"><span class="ejercicio-num">4</span><span class="ejercicio-titulo">Gráfico de barras</span>${st.superado?'<span class="badge-superado">✓ Superado</span>':""}</div>
+            <div class="enunciado">📊 Construye el gráfico de barras: ${st.frase}</div>
+            <div class="bars-chart-wrap"><div class="bars-axis">${ejeY}</div><div class="bars-drag-wrap">${barras}</div></div>
+            <div class="input-area">
+                ${!bloq ? `<button class="btn-primary" onclick="comprobarEjercicio(3)">Comprobar</button>` : ""}
+                ${st.bloqueado ? `<button class="btn-reintentar" onclick="reintentarEjercicio(3)">🔁 Intentarlo de nuevo</button>` : ""}
+            </div>
+            <div class="feedback" id="fb_e4" aria-live="polite">${st.ultimoMsg ? `<span class="feedback-${st.ultimoCorrecto?"correcto":"error"}">${st.ultimoMsg}</span>` : ""}</div>
+        </div>`;
+    }
+}
+
+/* ===================== TIPO 5: media (tabla dada) ===================== */
+class EjMedia extends EjercicioBase {
+    generarNuevo(){
+        const t = pick(CONTEXTOS_MEDIA);
+        this.contexto = t.contexto; this.variable = t.variable; this.x = t.xVals;
+        this.f = this.x.map(()=>randInt(1,9));
+        this.xf = this.x.map((xv,i)=>xv*this.f[i]);
+        this.N = this.f.reduce((a,b)=>a+b,0);
+        this.sumaXf = this.xf.reduce((a,b)=>a+b,0);
+        this.media = round2(this.sumaXf/this.N);
+    }
+    verificar(datos){
+        if(this.superado || this.bloqueado) return {correcto:false, superado:this.superado};
+        let errores=[]; let campos = {xf:this.x.map(()=>false), n:false, sumaXf:false, media:false};
+        datos.xfArr.forEach((v,i)=>{ if(parseFloat(v)!==this.xf[i]){ campos.xf[i]=true; errores.push(`Fila x=${this.x[i]}: xf incorrecto (correcto: ${this.xf[i]} = ${this.x[i]}×${this.f[i]}).`); } });
+        if(parseFloat(datos.n)!==this.N){ campos.n=true; errores.push(`N incorrecto: N es la suma de la columna f (correcto: ${this.N}).`); }
+        if(parseFloat(datos.sumaXf)!==this.sumaXf){ campos.sumaXf=true; errores.push(`Σxf incorrecto: es la suma de la columna xf (correcto: ${this.sumaXf}).`); }
+        if(isNaN(parseFloat(datos.media)) || Math.abs(parseFloat(datos.media)-this.media)>0.01){ campos.media=true; errores.push(`Media incorrecta (correcto: ${fmtNum(this.media)}).`); }
+        if(errores.length===0) return this.acierto("🎉 ¡Superado! Calculas bien la media.", datos);
+        return this.fallo(`❌ Revisa lo marcado en rojo:<br>${errores.join("<br>")}`, campos, datos);
+    }
+    getHTML(idx){
+        let st = ejercicios[idx];
+        const bloq = st.superado || st.bloqueado;
+        const ce = (cond)=> cond ? " campo-error" : "";
+        const it = st.ultimoIntento;
+        let filas = st.x.map((xv,i)=>`<tr><td>${xv}</td><td>${st.f[i]}</td><td><input type="number" id="me_${idx}_xf_${i}" class="number-input${ce(st.erroresCampos && st.erroresCampos.xf[i])}" style="width:75px;" value="${it && it.xfArr && it.xfArr[i]!==undefined ? it.xfArr[i] : ""}" ${bloq?"disabled":""}></td></tr>`).join("");
+        return `<div class="ejercicio-card ${st.superado?"superado":""}">
+            <div class="ejercicio-header"><span class="ejercicio-num">5</span><span class="ejercicio-titulo">Cálculo de la media</span>${st.superado?'<span class="badge-superado">✓ Superado</span>':""}</div>
+            <div class="enunciado">🧮 ${st.contexto} Variable: ${st.variable}. Calcula la media.</div>
+            <div class="tabla-proporcional"><table><tr><th>x</th><th>f</th><th>xf</th></tr>${filas}
+            <tr class="fila-total"><td></td><td><input type="number" id="me_${idx}_n" class="number-input${ce(st.erroresCampos && st.erroresCampos.n)}" style="width:70px;" placeholder="N" value="${it && it.n!==undefined ? it.n : ""}" aria-label="N, suma de las frecuencias" ${bloq?"disabled":""}></td><td><input type="number" id="me_${idx}_sumaxf" class="number-input${ce(st.erroresCampos && st.erroresCampos.sumaXf)}" style="width:75px;" placeholder="Σxf" value="${it && it.sumaXf!==undefined ? it.sumaXf : ""}" aria-label="Suma total de la columna xf" ${bloq?"disabled":""}></td></tr>
+            </table></div>
+            <div class="input-area"><span>Media = </span><input type="number" step="0.01" id="me_${idx}_media" class="number-input${ce(st.erroresCampos && st.erroresCampos.media)}" style="width:95px;" value="${it && it.media!==undefined ? it.media : ""}" aria-label="Resultado de la media" ${bloq?"disabled":""}>
+                ${!bloq ? `<button class="btn-primary" onclick="comprobarEjercicio(4)">Comprobar</button>` : ""}
+                ${st.bloqueado ? `<button class="btn-reintentar" onclick="reintentarEjercicio(4)">🔁 Intentarlo de nuevo</button>` : ""}
+            </div>
+            <div class="feedback" id="fb_e5" aria-live="polite">${st.ultimoMsg ? `<span class="feedback-${st.ultimoCorrecto?"correcto":"error"}">${st.ultimoMsg}</span>` : ""}</div>
+        </div>`;
+    }
+}
+
+/* ===================== TIPO 6: media a partir de un gráfico ===================== */
+class EjMediaGrafico extends EjercicioBase {
+    generarNuevo(){
+        const t = pick(CONTEXTOS_MEDIA_GRAFICO);
+        this.contexto = t.contexto; this.variable = t.variable; this.x = t.xVals;
+        this.f = this.x.map(()=>randInt(1,8));
+        this.xf = this.x.map((xv,i)=>xv*this.f[i]);
+        this.N = this.f.reduce((a,b)=>a+b,0);
+        this.sumaXf = this.xf.reduce((a,b)=>a+b,0);
+        this.media = round2(this.sumaXf/this.N);
+        this.svgGrafico = crearSVGBarrasLectura(this.x.map(String), this.f, 8);
+    }
+    verificar(datos){
+        if(this.superado || this.bloqueado) return {correcto:false, superado:this.superado};
+        let errores=[]; let campos = {x:this.x.map(()=>false), f:this.x.map(()=>false), xf:this.x.map(()=>false), n:false, sumaXf:false, media:false};
+        datos.xArr.forEach((v,i)=>{ if(parseFloat(v)!==this.x[i]){ campos.x[i]=true; errores.push(`Fila ${i+1}: el valor de x leído del gráfico no es correcto (correcto: ${this.x[i]}).`); } });
+        datos.fArr.forEach((v,i)=>{ if(parseFloat(v)!==this.f[i]){ campos.f[i]=true; errores.push(`Fila ${i+1} (x=${this.x[i]}): f leída del gráfico incorrecta (correcto: ${this.f[i]}).`); } });
+        datos.xfArr.forEach((v,i)=>{ if(parseFloat(v)!==this.xf[i]){ campos.xf[i]=true; errores.push(`Fila ${i+1} (x=${this.x[i]}): xf incorrecto (correcto: ${this.xf[i]}).`); } });
+        if(parseFloat(datos.n)!==this.N){ campos.n=true; errores.push(`N incorrecto (correcto: ${this.N}).`); }
+        if(parseFloat(datos.sumaXf)!==this.sumaXf){ campos.sumaXf=true; errores.push(`Σxf incorrecto (correcto: ${this.sumaXf}).`); }
+        if(isNaN(parseFloat(datos.media)) || Math.abs(parseFloat(datos.media)-this.media)>0.01){ campos.media=true; errores.push(`Media incorrecta (correcto: ${fmtNum(this.media)}).`); }
+        if(errores.length===0) return this.acierto("🎉 ¡Superado! Lees bien el gráfico y calculas la media.", datos);
+        return this.fallo(`❌ Revisa lo marcado en rojo:<br>${errores.join("<br>")}`, campos, datos);
+    }
+    getHTML(idx){
+        let st = ejercicios[idx];
+        const bloq = st.superado || st.bloqueado;
+        const ce = (cond)=> cond ? " campo-error" : "";
+        const it = st.ultimoIntento;
+        let filas = st.x.map((xv,i)=>`<tr><td><input type="number" id="mg_${idx}_x_${i}" class="number-input${ce(st.erroresCampos && st.erroresCampos.x[i])}" style="width:65px;" value="${it && it.xArr && it.xArr[i]!==undefined ? it.xArr[i] : ""}" aria-label="Valor de x leído del gráfico, fila ${i+1}" ${bloq?"disabled":""}></td><td><input type="number" id="mg_${idx}_f_${i}" class="number-input${ce(st.erroresCampos && st.erroresCampos.f[i])}" style="width:65px;" value="${it && it.fArr && it.fArr[i]!==undefined ? it.fArr[i] : ""}" ${bloq?"disabled":""}></td><td><input type="number" id="mg_${idx}_xf_${i}" class="number-input${ce(st.erroresCampos && st.erroresCampos.xf[i])}" style="width:75px;" value="${it && it.xfArr && it.xfArr[i]!==undefined ? it.xfArr[i] : ""}" ${bloq?"disabled":""}></td></tr>`).join("");
+        return `<div class="ejercicio-card ${st.superado?"superado":""}">
+            <div class="ejercicio-header"><span class="ejercicio-num">6</span><span class="ejercicio-titulo">Media a partir de un gráfico</span>${st.superado?'<span class="badge-superado">✓ Superado</span>':""}</div>
+            <div class="enunciado">📈 ${st.contexto} Variable: ${st.variable}. Lee el gráfico, completa la tabla (también el valor de x de cada fila) y calcula la media.</div>
+            ${st.svgGrafico}
+            <div class="tabla-proporcional" style="margin-top:10px;"><table><tr><th>x</th><th>f</th><th>xf</th></tr>${filas}
+            <tr class="fila-total"><td></td><td><input type="number" id="mg_${idx}_n" class="number-input${ce(st.erroresCampos && st.erroresCampos.n)}" style="width:70px;" placeholder="N" value="${it && it.n!==undefined ? it.n : ""}" aria-label="N, suma de las frecuencias" ${bloq?"disabled":""}></td><td><input type="number" id="mg_${idx}_sumaxf" class="number-input${ce(st.erroresCampos && st.erroresCampos.sumaXf)}" style="width:75px;" placeholder="Σxf" value="${it && it.sumaXf!==undefined ? it.sumaXf : ""}" aria-label="Suma total de la columna xf" ${bloq?"disabled":""}></td></tr>
+            </table></div>
+            <div class="input-area"><span>Media = </span><input type="number" step="0.01" id="mg_${idx}_media" class="number-input${ce(st.erroresCampos && st.erroresCampos.media)}" style="width:95px;" value="${it && it.media!==undefined ? it.media : ""}" aria-label="Resultado de la media" ${bloq?"disabled":""}>
+                ${!bloq ? `<button class="btn-primary" onclick="comprobarEjercicio(5)">Comprobar</button>` : ""}
+                ${st.bloqueado ? `<button class="btn-reintentar" onclick="reintentarEjercicio(5)">🔁 Intentarlo de nuevo</button>` : ""}
+            </div>
+            <div class="feedback" id="fb_e6" aria-live="polite">${st.ultimoMsg ? `<span class="feedback-${st.ultimoCorrecto?"correcto":"error"}">${st.ultimoMsg}</span>` : ""}</div>
+        </div>`;
+    }
+}
+
+/* ===================== Motor general ===================== */
+function actualizarUI(){
+    let superados = ejercicios.filter(e=>e.superado).length;
+    document.getElementById("progresoCount").innerText = superados;
+    document.getElementById("fallosCount").innerText = fallosGlobales;
+    document.getElementById("notaActual").innerText = puntosGlobal.toFixed(1);
+}
+
+function renderizarTodo(){
+    const container = document.getElementById("ejerciciosContainer");
+    container.innerHTML = ejercicios.map((e,i)=>e.getHTML(i)).join("<hr>");
+    actualizarUI();
+}
+
+window.comprobarEjercicio = function(idx){
+    let ej = ejercicios[idx];
+    if(ej.superado || ej.bloqueado) return;
+
+    if(idx===0){
+        let respuestas=[];
+        for(let i=0;i<5;i++){
+            let v = document.getElementById(`cc_0_${i}`).value;
+            if(v===""){ document.getElementById("fb_e1").innerHTML='<span class="feedback-error">⚠️ Completa las 5 filas. No cuenta como fallo.</span>'; return; }
+            respuestas.push(v);
+        }
+        ej.verificar(respuestas);
+    } else if(idx===1){
+        let filas=[];
+        for(let i=0;i<4;i++){
+            let f=document.getElementById(`tf_1_f_${i}`).value, F=document.getElementById(`tf_1_F_${i}`).value,
+                h=document.getElementById(`tf_1_h_${i}`).value, H=document.getElementById(`tf_1_H_${i}`).value;
+            if(f===""||F===""||h===""||H===""){ document.getElementById("fb_e2").innerHTML='<span class="feedback-error">⚠️ Completa toda la tabla. No cuenta como fallo.</span>'; return; }
+            filas.push({f,F,h,H});
+        }
+        ej.verificar(filas);
+    } else if(idx===2){
+        let sumaF = document.getElementById("sec_2_sumaf").value;
+        let grados=[];
+        for(let i=0;i<ej.categorias.length;i++){
+            let g=document.getElementById(`sec_2_g_${i}`).value;
+            if(g===""){ document.getElementById("fb_e3").innerHTML='<span class="feedback-error">⚠️ Completa los grados de todos los sectores. No cuenta como fallo.</span>'; return; }
+            grados.push(g);
+        }
+        if(sumaF===""){ document.getElementById("fb_e3").innerHTML='<span class="feedback-error">⚠️ Completa la fila «Total» con la suma de las frecuencias. No cuenta como fallo.</span>'; return; }
+        ej.verificar(sumaF, grados);
+    } else if(idx===3){
+        ej.verificar();
+    } else if(idx===4){
+        let xfArr=[];
+        for(let i=0;i<ej.x.length;i++){
+            let v=document.getElementById(`me_4_xf_${i}`).value;
+            if(v===""){ document.getElementById("fb_e5").innerHTML='<span class="feedback-error">⚠️ Completa la columna xf. No cuenta como fallo.</span>'; return; }
+            xfArr.push(v);
+        }
+        let n=document.getElementById("me_4_n").value, sumaXf=document.getElementById("me_4_sumaxf").value, media=document.getElementById("me_4_media").value;
+        if(n===""||sumaXf===""||media===""){ document.getElementById("fb_e5").innerHTML='<span class="feedback-error">⚠️ Completa N, Σxf y la media. No cuenta como fallo.</span>'; return; }
+        ej.verificar({xfArr, n, sumaXf, media});
+    } else if(idx===5){
+        let xArr=[], fArr=[], xfArr=[];
+        for(let i=0;i<ej.x.length;i++){
+            let x=document.getElementById(`mg_5_x_${i}`).value, f=document.getElementById(`mg_5_f_${i}`).value, xf=document.getElementById(`mg_5_xf_${i}`).value;
+            if(x===""||f===""||xf===""){ document.getElementById("fb_e6").innerHTML='<span class="feedback-error">⚠️ Completa toda la tabla (x, f y xf). No cuenta como fallo.</span>'; return; }
+            xArr.push(x); fArr.push(f); xfArr.push(xf);
+        }
+        let n=document.getElementById("mg_5_n").value, sumaXf=document.getElementById("mg_5_sumaxf").value, media=document.getElementById("mg_5_media").value;
+        if(n===""||sumaXf===""||media===""){ document.getElementById("fb_e6").innerHTML='<span class="feedback-error">⚠️ Completa N, Σxf y la media. No cuenta como fallo.</span>'; return; }
+        ej.verificar({xArr, fArr, xfArr, n, sumaXf, media});
+    }
+    renderizarTodo();
+};
+
+window.reintentarEjercicio = function(idx){
+    ejercicios[idx].reintentar();
+    renderizarTodo();
+};
+
+/* Arrastre: el pointerdown se captura en TODO el .bar-track (no solo en la barra),
+   así funciona incluso partiendo de valor 0 (barra de altura 0px, sin área que agarrar).
+   Además fija el valor inmediatamente al pulsar, no solo al mover. */
+window.iniciarDrag = function(e, idxEj, i){
+    e.preventDefault();
+    const ej = ejercicios[idxEj];
+    if(ej.superado || ej.bloqueado) return;
+    const track = e.currentTarget;
+    const trackRect = track.getBoundingClientRect();
+    const pxPerUnit = trackRect.height / ej.maxEscala;
+    const fillEl = document.getElementById(`bar_${idxEj}_${i}`);
+    const valEl = document.getElementById(`barval_${idxEj}_${i}`);
+    function actualizar(clientY){
+        let fromBottom = trackRect.bottom - clientY;
+        let val = Math.round(fromBottom / pxPerUnit);
+        val = Math.max(0, Math.min(ej.maxEscala, val));
+        ej.valoresActuales[i] = val;
+        fillEl.style.height = (val * pxPerUnit) + "px";
+        valEl.innerText = val;
+    }
+    actualizar(e.clientY);
+    function onMove(ev){ actualizar(ev.clientY); }
+    function onUp(){
+        document.removeEventListener("pointermove", onMove);
+        document.removeEventListener("pointerup", onUp);
+    }
+    document.addEventListener("pointermove", onMove);
+    document.addEventListener("pointerup", onUp);
+};
+
+function getTiempo(){
+    let elapsed = Math.floor((Date.now() - startTime) / 1000);
+    let h = Math.floor(elapsed / 3600), m = Math.floor((elapsed % 3600) / 60);
+    return `${h.toString().padStart(2,"0")}:${m.toString().padStart(2,"0")}`;
+}
+
+function mostrarResultados(nombre){
+    const nota = Math.round(puntosGlobal * 10) / 10;
+    const fecha = new Date().toLocaleDateString("es-ES");
+    const horaCompleta = new Date().toLocaleTimeString("es-ES");
+    const tiempo = getTiempo();
+    document.getElementById("modalNombreMostrar").innerHTML = nombre.toUpperCase();
+    document.getElementById("modalNota").innerHTML = nota.toFixed(1) + " / 10";
+    document.getElementById("modalMensaje").innerHTML = nota>=7 ? "👍 Muy bien" : (nota>=5 ? "📘 Aprobado" : "📚 Repasa");
+    const nombresTipos = ["Cualitativa / cuantitativa","Tabla de frecuencias","Diagrama de sectores","Gráfico de barras","Media (tabla dada)","Media (a partir de un gráfico)"];
+    let desglose = ejercicios.map((e,i)=>`<div style="margin-bottom:4px;">${e.superado?"✅":"⬜"} <strong>${nombresTipos[i]}</strong>: ${e.superado?"superado":"no superado"} — intentos ${e.intentos}, aciertos ${e.aciertos}, fallos ${e.fallos}</div>`).join("");
+    document.getElementById("modalStats").innerHTML = `<p>📅 ${fecha} &nbsp; 🕐 ${horaCompleta}</p><p>⏱️ Tiempo: ${tiempo}</p><p>⭐ Nota: ${nota.toFixed(1)}/10</p><hr style="margin:8px 0;"><div>${desglose}</div>`;
+    const modalCard = document.getElementById("modalCard");
+    let color = nota>=10?"#1a7a1a":nota>=9?"#6dbf6d":nota>=8?"#1a4f8a":nota>=7?"#5b9bd5":nota>=6?"#c05c00":nota>=5?"#f5a623":"#c0392b";
+    modalCard.style.backgroundColor = color;
+    if(nota>=10) document.body.classList.add("all-green"); else document.body.classList.remove("all-green");
+    document.getElementById("modalResultados").classList.add("show");
+}
+
+function finalizar(){
+    let n = document.getElementById("nombreAlumno").value.trim();
+    if(!n){ document.getElementById("modalNombre").classList.add("show"); return; }
+    mostrarResultados(n);
+}
+function resetearTodo(){
+    const hayProgreso = fallosGlobales > 0 || ejercicios.some(e=>e.superado);
+    if(!hayProgreso){ location.reload(); return; }
+    document.getElementById("modalReset").classList.add("show");
+}
+function cerrarModales(){ document.getElementById("modalResultados").classList.remove("show"); document.getElementById("modalNombre").classList.remove("show"); document.getElementById("modalReset").classList.remove("show"); }
+function confirmarNombre(){
+    let nom = document.getElementById("modalNombreInput").value.trim();
+    if(nom){ document.getElementById("nombreAlumno").value = nom; document.getElementById("modalNombre").classList.remove("show"); mostrarResultados(nom); }
+}
+
+ejercicios = [new EjCualiCuanti(), new EjTablaFrecuencias(), new EjSectores(), new EjBarras(), new EjMedia(), new EjMediaGrafico()];
+renderizarTodo();
+document.getElementById("btnFinalizar").addEventListener("click", finalizar);
+document.getElementById("btnResetear").addEventListener("click", resetearTodo);
+document.getElementById("closeModal").addEventListener("click", cerrarModales);
+document.getElementById("btnConfirmarNombre").addEventListener("click", confirmarNombre);
+document.getElementById("btnConfirmarReset").addEventListener("click", ()=>location.reload());
+document.getElementById("btnCancelarReset").addEventListener("click", ()=>document.getElementById("modalReset").classList.remove("show"));
+
+/* Soporte de tecla Enter en campos generados dinámicamente (delegación de eventos) */
+document.addEventListener("keydown", function(e){
+    if(e.key !== "Enter") return;
+    const tag = e.target.tagName;
+    if(tag !== "INPUT" && tag !== "SELECT") return;
+    const card = e.target.closest(".ejercicio-card");
+    if(!card) return;
+    const btn = card.querySelector(".btn-primary");
+    if(btn && !btn.disabled) btn.click();
+});
+</script>
+</body>
+</html>

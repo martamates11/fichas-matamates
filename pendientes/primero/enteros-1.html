@@ -1,0 +1,1562 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Números Enteros 1º ESO · Ficha interactiva</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script" async></script>
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --color-fondo: #F5F0E8;
+    --color-fondo-card: #FDFAF3;
+    --color-texto: #2C1F0E;
+    --color-texto-suave: #6B4F35;
+    --color-acento: #A0522D;
+    --color-acento-hover: #7B3B1E;
+    --color-borde: #C9A96E;
+    --color-borde-suave: #E0CEAA;
+    --color-cabecera: #3B2510;
+    --color-cabecera-txt: #F5EDD8;
+    --color-correcto: #2E6B3E;
+    --color-incorrecto: #8B1A1A;
+    --color-neutro: #E8DFC8;
+    --color-arrastre: #C9A96E;
+}
+
+body {
+    background: var(--color-fondo);
+    font-family: 'DM Sans', 'Inter', sans-serif;
+    color: var(--color-texto);
+    min-height: 100vh;
+}
+
+.recta-container {
+    background: var(--color-neutro);
+    border-radius: 1.5rem;
+    padding: 1rem;
+    margin: 1rem 0;
+    overflow-x: auto;
+    overflow-y: visible !important;
+}
+.recta-wrapper {
+    min-width: 650px;
+    position: relative;
+    margin: 20px 0;
+    overflow: visible !important;
+}
+.recta-linea {
+    position: relative;
+    height: 2px;
+    background: var(--color-texto);
+    width: 100%;
+    margin: 30px 0 20px 0;
+}
+.marcadores {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    top: -8px;
+    min-height: 60px !important;
+}
+.palito-wrapper {
+    position: relative;
+    width: 48px;
+    text-align: center;
+    display: inline-block;
+    min-height: 50px !important;
+    vertical-align: top;
+}
+.palito {
+    width: 1px;
+    height: 12px;
+    background: var(--color-texto);
+    position: relative;
+    top: 6px;
+    margin: 0 auto !important;
+}
+.palito.cero {
+    background: var(--color-acento);
+    height: 18px;
+    width: 2px;
+}
+.etiqueta-cero {
+    position: absolute;
+    bottom: -22px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: var(--color-acento);
+    white-space: nowrap;
+}
+.drop-zone-invisible {
+    position: absolute;
+    width: 48px;
+    height: 48px;
+    background: transparent;
+    top: -20px;
+    left: 0;
+    cursor: grab;
+    z-index: 10 !important;
+}
+.drop-zone-invisible:hover {
+    background: rgba(160, 82, 45, 0.15);
+    border-radius: 12px;
+}
+.numero-colocado {
+    position: absolute;
+    top: -32px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--color-correcto);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    white-space: nowrap;
+    pointer-events: none;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    z-index: 20 !important;
+}
+.numeros-arrastre {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 1.5rem;
+}
+.draggable-number {
+    background: var(--color-arrastre);
+    color: var(--color-cabecera-txt);
+    padding: 8px 18px;
+    border-radius: 40px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    cursor: grab;
+    transition: 0.1s;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    user-select: none;
+    display: inline-block !important;
+}
+.draggable-number:active { cursor: grabbing; }
+.draggable-number.dragging { opacity: 0.5; }
+
+.autoria {
+    background: var(--color-cabecera);
+    text-align: center;
+    padding: 6px;
+    font-size: 10px;
+    color: rgba(245, 240, 232, 0.7);
+}
+
+.ficha-wrapper {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.header {
+    background: var(--color-cabecera);
+    border-radius: 1.5rem;
+    padding: 1.8rem 2rem;
+    margin-bottom: 1.8rem;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.header h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--color-cabecera-txt);
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+}
+
+.header p { color: #C9B896; font-size: 0.9rem; }
+
+.header-badges {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+}
+
+.header-badge {
+    background: rgba(255,255,255,0.08);
+    padding: 0.25rem 0.75rem;
+    border-radius: 40px;
+    font-size: 0.7rem;
+    color: #E0CEAA;
+}
+
+.info-bar {
+    background: var(--color-fondo-card);
+    border-radius: 1.2rem;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    border: 1px solid var(--color-borde);
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--color-texto-suave);
+}
+
+.info-icon {
+    width: 30px;
+    height: 30px;
+    background: var(--color-fondo);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+
+.info-value {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--color-texto);
+}
+
+.name-section {
+    background: var(--color-fondo-card);
+    border-radius: 1rem;
+    padding: 0.8rem 1.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    border: 1px solid var(--color-borde-suave);
+}
+
+.name-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-texto-suave);
+}
+
+.name-input {
+    flex: 1;
+    max-width: 280px;
+    border: none;
+    border-bottom: 2px solid var(--color-borde);
+    padding: 0.5rem 0.25rem;
+    font-size: 0.95rem;
+    background: transparent;
+    color: var(--color-texto);
+}
+
+.name-input:focus {
+    outline: none;
+    border-bottom-color: var(--color-acento);
+}
+
+.ejercicio-card {
+    background: var(--color-fondo-card);
+    border-radius: 1.2rem;
+    padding: 1.5rem;
+    margin-bottom: 1.2rem;
+    border: 1px solid var(--color-borde);
+    transition: all 0.2s;
+}
+
+.ejercicio-card.superado {
+    border-left: 5px solid var(--color-correcto);
+    background: #FAF8F0;
+}
+
+.ejercicio-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.ejercicio-num {
+    background: var(--color-acento);
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.ejercicio-titulo {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.badge-superado {
+    background: var(--color-correcto);
+    color: white;
+    padding: 0.2rem 0.7rem;
+    border-radius: 40px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    margin-left: 0.5rem;
+}
+
+.racha-indicador {
+    margin-left: 10px;
+    font-size: 0.7rem;
+    color: var(--color-correcto);
+    background: rgba(46,107,62,0.15);
+    padding: 2px 10px;
+    border-radius: 20px;
+}
+
+.preguntas-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+.pregunta-item {
+    background: var(--color-fondo);
+    border-radius: 1rem;
+    padding: 1rem;
+    border: 1px solid var(--color-borde-suave);
+}
+.pregunta-enunciado {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+.pregunta-input {
+    border: 2px solid var(--color-borde);
+    border-radius: 10px;
+    padding: 6px 12px;
+    font-size: 0.9rem;
+    width: 120px;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.input-area {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin: 1rem 0;
+}
+.text-input, .number-input {
+    border: 2px solid var(--color-borde);
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-size: 0.9rem;
+    width: 200px;
+    font-family: 'JetBrains Mono', monospace;
+    background: white;
+}
+.number-input { width: 120px; text-align: center; }
+.btn-primary {
+    background: var(--color-acento);
+    border: none;
+    color: white;
+    padding: 8px 22px;
+    border-radius: 40px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.btn-primary:hover:not(:disabled) { background: var(--color-acento-hover); transform: scale(0.97); }
+.btn-primary:disabled { background: #C9A96E; cursor: not-allowed; }
+.btn-success {
+    background: var(--color-correcto);
+    border: none;
+    color: white;
+    padding: 8px 22px;
+    border-radius: 40px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.btn-success:disabled { background: #9CBBA3; cursor: not-allowed; }
+.sr-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--color-texto-suave);
+    display: block;
+    width: 100%;
+    margin-bottom: 4px;
+}
+.feedback {
+    margin-top: 10px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+.feedback-correcto { color: var(--color-correcto); background: rgba(46,107,62,0.1); padding: 6px 14px; border-radius: 30px; display: inline-block; }
+.feedback-error { color: var(--color-incorrecto); background: rgba(139,26,26,0.08); padding: 6px 14px; border-radius: 30px; display: inline-block; }
+hr { margin: 0.5rem 0; border: none; border-top: 1px solid var(--color-borde-suave); }
+.action-buttons { display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; flex-wrap: wrap; }
+.btn-large { background: var(--color-acento); color: white; border: none; padding: 12px 36px; font-size: 0.95rem; font-weight: 600; border-radius: 50px; cursor: pointer; }
+.btn-outline { background: transparent; border: 2px solid var(--color-borde); color: var(--color-texto-suave); padding: 10px 28px; border-radius: 50px; cursor: pointer; }
+
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+}
+.modal-overlay.show { display: flex; }
+.modal-card {
+    background: var(--color-fondo-card);
+    border-radius: 12px;
+    padding: 32px;
+    max-width: 460px;
+    width: 90%;
+    text-align: center;
+    border: 2px solid var(--color-borde);
+    animation: modalIn 0.3s ease;
+}
+.modal-card-name { background: var(--color-fondo-card); border-radius: 12px; padding: 32px; max-width: 420px; width: 90%; border: 2px solid var(--color-incorrecto); }
+@keyframes modalIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+.modal-close { float: right; background: none; border: none; font-size: 24px; cursor: pointer; color: var(--color-texto-suave); }
+.modal-grade { font-size: 52px; font-weight: 900; margin: 12px 0; }
+.modal-stats { border: 1.5px solid var(--color-borde); border-radius: 10px; padding: 12px; margin-bottom: 14px; font-family: monospace; font-size: 12px; text-align: left; background: rgba(0,0,0,0.02); }
+.recordatorio { font-size: 12px; margin-top: 8px; background: var(--color-neutro); border-radius: 20px; padding: 6px; color: var(--color-texto-suave); }
+</style>
+</head>
+<body>
+<div class="autoria">Material elaborado por Marta López de Letona Sánchez</div>
+<div class="ficha-wrapper">
+    <div class="header">
+        <h1>🔢 Números Enteros</h1>
+        <p>Recta, suma, resta, multiplicación, división y problemas · 1º ESO</p>
+        <div class="header-badges"><span class="header-badge">🎯 2 preguntas correctas consecutivas → superado</span><span class="header-badge">💡 Cada fallo resta 0.33 puntos</span></div>
+    </div>
+    <div class="info-bar">
+        <div class="info-item"><span class="info-icon">📊</span><span>Progreso: <span id="progresoCount" class="info-value">0</span>/6</span></div>
+        <div class="info-item"><span class="info-icon">❌</span><span>Fallos: <span id="fallosCount" class="info-value">0</span></span></div>
+        <div class="info-item"><span class="info-icon">⭐</span><span>Nota: <span id="notaActual" class="info-value">0.0</span>/10</span></div>
+    </div>
+    <div class="name-section"><label class="name-label" for="nombreAlumno">👤 ALUMNO/A</label><input type="text" id="nombreAlumno" class="name-input" placeholder="Escribe tu nombre..."></div>
+    <div id="ejerciciosContainer"></div>
+    <div class="action-buttons"><button class="btn-large" id="btnFinalizar">📋 Finalizar y calificar</button><button class="btn-outline" id="btnResetear">🔄 Nueva ficha</button></div>
+</div>
+
+<div id="modalNombre" class="modal-overlay"><div class="modal-card-name"><h3 style="color:var(--color-incorrecto);">✏️ Falta tu nombre</h3><p style="margin:10px 0">Para calificar necesitas identificarte.</p><input type="text" id="modalNombreInput" placeholder="Nombre completo" style="width:100%; padding:8px; margin:10px 0; border:1px solid var(--color-borde); border-radius:6px;"><button id="btnConfirmarNombre" style="background:var(--color-acento); color:white; padding:8px; width:100%; border:none; border-radius:6px; cursor:pointer;">Continuar</button></div></div>
+<div id="modalResultados" class="modal-overlay"><div class="modal-card" id="modalCard"><button class="modal-close" id="closeModal">✕</button><div id="modalNombreMostrar" style="font-weight:600;"></div><div style="font-size:0.85rem;">🔢 Números Enteros · 1º ESO</div><div class="modal-grade" id="modalNota"></div><div class="modal-message" id="modalMensaje"></div><div class="modal-stats" id="modalStats"></div><div class="recordatorio">📸 Haz una captura de pantalla y entrégala en Google Classroom.</div><div class="modal-footer">Material elaborado por Marta López de Letona Sánchez</div></div></div>
+
+<script>
+let ejercicios = [];
+let fallosGlobales = 0;
+let rachaGlobal = 0;
+
+// ============ OTRO ENUNCIADO TRAS UN FALLO ============
+// Tras un fallo que enseña la solución: otro enunciado (y otra solución, si se
+// pide), para que copiar la solución mostrada no cuente como acierto.
+const PASA_A_OTRO = '<br><br>👉 Ahora inténtalo con este nuevo.';
+function regenerarDistinto(ej, solucion) {
+    const firma = () => JSON.stringify(ej, (k, v) => (['racha', 'superado', 'yaComprobado', 'aciertoPendiente', 'requiereDosAciertos'].includes(k) ? undefined : v));
+    const f0 = firma(), s0 = solucion ? solucion() : null;
+    for (let n = 0; n < 50; n++) {
+        ej.generarNuevo();
+        if (firma() !== f0 && (!solucion || solucion() !== s0)) return;
+    }
+}
+
+// ============ AVISO DE CONFIRMACIÓN PROPIO (en lugar de confirm del navegador) ============
+function confirmar(mensaje, { si = 'Sí, reiniciar', no = 'Cancelar', titulo = '¿Seguro?' } = {}) {
+    if (document.querySelector('.confirmar-ficha')) return Promise.resolve(false);
+    return new Promise(resolve => {
+        const fondo = document.createElement('div');
+        fondo.className = 'confirmar-ficha';
+        fondo.setAttribute('role', 'alertdialog');
+        fondo.setAttribute('aria-modal', 'true');
+        fondo.setAttribute('aria-label', titulo);
+        fondo.tabIndex = -1;
+        fondo.style.cssText = 'position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;background:rgba(44,31,14,0.55);padding:16px;';
+        fondo.innerHTML =
+            '<div style="background:#FFFDF7;border:2px solid #C9A96E;border-radius:14px;max-width:380px;width:100%;padding:22px 22px 18px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.25);font-family:inherit;color:#2C1F0E;">' +
+            '<h3 style="margin:0 0 10px;font-size:1.1rem;color:#A0522D;"></h3>' +
+            '<p style="margin:0 0 18px;font-size:0.95rem;line-height:1.45;"></p>' +
+            '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">' +
+            '<button type="button" data-respuesta="no" style="background:transparent;color:#6B4F35;border:2px solid #C9A96E;border-radius:30px;padding:9px 20px;font-weight:700;cursor:pointer;font-family:inherit;"></button>' +
+            '<button type="button" data-respuesta="si" style="background:#A0522D;color:#FFFFFF;border:none;border-radius:30px;padding:10px 22px;font-weight:700;cursor:pointer;font-family:inherit;"></button>' +
+            '</div></div>';
+        fondo.querySelector('h3').textContent = '⚠️ ' + titulo;
+        fondo.querySelector('p').textContent = mensaje;
+        const btnNo = fondo.querySelector('[data-respuesta="no"]');
+        const btnSi = fondo.querySelector('[data-respuesta="si"]');
+        btnNo.textContent = no;
+        btnSi.textContent = si;
+        const cerrar = (respuesta) => { fondo.remove(); resolve(respuesta); };
+        btnNo.addEventListener('click', () => cerrar(false));
+        btnSi.addEventListener('click', () => cerrar(true));
+        fondo.addEventListener('click', (e) => { if (e.target === fondo) cerrar(false); });
+        fondo.addEventListener('keydown', (e) => { if (e.key === 'Escape') cerrar(false); });
+        document.body.appendChild(fondo);
+        btnNo.focus();
+    });
+}
+const startTime = Date.now();
+
+class EjercicioBase {
+    constructor(requiereDosAciertos = true) { 
+        this.racha = 0; 
+        this.superado = false; 
+        this.requiereDosAciertos = requiereDosAciertos; 
+        this.generarNuevo(); 
+    }
+    generarNuevo() {}
+    verificar(...args) {}
+    nuevoEjercicio() { 
+        if(!this.superado && this.requiereDosAciertos){ 
+            this.generarNuevo(); 
+            return true; 
+        } 
+        return false; 
+    }
+}
+
+class Ejercicio1 extends EjercicioBase {
+    generarNuevo() {
+        const candidatos = [-5,-4,-3,-2,-1,1,2,3,4,5];
+        this.numeros = [];
+        while(this.numeros.length < 3) { 
+            let n = candidatos[Math.floor(Math.random() * candidatos.length)]; 
+            if(!this.numeros.includes(n)) this.numeros.push(n); 
+        }
+        this.numeros.sort((a,b) => a - b);
+        this.colocados = {};
+        this.colocadosEnPos = {};
+        this.yaComprobado = false;
+        this.aciertoPendiente = false;
+    }
+    
+    verificarColocacionCompleta() {
+        return this.numeros.every(val => this.colocados[val] === true);
+    }
+    
+    verificar() {
+        if(this.superado) return {correcto: false, superado: true};
+        
+        let todosColocados = this.verificarColocacionCompleta();
+        
+        if(todosColocados && !this.yaComprobado) {
+            this.yaComprobado = true;
+            this.aciertoPendiente = true;
+            return {correcto: true, superado: false, aciertoPendiente: true, 
+                    msg: "✓ ¡Correcto! Ahora pulsa '➡️ Siguiente recta' para continuar."};
+        } else if (!todosColocados) {
+            this.yaComprobado = false;
+            this.aciertoPendiente = false;
+            this.racha = 0; 
+            rachaGlobal = 0; 
+            fallosGlobales++;
+            let faltantes = this.numeros.filter(v => !this.colocados[v]);
+            return {correcto: false, superado: false, msg: `❌ Faltan: ${faltantes.join(', ')}. Arrástralos al palito correcto.`};
+        } else {
+            return {correcto: false, superado: false, msg: "⚠️ Ya has comprobado esta recta. Pulsa 'Siguiente recta' para continuar."};
+        }
+    }
+    
+    siguienteRecta() {
+        if(this.superado) return {superado: true};
+        
+        if(this.aciertoPendiente) {
+            this.racha++;
+            rachaGlobal = this.racha;
+            this.aciertoPendiente = false;
+            this.yaComprobado = false;
+            
+            if(this.racha >= 2) {
+                this.superado = true;
+                return {superado: true, msg: "🎉 ¡Superado! Ubicas bien los enteros."};
+            } else {
+                this.generarNuevo();
+                return {superado: false, msg: `✓ ¡Correcto! (${this.racha}/2) → Nueva recta.`, nuevoEjercicio: true};
+            }
+        } else {
+            return {superado: false, msg: "⚠️ Primero debes colocar todos los números y pulsar 'Comprobar colocación'.", nuevoEjercicio: false};
+        }
+    }
+    
+    getHTML(idx) {
+        const st = ejercicios[idx];
+        const posiciones = [-5,-4,-3,-2,-1,0,1,2,3,4,5];
+        const numerosRestantes = st.numeros.filter(n => !st.colocados[n]);
+        
+        return `<div class="ejercicio-card ${st.superado ? 'superado' : ''}" id="ej1-card">
+            <div class="ejercicio-header">
+                <span class="ejercicio-num">1</span>
+                <span class="ejercicio-titulo">Ubicar en la recta real</span>
+                ${st.superado ? '<span class="badge-superado">✓ Superado</span>' : ''}
+                ${!st.superado && st.racha > 0 ? `<span class="racha-indicador">🎯 Racha: ${st.racha}/2</span>` : ''}
+                ${st.aciertoPendiente ? `<span class="racha-indicador" style="background:#2E6B3E; color:white;">✅ Acierto pendiente - pulsa "Siguiente recta"</span>` : ''}
+            </div>
+            <div class="recta-container">
+                <div class="recta-wrapper">
+                    <div class="recta-linea"></div>
+                    <div class="marcadores">
+                        ${posiciones.map(x => {
+                            const numeroColocado = st.colocadosEnPos[x];
+                            return `<div class="palito-wrapper" style="width:48px; text-align:center; position:relative; display:inline-block;">
+                                <div class="palito ${x === 0 ? 'cero' : ''}" style="margin:0 auto;"></div>
+                                ${x === 0 ? '<div class="etiqueta-cero">0</div>' : ''}
+                                ${numeroColocado !== undefined ? `<div class="numero-colocado">${numeroColocado}</div>` : ''}
+                                <div class="drop-zone-invisible" data-valor-esperado="${x}"></div>
+                            </div>`;
+                        }).join('')}
+                    </div>
+                </div>
+                <div class="numeros-arrastre">
+                    ${numerosRestantes.map(num => `<div class="draggable-number" draggable="true" data-num="${num}">${num}</div>`).join('')}
+                </div>
+                <div class="input-area">
+                    <button class="btn-primary" onclick="verificarEjercicio(0)" ${st.superado || st.aciertoPendiente ? 'disabled' : ''}>✅ Comprobar colocación</button>
+                    <button class="btn-success" onclick="siguienteRectaEj1()" ${st.superado ? 'disabled' : ''}>➡️ Siguiente recta</button>
+                </div>
+                <div class="feedback" id="fb_e1" aria-live="polite"></div>
+            </div>
+        </div>`;
+    }
+}
+
+class Ejercicio2 extends EjercicioBase {
+    generarNuevo() {
+        this.pregunta1 = this.generarPregunta();
+        this.pregunta2 = this.generarPregunta();
+        this.yaComprobado = false;
+    }
+    
+    generarPregunta() {
+        let tipo = Math.floor(Math.random() * 3);
+        let a, b;
+        
+        if (tipo === 0) {
+            a = -(Math.floor(Math.random() * 10) + 1);
+            b = -(Math.floor(Math.random() * 10) + 1);
+        } else if (tipo === 1) {
+            a = -(Math.floor(Math.random() * 10) + 1);
+            b = Math.floor(Math.random() * 10) + 1;
+        } else {
+            a = Math.floor(Math.random() * 10) + 1;
+            b = -(Math.floor(Math.random() * 10) + 1);
+        }
+        
+        let resultado = a + b;
+        const aStr = a < 0 ? `(${a})` : `${a}`;
+        const bStr = b < 0 ? `(${b})` : `${b}`;
+        
+        let explicacion = this.generarExplicacionSuma(a, b);
+        
+        return { expresion: `${aStr} + ${bStr}`, resultado: resultado, explicacion: explicacion };
+    }
+    
+    generarExplicacionSuma(a, b) {
+        if (a < 0 && b < 0) {
+            return `📖 <strong>Regla:</strong> Ambos son negativos → se suman los valores absolutos y el resultado es negativo.<br>🔢 |${a}| + |${b}| = ${Math.abs(a) + Math.abs(b)} → resultado negativo: ${a + b}`;
+        } else {
+            let positivo = a > 0 ? a : b;
+            let negativo = a < 0 ? a : b;
+            let valorAbsolutoNegativo = Math.abs(negativo);
+            let diferencia = Math.abs(positivo - valorAbsolutoNegativo);
+            let signoSimbolo = positivo > valorAbsolutoNegativo ? "" : "-";
+            
+            return `📖 <strong>Regla:</strong> Signos diferentes → se restan y se pone el signo del número con mayor valor absoluto.<br>🔢 ${positivo} - ${valorAbsolutoNegativo} = ${diferencia}<br>📌 Resultado: ${signoSimbolo}${diferencia === 0 ? "0" : diferencia}`;
+        }
+    }
+    
+    verificar(resp1, resp2) {
+        if(this.superado) return {correcto: false, superado: true};
+        
+        if((resp1===undefined || String(resp1).trim()==='') || (resp2===undefined || String(resp2).trim()==='')) {
+            return {correcto: false, superado: false, msg: "✏️ Completa las dos respuestas antes de comprobar."};
+        }
+        
+        let ok1 = parseInt(resp1) === this.pregunta1.resultado;
+        let ok2 = parseInt(resp2) === this.pregunta2.resultado;
+        
+        if(ok1 && ok2 && !this.yaComprobado) {
+            this.yaComprobado = true;
+            return {correcto: true, superado: false, aciertoPendiente: true, 
+                    msg: "✓ ¡Correcto! Ahora pulsa '➡️ Siguiente ronda' para continuar."};
+        } else if (!ok1 || !ok2) {
+            this.yaComprobado = false;
+            this.racha = 0;
+            rachaGlobal = 0;
+            fallosGlobales++;
+            let errores = [];
+            if(!ok1) errores.push(`"${this.pregunta1.expresion}" → respuesta correcta: ${this.pregunta1.resultado}<br>📚 ${this.pregunta1.explicacion}`);
+            if(!ok2) errores.push(`"${this.pregunta2.expresion}" → respuesta correcta: ${this.pregunta2.resultado}<br>📚 ${this.pregunta2.explicacion}`);
+            regenerarDistinto(this, () => JSON.stringify([this.pregunta1.resultado, this.pregunta2.resultado]));
+            return {correcto: false, superado: false, nuevoEnunciado: true, msg: `❌ Solución del ejercicio anterior:<br>${errores.join('<br><br>')}` + PASA_A_OTRO};
+        } else {
+            return {correcto: false, superado: false, msg: "⚠️ Ya has comprobado estas preguntas. Pulsa 'Siguiente ronda' para continuar."};
+        }
+    }
+    
+    siguienteRonda() {
+        if(this.superado) return {superado: true};
+        
+        if(this.yaComprobado) {
+            this.racha++;
+            rachaGlobal = this.racha;
+            this.yaComprobado = false;
+            
+            if(this.racha >= 2) {
+                this.superado = true;
+                return {superado: true, msg: "🎉 ¡Superado! Dominas la suma y resta de enteros."};
+            } else {
+                this.generarNuevo();
+                return {superado: false, msg: `✓ ¡Correcto! (${this.racha}/2) → Nueva ronda.`, nuevoEjercicio: true};
+            }
+        } else {
+            return {superado: false, msg: "⚠️ Primero debes responder las dos preguntas y pulsar 'Comprobar ambas'.", nuevoEjercicio: false};
+        }
+    }
+    
+    getHTML(idx) {
+        let st = ejercicios[idx];
+        if(st.superado) {
+            return `<div class="ejercicio-card superado">
+                <div class="ejercicio-header">
+                    <span class="ejercicio-num">2</span>
+                    <span class="ejercicio-titulo">Suma y resta de enteros</span>
+                    <span class="badge-superado">✓ Superado</span>
+                </div>
+                <div class="feedback-correcto">🎉 Ejercicio superado. ¡Bien hecho!</div>
+            </div>`;
+        }
+        
+        return `<div class="ejercicio-card">
+            <div class="ejercicio-header">
+                <span class="ejercicio-num">2</span>
+                <span class="ejercicio-titulo">Suma y resta de enteros</span>
+                ${st.racha > 0 ? `<span class="racha-indicador">🎯 Racha: ${st.racha}/2</span>` : ''}
+                ${st.yaComprobado ? `<span class="racha-indicador" style="background:#2E6B3E; color:white;">✅ Acierto pendiente - pulsa "Siguiente ronda"</span>` : '<span class="racha-indicador" style="background:#E8DFC8; color:#6B4F35;">📝 Responde las 2 preguntas</span>'}
+            </div>
+            <div class="preguntas-container">
+                <div class="pregunta-item">
+                    <div class="pregunta-enunciado">🧮 ${st.pregunta1.expresion}</div>
+                    <label class="sr-label" for="e2_resp1">Resultado 1:</label>
+                    <input type="text" autocomplete="off" id="e2_resp1" class="pregunta-input" placeholder="Resultado" ${st.yaComprobado ? 'disabled' : ''}>
+                </div>
+                <div class="pregunta-item">
+                    <div class="pregunta-enunciado">🧮 ${st.pregunta2.expresion}</div>
+                    <label class="sr-label" for="e2_resp2">Resultado 2:</label>
+                    <input type="text" autocomplete="off" id="e2_resp2" class="pregunta-input" placeholder="Resultado" ${st.yaComprobado ? 'disabled' : ''}>
+                </div>
+            </div>
+            <div class="input-area">
+                <button class="btn-primary" onclick="verificarEjercicio(1)" ${st.yaComprobado ? 'disabled' : ''}>✅ Comprobar ambas</button>
+                <button class="btn-success" onclick="siguienteRondaEj2()">➡️ Siguiente ronda</button>
+            </div>
+            <div class="feedback" id="fb_e2" aria-live="polite"></div>
+        </div>`;
+    }
+}
+
+class Ejercicio3 extends EjercicioBase {
+    generarNuevo() {
+        this.pregunta1 = this.generarPregunta();
+        this.pregunta2 = this.generarPregunta();
+        this.yaComprobado = false;
+    }
+    
+    formatearNumero(n) {
+        return n < 0 ? `(${n})` : `${n}`;
+    }
+    
+    generarPregunta() {
+        let a = Math.floor(Math.random() * 9) - 4;
+        let b = Math.floor(Math.random() * 9) - 4;
+        let c = Math.floor(Math.random() * 9) - 4;
+        
+        let tipo = Math.floor(Math.random() * 4);
+        let expresion = "";
+        let resultado = 0;
+        let pasos = "";
+        
+        if (tipo === 0) {
+            expresion = `${this.formatearNumero(a)} - (${this.formatearNumero(b)} - ${this.formatearNumero(c)})`;
+            let paso1 = b - c;
+            resultado = a - paso1;
+            pasos = `Paso 1: ${this.formatearNumero(b)} - ${this.formatearNumero(c)} = ${paso1}<br>Paso 2: ${this.formatearNumero(a)} - (${paso1}) = ${resultado}`;
+        } else if (tipo === 1) {
+            expresion = `${this.formatearNumero(a)} - (${this.formatearNumero(b)} + ${this.formatearNumero(c)})`;
+            let paso1 = b + c;
+            resultado = a - paso1;
+            pasos = `Paso 1: ${this.formatearNumero(b)} + ${this.formatearNumero(c)} = ${paso1}<br>Paso 2: ${this.formatearNumero(a)} - (${paso1}) = ${resultado}`;
+        } else if (tipo === 2) {
+            expresion = `${this.formatearNumero(a)} + (${this.formatearNumero(b)} - ${this.formatearNumero(c)})`;
+            let paso1 = b - c;
+            resultado = a + paso1;
+            pasos = `Paso 1: ${this.formatearNumero(b)} - ${this.formatearNumero(c)} = ${paso1}<br>Paso 2: ${this.formatearNumero(a)} + (${paso1}) = ${resultado}`;
+        } else {
+            expresion = `${this.formatearNumero(a)} + (${this.formatearNumero(b)} + ${this.formatearNumero(c)})`;
+            let paso1 = b + c;
+            resultado = a + paso1;
+            pasos = `Paso 1: ${this.formatearNumero(b)} + ${this.formatearNumero(c)} = ${paso1}<br>Paso 2: ${this.formatearNumero(a)} + (${paso1}) = ${resultado}`;
+        }
+        
+        return { expresion: expresion, resultado: resultado, pasos: pasos };
+    }
+    
+    verificar(resp1, resp2) {
+        if(this.superado) return {correcto: false, superado: true};
+        
+        if((resp1===undefined || String(resp1).trim()==='') || (resp2===undefined || String(resp2).trim()==='')) {
+            return {correcto: false, superado: false, msg: "✏️ Completa las dos respuestas antes de comprobar."};
+        }
+        
+        let ok1 = parseInt(resp1) === this.pregunta1.resultado;
+        let ok2 = parseInt(resp2) === this.pregunta2.resultado;
+        
+        if(ok1 && ok2 && !this.yaComprobado) {
+            this.yaComprobado = true;
+            return {correcto: true, superado: false, aciertoPendiente: true, 
+                    msg: "✓ ¡Correcto! Ahora pulsa '➡️ Siguiente ronda' para continuar."};
+        } else if (!ok1 || !ok2) {
+            this.yaComprobado = false;
+            this.racha = 0;
+            rachaGlobal = 0;
+            fallosGlobales++;
+            let errores = [];
+            if(!ok1) errores.push(`"${this.pregunta1.expresion}" → respuesta correcta: ${this.pregunta1.resultado}<br>📚 ${this.pregunta1.pasos}`);
+            if(!ok2) errores.push(`"${this.pregunta2.expresion}" → respuesta correcta: ${this.pregunta2.resultado}<br>📚 ${this.pregunta2.pasos}`);
+            regenerarDistinto(this, () => JSON.stringify([this.pregunta1.resultado, this.pregunta2.resultado]));
+            return {correcto: false, superado: false, nuevoEnunciado: true, msg: `❌ Solución del ejercicio anterior:<br>${errores.join('<br><br>')}` + PASA_A_OTRO};
+        } else {
+            return {correcto: false, superado: false, msg: "⚠️ Ya has comprobado estas preguntas. Pulsa 'Siguiente ronda' para continuar."};
+        }
+    }
+    
+    siguienteRonda() {
+        if(this.superado) return {superado: true};
+        
+        if(this.yaComprobado) {
+            this.racha++;
+            rachaGlobal = this.racha;
+            this.yaComprobado = false;
+            
+            if(this.racha >= 2) {
+                this.superado = true;
+                return {superado: true, msg: "🎉 ¡Superado! Manejas bien los paréntesis anidados."};
+            } else {
+                this.generarNuevo();
+                return {superado: false, msg: `✓ ¡Correcto! (${this.racha}/2) → Nueva ronda.`, nuevoEjercicio: true};
+            }
+        } else {
+            return {superado: false, msg: "⚠️ Primero debes responder las dos preguntas y pulsar 'Comprobar ambas'.", nuevoEjercicio: false};
+        }
+    }
+    
+    getHTML(idx) {
+        let st = ejercicios[idx];
+        if(st.superado) {
+            return `<div class="ejercicio-card superado">
+                <div class="ejercicio-header">
+                    <span class="ejercicio-num">3</span>
+                    <span class="ejercicio-titulo">Paréntesis anidados</span>
+                    <span class="badge-superado">✓ Superado</span>
+                </div>
+                <div class="feedback-correcto">🎉 Ejercicio superado. ¡Bien hecho!</div>
+            </div>`;
+        }
+        
+        return `<div class="ejercicio-card">
+            <div class="ejercicio-header">
+                <span class="ejercicio-num">3</span>
+                <span class="ejercicio-titulo">Paréntesis anidados</span>
+                ${st.racha > 0 ? `<span class="racha-indicador">🎯 Racha: ${st.racha}/2</span>` : ''}
+                ${st.yaComprobado ? `<span class="racha-indicador" style="background:#2E6B3E; color:white;">✅ Acierto pendiente - pulsa "Siguiente ronda"</span>` : '<span class="racha-indicador" style="background:#E8DFC8; color:#6B4F35;">📝 Responde las 2 preguntas</span>'}
+            </div>
+            <div class="preguntas-container">
+                <div class="pregunta-item">
+                    <div class="pregunta-enunciado">📐 ${st.pregunta1.expresion}</div>
+                    <label class="sr-label" for="e3_resp1">Resultado 1:</label>
+                    <input type="text" autocomplete="off" id="e3_resp1" class="pregunta-input" placeholder="Resultado" ${st.yaComprobado ? 'disabled' : ''}>
+                </div>
+                <div class="pregunta-item">
+                    <div class="pregunta-enunciado">📐 ${st.pregunta2.expresion}</div>
+                    <label class="sr-label" for="e3_resp2">Resultado 2:</label>
+                    <input type="text" autocomplete="off" id="e3_resp2" class="pregunta-input" placeholder="Resultado" ${st.yaComprobado ? 'disabled' : ''}>
+                </div>
+            </div>
+            <div class="input-area">
+                <button class="btn-primary" onclick="verificarEjercicio(2)" ${st.yaComprobado ? 'disabled' : ''}>✅ Comprobar ambas</button>
+                <button class="btn-success" onclick="siguienteRondaEj3()">➡️ Siguiente ronda</button>
+            </div>
+            <div class="feedback" id="fb_e3" aria-live="polite"></div>
+        </div>`;
+    }
+}
+
+class Ejercicio4 extends EjercicioBase {
+    generarNuevo() {
+        this.pregunta1 = this.generarPregunta();
+        this.pregunta2 = this.generarPregunta();
+        this.yaComprobado = false;
+    }
+    
+    generarPregunta() {
+        let ops = ['·', '÷'];
+        let op = ops[Math.floor(Math.random() * 2)];
+        
+        let tipo = Math.floor(Math.random() * 3);
+        let signo1, signo2;
+        
+        if (tipo === 0) {
+            signo1 = 1;
+            signo2 = -1;
+        } else if (tipo === 1) {
+            signo1 = -1;
+            signo2 = 1;
+        } else {
+            signo1 = -1;
+            signo2 = -1;
+        }
+        
+        let aPos = Math.floor(Math.random() * 8) + 2;
+        let bPos = Math.floor(Math.random() * 4) + 1;
+        
+        if(op === '÷') {
+            while(aPos % bPos !== 0) {
+                aPos = Math.floor(Math.random() * 12) + 1;
+                bPos = Math.floor(Math.random() * 4) + 1;
+            }
+        }
+        
+        let a = aPos * signo1;
+        let b = bPos * signo2;
+        let resultado = op === '·' ? a * b : a / b;
+        const aStr = a < 0 ? `(${a})` : `${a}`;
+        const bStr = b < 0 ? `(${b})` : `${b}`;
+        
+        let reglaSignos = "";
+        if ((a > 0 && b > 0) || (a < 0 && b < 0)) {
+            reglaSignos = "Signos iguales → resultado POSITIVO";
+        } else {
+            reglaSignos = "Signos diferentes → resultado NEGATIVO";
+        }
+        
+        let explicacion = `📖 <strong>Regla de signos:</strong> ${reglaSignos}<br>🔢 ${op === '·' ? 'Multiplicación' : 'División'}: |${a}| ${op} |${b}| = ${Math.abs(resultado)}<br>📌 Resultado final: ${resultado}`;
+        
+        return { expresion: `${aStr} ${op} ${bStr}`, resultado: resultado, explicacion: explicacion };
+    }
+    
+    verificar(resp1, resp2) {
+        if(this.superado) return {correcto: false, superado: true};
+        
+        if((resp1===undefined || String(resp1).trim()==='') || (resp2===undefined || String(resp2).trim()==='')) {
+            return {correcto: false, superado: false, msg: "✏️ Completa las dos respuestas antes de comprobar."};
+        }
+        
+        let ok1 = parseInt(resp1) === this.pregunta1.resultado;
+        let ok2 = parseInt(resp2) === this.pregunta2.resultado;
+        
+        if(ok1 && ok2 && !this.yaComprobado) {
+            this.yaComprobado = true;
+            return {correcto: true, superado: false, aciertoPendiente: true, 
+                    msg: "✓ ¡Correcto! Ahora pulsa '➡️ Siguiente ronda' para continuar."};
+        } else if (!ok1 || !ok2) {
+            this.yaComprobado = false;
+            this.racha = 0;
+            rachaGlobal = 0;
+            fallosGlobales++;
+            let errores = [];
+            if(!ok1) errores.push(`"${this.pregunta1.expresion}" → respuesta correcta: ${this.pregunta1.resultado}<br>📚 ${this.pregunta1.explicacion}`);
+            if(!ok2) errores.push(`"${this.pregunta2.expresion}" → respuesta correcta: ${this.pregunta2.resultado}<br>📚 ${this.pregunta2.explicacion}`);
+            regenerarDistinto(this, () => JSON.stringify([this.pregunta1.resultado, this.pregunta2.resultado]));
+            return {correcto: false, superado: false, nuevoEnunciado: true, msg: `❌ Solución del ejercicio anterior:<br>${errores.join('<br><br>')}` + PASA_A_OTRO};
+        } else {
+            return {correcto: false, superado: false, msg: "⚠️ Ya has comprobado estas preguntas. Pulsa 'Siguiente ronda' para continuar."};
+        }
+    }
+    
+    siguienteRonda() {
+        if(this.superado) return {superado: true};
+        
+        if(this.yaComprobado) {
+            this.racha++;
+            rachaGlobal = this.racha;
+            this.yaComprobado = false;
+            
+            if(this.racha >= 2) {
+                this.superado = true;
+                return {superado: true, msg: "🎉 ¡Superado! Dominas multiplicación y división."};
+            } else {
+                this.generarNuevo();
+                return {superado: false, msg: `✓ ¡Correcto! (${this.racha}/2) → Nueva ronda.`, nuevoEjercicio: true};
+            }
+        } else {
+            return {superado: false, msg: "⚠️ Primero debes responder las dos preguntas y pulsar 'Comprobar ambas'.", nuevoEjercicio: false};
+        }
+    }
+    
+    getHTML(idx) {
+        let st = ejercicios[idx];
+        if(st.superado) {
+            return `<div class="ejercicio-card superado">
+                <div class="ejercicio-header">
+                    <span class="ejercicio-num">4</span>
+                    <span class="ejercicio-titulo">Multiplicación / División</span>
+                    <span class="badge-superado">✓ Superado</span>
+                </div>
+                <div class="feedback-correcto">🎉 Ejercicio superado. ¡Bien hecho!</div>
+            </div>`;
+        }
+        
+        return `<div class="ejercicio-card">
+            <div class="ejercicio-header">
+                <span class="ejercicio-num">4</span>
+                <span class="ejercicio-titulo">Multiplicación / División</span>
+                ${st.racha > 0 ? `<span class="racha-indicador">🎯 Racha: ${st.racha}/2</span>` : ''}
+                ${st.yaComprobado ? `<span class="racha-indicador" style="background:#2E6B3E; color:white;">✅ Acierto pendiente - pulsa "Siguiente ronda"</span>` : '<span class="racha-indicador" style="background:#E8DFC8; color:#6B4F35;">📝 Responde las 2 preguntas</span>'}
+            </div>
+            <div class="preguntas-container">
+                <div class="pregunta-item">
+                    <div class="pregunta-enunciado">🧮 ${st.pregunta1.expresion}</div>
+                    <label class="sr-label" for="e4_resp1">Resultado 1:</label>
+                    <input type="text" autocomplete="off" id="e4_resp1" class="pregunta-input" placeholder="Resultado" ${st.yaComprobado ? 'disabled' : ''}>
+                </div>
+                <div class="pregunta-item">
+                    <div class="pregunta-enunciado">🧮 ${st.pregunta2.expresion}</div>
+                    <label class="sr-label" for="e4_resp2">Resultado 2:</label>
+                    <input type="text" autocomplete="off" id="e4_resp2" class="pregunta-input" placeholder="Resultado" ${st.yaComprobado ? 'disabled' : ''}>
+                </div>
+            </div>
+            <div class="input-area">
+                <button class="btn-primary" onclick="verificarEjercicio(3)" ${st.yaComprobado ? 'disabled' : ''}>✅ Comprobar ambas</button>
+                <button class="btn-success" onclick="siguienteRondaEj4()">➡️ Siguiente ronda</button>
+            </div>
+            <div class="feedback" id="fb_e4" aria-live="polite"></div>
+        </div>`;
+    }
+}
+
+class Ejercicio5 extends EjercicioBase {
+    generarNuevo() { 
+        this.mult = Math.floor(Math.random() * 3) + 2;       // 2..4
+        this.suma = Math.floor(Math.random() * 8) + 5;        // 5..12
+        this.divisor = Math.floor(Math.random() * 4) + 1;     // 1..4
+        this.cociente = Math.floor(Math.random() * 5) + 2;    // 2..6
+        this.dividendo = this.divisor * this.cociente;         // división exacta garantizada
+        this.f = Math.floor(Math.random() * 8) + 2;           // 2..9
+        this.g = Math.floor(Math.random() * 8) + 2;           // 2..9
+
+        this.expresion = `${this.mult} · [${this.suma} + ${this.dividendo} : (${this.divisor})] - (${this.f})·(${this.g})`;
+        const corchete = this.suma + this.cociente;
+        const parteIzq = this.mult * corchete;
+        const parteDer = this.f * this.g;
+        this.resultado = parteIzq - parteDer;
+        this.explicacion = `📖 <strong>Paso 1:</strong> Resolvemos la división dentro del corchete: ${this.dividendo} : ${this.divisor} = ${this.cociente}<br>
+                           📖 <strong>Paso 2:</strong> Resolvemos el corchete: ${this.suma} + ${this.cociente} = ${corchete}<br>
+                           📖 <strong>Paso 3:</strong> Multiplicamos ${this.mult} · ${corchete} = ${parteIzq}<br>
+                           📖 <strong>Paso 4:</strong> Calculamos (${this.f})·(${this.g}) = ${parteDer}<br>
+                           📖 <strong>Paso 5:</strong> Restamos: ${parteIzq} - ${parteDer} = ${this.resultado}`;
+        this.yaComprobado = false;
+    }
+    
+    verificar(r) { 
+        if(this.superado) return {correcto: false, superado: true}; 
+        if(r === undefined || String(r).trim() === '') {
+            return {correcto: false, superado: false, msg: "✏️ Escribe un número antes de comprobar."};
+        }
+        let ok = parseInt(r) === this.resultado; 
+        if(ok && !this.yaComprobado){ 
+            this.yaComprobado = true;
+            return {correcto: true, superado: false, aciertoPendiente: true, 
+                    msg: "✓ ¡Correcto! Ahora pulsa '➡️ Siguiente pregunta' para continuar."};
+        } else if (!ok) { 
+            this.yaComprobado = false;
+            this.racha = 0; 
+            rachaGlobal = 0; 
+            fallosGlobales++; 
+            const msg = `❌ Solución del ejercicio anterior: ${this.resultado}<br><br>📚 <strong>Explicación:</strong><br>${this.explicacion}`;
+            regenerarDistinto(this, () => String(this.resultado));
+            return{correcto: false, superado: false, nuevoEnunciado: true, msg: msg + PASA_A_OTRO};
+        } else {
+            return {correcto: false, superado: false, msg: "⚠️ Ya has comprobado esta pregunta. Pulsa 'Siguiente pregunta' para continuar."};
+        }
+    }
+    
+    siguientePregunta() {
+        if(this.superado) return {superado: true};
+        
+        if(this.yaComprobado) {
+            this.racha++;
+            rachaGlobal = this.racha;
+            this.yaComprobado = false;
+            
+            if(this.racha >= 2) {
+                this.superado = true;
+                return {superado: true, msg: "🎉 ¡Superado! Gran trabajo con operaciones combinadas."};
+            } else {
+                this.generarNuevo();
+                return {superado: false, msg: `✓ ¡Correcto! (${this.racha}/2) → Nueva pregunta.`, nuevoEjercicio: true};
+            }
+        } else {
+            return {superado: false, msg: "⚠️ Primero debes responder la pregunta y pulsar 'Comprobar'.", nuevoEjercicio: false};
+        }
+    }
+    
+    getHTML(idx) { 
+        let st = ejercicios[idx]; 
+        return `<div class="ejercicio-card ${st.superado ? 'superado' : ''}">
+            <div class="ejercicio-header">
+                <span class="ejercicio-num">5</span>
+                <span class="ejercicio-titulo">Operaciones combinadas</span>
+                ${st.superado ? '<span class="badge-superado">✓ Superado</span>' : ''}
+                ${!st.superado && st.racha > 0 ? `<span class="racha-indicador">🎯 Racha: ${st.racha}/2</span>` : ''}
+                ${st.yaComprobado ? `<span class="racha-indicador" style="background:#2E6B3E; color:white;">✅ Acierto pendiente - pulsa "Siguiente pregunta"</span>` : ''}
+            </div>
+            <div class="enunciado">⚡ ${st.expresion}</div>
+            <div class="input-area">
+                <label class="sr-label" for="e5_resp">Resultado:</label>
+                <input type="text" autocomplete="off" id="e5_resp" class="number-input" placeholder="Resultado" ${st.yaComprobado ? 'disabled' : ''} ${st.superado ? 'disabled' : ''}>
+                <button class="btn-primary" onclick="verificarEjercicio(4)" ${st.yaComprobado ? 'disabled' : ''} ${st.superado ? 'disabled' : ''}>✅ Comprobar</button>
+                <button class="btn-success" onclick="siguientePreguntaEj5()" ${st.superado ? 'disabled' : ''}>➡️ Siguiente pregunta</button>
+            </div>
+            <div class="feedback" id="fb_e5" aria-live="polite"></div>
+        </div>`;
+    }
+}
+
+class Ejercicio6 extends EjercicioBase {
+    constructor(){ 
+        super(false); 
+        this.generarNuevo(); 
+        this.yaComprobado = false;
+    }
+    generarNuevo() { 
+        this.deuda = Math.floor(Math.random() * 16) + 5;      // 5..20
+        this.gasto = Math.floor(Math.random() * 22) + 1;      // 1..22 (independiente de la deuda)
+        this.pagoCompleto = this.gasto >= this.deuda;
+        this.restante = this.pagoCompleto ? 0 : (this.deuda - this.gasto);
+        this.sobrante = this.pagoCompleto ? (this.gasto - this.deuda) : 0;
+        this.texto = `Una persona debe ${this.deuda} € y quiere saldar su deuda invitando a alguien que cuesta ${this.gasto} €. ¿Ha pagado lo que debía?`;
+        if(this.pagoCompleto) {
+            this.explicacion = this.sobrante > 0
+                ? `📖 Debe ${this.deuda} € (es decir, tiene -${this.deuda} €). Paga ${this.gasto} €. Operación: -${this.deuda} + ${this.gasto} = ${this.sobrante}. Ha pagado su deuda y le sobran ${this.sobrante} €. La respuesta es SÍ.`
+                : `📖 Debe ${this.deuda} € (es decir, tiene -${this.deuda} €). Paga exactamente ${this.gasto} €. Operación: -${this.deuda} + ${this.gasto} = 0. Ha saldado su deuda exacta. La respuesta es SÍ.`;
+        } else {
+            this.explicacion = `📖 Debe ${this.deuda} € (es decir, tiene -${this.deuda} €). Paga ${this.gasto} €. Operación: -${this.deuda} + ${this.gasto} = -${this.restante}. Sigue debiendo ${this.restante} €. La respuesta es NO.`;
+        }
+    }
+    verificar(r) { 
+        if(this.superado) return {correcto: false, superado: true}; 
+        const respuesta = (r || '').toLowerCase().trim();
+        if(respuesta === '') return {correcto: false, superado: false, msg: "✏️ Escribe sí o no antes de comprobar."};
+        const esSi = respuesta === 'si' || respuesta === 'sí' || respuesta.startsWith('si,') || respuesta.startsWith('sí,');
+        const esNo = respuesta === 'no' || respuesta.startsWith('no,');
+        const ok = this.pagoCompleto ? esSi : esNo;
+        if(ok && !this.yaComprobado){ 
+            this.superado = true; 
+            const msgFinal = this.pagoCompleto
+                ? (this.sobrante > 0 ? `🧩 ¡Correcto! Ha pagado de más, le sobran ${this.sobrante} €.` : `🧩 ¡Correcto! Ha pagado justo lo que debía.`)
+                : `🧩 ¡Correcto! Aún debe ${this.restante} €.`;
+            return{correcto: true, superado: true, msg: msgFinal};
+        } else if (!ok) { 
+            fallosGlobales++; 
+            const expl = this.explicacion.replace('📖 ', '');
+            const msg = `❌ Incorrecto. Solución del ejercicio anterior: ${expl.charAt(0).toLowerCase() + expl.slice(1)}`;
+            // Solo hay dos respuestas (sí/no): cambia el problema, no se exige otra respuesta
+            regenerarDistinto(this);
+            return{correcto: false, superado: false, nuevoEnunciado: true, msg: msg + PASA_A_OTRO};
+        } else {
+            return {correcto: false, superado: false, msg: "⚠️ Ya has comprobado este problema."};
+        }
+    }
+    getHTML(idx) { 
+        let st = ejercicios[idx]; 
+        return `<div class="ejercicio-card ${st.superado ? 'superado' : ''}">
+            <div class="ejercicio-header">
+                <span class="ejercicio-num">6</span>
+                <span class="ejercicio-titulo">Problema</span>
+                ${st.superado ? '<span class="badge-superado">✓ Superado</span>' : ''}
+            </div>
+            <div class="enunciado">📦 ${st.texto}</div>
+            <div class="input-area">
+                <label class="sr-label" for="e6_resp">Respuesta (sí/no):</label>
+                <input type="text" id="e6_resp" class="text-input" placeholder="Responde sí/no" ${st.superado ? 'disabled' : ''}>
+                <button class="btn-primary" onclick="verificarEjercicio(5)" ${st.superado ? 'disabled' : ''}>✅ Comprobar</button>
+            </div>
+            <div class="feedback" id="fb_e6" aria-live="polite"></div>
+        </div>`;
+    }
+}
+
+function actualizarUI() {
+    let superados = ejercicios.filter(e => e.superado).length;
+    let notaBase = superados - (fallosGlobales * 0.2); 
+    if(notaBase < 0) notaBase = 0;
+    let notaFinal = (notaBase / 6) * 10; 
+    if(notaFinal > 10) notaFinal = 10;
+    document.getElementById('progresoCount').innerText = superados;
+    document.getElementById('fallosCount').innerText = fallosGlobales;
+    document.getElementById('notaActual').innerText = notaFinal.toFixed(1);
+}
+
+function configurarDragAndDropEj1() {
+    const ej1 = ejercicios[0];
+    if (!ej1 || ej1.superado || ej1.yaComprobado) return;
+    
+    document.querySelectorAll('.draggable-number').forEach(el => {
+        el.setAttribute('draggable', 'true');
+        el.removeEventListener('dragstart', handleDragStart);
+        el.removeEventListener('dragend', handleDragEnd);
+        el.addEventListener('dragstart', handleDragStart);
+        el.addEventListener('dragend', handleDragEnd);
+    });
+    
+    document.querySelectorAll('.drop-zone-invisible').forEach(zone => {
+        zone.removeEventListener('dragover', handleDragOver);
+        zone.removeEventListener('drop', handleDrop);
+        zone.addEventListener('dragover', handleDragOver);
+        zone.addEventListener('drop', handleDrop);
+    });
+}
+
+function handleDragStart(e) {
+    e.dataTransfer.setData('text/plain', e.target.dataset.num);
+    e.target.classList.add('dragging');
+}
+
+function handleDragEnd(e) {
+    e.target.classList.remove('dragging');
+}
+
+function handleDragOver(e) {
+    e.preventDefault();
+}
+
+function handleDrop(e) {
+    e.preventDefault();
+    const ej1 = ejercicios[0];
+    if (ej1.superado || ej1.yaComprobado) return;
+    
+    const valorEsperado = parseInt(e.target.dataset.valorEsperado);
+    const numeroDrag = parseInt(e.dataTransfer.getData('text/plain'));
+    
+    if (ej1.colocados[numeroDrag]) {
+        const fb = document.getElementById('fb_e1');
+        fb.innerHTML = `<span class="feedback-error">⚠️ El número ${numeroDrag} ya está colocado.</span>`;
+        setTimeout(() => { if(fb) fb.innerHTML = ''; }, 1500);
+        return;
+    }
+    
+    if (valorEsperado === numeroDrag) {
+        ej1.colocados[numeroDrag] = true;
+        ej1.colocadosEnPos[valorEsperado] = numeroDrag;
+        renderizarTodo();
+    } else {
+        const fb = document.getElementById('fb_e1');
+        fb.innerHTML = `<span class="feedback-error">❌ El número ${numeroDrag} no pertenece a la posición ${valorEsperado}.</span>`;
+        setTimeout(() => { if(fb) fb.innerHTML = ''; }, 1500);
+    }
+}
+
+function configurarEnterKey(raiz = document) {
+    const mapa = {
+        'e2_resp1': 1, 'e2_resp2': 1,
+        'e3_resp1': 2, 'e3_resp2': 2,
+        'e4_resp1': 3, 'e4_resp2': 3,
+        'e5_resp': 4,
+        'e6_resp': 5
+    };
+    Object.keys(mapa).forEach(id => {
+        const el = raiz.querySelector('#' + id);
+        if(el && !el.dataset.enter) {
+            el.dataset.enter = '1';
+            el.addEventListener('keydown', function(e) {
+                if(e.key === 'Enter') {
+                    e.preventDefault();
+                    verificarEjercicio(mapa[id]);
+                }
+            });
+        }
+    });
+}
+
+// Repinta solo la tarjeta del ejercicio (sin borrar lo escrito en las demás)
+function renderizarTarjeta(idx) {
+    const viejo = document.querySelectorAll('#ejerciciosContainer .ejercicio-card')[idx];
+    if(!viejo) { renderizarTodo(); return; }
+    const plantilla = document.createElement('template');
+    plantilla.innerHTML = ejercicios[idx].getHTML(idx).trim();
+    const nueva = plantilla.content.firstElementChild;
+    viejo.replaceWith(nueva);
+    configurarEnterKey(nueva);
+    if(window.MathJax) MathJax.typesetPromise();
+}
+
+function renderizarTodo() {
+    const container = document.getElementById('ejerciciosContainer');
+    let html = '';
+    for(let i = 0; i < ejercicios.length; i++) { 
+        html += ejercicios[i].getHTML(i); 
+        if(i < ejercicios.length - 1) html += '<hr>'; 
+    }
+    container.innerHTML = html;
+    actualizarUI();
+    
+    setTimeout(() => {
+        configurarDragAndDropEj1();
+        configurarEnterKey();
+    }, 50);
+    
+    if(window.MathJax) MathJax.typesetPromise();
+}
+
+window.siguienteRectaEj1 = function() {
+    const ej1 = ejercicios[0];
+    const resultado = ej1.siguienteRecta();
+    const fb = document.getElementById('fb_e1');
+    if(resultado.nuevoEjercicio) {
+        renderizarTodo();
+        fb.innerHTML = `<span class="feedback-correcto">${resultado.msg}</span>`;
+    } else if(resultado.superado) {
+        renderizarTodo();
+        fb.innerHTML = `<span class="feedback-correcto">${resultado.msg}</span>`;
+    } else {
+        fb.innerHTML = `<span class="feedback-error">${resultado.msg}</span>`;
+        setTimeout(() => { if(fb) fb.innerHTML = ''; }, 2000);
+    }
+    actualizarUI();
+};
+
+window.siguienteRondaEj2 = function() {
+    const ej2 = ejercicios[1];
+    const resultado = ej2.siguienteRonda();
+    const fb = document.getElementById('fb_e2');
+    if(resultado.nuevoEjercicio) {
+        renderizarTodo();
+        fb.innerHTML = `<span class="feedback-correcto">${resultado.msg}</span>`;
+    } else if(resultado.superado) {
+        renderizarTodo();
+        fb.innerHTML = `<span class="feedback-correcto">${resultado.msg}</span>`;
+    } else {
+        fb.innerHTML = `<span class="feedback-error">${resultado.msg}</span>`;
+        setTimeout(() => { if(fb) fb.innerHTML = ''; }, 2000);
+    }
+    actualizarUI();
+};
+
+window.siguienteRondaEj3 = function() {
+    const ej3 = ejercicios[2];
+    const resultado = ej3.siguienteRonda();
+    const fb = document.getElementById('fb_e3');
+    if(resultado.nuevoEjercicio) {
+        renderizarTodo();
+        fb.innerHTML = `<span class="feedback-correcto">${resultado.msg}</span>`;
+    } else if(resultado.superado) {
+        renderizarTodo();
+        fb.innerHTML = `<span class="feedback-correcto">${resultado.msg}</span>`;
+    } else {
+        fb.innerHTML = `<span class="feedback-error">${resultado.msg}</span>`;
+        setTimeout(() => { if(fb) fb.innerHTML = ''; }, 2000);
+    }
+    actualizarUI();
+};
+
+window.siguienteRondaEj4 = function() {
+    const ej4 = ejercicios[3];
+    const resultado = ej4.siguienteRonda();
+    const fb = document.getElementById('fb_e4');
+    if(resultado.nuevoEjercicio) {
+        renderizarTodo();
+        fb.innerHTML = `<span class="feedback-correcto">${resultado.msg}</span>`;
+    } else if(resultado.superado) {
+        renderizarTodo();
+        fb.innerHTML = `<span class="feedback-correcto">${resultado.msg}</span>`;
+    } else {
+        fb.innerHTML = `<span class="feedback-error">${resultado.msg}</span>`;
+        setTimeout(() => { if(fb) fb.innerHTML = ''; }, 2000);
+    }
+    actualizarUI();
+};
+
+window.siguientePreguntaEj5 = function() {
+    const ej5 = ejercicios[4];
+    const resultado = ej5.siguientePregunta();
+    const fb = document.getElementById('fb_e5');
+    if(resultado.nuevoEjercicio) {
+        renderizarTodo();
+        fb.innerHTML = `<span class="feedback-correcto">${resultado.msg}</span>`;
+    } else if(resultado.superado) {
+        renderizarTodo();
+        fb.innerHTML = `<span class="feedback-correcto">${resultado.msg}</span>`;
+    } else {
+        fb.innerHTML = `<span class="feedback-error">${resultado.msg}</span>`;
+        setTimeout(() => { if(fb) fb.innerHTML = ''; }, 2000);
+    }
+    actualizarUI();
+};
+
+window.verificarEjercicio = function(idx){
+    const ej = ejercicios[idx]; 
+    let resultado;
+    
+    switch(idx){
+        case 0: 
+            resultado = ej.verificar(); 
+            break;
+        case 1: 
+            resultado = ej.verificar(
+                document.getElementById('e2_resp1')?.value,
+                document.getElementById('e2_resp2')?.value
+            ); 
+            break;
+        case 2: 
+            resultado = ej.verificar(
+                document.getElementById('e3_resp1')?.value,
+                document.getElementById('e3_resp2')?.value
+            ); 
+            break;
+        case 3: 
+            resultado = ej.verificar(
+                document.getElementById('e4_resp1')?.value,
+                document.getElementById('e4_resp2')?.value
+            ); 
+            break;
+        case 4: 
+            resultado = ej.verificar(document.getElementById('e5_resp')?.value); 
+            break;
+        case 5: 
+            resultado = ej.verificar(document.getElementById('e6_resp')?.value); 
+            break;
+        default: return;
+    }
+    
+    if(resultado.nuevoEnunciado) {
+        // Fallo: se enseña la solución y se plantea otro enunciado en la misma tarjeta
+        renderizarTarjeta(idx);
+        const fbNuevo = document.getElementById(`fb_e${idx+1}`);
+        if(fbNuevo) fbNuevo.innerHTML = `<span class="feedback-error">${resultado.msg}</span>`;
+        actualizarUI();
+        return;
+    }
+    const fb = document.getElementById(`fb_e${idx+1}`);
+    if(resultado.nuevoEjercicio) { 
+        renderizarTodo(); 
+    } else {
+        if(resultado.correcto) {
+            fb.innerHTML = `<span class="feedback-correcto">${resultado.msg}</span>`;
+            if(idx !== 0 && idx !== 1 && idx !== 2 && idx !== 3 && idx !== 4) {
+                if(resultado.superado) renderizarTodo();
+                else actualizarUI();
+            } else {
+                renderizarTodo();
+            }
+        } else {
+            fb.innerHTML = `<span class="feedback-error">${resultado.msg}</span>`;
+            if(resultado.superado) { 
+                renderizarTodo(); 
+            } else { 
+                actualizarUI(); 
+            }
+        }
+    }
+};
+
+window.nuevoEjercicio = function(idx){ 
+    if(ejercicios[idx] && !ejercicios[idx].superado){ 
+        ejercicios[idx].nuevoEjercicio(); 
+        renderizarTodo(); 
+    } 
+};
+
+function calcularNotaFinal(){
+    let superados = ejercicios.filter(e => e.superado).length;
+    let notaBase = superados - (fallosGlobales * 0.2); 
+    if(notaBase < 0) notaBase = 0;
+    let notaFinal = (notaBase / 6) * 10; 
+    if(notaFinal > 10) notaFinal = 10;
+    return {notaFinal, superados, notaBase};
+}
+
+function getTiempo(){ 
+    let elapsedMs = Date.now() - startTime; 
+    let minutosTotales = Math.ceil(elapsedMs / 60000); 
+    let h = Math.floor(minutosTotales / 60); 
+    let m = minutosTotales % 60;
+    return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`; 
+}
+
+function mostrarResultados(nombre){
+    let {notaFinal, superados} = calcularNotaFinal();
+    let fecha = new Date().toLocaleDateString('es-ES');
+    let horaCompleta = new Date().toLocaleTimeString('es-ES');
+    let tiempo = getTiempo();
+    document.getElementById('modalNombreMostrar').innerHTML = nombre.toUpperCase();
+    document.getElementById('modalNota').innerHTML = notaFinal.toFixed(1) + " / 10";
+    document.getElementById('modalMensaje').innerHTML = notaFinal >= 7 ? "👍 ¡Muy bien!" : (notaFinal >= 5 ? "📘 ¡Aprobado!" : "📚 ¡Ánimo! Repasa los contenidos");
+    document.getElementById('modalStats').innerHTML = `<p>📅 ${fecha}  🕐 ${horaCompleta}</p><p>⏱️ Tiempo: ${tiempo}</p><p>✅ Ejercicios superados: ${superados}/6</p><p>❌ Fallos totales: ${fallosGlobales}</p><p>⭐ Nota: ${notaFinal.toFixed(1)}/10</p>`;
+    const modalCard = document.getElementById('modalCard');
+    let color = notaFinal >= 10 ? '#1a7a1a' : notaFinal >= 9 ? '#6dbf6d' : notaFinal >= 8 ? '#1a4f8a' : notaFinal >= 7 ? '#5b9bd5' : notaFinal >= 6 ? '#c05c00' : notaFinal >= 5 ? '#f5a623' : '#c0392b';
+    modalCard.style.backgroundColor = color; 
+    modalCard.style.color = (notaFinal >= 5 && notaFinal < 6) ? '#1e2a3a' : 'white';
+    if(notaFinal >= 10) document.body.classList.add('all-green'); 
+    else document.body.classList.remove('all-green');
+    document.getElementById('modalResultados').classList.add('show');
+}
+
+function finalizar(){ 
+    let n = document.getElementById('nombreAlumno').value.trim(); 
+    if(!n){ 
+        document.getElementById('modalNombre').classList.add('show'); 
+        return; 
+    } 
+    mostrarResultados(n); 
+}
+
+function resetearTodo(){ 
+    confirmar('¿Reiniciar toda la ficha? Se perderá todo el progreso.').then(ok => { if(ok) location.reload(); });
+}
+
+function cerrarModales(){ 
+    document.getElementById('modalResultados').classList.remove('show'); 
+    document.getElementById('modalNombre').classList.remove('show'); 
+}
+
+function confirmarNombre(){ 
+    let nom = document.getElementById('modalNombreInput').value.trim(); 
+    if(nom){ 
+        document.getElementById('nombreAlumno').value = nom; 
+        document.getElementById('modalNombre').classList.remove('show'); 
+        mostrarResultados(nom); 
+    } 
+}
+
+ejercicios = [new Ejercicio1(), new Ejercicio2(), new Ejercicio3(), new Ejercicio4(), new Ejercicio5(), new Ejercicio6()];
+renderizarTodo();
+
+document.getElementById('btnFinalizar').addEventListener('click', finalizar);
+document.getElementById('btnResetear').addEventListener('click', resetearTodo);
+document.getElementById('closeModal').addEventListener('click', cerrarModales);
+document.getElementById('btnConfirmarNombre').addEventListener('click', confirmarNombre);
+</script>
+</body>
+</html>

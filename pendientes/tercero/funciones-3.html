@@ -1,0 +1,1527 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Funciones · 3º ESO</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --color-fondo: #F5F0E8;
+  --color-fondo-card: #FDFAF3;
+  --color-texto: #2C1F0E;
+  --color-texto-suave: #6B4F35;
+  --color-acento: #A0522D;
+  --color-acento-hover: #7B3B1E;
+  --color-borde: #C9A96E;
+  --color-borde-suave: #E0CEAA;
+  --color-cabecera: #3B2510;
+  --color-cabecera-txt: #F5EDD8;
+  --color-barra-alumno: #EFE4CC;
+  --color-correcto: #2E6B3E;
+  --color-incorrecto: #8B1A1A;
+  --color-neutro: #E8DFC8;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: 'Lato', sans-serif;
+  font-size: 15px;
+  color: var(--color-texto);
+  background-color: var(--color-fondo);
+  transition: background-color .5s ease;
+}
+body.nota-perfecta { background-color: #eafaea; }
+
+.cabecera {
+  background-color: var(--color-cabecera);
+  color: var(--color-cabecera-txt);
+  font-family: 'Libre Baskerville', serif;
+  text-align: center;
+  padding: 12px 20px;
+  border-bottom: 3px solid var(--color-borde);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+}
+
+.ficha-container {
+  max-width: 1100px;
+  margin: 28px auto;
+  background: var(--color-fondo-card);
+  border: 2px solid var(--color-borde);
+  border-radius: 6px;
+  box-shadow: 0 3px 12px rgba(44, 31, 14, 0.15);
+  padding: 28px 32px;
+}
+@media (max-width: 600px) {
+  .ficha-container { margin: 12px 8px; padding: 16px 14px; }
+  .ejercicio-card { padding: 14px 12px !important; }
+}
+
+.header {
+  background: var(--color-cabecera);
+  border-radius: 1.5rem;
+  padding: 1.8rem 2rem;
+  margin-bottom: 24px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  text-align: center;
+}
+.header h1 {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-cabecera-txt);
+  margin: 0 0 6px;
+}
+.header p {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.85rem;
+  color: #C9B896;
+  margin: 0 0 16px;
+  letter-spacing: 0.02em;
+}
+.header-badges { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.header-badge {
+  background: rgba(255,255,255,0.08);
+  border-radius: 40px;
+  padding: 6px 14px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--color-borde-suave);
+}
+
+.name-section {
+  background: var(--color-fondo-card);
+  border: 1.5px solid var(--color-borde);
+  border-radius: 4px;
+  padding: 10px 16px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.name-label { font-family: 'Libre Baskerville', serif; font-size: 0.82rem; color: var(--color-texto); letter-spacing: 0.02em; }
+.name-input {
+  flex: 1;
+  min-width: 180px;
+  max-width: 320px;
+  border: none;
+  border-bottom: 2px solid var(--color-borde);
+  padding: 6px 4px;
+  font-family: 'Lato', sans-serif;
+  font-size: 0.95rem;
+  background: transparent;
+  color: var(--color-texto);
+  outline: none;
+}
+.name-input:focus { border-bottom-color: var(--color-acento); }
+.name-input.falta { border-bottom-color: var(--color-incorrecto); }
+
+input[type="text"], input[type="number"], select {
+  background-color: var(--color-fondo);
+  border: 1.5px solid var(--color-borde);
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-family: 'Lato', sans-serif;
+  font-size: 0.95rem;
+  color: var(--color-texto);
+  outline: none;
+  transition: border-color 0.2s;
+}
+input[type="text"]:focus, input[type="number"]:focus, select:focus { border-color: var(--color-acento); }
+input:disabled, select:disabled { background-color: var(--color-neutro); cursor: not-allowed; }
+
+.info-bar {
+  position: sticky; top: 0; z-index: 50;
+  background: var(--color-barra-alumno);
+  border-radius: 20px;
+  padding: 10px 18px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  border: 1px solid var(--color-borde);
+  box-shadow: 0 2px 6px rgba(44, 31, 14, 0.08);
+}
+.info-item { display: flex; align-items: center; gap: 0.55rem; font-size: 0.78rem; font-weight: 700; color: var(--color-texto-suave); }
+.info-icon { width: 26px; height: 26px; background: var(--color-fondo-card); border: 1px solid var(--color-borde-suave); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; }
+.info-value { font-weight: 700; font-size: 0.95rem; color: var(--color-acento); }
+
+.ejercicio-card {
+  background: var(--color-fondo);
+  border: 1.5px solid var(--color-borde-suave);
+  border-left: 4px solid var(--color-borde);
+  border-radius: 4px;
+  padding: 18px 22px;
+  margin-bottom: 22px;
+}
+.ejercicio-card.superado { border-left-color: var(--color-correcto); background: #F0F7EE; }
+
+.encabezado-ej {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  margin-bottom: 12px;
+  border-bottom: 1px dotted var(--color-borde);
+  padding-bottom: 6px;
+}
+.ejercicio-num {
+  background: var(--color-acento);
+  color: #FDFAF3;
+  width: 26px; height: 26px;
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 0.85rem; flex-shrink: 0;
+}
+.ejercicio-titulo { font-family: 'Libre Baskerville', serif; font-weight: 700; font-size: 1.02rem; color: var(--color-acento); }
+.badge-superado {
+  background: var(--color-correcto); color: white;
+  padding: 2px 10px; border-radius: 20px;
+  font-size: 0.65rem; font-weight: 700; margin-left: 0.5rem;
+}
+
+.enunciado {
+  background: var(--color-fondo-card);
+  border-left: 3px solid var(--color-borde);
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-bottom: 14px;
+  font-size: 0.85rem;
+}
+.recuerda {
+  font-size: 0.78rem;
+  color: var(--color-texto-suave);
+  background: #F7EEDC;
+  border: 1px dashed var(--color-borde);
+  border-radius: 4px;
+  padding: 6px 10px;
+  margin-bottom: 12px;
+}
+
+.fila-dos-columnas { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; }
+.col-grafica { flex: 1 1 320px; min-width: 260px; text-align: center; }
+.col-panel { flex: 1 1 260px; min-width: 220px; }
+
+canvas {
+  display: block; margin: 0 auto;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid var(--color-borde-suave);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  max-width: 100%; height: auto;
+  touch-action: none;
+}
+canvas.interactivo { cursor: crosshair; }
+canvas.bloqueado { cursor: default; }
+
+.panel-interactivo { background: var(--color-fondo-card); border-radius: 8px; padding: 12px; margin-bottom: 10px; }
+.fila-inputs { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; align-items: center; }
+.fila-inputs label { font-size: 0.85rem; }
+.fila-inputs input[type=number], .fila-inputs input[type=text] { width: 75px; }
+
+.fila-punto { font-size: 0.85rem; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+.fila-punto .etq { min-width: 170px; }
+.fila-punto input[type=number], .fila-punto input[type=text] { width: 64px; padding: 6px 8px; }
+.nota-pequena { font-size: 0.75rem; color: var(--color-texto-suave); }
+
+.tramo-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 0.85rem; flex-wrap: wrap; }
+.tramo-item label { min-width: 150px; }
+.tramo-item select { min-width: 150px; }
+
+.lista-int { background: var(--color-fondo); border: 1px solid var(--color-borde-suave); border-radius: 6px; padding: 8px 12px; margin-bottom: 10px; }
+.lista-int-titulo { font-family: 'Libre Baskerville', serif; font-weight: 700; font-size: .88rem; color: var(--color-acento); margin-bottom: 6px; }
+.fila-intervalo { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; font-size: .95rem; flex-wrap: wrap; }
+.fila-intervalo input[type=number], .fila-intervalo input[type=text] { width: 64px; padding: 6px 8px; }
+.btn-quitar { background: transparent; border: none; color: var(--color-texto-suave); cursor: pointer; font-size: .9rem; padding: 4px 6px; border-radius: 4px; }
+.btn-quitar:hover:not(:disabled) { color: var(--color-incorrecto); background: #F9EAEA; }
+.btn-quitar:disabled { opacity: .4; cursor: not-allowed; }
+.btn-mini { background: transparent; border: 1.5px dashed var(--color-borde); color: var(--color-acento); border-radius: 4px; padding: 4px 10px; font-family: 'Lato', sans-serif; font-size: .78rem; font-weight: 700; cursor: pointer; }
+.btn-mini:hover:not(:disabled) { border-color: var(--color-acento); }
+.btn-mini:disabled { opacity: .4; cursor: not-allowed; }
+.opciones-radio { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.opcion-radio {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--color-fondo); border: 1.5px solid var(--color-borde-suave);
+  border-radius: 6px; padding: 8px 12px; cursor: pointer; font-size: 0.95rem;
+}
+.opcion-radio:hover { border-color: var(--color-borde); }
+.opcion-radio input { accent-color: var(--color-acento); width: 17px; height: 17px; }
+.opcion-radio .letra { font-weight: 700; color: var(--color-acento); }
+
+.fila-botones { display: flex; gap: 10px; justify-content: center; margin-top: 12px; flex-wrap: wrap; }
+
+.btn-primario {
+  background-color: var(--color-acento); color: #FDFAF3;
+  border: none; border-radius: 4px;
+  padding: 8px 20px;
+  font-family: 'Lato', sans-serif; font-size: 0.88rem; font-weight: 700;
+  cursor: pointer; letter-spacing: 0.02em;
+  transition: background-color 0.2s ease, opacity .2s;
+}
+.btn-primario:hover:not(:disabled) { background-color: var(--color-acento-hover); }
+.btn-primario:disabled { background-color: var(--color-neutro); color: var(--color-texto-suave); cursor: not-allowed; }
+
+.btn-secundario {
+  background-color: transparent; color: var(--color-acento);
+  border: 2px solid var(--color-borde); border-radius: 4px;
+  padding: 7px 18px;
+  font-family: 'Lato', sans-serif; font-size: 0.88rem; font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, opacity .2s, background-color .2s;
+}
+.btn-secundario:hover:not(:disabled) { border-color: var(--color-acento); color: var(--color-acento-hover); }
+.btn-secundario:disabled { opacity: .45; cursor: not-allowed; }
+.btn-secundario.destacado { border-color: var(--color-acento); background-color: #F3E1D0; }
+
+.btn-finalizar {
+  background-color: var(--color-cabecera); color: var(--color-cabecera-txt);
+  border: 2px solid var(--color-borde); border-radius: 4px;
+  padding: 10px 26px;
+  font-family: 'Libre Baskerville', serif; font-size: 0.95rem; font-weight: 700;
+  cursor: pointer; letter-spacing: 0.04em;
+  transition: background-color 0.2s;
+}
+.btn-finalizar:hover:not(:disabled) { background-color: #2C1A0A; }
+
+.feedback-local { margin-top: 10px; border-radius: 4px; font-size: 0.82rem; font-weight: 500; min-height: 1px; }
+.feedback-local > div { border-radius: 4px; padding: 9px 13px; line-height: 1.45; }
+.feedback-correcto { background-color: #EAF4EC; border: 1.5px solid var(--color-correcto); color: var(--color-correcto); font-weight: 700; }
+.feedback-incorrecto { background-color: #F9EAEA; border: 1.5px solid var(--color-incorrecto); color: var(--color-incorrecto); }
+.feedback-incorrecto ul { margin: 6px 0; padding-left: 18px; }
+.feedback-incorrecto .siguiente { display: block; margin-top: 6px; color: var(--color-texto-suave); font-style: italic; }
+.feedback-aviso { background-color: #FCF3E3; border: 1.5px solid var(--color-borde); color: var(--color-texto-suave); }
+
+.tabla-valores { border-collapse: collapse; margin: 6px auto; background: white; border-radius: 6px; overflow: hidden; }
+.tabla-valores th, .tabla-valores td { border: 1px solid var(--color-borde); padding: 6px 14px; text-align: center; font-size: .85rem; }
+.tabla-valores input { width: 70px; padding: 5px 8px; }
+
+.overlay { position: fixed; inset: 0; background: rgba(44, 31, 14, 0.55); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 16px; }
+.overlay.show { display: flex; }
+.modal-calificacion {
+  border: 3px solid var(--color-borde);
+  border-radius: 8px;
+  font-family: 'Libre Baskerville', serif;
+  box-shadow: 0 6px 24px rgba(44, 31, 14, 0.35);
+  padding: 28px 32px;
+  min-width: 280px; width: 95%; max-width: 560px;
+  max-height: 92vh; overflow-y: auto;
+  text-align: center;
+  background: white;
+}
+.modal-calificacion.pequena { max-width: 420px; background: var(--color-fondo-card); }
+.modal-titulo { font-size: 1.25rem; font-weight: 700; margin: 0; }
+.modal-subtitulo { font-family: 'Lato', sans-serif; font-size: .85rem; opacity: .9; margin: 4px 0 10px; padding-bottom: 10px; border-bottom: 1px solid rgba(0,0,0,.2); }
+.nota-grande { font-size: 2.1rem; font-weight: 700; margin: 10px 0; }
+.resumen-ejercicios { text-align: left; margin: 14px 0; font-size: 0.8rem; font-family: 'Lato', sans-serif; border-top: 1px solid rgba(0,0,0,.15); padding-top: 10px; }
+.resumen-ejercicios div { margin-bottom: 4px; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+</style>
+</head>
+<body>
+<div class="cabecera">Material elaborado por Marta L Letona S. Basado en el trabajo de Javier Cayetano</div>
+<div class="ficha-container" id="fichaContainer">
+  <div class="header">
+    <h1 class="titulo-ficha">📐 Funciones</h1>
+    <p class="subtitulo">Puntos de corte, monotonía, curvatura, extremos y funciones cuadráticas · 3º ESO</p>
+    <div class="header-badges">
+      <span class="header-badge">🎯 2 aciertos seguidos → superado</span>
+      <span class="header-badge">💡 Cada fallo resta 0,5 puntos</span>
+      <span class="header-badge">🔒 Un ejercicio superado se cierra y no admite más intentos</span>
+    </div>
+  </div>
+
+  <div class="name-section">
+    <span class="name-label">👤 ALUMNO/A</span>
+    <label for="nombreAlumno" class="sr-only">Nombre y apellidos</label>
+    <input type="text" id="nombreAlumno" class="name-input" placeholder="Escribe tu nombre..." autocomplete="off">
+  </div>
+
+  <div class="info-bar">
+    <div class="info-item"><span class="info-icon">📊</span><span>Ejercicios superados: <span id="progresoCount" class="info-value">0</span>/7</span></div>
+    <div class="info-item"><span class="info-icon">❌</span><span>Fallos totales: <span id="fallosCount" class="info-value">0</span></span></div>
+    <div class="info-item"><span class="info-icon">⭐</span><span>Nota: <span id="notaActual" class="info-value">0.0</span>/10</span></div>
+  </div>
+
+  <!-- EJERCICIO 1: Puntos de corte -->
+  <div class="ejercicio-card" id="card1">
+    <div class="encabezado-ej"><span class="ejercicio-num">1</span><span class="ejercicio-titulo">✂️ Puntos de corte con los ejes</span><span class="badge-superado" id="badge1" style="display:none;">✓ Superado</span></div>
+    <div class="enunciado" id="enunciado1"></div>
+    <div class="fila-dos-columnas">
+      <div class="col-grafica"><div id="grafica1-container"></div></div>
+      <div class="col-panel">
+        <div class="panel-interactivo" id="cortes1-container"></div>
+        <div class="fila-botones">
+          <button class="btn-primario" id="btnCorregir1">✓ Corregir</button>
+          <button class="btn-secundario" id="btnNuevo1">🔄 Nueva función</button>
+        </div>
+        <div id="feedback1" class="feedback-local" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EJERCICIO 2: Monotonía -->
+  <div class="ejercicio-card" id="card2">
+    <div class="encabezado-ej"><span class="ejercicio-num">2</span><span class="ejercicio-titulo">📉📈 Crecimiento y decrecimiento</span><span class="badge-superado" id="badge2" style="display:none;">✓ Superado</span></div>
+    <div class="enunciado" id="enunciado2"></div>
+    <div class="fila-dos-columnas">
+      <div class="col-grafica"><div id="grafica2-container"></div></div>
+      <div class="col-panel">
+        <div class="panel-interactivo" id="tramos2-container"></div>
+        <div class="fila-botones">
+          <button class="btn-primario" id="btnCorregir2">✓ Corregir</button>
+          <button class="btn-secundario" id="btnNuevo2">🔄 Nueva gráfica</button>
+        </div>
+        <div id="feedback2" class="feedback-local" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EJERCICIO 3: Concavidad y convexidad -->
+  <div class="ejercicio-card" id="card3">
+    <div class="encabezado-ej"><span class="ejercicio-num">3</span><span class="ejercicio-titulo">◡◠ Concavidad y convexidad</span><span class="badge-superado" id="badge3" style="display:none;">✓ Superado</span></div>
+    <div class="enunciado" id="enunciado3"></div>
+    <div class="recuerda">📌 <strong>Recuerda:</strong> una función es <strong>cóncava</strong> donde su gráfica tiene forma de <strong>∪</strong> (se abre hacia arriba) y <strong>convexa</strong> donde tiene forma de <strong>∩</strong> (se abre hacia abajo). Los puntos donde cambia la curvatura se llaman <strong>puntos de inflexión</strong>.</div>
+    <div class="fila-dos-columnas">
+      <div class="col-grafica"><div id="grafica3-container"></div></div>
+      <div class="col-panel">
+        <div class="panel-interactivo" id="tramos3-container"></div>
+        <div class="fila-botones">
+          <button class="btn-primario" id="btnCorregir3">✓ Corregir</button>
+          <button class="btn-secundario" id="btnNuevo3">🔄 Nueva gráfica</button>
+        </div>
+        <div id="feedback3" class="feedback-local" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EJERCICIO 4: Máximos y mínimos -->
+  <div class="ejercicio-card" id="card4">
+    <div class="encabezado-ej"><span class="ejercicio-num">4</span><span class="ejercicio-titulo">⛰️ Máximos y mínimos, absolutos y relativos</span><span class="badge-superado" id="badge4" style="display:none;">✓ Superado</span></div>
+    <div class="enunciado" id="enunciado4"></div>
+    <div class="fila-dos-columnas">
+      <div class="col-grafica"><div id="grafica4-container"></div></div>
+      <div class="col-panel">
+        <div class="panel-interactivo">
+          <div id="puntos4-container"></div>
+          <div class="fila-punto" style="margin-top:12px;">
+            <span class="etq">Máximo absoluto en:</span> (
+            <input type="text" autocomplete="off" id="xMax4" aria-label="Máximo absoluto, coordenada x"> ,
+            <input type="text" autocomplete="off" id="yMax4" aria-label="Máximo absoluto, coordenada y"> )
+          </div>
+          <div class="fila-punto">
+            <span class="etq">Mínimo absoluto en:</span> (
+            <input type="text" autocomplete="off" id="xMin4" aria-label="Mínimo absoluto, coordenada x"> ,
+            <input type="text" autocomplete="off" id="yMin4" aria-label="Mínimo absoluto, coordenada y"> )
+          </div>
+        </div>
+        <div class="fila-botones">
+          <button class="btn-primario" id="btnCorregir4">✓ Corregir</button>
+          <button class="btn-secundario" id="btnNuevo4">🔄 Nueva gráfica</button>
+        </div>
+        <div id="feedback4" class="feedback-local" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EJERCICIO 5: Función lineal -->
+  <div class="ejercicio-card" id="card5">
+    <div class="encabezado-ej"><span class="ejercicio-num">5</span><span class="ejercicio-titulo">📐 Función lineal</span><span class="badge-superado" id="badge5" style="display:none;">✓ Superado</span></div>
+    <div class="enunciado" id="enunciado5"></div>
+    <div class="fila-dos-columnas">
+      <div class="col-grafica"><div id="grafica5-container"></div></div>
+      <div class="col-panel">
+        <div class="panel-interactivo">
+          <div class="fila-inputs">
+            <label for="p5">Pendiente:</label><input type="text" autocomplete="off" id="p5">
+            <label for="o5">Ordenada:</label><input type="text" autocomplete="off" id="o5">
+          </div>
+          <div class="fila-inputs" style="margin-top:8px;">
+            <label for="mono5">Monotonía:</label>
+            <select id="mono5">
+              <option value="">--</option>
+              <option value="creciente">Creciente 📈</option>
+              <option value="decreciente">Decreciente 📉</option>
+            </select>
+          </div>
+        </div>
+        <div class="fila-botones">
+          <button class="btn-primario" id="btnCorregir5">✓ Corregir</button>
+          <button class="btn-secundario" id="btnNuevo5">🔄 Nueva función</button>
+        </div>
+        <div id="feedback5" class="feedback-local" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EJERCICIO 6: Elige la función correcta -->
+  <div class="ejercicio-card" id="card6">
+    <div class="encabezado-ej"><span class="ejercicio-num">6</span><span class="ejercicio-titulo">🔎 Elige la función correcta</span><span class="badge-superado" id="badge6" style="display:none;">✓ Superado</span></div>
+    <div class="enunciado" id="enunciado6"></div>
+    <div class="fila-dos-columnas">
+      <div class="col-grafica"><div id="grafica6-container"></div></div>
+      <div class="col-panel">
+        <div class="panel-interactivo">
+          <div class="fila-inputs" style="justify-content:flex-start;">
+            <label for="conc6">a) La parábola de la gráfica es:</label>
+            <select id="conc6">
+              <option value="">--</option>
+              <option value="concava">Cóncava</option>
+              <option value="convexa">Convexa</option>
+            </select>
+          </div>
+          <div style="margin-top:12px;font-size:.85rem;" id="lblOpciones6">b) ¿Cuál de estas funciones es la de la gráfica?</div>
+          <div class="opciones-radio" id="opciones6-container" role="radiogroup" aria-labelledby="lblOpciones6"></div>
+        </div>
+        <div class="fila-botones">
+          <button class="btn-primario" id="btnCorregir6">✓ Corregir</button>
+          <button class="btn-secundario" id="btnNuevo6">🔄 Nuevas funciones</button>
+        </div>
+        <div id="feedback6" class="feedback-local" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EJERCICIO 7: Tabla de valores y gráfica (función cuadrática) -->
+  <div class="ejercicio-card" id="card7">
+    <div class="encabezado-ej"><span class="ejercicio-num">7</span><span class="ejercicio-titulo">📊 Tabla de valores y gráfica de una parábola</span><span class="badge-superado" id="badge7" style="display:none;">✓ Superado</span></div>
+    <div class="enunciado" id="enunciado7"></div>
+    <div class="fila-dos-columnas">
+      <div class="col-panel" style="text-align:center;"><div id="tabla7-container"></div></div>
+      <div class="col-grafica"><div id="grafica7-container"></div></div>
+    </div>
+    <div class="fila-botones">
+      <button class="btn-primario" id="btnCorregir7">✓ Comprobar</button>
+      <button class="btn-secundario" id="btnNuevo7">🔄 Nueva función</button>
+    </div>
+    <div id="feedback7" class="feedback-local" aria-live="polite"></div>
+  </div>
+
+  <div class="fila-botones" style="margin-top:8px;">
+    <button class="btn-secundario" id="btnReiniciar">🔄 Nueva ficha</button>
+    <button class="btn-finalizar" id="btnFinalizar">Finalizar y Calificar</button>
+  </div>
+</div>
+
+<div class="overlay" id="overlayConfirmar">
+  <div class="modal-calificacion pequena" role="dialog" aria-modal="true">
+    <h3 style="margin-top:0;">⚠️ Atención</h3>
+    <p style="font-family:'Lato',sans-serif;">Si finalizas la ficha, <strong>ya no podrás seguir sumando puntos</strong> en esta sesión.<br>¿Deseas continuar y ver tu calificación?</p>
+    <div class="fila-botones">
+      <button class="btn-secundario" id="btnCancelarFinal">Cancelar</button>
+      <button class="btn-primario" id="btnConfirmarFinal">Sí, finalizar</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlayConfirmarReinicio">
+  <div class="modal-calificacion pequena" role="dialog" aria-modal="true">
+    <h3 style="margin-top:0;">⚠️ Atención</h3>
+    <p style="font-family:'Lato',sans-serif;">Vas a empezar una <strong>ficha nueva</strong> y perderás todo el progreso actual (puntos y ejercicios superados).<br>¿Deseas continuar?</p>
+    <div class="fila-botones">
+      <button class="btn-secundario" id="btnCancelarReinicio">Cancelar</button>
+      <button class="btn-primario" id="btnConfirmarReinicio">Sí, empezar de nuevo</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlayResultado">
+  <div class="modal-calificacion" id="modalResultado" role="dialog" aria-modal="true">
+    <div class="modal-titulo" id="resTitulo"></div>
+    <div class="modal-subtitulo" id="resSubtitulo"></div>
+    <h2 style="margin:6px 0 8px;font-size:1.1rem;">📊 Informe de la actividad</h2>
+    <div id="resNombre"></div>
+    <div class="nota-grande" id="resNota"></div>
+    <div id="resFecha"></div>
+    <div id="resHora"></div>
+    <div id="resTiempo"></div>
+    <div style="margin:12px 0;padding:8px;background:rgba(0,0,0,.06);border-radius:8px;font-family:'Lato',sans-serif;font-size:.85rem;">
+      📸 <strong>Haz una captura de pantalla y entrégala en Google Classroom.</strong>
+    </div>
+    <div class="resumen-ejercicios" id="resResumen"></div>
+    <button class="btn-primario" id="btnCerrarResultado" style="background:#fff;color:#333;">Cerrar</button>
+  </div>
+</div>
+
+<script>
+// Lee un número escrito por el alumno (coma o punto decimal, signo menos tipográfico); NaN si no es un número válido
+function leerNumero(txt){
+  const t = String(txt==null?'':txt).trim().replace(/[\u2212\u2013\u2014]/g,'-');
+  return /^[+-]?\d+([.,]\d+)?$/.test(t) ? parseFloat(t.replace(',','.')) : NaN;
+}
+(function(){
+"use strict";
+
+/* ---------- Aleatoriedad (seed opcional ?seed=N solo para pruebas/QA) ---------- */
+let rand = Math.random;
+const seedParam = new URLSearchParams(location.search).get('seed');
+if(seedParam !== null){
+  let s = (parseInt(seedParam,10) || 1) >>> 0;
+  rand = function(){ // mulberry32
+    s = (s + 0x6D2B79F5) | 0;
+    let t = Math.imul(s ^ (s >>> 15), 1 | s);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/* ---------- Utilidades numéricas y de formato ---------- */
+function randInt(min, max){ return Math.floor(rand()*(max-min+1))+min; }
+function randNonZero(min, max){ let v=0; while(v===0) v=randInt(min,max); return v; }
+function elegir(arr){ return arr[randInt(0,arr.length-1)]; }
+function barajar(arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=randInt(0,i); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
+function round1(v){ return Math.round(v*10)/10; }
+const MENOS = '−';
+function num(v){ return v<0 ? MENOS+Math.abs(v) : String(v); }
+// Escribe un polinomio a partir de términos {c: coeficiente, p: potencia} en el orden dado
+function fmtPoly(terminos){
+  const nz = terminos.filter(t=>t.c!==0);
+  if(!nz.length) return '0';
+  return nz.map((t,i)=>{
+    const abs = Math.abs(t.c);
+    let cuerpo;
+    if(t.p===0) cuerpo = String(abs);
+    else cuerpo = (abs===1 ? '' : String(abs)) + (t.p===1 ? 'x' : 'x²');
+    if(i===0) return (t.c<0 ? MENOS : '') + cuerpo;
+    return (t.c<0 ? ` ${MENOS} ` : ' + ') + cuerpo;
+  }).join('');
+}
+function polyCuad(a,b,c){ return fmtPoly([{c:a,p:2},{c:b,p:1},{c:c,p:0}]); }
+
+/* ---------- Estado global ---------- */
+const DOM_GRID = 6; // dominio -6..6 en las cuadrículas
+let startTime = Date.now();
+let finalizado = false;
+let resultadoFinal = null;
+
+const NUM_TIPOS = 7;
+const PUNTO_POR_TIPO = 10 / NUM_TIPOS;
+const PENALIZACION_FALLO = 0.5;
+const NOMBRES = ['Puntos de corte','Monotonía','Concavidad y convexidad','Máximos y mínimos','Función lineal','Elige la función correcta','Tabla de valores (parábola)'];
+
+function nuevoEstado(extra){ return Object.assign({ superado:false, fallos:0, aciertos:0, racha:0, objetivo:2 }, extra||{}); }
+const ex1 = nuevoEstado();
+const ex2 = nuevoEstado();
+const ex3 = nuevoEstado();
+const ex4 = nuevoEstado();
+const ex5 = nuevoEstado();
+const ex6 = nuevoEstado();
+const ex7 = nuevoEstado({ puntosUsuario:[] });
+const EJ = [null, ex1, ex2, ex3, ex4, ex5, ex6, ex7];
+
+/* ---------- Canvas y cuadrícula (300x300, dominio -6..6) ---------- */
+function nuevoCanvas(id){ const c=document.createElement('canvas'); c.width=300; c.height=300; c.id=id; return c; }
+function prepararCanvas(contId, id){
+  const cont=document.getElementById(contId); cont.innerHTML='';
+  const c=nuevoCanvas(id); cont.appendChild(c); return c;
+}
+function toPx(v, size){ return 40 + (v+DOM_GRID)/(2*DOM_GRID) * (size-80); }
+function toVal(px, size){ return Math.round(-DOM_GRID + (px-40)/(size-80) * (2*DOM_GRID)); }
+// Eje Y invertido: el píxel crece hacia abajo, el valor matemático hacia arriba
+function toPxY(v, size){ return 40 + (DOM_GRID-v)/(2*DOM_GRID) * (size-80); }
+function toValY(px, size){ return Math.round(DOM_GRID - (px-40)/(size-80) * (2*DOM_GRID)); }
+
+function dibujarCuadricula(ctx, size){
+  ctx.fillStyle='#FFF'; ctx.fillRect(0,0,size,size);
+  ctx.beginPath(); ctx.strokeStyle='#DDD2C0'; ctx.lineWidth=0.8;
+  for(let i=-DOM_GRID;i<=DOM_GRID;i++){
+    const px=toPx(i,size), py=toPxY(i,size);
+    ctx.moveTo(px,40); ctx.lineTo(px,size-40);
+    ctx.moveTo(40,py); ctx.lineTo(size-40,py);
+  }
+  ctx.stroke();
+  ctx.beginPath(); ctx.lineWidth=1.5; ctx.strokeStyle='#3B2510';
+  ctx.moveTo(toPx(0,size),40); ctx.lineTo(toPx(0,size),size-40);
+  ctx.moveTo(40,toPxY(0,size)); ctx.lineTo(size-40,toPxY(0,size));
+  ctx.stroke();
+  ctx.fillStyle='#6B4F35'; ctx.font='9px Lato';
+  for(let i=-DOM_GRID;i<=DOM_GRID;i++){
+    if(i===0) continue;
+    ctx.fillText(String(i), toPx(i,size)-4, toPxY(0,size)-3);
+    ctx.fillText(String(i), toPx(0,size)+3, toPxY(i,size)+3);
+  }
+  ctx.font='italic 11px Lato'; ctx.fillStyle='#3B2510';
+  ctx.fillText('x', size-34, toPxY(0,size)+13);
+  ctx.fillText('y', toPx(0,size)-12, 38);
+}
+function dibujarPunto(ctx,size,x,y,color,radio){
+  ctx.beginPath(); ctx.fillStyle=color;
+  ctx.arc(toPx(x,size), toPxY(y,size), radio||6, 0, 2*Math.PI); ctx.fill();
+}
+// Dibuja y = fn(x) recortada al área de la cuadrícula
+function dibujarFuncion(ctx,size,fn,color,ancho){
+  ctx.save();
+  ctx.beginPath(); ctx.rect(40,40,size-80,size-80); ctx.clip();
+  ctx.beginPath(); ctx.strokeStyle=color||'#A0522D'; ctx.lineWidth=ancho||2.5;
+  let primero=true;
+  for(let x=-DOM_GRID; x<=DOM_GRID+1e-9; x+=0.04){
+    const y=clamp(fn(x), -DOM_GRID-3, DOM_GRID+3);
+    const px=toPx(x,size), py=toPxY(y,size);
+    if(primero){ ctx.moveTo(px,py); primero=false; } else ctx.lineTo(px,py);
+  }
+  ctx.stroke(); ctx.restore();
+}
+function dibujarPolilinea(ctx,size,pts,color){
+  ctx.beginPath(); ctx.strokeStyle=color||'#A0522D'; ctx.lineWidth=2.5;
+  pts.forEach((p,i)=>{ const px=toPx(p.x,size), py=toPxY(p.y,size); if(i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py); });
+  ctx.stroke();
+}
+function lineaVerticalDiscontinua(ctx,size,x){
+  ctx.save(); ctx.setLineDash([4,4]); ctx.strokeStyle='#8a7a66'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(toPx(x,size),40); ctx.lineTo(toPx(x,size),size-40); ctx.stroke(); ctx.restore();
+}
+
+/* ---------- Feedback y registro de intentos (común) ---------- */
+function mostrarFeedback(n, html, tipo){
+  const div=document.getElementById('feedback'+n);
+  const clase = tipo==='correcto' ? 'feedback-correcto' : tipo==='incorrecto' ? 'feedback-incorrecto' : 'feedback-aviso';
+  div.innerHTML = `<div class="${clase}">${html}</div>`;
+}
+function limpiarFeedback(n){
+  document.getElementById('feedback'+n).innerHTML='';
+  document.getElementById('btnNuevo'+n).classList.remove('destacado');
+}
+function listaErrores(errores){ return '<ul>' + errores.map(e=>`<li>${e}</li>`).join('') + '</ul>'; }
+
+// Registra el resultado de un intento. Tras un fallo se revela la solución, así que
+// ese ejercicio queda bloqueado: el alumno debe pedir otro (nunca puntúa uno ya resuelto).
+function registrarIntento(n, correcto, htmlOk, htmlKo, campos, nuevoFn){
+  const ex = EJ[n];
+  campos.forEach(el=> el.disabled = true);
+  document.getElementById('btnCorregir'+n).disabled = true;
+  if(correcto){
+    ex.aciertos++; ex.racha++;
+    if(ex.racha >= ex.objetivo) ex.superado = true;
+    mostrarFeedback(n, `✅ Correcto (${ex.racha}/${ex.objetivo}). <span style="font-weight:500;">${htmlOk}</span>`, 'correcto');
+    if(ex.superado){
+      document.getElementById('btnNuevo'+n).disabled = true;
+      actualizarCabeceras();
+    } else {
+      // Durante la espera, «Nueva…» queda desactivado para que el ejercicio no cambie dos veces
+      document.getElementById('btnNuevo'+n).disabled = true;
+      ex.temporizador = setTimeout(()=>{ ex.temporizador = null; if(!ex.superado && !finalizado) nuevoFn(); }, 2600);
+    }
+  } else {
+    ex.fallos++; ex.racha = 0;
+    mostrarFeedback(n, `❌ Incorrecto. ${htmlKo}<span class="siguiente">Pulsa «${document.getElementById('btnNuevo'+n).textContent.trim()}» para practicar con otro ejercicio (la racha vuelve a empezar).</span>`, 'incorrecto');
+    document.getElementById('btnNuevo'+n).classList.add('destacado');
+  }
+  ENUNCIADOS[n]();
+  pintarMarcador();
+}
+function puedeCorregir(n){
+  if(EJ[n].superado) return false;
+  if(finalizado){ mostrarFeedback(n,'La ficha ya está finalizada. Pulsa «Nueva ficha» si quieres volver a empezar.','aviso'); return false; }
+  return true;
+}
+function ponerEnunciado(n, texto){
+  document.getElementById('enunciado'+n).textContent = EJ[n].superado ? '✅ Superado' : texto;
+}
+function prepararControles(n, campos){
+  const ex = EJ[n];
+  campos.forEach(el=> el.disabled = ex.superado || finalizado);
+  document.getElementById('btnCorregir'+n).disabled = ex.superado || finalizado;
+  document.getElementById('btnNuevo'+n).disabled = ex.superado || finalizado;
+}
+function conEnter(campos, fn){ campos.forEach(inp=> inp.onkeydown = e=>{ if(e.key==='Enter') fn(); }); }
+
+/* ============================================================
+   EJERCICIO 1: puntos de corte (recta o parábola con raíces enteras)
+   ============================================================ */
+function generarCortes(){
+  if(rand()<0.5){
+    for(let i=0;i<200;i++){
+      const m=randNonZero(-3,3), t=randNonZero(-4,4), b=m*t;
+      if(Math.abs(b)>5) continue;
+      return { tipo:'lineal', a:0, b:m, c:b, cortesX:[-t] };
+    }
+    return { tipo:'lineal', a:0, b:1, c:2, cortesX:[-2] };
+  }
+  for(let i=0;i<200;i++){
+    const a = rand()<0.5 ? 1 : -1;
+    const r1 = randInt(-5,4), r2 = r1 + randInt(1,4);
+    if(r2>5) continue;
+    const b = -a*(r1+r2), c = a*r1*r2;
+    if(Math.abs(c)>6) continue;
+    return { tipo:'cuad', a, b, c, cortesX:[r1,r2] };
+  }
+  return { tipo:'cuad', a:1, b:-1, c:-2, cortesX:[-1,2] };
+}
+function filaPunto(texto, id){
+  return `<div class="fila-punto"><span class="etq">${texto}:</span> (
+    <input type="text" autocomplete="off" id="${id}x" aria-label="${texto}, coordenada x"> ,
+    <input type="text" autocomplete="off" id="${id}y" aria-label="${texto}, coordenada y"> )</div>`;
+}
+function ex1Nuevo(){
+  if(ex1.superado) return;
+  Object.assign(ex1, generarCortes());
+  ex1.expr = 'f(x) = ' + polyCuad(ex1.a, ex1.b, ex1.c);
+  limpiarFeedback(1);
+  ex1Render();
+}
+function ex1Render(){
+  const c = prepararCanvas('grafica1-container','c1');
+  const ctx = c.getContext('2d');
+  dibujarCuadricula(ctx,300);
+  dibujarFuncion(ctx,300, x=> ex1.a*x*x + ex1.b*x + ex1.c);
+
+  const nX = ex1.cortesX.length;
+  let html = filaPunto('Corte con el eje Y','cy1');
+  for(let i=0;i<nX;i++) html += filaPunto(nX===1 ? 'Corte con el eje X' : `${i+1}.º corte con el eje X`, 'cx1_'+i);
+  if(nX>1) html += '<div class="nota-pequena">Los dos cortes con el eje X puedes escribirlos en cualquier orden.</div>';
+  document.getElementById('cortes1-container').innerHTML = html;
+
+  const campos = Array.from(document.querySelectorAll('#cortes1-container input'));
+  prepararControles(1, campos);
+
+  function comprobar(){
+    if(!puedeCorregir(1)) return;
+    const v = campos.map(el=> leerNumero(el.value));
+    if(v.some(isNaN)){ mostrarFeedback(1,'Rellena todas las coordenadas antes de corregir. No cuenta como fallo.','aviso'); return; }
+    const errores = [];
+    const [yx, yy] = v;
+    if(!(yx===0 && yy===ex1.c)){
+      if(yx===ex1.c && yy===0 && ex1.c!==0) errores.push(`En el corte con el eje Y has <strong>intercambiado las coordenadas</strong>. Un punto del eje Y siempre tiene x = 0, así que es (0, ${num(ex1.c)}).`);
+      else if(yx!==0) errores.push(`Un punto del eje Y siempre tiene <strong>x = 0</strong>. El corte es (0, f(0)) = (0, ${num(ex1.c)}).`);
+      else errores.push(`El corte con el eje Y es (0, ${num(ex1.c)}): al sustituir x = 0 se anulan todos los términos con x y solo queda el término independiente.`);
+    }
+    const pares = [];
+    for(let i=0;i<nX;i++) pares.push({x:v[2+2*i], y:v[3+2*i]});
+    if(pares.some(p=>p.y!==0)) errores.push('Un punto del eje X siempre tiene <strong>y = 0</strong>: debe escribirse (x, 0).');
+    const xsAl = pares.map(p=>p.x).sort((a,b)=>a-b);
+    const sol = ex1.cortesX.slice().sort((a,b)=>a-b);
+    const xOk = xsAl.every((val,i)=> val===sol[i]);
+    if(!xOk){
+      const neg = sol.map(s=>-s).sort((a,b)=>a-b);
+      const errorSigno = sol.some(s=>s!==0) && xsAl.every((val,i)=> val===neg[i]);
+      if(ex1.tipo==='lineal'){
+        if(errorSigno) errores.push(`<strong>Error de signo al despejar.</strong> De ${polyCuad(0,ex1.b,ex1.c)} = 0 se obtiene ${num(ex1.b)}x = ${num(-ex1.c)}, es decir, x = ${num(sol[0])}. El corte es (${num(sol[0])}, 0).`);
+        else errores.push(`El corte con el eje X es (${num(sol[0])}, 0): iguala ${polyCuad(0,ex1.b,ex1.c)} = 0 y despeja x.`);
+      } else {
+        if(errorSigno) errores.push(`<strong>Error de signo en las soluciones.</strong> La ecuación ${polyCuad(ex1.a,ex1.b,ex1.c)} = 0 tiene soluciones x = ${num(sol[0])} y x = ${num(sol[1])}. Comprueba: f(${num(sol[0])}) = 0. Los cortes son (${num(sol[0])}, 0) y (${num(sol[1])}, 0).`);
+        else errores.push(`Los cortes con el eje X son (${num(sol[0])}, 0) y (${num(sol[1])}, 0): resuelve la ecuación de 2.º grado ${polyCuad(ex1.a,ex1.b,ex1.c)} = 0, o mira dónde toca la parábola el eje X.`);
+      }
+    }
+    const ok = errores.length===0;
+    const htmlOk = ex1.tipo==='lineal'
+      ? 'Con x = 0 obtienes el corte con el eje Y; con f(x) = 0 y despejando x, el corte con el eje X.'
+      : 'Con x = 0 obtienes el corte con el eje Y; resolviendo la ecuación de 2.º grado f(x) = 0, los cortes con el eje X.';
+    registrarIntento(1, ok, htmlOk, listaErrores(errores), campos, ex1Nuevo);
+  }
+  document.getElementById('btnCorregir1').onclick = comprobar;
+  conEnter(campos, comprobar);
+  ENUNCIADOS[1]();
+}
+function enunciado1(){
+  ponerEnunciado(1, `✂️ Calcula los puntos de corte con los ejes de la función ${ex1.expr} (puedes comprobarlos en la gráfica). Aciertos seguidos: ${ex1.racha}/${ex1.objetivo}`);
+}
+
+/* ============================================================
+   Lista de intervalos (común a los ejercicios 2 y 3)
+   ============================================================ */
+function crearListaIntervalos(cont, pref, titulo){
+  const caja = document.createElement('div');
+  caja.className = 'lista-int';
+  caja.innerHTML = `<div class="lista-int-titulo">${titulo} en:</div><div class="filas"></div>
+    <button type="button" class="btn-mini" id="${pref}_mas">＋ Añadir intervalo</button>`;
+  cont.appendChild(caja);
+  const filas = caja.querySelector('.filas');
+  function anadir(){
+    const div = document.createElement('div');
+    div.className = 'fila-intervalo';
+    div.innerHTML = `( <input type="text" autocomplete="off" aria-label="${titulo}: extremo izquierdo del intervalo"> ,
+      <input type="text" autocomplete="off" aria-label="${titulo}: extremo derecho del intervalo"> )
+      <button type="button" class="btn-quitar" aria-label="Quitar este intervalo" title="Quitar">✕</button>`;
+    div.querySelector('.btn-quitar').onclick = ()=>{
+      if(filas.children.length>1) div.remove();
+      else div.querySelectorAll('input').forEach(x=> x.value='');
+    };
+    filas.appendChild(div);
+    return div;
+  }
+  anadir();
+  document.getElementById(pref+'_mas').onclick = ()=> anadir().querySelector('input').focus();
+  return {
+    titulo,
+    leer(){
+      const intervalos=[]; let incompleto=false;
+      filas.querySelectorAll('.fila-intervalo').forEach(f=>{
+        const [a,b] = Array.from(f.querySelectorAll('input')).map(x=> x.value==='' ? NaN : leerNumero(x.value));
+        if(isNaN(a) && isNaN(b)) return;
+        if(isNaN(a) || isNaN(b)) incompleto = true; else intervalos.push([a,b]);
+      });
+      return { incompleto, intervalos };
+    },
+    controles(){ return Array.from(caja.querySelectorAll('input, button')); }
+  };
+}
+function fmtIntervalos(arr){ return arr.map(([a,b])=>`(${num(a)}, ${num(b)})`).join(' ∪ '); }
+function mismosIntervalos(u, sol){
+  const clave = x=> x.map(p=>p.join(',')).sort().join('|');
+  return u.length===sol.length && clave(u)===clave(sol);
+}
+// Corrige dos listas complementarias (Crece/Decrece o Cóncava/Convexa).
+// Devuelve null si falta algo por rellenar (ya se ha mostrado el aviso) o {ok, errores}.
+function corregirIntervalos(n, cats, xsValidos){
+  const leidas = cats.map(c=> c.lista.leer());
+  if(leidas.some(l=>l.incompleto)){ mostrarFeedback(n,'Hay algún intervalo a medias: escribe los dos extremos o bórralo con ✕. No cuenta como fallo.','aviso'); return null; }
+  if(leidas.some(l=>l.intervalos.length===0)){ mostrarFeedback(n,`Escribe al menos un intervalo en «${cats[0].lista.titulo}» y otro en «${cats[1].lista.titulo}». No cuenta como fallo.`,'aviso'); return null; }
+  const errores=[];
+  leidas.forEach((l,i)=> l.intervalos.forEach(([a,b])=>{
+    if(a>=b) errores.push(`En «${cats[i].lista.titulo}» has escrito (${num(a)}, ${num(b)}): el primer número es el extremo izquierdo, que siempre es el <strong>menor</strong>.`);
+  }));
+  const ok = leidas.every((l,i)=> mismosIntervalos(l.intervalos, cats[i].sol));
+  if(!ok){
+    if(mismosIntervalos(leidas[0].intervalos, cats[1].sol) && mismosIntervalos(leidas[1].intervalos, cats[0].sol)){
+      errores.push(`Has <strong>intercambiado</strong> «${cats[0].lista.titulo}» y «${cats[1].lista.titulo}».`);
+    }
+    cats.forEach((c,i)=>{
+      if(!mismosIntervalos(leidas[i].intervalos, c.sol)){
+        const cuantos = c.sol.length===1 ? 'un solo intervalo' : `${c.sol.length} intervalos`;
+        errores.push(`${c.lista.titulo} en ${fmtIntervalos(c.sol)} (${cuantos}).`);
+      }
+    });
+    const extremos = leidas.flatMap(l=> l.intervalos.flat());
+    if(extremos.some(v=> !xsValidos.includes(v))) errores.push('Algún extremo que has escrito no corresponde a un cambio de la gráfica. Recuerda que los intervalos se escriben con valores de <strong>x</strong> (eje horizontal), no de y.');
+  }
+  return { ok: ok && errores.length===0, errores };
+}
+
+/* ============================================================
+   EJERCICIO 2: monotonía (intervalos de crecimiento y decrecimiento)
+   ============================================================ */
+function generarTramos(){
+  for(let it=0; it<3000; it++){
+    const nT = randInt(3,4);
+    const interiores=[]; let x=randInt(-4,-2);
+    for(let i=0;i<nT-1;i++){ interiores.push(x); x += randInt(2,4); }
+    if(interiores[interiores.length-1]>4) continue;
+    const xs = [-6, ...interiores, 6];
+    const sube0 = rand()<0.5;
+    const ys = [randInt(-5,5)];
+    let ok = true;
+    for(let i=0;i<nT;i++){
+      const sube = (i%2===0)===sube0;
+      const y = ys[i] + randInt(2,6)*(sube ? 1 : -1);
+      if(Math.abs(y)>5){ ok=false; break; }
+      ys.push(y);
+    }
+    if(!ok) continue;
+    const tipos = xs.slice(0,-1).map((_,i)=> ((i%2===0)===sube0) ? 'crece' : 'decrece');
+    return { xs, bp: xs.map((xx,i)=>({x:xx, y:ys[i]})), tipos };
+  }
+  return { xs:[-6,-2,2,6], bp:[{x:-6,y:-3},{x:-2,y:3},{x:2,y:-2},{x:6,y:4}], tipos:['crece','decrece','crece'] };
+}
+function intervalosDe(xs, tipos, tipo){
+  const r=[]; tipos.forEach((t,i)=>{ if(t===tipo) r.push([xs[i], xs[i+1]]); }); return r;
+}
+function ex2Nuevo(){
+  if(ex2.superado) return;
+  Object.assign(ex2, generarTramos());
+  limpiarFeedback(2);
+  ex2Render();
+}
+function ex2Render(){
+  const c = prepararCanvas('grafica2-container','c2');
+  const ctx = c.getContext('2d');
+  dibujarCuadricula(ctx,300);
+  dibujarPolilinea(ctx,300,ex2.bp);
+  ex2.bp.forEach(p=> dibujarPunto(ctx,300,p.x,p.y,'#3B2510',4));
+
+  const panel = document.getElementById('tramos2-container');
+  panel.innerHTML = '';
+  const listaC = crearListaIntervalos(panel,'crece2','Crece');
+  const listaD = crearListaIntervalos(panel,'decrece2','Decrece');
+  const controles = ()=> listaC.controles().concat(listaD.controles());
+  prepararControles(2, controles());
+  function comprobar(){
+    if(!puedeCorregir(2)) return;
+    const solC = intervalosDe(ex2.xs, ex2.tipos, 'crece'), solD = intervalosDe(ex2.xs, ex2.tipos, 'decrece');
+    const r = corregirIntervalos(2, [{lista:listaC, sol:solC},{lista:listaD, sol:solD}], ex2.xs);
+    if(!r) return;
+    registrarIntento(2, r.ok,
+      `Crece en ${fmtIntervalos(solC)} y decrece en ${fmtIntervalos(solD)}: los extremos de cada intervalo son las x donde la gráfica cambia de subir a bajar o al revés.`,
+      `Solución: ${listaErrores(r.errores)}Pista: lee la gráfica de izquierda a derecha. Crece donde al aumentar x aumenta y (sube); decrece donde al aumentar x disminuye y (baja). Los intervalos se escriben abiertos, con los valores de x.`,
+      controles(), ex2Nuevo);
+  }
+  document.getElementById('btnCorregir2').onclick = comprobar;
+  panel.onkeydown = e=>{ if(e.key==='Enter' && e.target.tagName==='INPUT') comprobar(); };
+  ENUNCIADOS[2]();
+}
+function enunciado2(){
+  ponerEnunciado(2, `📉📈 La gráfica representa una función definida en [−6, 6]. Escribe los intervalos en los que crece y en los que decrece. Si hay más de uno, pulsa «＋ Añadir intervalo». Aciertos seguidos: ${ex2.racha}/${ex2.objetivo}`);
+}
+
+/* ============================================================
+   EJERCICIO 3: concavidad y convexidad
+   (convenio del centro: cóncava = ∪, convexa = ∩)
+   ============================================================ */
+function generarCurvatura(){
+  let inflex;
+  if(rand()<0.5) inflex = [randInt(-3,3)];
+  else { const p=randInt(-4,1); inflex=[p, randInt(p+2, Math.min(4,p+5))]; }
+  const xs = [-6, ...inflex, 6];
+  const s0 = rand()<0.5 ? 1 : -1;
+  const signos = xs.slice(0,-1).map((_,i)=> i%2===0 ? s0 : -s0);
+  // Segunda derivada constante a trozos → curva hecha de arcos de parábola unidos sin picos.
+  // En los intervalos cortos la curvatura es mayor para que se aprecie bien.
+  const N=600, dx=12/N;
+  let fp = (rand()*2-1)*3, f = 0;
+  const raw=[];
+  for(let i=0;i<=N;i++){
+    const x = -6 + i*dx;
+    raw.push({x, y:f});
+    const xm = x + dx/2;
+    let k=0; while(k<signos.length-1 && xm>xs[k+1]) k++;
+    fp += signos[k]*(6/(xs[k+1]-xs[k]))*dx;
+    f += fp*dx;
+  }
+  // Quitar parte de la tendencia lineal (no cambia la curvatura) y escalar a la cuadrícula
+  const pend = (raw[N].y - raw[0].y)/12, alpha = rand()*0.8;
+  raw.forEach(p=> p.y -= alpha*pend*p.x);
+  const ymin = Math.min(...raw.map(p=>p.y)), ymax = Math.max(...raw.map(p=>p.y));
+  const mid = (ymin+ymax)/2, esc = 4.5/((ymax-ymin)/2 || 1), desp = (rand()*2-1);
+  const pts = raw.map(p=>({x:p.x, y:(p.y-mid)*esc + desp}));
+  const yEn = x=> pts[Math.round((x+6)/dx)].y;
+  return { pts, xs, inflex: inflex.map(x=>({x, y:yEn(x)})), tipos: signos.map(s=> s>0 ? 'concava' : 'convexa') };
+}
+function ex3Nuevo(){
+  if(ex3.superado) return;
+  Object.assign(ex3, generarCurvatura());
+  limpiarFeedback(3);
+  ex3Render();
+}
+function ex3Render(){
+  const c = prepararCanvas('grafica3-container','c3');
+  const ctx = c.getContext('2d');
+  dibujarCuadricula(ctx,300);
+  ex3.inflex.forEach(p=> lineaVerticalDiscontinua(ctx,300,p.x));
+  dibujarPolilinea(ctx,300,ex3.pts);
+  ex3.inflex.forEach(p=> dibujarPunto(ctx,300,p.x,p.y,'#3B2510',4.5));
+
+  const panel = document.getElementById('tramos3-container');
+  panel.innerHTML = '';
+  const listaCc = crearListaIntervalos(panel,'concava3','Cóncava');
+  const listaCx = crearListaIntervalos(panel,'convexa3','Convexa');
+  const controles = ()=> listaCc.controles().concat(listaCx.controles());
+  prepararControles(3, controles());
+  function comprobar(){
+    if(!puedeCorregir(3)) return;
+    const solCc = intervalosDe(ex3.xs, ex3.tipos, 'concava'), solCx = intervalosDe(ex3.xs, ex3.tipos, 'convexa');
+    const r = corregirIntervalos(3, [{lista:listaCc, sol:solCc},{lista:listaCx, sol:solCx}], ex3.xs);
+    if(!r) return;
+    const inflTxt = ex3.inflex.length===1 ? `el punto de inflexión x = ${num(ex3.inflex[0].x)}` : `los puntos de inflexión x = ${num(ex3.inflex[0].x)} y x = ${num(ex3.inflex[1].x)}`;
+    registrarIntento(3, r.ok,
+      `Cóncava (∪) en ${fmtIntervalos(solCc)} y convexa (∩) en ${fmtIntervalos(solCx)}. Los intervalos se separan en ${inflTxt}.`,
+      `Solución: ${listaErrores(r.errores)}Pista: fíjate en la <strong>forma</strong> de la curva, no en si sube o baja. Cóncava = se abre hacia arriba (∪, como un vaso que recoge agua); convexa = se abre hacia abajo (∩, como una cúpula). Los intervalos van de un punto de inflexión al siguiente.`,
+      controles(), ex3Nuevo);
+  }
+  document.getElementById('btnCorregir3').onclick = comprobar;
+  panel.onkeydown = e=>{ if(e.key==='Enter' && e.target.tagName==='INPUT') comprobar(); };
+  ENUNCIADOS[3]();
+}
+function enunciado3(){
+  ponerEnunciado(3, `◡◠ Los puntos marcados son puntos de inflexión. Escribe los intervalos en los que la función es cóncava y en los que es convexa. Si hay más de uno, pulsa «＋ Añadir intervalo». Aciertos seguidos: ${ex3.racha}/${ex3.objetivo}`);
+}
+/* ============================================================
+   EJERCICIO 4: máximos y mínimos absolutos y relativos
+   ============================================================ */
+// Interpolación de Hermite con pendiente 0 en los extremos interiores: la curva es
+// monótona entre nodos, así que los únicos extremos interiores son los puntos marcados.
+function curvaPorNodos(kx, ky){
+  const n = kx.length;
+  const m = kx.map((_,i)=> i===0 ? (ky[1]-ky[0])/(kx[1]-kx[0]) : i===n-1 ? (ky[n-1]-ky[n-2])/(kx[n-1]-kx[n-2]) : 0);
+  return x=>{
+    let i=0; while(i<n-2 && x>kx[i+1]) i++;
+    const h=kx[i+1]-kx[i], t=(x-kx[i])/h, t2=t*t, t3=t2*t;
+    return (2*t3-3*t2+1)*ky[i] + (t3-2*t2+t)*h*m[i] + (-2*t3+3*t2)*ky[i+1] + (t3-t2)*h*m[i+1];
+  };
+}
+function valorExtremo(tipo, yv, gmin, gmax){
+  // valor del extremo del dominio: estrictamente entre el mín. y el máx. absolutos
+  const lo = tipo==='max' ? gmin+1 : yv+1;
+  const hi = tipo==='max' ? yv-1 : gmax-1;
+  return lo>hi ? null : randInt(lo,hi);
+}
+function generarExtremos(){
+  for(let it=0; it<3000; it++){
+    const n = randInt(3,4);
+    const xsT=[]; let x=randInt(-5,-3);
+    for(let i=0;i<n;i++){ xsT.push(x); x += randInt(2,3); }
+    if(xsT[n-1]>5) continue;
+    const empiezaMax = rand()<0.5;
+    const clase = xsT.map((_,i)=> ((i%2===0)===empiezaMax) ? 'max' : 'min');
+    const ys = xsT.map(()=> randInt(-5,5));
+    let ok = true;
+    for(let i=1;i<n;i++){
+      if(Math.abs(ys[i]-ys[i-1])<2) ok=false;
+      if(clase[i]==='max' && ys[i]<=ys[i-1]) ok=false;
+      if(clase[i]==='min' && ys[i]>=ys[i-1]) ok=false;
+    }
+    if(!ok) continue;
+    const gmax=Math.max(...ys), gmin=Math.min(...ys);
+    if(ys.filter(v=>v===gmax).length!==1 || ys.filter(v=>v===gmin).length!==1) continue;
+    const y0 = valorExtremo(clase[0], ys[0], gmin, gmax);
+    const yN = valorExtremo(clase[n-1], ys[n-1], gmin, gmax);
+    if(y0===null || yN===null) continue;
+    const puntos = xsT.map((xx,i)=>({
+      x:xx, y:ys[i], letra:'ABCDE'[i],
+      tipo: clase[i]==='max' ? (ys[i]===gmax ? 'maxAbs' : 'maxRel') : (ys[i]===gmin ? 'minAbs' : 'minRel')
+    }));
+    return { kx:[-6,...xsT,6], ky:[y0,...ys,yN], puntos };
+  }
+  return { kx:[-6,-4,-1,2,6], ky:[0,3,-4,2,0], puntos:[
+    {x:-4,y:3,letra:'A',tipo:'maxAbs'},{x:-1,y:-4,letra:'B',tipo:'minAbs'},{x:2,y:2,letra:'C',tipo:'maxRel'}] };
+}
+const NOMBRE_EXT = {
+  maxAbs:'Máximo relativo y absoluto',
+  maxRel:'Máximo relativo (no absoluto)',
+  minAbs:'Mínimo relativo y absoluto',
+  minRel:'Mínimo relativo (no absoluto)'
+};
+function ex4Nuevo(){
+  if(ex4.superado) return;
+  Object.assign(ex4, generarExtremos());
+  limpiarFeedback(4);
+  ['xMax4','yMax4','xMin4','yMin4'].forEach(id=> document.getElementById(id).value='');
+  ex4Render();
+}
+function ex4Render(){
+  const c = prepararCanvas('grafica4-container','c4');
+  const ctx = c.getContext('2d');
+  dibujarCuadricula(ctx,300);
+  const fn = curvaPorNodos(ex4.kx, ex4.ky);
+  dibujarFuncion(ctx,300,fn);
+  // extremos del dominio [-6, 6]
+  dibujarPunto(ctx,300,-6,ex4.ky[0],'#A0522D',4);
+  dibujarPunto(ctx,300,6,ex4.ky[ex4.ky.length-1],'#A0522D',4);
+  ex4.puntos.forEach(p=>{
+    dibujarPunto(ctx,300,p.x,p.y,'#1E6F5C',5);
+    ctx.font='bold 13px Lato'; ctx.fillStyle='#1E6F5C';
+    const esMax = p.tipo.startsWith('max');
+    ctx.fillText(p.letra, toPx(p.x,300)-4, toPxY(p.y,300) + (esMax ? -10 : 20));
+  });
+
+  const cont = document.getElementById('puntos4-container');
+  cont.innerHTML = ex4.puntos.map((p,i)=>`<div class="tramo-item">
+      <label for="ext4_${i}">Punto ${p.letra}:</label>
+      <select id="ext4_${i}"><option value="">--</option>
+        <option value="maxAbs">${NOMBRE_EXT.maxAbs}</option><option value="maxRel">${NOMBRE_EXT.maxRel}</option>
+        <option value="minAbs">${NOMBRE_EXT.minAbs}</option><option value="minRel">${NOMBRE_EXT.minRel}</option>
+      </select></div>`).join('');
+  const selects = ex4.puntos.map((_,i)=> document.getElementById('ext4_'+i));
+  const coords = ['xMax4','yMax4','xMin4','yMin4'].map(id=> document.getElementById(id));
+  const campos = selects.concat(coords);
+  prepararControles(4, campos);
+
+  function comprobar(){
+    if(!puedeCorregir(4)) return;
+    if(selects.some(s=>s.value==='')){ mostrarFeedback(4,'Clasifica todos los puntos señalados antes de corregir. No cuenta como fallo.','aviso'); return; }
+    const cv = coords.map(el=> leerNumero(el.value));
+    if(cv.some(isNaN)){ mostrarFeedback(4,'Escribe las coordenadas del máximo y del mínimo absolutos. No cuenta como fallo.','aviso'); return; }
+    const errores=[];
+    let confRelAbs=false, confMaxMin=false;
+    selects.forEach((s,i)=>{
+      const p=ex4.puntos[i];
+      if(s.value!==p.tipo){
+        errores.push(`Punto ${p.letra} (${num(p.x)}, ${num(p.y)}): ${NOMBRE_EXT[p.tipo]}.`);
+        if(s.value.slice(0,3)===p.tipo.slice(0,3)) confRelAbs=true; else confMaxMin=true;
+      }
+    });
+    const pMax = ex4.puntos.find(p=>p.tipo==='maxAbs'), pMin = ex4.puntos.find(p=>p.tipo==='minAbs');
+    const revisarCoord = (x,y,p,nombre)=>{
+      if(x===p.x && y===p.y) return;
+      if(x===p.y && y===p.x) errores.push(`${nombre}: has <strong>intercambiado las coordenadas</strong>. Primero va la x (posición horizontal) y luego la y (altura): (${num(p.x)}, ${num(p.y)}).`);
+      else errores.push(`${nombre}: está en (${num(p.x)}, ${num(p.y)}). Se alcanza en x = ${num(p.x)} y su valor es y = ${num(p.y)}.`);
+    };
+    revisarCoord(cv[0],cv[1],pMax,'Máximo absoluto');
+    revisarCoord(cv[2],cv[3],pMin,'Mínimo absoluto');
+    let pista = '';
+    if(confRelAbs) pista += '<br>Pista: un extremo <strong>relativo</strong> es más alto (o más bajo) que los puntos de <em>su alrededor</em>; el <strong>absoluto</strong> es el más alto (o más bajo) de <em>toda</em> la gráfica. Solo hay un máximo absoluto y un mínimo absoluto, y también son relativos.';
+    if(confMaxMin) pista += '<br>Pista: en un <strong>máximo</strong> la función pasa de crecer a decrecer (una cima ⛰️); en un <strong>mínimo</strong> pasa de decrecer a crecer (un valle).';
+    registrarIntento(4, errores.length===0,
+      `El máximo absoluto es el punto más alto de toda la gráfica, (${num(pMax.x)}, ${num(pMax.y)}), y el mínimo absoluto el más bajo, (${num(pMin.x)}, ${num(pMin.y)}).`,
+      `Solución: ${listaErrores(errores)}${pista}`, campos, ex4Nuevo);
+  }
+  document.getElementById('btnCorregir4').onclick = comprobar;
+  conEnter(coords, comprobar);
+  ENUNCIADOS[4]();
+}
+function enunciado4(){
+  ponerEnunciado(4, `⛰️ La gráfica representa una función definida en el intervalo [−6, 6]. Clasifica los puntos señalados y escribe las coordenadas del máximo y del mínimo absolutos. Aciertos seguidos: ${ex4.racha}/${ex4.objetivo}`);
+}
+
+/* ============================================================
+   EJERCICIO 5: función lineal — pendiente, ordenada, monotonía
+   ============================================================ */
+function ex5Nuevo(){
+  if(ex5.superado) return;
+  ex5.m = randNonZero(-DOM_GRID, DOM_GRID);
+  ex5.b = randInt(-DOM_GRID, DOM_GRID);
+  ex5.expr = 'f(x) = ' + polyCuad(0, ex5.m, ex5.b);
+  limpiarFeedback(5);
+  ['p5','o5','mono5'].forEach(id=> document.getElementById(id).value='');
+  ex5Render();
+}
+function ex5Render(){
+  const c = prepararCanvas('grafica5-container','c5');
+  const ctx = c.getContext('2d');
+  dibujarCuadricula(ctx,300);
+  dibujarFuncion(ctx,300, x=> ex5.m*x + ex5.b);
+  const p5=document.getElementById('p5'), o5=document.getElementById('o5'), mono5=document.getElementById('mono5');
+  const campos=[p5,o5,mono5];
+  prepararControles(5, campos);
+  function comprobar(){
+    if(!puedeCorregir(5)) return;
+    const vp=leerNumero(p5.value), vo=leerNumero(o5.value), vm=mono5.value;
+    if(isNaN(vp) || isNaN(vo) || vm===''){ mostrarFeedback(5,'Completa la pendiente, la ordenada y la monotonía antes de corregir. No cuenta como fallo.','aviso'); return; }
+    const errores=[];
+    if(vp!==ex5.m){
+      if(vp===ex5.b && vo===ex5.m) errores.push(`Has <strong>intercambiado pendiente y ordenada</strong>: la pendiente es el número que multiplica a x (${num(ex5.m)}) y la ordenada en el origen el término independiente (${num(ex5.b)}).`);
+      else if(vp===-ex5.m) errores.push(`Pendiente = ${num(ex5.m)}: cuidado con el signo, el signo forma parte de la pendiente.`);
+      else errores.push(`Pendiente = ${num(ex5.m)} (el número que multiplica a x).`);
+    }
+    if(vo!==ex5.b && !(vp===ex5.b && vo===ex5.m)) errores.push(`Ordenada en el origen = ${num(ex5.b)} (el valor de y cuando x = 0).`);
+    const monoCorrecta = ex5.m>0 ? 'creciente' : 'decreciente';
+    if(vm!==monoCorrecta) errores.push(`La recta es ${monoCorrecta}, porque su pendiente es ${ex5.m>0 ? 'positiva' : 'negativa'}.`);
+    registrarIntento(5, errores.length===0,
+      `En f(x) = mx + n, m = ${num(ex5.m)} es la pendiente (${ex5.m>0?'positiva → creciente':'negativa → decreciente'}) y n = ${num(ex5.b)} es la ordenada en el origen.`,
+      `Revisa: ${listaErrores(errores)}Pista: en f(x) = mx + n, la pendiente (m) multiplica a la x y la ordenada (n) es el valor de y cuando x = 0. La recta es creciente si m es positiva y decreciente si m es negativa.`,
+      campos, ex5Nuevo);
+  }
+  document.getElementById('btnCorregir5').onclick = comprobar;
+  conEnter([p5,o5], comprobar);
+  ENUNCIADOS[5]();
+}
+function enunciado5(){
+  ponerEnunciado(5, `📐 Dada la función ${ex5.expr}, indica la pendiente, la ordenada en el origen y si es creciente o decreciente. Aciertos seguidos: ${ex5.racha}/${ex5.objetivo}`);
+}
+
+/* ============================================================
+   EJERCICIO 6: elige la función (signo del coeficiente principal)
+   ============================================================ */
+function terminosBarajados(a,b,c){
+  return barajar([{c:a,p:2},{c:b,p:1},{c:c,p:0}]);
+}
+function generarEleccion(){
+  for(let it=0; it<500; it++){
+    const a = elegir([1,-1,2,-2]);
+    const h = randInt(-3,3);
+    const k = a>0 ? randInt(-5,1) : randInt(-1,5);
+    const b = -2*a*h, c = a*h*h + k;
+    const correcta = {a,b,c};
+    const d1 = {a:-a, b, c}; // misma expresión con el signo de x² cambiado
+    const a2 = -Math.sign(a)*randInt(1,3);
+    const d2 = {a:a2, b:randInt(-4,4), c:randInt(-6,6)};
+    const clave = f=> `${f.a},${f.b},${f.c}`;
+    if(new Set([clave(correcta),clave(d1),clave(d2)]).size<3) continue;
+    const opciones = barajar([
+      Object.assign({correcta:true}, correcta),
+      Object.assign({correcta:false}, d1),
+      Object.assign({correcta:false}, d2)
+    ]).map(o=> Object.assign(o, { terminos: terminosBarajados(o.a,o.b,o.c) }));
+    return { a, b, c, opciones };
+  }
+  return { a:1, b:-2, c:-3, opciones:[
+    {a:1,b:-2,c:-3,correcta:true,terminos:[{c:-3,p:0},{c:1,p:2},{c:-2,p:1}]},
+    {a:-1,b:-2,c:-3,correcta:false,terminos:[{c:-2,p:1},{c:-1,p:2},{c:-3,p:0}]},
+    {a:-2,b:1,c:4,correcta:false,terminos:[{c:4,p:0},{c:1,p:1},{c:-2,p:2}]}] };
+}
+const LETRAS = ['A','B','C'];
+function ex6Nuevo(){
+  if(ex6.superado) return;
+  Object.assign(ex6, generarEleccion());
+  limpiarFeedback(6);
+  document.getElementById('conc6').value='';
+  ex6Render();
+}
+function ex6Render(){
+  const c = prepararCanvas('grafica6-container','c6');
+  const ctx = c.getContext('2d');
+  dibujarCuadricula(ctx,300);
+  dibujarFuncion(ctx,300, x=> ex6.a*x*x + ex6.b*x + ex6.c);
+
+  const cont = document.getElementById('opciones6-container');
+  cont.innerHTML = ex6.opciones.map((o,i)=>`<label class="opcion-radio" for="op6_${i}">
+      <input type="radio" name="op6" id="op6_${i}" value="${i}">
+      <span class="letra">${LETRAS[i]})</span> <span>f(x) = ${fmtPoly(o.terminos)}</span></label>`).join('');
+  const radios = ex6.opciones.map((_,i)=> document.getElementById('op6_'+i));
+  const conc = document.getElementById('conc6');
+  const campos = [conc].concat(radios);
+  prepararControles(6, campos);
+
+  function comprobar(){
+    if(!puedeCorregir(6)) return;
+    const elegida = radios.findIndex(r=>r.checked);
+    if(conc.value==='' || elegida===-1){ mostrarFeedback(6,'Responde los dos apartados: la forma de la parábola y la función elegida. No cuenta como fallo.','aviso'); return; }
+    const concCorrecta = ex6.a>0 ? 'concava' : 'convexa';
+    const idxOk = ex6.opciones.findIndex(o=>o.correcta);
+    const errores=[];
+    if(conc.value!==concCorrecta){
+      errores.push(`La parábola se abre hacia ${ex6.a>0 ? 'arriba (∪), así que es <strong>cóncava</strong>' : 'abajo (∩), así que es <strong>convexa</strong>'}.`);
+    }
+    if(elegida!==idxOk){
+      const op = ex6.opciones[elegida];
+      const primero = op.terminos.find(t=>t.c!==0);
+      const signoPrimeroComoCorrecta = primero.p!==2 && Math.sign(primero.c)===Math.sign(ex6.a);
+      const signoTxt = ex6.a>0 ? 'positivo' : 'negativo';
+      let e = `La función correcta es la <strong>${LETRAS[idxOk]})</strong>: es la única cuyo coeficiente de x² es ${signoTxt} (${num(ex6.a)}). La que elegiste tiene coeficiente de x² igual a ${num(op.a)}.`;
+      if(signoPrimeroComoCorrecta) e += ' <strong>Te has fijado en el signo del primer término</strong>, pero el coeficiente principal es el que multiplica a x², esté donde esté escrito.';
+      errores.push(e);
+    }
+    registrarIntento(6, errores.length===0,
+      `El coeficiente de x² es ${num(ex6.a)}: ${ex6.a>0 ? 'positivo → la parábola es cóncava ∪' : 'negativo → la parábola es convexa ∩'}. Las otras dos tienen el coeficiente de x² con el signo contrario.`,
+      `${listaErrores(errores)}Recuerda: en f(x) = ax² + bx + c, si <strong>a &gt; 0</strong> la parábola es <strong>cóncava ∪</strong> y si <strong>a &lt; 0</strong> es <strong>convexa ∩</strong>.`,
+      campos, ex6Nuevo);
+  }
+  document.getElementById('btnCorregir6').onclick = comprobar;
+  ENUNCIADOS[6]();
+}
+function enunciado6(){
+  ponerEnunciado(6, `🔎 Observa la parábola. Indica su forma y elige cuál de las tres funciones le corresponde (fíjate en el coeficiente de x²). Aciertos seguidos: ${ex6.racha}/${ex6.objetivo}`);
+}
+
+/* ============================================================
+   EJERCICIO 7: tabla de valores y gráfica de una función cuadrática
+   ============================================================ */
+const XS7 = [-2,-1,0,1,2];
+function generarCuadratica(){
+  for(let it=0; it<500; it++){
+    const a = elegir([1,-1,1,-1,2,-2]);
+    const b = randInt(-3,3), c = randInt(-5,5);
+    if(b===0 && rand()<0.6) continue;
+    const ys = XS7.map(x=> a*x*x + b*x + c);
+    if(ys.some(y=>Math.abs(y)>5)) continue; // los cinco puntos quedan dentro de la cuadrícula con margen
+    return { a, b, c, ys };
+  }
+  return { a:1, b:-1, c:-2, ys:[4,0,-2,-2,0] };
+}
+function ex7Nuevo(){
+  if(ex7.superado) return;
+  const g = generarCuadratica();
+  Object.assign(ex7, g);
+  ex7.expr = 'f(x) = ' + polyCuad(g.a,g.b,g.c);
+  ex7.puntosUsuario = XS7.map(()=>null);
+  limpiarFeedback(7);
+  ex7Render();
+}
+function ex7Render(){
+  let tabla = '<table class="tabla-valores"><tr><th>x</th><th>y = f(x)</th></tr>';
+  XS7.forEach((x,i)=>{ tabla += `<tr><td style="font-weight:bold;">${num(x)}</td><td><label for="val7_${i}" class="sr-only">Valor de y para x = ${x}</label><input type="text" autocomplete="off" id="val7_${i}"></td></tr>`; });
+  tabla += '</table><p style="font-size:0.72rem;margin-top:8px;">💡 Haz clic en la cuadrícula para marcar los cinco puntos (x = −2, −1, 0, 1, 2). Si te equivocas, vuelve a hacer clic en esa misma columna.</p>';
+  document.getElementById('tabla7-container').innerHTML = tabla;
+
+  const c = prepararCanvas('grafica7-container','c7');
+  const bloqueado = ex7.superado || finalizado;
+  c.className = bloqueado ? 'bloqueado' : 'interactivo';
+  const ctx = c.getContext('2d');
+  function redraw(){
+    dibujarCuadricula(ctx,300);
+    ex7.puntosUsuario.forEach(p=>{ if(p) dibujarPunto(ctx,300,p.x,p.y,'#1E6F5C'); });
+  }
+  redraw();
+  ex7.bloqueado = bloqueado;
+  c.addEventListener('pointerdown', e=>{
+    if(ex7.bloqueado || ex7.superado || finalizado) return;
+    const rect=c.getBoundingClientRect();
+    const px=(e.clientX-rect.left)*c.width/rect.width, py=(e.clientY-rect.top)*c.height/rect.height;
+    if(px<34||px>266||py<34||py>266) return;
+    const vx=toVal(px,300), idx=XS7.indexOf(vx);
+    if(idx===-1) return;
+    ex7.puntosUsuario[idx] = { x:vx, y:clamp(toValY(py,300),-DOM_GRID,DOM_GRID) };
+    redraw();
+  });
+
+  const campos = XS7.map((_,i)=> document.getElementById('val7_'+i));
+  prepararControles(7, campos);
+
+  function comprobar(){
+    if(!puedeCorregir(7)) return;
+    const vals = campos.map(el=> leerNumero(el.value));
+    if(vals.some(isNaN)){ mostrarFeedback(7,'Completa los cinco valores de la tabla antes de comprobar. No cuenta como fallo.','aviso'); return; }
+    if(ex7.puntosUsuario.some(p=>p===null)){ mostrarFeedback(7,'⚠️ Aún no has marcado los cinco puntos en la gráfica. Haz clic en la cuadrícula para señalarlos antes de comprobar.'+' No cuenta como fallo.','aviso'); return; }
+    const {a,b,c:cc} = ex7;
+    const errores=[];
+    let errCuadradoNeg=false, errSignoB=false;
+    XS7.forEach((x,i)=>{
+      if(vals[i]===ex7.ys[i]) return;
+      let e = `f(${num(x)}) = ${num(ex7.ys[i])}`;
+      if(x<0 && vals[i]=== -a*x*x + b*x + cc){ errCuadradoNeg=true; e += `. Has calculado (${num(x)})² como ${num(-x*x)}, pero el cuadrado de un número negativo es positivo: (${num(x)})² = ${x*x}.`; }
+      else if(x!==0 && b!==0 && vals[i]=== a*x*x - b*x + cc){ errSignoB=true; e += `. Error de signo en el término ${fmtPoly([{c:b,p:1}])}: ${num(b)}·(${num(x)}) = ${num(b*x)}.`; }
+      else e += `: ${num(a)}·(${num(x)})² ${b>=0?'+':MENOS} ${Math.abs(b)}·(${num(x)}) ${cc>=0?'+':MENOS} ${Math.abs(cc)} = ${num(a*x*x)} ${b*x>=0?'+':MENOS} ${Math.abs(b*x)} ${cc>=0?'+':MENOS} ${Math.abs(cc)} = ${num(ex7.ys[i])}.`;
+      errores.push(e);
+    });
+    const tablaOk = errores.length===0;
+    const puntosMal = XS7.filter((x,i)=> ex7.puntosUsuario[i].y!==ex7.ys[i]);
+    const puntosCoherentesConTabla = XS7.every((x,i)=> ex7.puntosUsuario[i].y===vals[i]);
+    if(puntosMal.length){
+      if(tablaOk) errores.push(`La tabla está bien, pero ${puntosMal.length===1 ? 'el punto con' : 'los puntos con'} x = ${puntosMal.map(num).join(', ')} no ${puntosMal.length===1 ? 'está colocado' : 'están colocados'} a la altura correcta. Cada fila (x, y) de la tabla es un punto de la gráfica.`);
+      else if(puntosCoherentesConTabla) errores.push('Has dibujado bien los puntos de tu tabla, pero como algunos valores de la tabla están mal, esos puntos también lo están.');
+      else errores.push(`Revisa también los puntos marcados en x = ${puntosMal.map(num).join(', ')}.`);
+    }
+    let pista = 'Pista: sustituye x respetando el orden de operaciones — primero la potencia, luego las multiplicaciones y por último las sumas y restas.';
+    if(errCuadradoNeg) pista = 'Pista: escribe siempre el número negativo entre paréntesis antes de elevarlo al cuadrado: (−2)² = (−2)·(−2) = 4.';
+    else if(errSignoB) pista = 'Pista: al multiplicar dos números con signo, signos iguales dan positivo y signos distintos dan negativo.';
+    const ok = errores.length===0;
+    if(ok && ex7.racha+1>=ex7.objetivo){
+      // al superar, mostramos la parábola completa sobre los puntos
+      dibujarFuncion(ctx,300, x=> a*x*x + b*x + cc, '#A0522D', 2);
+      ex7.puntosUsuario.forEach(p=> dibujarPunto(ctx,300,p.x,p.y,'#1E6F5C'));
+    }
+    ex7.bloqueado = true;
+    c.className='bloqueado';
+    registrarIntento(7, ok,
+      `Los cinco puntos dibujan una parábola ${a>0 ? 'cóncava ∪ (a > 0)' : 'convexa ∩ (a < 0)'}.`,
+      `${listaErrores(errores)}${pista}`, campos, ex7Nuevo);
+  }
+  document.getElementById('btnCorregir7').onclick = comprobar;
+  conEnter(campos, comprobar);
+  ENUNCIADOS[7]();
+}
+function enunciado7(){
+  ponerEnunciado(7, `📊 Completa la tabla de valores de la función ${ex7.expr} y marca los puntos en la gráfica. Aciertos seguidos: ${ex7.racha}/${ex7.objetivo}`);
+}
+
+const ENUNCIADOS = [null, enunciado1, enunciado2, enunciado3, enunciado4, enunciado5, enunciado6, enunciado7];
+const NUEVOS = [null, ex1Nuevo, ex2Nuevo, ex3Nuevo, ex4Nuevo, ex5Nuevo, ex6Nuevo, ex7Nuevo];
+for(let n=1;n<=NUM_TIPOS;n++){
+  document.getElementById('btnNuevo'+n).onclick = ()=>{ if(!EJ[n].superado && !finalizado) NUEVOS[n](); };
+}
+
+/* ---------- Marcador general y cabeceras ---------- */
+function pintarMarcador(){
+  const todos = EJ.slice(1);
+  document.getElementById('progresoCount').textContent = todos.filter(e=>e.superado).length;
+  document.getElementById('fallosCount').textContent = todos.reduce((s,e)=>s+e.fallos,0);
+  document.getElementById('notaActual').textContent = calcularNota().toFixed(1);
+}
+function actualizarCabeceras(){
+  for(let i=1;i<=NUM_TIPOS;i++){
+    const sup = EJ[i].superado;
+    document.getElementById('card'+i).classList.toggle('superado', sup);
+    document.getElementById('badge'+i).style.display = sup ? 'inline-block' : 'none';
+  }
+}
+
+/* ---------- Puntuación ---------- */
+function valorEjercicio(ex){
+  if(!ex.superado) return 0;
+  return Math.max(0, PUNTO_POR_TIPO - PENALIZACION_FALLO*ex.fallos);
+}
+function calcularNota(){ return round1(EJ.slice(1).reduce((s,ex)=> s+valorEjercicio(ex), 0)); }
+function colorPorNota(nota){
+  if(nota===10) return {bg:'#1a7a1a', txt:'white'};
+  if(nota>=9)   return {bg:'#6dbf6d', txt:'white'};
+  if(nota>=8)   return {bg:'#1a4f8a', txt:'white'};
+  if(nota>=7)   return {bg:'#5b9bd5', txt:'white'};
+  if(nota>=6)   return {bg:'#c05c00', txt:'white'};
+  if(nota>=5)   return {bg:'#f5a623', txt:'black'};
+  return {bg:'#c0392b', txt:'white'};
+}
+function formatoTiempo(segundos){
+  const totalMin = Math.max(1, Math.ceil(segundos/60));
+  const pad = n=> String(n).padStart(2,'0');
+  return `${pad(Math.floor(totalMin/60))}:${pad(totalMin%60)}`;
+}
+
+/* ---------- Finalizar y Calificar ---------- */
+document.getElementById('btnFinalizar').onclick = ()=>{
+  if(finalizado && resultadoFinal){ mostrarResultado(); return; }
+  const nombre = document.getElementById('nombreAlumno').value.trim();
+  if(!nombre){ alertaNombre(); return; }
+  document.getElementById('overlayConfirmar').classList.add('show');
+};
+function alertaNombre(){
+  const campo = document.getElementById('nombreAlumno');
+  campo.classList.add('falta');
+  campo.placeholder = 'Escribe tu nombre antes de finalizar';
+  campo.focus();
+  campo.scrollIntoView({behavior:'smooth', block:'center'});
+  setTimeout(()=> campo.classList.remove('falta'), 2500);
+}
+function bloquearTodo(){
+  for(let n=1;n<=NUM_TIPOS;n++){
+    document.querySelectorAll(`#card${n} input, #card${n} select, #card${n} button`).forEach(el=> el.disabled = true);
+  }
+  ex7.bloqueado = true;
+  document.getElementById('nombreAlumno').disabled = true;
+}
+document.getElementById('btnCancelarFinal').onclick = ()=> document.getElementById('overlayConfirmar').classList.remove('show');
+document.getElementById('btnConfirmarFinal').onclick = ()=>{
+  document.getElementById('overlayConfirmar').classList.remove('show');
+  finalizado = true;
+  bloquearTodo();
+  const ahora = new Date();
+  const pad = n=> String(n).padStart(2,'0');
+  resultadoFinal = {
+    nombre: document.getElementById('nombreAlumno').value.trim(),
+    fecha: `${pad(ahora.getDate())}/${pad(ahora.getMonth()+1)}/${ahora.getFullYear()}`,
+    hora: `${pad(ahora.getHours())}:${pad(ahora.getMinutes())}:${pad(ahora.getSeconds())}`,
+    tiempo: formatoTiempo((Date.now()-startTime)/1000),
+    nota: calcularNota()
+  };
+  mostrarResultado();
+};
+function mostrarResultado(){
+  const r = resultadoFinal;
+  const color = colorPorNota(r.nota);
+  document.getElementById('resTitulo').textContent = document.querySelector('.titulo-ficha').textContent;
+  document.getElementById('resSubtitulo').textContent = document.querySelector('.subtitulo').textContent;
+  const nom = document.getElementById('resNombre'); nom.innerHTML=''; const b=document.createElement('strong'); b.textContent=r.nombre; nom.appendChild(b);
+  document.getElementById('resNota').textContent = `${r.nota} / 10`;
+  document.getElementById('resFecha').textContent = `📅 Fecha: ${r.fecha}`;
+  document.getElementById('resHora').textContent = `⏰ Hora: ${r.hora}`;
+  document.getElementById('resTiempo').textContent = `⏱️ Tiempo empleado: ${r.tiempo}`;
+  document.getElementById('resResumen').innerHTML = EJ.slice(1).map((ex,i)=>{
+    const intentos = ex.aciertos + ex.fallos;
+    const estado = ex.superado ? `✅ Superado (${valorEjercicio(ex).toFixed(2)}/${PUNTO_POR_TIPO.toFixed(2)})` : `🔘 No superado (0/${PUNTO_POR_TIPO.toFixed(2)})`;
+    return `<div><strong>${i+1}. ${NOMBRES[i]}</strong> — ${estado} · ${intentos} intento${intentos===1?'':'s'}: ${ex.aciertos} acierto${ex.aciertos===1?'':'s'}, ${ex.fallos} fallo${ex.fallos===1?'':'s'}</div>`;
+  }).join('');
+  const modal = document.getElementById('modalResultado');
+  modal.style.backgroundColor = color.bg; modal.style.color = color.txt;
+  document.body.classList.toggle('nota-perfecta', r.nota===10);
+  document.getElementById('fichaContainer').style.background = r.nota===10 ? '#eafaea' : '';
+  document.getElementById('overlayResultado').classList.add('show');
+}
+document.getElementById('btnCerrarResultado').onclick = ()=> document.getElementById('overlayResultado').classList.remove('show');
+
+/* ---------- Reinicio global ("Nueva ficha") ---------- */
+function reiniciarTodo(){
+  EJ.slice(1).forEach(e=>{ clearTimeout(e.temporizador); e.temporizador=null; e.superado=false; e.fallos=0; e.aciertos=0; e.racha=0; });
+  startTime = Date.now();
+  finalizado = false;
+  resultadoFinal = null;
+  document.body.classList.remove('nota-perfecta');
+  document.getElementById('fichaContainer').style.background = '';
+  ['overlayResultado','overlayConfirmar'].forEach(id=> document.getElementById(id).classList.remove('show'));
+  const nombre = document.getElementById('nombreAlumno');
+  nombre.disabled = false; nombre.value = '';
+  for(let n=1;n<=NUM_TIPOS;n++) NUEVOS[n]();
+  actualizarCabeceras(); pintarMarcador();
+}
+document.getElementById('btnReiniciar').onclick = ()=> document.getElementById('overlayConfirmarReinicio').classList.add('show');
+document.getElementById('btnCancelarReinicio').onclick = ()=> document.getElementById('overlayConfirmarReinicio').classList.remove('show');
+document.getElementById('btnConfirmarReinicio').onclick = ()=>{
+  document.getElementById('overlayConfirmarReinicio').classList.remove('show');
+  reiniciarTodo();
+};
+
+/* ---------- Arranque ---------- */
+for(let n=1;n<=NUM_TIPOS;n++) NUEVOS[n]();
+actualizarCabeceras(); pintarMarcador();
+
+// Gancho solo para pruebas automáticas (únicamente con ?seed=N en la URL)
+if(seedParam !== null){
+  window.__qa = { EJ, fmtPoly, polyCuad, generarCortes, generarTramos, generarCurvatura, generarExtremos, generarEleccion, generarCuadratica, calcularNota };
+}
+
+})();
+</script>
+</body>
+</html>
+

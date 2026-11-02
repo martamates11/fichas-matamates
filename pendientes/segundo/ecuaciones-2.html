@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ecuaciones 2º ESO · Ficha interactiva</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script" async></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#F5F0E8;font-family:'Lato',sans-serif;color:#2C1F0E;min-height:100vh}
+.autoria{background:#3B2510;text-align:center;padding:6px;font-size:10px;color:rgba(245,240,232,0.7)}
+.ficha-wrapper{max-width:1000px;margin:0 auto;padding:2rem 1rem}
+.header{background:#3B2510;border-radius:1.5rem;padding:1.8rem 2rem;margin-bottom:1.8rem;box-shadow:0 8px 20px rgba(0,0,0,0.1)}
+.header h1{font-family:'Libre Baskerville',serif;font-size:2.2rem;font-weight:700;color:#F5EDD8;margin-bottom:0.5rem}
+.header p{color:#C9B896;font-size:0.9rem}
+.header-badges{display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:1rem}
+.header-badge{background:rgba(255,255,255,0.08);padding:0.25rem 0.75rem;border-radius:40px;font-size:0.7rem;color:#E0CEAA}
+.info-bar{background:#FDFAF3;border-radius:1.2rem;padding:1rem 1.5rem;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;border:1px solid #C9A96E}
+.info-item{display:flex;align-items:center;gap:0.6rem;font-size:0.85rem;font-weight:500;color:#6B4F35}
+.info-icon{width:30px;height:30px;background:#F5F0E8;border-radius:10px;display:flex;align-items:center;justify-content:center}
+.info-value{font-weight:700;font-size:1rem;color:#2C1F0E}
+.name-section{background:#FDFAF3;border-radius:1rem;padding:0.8rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;border:1px solid #E0CEAA}
+.name-label{font-size:0.75rem;font-weight:600;text-transform:uppercase;color:#6B4F35}
+.name-input{flex:1;max-width:280px;border:none;border-bottom:2px solid #C9A96E;padding:0.5rem 0.25rem;font-size:0.95rem;background:transparent}
+.name-input:focus{outline:none;border-bottom-color:#A0522D}
+.ejercicio-card{background:#FDFAF3;border-radius:1.2rem;padding:1.5rem;margin-bottom:1.2rem;border:1px solid #C9A96E}
+.ejercicio-card.superado{border-left:5px solid #2E6B3E;background:#FAF8F0}
+.ejercicio-header{display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;flex-wrap:wrap}
+.ejercicio-num{background:#A0522D;color:white;width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700}
+.ejercicio-titulo{font-family:'Libre Baskerville',serif;font-weight:700}
+.badge-superado{background:#2E6B3E;color:white;padding:0.2rem 0.7rem;border-radius:40px;font-size:0.65rem;font-weight:600;margin-left:0.5rem}
+.enunciado,.enunciado-latex{background:#F5F0E8;padding:0.8rem 1.2rem;border-radius:1rem;font-size:1rem;margin-bottom:1.2rem;border:1px solid #E0CEAA;display:inline-block;font-family:'Lato',sans-serif}
+.text-input,.number-input{border:2px solid #C9A96E;border-radius:10px;padding:8px 14px;font-size:0.9rem;width:280px;background:white}
+.number-input{width:120px;text-align:center}
+.input-area{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:0.8rem}
+.feedback{margin-top:10px;font-size:0.85rem;min-height:50px}
+.feedback-correcto{color:#2E6B3E;background:rgba(46,107,62,0.1);padding:6px 14px;border-radius:30px;display:inline-block}
+.feedback-error{color:#8B1A1A;background:rgba(139,26,26,0.08);padding:6px 14px;border-radius:30px;display:inline-block}
+.btn-primary{background:#A0522D;border:none;color:white;padding:8px 22px;border-radius:40px;font-weight:600;cursor:pointer}
+.btn-primary:hover:not(:disabled){background:#7B3B1E;transform:scale(0.97)}
+.btn-primary:disabled{background:#C9A96E;cursor:not-allowed}
+.btn-secondary{background:#C9A96E;border:none;color:#2C1F0E;padding:8px 22px;border-radius:40px;font-weight:600;cursor:pointer}
+.btn-potencia{background:#E0CEAA;border:none;color:#3B2510;padding:8px 14px;border-radius:40px;font-weight:600;cursor:pointer;font-size:0.8rem}
+.btn-large{background:#A0522D;color:white;border:none;padding:12px 36px;font-size:0.95rem;font-weight:600;border-radius:50px;cursor:pointer}
+.btn-outline{background:transparent;border:2px solid #C9A96E;color:#6B4F35;padding:10px 28px;border-radius:50px;cursor:pointer}
+.action-buttons{display:flex;gap:1rem;justify-content:center;margin-top:2rem;flex-wrap:wrap}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(4px);padding:1rem}
+.modal-overlay.show{display:flex}
+.modal-card{background:#fffdf7;border-radius:12px;padding:32px;max-width:520px;width:95%;max-height:90vh;overflow-y:auto;text-align:center;border:2px solid #1a1008;animation:modalIn 0.3s ease;font-family:'Libre Baskerville',serif}
+.modal-card-name{background:#fffdf7;border-radius:12px;padding:32px;max-width:420px;width:90%;text-align:center;border:2px solid #c8401a}
+@keyframes modalIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
+.modal-close{float:right;background:none;border:none;font-size:24px;cursor:pointer}
+.modal-grade{font-size:52px;font-weight:900;margin:12px 0 8px}
+.modal-stats{border:1.5px solid rgba(0,0,0,0.2);border-radius:10px;padding:12px;margin-bottom:14px;font-size:12px;text-align:left}
+.modal-desglose{border:1.5px solid rgba(0,0,0,0.2);border-radius:10px;padding:12px;margin-bottom:14px;font-size:12px;text-align:left}
+.desglose-fila{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(0,0,0,0.08)}
+.desglose-fila:last-child{border-bottom:none}
+.desglose-nombre{font-weight:600}
+.desglose-est{font-size:10px;opacity:0.85}
+.chip-ok{background:rgba(46,107,62,0.15);color:#2E6B3E;padding:2px 8px;border-radius:20px;font-weight:700;font-size:10px}
+.chip-no{background:rgba(139,26,26,0.1);color:#8B1A1A;padding:2px 8px;border-radius:20px;font-weight:700;font-size:10px}
+hr{margin:0.5rem 0;border:none;border-top:1px solid #E0CEAA}
+.recordatorio{font-size:12px;margin-top:8px;font-weight:500;background:rgba(0,0,0,0.1);border-radius:20px;padding:6px;display:inline-block}
+.modal-footer{font-size:10px;margin-top:12px;opacity:0.7}
+.input-con-potencia{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.enunciado-fraccion-manual{background:#F5F0E8;padding:0.8rem 1.2rem;border-radius:1rem;margin-bottom:1.2rem;border:1px solid #E0CEAA;display:inline-flex;align-items:center;gap:10px;font-size:1.1rem}
+.frac-manual{display:inline-flex;flex-direction:column;align-items:center;line-height:1.15;vertical-align:middle}
+.frac-manual-num,.frac-manual-den{padding:0 4px}
+.frac-manual-den{border-top:2px solid #2C1F0E}
+.frac-manual-op{font-weight:700;padding:0 2px}
+</style>
+</head>
+<body>
+<div class="autoria">Material elaborado por Marta López de Letona Sánchez.</div>
+<div class="ficha-wrapper">
+<div class="header">
+<h1>📐 Ecuaciones · 2º ESO</h1>
+<p>Ecuaciones de primer y segundo grado: sencillas, con paréntesis, con fracciones y problemas</p>
+<div class="header-badges">
+<span class="header-badge">🎯 2 aciertos de 3 (ventana móvil) → tipo superado</span>
+<span class="header-badge">💡 Cada fallo resta 0,5 puntos sobre 10</span>
+</div>
+</div>
+<div class="info-bar">
+<div class="info-item"><span class="info-icon">📊</span><span>Tipos superados: <span id="progresoCount" class="info-value">0</span>/5</span></div>
+<div class="info-item"><span class="info-icon">❌</span><span>Fallos totales: <span id="fallosCount" class="info-value">0</span></span></div>
+<div class="info-item"><span class="info-icon">⭐</span><span>Nota: <span id="notaActual" class="info-value">0.0</span>/10</span></div>
+</div>
+<div class="name-section">
+<span class="name-label">👤 ALUMNO/A</span>
+<label for="nombreAlumno" class="sr-only">Nombre y apellidos del alumno o alumna</label>
+<input type="text" id="nombreAlumno" class="name-input" placeholder="Escribe tu nombre...">
+</div>
+<div id="ejerciciosContainer"></div>
+<div class="action-buttons">
+<button class="btn-large" id="btnFinalizar">📋 Finalizar y calificar</button>
+<button class="btn-outline" id="btnResetear">🔄 Reiniciar toda la ficha</button>
+</div>
+</div>
+<div id="modalNombre" class="modal-overlay">
+<div class="modal-card-name">
+<h3 style="color:#c8401a;">✏️ Falta tu nombre</h3>
+<p style="font-size:13px;margin-bottom:16px;">Para calificar necesitas identificarte.</p>
+<label for="modalNombreInput" class="sr-only">Nombre completo</label>
+<input type="text" id="modalNombreInput" placeholder="Nombre completo" style="width:100%;border:1.5px solid #d4c4a0;border-radius:6px;padding:10px;margin:16px 0;">
+<button id="btnConfirmarNombre" style="background:#c8401a;color:#fff;border:none;padding:10px;width:100%;border-radius:6px;cursor:pointer;font-weight:600;">Continuar →</button>
+</div>
+</div>
+<div id="modalReiniciar" class="modal-overlay">
+<div class="modal-card-name">
+<h3 style="color:#c8401a;">🔄 Reiniciar ficha</h3>
+<p style="font-size:13px;margin:12px 0 20px;">Se perderá todo el progreso registrado. Esta acción no se puede deshacer. ¿Seguro que quieres reiniciar?</p>
+<div style="display:flex;gap:10px;">
+<button id="btnCancelarReset" style="flex:1;background:transparent;border:1.5px solid #d4c4a0;color:#6B4F35;padding:10px;border-radius:6px;cursor:pointer;font-weight:600;">Cancelar</button>
+<button id="btnConfirmarReset" style="flex:1;background:#c8401a;color:#fff;border:none;padding:10px;border-radius:6px;cursor:pointer;font-weight:600;">Sí, reiniciar</button>
+</div>
+</div>
+</div>
+<div id="modalAvisoIncompleto" class="modal-overlay">
+<div class="modal-card-name">
+<h3 style="color:#c8401a;">⚠️ Ficha incompleta</h3>
+<p style="font-size:13px;margin:12px 0 8px;" id="avisoIncompletoTexto"></p>
+<p style="font-size:13px;margin-bottom:16px;">Si finalizas ahora, tu nota será <strong id="avisoIncompletoNota"></strong>. Puedes cancelar y seguir completando la ficha sin perder nada de lo ya conseguido.</p>
+<div style="display:flex;gap:10px;">
+<button id="btnCancelarFinalizar" style="flex:1;background:transparent;border:1.5px solid #d4c4a0;color:#6B4F35;padding:10px;border-radius:6px;cursor:pointer;font-weight:600;">Seguir trabajando</button>
+<button id="btnConfirmarFinalizarIncompleto" style="flex:1;background:#c8401a;color:#fff;border:none;padding:10px;border-radius:6px;cursor:pointer;font-weight:600;">Finalizar igualmente</button>
+</div>
+</div>
+</div>
+<div id="modalResultados" class="modal-overlay">
+<div class="modal-card" id="modalCard">
+<button class="modal-close" id="closeModal">✕</button>
+<div id="modalNombreMostrar" style="font-size:1rem;font-weight:600;"></div>
+<div style="font-size:0.85rem;opacity:0.8;">📐 Ecuaciones · 2º ESO</div>
+<div class="modal-grade" id="modalNota"></div>
+<div class="modal-message" id="modalMensaje"></div>
+<div class="modal-stats" id="modalStats"></div>
+<div class="modal-desglose" id="modalDesglose"></div>
+<div class="recordatorio">📸 Captura y entrega en Google Classroom.</div>
+<div class="modal-footer">Material elaborado por Marta López de Letona Sánchez. Basado en el trabajo de Javier Cayetano.</div>
+</div>
+</div>
+<script>
+const startTime = Date.now();
+
+/* ============ UTILIDADES DE PARSEO Y EQUIVALENCIA DE ECUACIONES ============ */
+function normalizarExpresion(exp) {
+    if (!exp) return "";
+    return exp.trim().replace(/\s/g, '');
+}
+
+// Normaliza la respuesta del alumno: admite coma decimal española ("7,5" -> "7.5")
+// y quita espacios sobrantes, antes de pasarla a parseInt/parseFloat.
+function normalizarNumero(str) {
+    if (typeof str !== 'string') return str;
+    return str.trim().replace(',', '.');
+}
+
+function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { [a, b] = [b, a % b]; } return a; }
+function lcm(a, b) { return Math.abs(a * b) / gcd(a, b); }
+
+function insertarPotencia(idInput) {
+    let input = document.getElementById(idInput);
+    if (input) {
+        let cursorPos = input.selectionStart;
+        let valor = input.value;
+        input.value = valor.slice(0, cursorPos) + '^' + valor.slice(cursorPos);
+        input.focus();
+        input.setSelectionRange(cursorPos + 1, cursorPos + 1);
+    }
+}
+
+// Parsea un lado de una ecuación (sin '=') en {a: coef x^2, b: coef x, c: término independiente}
+function parseLadoCuadratico(str) {
+    let s = normalizarExpresion(str);
+    if (s === '') return { a: 0, b: 0, c: 0 };
+    if (s[0] !== '+' && s[0] !== '-') s = '+' + s;
+    let terms = s.match(/[+-][^+-]+/g) || [];
+    let a = 0, b = 0, c = 0;
+    terms.forEach(t => {
+        let sign = t[0] === '-' ? -1 : 1;
+        let body = t.slice(1);
+        if (body.includes('x^2')) {
+            let coefStr = body.replace('x^2', '');
+            let coef = coefStr === '' ? 1 : parseFloat(coefStr);
+            if (!isNaN(coef)) a += sign * coef;
+        } else if (body.includes('x')) {
+            let coefStr = body.replace('x', '');
+            let coef = coefStr === '' ? 1 : parseFloat(coefStr);
+            if (!isNaN(coef)) b += sign * coef;
+        } else {
+            let num = parseFloat(body);
+            if (!isNaN(num)) c += sign * num;
+        }
+    });
+    return { a, b, c };
+}
+
+function normalizarSigno(coefs) {
+    let { a, b, c } = coefs;
+    if (Math.abs(a) > 1e-9) {
+        if (a < 0) return { a: -a, b: -b, c: -c };
+        return { a, b, c };
+    }
+    if (Math.abs(b) > 1e-9) {
+        if (b < 0) return { a: -a, b: -b, c: -c };
+        return { a, b, c };
+    }
+    return { a, b, c };
+}
+
+// Compara dos ecuaciones (con '=') admitiendo reordenación de términos,
+// cambio de lado y cambio de signo global (multiplicar ambos miembros por -1).
+function ecuacionesEquivalentes(e1, e2) {
+    if (!e1 || !e2 || !e1.includes('=') || !e2.includes('=')) return false;
+    let [l1, r1] = e1.split('=');
+    let [l2, r2] = e2.split('=');
+    let pl1 = parseLadoCuadratico(l1), pr1 = parseLadoCuadratico(r1);
+    let pl2 = parseLadoCuadratico(l2), pr2 = parseLadoCuadratico(r2);
+    let net1 = normalizarSigno({ a: pl1.a - pr1.a, b: pl1.b - pr1.b, c: pl1.c - pr1.c });
+    let net2 = normalizarSigno({ a: pl2.a - pr2.a, b: pl2.b - pr2.b, c: pl2.c - pr2.c });
+    return Math.abs(net1.a - net2.a) < 1e-9 && Math.abs(net1.b - net2.b) < 1e-9 && Math.abs(net1.c - net2.c) < 1e-9;
+}
+
+function formatEcuacionCuadratica(a, b, c) {
+    let terms = [];
+    if (a !== 0) terms.push({ coef: a, v: 'x^2' });
+    if (b !== 0) terms.push({ coef: b, v: 'x' });
+    if (c !== 0) terms.push({ coef: c, v: '' });
+    if (terms.length === 0) return '0=0';
+    let str = '';
+    terms.forEach((t, idx) => {
+        let abs = Math.abs(t.coef);
+        let coefStr = (abs === 1 && t.v !== '') ? '' : abs.toString();
+        let piece = coefStr + t.v;
+        if (idx === 0) {
+            str += (t.coef < 0 ? '-' : '') + piece;
+        } else {
+            str += (t.coef < 0 ? '-' : '+') + piece;
+        }
+    });
+    return str + '=0';
+}
+
+function compararParDeRaices(v1, v2, raices) {
+    let n1 = parseInt(normalizarNumero(v1)), n2 = parseInt(normalizarNumero(v2));
+    if (isNaN(n1) || isNaN(n2)) return false;
+    let entrada = [n1, n2].sort((x, y) => x - y);
+    let esperado = [...raices].sort((x, y) => x - y);
+    return entrada[0] === esperado[0] && entrada[1] === esperado[1];
+}
+
+/* ============ ESTADO GENERAL (modelo ventana móvil, skill fichas-interactivas) ============ */
+const NOMBRES_TIPOS = [
+    'Ecuaciones sencillas',
+    'Ecuaciones con paréntesis',
+    'Problema (1er grado)',
+    'Ecuaciones con fracciones',
+    '2º grado incompleta'
+];
+const NUM_TIPOS = NOMBRES_TIPOS.length;
+const PUNTO_POR_TIPO = 10 / NUM_TIPOS;
+const PENALIZACION_FALLO = 0.5;
+
+const state = {
+    puntosGlobal: 0,
+    tipos: NOMBRES_TIPOS.map(() => ({ ventana: [], superado: false, cerrado: false, totalIntentos: 0, totalAciertos: 0, totalFallos: 0 })),
+    inicio: Date.now()
+};
+
+let instancias = [];
+let pasoProblema = {}; // solo para tipos multipaso (2): 1 = plantear ecuación, 2 = resolver x
+let lastBancoIndex = {};
+let nombrePendienteFinalizar = null; // retiene el nombre mientras se muestra el aviso de progreso incompleto
+
+// Disponibilidad de MathJax: null = aún no se sabe, true = cargó, false = se dio
+// por perdido tras el margen de espera (CDN bloqueado o caído). Mientras es null,
+// se intenta renderizar con MathJax con normalidad.
+let mathJaxDisponible = null;
+setTimeout(function () {
+    if (mathJaxDisponible === null) {
+        mathJaxDisponible = !!(window.MathJax && typeof MathJax.typesetPromise === 'function');
+        if (!mathJaxDisponible) refrescarSoloTipo3();
+    }
+}, 3000);
+
+// Re-renderiza solo la tarjeta del tipo 3 (fracciones), sin tocar el resto de
+// tarjetas ni su feedback, cuando se confirma que MathJax no ha llegado a tiempo.
+function refrescarSoloTipo3() {
+    let tarjetas = document.querySelectorAll('#ejerciciosContainer .ejercicio-card');
+    if (tarjetas[3]) {
+        let temp = document.createElement('div');
+        temp.innerHTML = getHTML3(3);
+        tarjetas[3].replaceWith(temp.firstElementChild);
+    }
+}
+
+function registrarResultado(i, correcto) {
+    let t = state.tipos[i];
+    if (t.cerrado) return;
+    t.totalIntentos++;
+    if (correcto) t.totalAciertos++; else t.totalFallos++;
+    t.ventana.push(correcto);
+    if (t.ventana.length > 3) t.ventana.shift();
+    let aciertosVentana = t.ventana.filter(Boolean).length;
+    if (!t.superado && aciertosVentana >= 2) {
+        t.superado = true;
+        t.cerrado = true;
+    }
+    // Nota = tipos superados × su valor − 0,5 por cada fallo, acotada a [0, 10] solo al final:
+    // antes cada fallo se recortaba en 0 por separado y los primeros fallos no restaban.
+    const superados = state.tipos.filter(x => x.superado).length;
+    const fallos = state.tipos.reduce((acc, x) => acc + x.totalFallos, 0);
+    state.puntosGlobal = Math.min(10, Math.max(0, superados * PUNTO_POR_TIPO - fallos * PENALIZACION_FALLO));
+}
+
+function pickBancoIndex(banco, key) {
+    if (banco.length === 1) return 0;
+    let idx;
+    do {
+        idx = Math.floor(Math.random() * banco.length);
+    } while (idx === lastBancoIndex[key]);
+    lastBancoIndex[key] = idx;
+    return idx;
+}
+
+/* ============ BANCOS DE PROBLEMAS ============ */
+const BANCO_PROBLEMAS_1ER_GRADO = [
+    { enunciado: "El triple de un número, menos 2, es igual al doble del mismo número más 5. Plantea la ecuación y halla el número.", ecuacion: "3x-2=2x+5", sol: 7 },
+    { enunciado: "La suma de un número y su doble es igual a 27. Plantea la ecuación y halla el número.", ecuacion: "x+2x=27", sol: 9 },
+    { enunciado: "Si al doble de un número le sumamos 6, obtenemos 16. Plantea la ecuación y halla el número.", ecuacion: "2x+6=16", sol: 5 },
+    { enunciado: "El doble de un número, aumentado en 8, es igual al triple del mismo número disminuido en 3. Plantea la ecuación y halla el número.", ecuacion: "2x+8=3x-3", sol: 11 },
+    { enunciado: "Si a un número le restamos 9, el resultado es el doble de ese número. Plantea la ecuación y halla el número.", ecuacion: "x-9=2x", sol: -9 },
+    { enunciado: "Pedro tiene 4 años menos que el triple de la edad de Juan. Si entre los dos suman 44 años, llama x a la edad de Juan, plantea la ecuación en su forma desarrollada (sin paréntesis) y halla la edad de Juan.", ecuacion: "x+3x-4=44", sol: 12 }
+];
+
+/* ============ GENERACIÓN DE INSTANCIAS POR TIPO ============ */
+function generarInstancia(i) {
+    switch (i) {
+        case 0: { // Ecuaciones sencillas: x+a=b / x-a=b
+            let xSol = Math.floor(Math.random() * 31) - 15; // -15..15
+            let a = Math.floor(Math.random() * 20) + 1;     // 1..20
+            let op = Math.random() < 0.5 ? '+' : '-';
+            let b = op === '+' ? xSol + a : xSol - a;
+            return { ecuacion: 'x' + op + a + '=' + b, sol: xSol, a, op, b };
+        }
+        case 1: { // Ecuaciones con paréntesis: a(x+b)=c
+            let xSol = Math.floor(Math.random() * 25) - 12; // -12..12
+            let a = Math.floor(Math.random() * 8) + 2;      // 2..9
+            let b = Math.floor(Math.random() * 21) - 10;    // -10..10
+            if (b === 0) b = 3;
+            let c = a * (xSol + b);
+            let signoB = b >= 0 ? ('+' + b) : ('' + b);
+            return { ecuacion: a + '(x' + signoB + ')=' + c, sol: xSol, a, b, c };
+        }
+        case 2: { // Problema 1er grado (banco, 2 pasos)
+            pasoProblema[2] = 1;
+            let idx = pickBancoIndex(BANCO_PROBLEMAS_1ER_GRADO, 2);
+            return { ...BANCO_PROBLEMAS_1ER_GRADO[idx] };
+        }
+        case 3: { // Ecuaciones con fracciones sencillas: DEBEN aparecer dos fracciones (x/n1 op x/n2 = b)
+            let denominadores = [2, 3, 4, 6];
+            let n1 = denominadores[Math.floor(Math.random() * denominadores.length)];
+            let n2;
+            do { n2 = denominadores[Math.floor(Math.random() * denominadores.length)]; } while (n2 === n1);
+            let L = lcm(n1, n2);
+            let k = Math.floor(Math.random() * 7) - 3; // -3..3
+            if (k === 0) k = 1;
+            let xSol = k * L;
+            let op = Math.random() < 0.5 ? '+' : '-';
+            let term1 = xSol / n1;
+            let term2 = xSol / n2;
+            let b = op === '+' ? term1 + term2 : term1 - term2;
+            let ecuacion = 'x/' + n1 + op + 'x/' + n2 + '=' + b;
+            let ecuacionLatex = '\\dfrac{x}{' + n1 + '}' + op + '\\dfrac{x}{' + n2 + '}=' + b;
+            return { ecuacion, ecuacionLatex, sol: xSol, n1, n2, L, op, term1, term2, b };
+        }
+        case 4: { // 2º grado incompleta: pura o sin término independiente, alternando
+            let tipoSub = Math.random() < 0.5 ? 'pura' : 'sinIndep';
+            if (tipoSub === 'pura') {
+                let r = Math.floor(Math.random() * 9) + 1; // 1..9
+                let a = Math.floor(Math.random() * 4) + 1; // 1..4
+                let c = a * r * r;
+                return { ecuacion: formatEcuacionCuadratica(a, 0, -c), raices: [r, -r], tipoSub, a, c };
+            } else {
+                let raizNoNula = Math.floor(Math.random() * 17) - 8;
+                if (raizNoNula === 0) raizNoNula = 3;
+                let a = Math.floor(Math.random() * 5) + 1; // 1..5
+                let b = -a * raizNoNula;
+                return { ecuacion: formatEcuacionCuadratica(a, b, 0), raices: [0, raizNoNula], tipoSub, a, b };
+            }
+        }
+    }
+}
+
+instancias = NOMBRES_TIPOS.map((_, i) => generarInstancia(i));
+
+/* ============ RENDERIZADO ============ */
+function badgeSuperado(i) {
+    return state.tipos[i].superado ? '<span class="badge-superado">✓ Superado</span>' : '';
+}
+
+function cardClase(i) {
+    return state.tipos[i].superado ? 'superado' : '';
+}
+
+function getHTML0(i) {
+    let e = instancias[i], cerrado = state.tipos[i].cerrado, disabledAttr = cerrado ? 'disabled' : '';
+    return '<div class="ejercicio-card ' + cardClase(i) + '"><div class="ejercicio-header"><span class="ejercicio-num">1</span><span class="ejercicio-titulo">Ecuaciones sencillas</span>' + badgeSuperado(i) + '</div><div class="enunciado-latex">\\( ' + e.ecuacion + ' \\)</div><label for="t0_x" class="sr-only">Valor de x</label><div class="input-area"><input type="text" inputmode="decimal" id="t0_x" class="number-input" placeholder="x =" ' + disabledAttr + '><button class="btn-primary" onclick="comprobar(0)" ' + disabledAttr + '>Comprobar</button>' + (!cerrado ? '<button class="btn-secondary" onclick="nuevoManual(0)">🔄 Nuevo</button>' : '') + '</div><div class="feedback" id="fb_0" aria-live="polite"></div></div>';
+}
+
+function getHTML1(i) {
+    let e = instancias[i], cerrado = state.tipos[i].cerrado, disabledAttr = cerrado ? 'disabled' : '';
+    return '<div class="ejercicio-card ' + cardClase(i) + '"><div class="ejercicio-header"><span class="ejercicio-num">2</span><span class="ejercicio-titulo">Ecuaciones con paréntesis</span>' + badgeSuperado(i) + '</div><div class="enunciado-latex">\\( ' + e.ecuacion + ' \\)</div><label for="t1_x" class="sr-only">Valor de x</label><div class="input-area"><input type="text" inputmode="decimal" id="t1_x" class="number-input" placeholder="x =" ' + disabledAttr + '><button class="btn-primary" onclick="comprobar(1)" ' + disabledAttr + '>Comprobar</button>' + (!cerrado ? '<button class="btn-secondary" onclick="nuevoManual(1)">🔄 Nuevo</button>' : '') + '</div><div class="feedback" id="fb_1" aria-live="polite"></div></div>';
+}
+
+function getHTML2(i) {
+    let e = instancias[i], cerrado = state.tipos[i].cerrado, disabledAttr = cerrado ? 'disabled' : '';
+    let paso = pasoProblema[2];
+    let paso1Display = (paso === 1 && !cerrado) ? 'flex' : 'none';
+    let paso2Display = (paso === 2 && !cerrado) ? 'flex' : 'none';
+    return '<div class="ejercicio-card ' + cardClase(i) + '"><div class="ejercicio-header"><span class="ejercicio-num">3</span><span class="ejercicio-titulo">Problema (ecuación de primer grado)</span>' + badgeSuperado(i) + '</div><div class="enunciado">📦 ' + e.enunciado + '</div>' +
+        '<div class="input-area" id="paso1_t2" style="display:' + paso1Display + '"><label for="t2_eq" class="sr-only">Ecuación planteada</label><input type="text" id="t2_eq" class="text-input" placeholder="Ej: 3x-2=2x+5" ' + disabledAttr + '><button class="btn-primary" onclick="comprobar(2)" ' + disabledAttr + '>Comprobar ecuación</button></div>' +
+        '<div class="input-area" id="paso2_t2" style="display:' + paso2Display + '"><label for="t2_x" class="sr-only">Valor de x</label><input type="text" inputmode="decimal" id="t2_x" class="number-input" placeholder="x =" ' + disabledAttr + '><button class="btn-primary" onclick="comprobar(2)" ' + disabledAttr + '>Comprobar solución</button></div>' +
+        (!cerrado ? '<div class="input-area"><button class="btn-secondary" onclick="nuevoManual(2)">🔄 Nuevo problema</button></div>' : '') +
+        '<div class="feedback" id="fb_2" aria-live="polite"></div></div>';
+}
+
+// Fallback manual (sin MathJax) para las ecuaciones con fracciones: si el CDN de
+// MathJax no llega a cargar (bloqueo de red del centro), se muestra la fracción
+// con HTML/CSS en vez de dejar el LaTeX en crudo con barras invertidas.
+function renderFraccionManual(e) {
+    let signo = e.op === '+' ? '+' : '−';
+    return '<div class="enunciado-fraccion-manual">' +
+        '<span class="frac-manual"><span class="frac-manual-num">x</span><span class="frac-manual-den">' + e.n1 + '</span></span>' +
+        '<span class="frac-manual-op">' + signo + '</span>' +
+        '<span class="frac-manual"><span class="frac-manual-num">x</span><span class="frac-manual-den">' + e.n2 + '</span></span>' +
+        '<span class="frac-manual-op">=</span><span>' + e.b + '</span>' +
+        '</div>';
+}
+
+function getHTML3(i) {
+    let e = instancias[i], cerrado = state.tipos[i].cerrado, disabledAttr = cerrado ? 'disabled' : '';
+    let formula = mathJaxDisponible === false
+        ? renderFraccionManual(e)
+        : '<div class="enunciado-latex">\\( ' + e.ecuacionLatex + ' \\)</div>';
+    return '<div class="ejercicio-card ' + cardClase(i) + '"><div class="ejercicio-header"><span class="ejercicio-num">4</span><span class="ejercicio-titulo">Ecuaciones con fracciones</span>' + badgeSuperado(i) + '</div>' + formula + '<label for="t3_x" class="sr-only">Valor de x</label><div class="input-area"><input type="text" inputmode="decimal" id="t3_x" class="number-input" placeholder="x =" ' + disabledAttr + '><button class="btn-primary" onclick="comprobar(3)" ' + disabledAttr + '>Comprobar</button>' + (!cerrado ? '<button class="btn-secondary" onclick="nuevoManual(3)">🔄 Nuevo</button>' : '') + '</div><div class="feedback" id="fb_3" aria-live="polite"></div></div>';
+}
+
+function getHTML4(i) {
+    let e = instancias[i], cerrado = state.tipos[i].cerrado, disabledAttr = cerrado ? 'disabled' : '';
+    return '<div class="ejercicio-card ' + cardClase(i) + '"><div class="ejercicio-header"><span class="ejercicio-num">5</span><span class="ejercicio-titulo">2º grado incompleta</span>' + badgeSuperado(i) + '</div><div class="enunciado-latex">\\( ' + e.ecuacion + ' \\)</div><p style="font-size:0.75rem;color:#6B4F35;margin-bottom:0.6rem;">Tiene dos soluciones. Escríbelas en cualquier orden.</p><label for="t4_x1" class="sr-only">Primera solución</label><label for="t4_x2" class="sr-only">Segunda solución</label><div class="input-area"><input type="text" inputmode="decimal" id="t4_x1" class="number-input" placeholder="x₁ =" ' + disabledAttr + '><input type="text" inputmode="decimal" id="t4_x2" class="number-input" placeholder="x₂ =" ' + disabledAttr + '><button class="btn-primary" onclick="comprobar(4)" ' + disabledAttr + '>Comprobar</button>' + (!cerrado ? '<button class="btn-secondary" onclick="nuevoManual(4)">🔄 Nuevo</button>' : '') + '</div><div class="feedback" id="fb_4" aria-live="polite"></div></div>';
+}
+
+const GENERADORES_HTML = [getHTML0, getHTML1, getHTML2, getHTML3, getHTML4];
+
+function actualizarUI() {
+    let s = state.tipos.filter(t => t.superado).length;
+    let fallosTotales = state.tipos.reduce((acc, t) => acc + t.totalFallos, 0);
+    let nf = Math.min(10, Math.max(0, state.puntosGlobal));
+    document.getElementById('progresoCount').innerText = s;
+    document.getElementById('fallosCount').innerText = fallosTotales;
+    document.getElementById('notaActual').innerText = nf.toFixed(1);
+}
+
+function renderizarTodo() {
+    let c = document.getElementById('ejerciciosContainer');
+    let h = '';
+    for (let i = 0; i < NUM_TIPOS; i++) {
+        h += GENERADORES_HTML[i](i);
+        if (i < NUM_TIPOS - 1) h += '<hr>';
+    }
+    c.innerHTML = h;
+    actualizarUI();
+    if (window.MathJax && typeof MathJax.typesetPromise === 'function') {
+        mathJaxDisponible = true;
+        MathJax.typesetPromise().catch(() => {});
+    }
+}
+
+function mostrarFeedback(i, correcto, msg) {
+    let fb = document.getElementById('fb_' + i);
+    if (!fb) return;
+    fb.innerHTML = '<span class="' + (correcto ? 'feedback-correcto' : 'feedback-error') + '">' + msg + '</span>';
+}
+
+const AVISO_VACIO = '⚠️ Escribe tu respuesta antes de comprobar. No cuenta como fallo.';
+
+/* «x = 7», «7 = x» o «x − 7 = 0» ya son la solución despejada, no el planteamiento
+   del enunciado: antes se aceptaban cuando la ecuación pedida tenía 1·x neto. */
+function esSolucionDespejada(eq) {
+    const s = normalizarExpresion(eq);
+    if (!s.includes('=')) return false;
+    const terminos = s.split('=').flatMap(lado => lado.match(/[+-]?[^+-]+/g) || []).filter(t => !/^[+-]?0$/.test(t));
+    const conX = terminos.filter(t => t.includes('x'));
+    return conX.length === 1 && /^[+-]?1?x$/.test(conX[0]) && terminos.length <= 2;
+}
+
+/* ============ VERIFICACIÓN POR TIPO ============ */
+function comprobar(i) {
+    if (state.tipos[i].cerrado) return;
+    switch (i) {
+        case 0: return comprobarTipo0();
+        case 1: return comprobarTipo1();
+        case 2: return comprobarTipo2();
+        case 3: return comprobarTipo3();
+        case 4: return comprobarTiposDobleRaiz(4, 't4_x1', 't4_x2');
+    }
+}
+
+function finalizarIntento(i, correcto, msgCorrecto, msgError) {
+    mostrarFeedback(i, correcto, correcto ? msgCorrecto : msgError);
+    registrarResultado(i, correcto);
+    if (!state.tipos[i].cerrado) {
+        instancias[i] = generarInstancia(i);
+    }
+    renderizarTodo();
+    // Restaurar el mensaje de feedback tras el re-render (renderizarTodo limpia el contenedor)
+    mostrarFeedback(i, correcto, correcto ? msgCorrecto : msgError);
+}
+
+function comprobarTipo0() {
+    let e = instancias[0];
+    let num = parseInt(normalizarNumero(document.getElementById('t0_x').value));
+    if (isNaN(num)) { mostrarFeedback(0, false, AVISO_VACIO); return; }
+    if (num === e.sol) {
+        finalizarIntento(0, true, '✓ ¡Correcto! x = ' + e.sol + '.', '');
+    } else {
+        let paso = e.op === '+' ? ('x = ' + e.b + ' - ' + e.a) : ('x = ' + e.b + ' + ' + e.a);
+        finalizarIntento(0, false, '', '❌ Incorrecto. En ' + e.ecuacion + ', pasamos el ' + e.a + ' al otro lado cambiando de signo: ' + paso + ' = ' + e.sol + '.');
+    }
+}
+
+function comprobarTipo1() {
+    let e = instancias[1];
+    let num = parseInt(normalizarNumero(document.getElementById('t1_x').value));
+    if (isNaN(num)) { mostrarFeedback(1, false, AVISO_VACIO); return; }
+    if (num === e.sol) {
+        finalizarIntento(1, true, '✓ ¡Correcto! x = ' + e.sol + '.', '');
+    } else {
+        let ab = e.a * e.b;
+        let pasoDistribuido = e.a + 'x' + (ab >= 0 ? '+' + ab : ab) + '=' + e.c;
+        finalizarIntento(1, false, '', '❌ Incorrecto. Primero se distribuye: ' + pasoDistribuido + '. Luego x = (' + e.c + ' - (' + ab + ')) / ' + e.a + ' = ' + e.sol + '.');
+    }
+}
+
+function comprobarTipo2() {
+    let e = instancias[2];
+    if (pasoProblema[2] === 1) {
+        let eqVal = document.getElementById('t2_eq').value;
+        if (!eqVal.trim()) { mostrarFeedback(2, false, AVISO_VACIO); return; }
+        if (esSolucionDespejada(eqVal)) {
+            mostrarFeedback(2, false, '⚠️ Eso ya es la solución despejada. Escribe la ecuación que traduce el enunciado. No cuenta como fallo.');
+            return;
+        }
+        if (ecuacionesEquivalentes(eqVal, e.ecuacion)) {
+            pasoProblema[2] = 2;
+            mostrarFeedback(2, true, '✓ Ecuación correcta. Ahora resuelve: ¿cuánto vale x?');
+            document.getElementById('paso1_t2').style.display = 'none';
+            document.getElementById('paso2_t2').style.display = 'flex';
+        } else {
+            finalizarIntento(2, false, '', '❌ Ecuación incorrecta. La ecuación que corresponde al enunciado es: ' + e.ecuacion + ' → x = ' + e.sol + '.');
+        }
+    } else {
+        let num = parseInt(normalizarNumero(document.getElementById('t2_x').value));
+        if (isNaN(num)) { mostrarFeedback(2, false, AVISO_VACIO); return; }
+        if (num === e.sol) {
+            finalizarIntento(2, true, '✓ ¡Correcto! Solución: x = ' + e.sol + '.', '');
+        } else {
+            finalizarIntento(2, false, '', '❌ Incorrecto. Partiendo de ' + e.ecuacion + ', la solución es x = ' + e.sol + '.');
+        }
+    }
+}
+
+function comprobarTipo3() {
+    let e = instancias[3];
+    let num = parseInt(normalizarNumero(document.getElementById('t3_x').value));
+    if (isNaN(num)) { mostrarFeedback(3, false, AVISO_VACIO); return; }
+    if (num === e.sol) {
+        finalizarIntento(3, true, '✓ ¡Correcto! x = ' + e.sol + '.', '');
+    } else {
+        let fmtX = (n) => (n === 1 ? '' : (n === -1 ? '-' : n)) + 'x';
+        let coefL1 = e.L / e.n1, coefL2 = e.L / e.n2;
+        let coefTotal = e.op === '+' ? coefL1 + coefL2 : coefL1 - coefL2;
+        let bL = e.b * e.L;
+        let explicacion = 'Multiplicamos toda la ecuación por el m.c.m.(' + e.n1 + ',' + e.n2 + ') = ' + e.L + ': ' + fmtX(coefL1) + (e.op === '+' ? '+' : '-') + fmtX(coefL2) + ' = ' + bL + ' → ' + fmtX(coefTotal) + ' = ' + bL + ' → x = ' + e.sol + '.';
+        finalizarIntento(3, false, '', '❌ Incorrecto. ' + explicacion);
+    }
+}
+
+function comprobarTiposDobleRaiz(i, id1, id2) {
+    let e = instancias[i];
+    let v1 = document.getElementById(id1).value, v2 = document.getElementById(id2).value;
+    if (!v1.trim() && !v2.trim()) { mostrarFeedback(i, false, AVISO_VACIO); return; }
+    let ok = compararParDeRaices(v1, v2, e.raices);
+    if (ok) {
+        finalizarIntento(i, true, '✓ ¡Correcto! Las soluciones son x = ' + e.raices[0] + ' y x = ' + e.raices[1] + '.', '');
+        return;
+    }
+    let explicacion;
+    if (i === 4) {
+        if (e.tipoSub === 'pura') {
+            explicacion = 'La ecuación ' + e.ecuacion + ' es incompleta (sin término en x). Despejamos x²: x² = ' + e.c + '/' + e.a + ' = ' + (e.raices[0] * e.raices[0]) + '. Al hacer la raíz cuadrada aparecen dos soluciones opuestas: x = ' + e.raices[0] + ' y x = ' + e.raices[1] + '.';
+        } else {
+            explicacion = 'La ecuación ' + e.ecuacion + ' es incompleta (sin término independiente). Se saca x factor común: x(' + e.a + 'x' + (e.b >= 0 ? '+' + e.b : e.b) + ')=0. Esto da dos soluciones: x = 0 y x = ' + e.raices[1] + '.';
+        }
+    } else {
+        explicacion = 'Buscamos dos números que sumen ' + (-e.b) + ' y multiplicados den ' + e.c + '. Las soluciones de ' + e.ecuacion + ' son x = ' + e.raices[0] + ' y x = ' + e.raices[1] + '.';
+    }
+    finalizarIntento(i, false, '', '❌ Incorrecto. ' + explicacion);
+}
+
+function nuevoManual(i) {
+    if (state.tipos[i].cerrado) return;
+    instancias[i] = generarInstancia(i);
+    renderizarTodo();
+}
+
+/* ============ FINALIZAR Y CALIFICAR ============ */
+function getTiempo() {
+    let elapsedSec = Math.floor((Date.now() - startTime) / 1000);
+    let minutosRedondeados = Math.ceil(elapsedSec / 60);
+    let h = Math.floor(minutosRedondeados / 60);
+    let m = minutosRedondeados % 60;
+    return h.toString().padStart(2, '0') + ':' + m.toString().padStart(2, '0');
+}
+
+function mostrarResultados(nombre) {
+    let notaFinal = Math.min(10, Math.max(0, state.puntosGlobal));
+    let fecha = new Date().toLocaleDateString('es-ES');
+    let hora = new Date().toLocaleTimeString('es-ES');
+    let tiempo = getTiempo();
+    let fallosTotales = state.tipos.reduce((acc, t) => acc + t.totalFallos, 0);
+    let superados = state.tipos.filter(t => t.superado).length;
+
+    document.getElementById('modalNombreMostrar').innerHTML = nombre.toUpperCase();
+    document.getElementById('modalNota').innerHTML = notaFinal.toFixed(1) + '/10';
+    let msg = notaFinal >= 9 ? "🌟 Excelente" : (notaFinal >= 7 ? "👍 Muy bien" : (notaFinal >= 5 ? "📘 Aprobado" : "📚 Repasa"));
+    document.getElementById('modalMensaje').innerHTML = msg;
+    document.getElementById('modalStats').innerHTML = '<p>📅 ' + fecha + ' 🕐 ' + hora + '</p><p>⏱️ Tiempo: ' + tiempo + '</p><p>🎯 Tipos superados: ' + superados + '/' + NUM_TIPOS + '</p><p>❌ Fallos totales: ' + fallosTotales + '</p><p>⭐ Nota: ' + notaFinal.toFixed(1) + '</p>';
+
+    let desgloseHTML = '';
+    state.tipos.forEach((t, idx) => {
+        desgloseHTML += '<div class="desglose-fila"><div><div class="desglose-nombre">' + NOMBRES_TIPOS[idx] + '</div><div class="desglose-est">Intentos: ' + t.totalIntentos + ' · Aciertos: ' + t.totalAciertos + ' · Fallos: ' + t.totalFallos + '</div></div>' + (t.superado ? '<span class="chip-ok">SUPERADO</span>' : '<span class="chip-no">NO SUPERADO</span>') + '</div>';
+    });
+    document.getElementById('modalDesglose').innerHTML = desgloseHTML;
+
+    let mc = document.getElementById('modalCard');
+    let bgColor, textColor;
+    let nfRedondeada = Math.round(notaFinal * 10) / 10;
+    if (nfRedondeada >= 9.95) { bgColor = '#1a7a1a'; textColor = 'white'; }
+    else if (nfRedondeada >= 9) { bgColor = '#6dbf6d'; textColor = 'white'; }
+    else if (nfRedondeada >= 8) { bgColor = '#1a4f8a'; textColor = 'white'; }
+    else if (nfRedondeada >= 7) { bgColor = '#5b9bd5'; textColor = 'white'; }
+    else if (nfRedondeada >= 6) { bgColor = '#c05c00'; textColor = 'white'; }
+    else if (nfRedondeada >= 5) { bgColor = '#f5a623'; textColor = 'black'; }
+    else { bgColor = '#c0392b'; textColor = 'white'; }
+    mc.style.backgroundColor = bgColor;
+    mc.style.color = textColor;
+    document.getElementById('modalResultados').classList.add('show');
+}
+
+function finalizar() {
+    let n = document.getElementById('nombreAlumno').value.trim();
+    if (!n) {
+        document.getElementById('modalNombre').classList.add('show');
+        return;
+    }
+    intentarFinalizar(n);
+}
+
+// Comprueba si quedan tipos sin superar antes de calificar. Si los hay, avisa
+// con un modal propio (nunca confirm() nativo) indicando qué falta y qué nota
+// quedaría, dejando cancelar sin perder nada de lo ya conseguido.
+function intentarFinalizar(nombre) {
+    let nombresPendientes = [];
+    state.tipos.forEach((t, idx) => { if (!t.superado) nombresPendientes.push(NOMBRES_TIPOS[idx]); });
+    if (nombresPendientes.length === 0) {
+        mostrarResultados(nombre);
+        return;
+    }
+    let notaProyectada = Math.min(10, Math.max(0, state.puntosGlobal));
+    nombrePendienteFinalizar = nombre;
+    document.getElementById('avisoIncompletoTexto').innerHTML = 'Todavía no has superado: <strong>' + nombresPendientes.join(', ') + '</strong>.';
+    document.getElementById('avisoIncompletoNota').innerHTML = notaProyectada.toFixed(1) + '/10';
+    document.getElementById('modalAvisoIncompleto').classList.add('show');
+}
+
+function resetear() {
+    document.getElementById('modalReiniciar').classList.add('show');
+}
+
+function cerrarModales() {
+    document.getElementById('modalResultados').classList.remove('show');
+    document.getElementById('modalNombre').classList.remove('show');
+    document.getElementById('modalReiniciar').classList.remove('show');
+}
+
+function confirmarNombre() {
+    let n = document.getElementById('modalNombreInput').value.trim();
+    if (n) {
+        document.getElementById('nombreAlumno').value = n;
+        document.getElementById('modalNombre').classList.remove('show');
+        intentarFinalizar(n);
+    }
+}
+
+renderizarTodo();
+document.getElementById('btnFinalizar').addEventListener('click', finalizar);
+document.getElementById('btnResetear').addEventListener('click', resetear);
+document.getElementById('closeModal').addEventListener('click', cerrarModales);
+document.getElementById('btnConfirmarNombre').addEventListener('click', confirmarNombre);
+document.getElementById('btnCancelarReset').addEventListener('click', function () {
+    document.getElementById('modalReiniciar').classList.remove('show');
+});
+document.getElementById('btnConfirmarReset').addEventListener('click', function () {
+    location.reload();
+});
+document.getElementById('btnCancelarFinalizar').addEventListener('click', function () {
+    document.getElementById('modalAvisoIncompleto').classList.remove('show');
+    nombrePendienteFinalizar = null;
+});
+document.getElementById('btnConfirmarFinalizarIncompleto').addEventListener('click', function () {
+    document.getElementById('modalAvisoIncompleto').classList.remove('show');
+    mostrarResultados(nombrePendienteFinalizar);
+    nombrePendienteFinalizar = null;
+});
+
+document.getElementById('ejerciciosContainer').addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' || e.target.tagName !== 'INPUT') return;
+    e.preventDefault();
+    const card = e.target.closest('.ejercicio-card');
+    if (!card) return;
+    const botones = card.querySelectorAll('.btn-primary');
+    for (const boton of botones) {
+        const areaPadre = boton.closest('.input-area');
+        const areaVisible = !areaPadre || areaPadre.style.display !== 'none';
+        if (!boton.disabled && areaVisible) {
+            boton.click();
+            break;
+        }
+    }
+});
+
+document.getElementById('modalNombreInput').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        confirmarNombre();
+    }
+});
+</script>
+</body>
+</html>
