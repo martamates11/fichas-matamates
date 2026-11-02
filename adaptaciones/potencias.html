@@ -1,0 +1,1599 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Escapa del Laboratorio de las Potencias</title>
+<meta name="color-scheme" content="dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0720;
+  --bg2:#120c33;
+  --panel:#16103a;
+  --panel2:#1d1548;
+  --txt:#ece9ff;
+  --muted:#a9a3d6;
+  --ink:#0a0720;
+  --white:#ffffff;
+  --yel:#ffe600;
+  --red:#ff3d6e;
+  --cyan:#00e5ff;
+  --vio:#b06bff;
+  --grn:#39ff88;
+  --org:#ff9a1f;
+  --pink:#ff2bd6;
+  --blue:#4d8dff;
+  --ok:#39ff88;
+  --ko:#ff4d7a;
+  --pix:'Press Start 2P','Courier New',monospace;
+  --glow-c:0 0 6px var(--cyan),0 0 18px rgba(0,229,255,.45);
+  --glow-p:0 0 6px var(--pink),0 0 18px rgba(255,43,214,.45);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;font-family:'Nunito',system-ui,sans-serif;font-weight:600;color:var(--txt);
+  background:
+    linear-gradient(rgba(176,107,255,.07) 1px,transparent 1px) 0 0/32px 32px,
+    linear-gradient(90deg,rgba(176,107,255,.07) 1px,transparent 1px) 0 0/32px 32px,
+    radial-gradient(ellipse at 50% -10%,#2a1366 0%,transparent 60%),
+    radial-gradient(ellipse at 50% 120%,#3a0a4f 0%,transparent 55%),
+    var(--bg);
+  background-attachment:fixed;
+  min-height:100vh;
+}
+/* scanlines */
+body::after{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:85;
+  background:repeating-linear-gradient(to bottom,rgba(0,0,0,0) 0,rgba(0,0,0,0) 2px,rgba(0,0,0,.12) 3px);
+}
+body.victoria{
+  background:
+    linear-gradient(rgba(57,255,136,.12) 1px,transparent 1px) 0 0/32px 32px,
+    linear-gradient(90deg,rgba(57,255,136,.12) 1px,transparent 1px) 0 0/32px 32px,
+    #0b3a1a;
+}
+/* ---------- Cabecera de autoría ---------- */
+.autoria{
+  background:#05030f;color:var(--muted);text-align:center;font-size:.8rem;
+  padding:.55rem 1rem;letter-spacing:.3px;font-weight:800;border-bottom:2px solid var(--pink);
+  box-shadow:0 0 14px rgba(255,43,214,.35);
+}
+.contenedor{max-width:1020px;margin:0 auto;padding:1.4rem 16px 2.5rem}
+/* ---------- Título ---------- */
+.titulo-ficha{
+  font-family:var(--pix);font-weight:400;text-align:center;margin:.8rem 0 .2rem;
+  font-size:clamp(1.15rem,4.2vw,2.3rem);line-height:1.45;color:#fff;letter-spacing:1px;
+  text-shadow:0 0 4px #fff,0 0 12px var(--pink),0 0 28px var(--pink),0 0 48px rgba(255,43,214,.6);
+  animation:parpadeo 6s infinite;
+}
+@keyframes parpadeo{0%,92%,100%{opacity:1}93%{opacity:.6}94%{opacity:1}96%{opacity:.75}}
+.subtitulo{
+  text-align:center;margin:.9rem auto 1.3rem;font-weight:800;font-size:.95rem;color:var(--cyan);
+  display:table;padding:.35rem 1rem;border:2px solid var(--cyan);border-radius:6px;
+  box-shadow:var(--glow-c),inset 0 0 10px rgba(0,229,255,.25);text-shadow:0 0 8px rgba(0,229,255,.7);
+  letter-spacing:.5px;
+}
+/* ---------- Barra del alumno ---------- */
+.barra-alumno{
+  position:sticky;top:0;z-index:30;background:rgba(22,16,58,.94);backdrop-filter:blur(6px);
+  border:2px solid var(--vio);border-radius:12px;box-shadow:0 0 14px rgba(176,107,255,.45);
+  padding:.6rem .8rem;margin-bottom:1.3rem;
+}
+.barra-fila{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem .9rem}
+.campo-nombre{display:flex;align-items:center;gap:.45rem;flex:1 1 230px;min-width:0;max-width:100%}
+.campo-nombre label{font-weight:900;font-size:.9rem;white-space:nowrap;color:var(--muted)}
+.campo-nombre input{
+  width:100%;flex:1;min-width:0;font:inherit;font-weight:800;padding:.45rem .65rem;border:2px solid #4b3f8f;
+  border-radius:8px;background:#0c0826;color:#fff;outline:none;
+}
+.campo-nombre input::placeholder{color:#6f68a3}
+.campo-nombre input:focus{border-color:var(--cyan);box-shadow:var(--glow-c)}
+.campo-nombre input.falta{border-color:var(--ko);box-shadow:0 0 10px var(--ko)}
+.stats{display:flex;flex-wrap:wrap;gap:.45rem}
+.stat{
+  border:2px solid var(--sc);border-radius:8px;padding:.25rem .55rem;font-size:.72rem;font-weight:800;
+  background:#0c0826;display:flex;align-items:center;gap:.4rem;white-space:nowrap;color:var(--muted);
+  box-shadow:0 0 8px color-mix(in srgb,var(--sc) 45%,transparent);text-transform:uppercase;letter-spacing:.5px;
+}
+.stat b{font-family:var(--pix);font-weight:400;font-size:.85rem;color:var(--sc);text-shadow:0 0 8px var(--sc)}
+.stat.nota{--sc:var(--yel)}
+.stat.salas{--sc:var(--cyan)}
+.stat.fallos{--sc:var(--red)}
+.stat.racha{--sc:var(--org)}
+.stat.racha.viva b{animation:latido .5s}
+@keyframes latido{50%{transform:scale(1.5)}}
+.aviso-nombre{color:var(--ko);font-weight:900;font-size:.86rem;margin-top:.35rem;text-shadow:0 0 6px rgba(255,77,122,.6)}
+/* ---------- Paneles ---------- */
+.panel{background:var(--panel);border:2px solid #3a2e7a;border-radius:14px;padding:1rem 1.1rem;box-shadow:0 10px 30px rgba(0,0,0,.45)}
+.mision{display:grid;grid-template-columns:auto 1fr;gap:1rem;align-items:center;margin-bottom:1.4rem;border-color:var(--cyan);box-shadow:var(--glow-c)}
+.mision .icono-mision{font-size:2.6rem;line-height:1;filter:drop-shadow(0 0 8px var(--grn))}
+.mision h2{font-family:var(--pix);font-weight:400;margin:0 0 .6rem;font-size:.9rem;line-height:1.6;color:var(--yel);text-shadow:0 0 8px rgba(255,230,0,.6)}
+.mision p{margin:.2rem 0;line-height:1.5}
+.mision ul{margin:.4rem 0 0;padding-left:1.15rem;line-height:1.55}
+.mision b{color:var(--cyan)}
+/* ---------- Código ---------- */
+.codigo{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.5rem;margin:0 0 1.4rem}
+.codigo .rotulo{font-family:var(--pix);font-size:.8rem;margin-right:.5rem;color:var(--muted)}
+.digito{
+  width:42px;height:52px;border:2px solid #3a2e7a;border-radius:6px;background:#07051a;color:#3a2e7a;
+  display:grid;place-items:center;font-family:var(--pix);font-size:1.15rem;
+}
+.digito.on{border-color:var(--grn);color:var(--grn);text-shadow:0 0 8px var(--grn);box-shadow:0 0 10px rgba(57,255,136,.5),inset 0 0 10px rgba(57,255,136,.2);animation:pop .45s}
+@keyframes pop{0%{transform:scale(.3)}70%{transform:scale(1.2)}100%{transform:scale(1)}}
+/* ---------- Mapa de salas ---------- */
+.mapa{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+.puerta{
+  position:relative;border:2px solid var(--c);border-radius:12px;padding:1rem .7rem .9rem;text-align:center;cursor:pointer;
+  font:inherit;color:var(--txt);background:linear-gradient(180deg,var(--panel2),#0f0a2a);min-height:175px;
+  display:flex;flex-direction:column;align-items:center;gap:.35rem;
+  box-shadow:0 0 8px var(--c),inset 0 0 14px color-mix(in srgb,var(--c) 25%,transparent);
+  transition:transform .15s,box-shadow .15s;
+}
+.puerta:hover:not(:disabled){transform:translateY(-4px);box-shadow:0 0 16px var(--c),0 0 34px color-mix(in srgb,var(--c) 55%,transparent),inset 0 0 18px color-mix(in srgb,var(--c) 35%,transparent)}
+.puerta:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.puerta .num{
+  position:absolute;top:-12px;left:10px;background:var(--bg);color:var(--c);font-family:var(--pix);
+  font-size:.62rem;border-radius:4px;padding:.25rem .45rem;border:2px solid var(--c);text-shadow:0 0 6px var(--c)
+}
+.puerta .ico{font-size:2rem;line-height:1.1;margin-top:.2rem;filter:drop-shadow(0 0 6px var(--c))}
+.puerta .nom{font-family:var(--pix);font-size:.66rem;line-height:1.6;color:var(--c);text-shadow:0 0 6px var(--c)}
+.puerta .tema{font-size:.8rem;font-weight:800;line-height:1.3;color:var(--txt)}
+.puerta .estado{margin-top:auto;font-size:.74rem;font-weight:900;background:#07051a;border:1.5px solid #4b3f8f;border-radius:999px;padding:.12rem .6rem;color:var(--muted)}
+.puerta:disabled:not(.superada){cursor:not-allowed;filter:grayscale(.9) brightness(.55);box-shadow:none}
+.puerta.superada{cursor:default;background:linear-gradient(180deg,color-mix(in srgb,var(--c) 30%,var(--panel2)),#0f0a2a)}
+.puerta.superada .estado{border-color:var(--grn);color:var(--grn);text-shadow:0 0 6px var(--grn)}
+.puerta.final{border-width:3px;background:linear-gradient(160deg,#1b1a5c,#3a0f5c)}
+/* ---------- Sala ---------- */
+.sala-top{display:flex;flex-wrap:wrap;align-items:center;gap:.7rem;margin-bottom:1rem}
+.btn{
+  font:inherit;font-weight:900;border:2px solid var(--bc,var(--cyan));border-radius:8px;padding:.6rem 1rem;cursor:pointer;
+  background:transparent;color:var(--bc,var(--cyan));text-shadow:0 0 6px var(--bc,var(--cyan));
+  box-shadow:0 0 8px color-mix(in srgb,var(--bc,var(--cyan)) 55%,transparent),inset 0 0 8px color-mix(in srgb,var(--bc,var(--cyan)) 25%,transparent);
+  transition:transform .1s,background .15s,color .15s;letter-spacing:.3px;
+}
+.btn:hover:not(:disabled){background:var(--bc,var(--cyan));color:var(--bg);text-shadow:none}
+.btn:active:not(:disabled){transform:scale(.96)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.btn.prim{--bc:var(--pink)}
+.btn.pista{--bc:var(--yel)}
+.btn.sig{--bc:var(--grn)}
+.btn.volver{--bc:var(--cyan)}
+.btn.peligro{--bc:var(--red)}
+.etiqueta-sala{
+  font-family:var(--pix);font-size:.8rem;line-height:1.6;color:var(--c);border:2px solid var(--c);border-radius:8px;
+  padding:.45rem .8rem;text-shadow:0 0 8px var(--c);box-shadow:0 0 10px var(--c),inset 0 0 10px color-mix(in srgb,var(--c) 25%,transparent)
+}
+.ventana{margin-left:auto;display:flex;align-items:center;gap:.35rem;font-size:.82rem;font-weight:900;color:var(--muted)}
+.ventana .slots{display:flex;flex-wrap:wrap;gap:.3rem}
+.slot{width:30px;height:30px;border:2px solid #4b3f8f;border-radius:6px;display:grid;place-items:center;background:#07051a;font-size:1rem}
+.slot.si{border-color:var(--grn);color:var(--grn);box-shadow:0 0 8px var(--grn);text-shadow:0 0 6px var(--grn)}
+.slot.no{border-color:var(--red);color:var(--red);box-shadow:0 0 8px var(--red);text-shadow:0 0 6px var(--red)}
+.regla{
+  display:flex;flex-wrap:wrap;align-items:center;gap:.6rem 1.2rem;background:rgba(255,230,0,.05);border:2px dashed var(--yel);
+  border-radius:12px;padding:.75rem 1rem;margin-bottom:1rem
+}
+.regla .tit{font-family:var(--pix);font-size:.6rem;line-height:1.6;color:var(--bg);background:var(--yel);padding:.3rem .5rem;border-radius:4px;box-shadow:0 0 10px rgba(255,230,0,.6)}
+.regla .form{font-size:1.45rem;font-weight:900;color:var(--yel);text-shadow:0 0 8px rgba(255,230,0,.55)}
+.regla .txt{flex:1 1 260px;font-size:.93rem;line-height:1.45}
+.regla .txt b{color:var(--yel)}
+.reto{position:relative;overflow:hidden;border-color:var(--pink);box-shadow:var(--glow-p)}
+.reto .enun{font-weight:900;font-size:1.05rem;margin:0 0 .6rem}
+.expr{
+  font-size:clamp(1.8rem,6vw,2.7rem);font-weight:900;text-align:center;padding:1rem .5rem;margin:.2rem 0 1rem;
+  background:#07051a;border:2px solid #3a2e7a;border-radius:12px;line-height:1.5;overflow-x:auto;color:#fff;
+  text-shadow:0 0 10px rgba(0,229,255,.55);
+}
+.pw{white-space:nowrap}
+.pw sup{font-size:.58em;vertical-align:super;line-height:0;margin-left:1px}
+.pw sup .pw sup{font-size:.75em}
+.op{color:var(--pink);padding:0 .08em;text-shadow:0 0 6px rgba(255,43,214,.6)}
+.igual{color:var(--pink)}
+.respuesta{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.9rem 1.2rem}
+.resp-label{font-weight:900;font-size:1.05rem}
+.pot-in{display:inline-flex;align-items:flex-start;gap:.25rem}
+.pot-in input,.num-in{
+  font:inherit;font-weight:900;text-align:center;border:2px solid var(--cyan);border-radius:10px;background:#07051a;color:#fff;
+  outline:none;-moz-appearance:textfield;box-shadow:0 0 8px rgba(0,229,255,.4),inset 0 0 8px rgba(0,229,255,.15);
+}
+.pot-in input::-webkit-outer-spin-button,.pot-in input::-webkit-inner-spin-button,
+.num-in::-webkit-outer-spin-button,.num-in::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.in-base{width:96px;height:72px;font-size:2.2rem}
+.in-exp{width:62px;height:46px;font-size:1.35rem;margin-top:-12px;border-color:var(--yel) !important;box-shadow:0 0 8px rgba(255,230,0,.45) !important}
+.num-in{width:150px;height:64px;font-size:2rem}
+.pot-in input:focus,.num-in:focus{box-shadow:0 0 14px var(--cyan),0 0 28px rgba(0,229,255,.5)}
+.pot-in input:disabled,.num-in:disabled{opacity:.55}
+.mini-et{display:block;font-size:.7rem;font-weight:900;text-align:center;margin-top:.2rem;color:var(--muted)}
+.botones{display:flex;flex-wrap:wrap;gap:.7rem;justify-content:center;margin-top:1.1rem}
+.panel-pista{
+  margin-top:1rem;background:rgba(255,230,0,.06);border:2px solid var(--yel);border-radius:12px;padding:.85rem 1rem;line-height:1.6;
+  box-shadow:0 0 10px rgba(255,230,0,.35)
+}
+.panel-pista::before{content:"💡 PISTA";font-family:var(--pix);font-size:.65rem;display:block;margin-bottom:.4rem;color:var(--yel);text-shadow:0 0 6px var(--yel)}
+.panel-pista b{color:var(--yel)}
+.chips{display:inline-flex;flex-wrap:wrap;gap:.25rem;align-items:center;vertical-align:middle;margin:.15rem 0}
+.chip{
+  display:inline-grid;place-items:center;min-width:32px;height:32px;padding:0 .3rem;border:2px solid var(--c,var(--cyan));border-radius:6px;
+  font-weight:900;background:#07051a;color:var(--c,var(--cyan));text-shadow:0 0 6px var(--c,var(--cyan));
+  box-shadow:0 0 6px color-mix(in srgb,var(--c,var(--cyan)) 50%,transparent)
+}
+.chip s{text-decoration-color:var(--red);text-decoration-thickness:3px;opacity:.6}
+.grupo{display:inline-flex;gap:.2rem;padding:.2rem;border:2px dashed #6f68a3;border-radius:8px;margin:.1rem}
+.fraccion{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;gap:.2rem;margin:.3rem 0}
+.fraccion .linea{height:2px;background:var(--txt);align-self:stretch;border-radius:2px}
+.feedback{margin-top:1rem;border:2px solid var(--fc);border-radius:12px;padding:.85rem 1rem;line-height:1.6;background:color-mix(in srgb,var(--fc) 9%,#0c0826);box-shadow:0 0 12px color-mix(in srgb,var(--fc) 45%,transparent)}
+.feedback:empty{display:none}
+.feedback.ok{--fc:var(--grn)}
+.feedback.ko{--fc:var(--red)}
+.feedback.casi{--fc:var(--yel)}
+.feedback b{color:#fff}
+.feedback .cab{font-family:var(--pix);font-size:.75rem;line-height:1.6;display:block;margin-bottom:.4rem;color:var(--fc);text-shadow:0 0 8px var(--fc)}
+.feedback .sol{display:block;margin-top:.5rem;padding-top:.5rem;border-top:1px dashed #4b3f8f}
+.pasos{display:block;font-size:.95rem;color:var(--muted);margin-top:.2rem}
+ol.pasos-lista{margin:.4rem 0 0;padding-left:1.3rem}
+ol.pasos-lista li{margin:.3rem 0}
+.tapa{
+  position:absolute;inset:0;background:rgba(10,7,32,.95);display:none;flex-direction:column;align-items:center;justify-content:center;
+  gap:.9rem;text-align:center;padding:1rem;z-index:5
+}
+.tapa.on{display:flex}
+.tapa .grande{font-family:var(--pix);font-size:clamp(1rem,4.5vw,1.6rem);line-height:1.5;color:var(--grn);text-shadow:0 0 8px var(--grn),0 0 22px var(--grn);animation:parpadeo 1.6s infinite}
+.tapa .dig{font-family:var(--pix);font-size:2rem;width:74px;height:86px;display:grid;place-items:center;color:var(--grn);border:3px solid var(--grn);border-radius:10px;box-shadow:0 0 16px var(--grn),inset 0 0 14px rgba(57,255,136,.3);text-shadow:0 0 10px var(--grn);animation:pop .5s}
+/* ---------- Selector de modo ---------- */
+.modo{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.7rem 1rem;margin:0 0 1.4rem;padding:.8rem 1rem;border-color:var(--vio);box-shadow:0 0 12px rgba(176,107,255,.4)}
+.modo .rotulo-modo{font-family:var(--pix);font-size:.68rem;line-height:1.6;color:var(--vio);text-shadow:0 0 6px var(--vio)}
+.modo-opciones{display:inline-flex;flex-wrap:wrap;gap:.5rem}
+.modo-btn{
+  font:inherit;font-weight:900;font-size:.92rem;cursor:pointer;color:var(--muted);background:#07051a;
+  border:2px solid #3a2e7a;border-radius:10px;padding:.5rem .9rem;display:flex;flex-direction:column;align-items:center;gap:.1rem;min-width:150px;
+  transition:box-shadow .15s,color .15s,border-color .15s;
+}
+.modo-btn small{font-weight:800;font-size:.75rem;opacity:.85}
+.modo-btn[aria-pressed="true"]{color:#fff;border-color:var(--mc);box-shadow:0 0 10px var(--mc),inset 0 0 12px color-mix(in srgb,var(--mc) 25%,transparent)}
+.modo-btn[aria-pressed="true"] small{color:var(--mc)}
+.modo-btn#modoNormal{--mc:var(--cyan)}
+.modo-btn#modoPlus{--mc:var(--org)}
+.modo-btn:disabled{cursor:not-allowed}
+.modo-btn:disabled:not([aria-pressed="true"]){opacity:.35}
+.modo-btn:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.modo-nota{flex:1 1 100%;text-align:center;margin:0;font-size:.85rem;color:var(--muted);line-height:1.45}
+.modo-nota b{color:var(--org)}
+.etq-modo{font-family:var(--pix);font-size:.55rem;line-height:1.6;color:var(--bg);background:var(--org);border-radius:4px;padding:.25rem .45rem;box-shadow:0 0 8px var(--org)}
+/* ---------- Pie ---------- */
+.pie{text-align:center;margin-top:2.2rem}
+.btn.calificar{--bc:var(--vio);font-family:var(--pix);font-weight:400;font-size:.75rem;line-height:1.6;padding:.9rem 1.4rem}
+/* ---------- Texto de impacto ---------- */
+.burst{
+  position:fixed;left:50%;top:42%;z-index:80;pointer-events:none;transform:translate(-50%,-50%) scale(0);
+  width:min(560px,92vw);display:grid;place-items:center;text-align:center;
+}
+.burst span{font-family:var(--pix);font-size:clamp(1.3rem,6.5vw,2.6rem);line-height:1.4;color:var(--yel);
+  text-shadow:0 0 6px #fff,0 0 16px var(--yel),0 0 34px var(--org),4px 4px 0 var(--pink)}
+.burst.go{animation:boom 1s ease-out forwards}
+@keyframes boom{0%{transform:translate(-50%,-50%) scale(.2);opacity:0}20%{transform:translate(-50%,-50%) scale(1.15);opacity:1}40%{transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{transform:translate(-50%,-60%) scale(1);opacity:0}}
+/* ---------- Modales ---------- */
+.capa{position:fixed;inset:0;background:rgba(5,3,15,.8);display:none;align-items:center;justify-content:center;z-index:90;padding:16px}
+.capa.on{display:flex}
+.modal{
+  width:min(640px,100%);max-height:92vh;overflow:auto;border:3px solid #fff;border-radius:14px;
+  box-shadow:0 0 20px rgba(255,255,255,.35),0 0 50px rgba(176,107,255,.5);padding:1.2rem 1.3rem;position:relative;
+}
+.modal h2{margin:0;font-family:var(--pix);font-weight:400;font-size:1rem;line-height:1.6}
+.modal .sub-modal{margin:.3rem 0 .6rem;font-weight:800;opacity:.92}
+.modal hr{border:none;border-top:2px solid currentColor;opacity:.45;margin:.6rem 0}
+.modal h3{margin:.3rem 0 .6rem;font-size:1.05rem;font-weight:900;text-transform:uppercase;letter-spacing:.6px}
+.datos{display:grid;grid-template-columns:auto 1fr;gap:.25rem 1rem;font-size:1rem}
+.datos dt{font-weight:900}
+.datos dd{margin:0}
+.nota-grande{font-family:var(--pix);font-size:1.5rem;line-height:1.3}
+.desglose{width:100%;border-collapse:collapse;margin-top:.8rem;font-size:.86rem;background:rgba(255,255,255,.96);color:#1d1a2f;border-radius:10px;overflow:hidden}
+.desglose th,.desglose td{padding:.38rem .45rem;border-bottom:1px solid #ddd;text-align:center}
+.desglose th{background:#1d1a2f;color:#fff;font-weight:800}
+.desglose td:first-child,.desglose th:first-child{text-align:left}
+.est-si{color:#14955c;font-weight:900}
+.est-no{color:#d62839;font-weight:900}
+.cerrar-modal{margin-top:1rem;display:flex;justify-content:flex-end}
+.modal .btn{border-color:currentColor;color:inherit;text-shadow:none;box-shadow:none;background:rgba(0,0,0,.15)}
+.modal .btn:hover:not(:disabled){background:rgba(0,0,0,.3);color:inherit}
+.escape-box{background:var(--panel);color:var(--txt);text-align:center;border-color:var(--grn);box-shadow:0 0 20px var(--grn),0 0 60px rgba(57,255,136,.45)}
+.escape-box .grande{font-family:var(--pix);font-size:clamp(1.3rem,6vw,2.2rem);line-height:1.5;color:var(--grn);text-shadow:0 0 8px var(--grn),0 0 26px var(--grn);animation:parpadeo 1.8s infinite}
+.escape-box .codigo{margin:1rem 0}
+.escape-box .btn.calificar{--bc:var(--grn);border-color:var(--grn);color:var(--grn);text-shadow:0 0 6px var(--grn);box-shadow:0 0 10px var(--grn)}
+.escape-box .btn.calificar:hover{background:var(--grn);color:var(--bg)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+[hidden]{display:none !important}
+/* ---------- Responsive ---------- */
+@media (max-width:820px){
+  .mapa{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:520px){
+  .mision{grid-template-columns:1fr}
+  .mision .icono-mision{display:none}
+  .digito{width:32px;height:42px;font-size:.9rem}
+  .ventana{margin-left:0}
+  .puerta{min-height:160px}
+  .puerta .nom{font-size:.58rem}
+  .in-base{width:84px;height:64px;font-size:1.9rem}
+  .stat{font-size:.66rem}
+  .ventana{flex:1 1 100%;flex-wrap:nowrap;justify-content:space-between}
+  .ventana .slots{flex-wrap:nowrap;gap:.2rem}
+  .slot{width:24px;height:24px;font-size:.8rem}
+  .modo-btn{min-width:0;flex:1 1 130px}
+}
+
+/* ---------- Duelo ---------- */
+.duelo-card{
+  width:100%;margin-top:1.4rem;display:flex;align-items:center;gap:1rem;text-align:left;cursor:pointer;font:inherit;color:var(--txt);
+  background:linear-gradient(100deg,#2a0b3f,#16103a 60%,#0b2240);border:2px solid var(--pink);border-radius:14px;padding:1rem 1.2rem;
+  box-shadow:0 0 10px var(--pink),inset 0 0 18px rgba(255,43,214,.25);transition:transform .15s,box-shadow .15s;
+}
+.duelo-card:hover{transform:translateY(-3px);box-shadow:0 0 18px var(--pink),0 0 40px rgba(255,43,214,.45),inset 0 0 22px rgba(255,43,214,.35)}
+.duelo-card:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.duelo-card .dc-ico{font-size:2.4rem;filter:drop-shadow(0 0 8px var(--pink))}
+.duelo-card .dc-txt{flex:1;display:flex;flex-direction:column;gap:.35rem;line-height:1.4}
+.duelo-card .dc-txt b{font-family:var(--pix);font-weight:400;font-size:1rem;color:var(--pink);text-shadow:0 0 8px var(--pink)}
+.duelo-card .dc-ir{font-family:var(--pix);color:var(--yel);text-shadow:0 0 8px var(--yel);animation:parpadeo 1.4s infinite}
+.duelo-sel{border-color:var(--pink);box-shadow:var(--glow-p)}
+.pestanas{display:inline-flex;flex-wrap:wrap;background:#07051a;border:2px solid #3a2e7a;border-radius:10px;padding:3px;margin-bottom:1rem;gap:3px}
+.pestanas button{font:inherit;font-weight:900;font-size:.92rem;color:var(--muted);background:none;border:0;border-radius:7px;padding:.45rem 1rem;cursor:pointer}
+.pestanas button[aria-selected="true"]{background:var(--cyan);color:var(--bg);box-shadow:0 0 10px var(--cyan)}
+.pestanas button:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.sel-cab{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.6rem}
+.sel-txt{display:block;font-weight:900;margin:0 0 .5rem}
+.sel-cab .sel-txt{margin:0}
+.opc-salas{display:grid;grid-template-columns:repeat(4,1fr);gap:.55rem;margin-bottom:1rem}
+.opc-sala{
+  font:inherit;font-weight:800;font-size:.85rem;line-height:1.25;color:var(--muted);cursor:pointer;text-align:left;
+  display:flex;align-items:center;gap:.5rem;padding:.55rem .65rem;border-radius:10px;border:2px solid #3a2e7a;background:#0c0826;
+}
+.opc-sala span{font-size:1.3rem;filter:grayscale(1);opacity:.6}
+.opc-sala[aria-pressed="true"]{color:#fff;border-color:var(--c);box-shadow:0 0 8px var(--c),inset 0 0 10px color-mix(in srgb,var(--c) 22%,transparent)}
+.opc-sala[aria-pressed="true"] span{filter:drop-shadow(0 0 5px var(--c));opacity:1}
+.opc-sala:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.btn-ancho{display:block;width:100%;margin-top:.4rem}
+.btn-mini{font:inherit;font-weight:800;font-size:.8rem;color:var(--cyan);background:transparent;border:1.5px solid var(--cyan);border-radius:999px;padding:.25rem .75rem;cursor:pointer}
+.btn-mini:hover{background:var(--cyan);color:var(--bg)}
+.codigo-grande{
+  font-family:var(--pix);font-size:clamp(1.3rem,6.5vw,2.2rem);letter-spacing:.12em;text-align:center;color:var(--yel);
+  text-shadow:0 0 8px var(--yel),0 0 22px rgba(255,230,0,.6);background:#07051a;border:2px dashed var(--yel);border-radius:12px;padding:.9rem .5rem;margin:1rem 0 .5rem
+}
+#codigoUnir{
+  width:100%;font-family:var(--pix);font-size:clamp(1.1rem,5vw,1.6rem);letter-spacing:.12em;text-align:center;text-transform:uppercase;
+  border-radius:10px;border:2px solid var(--cyan);background:#07051a;color:var(--yel);padding:.7rem .4rem;outline:none;box-shadow:0 0 8px rgba(0,229,255,.4)
+}
+#codigoUnir::placeholder{color:#4b3f8f}
+#codigoUnir:focus{box-shadow:0 0 14px var(--cyan)}
+.aviso-codigo{min-height:1.4rem;margin:.5rem 0 .3rem;font-weight:800;color:var(--ko)}
+.aviso-codigo.ok{color:var(--grn);text-shadow:0 0 6px rgba(57,255,136,.6)}
+#btnEmpezar{margin-top:1rem}
+.reglas-duelo{margin:1rem 0 0;padding-left:1.2rem;font-size:.9rem;line-height:1.55;color:var(--muted)}
+.nota-duelo{font-size:.9rem;color:var(--muted);margin:.5rem 0 0;line-height:1.5}
+.duelo-cab{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.7rem}
+.dchip{font-weight:900;font-size:.82rem;border:2px solid #4b3f8f;border-radius:999px;padding:.2rem .7rem;background:#07051a;color:var(--txt)}
+#dueloChip{color:var(--yel);border-color:var(--yel)}
+.duelo-reloj{font-family:var(--pix);font-size:1.05rem;color:var(--cyan);text-shadow:0 0 8px var(--cyan);font-variant-numeric:tabular-nums}
+.duelo-barra{height:10px;border-radius:999px;background:#07051a;border:1.5px solid #3a2e7a;overflow:hidden;margin-bottom:1rem}
+.duelo-barra i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--pink));box-shadow:0 0 10px var(--pink);transition:width .3s}
+.duelo-tipo{font-family:var(--pix);font-size:.68rem;line-height:1.6;text-align:center;color:var(--c,var(--cyan));text-shadow:0 0 6px var(--c,var(--cyan));margin-bottom:.6rem}
+.resultado-duelo{text-align:center}
+.rd-etq{font-family:var(--pix);font-size:.8rem;color:var(--cyan);text-shadow:0 0 8px var(--cyan);margin-bottom:.8rem}
+.rd-cifra{font-family:var(--pix);font-size:clamp(2.2rem,10vw,3.4rem);line-height:1.1;color:var(--grn);text-shadow:0 0 10px var(--grn),0 0 26px rgba(57,255,136,.6)}
+.rd-cifra small{font-size:.45em;color:var(--muted);text-shadow:none}
+.rd-sub{color:var(--muted);font-weight:800;margin-top:.3rem}
+.rd-fila{display:flex;flex-wrap:wrap;justify-content:center;gap:1rem 2rem;margin:1.1rem 0 .6rem}
+.rd-fila span{display:block;font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:800}
+.rd-fila b{font-family:var(--pix);font-weight:400;font-size:.95rem;color:var(--yel);text-shadow:0 0 6px var(--yel)}
+.rd-fila b.rojo{color:var(--red);text-shadow:0 0 6px var(--red)}
+.rd-val{font-weight:900;font-size:1.05rem;margin:.6rem 0 0}
+.clasif{margin-top:1.1rem;text-align:left;background:#07051a;border:2px solid var(--vio);border-radius:12px;padding:.8rem .9rem;box-shadow:0 0 10px rgba(176,107,255,.4)}
+.clasif-cab{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-bottom:.6rem}
+.clasif-cab b{font-family:var(--pix);font-weight:400;font-size:.72rem;line-height:1.6;color:var(--vio);text-shadow:0 0 6px var(--vio)}
+.clasif ol{list-style:none;margin:0;padding:0;display:grid;gap:.45rem}
+.clasif li{display:grid;grid-template-columns:32px 1fr auto;align-items:center;gap:.6rem;background:var(--panel);border:1.5px solid #3a2e7a;border-radius:10px;padding:.45rem .6rem}
+.clasif li.yo{border-color:var(--cyan);box-shadow:0 0 10px rgba(0,229,255,.5)}
+.clasif .med{width:30px;height:30px;border-radius:6px;display:grid;place-items:center;font-family:var(--pix);font-size:.75rem;color:var(--bg)}
+.clasif .m1{background:#ffd23f;box-shadow:0 0 10px #ffd23f}.clasif .m2{background:#cfd8ea;box-shadow:0 0 8px #cfd8ea}.clasif .m3{background:#ff9a5a;box-shadow:0 0 8px #ff9a5a}
+.clasif .dat{font-size:.82rem;color:var(--muted);white-space:nowrap}
+.clasif .tu{margin:.7rem 0 0;font-weight:900;color:var(--cyan)}
+.abandono{border-color:var(--red);box-shadow:0 0 20px var(--red),0 0 60px rgba(255,61,110,.4)}
+.abandono .grande{color:var(--red);text-shadow:0 0 8px var(--red),0 0 24px var(--red)}
+.abandono .btn.sig{border-color:var(--grn);color:var(--grn);text-shadow:0 0 6px var(--grn);box-shadow:0 0 10px var(--grn)}
+.abandono .btn.prim{border-color:var(--pink);color:var(--pink);text-shadow:0 0 6px var(--pink);box-shadow:0 0 10px var(--pink)}
+.abandono .btn.sig:hover{background:var(--grn);color:var(--bg)}
+.abandono .btn.prim:hover{background:var(--pink);color:var(--bg)}
+.h3-duelos{margin-top:1.1rem !important}
+.tabla-scroll{overflow-x:auto}
+@media (max-width:820px){ .opc-salas{grid-template-columns:repeat(2,1fr)} }
+@media (max-width:520px){ .duelo-card{flex-wrap:wrap} .duelo-card .dc-ir{display:none} .clasif li{grid-template-columns:30px 1fr} .clasif .dat{grid-column:2} }
+@media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
+</style>
+</head>
+<body>
+
+<header class="autoria">Material elaborado por Marta López de Letona Sánchez.</header>
+
+<main class="contenedor">
+  <h1 class="titulo-ficha">Escapa del Laboratorio de las Potencias</h1>
+  <p class="subtitulo">Potencias con números naturales · Escape room</p>
+
+  <div class="barra-alumno" id="barra">
+    <div class="barra-fila">
+      <div class="campo-nombre">
+        <label for="nombre">Nombre:</label>
+        <input id="nombre" type="text" autocomplete="off" placeholder="Escribe tu nombre y apellidos">
+      </div>
+      <div class="stats" aria-live="polite">
+        <span class="stat nota">Nota <b id="sNota">0</b></span>
+        <span class="stat salas">Salas <b id="sSalas">0/8</b></span>
+        <span class="stat fallos">Fallos <b id="sFallos">0</b></span>
+        <span class="stat racha" id="statRacha">🔥 Racha <b id="sRacha">0</b></span>
+      </div>
+    </div>
+    <div class="aviso-nombre" id="avisoNombre" hidden>Escribe tu nombre antes de empezar a responder.</div>
+  </div>
+
+  <!-- ============ MAPA ============ -->
+  <section id="vistaMapa">
+    <div class="panel modo" id="panelModo">
+      <span class="rotulo-modo">MODO DE JUEGO</span>
+      <div class="modo-opciones" role="group" aria-label="Modo de superación de las salas">
+        <button type="button" class="modo-btn" id="modoNormal" data-modo="normal" aria-pressed="true">Normal<small>3 aciertos de 4</small></button>
+        <button type="button" class="modo-btn" id="modoPlus" data-modo="plus" aria-pressed="false">⚡ Plus<small>6 aciertos de 7</small></button>
+      </div>
+      <p class="modo-nota" id="modoNota">Elige el modo antes de empezar: en cuanto respondas el primer reto, quedará fijado.</p>
+    </div>
+
+    <div class="panel mision">
+      <div class="icono-mision" aria-hidden="true">🧪</div>
+      <div>
+        <h2>¡La puerta del laboratorio se ha cerrado!</h2>
+        <p>Para salir necesitas el código secreto de 8 cifras. Cada sala superada te da una cifra.</p>
+        <ul>
+          <li>Una sala se supera con <b id="txtRegla">3 aciertos en tus 4 últimos intentos</b>.</li>
+          <li>Entra en la sala que quieras, en el orden que quieras. Si no recuerdas qué es una potencia, empieza por la <b>Sala 1</b>.</li>
+          <li>La <b>Cámara Final</b> mezcla varias propiedades: es la más difícil.</li>
+          <li>Cada sala vale 1,25 puntos. Cada fallo resta 0,25. Las pistas 💡 son gratis: úsalas.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="codigo" id="codigoMapa" aria-label="Código secreto"></div>
+    <div class="mapa" id="mapa"></div>
+
+    <button type="button" class="duelo-card" id="btnIrDuelo">
+      <span class="dc-ico" aria-hidden="true">⚔️</span>
+      <span class="dc-txt"><b>DUELO</b><span>Reta a tus compañeros: mismo código, mismos retos. ¿Quién acierta más y más rápido?</span></span>
+      <span class="dc-ir" aria-hidden="true">▶</span>
+    </button>
+  </section>
+
+  <!-- ============ SALA ============ -->
+  <section id="vistaSala" hidden>
+    <div class="sala-top">
+      <button class="btn volver" id="btnVolver" type="button">← Mapa</button>
+      <span class="etiqueta-sala" id="etiquetaSala"></span>
+      <div class="ventana" id="ventana" aria-label="Tus últimos intentos en esta sala">
+        Últimos intentos:
+        <span class="slots" id="slots"></span>
+      </div>
+    </div>
+
+    <div class="regla" id="regla"></div>
+
+    <div class="panel reto" id="reto">
+      <p class="enun" id="enun"></p>
+      <div class="expr" id="expr"></div>
+      <div class="respuesta" id="zonaResp"></div>
+      <div class="botones">
+        <button class="btn prim" id="btnComprobar" type="button">Comprobar</button>
+        <button class="btn pista" id="btnPista" type="button">💡 Pista</button>
+        <button class="btn sig" id="btnOtro" type="button" hidden>Otro reto →</button>
+      </div>
+      <div class="panel-pista" id="pista" hidden></div>
+      <div class="feedback" id="feedback" aria-live="polite"></div>
+
+      <div class="tapa" id="tapa">
+        <div class="grande">¡SALA SUPERADA!</div>
+        <div>Cifra del código:</div>
+        <div class="dig" id="tapaDig"></div>
+        <button class="btn sig" id="btnTapa" type="button">Volver al mapa →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ DUELO ============ -->
+  <section id="vistaDuelo" hidden>
+    <div class="sala-top">
+      <button class="btn volver" id="btnDueloSalir" type="button">← Mapa</button>
+      <span class="etiqueta-sala" style="--c:var(--pink)">⚔️ Duelo</span>
+    </div>
+
+    <div class="panel duelo-sel" id="dueloSelector">
+      <div class="pestanas" role="tablist" aria-label="Crear o unirse a un duelo">
+        <button type="button" role="tab" id="tabCrear" aria-selected="true">Crear un duelo</button>
+        <button type="button" role="tab" id="tabUnir" aria-selected="false">Unirme con un código</button>
+      </div>
+      <div id="zonaCrear">
+        <div class="sel-cab">
+          <p class="sel-txt">¿Qué salas entran en el duelo?</p>
+          <button type="button" class="btn-mini" id="btnTodasSalas">Todas / ninguna</button>
+        </div>
+        <div class="opc-salas" id="opcSalas"></div>
+        <button type="button" class="btn prim btn-ancho" id="btnCrearCodigo">Generar el código del duelo</button>
+        <div id="codigoCreado" hidden>
+          <div class="codigo-grande" id="codigoTexto" aria-live="polite"></div>
+          <p class="nota-duelo" id="codigoAyuda"></p>
+        </div>
+      </div>
+      <div id="zonaUnir" hidden>
+        <label for="codigoUnir" class="sel-txt">Escribe el código que te han dado</label>
+        <input id="codigoUnir" type="text" autocomplete="off" maxlength="9" placeholder="ABC-DEFG" spellcheck="false">
+        <div class="aviso-codigo" id="avisoCodigo" aria-live="polite"></div>
+      </div>
+      <button type="button" class="btn sig btn-ancho" id="btnEmpezar" disabled>Empezar el duelo</button>
+      <ul class="reglas-duelo">
+        <li>Todos tenéis los mismos 12 retos, en el mismo orden.</li>
+        <li>Gana quien más acierte; si hay empate, quien tarde menos. El reloj solo corre mientras hay un reto sin responder.</li>
+        <li>Solo cuenta tu primer intento con cada código. En el duelo no hay pistas.</li>
+        <li>El duelo no cambia tu nota de la ficha, pero aparece en tu informe.</li>
+      </ul>
+    </div>
+
+    <div class="panel reto duelo-partida" id="dueloPartida" hidden>
+      <div class="duelo-cab">
+        <span class="dchip" id="dueloChip">Duelo</span>
+        <span class="dchip" id="dueloNum">Reto 1 de 12</span>
+        <span class="duelo-reloj" id="dueloReloj" aria-label="Tiempo de duelo">00:00</span>
+      </div>
+      <div class="duelo-barra" aria-hidden="true"><i id="dueloBarra"></i></div>
+      <div id="dueloJuego">
+        <div class="duelo-tipo" id="dueloTipo"></div>
+        <p class="enun" id="dEnun"></p>
+        <div class="expr" id="dExpr"></div>
+        <div class="respuesta" id="dueloZona"></div>
+        <div class="botones">
+          <button class="btn prim" id="dueloComprobar" type="button">Comprobar</button>
+          <button class="btn sig" id="dueloSiguiente" type="button" hidden>Siguiente reto →</button>
+        </div>
+        <div class="feedback" id="dueloFeedback" aria-live="polite"></div>
+      </div>
+      <div id="dueloFinal" class="resultado-duelo" hidden></div>
+      <p class="nota-duelo" id="dueloRegla" style="text-align:center">Gana quien más acierte. Si hay empate, gana quien tarde menos.</p>
+    </div>
+  </section>
+
+  <div class="pie">
+    <button class="btn calificar" id="btnCalificar" type="button">Finalizar y Calificar</button>
+  </div>
+</main>
+
+<div class="burst" id="burst" aria-hidden="true"><span id="burstTxt"></span></div>
+
+<!-- Modal informe -->
+<div class="capa" id="capaInforme" role="dialog" aria-modal="true" aria-labelledby="mTitulo">
+  <div class="modal" id="modalInforme">
+    <h2 id="mTitulo"></h2>
+    <p class="sub-modal" id="mSub"></p>
+    <hr>
+    <h3>Informe de la actividad</h3>
+    <dl class="datos">
+      <dt>Nombre:</dt><dd id="mNombre"></dd>
+      <dt>Nota:</dt><dd><span class="nota-grande" id="mNota"></span></dd>
+      <dt>Modo:</dt><dd id="mModo"></dd>
+      <dt>Fecha:</dt><dd id="mFecha"></dd>
+      <dt>Hora:</dt><dd id="mHora"></dd>
+      <dt>Tiempo empleado:</dt><dd id="mTiempo"></dd>
+      <dt>Mejor racha:</dt><dd id="mRacha"></dd>
+    </dl>
+    <table class="desglose">
+      <thead><tr><th>Sala</th><th>Estado</th><th>Intentos</th><th>Aciertos</th><th>Fallos</th><th>Pistas</th></tr></thead>
+      <tbody id="mTabla"></tbody>
+    </table>
+    <div id="mDuelosCaja" hidden>
+      <h3 class="h3-duelos">Duelos</h3>
+      <div class="tabla-scroll"><table class="desglose">
+        <thead><tr><th>Código</th><th>Salas</th><th>Intento</th><th>Aciertos</th><th>Tiempo</th><th>Estado</th><th>Puesto (última consulta)</th></tr></thead>
+        <tbody id="mDuelos"></tbody>
+      </table></div>
+    </div>
+    <div class="cerrar-modal"><button class="btn" id="btnCerrarInforme" type="button">Cerrar y seguir practicando</button></div>
+  </div>
+</div>
+
+<!-- Modal abandonar duelo -->
+<div class="capa" id="capaAbandono" role="dialog" aria-modal="true" aria-labelledby="abTit">
+  <div class="modal escape-box abandono">
+    <div class="grande" id="abTit">¿ABANDONAR?</div>
+    <p style="font-weight:800">Si abandonas, este intento cuenta igualmente: con este código ya no entrarás en la clasificación.</p>
+    <div class="cerrar-modal" style="justify-content:center;gap:.7rem;flex-wrap:wrap">
+      <button class="btn sig" id="btnSeguirDuelo" type="button">Seguir jugando</button>
+      <button class="btn prim" id="btnConfAbandono" type="button">Abandonar el duelo</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal escape -->
+<div class="capa" id="capaEscape" role="dialog" aria-modal="true" aria-labelledby="escTit">
+  <div class="modal escape-box">
+    <div class="grande" id="escTit">¡HAS ESCAPADO!</div>
+    <p style="font-weight:900;font-size:1.1rem">Has conseguido el código completo del laboratorio:</p>
+    <div class="codigo" id="codigoEscape"></div>
+    <p>Pulsa <b>Finalizar y Calificar</b> para ver tu informe.</p>
+    <div class="cerrar-modal" style="justify-content:center">
+      <button class="btn calificar" id="btnEscapeInforme" type="button">Finalizar y Calificar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =====================================================================
+   AZAR (semilla solo para pruebas: ?seed=123)
+   ===================================================================== */
+const params = new URLSearchParams(location.search);
+const SEED = params.has('seed') ? (parseInt(params.get('seed'), 10) || 1) : null;
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;}}
+const randBase = SEED !== null ? mulberry32(SEED) : Math.random;
+let rand = randBase;   // el duelo lo sustituye temporalmente por el generador de su código
+const ri = (a,b) => a + Math.floor(rand()*(b-a+1));
+const pick = arr => arr[Math.floor(rand()*arr.length)];
+const bp = (b,e) => BigInt(b) ** BigInt(e);
+const distintos = arr => new Set(arr).size === arr.length;
+function raiz(x){ for (let r=2;r<=x;r++){ let v=r; while (v<x) v*=r; if (v===x) return r; } return x; }
+const sinBaseOculta = arr => distintos(arr.map(raiz));   // p. ej. 2 y 8 son ambos potencias de 2
+
+/* =====================================================================
+   FORMATO
+   ===================================================================== */
+const P  = (b,e) => `<span class="pw">${b}<sup>${e}</sup></span>`;
+const PP = (inner,e) => `<span class="pw">(${inner})<sup>${e}</sup></span>`;
+const DOT = ' <span class="op">·</span> ';
+const DIV = ' <span class="op">:</span> ';
+const EQ  = ' <span class="igual">=</span> ';
+function chips(arr, color){ return `<span class="chips">${arr.map(x=>`<span class="chip" style="--c:${color||'var(--cyan)'}">${x}</span>`).join('<span class="op">·</span>')}</span>`; }
+function grupo(arr,color){ return `<span class="grupo">${chips(arr,color)}</span>`; }
+const rep = (x,n) => Array(n).fill(x);
+const COLS = ['var(--cyan)','var(--pink)','var(--yel)','var(--grn)','var(--org)'];
+
+/* =====================================================================
+   GENERADORES DE RETOS
+   Cada reto: {enun, expr, kind:'pow'|'num', ans, val (BigInt, valor de la
+   expresión calculado de forma independiente), diag(resp), explain, pista}
+   ===================================================================== */
+
+// ---------- Sala 1: concepto ----------
+function genConcepto(){
+  const r = rand();
+  if (r < 0.45){
+    let b,e;
+    do { b = ri(2,10); e = rand() < 0.12 ? 1 : ri(2,4); } while (b**e > 1000);
+    const v = b**e;
+    let pasos = [], acc = b;
+    for (let i=1;i<e;i++){ pasos.push(`${acc} · ${b} = ${acc*b}`); acc*=b; }
+    return {
+      variante:'valor', enun:'Calcula el valor de esta potencia:', expr:P(b,e), kind:'num', ans:v, val:bp(b,e),
+      diag:x=>{
+        if (x===b*e && b*e!==v) return `Has multiplicado la base por el exponente (${b} · ${e} = ${b*e}). Es el error más típico: el exponente <b>no multiplica</b> a la base, dice <b>cuántas veces se repite la base</b> como factor.`;
+        if (x===e**b && e**b!==v) return `Has cambiado los papeles: has calculado ${P(e,b)}. La base es el número grande (${b}) y el exponente, el pequeño de arriba (${e}).`;
+        if (e>1 && x===b**(e-1)) return `Te ha faltado multiplicar una vez. Cuenta los factores: tiene que haber exactamente ${e}.`;
+        if (x===b**(e+1)) return `Has multiplicado una vez de más. Cuenta los factores: tiene que haber exactamente ${e}.`;
+        return null;
+      },
+      explain: e===1
+        ? `Con exponente 1 la base aparece una sola vez: ${P(b,1)} = ${b}.`
+        : `${P(b,e)} = ${rep(b,e).join(' · ')} = <b>${v}</b><span class="pasos">Paso a paso: ${pasos.join(' → ')}</span>`,
+      pista: e===1
+        ? `El exponente dice cuántas veces aparece la base como factor. Aquí aparece una sola vez.`
+        : `Escríbelo como una multiplicación: ${chips(rep(b,e))}<br>Después multiplica de dos en dos, sin prisa.`
+    };
+  }
+  if (r < 0.8){
+    const b = ri(2,15), e = ri(3,7);
+    return {
+      variante:'producto', enun:'Escribe esta multiplicación como una potencia:', expr:rep(b,e).join(DOT), kind:'pow', ans:{b,e}, val:bp(b,e),
+      diag:o=>{
+        if (o.b===e && o.e===b) return `Has intercambiado base y exponente. La <b>base</b> es el número que se repite (${b}); el <b>exponente</b> es cuántas veces se repite (${e}).`;
+        if (o.b===b) return `La base está bien. Vuelve a contar: el ${b} aparece <b>${e}</b> veces, así que el exponente es ${e}.`;
+        if (o.e===e) return `El exponente está bien, pero la base es el número que se repite: ${b}.`;
+        return null;
+      },
+      explain:`El número que se repite es ${b} (la <b>base</b>) y aparece ${e} veces (el <b>exponente</b>): ${rep(b,e).join(' · ')} = ${P(b,e)}.`,
+      pista:`Fíjate en qué número se repite: esa es la base. Después cuenta cuántas veces aparece: ese recuento es el exponente.`
+    };
+  }
+  let b, e; do { b = pick([2,3,4,5,10]); e = ri(2,4); } while (b**e > 1000);
+  const v = b**e;
+  let cad = [b]; for (let i=2;i<=e;i++) cad.push(b**i);
+  return {
+    variante:'exponente', enun:`¿A qué exponente hay que elevar ${b} para obtener ${v}?`, expr:`${P(b,'?')}${EQ}${v}`, kind:'num', ans:e, val:BigInt(e),
+    diag:x=>{
+      if (x===v/b) return `Has dividido ${v} entre ${b}. Lo que buscamos es <b>cuántas veces</b> hay que multiplicar el ${b} por sí mismo para llegar a ${v}.`;
+      if (x>0 && x<=30) return `${P(b,x)} vale ${(bp(b,x)).toString()}, no ${v}.`;
+      return null;
+    },
+    explain:`Multiplicando ${b} por sí mismo: ${cad.join(' → ')}. Hemos usado el ${b} <b>${e}</b> veces, así que ${P(b,e)} = ${v}.`,
+    pista:`Ve multiplicando ${b} · ${b} · ${b}… hasta llegar a ${v}, y cuenta cuántas veces has puesto el ${b}.`
+  };
+}
+
+// ---------- Sala 2: producto con la misma base ----------
+function genMultBase(){
+  const a = ri(2,12); const tres = rand() < 0.25; let es;
+  do { es = tres ? [ri(2,6),ri(2,6),ri(2,6)] : [ri(2,9),ri(2,9)]; } while (!distintos(es));
+  const s = es.reduce((x,y)=>x+y,0), prod = es.reduce((x,y)=>x*y,1);
+  const expr = es.map(e=>P(a,e)).join(DOT);
+  const pista = s <= 14
+    ? `Escribe cada potencia como multiplicación:<br>${es.map((e,i)=>grupo(rep(a,e),COLS[i])).join(' <span class="op">·</span> ')}<br>Todo es un único producto de ${a}. ¿Cuántos ${a} hay en total?`
+    : `Mira un ejemplo pequeño: ${P(2,2)} · ${P(2,3)} = (2·2)·(2·2·2) = ${P(2,5)}. Se juntan todos los factores: 2 + 3 = 5. Haz lo mismo con tus exponentes.`;
+  return {
+    meta:{exps:es}, enun:'Escribe el resultado como una sola potencia:', expr, kind:'pow', ans:{b:a,e:s}, val:es.reduce((acc,e)=>acc*bp(a,e),1n),
+    diag:o=>{
+      if (o.b===a && o.e===prod && prod!==s) return `Has <b>multiplicado</b> los exponentes. Eso se hace en la potencia de una potencia, ${PP(P('a','m'),'n')}. Aquí se multiplican potencias de la misma base, y los exponentes se <b>suman</b>.`;
+      if (o.b!==a && o.e===s) return `El exponente está bien, pero la base <b>no cambia</b>: sigue siendo ${a}. ${o.b===a*es.length||o.b===a**es.length?'Parece que has operado también con las bases; no hay que hacerlo.':''}`;
+      if (o.b===a) return `La base está bien. Los exponentes se suman: ${es.join(' + ')} = ${s}.`;
+      return null;
+    },
+    explain:`${expr}${EQ}${P(a,es.join('+'))}${EQ}${P(a,s)}. Al multiplicar se juntan todos los factores ${a}: ${es.join(' + ')} = ${s}. Misma base → se deja la base y se <b>suman</b> los exponentes.`,
+    pista
+  };
+}
+
+// ---------- Sala 3: cociente con la misma base ----------
+function genDivBase(){
+  const a = ri(2,12), n = ri(2,7), m = n + ri(1,7);
+  const d = m - n;
+  const pista = m <= 14
+    ? `Escríbelo como fracción y tacha cada ${a} de abajo con uno de arriba:<br><span class="fraccion"><span>${chips([...rep(a,n).map(()=>'<s>'+a+'</s>'), ...rep(a,d)],'var(--org)')}</span><span class="linea"></span><span>${chips(rep('<s>'+a+'</s>',n),'var(--org)')}</span></span><br>¿Cuántos ${a} quedan arriba sin tachar?`
+    : `Ejemplo pequeño: ${P(3,5)} : ${P(3,2)} = (3·3·3·3·3) : (3·3) = ${P(3,3)}. Se tachan 2 treses y quedan 5 − 2 = 3. Haz lo mismo con tus exponentes.`;
+  return {
+    meta:{exps:[m,n]}, enun:'Escribe el resultado como una sola potencia:', expr:P(a,m)+DIV+P(a,n), kind:'pow', ans:{b:a,e:d}, val:bp(a,m)/bp(a,n),
+    diag:o=>{
+      if (o.b===a && m%n===0 && o.e===m/n && m/n!==d) return `Has <b>dividido</b> los exponentes (${m} : ${n}). Al dividir potencias de la misma base, los exponentes se <b>restan</b>.`;
+      if (o.b===a && o.e===m+n) return `Has <b>sumado</b> los exponentes. Eso se hace al multiplicar. Al dividir se <b>restan</b>: ${m} − ${n} = ${d}.`;
+      if (o.b===1) return `Has dividido las bases (${a} : ${a} = 1). La base no se opera: se queda igual, ${a}.`;
+      if (o.b===a) return `La base está bien. Los exponentes se restan: ${m} − ${n} = ${d}.`;
+      if (o.e===d) return `El exponente está bien, pero la base no cambia: sigue siendo ${a}.`;
+      return null;
+    },
+    explain:`${P(a,m)} : ${P(a,n)}${EQ}${P(a,m+'−'+n)}${EQ}${P(a,d)}. Los ${n} factores ${a} de abajo se tachan con ${n} de arriba y quedan ${d}. Misma base → se deja la base y se <b>restan</b> los exponentes.`,
+    pista
+  };
+}
+
+// ---------- Sala 4: potencia de una potencia ----------
+function genPotPot(){
+  let a,m,n;
+  do { a = ri(2,10); m = ri(2,6); n = ri(2,5); } while (m===2 && n===2);
+  const t = m*n;
+  const pista = t <= 15
+    ? `Elevar a ${n} es repetir ${n} veces lo de dentro del paréntesis:<br>${rep(0,n).map((_,i)=>grupo(rep(a,m),COLS[i%5])).join(' <span class="op">·</span> ')}<br>Son ${n} grupos de ${m} factores. ¿Cuántos ${a} hay en total?`
+    : `${PP(P(a,m),n)} es ${P(a,m)} repetido ${n} veces: ${rep(P(a,m),n).join(' · ')}. Cuenta cuántos factores hay en total: ${n} grupos de ${m}.`;
+  return {
+    enun:'Escribe el resultado como una sola potencia:', expr:PP(P(a,m),n), kind:'pow', ans:{b:a,e:t}, val:bp(a,t),
+    diag:o=>{
+      if (o.b===a && o.e===m+n) return `Has <b>sumado</b> los exponentes. Se suman cuando se multiplican dos potencias de la misma base. Aquí hay ${n} grupos de ${m} factores: los exponentes se <b>multiplican</b>.`;
+      if (o.b===a && m**n<=1000 && o.e===m**n) return `Has elevado un exponente al otro (${P(m,n)}). Los exponentes se <b>multiplican</b>: ${m} · ${n} = ${t}.`;
+      if (o.b===a) return `La base está bien. Los exponentes se multiplican: ${m} · ${n} = ${t}.`;
+      if (o.e===t) return `El exponente está bien, pero la base no cambia: sigue siendo ${a}.`;
+      return null;
+    },
+    explain:`${PP(P(a,m),n)}${EQ}${rep(P(a,m),n).join(' · ')}${EQ}${P(a,m+'·'+n)}${EQ}${P(a,t)}. Son ${n} grupos de ${m} factores. Potencia de potencia → se deja la base y se <b>multiplican</b> los exponentes.`,
+    pista
+  };
+}
+
+// ---------- Sala 5: exponente cero ----------
+const razonCero = (a='5') => `¿Por qué? ${P(a,3)} : ${P(a,3)} = 1, porque todo número dividido entre sí mismo da 1. Y por la regla de la división, ${P(a,3)} : ${P(a,3)} = ${P(a,'3−3')} = ${P(a,0)}. Por eso ${P(a,0)} = 1.`;
+function genCero(){
+  const v = ri(1,5);
+  if (v===1){
+    const a = pick([ri(2,99), ri(100,999), 2026, ri(1000,9999)]);
+    return { enun:'Calcula el valor:', expr:P(a,0), kind:'num', ans:1, val:1n,
+      diag:x=> x===0 ? `Error típico: un exponente 0 <b>no</b> hace que el resultado sea 0. Cualquier número (que no sea 0) elevado a 0 vale <b>1</b>.`
+             : x===a ? `${a} sería ${P(a,1)} (la base una vez). Con exponente 0 el resultado es siempre 1.` : null,
+      explain:`${P(a,0)} = <b>1</b>. Cualquier número distinto de 0 elevado a 0 vale 1. ${razonCero(a)}`,
+      pista:`Piensa en ${P(5,3)} : ${P(5,3)}. ¿Cuánto da un número dividido entre sí mismo? ¿Y qué exponente sale al restar 3 − 3?` };
+  }
+  if (v===2){
+    const c = ri(3,40); let a; do { a = ri(2,99); } while (a===c);
+    return { enun:'Calcula el valor:', expr:c+' <span class="op">−</span> '+P(a,0), kind:'num', ans:c-1, val:BigInt(c-1),
+      diag:x=> x===c ? `Has tomado ${P(a,0)} como si valiera 0. Vale <b>1</b>: ${c} − 1 = ${c-1}.`
+             : x===c-a ? `Has tomado ${P(a,0)} como si valiera ${a}. Con exponente 0 vale 1: ${c} − 1 = ${c-1}.` : null,
+      explain:`${P(a,0)} = 1, así que ${c} − ${P(a,0)} = ${c} − 1 = <b>${c-1}</b>.`,
+      pista:`Primero calcula cuánto vale ${P(a,0)}. Después haz la resta.` };
+  }
+  if (v===3){
+    const b = ri(2,30); let a; do { a = ri(2,99); } while (a===b);
+    return { enun:'Calcula el valor:', expr:b+DOT+P(a,0), kind:'num', ans:b, val:BigInt(b),
+      diag:x=> x===0 ? `${P(a,0)} no vale 0, vale 1. Por eso ${b} · ${P(a,0)} = ${b} · 1 = ${b}.`
+             : x===b*a ? `Has tomado ${P(a,0)} como si valiera ${a}. Con exponente 0 vale 1: ${b} · 1 = ${b}.`
+             : x===1 ? `${P(a,0)} vale 1, sí; pero falta multiplicar por ${b}: ${b} · 1 = ${b}.` : null,
+      explain:`${P(a,0)} = 1, así que ${b} · ${P(a,0)} = ${b} · 1 = <b>${b}</b>.`,
+      pista:`Primero calcula cuánto vale ${P(a,0)}. Después multiplica por ${b}.` };
+  }
+  if (v===4){
+    const a = ri(2,50); let c; do { c = ri(2,50); } while (c===a);
+    return { enun:'Calcula el valor:', expr:P(a,0)+' <span class="op">+</span> '+P(c,0), kind:'num', ans:2, val:2n,
+      diag:x=> x===0 ? `Cada potencia con exponente 0 vale 1, no 0: 1 + 1 = 2.`
+             : x===1 ? `Cada una vale 1, y aquí se <b>suman</b>: 1 + 1 = 2.`
+             : x===a+c ? `Has sumado las bases. Cada potencia con exponente 0 vale 1: 1 + 1 = 2.` : null,
+      explain:`${P(a,0)} = 1 y ${P(c,0)} = 1, así que la suma es 1 + 1 = <b>2</b>.`,
+      pista:`¿Cuánto vale cada potencia por separado? Después súmalas.` };
+  }
+  const b = ri(2,30); let a; do { a = ri(2,99); } while (a===b);
+  return { enun:'Calcula el valor:', expr:P(a,0)+' <span class="op">+</span> '+b, kind:'num', ans:b+1, val:BigInt(b+1),
+    diag:x=> x===b ? `Has tomado ${P(a,0)} como si valiera 0. Vale <b>1</b>: 1 + ${b} = ${b+1}.`
+           : x===a+b ? `Has tomado ${P(a,0)} como si valiera ${a}. Con exponente 0 vale 1: 1 + ${b} = ${b+1}.` : null,
+    explain:`${P(a,0)} = 1, así que ${P(a,0)} + ${b} = 1 + ${b} = <b>${b+1}</b>.`,
+    pista:`¿Cuánto vale ${P(a,0)}? Sustitúyelo y suma.` };
+}
+
+// ---------- Sala 6: producto con el mismo exponente ----------
+function genMultExp(){
+  let bases, n = ri(2,7);
+  if (rand() < 0.2){ do { bases = [ri(2,7),ri(2,7),ri(2,7)]; } while (!sinBaseOculta(bases) || bases.reduce((x,y)=>x*y,1) > 120); }
+  else { do { bases = [ri(2,9),ri(2,9)]; } while (!sinBaseOculta(bases)); }
+  const prod = bases.reduce((x,y)=>x*y,1), suma = bases.reduce((x,y)=>x+y,0);
+  const expr = bases.map(b=>P(b,n)).join(DOT);
+  const pista = n <= 6
+    ? `Escribe cada potencia como multiplicación y forma grupos con un factor de cada una:<br>${rep(0,n).map(()=>grupo(bases,'var(--grn)')).join(' <span class="op">·</span> ')}<br>Hay ${n} grupos iguales. ¿Cuánto vale cada grupo ${bases.join('·')}?`
+    : `Ejemplo pequeño: ${P(2,3)} · ${P(5,3)} = (2·5)·(2·5)·(2·5) = ${P(10,3)}. Las bases se multiplican y el exponente se mantiene.`;
+  return {
+    meta:{bases}, enun:'Escribe el resultado como una sola potencia:', expr, kind:'pow', ans:{b:prod,e:n}, val:bases.reduce((acc,b)=>acc*bp(b,n),1n),
+    diag:o=>{
+      if (o.b===suma && suma!==prod) return `Has <b>sumado</b> las bases. Con el mismo exponente, las bases se <b>multiplican</b>: ${bases.join(' · ')} = ${prod}.`;
+      if (o.b===prod && o.e===n*bases.length) return `Has sumado los exponentes. Ojo: sumar exponentes es para la <b>misma base</b>. Aquí las bases son distintas y el exponente común <b>se mantiene</b>: ${n}.`;
+      if (o.b===prod) return `La base está bien. El exponente común se mantiene: ${n}.`;
+      if (o.e===n) return `El exponente está bien. Las bases se multiplican: ${bases.join(' · ')} = ${prod}.`;
+      return null;
+    },
+    explain:`${expr}${EQ}${PP(bases.join(' · '),n)}${EQ}${P(prod,n)}. Cada ${bases[0]} se empareja con un ${bases[1]}${bases.length>2?' y un '+bases[2]:''}, y hay ${n} grupos. Mismo exponente → se <b>multiplican las bases</b> y se deja el exponente.`,
+    pista
+  };
+}
+
+// ---------- Sala 7: cociente con el mismo exponente ----------
+function genDivExp(){
+  let b, k; do { b = ri(2,9); k = ri(2,9); } while (!sinBaseOculta([b*k, b]) || !sinBaseOculta([k, b]));
+  const a = b*k, n = ri(2,7);
+  const pista = n <= 5
+    ? `Escríbelo como fracción y agrupa en parejas ${a}/${b}:<br>${rep(0,n).map(()=>`<span class="grupo"><span class="fraccion"><span class="chip" style="--c:var(--pink)">${a}</span><span class="linea"></span><span class="chip" style="--c:var(--pink)">${b}</span></span></span>`).join(' <span class="op">·</span> ')}<br>¿Cuánto vale cada pareja ${a} : ${b}?`
+    : `Ejemplo pequeño: ${P(6,2)} : ${P(3,2)} = (6:3)·(6:3) = ${P(2,2)}. Las bases se dividen y el exponente se mantiene.`;
+  return {
+    meta:{bases:[a,b]}, enun:'Escribe el resultado como una sola potencia:', expr:P(a,n)+DIV+P(b,n), kind:'pow', ans:{b:k,e:n}, val:bp(a,n)/bp(b,n),
+    diag:o=>{
+      if (o.b===a-b) return `Has <b>restado</b> las bases. Con el mismo exponente, las bases se <b>dividen</b>: ${a} : ${b} = ${k}.`;
+      if (o.b===k && o.e===0) return `Has restado los exponentes. Eso se hace con la <b>misma base</b>. Aquí las bases son distintas y el exponente común se <b>mantiene</b>: ${n}.`;
+      if (o.b===k) return `La base está bien. El exponente común se mantiene: ${n}.`;
+      if (o.e===n) return `El exponente está bien. Las bases se dividen: ${a} : ${b} = ${k}.`;
+      return null;
+    },
+    explain:`${P(a,n)} : ${P(b,n)}${EQ}${PP(a+' : '+b,n)}${EQ}${P(k,n)}. Cada ${a} de arriba se divide entre un ${b} de abajo, y hay ${n} parejas. Mismo exponente → se <b>dividen las bases</b> y se deja el exponente.`,
+    pista
+  };
+}
+
+// ---------- Sala 8: varias propiedades ----------
+const PARES = [[2,5],[2,3],[3,4],[2,7],[4,5],[3,5],[2,9],[3,7]];
+function genComb(forzar){
+  const t = forzar || ri(1,7);
+  let r;
+  switch(t){
+    case 1:{ const [a,b]=pick(PARES), c=a*b; let n,m; do{ n=ri(2,5); m=ri(2,6); }while(n===m);
+      r={expr:P(a,n)+DOT+P(b,n)+DOT+P(c,m), ans:{b:c,e:n+m}, val:bp(a,n)*bp(b,n)*bp(c,m),
+        pasos:[`<b>Mismo exponente</b>: ${P(a,n)} · ${P(b,n)} = ${PP(a+'·'+b,n)} = ${P(c,n)}`,
+               `<b>Misma base</b>: ${P(c,n)} · ${P(c,m)} = ${P(c,n+'+'+m)} = ${P(c,n+m)}`],
+        pista:`Busca dos potencias con el <b>mismo exponente</b> y júntalas en una. ¿Qué base sale? ¿Coincide con la de la tercera potencia?`}; break; }
+    case 2:{ const a=ri(2,7); let m,n,p; do{ m=ri(2,4); n=ri(2,3); p=ri(2,5); }while(m*n===p); const tot=m*n+p, q=ri(2,tot-2);
+      r={expr:PP(P(a,m),n)+DOT+P(a,p)+DIV+P(a,q), ans:{b:a,e:tot-q}, val:bp(a,m*n)*bp(a,p)/bp(a,q),
+        pasos:[`<b>Potencia de potencia</b>: ${PP(P(a,m),n)} = ${P(a,m*n)}`,
+               `<b>Producto, misma base</b>: ${P(a,m*n)} · ${P(a,p)} = ${P(a,tot)}`,
+               `<b>Cociente, misma base</b>: ${P(a,tot)} : ${P(a,q)} = ${P(a,tot-q)}`],
+        pista:`Empieza por el paréntesis (potencia de potencia). Después todo tiene la misma base: suma o resta exponentes según multipliques o dividas.`}; break; }
+    case 3:{ const a=ri(2,9), p=ri(2,4); let m,n; do{ m=ri(2,4); n=ri(2,4); }while(m===n);
+      r={expr:PP(P(a,m)+DOT+P(a,n),p), ans:{b:a,e:(m+n)*p}, val:(bp(a,m)*bp(a,n))**BigInt(p),
+        pasos:[`<b>Dentro del paréntesis, misma base</b>: ${P(a,m)} · ${P(a,n)} = ${P(a,m+n)}`,
+               `<b>Potencia de potencia</b>: ${PP(P(a,m+n),p)} = ${P(a,(m+n)+'·'+p)} = ${P(a,(m+n)*p)}`],
+        pista:`Primero resuelve lo de dentro del paréntesis (misma base). Después eleva el resultado a ${p}.`}; break; }
+    case 4:{ const [a,b]=pick(PARES), c=a*b; let n,m; do{ n=ri(2,6); m=ri(2,5); }while(n===m);
+      r={expr:P(c,n)+DIV+P(b,n)+DOT+P(a,m), ans:{b:a,e:n+m}, val:bp(c,n)/bp(b,n)*bp(a,m),
+        pasos:[`<b>Mismo exponente</b>: ${P(c,n)} : ${P(b,n)} = ${PP(c+':'+b,n)} = ${P(a,n)}`,
+               `<b>Misma base</b>: ${P(a,n)} · ${P(a,m)} = ${P(a,n+m)}`],
+        pista:`Las dos primeras potencias tienen el <b>mismo exponente</b>: divide sus bases. ¿Qué base sale? ¿Coincide con la de la última?`}; break; }
+    case 5:{ const a=ri(2,9); let b; do{b=ri(2,50);}while(b===a); let m,n; do{ m=ri(2,6); n=ri(2,6); }while(m===n); const p=ri(2,m+n-2);
+      r={expr:P(a,m)+DOT+P(b,0)+DOT+P(a,n)+DIV+P(a,p), ans:{b:a,e:m+n-p}, val:bp(a,m)*bp(a,n)/bp(a,p),
+        pasos:[`<b>Exponente cero</b>: ${P(b,0)} = 1, así que no cambia nada al multiplicar`,
+               `<b>Producto, misma base</b>: ${P(a,m)} · ${P(a,n)} = ${P(a,m+n)}`,
+               `<b>Cociente, misma base</b>: ${P(a,m+n)} : ${P(a,p)} = ${P(a,m+n-p)}`],
+        pista:`Hay una potencia que vale 1: localízala y quítala. Lo que queda tiene la misma base.`}; break; }
+    case 6:{ const [a,b]=pick(PARES), c=a*b, n=ri(2,4), m=ri(2,4);
+      r={expr:PP(P(c,n)+DIV+P(b,n),m), ans:{b:a,e:n*m}, val:(bp(c,n)/bp(b,n))**BigInt(m),
+        pasos:[`<b>Dentro del paréntesis, mismo exponente</b>: ${P(c,n)} : ${P(b,n)} = ${PP(c+':'+b,n)} = ${P(a,n)}`,
+               `<b>Potencia de potencia</b>: ${PP(P(a,n),m)} = ${P(a,n*m)}`],
+        pista:`Dentro del paréntesis, las dos potencias tienen el mismo exponente: divide sus bases. Después aplica la potencia de potencia.`}; break; }
+    default:{ let a,m,n,p,q; do{ a=ri(2,6); m=ri(2,5); n=ri(2,4); p=ri(2,4); q=ri(2,3);}while(m*n <= p*q+1);
+      r={expr:PP(P(a,m),n)+DIV+PP(P(a,p),q), ans:{b:a,e:m*n-p*q}, val:bp(a,m*n)/bp(a,p*q),
+        pasos:[`<b>Potencia de potencia</b> (dos veces): ${PP(P(a,m),n)} = ${P(a,m*n)} y ${PP(P(a,p),q)} = ${P(a,p*q)}`,
+               `<b>Cociente, misma base</b>: ${P(a,m*n)} : ${P(a,p*q)} = ${P(a,m*n-p*q)}`],
+        pista:`Resuelve cada paréntesis por separado (potencia de potencia). Después divide: misma base.`}; }
+  }
+  r.plantilla = t;
+  r.enun = 'Usa varias propiedades y escribe el resultado como una sola potencia:';
+  r.kind = 'pow';
+  r.explain = `<ol class="pasos-lista">${r.pasos.map(p=>`<li>${p}</li>`).join('')}</ol>Resultado: ${P(r.ans.b,r.ans.e)}.`;
+  r.diag = o=>{
+    if (o.b===r.ans.b) return `La base está bien (${r.ans.b}). Revisa los exponentes paso a paso: suma al multiplicar, resta al dividir y multiplica en la potencia de potencia.`;
+    if (o.e===r.ans.e) return `El exponente está bien, pero la base final no es ${o.b}. Fíjate en qué potencias tienen el mismo exponente y cuáles la misma base.`;
+    return null;
+  };
+  return r;
+}
+
+/* =====================================================================
+   SALAS (TIPOS)
+   ===================================================================== */
+const TIPOS = [
+  {id:'concepto', corto:'Concepto', nombre:'Sala del Código', tema:'Qué es una potencia', ico:'🔑', color:'var(--yel)', gen:genConcepto,
+   regla:`${P('a','n')} = a · a · … · a`, reglaTxt:'La <b>base</b> (a) es el número que se repite. El <b>exponente</b> (n) dice cuántas veces se repite como factor.'},
+  {id:'multBase', corto:'Producto misma base', nombre:'Sala de los Clones', tema:'Producto con la misma base', ico:'👯', color:'var(--cyan)', gen:genMultBase,
+   regla:`${P('a','m')} · ${P('a','n')} = ${P('a','m+n')}`, reglaTxt:'Misma base al <b>multiplicar</b>: se deja la base y se <b>suman</b> los exponentes.'},
+  {id:'divBase', corto:'Cociente misma base', nombre:'Sala del Divisor', tema:'Cociente con la misma base', ico:'✂️', color:'var(--org)', gen:genDivBase,
+   regla:`${P('a','m')} : ${P('a','n')} = ${P('a','m−n')}`, reglaTxt:'Misma base al <b>dividir</b>: se deja la base y se <b>restan</b> los exponentes.'},
+  {id:'potPot', corto:'Potencia de potencia', nombre:'Sala de la Torre', tema:'Potencia de una potencia', ico:'🗼', color:'var(--vio)', gen:genPotPot,
+   regla:`${PP(P('a','m'),'n')} = ${P('a','m·n')}`, reglaTxt:'Potencia elevada a otra potencia: se deja la base y se <b>multiplican</b> los exponentes.'},
+  {id:'cero', corto:'Exponente cero', nombre:'Sala del Cero', tema:'Exponente cero', ico:'🥚', color:'var(--pink)', gen:genCero,
+   regla:`${P('a','0')} = 1 &nbsp;<small>(a ≠ 0)</small>`, reglaTxt:'Cualquier número distinto de 0 elevado a 0 vale <b>1</b>, no 0.'},
+  {id:'multExp', corto:'Producto mismo exponente', nombre:'Sala de los Gemelos', tema:'Producto con el mismo exponente', ico:'🤝', color:'var(--grn)', gen:genMultExp,
+   regla:`${P('a','n')} · ${P('b','n')} = ${PP('a · b','n')}`, reglaTxt:'Mismo exponente al <b>multiplicar</b>: se <b>multiplican las bases</b> y se deja el exponente.'},
+  {id:'divExp', corto:'Cociente mismo exponente', nombre:'Sala del Reparto', tema:'Cociente con el mismo exponente', ico:'🍕', color:'var(--red)', gen:genDivExp,
+   regla:`${P('a','n')} : ${P('b','n')} = ${PP('a : b','n')}`, reglaTxt:'Mismo exponente al <b>dividir</b>: se <b>dividen las bases</b> y se deja el exponente.'},
+  {id:'comb', corto:'Varias propiedades', nombre:'Cámara Final', tema:'Varias propiedades a la vez', ico:'🚪', color:'var(--blue)', gen:genComb, final:true,
+   regla:'Estrategia', reglaTxt:'Busca primero exponentes cero y paréntesis. Después agrupa lo que tenga la <b>misma base</b> o el <b>mismo exponente</b>, paso a paso.'}
+];
+
+/* =====================================================================
+   ESTADO Y PUNTUACIÓN (ventana móvil según el modo elegido, nota desde cero)
+   · Normal: 3 aciertos en los 4 últimos intentos (por defecto)
+   · Plus:   6 aciertos en los 7 últimos intentos
+   El modo se fija con el primer intento registrado en cualquier sala.
+   ===================================================================== */
+const MODOS = {
+  normal:{id:'normal', nombre:'Normal', ventana:4, aciertos:3},
+  plus:  {id:'plus',   nombre:'Plus',   ventana:7, aciertos:6}
+};
+const state = {
+  modo:'normal', fallosTotales:0, racha:0, mejorRacha:0,
+  tipos:{}, inicio:Date.now(), codigo:{}, salaActual:null, actual:{}, escapeMostrado:false, duelos:[]
+};
+TIPOS.forEach(t=>{
+  state.tipos[t.id] = {intentos:[], superado:false, cerrado:false, fallos:0, aciertos:0, total:0, pistas:0};
+  state.codigo[t.id] = ri(0,9);
+});
+const PUNTO_POR_TIPO = 10 / TIPOS.length;  // 1,25
+const PENALIZACION_FALLO = 0.25;
+const modoActual = () => MODOS[state.modo];
+const VENTANA = () => modoActual().ventana;                  // últimos intentos que se miran
+const ACIERTOS_PARA_SUPERAR = () => modoActual().aciertos;
+const textoModo = m => `${m.nombre} (${m.aciertos} aciertos de cada ${m.ventana})`;
+const modoBloqueado = () => Object.values(state.tipos).some(t=>t.total>0);
+
+function calcularNota(){
+  const superados = Object.values(state.tipos).filter(t=>t.superado).length;
+  const bruta = superados*PUNTO_POR_TIPO - state.fallosTotales*PENALIZACION_FALLO;
+  return Math.round(Math.min(10, Math.max(0, bruta))*100)/100;
+}
+function registrarIntento(tipo, correcto){
+  const t = state.tipos[tipo];
+  if (t.cerrado) return;
+  t.total++;
+  t.intentos.push(correcto);
+  if (t.intentos.length > VENTANA()) t.intentos.shift();
+  if (correcto){ t.aciertos++; state.racha++; state.mejorRacha = Math.max(state.mejorRacha, state.racha); }
+  else { t.fallos++; state.fallosTotales++; state.racha = 0; }
+  if (!t.superado && t.intentos.filter(Boolean).length >= ACIERTOS_PARA_SUPERAR()){ t.superado = true; t.cerrado = true; }
+}
+const fmtNota = n => (Number.isInteger(n) ? String(n) : n.toFixed(2).replace(/0$/,'')).replace('.',',');
+const nSuperadas = () => Object.values(state.tipos).filter(t=>t.superado).length;
+
+/* =====================================================================
+   INTERFAZ
+   ===================================================================== */
+const $ = id => document.getElementById(id);
+const tipoPorId = id => TIPOS.find(t=>t.id===id);
+
+function pintarCodigo(cont){
+  cont.innerHTML = (cont.id==='codigoMapa' ? '<span class="rotulo">Código:</span>' : '') +
+    TIPOS.map(t=>{ const on = state.tipos[t.id].superado; return `<span class="digito ${on?'on':''}" title="${t.nombre}">${on?state.codigo[t.id]:'?'}</span>`; }).join('');
+}
+function pintarModo(){
+  const m = modoActual(), bloq = modoBloqueado();
+  document.querySelectorAll('.modo-btn').forEach(b=>{
+    b.setAttribute('aria-pressed', String(b.dataset.modo===state.modo));
+    b.disabled = bloq;
+  });
+  $('txtRegla').textContent = `${m.aciertos} aciertos en tus ${m.ventana} últimos intentos`;
+  $('modoNota').innerHTML = bloq
+    ? `Modo fijado: <b>${textoModo(m)}</b>. Ya has empezado a responder, así que no se puede cambiar.`
+    : state.modo==='plus'
+      ? `<b>Modo Plus</b>: más exigente, solo admite 1 fallo en tus 7 últimos intentos de cada sala. Queda fijado al responder el primer reto.`
+      : 'Elige el modo antes de empezar: en cuanto respondas el primer reto, quedará fijado.';
+}
+function elegirModo(id){
+  if (modoBloqueado() || !MODOS[id]) return;
+  state.modo = id;
+  pintarModo();
+}
+function pintarMapa(){
+  pintarModo();
+  pintarCodigo($('codigoMapa'));
+  $('mapa').innerHTML = TIPOS.map((t,i)=>{
+    const st = state.tipos[t.id];
+    let estado, cls='';
+    if (st.superado){ estado = `✓ Superada · cifra ${state.codigo[t.id]}`; cls='superada'; }
+    else estado = st.total ? `En curso · ${st.aciertos} ✓ · ${st.fallos} ✗` : '¡Entra!';
+    return `<button type="button" class="puerta ${cls} ${t.final?'final':''}" style="--c:${t.color}" data-id="${t.id}" ${st.superado?'disabled':''} aria-label="${t.nombre}: ${t.tema}. ${estado}">
+      <span class="num">${t.final?'FINAL':i+1}</span><span class="ico" aria-hidden="true">${st.superado?'🔓':t.ico}</span>
+      <span class="nom">${t.nombre}</span><span class="tema">${t.tema}</span><span class="estado">${estado}</span></button>`;
+  }).join('');
+}
+function actualizarBarra(){
+  $('sNota').textContent = fmtNota(calcularNota());
+  $('sSalas').textContent = `${nSuperadas()}/${TIPOS.length}`;
+  $('sFallos').textContent = state.fallosTotales;
+  $('sRacha').textContent = state.racha;
+}
+function pintarVentana(){
+  const t = state.tipos[state.salaActual];
+  const m = modoActual();
+  $('ventana').setAttribute('aria-label', `Tus ${m.ventana} últimos intentos en esta sala: necesitas ${m.aciertos} aciertos`);
+  $('slots').innerHTML = Array.from({length:m.ventana}, (_,i)=>{
+    const v = t.intentos[i];
+    return `<span class="slot${v===true?' si':v===false?' no':''}">${v===true?'✓':v===false?'✗':''}</span>`;
+  }).join('');
+}
+function burst(txt){
+  const b = $('burst'); $('burstTxt').textContent = txt;
+  b.classList.remove('go'); void b.offsetWidth; b.classList.add('go');
+}
+const EXCLAM_OK = ['¡BOOM!','¡ZAS!','¡CRACK!','¡GENIAL!','¡PUM!','¡TOMA!'];
+
+function mostrarVista(v){
+  ['vistaMapa','vistaSala','vistaDuelo'].forEach(x=> $(x).hidden = x!==v);
+  window.scrollTo({top:0});
+}
+function mostrarMapa(){
+  state.salaActual = null;
+  mostrarVista('vistaMapa');
+  pintarMapa(); actualizarBarra();
+}
+function entrarSala(id){
+  if (state.tipos[id].cerrado) return;
+  const t = tipoPorId(id);
+  state.salaActual = id;
+  mostrarVista('vistaSala');
+  const et = $('etiquetaSala'); et.textContent = `${t.ico} ${t.nombre}`; et.style.setProperty('--c', t.color);
+  $('regla').innerHTML = `<span class="tit">${t.final?'ESTRATEGIA':'LA REGLA DE ESTA SALA'}</span>${t.final?'':`<span class="form">${t.regla}</span>`}<span class="txt">${t.reglaTxt}</span>`;
+  $('tapa').classList.remove('on');
+  const prev = state.actual[id];
+  if (!prev || prev.respondido) nuevoReto(); else pintarReto(prev);
+  pintarVentana(); window.scrollTo({top:0});
+}
+function nuevoReto(){
+  const t = tipoPorId(state.salaActual);
+  const ej = t.gen(); ej.respondido = false;
+  state.actual[state.salaActual] = ej;
+  pintarReto(ej);
+}
+function pintarReto(ej){
+  $('enun').textContent = ej.enun;
+  $('expr').innerHTML = ej.expr;
+  $('zonaResp').innerHTML = ej.kind==='pow'
+    ? `<span class="resp-label">Resultado:</span>
+       <span class="pot-in">
+         <span><input class="in-base" id="inBase" type="text" inputmode="numeric" autocomplete="off" aria-label="Base"><span class="mini-et">base</span></span>
+         <span><input class="in-exp" id="inExp" type="text" inputmode="numeric" autocomplete="off" aria-label="Exponente"><span class="mini-et">exponente</span></span>
+       </span>`
+    : `<label class="resp-label" for="inNum">Resultado:</label><input class="num-in" id="inNum" type="text" inputmode="numeric" autocomplete="off">`;
+  $('pista').hidden = true; $('pista').innerHTML = '';
+  $('feedback').className = 'feedback'; $('feedback').innerHTML = '';
+  $('btnComprobar').hidden = false; $('btnComprobar').disabled = false;
+  $('btnPista').disabled = false;
+  $('btnOtro').hidden = true;
+  const f = ej.kind==='pow' ? $('inBase') : $('inNum');
+  if (f) f.focus({preventScroll:true});
+}
+function leerEntero(el){
+  const s = (el.value||'').trim();
+  return /^\d+$/.test(s) ? parseInt(s,10) : null;
+}
+function nombreValido(){
+  const ok = $('nombre').value.trim().length > 0;
+  $('avisoNombre').hidden = ok;
+  $('nombre').classList.toggle('falta', !ok);
+  if (!ok) $('nombre').focus();
+  return ok;
+}
+
+function comprobar(){
+  const id = state.salaActual; if (!id) return;
+  const ej = state.actual[id]; const t = state.tipos[id];
+  if (!ej || ej.respondido || t.cerrado) return;
+  if (!nombreValido()) return;
+  const fb = $('feedback');
+  let ok, resp;
+  if (ej.kind==='pow'){
+    const b = leerEntero($('inBase')), e = leerEntero($('inExp'));
+    if (b===null || e===null){
+      fb.className='feedback casi'; fb.innerHTML = `<span class="cab">¡Falta algo!</span>Escribe un número natural en la base <b>y</b> en el exponente.`; return;
+    }
+    resp = {b,e};
+    ok = b===ej.ans.b && e===ej.ans.e;
+    if (!ok && b>1 && e>=1 && e<=400 && bp(b,e)===bp(ej.ans.b,ej.ans.e)){
+      fb.className='feedback casi';
+      fb.innerHTML = `<span class="cab">¡Casi!</span>${P(b,e)} vale lo mismo que el resultado, pero no es la forma que se pide: aplica la propiedad y escribe la potencia con base <b>${ej.ans.b}</b>. Esto no cuenta como fallo.`;
+      return;
+    }
+  } else {
+    const n = leerEntero($('inNum'));
+    if (n===null){ fb.className='feedback casi'; fb.innerHTML = `<span class="cab">¡Falta algo!</span>Escribe un número natural.`; return; }
+    resp = n; ok = n===ej.ans;
+  }
+  ej.respondido = true;
+  registrarIntento(id, ok);
+  document.querySelectorAll('#zonaResp input').forEach(i=>i.disabled=true);
+  $('btnComprobar').disabled = true; $('btnPista').disabled = true;
+
+  if (ok){
+    fb.className='feedback ok';
+    fb.innerHTML = `<span class="cab">✓ ¡Correcto!</span>${ej.explain}`;
+    burst(pick(EXCLAM_OK));
+    if ([3,5,8,12,20].includes(state.racha)) setTimeout(()=>burst(`¡RACHA x${state.racha}!`), 700);
+    const r = $('statRacha'); r.classList.remove('viva'); void r.offsetWidth; r.classList.add('viva');
+  } else {
+    const d = ej.diag(resp);
+    fb.className='feedback ko';
+    fb.innerHTML = `<span class="cab">✗ ¡Ups! No es correcto</span>${d || 'Esa no es la respuesta. Mira cómo se resuelve:'}<span class="sol"><b>Solución:</b> ${ej.explain}</span>`;
+  }
+  actualizarBarra(); pintarVentana();
+
+  if (t.superado){
+    setTimeout(()=>{
+      $('tapaDig').textContent = state.codigo[id];
+      $('tapa').classList.add('on');
+      burst('¡SALA SUPERADA!');
+      $('btnTapa').focus({preventScroll:true});
+    }, ok ? 1200 : 0);
+  } else {
+    $('btnOtro').hidden = false;
+    $('btnOtro').focus({preventScroll:true});
+  }
+}
+function verPista(){
+  const id = state.salaActual; const ej = state.actual[id];
+  if (!ej || ej.respondido) return;
+  if ($('pista').hidden){ state.tipos[id].pistas++; }
+  $('pista').innerHTML = ej.pista; $('pista').hidden = false;
+}
+function salirDeSalaSuperada(){
+  $('tapa').classList.remove('on');
+  mostrarMapa();
+  if (nSuperadas()===TIPOS.length && !state.escapeMostrado){
+    state.escapeMostrado = true;
+    pintarCodigo($('codigoEscape'));
+    setTimeout(()=>{ $('capaEscape').classList.add('on'); burst('¡LIBRE!'); $('btnEscapeInforme').focus(); }, 300);
+  }
+}
+
+/* =====================================================================
+   INFORME
+   ===================================================================== */
+function colorNota(n){
+  if (n >= 10) return ['#1a7a1a','#fff'];
+  const f = Math.floor(n);
+  if (f===9) return ['#6dbf6d','#fff'];
+  if (f===8) return ['#1a4f8a','#fff'];
+  if (f===7) return ['#5b9bd5','#fff'];
+  if (f===6) return ['#c05c00','#fff'];
+  if (f===5) return ['#f5a623','#000'];
+  return ['#c0392b','#fff'];
+}
+const dos = x => String(x).padStart(2,'0');
+function calificar(){
+  $('capaEscape').classList.remove('on');
+  if (!nombreValido()){ window.scrollTo({top:0, behavior:'smooth'}); return; }
+  const nota = calcularNota(); const ahora = new Date();
+  const [bg, fg] = colorNota(nota);
+  const m = $('modalInforme'); m.style.background = bg; m.style.color = fg;
+  $('mTitulo').textContent = document.querySelector('.titulo-ficha').textContent;
+  $('mSub').textContent = document.querySelector('.subtitulo').textContent;
+  $('mNombre').textContent = $('nombre').value.trim();
+  $('mNota').textContent = fmtNota(nota) + ' / 10';
+  $('mModo').innerHTML = state.modo==='plus'
+    ? `<span class="etq-modo">⚡ PLUS</span> 6 aciertos de cada 7 intentos`
+    : 'Normal · 3 aciertos de cada 4 intentos';
+  $('mFecha').textContent = `${dos(ahora.getDate())}/${dos(ahora.getMonth()+1)}/${ahora.getFullYear()}`;
+  $('mHora').textContent = `${dos(ahora.getHours())}:${dos(ahora.getMinutes())}:${dos(ahora.getSeconds())}`;
+  const min = Math.ceil((Date.now()-state.inicio)/60000);
+  $('mTiempo').textContent = `${dos(Math.floor(min/60))}:${dos(min%60)}`;
+  $('mRacha').textContent = state.mejorRacha + (state.mejorRacha===1?' acierto seguido':' aciertos seguidos');
+  $('mTabla').innerHTML = TIPOS.map((t,i)=>{
+    const s = state.tipos[t.id];
+    return `<tr><td>${t.final?'Final':i+1}. ${t.tema}</td><td class="${s.superado?'est-si':'est-no'}">${s.superado?'Superada':'No superada'}</td><td>${s.total}</td><td>${s.aciertos}</td><td>${s.fallos}</td><td>${s.pistas}</td></tr>`;
+  }).join('');
+  $('mDuelosCaja').hidden = !state.duelos.length;
+  $('mDuelos').innerHTML = state.duelos.map(d=>`<tr><td>${verCodigo(d.codigo)}</td><td>${escapar(textoSalas(d.salas))}</td><td>${d.intento}.º</td><td>${d.aciertos}/${DUELO_N}</td><td>${fmtPreciso(d.ms)}</td><td>${d.estado==='terminado'?'Terminado':'Abandonado ('+d.respondidas+' de '+DUELO_N+')'}</td><td>${escapar(d.puesto||'—')}</td></tr>`).join('');
+  document.body.classList.toggle('victoria', nota >= 10);
+  $('capaInforme').classList.add('on');
+  $('btnCerrarInforme').focus();
+}
+
+/* =====================================================================
+   EVENTOS
+   ===================================================================== */
+$('mapa').addEventListener('click', e=>{ const b = e.target.closest('.puerta'); if (b && !b.disabled) entrarSala(b.dataset.id); });
+$('btnVolver').addEventListener('click', mostrarMapa);
+$('panelModo').addEventListener('click', e=>{ const b = e.target.closest('.modo-btn'); if (b) elegirModo(b.dataset.modo); });
+$('btnComprobar').addEventListener('click', comprobar);
+$('btnPista').addEventListener('click', verPista);
+$('btnOtro').addEventListener('click', nuevoReto);
+$('btnTapa').addEventListener('click', salirDeSalaSuperada);
+$('btnCalificar').addEventListener('click', calificar);
+$('btnEscapeInforme').addEventListener('click', calificar);
+$('btnCerrarInforme').addEventListener('click', ()=>{ $('capaInforme').classList.remove('on'); });
+$('nombre').addEventListener('input', ()=>{ if ($('nombre').value.trim()){ $('avisoNombre').hidden = true; $('nombre').classList.remove('falta'); } });
+document.addEventListener('keydown', e=>{
+  if (e.key==='Escape'){ $('capaInforme').classList.remove('on'); $('capaEscape').classList.remove('on'); $('capaAbandono').classList.remove('on'); }
+  if (e.key!=='Enter') return;
+  const tg = e.target;
+  if (tg && tg.closest && tg.closest('#zonaResp')){
+    e.preventDefault();
+    if (tg.id==='inBase' && !$('inExp').value.trim()){ $('inExp').focus(); return; }
+    comprobar();
+  }
+});
+
+/* =====================================================================
+   DUELO ARCADE (skill duelo-galactico)
+   Mismo código → mismos retos en el mismo orden para todos los rivales.
+   El duelo NO cambia la nota de la ficha; queda registrado en el informe.
+   ⚠️ Si se cambian los generadores de retos, los códigos ya repartidos dejan
+   de coincidir entre alumnos: todos deben usar la misma versión de la ficha.
+   ===================================================================== */
+// Pega aquí la URL de la aplicación web de Apps Script (termina en /exec).
+// Si se deja vacía, el duelo funciona igual, pero sin panel ni clasificación.
+const URL_DUELOS = 'https://script.google.com/macros/s/AKfycbzky7iMLGvMrPGe1smyhdTyZSOiqEHbZENPfQ_iLkQHtPaf0luYPaXStvokVt6K-tR0TA/exec';
+const ALFA = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';   // sin 0/O ni 1/I
+const DUELO_N = 12;
+const digitoControl = s => ALFA[[...s].reduce((acc,c,i)=>acc + ALFA.indexOf(c)*(2*i+1), 0) % 32];   // pesos impares
+function crearCodigo(ids){
+  const mascara = ids.reduce((m,id)=> m | (1 << TIPOS.findIndex(t=>t.id===id)), 0);   // bit i = sala i
+  const semilla = Math.floor(randBase() * 2**21);
+  let v = mascara * 2**21 + semilla, s = '';
+  for (let i=0;i<6;i++){ s = ALFA[v % 32] + s; v = Math.floor(v / 32); }
+  return s + digitoControl(s);
+}
+function leerCodigo(txt){
+  const s = String(txt||'').toUpperCase().replace(/[^0-9A-Z]/g,'');
+  if (s.length!==7 || [...s].some(c=>!ALFA.includes(c)) || digitoControl(s.slice(0,6))!==s[6]) return null;
+  let v = 0; for (const c of s.slice(0,6)) v = v*32 + ALFA.indexOf(c);
+  const mascara = Math.floor(v / 2**21), semilla = v % 2**21;
+  const salas = TIPOS.filter((t,i)=> mascara & (1<<i)).map(t=>t.id);
+  return salas.length ? {codigo:s, salas, semilla, mascara} : null;
+}
+const verCodigo = s => s.slice(0,3) + '-' + s.slice(3);
+function generadorDe(n){   // mulberry32 propio del duelo: no comparte estado con el resto de la ficha
+  let s = n >>> 0;
+  return () => { s += 0x6D2B79F5; let t = s; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+}
+const textoSalas = ids => ids.length===TIPOS.length ? 'Todas las salas' : ids.map(id=>tipoPorId(id).corto).join(' · ');
+
+/* 12 retos repartidos por igual entre las salas elegidas: primero «Qué es una potencia»,
+   después las propiedades intercaladas (nunca la misma sala dos veces seguidas si se puede)
+   y al final la Cámara Final. */
+function ordenDuelo(d, r){
+  const k = d.salas.length, base = Math.floor(DUELO_N / k), extra = DUELO_N % k;
+  const barajadas = d.salas.slice();
+  for (let i=barajadas.length-1;i>0;i--){ const j = Math.floor(r()*(i+1)); [barajadas[i],barajadas[j]] = [barajadas[j],barajadas[i]]; }
+  const resto = {}; d.salas.forEach(id=> resto[id] = base); barajadas.slice(0, extra).forEach(id=> resto[id]++);
+  const ini = rep('concepto', resto.concepto || 0), fin = rep('comb', resto.comb || 0);
+  delete resto.concepto; delete resto.comb;
+  const medio = []; let prev = ini.length ? 'concepto' : null;
+  while (Object.values(resto).some(x=>x>0)){
+    let cand = Object.keys(resto).filter(id=> resto[id]>0 && id!==prev);
+    if (!cand.length) cand = Object.keys(resto).filter(id=> resto[id]>0);
+    const max = Math.max(...cand.map(id=>resto[id]));
+    cand = cand.filter(id=> resto[id]===max);
+    const id = cand[Math.floor(r()*cand.length)];
+    medio.push(id); resto[id]--; prev = id;
+  }
+  return [...ini, ...medio, ...fin];
+}
+function preguntasDuelo(d){
+  const r = generadorDe(d.semilla + d.mascara * 2**21);
+  const orden = ordenDuelo(d, r);
+  const qs = [], vistos = new Set(), anterior = rand;
+  rand = r;   // los generadores de la ficha usan rand(): durante el duelo, solo el generador del código
+  try {
+    for (const id of orden){
+      let ej, k = 0;
+      do { ej = tipoPorId(id).gen(); k++; } while (vistos.has(ej.expr) && k < 8);   // sin retos repetidos
+      vistos.add(ej.expr); ej.sala = id; qs.push(ej);
+    }
+  } finally { rand = anterior; }
+  return qs;
+}
+
+/* ---------- Conexión con el panel (Apps Script) ---------- */
+const idPartida = () => (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 12);
+async function enviarPanel(datos, reintentos = 0){
+  if (!URL_DUELOS) return null;
+  for (let k=0;k<=reintentos;k++){
+    try {
+      // text/plain evita la petición previa CORS, que Apps Script no responde
+      const r = await fetch(URL_DUELOS, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify(datos)});
+      return await r.json();
+    } catch (e) {
+      if (k < reintentos) await new Promise(ok=>setTimeout(ok, 1500*(k+1)));
+    }
+  }
+  return null;
+}
+async function pedirRanking(codigo, id){
+  if (!URL_DUELOS) return null;
+  try {
+    const r = await fetch(`${URL_DUELOS}?accion=ranking&codigo=${encodeURIComponent(codigo)}&id=${encodeURIComponent(id)}`);
+    return await r.json();
+  } catch (e) { return null; }
+}
+
+/* ---------- Selector: crear o unirse ---------- */
+let D = null, dueloTab = 'crear', dueloListo = null;
+const seleccionDuelo = new Set(TIPOS.map(t=>t.id));
+const escapar = t => String(t).replace(/[<>&"]/g, c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
+const punteroFino = () => window.matchMedia && matchMedia('(pointer:fine)').matches;
+const fmtReloj = ms => { const s = Math.floor(ms/1000); return `${dos(Math.floor(s/60))}:${dos(s%60)}`; };
+const fmtPreciso = ms => { const d = Math.round(ms/100), s = Math.floor(d/10); return `${Math.floor(s/60)}:${dos(s%60)},${d%10}`; };
+const ordinal = n => `${n}.º`;
+
+function pintarOpcionesDuelo(){
+  $('opcSalas').innerHTML = TIPOS.map(t=>`<button type="button" class="opc-sala" style="--c:${t.color}" data-id="${t.id}" aria-pressed="${seleccionDuelo.has(t.id)}"><span aria-hidden="true">${t.ico}</span>${t.corto}</button>`).join('');
+}
+function pintarSelector(){
+  $('tabCrear').setAttribute('aria-selected', String(dueloTab==='crear'));
+  $('tabUnir').setAttribute('aria-selected', String(dueloTab==='unir'));
+  $('zonaCrear').hidden = dueloTab!=='crear';
+  $('zonaUnir').hidden = dueloTab!=='unir';
+  document.querySelectorAll('.opc-sala').forEach(b=> b.setAttribute('aria-pressed', String(seleccionDuelo.has(b.dataset.id))));
+  $('btnCrearCodigo').disabled = seleccionDuelo.size < 1;
+  $('codigoCreado').hidden = !(dueloTab==='crear' && dueloListo);
+  $('btnEmpezar').disabled = !dueloListo;
+}
+function abrirDuelo(){
+  mostrarVista('vistaDuelo');
+  if (D && !D.terminado){ $('dueloSelector').hidden = true; $('dueloPartida').hidden = false; return; }
+  D = null;
+  $('dueloSelector').hidden = false; $('dueloPartida').hidden = true;
+  $('btnDueloSalir').textContent = '← Mapa'; $('btnDueloSalir').classList.remove('peligro');
+  pintarSelector();
+}
+function generarCodigoDuelo(){
+  if (seleccionDuelo.size < 1) return;
+  const ids = TIPOS.map(t=>t.id).filter(id=>seleccionDuelo.has(id));
+  dueloListo = leerCodigo(crearCodigo(ids));
+  $('codigoTexto').textContent = verCodigo(dueloListo.codigo);
+  $('codigoAyuda').innerHTML = `Díctalo a tus rivales: lo escriben en «Unirme con un código». Cuando estéis todos, pulsad «Empezar el duelo». <b>${escapar(textoSalas(dueloListo.salas))}</b> · ${DUELO_N} retos.`;
+  pintarSelector();
+  $('codigoCreado').scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+/* ---------- Partida ---------- */
+function empezarDuelo(d){
+  if (!nombreValido()){ window.scrollTo({top:0, behavior:'smooth'}); return; }
+  const previos = state.duelos.filter(x=>x.codigo===d.codigo).length;
+  D = {...d, qs:preguntasDuelo(d), i:0, aciertos:0, acum:0, tramo:null, respondida:false, fallos:[], intento:previos+1,
+       timer:null, terminado:false, id:idPartida(), nombre:$('nombre').value.trim(), finEnviado:false};
+  $('dueloSelector').hidden = true; $('dueloPartida').hidden = false;
+  $('btnDueloSalir').textContent = 'Abandonar el duelo'; $('btnDueloSalir').classList.add('peligro');
+  $('dueloChip').textContent = `⚔️ ${verCodigo(d.codigo)}`; $('dueloChip').title = textoSalas(d.salas);
+  $('dueloJuego').hidden = false; $('dueloFinal').hidden = true; $('dueloRegla').hidden = false;
+  D.timer = setInterval(pintarRelojDuelo, 200);
+  const partida = D;
+  enviarPanel({evento:'inicio', id:D.id, codigo:D.codigo, nombre:D.nombre}, 1).then(r=>{ if (r && r.ok && r.intento) partida.intentoPanel = r.intento; });
+  pintarPreguntaDuelo();
+  window.scrollTo({top:0});
+}
+// El reloj solo corre mientras hay un reto sin responder: leer la corrección no cuenta.
+const msDuelo = () => D.acum + (D.tramo ? Date.now() - D.tramo : 0);
+function pintarRelojDuelo(){ if (D) $('dueloReloj').textContent = fmtReloj(msDuelo()); }
+function pintarPreguntaDuelo(){
+  const q = D.qs[D.i], t = tipoPorId(q.sala);
+  $('dueloNum').textContent = `Reto ${D.i+1} de ${DUELO_N}`;
+  $('dueloBarra').style.width = `${(D.i/DUELO_N*100).toFixed(1)}%`;
+  $('dueloTipo').textContent = `${t.ico} ${t.nombre}`; $('dueloTipo').style.setProperty('--c', t.color);
+  $('dEnun').textContent = q.enun;
+  $('dExpr').innerHTML = q.expr;
+  $('dueloZona').innerHTML = q.kind==='pow'
+    ? `<span class="resp-label">Resultado:</span>
+       <span class="pot-in">
+         <span><input class="in-base" id="dBase" type="text" inputmode="numeric" autocomplete="off" aria-label="Base"><span class="mini-et">base</span></span>
+         <span><input class="in-exp" id="dExp" type="text" inputmode="numeric" autocomplete="off" aria-label="Exponente"><span class="mini-et">exponente</span></span>
+       </span>`
+    : `<label class="resp-label" for="dNum">Resultado:</label><input class="num-in" id="dNum" type="text" inputmode="numeric" autocomplete="off">`;
+  $('dueloFeedback').className = 'feedback'; $('dueloFeedback').innerHTML = '';
+  $('dueloComprobar').hidden = false; $('dueloComprobar').disabled = false;
+  $('dueloSiguiente').hidden = true;
+  D.respondida = false; D.tramo = Date.now();
+  const primero = document.querySelector('#dueloZona input');
+  if (primero && punteroFino()) primero.focus({preventScroll:true});
+}
+function comprobarDuelo(){
+  if (!D || D.respondida || D.terminado) return;
+  const q = D.qs[D.i], fb = $('dueloFeedback');
+  let ok, resp;
+  if (q.kind==='pow'){
+    const b = leerEntero($('dBase')), e = leerEntero($('dExp'));
+    if (b===null || e===null){ fb.className='feedback casi'; fb.innerHTML = `<span class="cab">¡Falta algo!</span>Escribe un número natural en la base <b>y</b> en el exponente.`; return; }
+    resp = {b,e}; ok = b===q.ans.b && e===q.ans.e;
+    if (!ok && b>1 && e>=1 && e<=400 && bp(b,e)===bp(q.ans.b,q.ans.e)){
+      fb.className='feedback casi';
+      fb.innerHTML = `<span class="cab">¡Casi!</span>${P(b,e)} vale lo mismo, pero aplica la propiedad y escribe la potencia con base <b>${q.ans.b}</b>. No cuenta como fallo: corrígelo.`;
+      return;
+    }
+  } else {
+    const n = leerEntero($('dNum'));
+    if (n===null){ fb.className='feedback casi'; fb.innerHTML = `<span class="cab">¡Falta algo!</span>Escribe un número natural.`; return; }
+    resp = n; ok = n===q.ans;
+  }
+  D.acum += Date.now() - D.tramo; D.tramo = null; D.respondida = true;
+  document.querySelectorAll('#dueloZona input').forEach(i=>i.disabled=true);
+  if (ok){
+    D.aciertos++;
+    fb.className = 'feedback ok'; fb.innerHTML = `<span class="cab">✓ ¡Correcto!</span>${q.explain}`;
+    burst(pick(EXCLAM_OK));
+  } else {
+    D.fallos.push(q.sala);
+    const d = q.diag(resp);
+    fb.className = 'feedback ko';
+    fb.innerHTML = `<span class="cab">✗ ¡Ups! No es correcto</span>${d || 'Esa no es la respuesta. Mira cómo se resuelve:'}<span class="sol"><b>Solución:</b> ${q.explain}</span>`;
+  }
+  $('dueloComprobar').disabled = true; $('dueloComprobar').hidden = true;
+  $('dueloSiguiente').textContent = D.i===DUELO_N-1 ? 'Ver mi resultado' : 'Siguiente reto →';
+  $('dueloSiguiente').hidden = false;
+  if (punteroFino()) $('dueloSiguiente').focus({preventScroll:true});
+  pintarRelojDuelo();
+  if (D.i < DUELO_N-1) enviarPanel({evento:'progreso', id:D.id, codigo:D.codigo, nombre:D.nombre, respondidas:D.i+1, aciertos:D.aciertos});
+}
+function siguienteDuelo(){
+  if (!D || !D.respondida || D.terminado) return;
+  D.i++;
+  D.i >= DUELO_N ? terminarDuelo(false) : pintarPreguntaDuelo();
+}
+function terminarDuelo(abandonado){
+  clearInterval(D.timer);
+  if (D.tramo){ D.acum += Date.now() - D.tramo; D.tramo = null; }
+  const respondidas = abandonado ? D.i + (D.respondida ? 1 : 0) : DUELO_N;
+  const registro = {id:D.id, codigo:D.codigo, salas:D.salas, aciertos:D.aciertos, respondidas, ms:D.acum, intento:D.intento,
+                    estado: abandonado ? 'abandonado' : 'terminado', puesto:''};
+  state.duelos.push(registro);
+  D.terminado = true; D.registro = registro;
+  const partida = D;
+  const envio = {evento: abandonado ? 'abandono' : 'fin', id:D.id, codigo:D.codigo, nombre:D.nombre, respondidas, aciertos:D.aciertos, ms:Math.round(D.acum)};
+  partida.envioFin = envio;
+  const promesa = enviarPanel(envio, 2).then(r=>{ partida.respFin = r; if (r && r.ok) partida.finEnviado = true; return r; });
+  if (abandonado) return;
+  $('dueloBarra').style.width = '100%';
+  $('dueloJuego').hidden = true; $('dueloRegla').hidden = true; $('dueloFinal').hidden = false;
+  $('btnDueloSalir').textContent = '← Mapa'; $('btnDueloSalir').classList.remove('peligro');
+  const a = D.aciertos;
+  const repasar = [...new Set(D.fallos)].map(id=>tipoPorId(id).nombre);
+  const valoracion = a===DUELO_N ? '¡Pleno! Ningún fallo.'
+    : a >= DUELO_N-3 ? '¡Muy buen duelo!'
+    : a >= DUELO_N/2 ? 'Buen intento. Entra en las salas donde has fallado y vuelve a retar.'
+    : 'Te conviene practicar antes en las salas donde has fallado.';
+  $('dueloFinal').innerHTML = `
+    <div class="rd-etq">DUELO TERMINADO</div>
+    <div class="rd-cifra">${a}<small> / ${DUELO_N}</small></div>
+    <div class="rd-sub">aciertos</div>
+    <div class="rd-fila"><div><span>Fallos</span><b class="rojo">${DUELO_N-a}</b></div><div><span>Tiempo</span><b>${fmtPreciso(D.acum)}</b></div><div><span>Código</span><b>${verCodigo(D.codigo)}</b></div></div>
+    <p class="rd-val">${valoracion}</p>
+    ${repasar.length ? `<p class="nota-duelo">Para repasar: ${repasar.join(' · ')}</p>` : ''}
+    ${URL_DUELOS ? '<div class="clasif" id="dueloClasif" aria-live="polite"><p class="nota-duelo">Enviando tu resultado al panel…</p></div>'
+      : '<p class="nota-duelo">Comparad vuestras pantallas: gana quien tenga más aciertos y, si empatáis, quien haya tardado menos. El resultado queda guardado en tu informe.</p>'}
+    <div class="botones"><button type="button" class="btn volver" id="btnOtroDuelo">⚔️ Otro duelo</button></div>`;
+  $('btnOtroDuelo').addEventListener('click', abrirDuelo);
+  burst(a===DUELO_N ? '¡PLENO!' : '¡FIN!');
+  if (URL_DUELOS) promesa.then(()=>cargarClasificacion(partida));
+}
+async function cargarClasificacion(partida){
+  const caja = () => (D===partida ? $('dueloClasif') : null);   // si el alumno ya ha salido, no se pinta nada
+  if (!caja()) return;
+  if (!partida.finEnviado){
+    const r = await enviarPanel(partida.envioFin, 1);
+    partida.respFin = r || partida.respFin;
+    if (r && r.ok) partida.finEnviado = true;
+  }
+  if (!caja()) return;
+  if (!partida.finEnviado){
+    const motivo = partida.respFin && partida.respFin.error ? ` El panel ha respondido: «${escapar(String(partida.respFin.error))}».` : ' Puede que no haya conexión.';
+    caja().innerHTML = `<div class="clasif-cab"><b>Clasificación</b><button type="button" class="btn-mini" id="clasifAct">Reintentar</button></div><p class="nota-duelo">No se ha podido enviar tu resultado al panel.${motivo} Tu resultado sí está guardado en tu informe.</p>`;
+    $('clasifAct').addEventListener('click', ()=>cargarClasificacion(partida));
+    return;
+  }
+  const r = await pedirRanking(partida.codigo, partida.id);
+  if (!caja()) return;
+  if (!r || !r.ok){
+    caja().innerHTML = `<div class="clasif-cab"><b>Clasificación</b><button type="button" class="btn-mini" id="clasifAct">Actualizar</button></div><p class="nota-duelo">Tu resultado se ha enviado, pero no se ha podido leer la clasificación. Prueba a actualizar.</p>`;
+    $('clasifAct').addEventListener('click', ()=>cargarClasificacion(partida));
+    return;
+  }
+  const lista = r.podio.map((p,k)=>`<li class="${p.yo?'yo':''}"><span class="med m${k+1}">${k+1}</span><b>${escapar(p.nombre)}</b><span class="dat">${p.aciertos} ✓ · ${p.fallos} ✗ · ${fmtPreciso(p.ms)}</span></li>`).join('');
+  let tu;
+  if (r.tu && r.tu.cuenta && r.tu.posicion) tu = `Tu puesto: ${ordinal(r.tu.posicion)} de ${r.terminados} que han terminado.`;
+  else if (r.tu && !r.tu.cuenta) tu = `Este es tu intento n.º ${r.tu.intento} con este código: solo cuenta el primero, así que no entra en la clasificación.`;
+  else tu = 'Tu resultado se está registrando.';
+  partida.registro.puesto = r.tu && r.tu.cuenta && r.tu.posicion ? `${ordinal(r.tu.posicion)} de ${r.terminados}` : r.tu && !r.tu.cuenta ? `No cuenta (intento ${r.tu.intento})` : '';
+  caja().innerHTML = `<div class="clasif-cab"><b>Clasificación del duelo</b><button type="button" class="btn-mini" id="clasifAct">Actualizar</button></div>
+    ${lista ? `<ol>${lista}</ol>` : '<p class="nota-duelo">Todavía no ha terminado nadie.</p>'}
+    <p class="tu">${tu}</p>
+    <p class="nota-duelo">${r.enJuego ? `Todavía ${r.enJuego===1 ? 'juega 1 compañero' : `juegan ${r.enJuego} compañeros`}: actualiza en un rato. ` : ''}Gana quien más acierte; si hay empate, quien tarde menos.</p>`;
+  $('clasifAct').addEventListener('click', ()=>cargarClasificacion(partida));
+}
+
+/* ---------- Eventos del duelo ---------- */
+pintarOpcionesDuelo();
+$('btnIrDuelo').addEventListener('click', abrirDuelo);
+$('opcSalas').addEventListener('click', e=>{
+  const b = e.target.closest('.opc-sala'); if (!b) return;
+  const id = b.dataset.id;
+  seleccionDuelo.has(id) ? seleccionDuelo.delete(id) : seleccionDuelo.add(id);
+  dueloListo = null;   // al cambiar las salas, el código anterior ya no vale
+  pintarSelector();
+});
+$('btnTodasSalas').addEventListener('click', ()=>{
+  const todas = seleccionDuelo.size===TIPOS.length;
+  seleccionDuelo.clear(); if (!todas) TIPOS.forEach(t=>seleccionDuelo.add(t.id));
+  dueloListo = null; pintarSelector();
+});
+$('tabCrear').addEventListener('click', ()=>{ dueloTab = 'crear'; dueloListo = null; pintarSelector(); });
+$('tabUnir').addEventListener('click', ()=>{ dueloTab = 'unir'; dueloListo = leerCodigo($('codigoUnir').value); pintarSelector(); $('codigoUnir').focus(); });
+$('codigoUnir').addEventListener('input', ()=>{
+  const txt = $('codigoUnir').value;
+  dueloListo = leerCodigo(txt);
+  const limpio = txt.toUpperCase().replace(/[^0-9A-Z]/g,'');
+  $('avisoCodigo').className = 'aviso-codigo' + (dueloListo ? ' ok' : '');
+  $('avisoCodigo').textContent = dueloListo ? `✓ ${textoSalas(dueloListo.salas)} · ${DUELO_N} retos`
+    : limpio.length >= 7 ? 'Ese código no es válido. Revisa que lo hayas copiado bien.' : '';
+  pintarSelector();
+});
+$('codigoUnir').addEventListener('keydown', e=>{ if (e.key==='Enter' && dueloListo){ e.preventDefault(); empezarDuelo(dueloListo); } });
+$('btnCrearCodigo').addEventListener('click', generarCodigoDuelo);
+$('btnEmpezar').addEventListener('click', ()=>{ if (dueloListo) empezarDuelo(dueloListo); });
+$('dueloComprobar').addEventListener('click', comprobarDuelo);
+$('dueloSiguiente').addEventListener('click', siguienteDuelo);
+$('dueloZona').addEventListener('keydown', e=>{
+  if (e.key!=='Enter') return;
+  e.preventDefault();
+  if (e.target.id==='dBase' && !$('dExp').value.trim()){ $('dExp').focus(); return; }
+  comprobarDuelo();
+});
+$('btnDueloSalir').addEventListener('click', ()=>{
+  if (D && !D.terminado){ $('capaAbandono').classList.add('on'); $('btnSeguirDuelo').focus(); return; }
+  D = null; mostrarMapa();
+});
+$('btnSeguirDuelo').addEventListener('click', ()=> $('capaAbandono').classList.remove('on'));
+$('btnConfAbandono').addEventListener('click', ()=>{
+  $('capaAbandono').classList.remove('on');
+  if (D && !D.terminado) terminarDuelo(true);
+  D = null; mostrarMapa();
+});
+
+/* Acceso para pruebas automáticas */
+window.__ficha = {TIPOS, MODOS, state, elegirModo, calcularNota, registrarIntento, genComb, bp, raiz, sinBaseOculta, distintos,
+  leerCodigo, crearCodigo, preguntasDuelo, get duelo(){ return D; }};
+
+pintarMapa(); actualizarBarra();
+</script>
+</body>
+</html>
