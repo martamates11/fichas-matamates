@@ -1,0 +1,1964 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La Ruta de las Tablas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --noche:#0e1726; --noche-2:#15233a; --noche-3:#1c304f; --linea:#2a4266;
+  --tinta:#eaf1fb; --tinta-suave:#a3b6d1;
+  --turquesa:#2ec4b6; --coral:#ff6b5b; --mostaza:#f4b942; --violeta:#9b7bff;
+  --cielo:#4cc9f0; --rosa:#ff8fab; --menta:#7bd389; --naranja:#f7893b; --lila:#c3a6ff;
+  --ok:#3ddc97; --ko:#ff6b5b;
+  --papel:#f5f8fd; --papel-tinta:#13213a; --papel-acento:#c8432f;
+  --display:'Bricolage Grotesque', 'Trebuchet MS', sans-serif;
+  --texto:'Figtree', 'Segoe UI', sans-serif;
+  --radio:18px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--noche);color:var(--tinta);font-family:var(--texto);font-size:16px;line-height:1.5}
+body{
+  min-height:100vh;
+  background:
+    radial-gradient(1200px 600px at 85% -10%, rgba(155,123,255,.18), transparent 60%),
+    radial-gradient(900px 500px at -10% 20%, rgba(46,196,182,.14), transparent 60%),
+    var(--noche);
+}
+body::before{ /* rejilla sutil de fondo */
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+  background-size:32px 32px;
+  mask-image:linear-gradient(180deg, rgba(0,0,0,.9), transparent 85%);
+}
+body.todo-verde{background:radial-gradient(900px 500px at 50% 0%, rgba(61,220,151,.35), transparent 70%), #0b2a1f}
+
+/* 1. Franja oscura de autoría */
+.autoria{position:relative;z-index:2;background:#070d17;color:#8fa3c0;font-size:.78rem;text-align:center;padding:.55rem 1rem;letter-spacing:.02em;border-bottom:1px solid #1a2840}
+
+.contenedor{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:1.4rem 1rem 3rem}
+
+/* 2-3. Título y subtítulo */
+.titulo-ficha{font-family:var(--display);font-weight:800;font-size:clamp(2rem,7vw,3rem);line-height:1.02;letter-spacing:-.02em;
+  background:linear-gradient(100deg,var(--mostaza) 0%,var(--coral) 45%,var(--violeta) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.subtitulo{font-family:var(--display);font-weight:500;color:var(--tinta-suave);font-size:1rem;margin:.3rem 0 1rem;letter-spacing:.04em;text-transform:uppercase}
+
+/* 4. Barra del alumno (clara, sticky) */
+.barra-alumno{position:sticky;top:0;z-index:20;background:var(--papel);color:var(--papel-tinta);border:2px solid var(--mostaza);border-radius:14px;padding:.6rem .8rem;margin-bottom:1.2rem;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+.barra-fila{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem 1rem}
+.barra-fila label{font-weight:700;font-size:.85rem}
+#nombre{flex:1 1 170px;min-width:0;font:inherit;font-size:1rem;padding:.4rem .6rem;border:1.5px solid #c9d4e6;border-radius:9px;background:#fff;color:var(--papel-tinta)}
+#nombre:focus{outline:3px solid rgba(244,185,66,.5);border-color:var(--mostaza)}
+#nombre.falta{border-color:var(--papel-acento);background:#fff4f2}
+.marcador{display:flex;gap:.9rem;font-size:.85rem;font-weight:600}
+.marcador b{font-family:var(--display);font-size:1.15rem;color:var(--papel-acento);margin-left:.15rem}
+.aviso-nombre{display:none;color:#b3261e;font-size:.85rem;font-weight:600;margin-top:.35rem}
+.aviso-nombre.visible{display:block}
+
+/* Tarjetas */
+.tarjeta{background:linear-gradient(180deg,var(--noche-2),#122036);border:1px solid var(--linea);border-radius:var(--radio);padding:1.1rem;margin-bottom:1rem;box-shadow:0 14px 40px rgba(0,0,0,.3)}
+.etiqueta{font-family:var(--display);font-weight:700;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--turquesa);margin-bottom:.5rem}
+.h2{font-family:var(--display);font-weight:700;font-size:1.35rem;line-height:1.2;margin-bottom:.35rem}
+.suave{color:var(--tinta-suave)}
+
+/* Selector de modo: tarjetas grandes */
+.modos{display:grid;grid-template-columns:repeat(2,1fr);gap:.7rem;margin-top:.7rem}
+.modo-card{--m:var(--turquesa);position:relative;text-align:left;font:inherit;color:var(--tinta);cursor:pointer;
+  background:linear-gradient(160deg,color-mix(in srgb,var(--m) 16%,var(--noche)) 0%,var(--noche) 70%);
+  border:2px solid color-mix(in srgb,var(--m) 45%,var(--linea));border-radius:18px;padding:.85rem .85rem .9rem;
+  display:grid;grid-template-columns:52px 1fr;gap:.15rem .7rem;align-items:start;transition:transform .15s,box-shadow .15s,border-color .15s}
+.modo-card:hover{transform:translateY(-2px);border-color:var(--m)}
+.modo-card svg{grid-row:1/3;width:52px;height:52px}
+.modo-card .mc-tit{font-family:var(--display);font-weight:800;font-size:1.2rem;line-height:1.15}
+.modo-card .mc-desc{font-size:.85rem;color:var(--tinta-suave);line-height:1.35}
+.modo-card .mc-tag{grid-column:1/-1;justify-self:start;margin-top:.45rem;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+  color:var(--m);border:1px solid color-mix(in srgb,var(--m) 55%,transparent);border-radius:999px;padding:.12rem .55rem}
+.modo-card[aria-pressed="true"]{border-color:var(--m);background:linear-gradient(160deg,color-mix(in srgb,var(--m) 34%,var(--noche)) 0%,color-mix(in srgb,var(--m) 8%,var(--noche)) 80%);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--m) 30%,transparent),0 14px 30px rgba(0,0,0,.4)}
+.modo-card[aria-pressed="true"]::after{content:"✓";position:absolute;top:10px;right:12px;width:24px;height:24px;border-radius:50%;background:var(--m);color:var(--noche);font-weight:800;font-size:.85rem;display:grid;place-items:center}
+.modo-card.duelo{--m:var(--cielo);
+  background:radial-gradient(260px 120px at 90% 0%,rgba(255,143,171,.25),transparent 70%),linear-gradient(160deg,color-mix(in srgb,var(--cielo) 18%,var(--noche)) 0%,var(--noche) 75%)}
+.modo-card.duelo[aria-pressed="true"]{background:radial-gradient(260px 120px at 90% 0%,rgba(255,143,171,.35),transparent 70%),linear-gradient(160deg,color-mix(in srgb,var(--cielo) 34%,var(--noche)) 0%,color-mix(in srgb,var(--cielo) 8%,var(--noche)) 80%)}
+@media (max-width:520px){.modos{grid-template-columns:1fr}}
+
+/* Construcción como siguiente paso (tras completar las 9 tablas) */
+.modo-card .mc-sig{position:absolute;top:-11px;left:14px;background:var(--violeta);color:#fff;font-family:var(--display);font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;border-radius:999px;padding:.18rem .65rem;box-shadow:0 4px 12px rgba(0,0,0,.4)}
+.modo-card.siguiente{animation:latido 1.9s ease-in-out infinite}
+@keyframes latido{0%,100%{box-shadow:0 0 0 0 rgba(155,123,255,.6),0 14px 30px rgba(0,0,0,.4)}50%{box-shadow:0 0 0 9px rgba(155,123,255,0),0 14px 30px rgba(0,0,0,.4)}}
+.btn-cons{background:linear-gradient(100deg,var(--violeta),var(--cielo));color:#fff;box-shadow:0 8px 22px rgba(155,123,255,.35)}
+.modal-cons{background:radial-gradient(420px 200px at 50% 0%,rgba(155,123,255,.32),transparent 70%),var(--noche-2);border:1px solid rgba(155,123,255,.6);text-align:center}
+.modal-cons .ilus{display:block;width:150px;height:auto;margin:0 auto .5rem}
+.modal-cons .etiqueta{color:var(--lila);margin-bottom:.2rem}
+.modal-cons .h2{font-size:1.65rem}
+.pasos-nota{display:flex;justify-content:center;gap:.5rem;flex-wrap:wrap;margin:.9rem 0 .2rem}
+.pasos-nota .pn{min-width:96px;background:var(--noche);border:1px solid var(--linea);border-radius:12px;padding:.4rem .7rem;font-size:.8rem;color:var(--tinta-suave)}
+.pasos-nota .pn b{display:block;font-family:var(--display);font-size:1.3rem;color:var(--tinta)}
+.pasos-nota .pn.ok{border-color:rgba(61,220,151,.55)} .pasos-nota .pn.ok b{color:var(--ok)}
+.pasos-nota .pn.pend{border-color:rgba(155,123,255,.7)} .pasos-nota .pn.pend b{color:var(--lila)}
+.ir-cons{display:block;margin:1rem auto 0;max-width:340px}
+
+/* Consejo / aviso de progreso */
+.consejo{display:flex;gap:.7rem;align-items:flex-start;background:linear-gradient(100deg,rgba(244,185,66,.14),rgba(155,123,255,.12));border:1px solid rgba(244,185,66,.55);border-radius:16px;padding:.75rem .9rem;margin-bottom:1rem;font-size:.95rem}
+.consejo .ico{flex:0 0 30px;width:30px;height:30px;border-radius:50%;background:var(--mostaza);color:#1a1206;display:grid;place-items:center;font-family:var(--display);font-weight:800}
+.consejo b{color:var(--mostaza)}
+.medidor{display:flex;gap:.9rem;flex-wrap:wrap;margin-top:.45rem;font-size:.8rem;color:var(--tinta-suave)}
+.medidor .barra{display:inline-block;width:110px;height:8px;border-radius:999px;background:var(--noche);border:1px solid var(--linea);overflow:hidden;vertical-align:middle;margin-left:.35rem}
+.medidor .barra i{display:block;height:100%;background:linear-gradient(90deg,var(--turquesa),var(--menta))}
+.medidor .barra.c i{background:linear-gradient(90deg,var(--violeta),var(--lila))}
+
+/* Progreso de cada tabla en su guardián */
+.mini-pips{display:flex;gap:3px;margin-top:.25rem}
+.mini-pips i{width:9px;height:5px;border-radius:3px;background:var(--linea)}
+.mini-pips i.on{background:var(--ok)}
+.guardian-btn.completa{border-color:rgba(61,220,151,.55)}
+.guardian-btn .sello{position:absolute;top:6px;left:8px;font-size:.62rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--ok)}
+.rejilla-guardianes{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem}
+.guardian-btn{position:relative;font:inherit;color:var(--tinta);background:var(--noche);border:2px solid var(--linea);border-radius:16px;padding:.5rem .3rem .55rem;cursor:pointer;transition:transform .15s,border-color .15s,box-shadow .15s;display:flex;flex-direction:column;align-items:center}
+.guardian-btn:hover{border-color:var(--c)}
+.guardian-btn:hover svg{transform:translateY(-3px)}
+.guardian-btn svg{transition:transform .15s}
+.guardian-btn svg{width:64px;height:64px}
+.guardian-btn .nombre-g{font-family:var(--display);font-weight:700;font-size:.95rem}
+.guardian-btn .tabla-g{font-size:.75rem;color:var(--tinta-suave)}
+.guardian-btn[aria-pressed="true"]{border-color:var(--c);box-shadow:0 0 0 3px color-mix(in srgb,var(--c) 30%,transparent),0 10px 24px rgba(0,0,0,.35);background:color-mix(in srgb,var(--c) 12%,var(--noche))}
+.guardian-btn[aria-pressed="true"]::after{content:"✓";position:absolute;top:6px;right:8px;width:20px;height:20px;border-radius:50%;background:var(--c);color:var(--noche);font-weight:800;font-size:.75rem;display:grid;place-items:center}
+.avatares{display:flex;gap:.6rem;margin-top:.4rem}
+.avatar-btn{font:inherit;color:var(--tinta);background:var(--noche);border:2px solid var(--linea);border-radius:14px;padding:.4rem .5rem;cursor:pointer;display:flex;flex-direction:column;align-items:center;flex:1}
+.avatar-btn svg{width:52px;height:52px}
+.avatar-btn span{font-family:var(--display);font-weight:700;font-size:.85rem}
+.avatar-btn[aria-pressed="true"]{border-color:var(--mostaza);background:rgba(244,185,66,.1)}
+
+.btn{font:inherit;font-family:var(--display);font-weight:700;font-size:1.05rem;border:0;border-radius:12px;padding:.75rem 1.3rem;cursor:pointer;transition:transform .12s, filter .12s}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-principal{background:linear-gradient(100deg,var(--mostaza),var(--coral));color:#1a1206;box-shadow:0 8px 22px rgba(255,107,91,.3)}
+.btn-secundario{background:var(--noche-3);color:var(--tinta);border:1px solid var(--linea)}
+.btn-ancho{width:100%}
+
+/* Mapa */
+.mapa-wrap{position:relative;border-radius:var(--radio);overflow:hidden;border:1px solid var(--linea);background:radial-gradient(500px 260px at 70% 10%, rgba(155,123,255,.25), transparent 70%),linear-gradient(180deg,#132443,#0c1628);margin-bottom:.6rem}
+#mapa{display:block;width:100%;height:auto}
+.mapa-cabecera{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-bottom:.5rem}
+.chip{font-size:.8rem;font-weight:700;background:var(--noche-2);border:1px solid var(--linea);color:var(--tinta);padding:.25rem .6rem;border-radius:999px;backdrop-filter:blur(4px)}
+@keyframes pulso{0%,100%{r:9}50%{r:12}}
+.punto-actual{animation:pulso 1.6s ease-in-out infinite}
+.hito{cursor:pointer;outline:none}
+.hito:hover circle:nth-of-type(2),.hito:focus-visible circle:nth-of-type(2){stroke:#f4b942;stroke-width:3}
+
+/* Selector de estaciones (acceso libre) */
+.nav-niveles{display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem;margin-bottom:1rem}
+.nav-nivel{font:inherit;font-family:var(--display);font-weight:700;font-size:.82rem;line-height:1.2;color:var(--tinta);background:var(--noche-2);border:1.5px solid var(--linea);border-radius:12px;padding:.5rem .3rem;cursor:pointer;transition:border-color .12s,background .12s}
+.nav-nivel:hover{border-color:var(--mostaza)}
+.nav-nivel.hecho{border-color:rgba(61,220,151,.6);background:rgba(61,220,151,.1)}
+.nav-nivel.actual{border-color:var(--mostaza);background:rgba(244,185,66,.16);box-shadow:0 0 0 2px rgba(244,185,66,.25)}
+@media (max-width:420px){.nav-nivel{font-size:.74rem;padding:.45rem .15rem}}
+
+/* Ejercicio */
+.cab-ejercicio{display:flex;gap:.8rem;align-items:center;margin-bottom:.6rem}
+.cab-ejercicio .g{flex:0 0 72px;width:72px;height:72px}
+.cab-ejercicio .g svg{width:100%;height:100%}
+.bocadillo{position:relative;background:var(--noche-3);border:1px solid var(--linea);border-radius:14px;padding:.55rem .8rem;font-size:.95rem}
+.bocadillo::before{content:"";position:absolute;left:-7px;top:22px;width:12px;height:12px;background:var(--noche-3);border-left:1px solid var(--linea);border-bottom:1px solid var(--linea);transform:rotate(45deg)}
+.pregunta{font-family:var(--display);font-weight:800;font-size:clamp(2.4rem,11vw,3.6rem);text-align:center;letter-spacing:-.01em;margin:.4rem 0 .5rem;line-height:1.1}
+.pregunta .x{color:var(--tinta-suave);font-weight:500;margin:0 .15em}
+.pregunta .hueco{display:inline-block;min-width:1.2em;border-bottom:4px solid var(--mostaza);color:var(--mostaza)}
+.matriz{display:flex;justify-content:center;margin:.3rem 0 .8rem}
+.matriz svg{max-width:100%;height:auto}
+.respuesta{display:flex;gap:.6rem;justify-content:center;align-items:stretch}
+#resp{width:7.5rem;font-family:var(--display);font-weight:800;font-size:2rem;text-align:center;border-radius:12px;border:2px solid var(--linea);background:var(--noche);color:var(--tinta);padding:.3rem}
+#resp:focus,.caja:focus{outline:none;border-color:var(--mostaza);box-shadow:0 0 0 3px rgba(244,185,66,.3)}
+
+/* Construcción: figura con casillas */
+.figura{position:relative;width:100%;margin:.2rem auto .5rem}
+.figura svg{display:block;width:100%;height:auto}
+.campo{position:absolute;display:flex;flex-direction:column;align-items:flex-start;gap:2px;transform:translateY(-50%)}
+.campo.dentro{transform:translate(-50%,-50%);align-items:center}
+.campo small{font-family:var(--display);font-weight:700;font-size:.8rem;line-height:1.1;color:var(--cc);white-space:nowrap}
+.caja{width:80px;font-family:var(--display);font-weight:800;font-size:1.35rem;text-align:center;border-radius:10px;border:2px solid var(--cc,var(--linea));background:rgba(14,23,38,.94);color:var(--tinta);padding:.2rem .1rem}
+.campo.dentro .caja{width:84px;font-size:1.6rem;box-shadow:0 6px 18px rgba(0,0,0,.45)}
+.caja.bien{border-color:var(--ok);background:rgba(20,70,52,.95)}
+.caja.mal{border-color:var(--ko);background:rgba(90,28,30,.95)}
+.caja:disabled{opacity:1;color:var(--tinta)}
+.fila-total{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.5rem .6rem;margin-top:.5rem}
+.fila-total .eq{font-family:var(--display);font-weight:800;font-size:1.6rem;white-space:nowrap}
+.caja-total{width:110px;font-size:1.8rem;--cc:var(--mostaza)}
+@keyframes fila{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+.fila-nueva{animation:fila .55s cubic-bezier(.2,.8,.2,1) both}
+.lista-fallos{margin:.2rem 0 0 1.1rem;font-size:.88rem}
+.lista-fallos li+li{margin-top:.15rem}
+.opciones{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem}
+.opcion{font-family:var(--display);font-weight:800;font-size:1.9rem;padding:.7rem 0;border-radius:14px;border:2px solid var(--linea);background:var(--noche);color:var(--tinta);cursor:pointer;transition:border-color .12s,box-shadow .12s}
+.opcion:hover:not(:disabled){border-color:var(--turquesa);box-shadow:0 0 0 3px rgba(46,196,182,.25)}
+.opcion.bien{border-color:var(--ok);background:rgba(61,220,151,.15)}
+.opcion.mal{border-color:var(--ko);background:rgba(255,107,91,.15)}
+.opcion:disabled{cursor:default}
+.aviso-entrada{min-height:1.3em;text-align:center;font-size:.85rem;color:var(--mostaza);margin-top:.35rem}
+.feedback{display:none;margin-top:.8rem;border-radius:14px;padding:.8rem .9rem;font-size:.97rem}
+.feedback.visible{display:block}
+.feedback.ok{background:rgba(61,220,151,.12);border:1px solid rgba(61,220,151,.45)}
+.feedback.ko{background:rgba(255,107,91,.1);border:1px solid rgba(255,107,91,.45)}
+.feedback .tit{font-family:var(--display);font-weight:800;font-size:1.1rem;margin-bottom:.2rem}
+.feedback.ok .tit{color:var(--ok)} .feedback.ko .tit{color:var(--coral)}
+.feedback p+p{margin-top:.35rem}
+.saltos{font-family:var(--display);font-weight:700;color:var(--mostaza);letter-spacing:.02em}
+.truco{color:var(--cielo)}
+.acciones-ej{margin-top:.8rem;display:none}
+.acciones-ej.visible{display:block}
+
+/* Zona 1 de la Ruta: progreso de la construcción de la tabla */
+.fila-progreso{display:flex;flex-direction:column;align-items:center;gap:.35rem;margin:.1rem 0 .2rem}
+.fp-txt{font-family:var(--display);font-weight:700;font-size:.95rem;color:var(--mostaza);text-align:center}
+.fp-barras{display:flex;gap:4px}
+.fp-barras i{width:20px;height:7px;border-radius:4px;background:var(--noche);border:1px solid var(--linea)}
+.fp-barras i.hecha{background:var(--turquesa);border-color:var(--turquesa)}
+.fp-barras i.actual{background:var(--mostaza);border-color:var(--mostaza)}
+
+/* Progreso de nivel (ventana móvil) */
+.progreso{display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin-top:1rem;padding-top:.8rem;border-top:1px dashed var(--linea);font-size:.85rem;color:var(--tinta-suave)}
+.pips{display:flex;gap:6px}
+.pip{width:16px;height:16px;border-radius:50%;border:2px solid var(--linea);background:transparent}
+.pip.a{background:var(--ok);border-color:var(--ok)}
+.pip.f{background:var(--ko);border-color:var(--ko)}
+
+/* Contrarreloj */
+.crono-ctrl{display:flex;align-items:center;justify-content:center;gap:.5rem;margin:.2rem 0 .6rem;font-size:.9rem}
+.interruptor{position:relative;width:46px;height:26px;border-radius:999px;background:var(--noche);border:1px solid var(--linea);cursor:pointer}
+.interruptor::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:var(--tinta-suave);transition:left .2s,background .2s}
+.interruptor[aria-checked="true"]{background:rgba(255,107,91,.25);border-color:var(--coral)}
+.interruptor[aria-checked="true"]::after{left:23px;background:var(--coral)}
+.barra-tiempo{height:8px;border-radius:999px;background:var(--noche);overflow:hidden;margin:.2rem 0 .7rem;display:none}
+.barra-tiempo.visible{display:block}
+.barra-tiempo i{display:block;height:100%;width:100%;background:linear-gradient(90deg,var(--coral),var(--mostaza));transform-origin:left}
+
+/* Banner de nivel superado */
+.banner{display:none;text-align:center;margin-top:.8rem;padding:.8rem;border-radius:14px;background:linear-gradient(100deg,rgba(244,185,66,.18),rgba(155,123,255,.18));border:1px solid var(--mostaza)}
+.banner.visible{display:block;animation:entrada .5s ease}
+.banner b{font-family:var(--display);font-size:1.25rem;color:var(--mostaza)}
+@keyframes entrada{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes flota{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.flota{animation:flota 2.4s ease-in-out infinite}
+@keyframes sacude{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.sacude{animation:sacude .3s ease 2}
+
+/* Cronómetro global (barra del alumno) */
+.crono-global{display:inline-flex;align-items:center;gap:.4rem;font:inherit;font-weight:700;font-size:.85rem;color:var(--papel-tinta);background:#fff;border:1.5px solid #c9d4e6;border-radius:999px;padding:.22rem .65rem .22rem .3rem;cursor:pointer}
+.crono-global .cg-ico{width:22px;height:22px;border-radius:50%;background:#e3e9f3;display:grid;place-items:center}
+.crono-global .cg-ico svg{width:14px;height:14px}
+.crono-global .cg-t{font-family:var(--display);font-variant-numeric:tabular-nums;min-width:2.9em;text-align:left}
+.crono-global[aria-pressed="true"]{border-color:var(--papel-acento);background:#fff4f2}
+.crono-global[aria-pressed="true"] .cg-ico{background:var(--papel-acento);color:#fff}
+.crono-global[aria-pressed="true"] .cg-t{color:var(--papel-acento)}
+
+/* Duelo galáctico */
+.panel-duelo{margin-top:.2rem}
+.pestanas{display:inline-flex;background:var(--noche);border:1px solid var(--linea);border-radius:999px;padding:3px;margin-bottom:.8rem}
+.pestanas button{font:inherit;font-weight:700;font-size:.9rem;color:var(--tinta-suave);background:none;border:0;border-radius:999px;padding:.4rem 1rem;cursor:pointer}
+.pestanas button[aria-selected="true"]{background:var(--cielo);color:var(--noche)}
+.codigo-grande{font-family:var(--display);font-weight:800;font-size:clamp(2rem,9vw,2.8rem);letter-spacing:.14em;text-align:center;color:var(--cielo);
+  background:var(--noche);border:2px dashed rgba(76,201,240,.6);border-radius:16px;padding:.5rem .6rem;margin:.6rem 0}
+#codigoUnir{width:100%;font-family:var(--display);font-weight:800;font-size:1.7rem;letter-spacing:.12em;text-align:center;text-transform:uppercase;border-radius:12px;border:2px solid var(--linea);background:var(--noche);color:var(--tinta);padding:.4rem}
+#codigoUnir:focus{outline:none;border-color:var(--cielo);box-shadow:0 0 0 3px rgba(76,201,240,.3)}
+.nota-duelo{font-size:.88rem;color:var(--tinta-suave);margin-top:.5rem}
+.duelo-cab{display:flex;justify-content:space-between;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.6rem}
+.duelo-reloj{font-family:var(--display);font-weight:800;font-size:1.4rem;font-variant-numeric:tabular-nums;color:var(--cielo)}
+.duelo-barra{height:8px;border-radius:999px;background:var(--noche);border:1px solid var(--linea);overflow:hidden;margin-bottom:.6rem}
+.duelo-barra i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cielo),var(--rosa));transition:width .3s}
+.resultado-duelo{text-align:center}
+.resultado-duelo .rd-cifra{font-family:var(--display);font-weight:800;font-size:3rem;line-height:1;color:var(--cielo)}
+.resultado-duelo .rd-fila{display:flex;justify-content:center;gap:1.6rem;margin:.6rem 0}
+.resultado-duelo .rd-fila span{display:block;font-size:.8rem;color:var(--tinta-suave);text-transform:uppercase;letter-spacing:.06em}
+.botones-fila{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.9rem}
+.botones-fila .btn{flex:1 1 180px}
+
+.duelo-tipo{text-align:center;font-family:var(--display);font-weight:700;font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;color:var(--tinta-suave)}
+.duelo-tipo.cons{color:var(--violeta)}
+.clasif{margin-top:1rem;text-align:left;background:var(--noche);border:1px solid var(--linea);border-radius:16px;padding:.8rem .9rem}
+.clasif-cab{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-bottom:.5rem}
+.clasif-cab b{font-family:var(--display);font-size:1.05rem}
+.clasif ol{list-style:none;display:grid;gap:.4rem}
+.clasif li{display:grid;grid-template-columns:32px 1fr auto;align-items:center;gap:.6rem;background:var(--noche-2);border:1px solid var(--linea);border-radius:12px;padding:.4rem .6rem}
+.clasif li.yo{border-color:var(--cielo);box-shadow:0 0 0 2px rgba(76,201,240,.25)}
+.clasif .med{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:800;color:#1a1206}
+.clasif .m1{background:#f4b942} .clasif .m2{background:#c9d4e6} .clasif .m3{background:#e0915a}
+.clasif .dat{font-size:.82rem;color:var(--tinta-suave);white-space:nowrap}
+.clasif .tu{margin-top:.6rem;font-weight:700;color:var(--cielo)}
+.btn-mini{font:inherit;font-weight:700;font-size:.82rem;color:var(--tinta);background:var(--noche-3);border:1px solid var(--linea);border-radius:999px;padding:.3rem .8rem;cursor:pointer}
+
+/* Pie */
+.pie{display:flex;flex-wrap:wrap;gap:.6rem;justify-content:space-between;margin-top:1.4rem}
+.pie .btn{flex:1 1 220px}
+
+/* Modales */
+.fondo-modal{position:fixed;inset:0;background:rgba(5,10,20,.72);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:50;padding:1rem}
+.fondo-modal.visible{display:flex}
+.modal{width:100%;max-width:560px;max-height:92vh;overflow:auto;border-radius:20px;padding:1.3rem 1.2rem;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.modal-confirma{background:var(--noche-2);border:1px solid var(--linea);color:var(--tinta)}
+.modal-confirma .botones{display:flex;gap:.6rem;margin-top:1rem}
+.modal-confirma .botones .btn{flex:1}
+.modal-confirma.modal-cons{background:radial-gradient(420px 200px at 50% 0%,rgba(155,123,255,.32),transparent 70%),var(--noche-2);border-color:rgba(155,123,255,.6)}
+.lista-pend{margin:.5rem 0 .2rem 1.1rem;color:var(--mostaza);font-weight:700}
+.informe .inf-titulo{font-family:var(--display);font-weight:800;font-size:1.5rem;line-height:1.1}
+.informe .inf-sub{font-size:.9rem;opacity:.9;margin-top:.15rem}
+.informe hr{border:0;border-top:1px solid currentColor;opacity:.35;margin:.8rem 0}
+.informe h3{font-family:var(--display);font-size:1.05rem;margin:.2rem 0 .5rem;letter-spacing:.06em;text-transform:uppercase}
+.inf-datos{display:grid;grid-template-columns:auto 1fr;gap:.2rem .8rem;font-size:.95rem}
+.inf-datos dt{opacity:.85}
+.inf-datos dd{font-weight:700}
+.inf-nota{font-family:var(--display);font-weight:800;font-size:2.6rem;line-height:1}
+.tabla-niveles{width:100%;border-collapse:collapse;font-size:.88rem;margin-top:.3rem}
+.tabla-niveles th,.tabla-niveles td{padding:.35rem .3rem;border-bottom:1px solid rgba(255,255,255,.25);text-align:center}
+.tabla-niveles th:first-child,.tabla-niveles td:first-child{text-align:left}
+.informe.texto-negro .tabla-niveles th,.informe.texto-negro .tabla-niveles td{border-bottom-color:rgba(0,0,0,.2)}
+.cuadricula{display:grid;gap:3px;margin-top:.4rem;font-size:.72rem}
+.cuadricula div{display:grid;place-items:center;height:26px;border-radius:5px;font-weight:700}
+.cuadricula div:not(.cab){box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.7)}
+.cuadricula .cab{opacity:.85}
+.c-vacio{background:rgba(255,255,255,.12)} .c-ok{background:#2fae74;color:#fff} .c-ko{background:#d63c2f;color:#fff} .c-mix{background:#e8a23a;color:#1a1206}
+.informe.texto-negro .c-vacio{background:rgba(0,0,0,.1)}
+.leyenda{display:flex;flex-wrap:wrap;gap:.3rem .8rem;font-size:.75rem;margin-top:.4rem}
+.leyenda span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px;background:var(--b)}
+.inf-cerrar{margin-top:1rem;width:100%;background:rgba(255,255,255,.92);color:#13213a}
+.inf-calculo{font-size:.9rem;margin-top:.5rem;padding:.5rem .7rem;border-radius:10px;background:rgba(255,255,255,.14)}
+.informe.texto-negro .inf-calculo{background:rgba(0,0,0,.08)}
+.inf-pips{display:inline-flex;gap:3px;vertical-align:middle}
+.inf-pips i{width:12px;height:7px;border-radius:3px;background:rgba(255,255,255,.3)}
+.inf-pips i.on{background:#fff}
+.informe.texto-negro .inf-pips i{background:rgba(0,0,0,.18)} .informe.texto-negro .inf-pips i.on{background:#13213a}
+.inf-lista{margin:.2rem 0 0 1.1rem;font-size:.9rem}
+.inf-lista li+li{margin-top:.15rem}
+
+.oculto{display:none!important}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+@media (max-width:420px){
+  .rejilla-guardianes{gap:.45rem}
+  .guardian-btn svg{width:54px;height:54px}
+  .tarjeta{padding:.9rem}
+  .marcador{gap:.6rem}
+  .modo button{font-size:.82rem;padding:.38rem .62rem}
+  .cab-ejercicio{gap:.6rem}
+  .cab-ejercicio .g{flex-basis:54px;width:54px;height:54px}
+  .bocadillo{font-size:.9rem;padding:.5rem .7rem}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="autoria">Material elaborado por Marta L Letona S.</div>
+
+<main class="contenedor">
+  <h1 class="titulo-ficha">La Ruta de las Tablas</h1>
+  <p class="subtitulo">Refuerzo ESO · Tablas de multiplicar</p>
+
+  <div class="barra-alumno" id="barraAlumno">
+    <div class="barra-fila">
+      <label for="nombre">Nombre</label>
+      <input id="nombre" type="text" autocomplete="off" placeholder="Escribe tu nombre y apellidos">
+      <div class="marcador" aria-live="polite">
+        <span>Nota<b id="mNota">0</b></span>
+        <span>Tablas<b id="mTablas">0/9</b></span>
+        <span>Constr.<b id="mCons">0/4</b></span>
+        <span>Fallos<b id="mFallos">0</b></span>
+      </div>
+      <button type="button" class="crono-global" id="cronoGlobal" aria-pressed="false" title="Cronómetro: mide cuánto tardas en cada zona para retarte a ti mismo. No cambia la nota.">
+        <span class="cg-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9.5 2.5h5"/></svg></span>
+        <span class="cg-t" id="cronoGlobalT">Crono</span>
+      </button>
+    </div>
+    <div class="aviso-nombre" id="avisoNombre" role="alert">Escribe tu nombre antes de continuar.</div>
+  </div>
+
+  <!-- PANTALLA 1: selector -->
+  <section id="pantallaSelector">
+    <div class="consejo" id="consejoSel" aria-live="polite"></div>
+
+    <div class="tarjeta">
+      <div class="etiqueta">Paso 1 · Elige cómo jugar</div>
+      <h2 class="h2">Tu objetivo: repasar todas las tablas</h2>
+      <div class="modos" role="group" aria-label="Modo de juego">
+        <button type="button" class="modo-card" id="modoUna" aria-pressed="true" style="--m:var(--turquesa)">
+          <svg viewBox="0 0 52 52" aria-hidden="true"><rect x="4" y="4" width="44" height="44" rx="14" fill="#2ec4b6" opacity=".2"/><text x="26" y="34" text-anchor="middle" font-family="Bricolage Grotesque, sans-serif" font-weight="800" font-size="22" fill="#2ec4b6">×7</text></svg>
+          <span class="mc-tit">Una tabla</span>
+          <span class="mc-desc">Paso a paso: una tabla cada vez, con su mapa de cuatro zonas.</span>
+          <span class="mc-tag">Para ir con calma</span>
+        </button>
+        <button type="button" class="modo-card" id="modoMezcla" aria-pressed="false" style="--m:var(--mostaza)">
+          <svg viewBox="0 0 52 52" aria-hidden="true"><rect x="4" y="4" width="44" height="44" rx="14" fill="#f4b942" opacity=".2"/><text x="17" y="25" text-anchor="middle" font-family="Bricolage Grotesque, sans-serif" font-weight="800" font-size="13" fill="#f4b942">×3</text><text x="35" y="25" text-anchor="middle" font-family="Bricolage Grotesque, sans-serif" font-weight="800" font-size="13" fill="#ff6b5b">×8</text><text x="26" y="41" text-anchor="middle" font-family="Bricolage Grotesque, sans-serif" font-weight="800" font-size="13" fill="#9b7bff">×6</text></svg>
+          <span class="mc-tit">Mezcla</span>
+          <span class="mc-desc">Varias tablas a la vez. Si ya te las sabes, terminas mucho antes.</span>
+          <span class="mc-tag">Si las dominas</span>
+        </button>
+        <button type="button" class="modo-card" id="modoCons" aria-pressed="false" style="--m:var(--violeta)">
+          <span class="mc-sig oculto" id="sigCons">Tu siguiente paso</span>
+          <svg viewBox="0 0 52 52" aria-hidden="true"><rect x="4" y="4" width="44" height="44" rx="14" fill="#9b7bff" opacity=".2"/><rect x="13" y="12" width="26" height="16" rx="2" fill="#2ec4b6" opacity=".85"/><rect x="13" y="29" width="26" height="10" rx="2" fill="#f4b942" opacity=".9"/></svg>
+          <span class="mc-tit">Construcción</span>
+          <span class="mc-desc">Multiplica números grandes partiendo rectángulos. Necesaria para llegar al 10.</span>
+          <span class="mc-tag">Hasta 3 puntos</span>
+        </button>
+        <button type="button" class="modo-card duelo" id="modoDuelo" aria-pressed="false">
+          <svg viewBox="0 0 52 52" aria-hidden="true"><rect x="4" y="4" width="44" height="44" rx="14" fill="#4cc9f0" opacity=".2"/><circle cx="26" cy="27" r="9" fill="#4cc9f0"/><ellipse cx="26" cy="27" rx="17" ry="5" fill="none" stroke="#ff8fab" stroke-width="2.5" transform="rotate(-20 26 27)"/><circle cx="13" cy="13" r="1.6" fill="#eaf1fb"/><circle cx="40" cy="40" r="1.3" fill="#eaf1fb"/><circle cx="41" cy="14" r="1" fill="#eaf1fb"/></svg>
+          <span class="mc-tit">Duelo galáctico</span>
+          <span class="mc-desc">Reta a tus compañeros: con el mismo código, todos tenéis las mismas preguntas en el mismo orden.</span>
+          <span class="mc-tag">Con código</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="tarjeta" id="tarjetaPaso2">
+      <div class="etiqueta" id="paso2Etq">Paso 2 · Elige tu reto</div>
+      <h2 class="h2" id="selTitulo">¿Qué tabla quieres conquistar?</h2>
+      <p class="suave" id="selIntro">Cada tabla tiene un guardián. Para vencerlo tendrás que atravesar cuatro zonas del mapa.</p>
+      <div id="panelDuelo" class="panel-duelo oculto">
+        <div class="pestanas" role="tablist" aria-label="Crear o unirse a un duelo">
+          <button type="button" role="tab" id="tabCrear" aria-selected="true">Crear un duelo</button>
+          <button type="button" role="tab" id="tabUnir" aria-selected="false">Unirme con un código</button>
+        </div>
+        <div id="zonaUnir" class="oculto">
+          <label for="codigoUnir" class="suave" style="font-size:.9rem">Escribe el código que te han dado</label>
+          <input id="codigoUnir" type="text" autocomplete="off" maxlength="9" placeholder="ABC-1234" spellcheck="false">
+          <div class="aviso-entrada" id="avisoCodigo" aria-live="polite"></div>
+        </div>
+      </div>
+      <p class="suave" id="ayudaModo" style="font-size:.88rem;margin:.2rem 0 .7rem">Toca un guardián.</p>
+      <div class="rejilla-guardianes" id="rejillaGuardianes"></div>
+      <button type="button" class="btn btn-principal btn-ancho oculto" id="btnCrearCodigo" style="margin-top:.9rem">Generar el código del duelo</button>
+      <div id="codigoCreado" class="oculto">
+        <div class="codigo-grande" id="codigoTexto" aria-live="polite"></div>
+        <p class="nota-duelo" id="codigoAyuda"></p>
+      </div>
+    </div>
+    <div class="tarjeta" id="tarjetaAvatar">
+      <div class="etiqueta">Paso 3 · Tu explorador</div>
+      <div class="avatares" id="avatares"></div>
+    </div>
+    <button class="btn btn-principal btn-ancho" id="btnEmpezar" disabled>Empezar la ruta</button>
+  </section>
+
+  <!-- PANTALLA 3: duelo -->
+  <section id="pantallaDuelo" class="oculto">
+    <div class="tarjeta" id="tarjetaDuelo">
+      <div class="duelo-cab">
+        <span class="chip" id="dueloChip">Duelo</span>
+        <span class="chip" id="dueloNum">Pregunta 1 de 15</span>
+        <span class="duelo-reloj" id="dueloReloj" aria-label="Tiempo de duelo">00:00</span>
+      </div>
+      <div class="duelo-barra" aria-hidden="true"><i id="dueloBarra"></i></div>
+      <div id="dueloJuego">
+        <div class="duelo-tipo" id="dueloTipo"></div>
+        <div class="pregunta" id="dueloPregunta"></div>
+        <div id="dueloZona"></div>
+        <div class="aviso-entrada" id="dueloAviso" aria-live="polite"></div>
+        <div class="feedback" id="dueloFeedback" aria-live="polite"></div>
+        <div class="acciones-ej" id="dueloAcciones"><button class="btn btn-principal btn-ancho" id="dueloSiguiente">Siguiente</button></div>
+      </div>
+      <div id="dueloFinal" class="oculto resultado-duelo"></div>
+      <p class="nota-duelo" id="dueloRegla" style="text-align:center">Gana quien más acierte. Si hay empate, gana quien tarde menos.</p>
+    </div>
+  </section>
+
+  <!-- PANTALLA 2: ruta -->
+  <section id="pantallaRuta" class="oculto">
+    <div class="mapa-cabecera">
+      <span class="chip" id="chipTablas">Tabla del 7</span>
+      <span class="chip" id="chipNivel">Zona 1 de 4</span>
+    </div>
+    <div class="mapa-wrap">
+      <svg id="mapa" viewBox="0 -28 360 278" role="img" aria-label="Mapa de la ruta con cuatro zonas. Puedes tocar cualquier zona para entrar en ella."></svg>
+    </div>
+    <div class="nav-niveles" id="navNiveles" role="group" aria-label="Ir directamente a una zona"></div>
+
+    <div class="tarjeta" id="tarjetaEjercicio">
+      <div class="cab-ejercicio">
+        <div class="g flota" id="guardianActual"></div>
+        <div class="bocadillo" id="bocadillo"></div>
+      </div>
+
+      <div id="zonaJuego">
+        <div class="crono-ctrl oculto" id="cronoCtrl">
+          <span id="cronoTexto">Contrarreloj por pregunta (12 s)</span>
+          <button type="button" class="interruptor" id="interruptorCrono" role="switch" aria-checked="false" aria-label="Activar contrarreloj"></button>
+        </div>
+        <div class="barra-tiempo" id="barraTiempo"><i id="barraTiempoRelleno"></i></div>
+        <div class="fila-progreso oculto" id="filaProgreso" aria-live="polite"><div class="fp-txt" id="fpTxt"></div><div class="fp-barras" id="fpBarras" aria-hidden="true"></div></div>
+        <div class="pregunta" id="pregunta"></div>
+        <div class="matriz" id="matriz"></div>
+        <div id="zonaRespuesta"></div>
+        <div class="aviso-entrada" id="avisoEntrada" aria-live="polite"></div>
+        <div class="feedback" id="feedback" aria-live="polite"></div>
+        <div class="banner" id="banner"></div>
+        <div class="acciones-ej" id="accionesEj">
+          <button class="btn btn-principal btn-ancho" id="btnSiguiente">Siguiente</button>
+        </div>
+      </div>
+
+      <div id="zonaFinal" class="oculto" style="text-align:center">
+        <div class="h2" style="font-size:1.7rem;margin-top:.4rem" id="finalTitulo">Ruta completada</div>
+        <p class="suave" id="finalTexto"></p>
+        <button type="button" class="btn btn-cons btn-ancho ir-cons oculto" id="btnFinalCons">Ir a Construcción · 3 puntos más</button>
+      </div>
+
+      <div class="progreso" id="progreso">
+        <span id="textoProgreso">Necesitas 4 aciertos en tus últimos 5 intentos</span>
+        <div class="pips" id="pips" aria-hidden="true"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="pie">
+    <button class="btn btn-secundario oculto" id="btnCambiar">Cambiar de reto</button>
+    <button class="btn btn-principal" id="btnFinalizar">Finalizar y Calificar</button>
+  </div>
+</main>
+
+<!-- Modal de confirmación -->
+<div class="fondo-modal" id="modalConfirma" role="dialog" aria-modal="true" aria-labelledby="confTitulo">
+  <div class="modal modal-confirma">
+    <div class="h2" id="confTitulo">¿Cambiar de reto?</div>
+    <p class="suave" id="confTexto">Lo que ya has superado queda guardado y sigue contando para tu nota. Solo se pierde el avance de la zona que tienes a medias.</p>
+    <div class="botones">
+      <button class="btn btn-secundario" id="confNo">Seguir aquí</button>
+      <button class="btn btn-principal" id="confSi">Sí, cambiar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de aviso: zonas anteriores pendientes -->
+<div class="fondo-modal" id="modalPendientes" role="dialog" aria-modal="true" aria-labelledby="pendTitulo">
+  <div class="modal modal-confirma">
+    <div class="h2" id="pendTitulo">Aún tienes zonas pendientes</div>
+    <p class="suave" id="pendTexto">Todavía no has superado:</p>
+    <ul class="lista-pend" id="pendLista"></ul>
+    <p class="suave" style="margin-top:.5rem">Puedes entrar igualmente, pero para completar la ruta tendrás que superarlas más adelante.</p>
+    <div class="botones">
+      <button class="btn btn-secundario" id="pendNo">Volver</button>
+      <button class="btn btn-principal" id="pendSi">Entrar igualmente</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: las 9 tablas completadas → pasar a Construcción -->
+<div class="fondo-modal" id="modalCons" role="dialog" aria-modal="true" aria-labelledby="consTitulo">
+  <div class="modal modal-confirma modal-cons">
+    <svg class="ilus" viewBox="0 0 150 92" aria-hidden="true">
+      <circle cx="18" cy="14" r="1.6" fill="#eaf1fb" opacity=".8"/><circle cx="132" cy="10" r="1.3" fill="#eaf1fb" opacity=".7"/><circle cx="112" cy="26" r="1" fill="#eaf1fb" opacity=".6"/>
+      <rect x="14" y="62" width="40" height="22" rx="3" fill="#2ec4b6"/>
+      <rect x="14" y="44" width="40" height="16" rx="3" fill="#f4b942"/>
+      <rect x="60" y="32" width="30" height="52" rx="3" fill="#9b7bff"/>
+      <polygon points="56,33 75,14 94,33" fill="#f4b942"/>
+      <rect x="71" y="68" width="8" height="16" rx="1" fill="#0e1726"/>
+      <rect x="96" y="54" width="40" height="30" rx="3" fill="#4cc9f0" opacity=".9"/>
+      <line x1="96" y1="64" x2="136" y2="64" stroke="#0e1726" stroke-width="1.5" opacity=".35"/><line x1="116" y1="54" x2="116" y2="84" stroke="#0e1726" stroke-width="1.5" opacity=".35"/>
+      <line x1="6" y1="86" x2="144" y2="86" stroke="#a3b6d1" stroke-width="2.5" stroke-linecap="round"/>
+    </svg>
+    <div class="etiqueta">Tablas completadas</div>
+    <div class="h2" id="consTitulo">¡Ya tienes las 9 tablas!</div>
+    <p class="suave" id="consTexto"></p>
+    <div class="pasos-nota" id="consPasos"></div>
+    <div class="botones">
+      <button class="btn btn-secundario" id="consNo">Más tarde</button>
+      <button class="btn btn-cons" id="consSi">Ir a Construcción</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal informe -->
+<div class="fondo-modal" id="modalInforme" role="dialog" aria-modal="true" aria-labelledby="infTitulo">
+  <div class="modal informe" id="informe"></div>
+</div>
+
+<script>
+(() => {
+'use strict';
+
+/* ---------- Aleatoriedad: seed solo para QA (?seed=123) ---------- */
+const params = new URLSearchParams(location.search);
+const SEED = params.has('seed') ? parseInt(params.get('seed'), 10) : null;
+let rnd = Math.random;
+if (SEED !== null && !Number.isNaN(SEED)) {
+  let s = SEED >>> 0;
+  rnd = () => { s += 0x6D2B79F5; let t = s; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+}
+const azar = arr => arr[Math.floor(rnd() * arr.length)];
+const barajar = arr => { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const rango = (d, h) => Array.from({ length: h - d + 1 }, (_, i) => d + i);
+
+/* ---------- Constantes de puntuación (Fase 0) ---------- */
+const TIPOS = ['n1', 'n2', 'n3', 'n4'];
+const TODAS = [2, 3, 4, 5, 6, 7, 8, 9, 10];
+/* Modelo de nota (acumulado entre retos, se calcula siempre desde cero en calcularNota):
+   · Ruta: hasta 7 puntos = 9 tablas × 4 zonas → 7/36 por zona y tabla.
+   · Construcción: hasta 3 puntos = 4 estaciones × 0,75, contando la tabla con más estaciones superadas.
+   · −0,25 por cada fallo en una zona abierta. El suelo de 0 solo se aplica al resultado final. */
+const PUNTOS_RUTA = 7, PUNTOS_CONS = 3;
+const PUNTO_ZONA_TABLA = PUNTOS_RUTA / (TODAS.length * TIPOS.length);
+const PUNTO_ESTACION = PUNTOS_CONS / TIPOS.length;
+const PENALIZACION_FALLO = 0.25;
+const VENTANA = 5;
+const ACIERTOS_NECESARIOS = 4;
+const SEGUNDOS_CRONO = { ruta: 12, cons: 60 };   // en Construcción el jefe tiene tres casillas con números de hasta cuatro cifras
+
+const NIVELES = {
+  ruta: {
+    n1: { zona: 'Campamento', verbo: 'Descubre', nombre: 'Zona 1 · Campamento', instr: 'Construye la tabla fila a fila hasta ×10. Al terminar, superas la zona si has acertado al menos 4 de las 5 últimas.' },
+    n2: { zona: 'Cañón',      verbo: 'Elige',    nombre: 'Zona 2 · Cañón',      instr: 'Ahora la tabla va desordenada. Elige la respuesta correcta.' },
+    n3: { zona: 'Ruinas',     verbo: 'Escribe',  nombre: 'Zona 3 · Ruinas',     instr: 'Sin opciones: escribe tú el resultado.' },
+    n4: { zona: 'Torre',      verbo: 'Jefe final', nombre: 'Zona 4 · Torre del guardián', instr: 'El guardián te reta. A veces falta el resultado y a veces falta un factor.' }
+  },
+  cons: {
+    n1: { zona: 'Cimientos', verbo: 'Área',    nombre: 'Estación 1 · Cimientos', instr: 'Arriba ves cuántos cuadrados tiene cada fila y a la izquierda, cuántas filas hay. ¿Cuántos cuadrados hay dentro?' },
+    n2: { zona: 'Andamio',   verbo: 'Partir',  nombre: 'Estación 2 · Andamio',   instr: 'El rectángulo está partido en dos. Calcula cada parte y después súmalas.' },
+    n3: { zona: 'Muro',      verbo: 'Sin red', nombre: 'Estación 3 · Muro',      instr: 'Ya no hay cuadrícula. Calcula cada parte de cabeza, escríbela a su derecha y después súmalas.' },
+    n4: { zona: 'Torre',     verbo: 'Jefe final', nombre: 'Estación 4 · Torre del guardián', instr: 'Calcula el rectángulo grande y la franja roja, escríbelos a su derecha y quita la franja para ver lo que queda.' }
+  }
+};
+const UNIDAD = { ruta: 'Zona', cons: 'Estación' };
+
+/* Valores de la segunda dimensión por estación de Construcción */
+const POOLS_CONS = {
+  n1: rango(2, 10),
+  n2: rango(11, 19),                                   // 10 + k
+  n3: rango(21, 99).filter(b => b % 10 !== 0),         // decenas + unidades (p. ej. 54 = 50 + 4)
+  n4: [97, 98, 99, 197, 198, 199, 297, 298, 299]      // centena siguiente − franja (p. ej. 2 × 198 = 2 × 200 − 2 × 2)
+};
+const COL = { base: '#2ec4b6', parte: '#f4b942', grande: '#9b7bff', franja: '#ff4d5e' };
+
+const GUARDIANES = {
+  2: { nombre: 'Bit',  color: '#2ec4b6' }, 3: { nombre: 'Tri',  color: '#ff6b5b' },
+  4: { nombre: 'Kub',  color: '#f4b942' }, 5: { nombre: 'Pent', color: '#9b7bff' },
+  6: { nombre: 'Hex',  color: '#4cc9f0' }, 7: { nombre: 'Sept', color: '#ff8fab' },
+  8: { nombre: 'Okto', color: '#7bd389' }, 9: { nombre: 'Nova', color: '#f7893b' },
+  10:{ nombre: 'Deka', color: '#c3a6ff' }
+};
+const AVATARES = [
+  { nombre: 'Rumbo', color: '#2ec4b6' }, { nombre: 'Vega', color: '#ff6b5b' }, { nombre: 'Nox', color: '#9b7bff' }
+];
+
+/* ---------- Estado ---------- */
+let state;                     // reto en curso (se descarta al cambiar de reto)
+let destinoPendiente = null;   // zona a la que se quiere entrar mientras se muestra el aviso de pendientes
+const estadoGlobalInicio = Date.now();   // el tiempo total del informe arranca al cargar la página
+
+/* Progreso global: se conserva al cambiar de reto y es lo único que cuenta para la nota */
+const G = {
+  zonasTabla: Object.fromEntries(TODAS.map(n => [n, new Set()])),   // Ruta: zonas superadas por tabla
+  consTabla: Object.fromEntries(TODAS.map(n => [n, new Set()])),    // Construcción: estaciones superadas por tabla
+  fallosTotales: 0,
+  stats: { ruta: {}, cons: {} },   // intentos / aciertos / fallos por zona, sumando todos los retos
+  hechos: {},                      // "a×b" -> {ok, ko}, de Ruta y Duelo
+  fallosCons: [],
+  duelos: [],
+  marcas: [],                      // tiempos con cronómetro: {clave, etiqueta, ms}
+  usoMezcla: false
+};
+['ruta', 'cons'].forEach(m => TIPOS.forEach(t => G.stats[m][t] = { total: 0, aciertos: 0, fallos: 0 }));
+const tablaRepasada = n => G.zonasTabla[n].size === TIPOS.length;
+const maxEstaciones = () => Math.max(...TODAS.map(n => G.consTabla[n].size));
+/* Las 9 tablas ya están repasadas y Construcción sigue pendiente: es el momento de pasar a Construcción */
+const tocaConstruccion = () => TODAS.every(tablaRepasada) && maxEstaciones() < TIPOS.length;
+function puntosBrutos() {
+  const zonas = TODAS.reduce((s, n) => s + G.zonasTabla[n].size, 0);
+  return { ruta: zonas * PUNTO_ZONA_TABLA, cons: maxEstaciones() * PUNTO_ESTACION };
+}
+function calcularNota() {   // única fuente de la nota; el suelo de 0 va al final
+  const p = puntosBrutos();
+  const bruta = p.ruta + p.cons - G.fallosTotales * PENALIZACION_FALLO;
+  return Math.round(Math.min(10, Math.max(0, bruta)) * 100) / 100;
+}
+const yaAcreditada = (modo, tablas, t) => tablas.every(n => (modo === 'cons' ? G.consTabla : G.zonasTabla)[n].has(t));
+
+function estadoInicial(modo, tablas, avatar) {
+  const tipos = {};
+  TIPOS.forEach(t => {
+    const hecha = yaAcreditada(modo, tablas, t);   // zona ya ganada en un reto anterior: se puede practicar, no puntúa
+    tipos[t] = { intentos: [], superado: hecha, cerrado: hecha, previa: hecha, total: 0, aciertos: 0, fallos: 0, vistos: new Set(), tablasOk: new Set() };
+  });
+  return {
+    modo, tipos, tablas, avatar,
+    nivelActual: TIPOS.find(t => !tipos[t].superado) || 'n1', ejercicio: null,
+    n1Recorrido: 0,        // Ruta: pasos del recorrido ordenado ×1…×10
+    ultimoHecho: null,
+    cronoActivo: false, cronoTimer: null
+  };
+}
+let seleccion = new Set(), modoSel = 'una', avatarElegido = 0;
+const niveles = () => NIVELES[state.modo];
+
+/* ---------- Utilidades DOM ---------- */
+const $ = id => document.getElementById(id);
+const fmtNota = n => (Math.round(n * 100) / 100).toLocaleString('es-ES', { maximumFractionDigits: 2 });
+const nombreAlumno = () => $('nombre').value.trim();
+function exigirNombre() {
+  if (nombreAlumno()) { $('avisoNombre').classList.remove('visible'); $('nombre').classList.remove('falta'); return true; }
+  $('avisoNombre').classList.add('visible'); $('nombre').classList.add('falta'); $('nombre').focus();
+  return false;
+}
+$('nombre').addEventListener('input', () => { if (nombreAlumno()) { $('avisoNombre').classList.remove('visible'); $('nombre').classList.remove('falta'); } });
+const punteroFino = () => window.matchMedia('(pointer:fine)').matches;
+
+/* ---------- Dibujo: guardianes y avatares ---------- */
+function poligono(n, cx, cy, r, rot = -90) {
+  const pts = [];
+  for (let i = 0; i < n; i++) { const a = (rot + i * 360 / n) * Math.PI / 180; pts.push((cx + r * Math.cos(a)).toFixed(1) + ',' + (cy + r * Math.sin(a)).toFixed(1)); }
+  return pts.join(' ');
+}
+function svgGuardian(n, jefe = false, sinNumero = false) {
+  const g = GUARDIANES[n], c = g.color;
+  const cuerpo = n === 2
+    ? `<rect x="22" y="26" width="56" height="52" rx="26" fill="${c}"/>`
+    : `<polygon points="${n === 3 ? poligono(3, 50, 60, 42) : poligono(n, 50, 54, 36, n % 2 ? -90 : -90 + 180 / n)}" fill="${c}" stroke="${c}" stroke-width="5" stroke-linejoin="round"/>`;
+  const dy = n === 3 ? 12 : 0;
+  const aura = jefe ? `<circle cx="50" cy="54" r="45" fill="none" stroke="${c}" stroke-width="1.5" stroke-dasharray="3 6" opacity=".8"><animateTransform attributeName="transform" type="rotate" from="0 50 54" to="360 50 54" dur="14s" repeatCount="indefinite"/></circle>
+    <polygon points="38,18 43,8 50,16 57,8 62,18" fill="#f4b942"/>` : '';
+  return `<svg viewBox="0 0 100 100" aria-hidden="true">
+    ${aura}
+    <ellipse cx="50" cy="92" rx="24" ry="4" fill="#000" opacity=".3"/>
+    <line x1="50" y1="${jefe ? 20 : 10}" x2="50" y2="${n === 3 ? 20 : 22}" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
+    ${jefe ? '' : `<circle cx="50" cy="9" r="4" fill="#fff" opacity=".9"/>`}
+    <rect x="34" y="80" width="9" height="9" rx="3" fill="${c}"/><rect x="57" y="80" width="9" height="9" rx="3" fill="${c}"/>
+    ${cuerpo}
+    <g transform="translate(0 ${dy})"><rect x="30" y="43" width="40" height="15" rx="7.5" fill="#0e1726"/>
+    <rect x="37" y="48" width="8" height="5" rx="2.5" fill="#eaf1fb"/><rect x="55" y="48" width="8" height="5" rx="2.5" fill="#eaf1fb"/></g>
+    ${sinNumero ? '' : `<text x="50" y="${74 + dy / 2}" text-anchor="middle" font-family="Bricolage Grotesque, sans-serif" font-weight="800" font-size="11" fill="#0e1726" opacity=".75">×${n}</text>`}
+  </svg>`;
+}
+function svgAvatar(i, tam = 100) {
+  const c = AVATARES[i].color;
+  return `<svg viewBox="0 0 100 100" width="${tam}" height="${tam}" aria-hidden="true">
+    <rect x="62" y="50" width="14" height="26" rx="5" fill="#0e1726" opacity=".55"/>
+    <path d="M30 88 L36 56 Q50 48 64 56 L70 88 Z" fill="${c}"/>
+    <circle cx="50" cy="38" r="20" fill="${c}"/>
+    <path d="M32 40 Q50 28 68 40 L68 46 Q50 38 32 46 Z" fill="#0e1726" opacity=".25"/>
+    <rect x="35" y="35" width="30" height="11" rx="5.5" fill="#0e1726"/>
+    <rect x="40" y="38.5" width="20" height="4" rx="2" fill="#f4b942"/>
+    <rect x="44" y="60" width="12" height="3" rx="1.5" fill="#0e1726" opacity=".35"/>
+  </svg>`;
+}
+
+/* ---------- Dibujo: rectángulos de celdas ---------- */
+const FUENTE = 'font-family="Bricolage Grotesque, sans-serif"';
+function cotaH(x1, x2, y, txt) {   // medida del lado de arriba
+  return `<g stroke="#a3b6d1" stroke-width="1.5"><line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}"/><line x1="${x1}" y1="${y - 4}" x2="${x1}" y2="${y + 4}"/><line x1="${x2}" y1="${y - 4}" x2="${x2}" y2="${y + 4}"/></g>
+    <text x="${(x1 + x2) / 2}" y="${y - 6}" text-anchor="middle" ${FUENTE} font-weight="800" font-size="15" fill="#eaf1fb">${txt}</text>`;
+}
+function cotaV(x, y1, y2, txt) {   // medida del lado izquierdo
+  const a = y1 + 2, b = y2 - 2;
+  return `<g stroke="#a3b6d1" stroke-width="1.5"><line x1="${x}" y1="${a}" x2="${x}" y2="${b}"/><line x1="${x - 4}" y1="${a}" x2="${x + 4}" y2="${a}"/><line x1="${x - 4}" y1="${b}" x2="${x + 4}" y2="${b}"/></g>
+    <text x="${x - 7}" y="${(y1 + y2) / 2 + 5}" text-anchor="end" ${FUENTE} font-weight="800" font-size="15" fill="#eaf1fb">${txt}</text>`;
+}
+function celdasFila(x0, y, a, cell, color, op) {
+  const gap = Math.max(1.5, cell * .09);
+  let s = '';
+  for (let k = 0; k < a; k++) s += `<rect x="${(x0 + k * cell + gap / 2).toFixed(1)}" y="${(y + gap / 2).toFixed(1)}" width="${(cell - gap).toFixed(1)}" height="${(cell - gap).toFixed(1)}" rx="${(cell * .18).toFixed(1)}" fill="${color}" opacity="${op}"/>`;
+  return s;
+}
+/* Ruta: b filas de a cuadrados. etiquetas: 'ninguna' | 'parcial' (última fila con ?) | 'todas' */
+function svgCeldas(a, b, etiquetas, animar = false) {
+  const cell = Math.min(26, 230 / a);
+  const LBL = 36, TOP = 30, conEtq = etiquetas !== 'ninguna';
+  const rw = a * cell, rh = b * cell;
+  const W = LBL + rw + (conEtq ? 50 : 8), H = TOP + rh + 6;
+  const color = GUARDIANES[a] ? GUARDIANES[a].color : '#2ec4b6';
+  let s = `<svg viewBox="0 0 ${W.toFixed(1)} ${H.toFixed(1)}" width="${W.toFixed(0)}" height="${H.toFixed(0)}" role="img" aria-label="Rectángulo de ${b} ${b === 1 ? 'fila' : 'filas'} de ${a} cuadrados">`;
+  s += cotaH(LBL, LBL + rw, TOP - 12, a) + cotaV(LBL - 10, TOP, TOP + rh, b);
+  for (let f = 0; f < b; f++) {
+    const ultima = f === b - 1, y = TOP + f * cell;
+    s += `<g${animar && ultima ? ' class="fila-nueva"' : ''}>` + celdasFila(LBL, y, a, cell, color, conEtq && ultima ? 1 : .78);
+    if (conEtq) {
+      const txt = (etiquetas === 'parcial' && ultima) ? '?' : a * (f + 1);
+      s += `<text x="${(LBL + rw + 10).toFixed(1)}" y="${(y + cell / 2 + 4.5).toFixed(1)}" ${FUENTE} font-weight="700" font-size="13" fill="${ultima ? '#f4b942' : '#a3b6d1'}">${txt}</text>`;
+    }
+    s += '</g>';
+  }
+  return s + '</svg>';
+}
+function rejilla(x, y, a, n, cell, color) {
+  let s = `<g stroke="${color}" stroke-opacity=".6" stroke-width="1">`;
+  for (let i = 1; i < a; i++) s += `<line x1="${(x + i * cell).toFixed(1)}" y1="${y.toFixed(1)}" x2="${(x + i * cell).toFixed(1)}" y2="${(y + n * cell).toFixed(1)}"/>`;
+  for (let j = 1; j < n; j++) s += `<line x1="${x.toFixed(1)}" y1="${(y + j * cell).toFixed(1)}" x2="${(x + a * cell).toFixed(1)}" y2="${(y + j * cell).toFixed(1)}"/>`;
+  return s + '</g>';
+}
+/* Construcción: figura de la estación. sol = true dibuja la solución (sin casillas) */
+let uid = 0;
+function svgArea(ej, sol) {
+  const { a, tipo } = ej;
+  const filas = tipo === 'n4' ? ej.B : ej.b;
+  const cell = tipo === 'n1' ? Math.min(30, 230 / a, 260 / filas) : Math.min(22, 150 / a, 270 / filas);
+  const LBL = 46, TOP = 32, x0 = LBL, y0 = TOP;
+  let rw = a * cell, rh = filas * cell;
+  if (tipo === 'n4') { rw = a * Math.min(22, 150 / a); rh = 240; }   // 200 filas no caben: dibujo esquemático, sin escala
+  const hBase = 190, hK = tipo === 'n3' ? 24 + 5 * ej.k : 0;
+  if (tipo === 'n3') { rw = a * Math.min(22, 150 / a); rh = hBase + hK; }   // estación 3 (hasta 99 filas): también esquemático
+  const geo = pt => tipo === 'n3'
+    ? (pt.id === 'p1' ? { y: y0, h: hBase } : { y: y0 + hBase, h: hK })
+    : { y: y0 + pt.desde * cell, h: tipo === 'n4' ? rh : pt.n * cell };
+  let cx = x0 + rw + 14;
+  const id = 'ray' + (++uid);
+  let W = x0 + rw + 10, H = y0 + rh + 10;
+  let cuerpo = '', cotas = cotaH(x0, x0 + rw, TOP - 12, a);
+  const col = [], campos = [];
+  if (tipo === 'n1') {
+    for (let f = 0; f < ej.b; f++) cuerpo += celdasFila(x0, y0 + f * cell, a, cell, GUARDIANES[a].color, .82);
+    cotas += cotaV(x0 - 10, y0, y0 + rh, ej.b);
+    if (rw >= 96 && rh >= 44) campos.push({ id: 'total', tipo: 'dentro', x: x0 + rw / 2, y: y0 + rh / 2, color: GUARDIANES[a].color, aria: 'Cuadrados que hay dentro' });
+    else { W = cx + 100; col.push({ id: 'total', y: y0 + rh / 2, color: GUARDIANES[a].color, etq: `${a} × ${ej.b}`, input: true }); }
+  } else {
+    const partes = tipo === 'n4'
+      ? [{ desde: 0, n: ej.B, color: COL.grande, id: 'grande' }]
+      : [{ desde: 0, n: ej.base, color: COL.base, id: 'p1' }, { desde: ej.base, n: ej.k, color: COL.parte, id: 'p2' }];
+    for (const pt of partes) {
+      const { y, h } = geo(pt);
+      cuerpo += `<rect x="${x0}" y="${y.toFixed(1)}" width="${rw.toFixed(1)}" height="${h.toFixed(1)}" rx="3" fill="${pt.color}" fill-opacity="${tipo === 'n2' ? .22 : .34}" stroke="${pt.color}" stroke-width="2"/>`;
+      if (tipo === 'n2') cuerpo += rejilla(x0, y, a, pt.n, cell, pt.color);
+    }
+    if (tipo === 'n4') {
+      const h = 14 + 8 * ej.s, y = y0 + rh - h;
+      cuerpo += `<defs><pattern id="${id}" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" fill="${COL.franja}" fill-opacity=".22"/><line x1="0" y1="0" x2="0" y2="7" stroke="${COL.franja}" stroke-width="2.6" stroke-opacity=".85"/></pattern></defs>
+        <rect x="${x0}" y="${y.toFixed(1)}" width="${rw.toFixed(1)}" height="${h.toFixed(1)}" fill="url(#${id})" stroke="${COL.franja}" stroke-width="2" stroke-dasharray="5 3"/>`;
+      cotas += cotaV(x0 - 10, y0, y0 + rh, ej.B);
+      cuerpo += `<text x="${x0}" y="${(y0 + rh + 17).toFixed(1)}" ${FUENTE} font-weight="500" font-size="11" fill="#a3b6d1">Dibujo sin escala</text>`;
+      H += 14;
+      col.push({ id: 'grande', y: y0 + rh / 2, color: COL.grande, etq: `${a} × ${ej.B}`, val: a * ej.B });
+      col.push({ id: 'franja', y: y + h / 2, color: COL.franja, etq: `− ${a} × ${ej.s}`, val: a * ej.s });
+    } else {
+      for (const pt of partes) {
+        const { y: y1, h: hp } = geo(pt), y2 = y1 + hp;
+        cotas += cotaV(x0 - 10, y1, y2, pt.n);
+        col.push({ id: pt.id, y: (y1 + y2) / 2, color: pt.color, etq: `${a} × ${pt.n}`, val: a * pt.n });
+      }
+      if (tipo === 'n3') { cuerpo += `<text x="${x0}" y="${(y0 + rh + 17).toFixed(1)}" ${FUENTE} font-weight="500" font-size="11" fill="#a3b6d1">Dibujo sin escala</text>`; H += 14; }
+    }
+    col.forEach(c => c.input = !sol);
+    if ((tipo === 'n3' || tipo === 'n4') && !sol) col.forEach(c => c.etq = c.id === 'franja' ? 'se quita' : '');   // estaciones 3 y 4: casillas sin la operación escrita
+    W = cx + 104;
+    if (tipo === 'n4' && !sol) {   // la franja no está a escala: se rotulan sus filas a la derecha
+      const hF = 14 + 8 * ej.s, yF = y0 + rh - hF, xd = x0 + rw + 10;
+      cotas += `<g stroke="${COL.franja}" stroke-width="1.5"><line x1="${xd}" y1="${yF + 2}" x2="${xd}" y2="${y0 + rh - 2}"/><line x1="${xd - 4}" y1="${yF + 2}" x2="${xd + 4}" y2="${yF + 2}"/><line x1="${xd - 4}" y1="${y0 + rh - 2}" x2="${xd + 4}" y2="${y0 + rh - 2}"/></g>
+        <text x="${xd + 8}" y="${(yF + hF / 2 + 5).toFixed(1)}" ${FUENTE} font-weight="800" font-size="15" fill="${COL.franja}">${ej.s}</text>`;
+      cx = xd + 30; W = cx + 104;   // las casillas van a la derecha del rótulo de la franja
+    }
+  }
+  // columna derecha: separación mínima entre casillas para que no se monten
+  let prev = -Infinity;
+  for (const c of col) { c.y = Math.max(c.y, prev + 72, 32); prev = c.y; }
+  if (col.length) H = Math.max(H, prev + 32);
+  let textos = '';
+  for (const c of col) {
+    if (c.input) campos.push({ id: c.id, tipo: 'lado', x: cx, y: c.y, color: c.color, etq: c.etq, aria: { p1: 'Parte de arriba', p2: 'Parte de abajo', grande: 'Rectángulo grande', franja: 'Franja roja que se quita', total: 'Total' }[c.id] });
+    else if (sol) textos += `<text x="${cx}" y="${(c.y - 4).toFixed(1)}" ${FUENTE} font-weight="700" font-size="15" fill="${c.color}">${c.etq}</text><text x="${cx}" y="${(c.y + 16).toFixed(1)}" ${FUENTE} font-weight="800" font-size="18" fill="#eaf1fb">= ${c.val}</text>`;
+    else textos += `<text x="${cx}" y="${(c.y + 5).toFixed(1)}" ${FUENTE} font-weight="700" font-size="15" fill="${c.color}">${c.etq}</text>`;
+  }
+  const svg = `<svg viewBox="0 0 ${W.toFixed(1)} ${H.toFixed(1)}" width="${W.toFixed(0)}" height="${H.toFixed(0)}" role="img" aria-label="Rectángulo de ${tipo === 'n4' ? ej.b : filas} filas de ${a} cuadrados">${cuerpo}${cotas}${textos}</svg>`;
+  return { svg, W, H, campos };
+}
+
+/* ---------- Avisos de progreso ---------- */
+const listaY = arr => arr.length > 1 ? arr.slice(0, -1).join(', ') + ' y ' + arr[arr.length - 1] : String(arr[0]);
+function consejo() {
+  const pend = TODAS.filter(n => !tablaRepasada(n));
+  const medias = pend.filter(n => G.zonasTabla[n].size > 0);
+  const est = maxEstaciones(), hechas = TODAS.length - pend.length;
+  if (!pend.length && est === TIPOS.length) return '<b>¡Lo has completado todo!</b> Pulsa «Finalizar y Calificar» para ver tu informe.';
+  if (!pend.length) return `<b>Ya tienes las 9 tablas.</b> Ahora entra en <b>Construcción</b> (la tarjeta morada del paso 1), elige una tabla y supera sus cuatro estaciones: son los 3 puntos que te faltan para llegar al 10 (llevas ${est} de 4).`;
+  if (!hechas && !medias.length && est === 0)
+    return `<b>Tu objetivo:</b> repasar las 9 tablas te da hasta <b>7 puntos</b>; completar Construcción con una tabla, <b>3 más</b>. Cada fallo resta ${fmtNota(PENALIZACION_FALLO)}. Si ya te sabes las tablas, usa <b>Mezcla</b> y acabarás antes.`;
+  let t = `Llevas <b>${hechas} de 9</b> tablas. Te ${pend.length === 1 ? 'falta la tabla del' : 'faltan las tablas del'} <b>${listaY(pend)}</b>.`;
+  if (medias.length) t += ` A medias: ${medias.map(n => `la del ${n} (${G.zonasTabla[n].size} de 4 zonas)`).join(', ')}.`;
+  if (pend.length >= 3) t += ' Si las dominas, elige <b>Mezcla</b> con varias a la vez y acabarás antes.';
+  else if (est < TIPOS.length) t += ' Después, Construcción te da hasta 3 puntos más.';
+  return t;
+}
+function medidores() {
+  const zonas = TODAS.reduce((s, n) => s + G.zonasTabla[n].size, 0), e = maxEstaciones();
+  return `<div class="medidor"><span>Tablas ${TODAS.filter(tablaRepasada).length}/9<span class="barra"><i style="width:${(zonas / 36 * 100).toFixed(1)}%"></i></span></span>`
+    + `<span>Construcción ${e}/4<span class="barra c"><i style="width:${e / 4 * 100}%"></i></span></span><span>Nota ${fmtNota(calcularNota())}</span></div>`;
+}
+const pintarConsejo = id => { $(id).innerHTML = `<span class="ico" aria-hidden="true">!</span><div>${consejo()}${medidores()}</div>`; };
+
+/* ---------- Paso a Construcción tras completar las 9 tablas ---------- */
+function avisoConstruccion() {
+  const p = puntosBrutos(), est = maxEstaciones();
+  $('consTexto').innerHTML = est
+    ? `La parte de las tablas está completa. Para llegar al 10 te faltan las estaciones de <b>Construcción</b> que aún no has superado (llevas ${est} de 4).`
+    : 'La parte de las tablas está completa. Los 3 puntos que faltan para llegar al 10 están en <b>Construcción</b>: elige una tabla y supera sus cuatro estaciones.';
+  $('consPasos').innerHTML = `<div class="pn ok"><b>${fmtNota(p.ruta)} / 7</b>Tablas</div>`
+    + `<div class="pn pend"><b>${fmtNota(p.cons)} / 3</b>Construcción</div>`
+    + `<div class="pn"><b>${fmtNota(calcularNota())}</b>Nota actual</div>`;
+  $('modalCons').classList.add('visible');
+  setTimeout(() => $('consSi').focus({ preventScroll: true }), 30);
+}
+function irAConstruccion() {
+  $('modalCons').classList.remove('visible');
+  if (D && !D.terminado) return;   // salvaguarda: no se abandona un duelo en curso desde aquí
+  volverSelector();
+  elegirModo('cons');
+  setTimeout(() => $('tarjetaPaso2').scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
+}
+$('consSi').addEventListener('click', irAConstruccion);
+$('consNo').addEventListener('click', () => $('modalCons').classList.remove('visible'));
+$('btnFinalCons').addEventListener('click', irAConstruccion);
+
+/* ---------- Selector ---------- */
+const TEXTOS_SEL = {
+  una:    { paso: 'Paso 2 · Elige tu tabla', titulo: '¿Qué tabla quieres conquistar?', intro: 'Cada tabla tiene un guardián. Para vencerlo tendrás que atravesar cuatro zonas del mapa. Las barritas verdes indican las zonas que ya has superado.', ayuda: 'Toca un guardián.', boton: 'Empezar la ruta' },
+  mezcla: { paso: 'Paso 2 · Elige tus tablas', titulo: '¿Qué tablas quieres mezclar?', intro: 'Las preguntas saldrán de todas las tablas que elijas. Para superar cada zona tendrás que acertar al menos una vez cada tabla de la mezcla.', ayuda: 'Toca dos o más guardianes para mezclar sus tablas.', boton: 'Empezar la ruta' },
+  cons:   { paso: 'Paso 2 · Elige tu tabla', titulo: '¿Con qué tabla quieres construir?', intro: 'Construirás rectángulos: un lado lo pone la tabla del guardián y el otro va creciendo. Cuatro estaciones, de la más fácil a la más difícil. Basta con completarlas con una tabla.', ayuda: 'Toca un guardián y pulsa «Empezar a construir». Con una sola tabla es suficiente.', boton: 'Empezar a construir' },
+  duelo:  { paso: 'Paso 2 · Prepara el duelo', titulo: 'Duelo galáctico', intro: `Quien crea el duelo elige las tablas y obtiene un código. Los rivales lo escriben en su ordenador y todos tenéis las mismas 15 preguntas (10 de tablas y 5 de Construcción) en el mismo orden. Gana quien más acierte; si hay empate, quien tarde menos.`, ayuda: 'Paso A: toca uno o varios guardianes para elegir las tablas. Paso B: pulsa «Generar el código del duelo», debajo de los guardianes.', boton: 'Generar el código del duelo' }
+};
+let dueloTab = 'crear', dueloListo = null;   // dueloListo: duelo descodificado y preparado para empezar
+function pintarSelector() {
+  const cons = modoSel === 'cons', duelo = modoSel === 'duelo', unir = duelo && dueloTab === 'unir';
+  $('rejillaGuardianes').innerHTML = TODAS.map(n => {
+    const hechas = (cons ? G.consTabla : G.zonasTabla)[n], completa = hechas.size === TIPOS.length && !duelo;
+    const pips = duelo ? '' : `<span class="mini-pips" aria-hidden="true">${TIPOS.map(t => `<i class="${hechas.has(t) ? 'on' : ''}"></i>`).join('')}</span>`;
+    return `<button type="button" class="guardian-btn${completa ? ' completa' : ''}" data-tabla="${n}" style="--c:${GUARDIANES[n].color}" aria-pressed="${seleccion.has(n)}" aria-label="Tabla del ${n}, guardián ${GUARDIANES[n].nombre}${duelo ? '' : `, ${hechas.size} de 4 ${cons ? 'estaciones' : 'zonas'} superadas`}">
+      ${completa ? `<span class="sello">${cons ? 'Construida' : 'Repasada'}</span>` : ''}${svgGuardian(n)}<span class="nombre-g">${GUARDIANES[n].nombre}</span><span class="tabla-g">Tabla del ${n}</span>${pips}
+    </button>`;
+  }).join('');
+  $('avatares').innerHTML = AVATARES.map((av, i) => `
+    <button type="button" class="avatar-btn" data-avatar="${i}" aria-pressed="${i === avatarElegido}">${svgAvatar(i, 52)}<span>${av.nombre}</span></button>`).join('');
+  const tx = TEXTOS_SEL[modoSel];
+  $('paso2Etq').textContent = tx.paso; $('selTitulo').textContent = tx.titulo; $('selIntro').textContent = tx.intro; $('ayudaModo').textContent = tx.ayuda;
+  $('panelDuelo').classList.toggle('oculto', !duelo);
+  $('zonaUnir').classList.toggle('oculto', !unir);
+  $('rejillaGuardianes').classList.toggle('oculto', unir);
+  $('ayudaModo').classList.toggle('oculto', unir);
+  $('tarjetaAvatar').classList.toggle('oculto', duelo);
+  $('codigoCreado').classList.toggle('oculto', !(duelo && dueloTab === 'crear' && dueloListo));
+  const crearVisible = duelo && dueloTab === 'crear' && !dueloListo;
+  $('btnCrearCodigo').classList.toggle('oculto', !crearVisible);
+  $('btnCrearCodigo').disabled = seleccion.size < 1;
+  $('btnCrearCodigo').textContent = seleccion.size < 1 ? 'Elige al menos una tabla para generar el código' : 'Generar el código del duelo';
+  $('tabCrear').setAttribute('aria-selected', String(dueloTab === 'crear'));
+  $('tabUnir').setAttribute('aria-selected', String(dueloTab === 'unir'));
+  const b = $('btnEmpezar');
+  if (duelo) {
+    if (unir) { b.disabled = !dueloListo; b.textContent = dueloListo ? 'Empezar el duelo' : 'Escribe un código válido'; }
+    else if (dueloListo) { b.disabled = false; b.textContent = 'Empezar el duelo'; }
+    else { b.disabled = true; b.textContent = seleccion.size < 1 ? 'Elige al menos una tabla' : 'Primero genera el código'; }
+  } else {
+    b.textContent = tx.boton;
+    b.disabled = modoSel === 'una' ? seleccion.size !== 1 : modoSel === 'mezcla' ? seleccion.size < 2 : seleccion.size < 1;
+    if (b.disabled)   // el botón dice qué falta en vez de quedarse gris sin explicación
+      b.textContent = modoSel === 'mezcla' ? (seleccion.size === 1 ? 'Elige al menos otra tabla para mezclar' : 'Elige al menos 2 tablas') : cons ? 'Elige una tabla para construir' : 'Elige una tabla';
+  }
+  ['Una', 'Mezcla', 'Cons', 'Duelo'].forEach(m => $('modo' + m).setAttribute('aria-pressed', String(modoSel === m.toLowerCase())));
+  const siguiente = tocaConstruccion();   // Construcción destacada como siguiente paso
+  $('modoCons').classList.toggle('siguiente', siguiente);
+  $('sigCons').classList.toggle('oculto', !siguiente);
+  pintarConsejo('consejoSel');
+}
+$('rejillaGuardianes').addEventListener('click', e => {
+  const b = e.target.closest('.guardian-btn'); if (!b) return;
+  const n = +b.dataset.tabla;
+  if (modoSel === 'una') seleccion = new Set([n]);
+  else seleccion.has(n) ? seleccion.delete(n) : seleccion.add(n);
+  if (modoSel === 'duelo') dueloListo = null;   // cambiar las tablas invalida el código ya creado
+  pintarSelector();
+});
+$('avatares').addEventListener('click', e => { const b = e.target.closest('.avatar-btn'); if (!b) return; avatarElegido = +b.dataset.avatar; pintarSelector(); });
+const elegirModo = m => {
+  modoSel = m;
+  if (m === 'una' && seleccion.size > 1) seleccion = new Set([Math.min(...seleccion)]);
+  if (m === 'duelo' && dueloTab === 'crear') dueloListo = null;
+  pintarSelector();
+};
+$('modoUna').addEventListener('click', () => elegirModo('una'));
+$('modoMezcla').addEventListener('click', () => elegirModo('mezcla'));
+$('modoCons').addEventListener('click', () => elegirModo('cons'));
+$('modoDuelo').addEventListener('click', () => elegirModo('duelo'));
+$('tabCrear').addEventListener('click', () => { dueloTab = 'crear'; dueloListo = null; pintarSelector(); });
+$('tabUnir').addEventListener('click', () => { dueloTab = 'unir'; dueloListo = leerCodigo($('codigoUnir').value); pintarSelector(); $('codigoUnir').focus(); });
+$('codigoUnir').addEventListener('input', () => {
+  const txt = $('codigoUnir').value;
+  dueloListo = leerCodigo(txt);
+  const limpio = txt.toUpperCase().replace(/[^0-9A-Z]/g, '');
+  $('avisoCodigo').textContent = dueloListo ? `Duelo de ${dueloListo.tablas.length === 1 ? 'la tabla del ' + dueloListo.tablas[0] : 'las tablas del ' + listaY(dueloListo.tablas)} · ${DUELO_N} preguntas`
+    : limpio.length >= 7 ? 'Ese código no es válido. Revisa que lo hayas copiado bien.' : '';
+  pintarSelector();
+});
+$('codigoUnir').addEventListener('keydown', e => { if (e.key === 'Enter' && dueloListo) $('btnEmpezar').click(); });
+$('btnEmpezar').addEventListener('click', () => {
+  if (modoSel === 'duelo') {
+    if (dueloTab === 'crear' && !dueloListo) { generarCodigoDuelo(); return; }
+    if (dueloListo) empezarDuelo(dueloListo);
+    return;
+  }
+  empezarReto();
+});
+function generarCodigoDuelo() {
+  if (seleccion.size < 1) return;
+  dueloListo = leerCodigo(crearCodigo([...seleccion].sort((x, y) => x - y)));
+  $('codigoTexto').textContent = verCodigo(dueloListo.codigo);
+  $('codigoAyuda').innerHTML = `Díctalo a tus rivales: lo escriben en «Unirme con un código». Cuando estéis todos, pulsad «Empezar el duelo». ${dueloListo.tablas.length === 1 ? 'Tabla del ' + dueloListo.tablas[0] : 'Tablas del ' + listaY(dueloListo.tablas)} · ${DUELO_N} preguntas.`;
+  pintarSelector();
+  $('codigoCreado').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+$('btnCrearCodigo').addEventListener('click', generarCodigoDuelo);
+function empezarReto() {
+  state = estadoInicial(modoSel === 'cons' ? 'cons' : 'ruta', [...seleccion].sort((x, y) => x - y), avatarElegido);
+  if (modoSel === 'mezcla') G.usoMezcla = true;
+  $('pantallaSelector').classList.add('oculto'); $('pantallaRuta').classList.remove('oculto'); $('btnCambiar').classList.remove('oculto');
+  $('btnCambiar').textContent = 'Cambiar de reto';
+  const tablas = state.tablas.length === 1 ? `Tabla del ${state.tablas[0]}` : `Tablas del ${state.tablas.join(', ')}`;
+  $('chipTablas').textContent = state.modo === 'cons' ? `Construcción · ${tablas}` : tablas;
+  dibujarMapa(); nuevoEjercicio(); actualizarUI();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ---------- Duelo galáctico: código ↔ generación fija ---------- */
+const ALFA = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';   // 32 símbolos: sin 0/O ni 1/I para evitar confusiones al dictarlo
+const DUELO_N = 15;
+const digitoControl = s => ALFA[[...s].reduce((acc, c, i) => acc + ALFA.indexOf(c) * (2 * i + 1), 0) % 32];   // pesos impares: cualquier carácter mal copiado se detecta
+function crearCodigo(tablas) {
+  const mascara = tablas.reduce((m, n) => m | (1 << (n - 2)), 0);   // 9 bits: qué tablas entran
+  const semilla = Math.floor(rnd() * 2 ** 21);                       // 21 bits: fija el orden y los números
+  let v = mascara * 2 ** 21 + semilla, s = '';
+  for (let i = 0; i < 6; i++) { s = ALFA[v % 32] + s; v = Math.floor(v / 32); }
+  return s + digitoControl(s);   // 7.º carácter: detecta errores al copiarlo
+}
+function leerCodigo(txt) {
+  const s = String(txt || '').toUpperCase().replace(/[^0-9A-Z]/g, '');
+  if (s.length !== 7 || [...s].some(c => !ALFA.includes(c)) || digitoControl(s.slice(0, 6)) !== s[6]) return null;
+  let v = 0; for (const c of s.slice(0, 6)) v = v * 32 + ALFA.indexOf(c);
+  const mascara = Math.floor(v / 2 ** 21), semilla = v % 2 ** 21;
+  const tablas = TODAS.filter(n => mascara & (1 << (n - 2)));
+  return tablas.length ? { codigo: s, tablas, semilla, mascara } : null;
+}
+const verCodigo = s => s.slice(0, 3) + '-' + s.slice(3);
+function generadorDe(n) {   // mulberry32 propio del duelo: no comparte estado con el resto de la ficha
+  let s = n >>> 0;
+  return () => { s += 0x6D2B79F5; let t = s; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+}
+/* 15 preguntas: 10 de tablas y 5 de Construcción (posiciones 3, 6, 9, 12 y 15, de menos a más difíciles) */
+const DUELO_CONS = { 2: 'n2', 5: 'n2', 8: 'n3', 11: 'n3', 14: 'n4' };
+function preguntasDuelo(d) {
+  const r = generadorDe(d.semilla + d.mascara * 2 ** 21);
+  const mezclar = arr => { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const qs = [], usados = new Set();
+  let bolsa = [];
+  for (let i = 0; i < DUELO_N; i++) {
+    if (!bolsa.length) bolsa = mezclar(d.tablas);   // las tablas salen repartidas de forma equilibrada
+    const a = bolsa.pop(), prev = qs[i - 1];
+    if (DUELO_CONS[i]) {
+      const t = DUELO_CONS[i], pool = POOLS_CONS[t].filter(b => !usados.has(a + '×' + b));
+      const b = pool[Math.floor(r() * pool.length)];
+      usados.add(a + '×' + b);
+      qs.push({ cons: true, ...construirCons(t, a, b) });
+      continue;
+    }
+    let cand = rango(2, 9).filter(b => !usados.has(a + '×' + b) && !(prev && prev.b === b));
+    if (!cand.length) cand = rango(2, 9).filter(b => !(prev && prev.a === a && prev.b === b));
+    const b = cand[Math.floor(r() * cand.length)];
+    usados.add(a + '×' + b);
+    const forma = r() < .3 ? 'faltaB' : 'directa';
+    qs.push({ cons: false, a, b, p: a * b, forma, correcta: forma === 'faltaB' ? b : a * b });
+  }
+  return qs;
+}
+
+/* ---------- Mapa ---------- */
+const RUTA_D = 'M28 222 C 80 228, 120 210, 110 180 S 50 140, 95 118 S 200 140, 225 112 S 175 62, 228 46 S 300 50, 322 34';
+let rutaLong = 0, rutaEl = null;
+function dibujarMapa() {
+  const svg = $('mapa');
+  let estrellas = '';
+  for (let i = 0; i < 44; i++) estrellas += `<circle cx="${(rnd() * 360).toFixed(0)}" cy="${(rnd() * 270 - 28).toFixed(0)}" r="${(rnd() * 1.2 + .3).toFixed(1)}" fill="#fff" opacity="${(rnd() * .5 + .15).toFixed(2)}"/>`;
+  svg.innerHTML = `
+    <defs>
+      <filter id="brillo" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+    ${estrellas}
+    <path d="M0 250 L0 200 Q60 185 120 205 T240 190 T360 200 L360 250 Z" fill="#0b1424" opacity=".8"/>
+    <path id="rutaBase" d="${RUTA_D}" fill="none" stroke="#2a4266" stroke-width="6" stroke-linecap="round" stroke-dasharray="2 10"/>
+    <path id="rutaProgreso" d="${RUTA_D}" fill="none" stroke="#2ec4b6" stroke-width="5" stroke-linecap="round" filter="url(#brillo)"/>
+    <g id="decoraciones" style="pointer-events:none"></g><g id="hitos"></g><g id="explorador" style="transition:transform .8s ease;pointer-events:none">${svgAvatar(state.avatar, 46)}</g>`;
+  rutaEl = $('rutaProgreso'); rutaLong = rutaEl.getTotalLength();
+  rutaEl.style.strokeDasharray = rutaLong; rutaEl.style.strokeDashoffset = rutaLong;
+  rutaEl.style.transition = 'stroke-dashoffset .8s ease';
+  const p = f => rutaEl.getPointAtLength(rutaLong * f);
+  const d1 = p(.25), d2 = p(.5), d3 = p(.75), d4 = p(1);
+  $('decoraciones').innerHTML = state.modo === 'cons' ? `
+    <g transform="translate(${d1.x + 16},${d1.y - 10})" opacity=".9"><rect x="0" y="10" width="10" height="10" fill="#f4b942"/><rect x="11" y="10" width="10" height="10" fill="#f4b942" opacity=".7"/><rect x="5" y="-1" width="10" height="10" fill="#f4b942" opacity=".85"/></g>
+    <g transform="translate(${d2.x - 50},${d2.y - 26})" opacity=".85" stroke="#2ec4b6" stroke-width="2" fill="none"><rect x="0" y="0" width="26" height="26"/><line x1="13" y1="0" x2="13" y2="26"/><line x1="0" y1="13" x2="26" y2="13"/></g>
+    <g transform="translate(${d3.x + 16},${d3.y - 14})" opacity=".85" fill="#9b7bff"><rect x="0" y="0" width="12" height="6"/><rect x="13" y="0" width="12" height="6"/><rect x="6" y="7" width="12" height="6"/><rect x="0" y="14" width="12" height="6"/><rect x="13" y="14" width="12" height="6"/></g>
+    <g transform="translate(${d4.x - 12},${d4.y - 40})"><rect x="4" y="10" width="16" height="30" fill="#c3a6ff" opacity=".9"/><polygon points="0,12 12,0 24,12" fill="#f4b942"/><rect x="9" y="28" width="6" height="12" fill="#0e1726"/></g>` : `
+    <g transform="translate(${d1.x + 18},${d1.y - 6})" opacity=".85"><polygon points="0,14 12,-6 24,14" fill="#f4b942"/><polygon points="9,14 12,6 15,14" fill="#0e1726"/></g>
+    <g transform="translate(${d2.x - 52},${d2.y - 20})" opacity=".8" fill="none" stroke="#ff6b5b" stroke-width="2.5" stroke-linejoin="round"><path d="M0 22 L8 4 L14 14 L20 0 L28 22"/></g>
+    <g transform="translate(${d3.x + 16},${d3.y - 12})" opacity=".8" fill="#9b7bff"><rect x="0" y="4" width="5" height="16" rx="1"/><rect x="9" y="0" width="5" height="20" rx="1"/><rect x="18" y="8" width="5" height="12" rx="1"/><rect x="-2" y="20" width="27" height="3"/></g>
+    <g transform="translate(${d4.x - 12},${d4.y - 40})"><rect x="4" y="10" width="16" height="30" fill="#c3a6ff" opacity=".9"/><polygon points="0,12 12,0 24,12" fill="#f4b942"/><rect x="9" y="28" width="6" height="12" fill="#0e1726"/></g>`;
+}
+function progresoNivel(t) {
+  const tt = state.tipos[t];
+  if (tt.cerrado) return 1;
+  const ac = tt.intentos.filter(Boolean).length;
+  if (state.modo === 'ruta' && t === 'n1') return Math.min(.95, (state.n1Recorrido / 10) * .75 + (ac / ACIERTOS_NECESARIOS) * .25);
+  return Math.min(.95, ac / ACIERTOS_NECESARIOS);
+}
+function actualizarMapa() {
+  if (!rutaEl) return;
+  // el explorador está en la zona actual (se puede entrar en cualquiera, en cualquier orden)
+  const total = Math.min(1, TIPOS.indexOf(state.nivelActual) * .25 + progresoNivel(state.nivelActual) * .25);
+  rutaEl.style.strokeDashoffset = rutaLong * (1 - total);
+  $('hitos').innerHTML = [0, .25, .5, .75, 1].map((f, i) => {
+    const pt = rutaEl.getPointAtLength(rutaLong * f);
+    if (i === 0) return `<circle cx="${pt.x}" cy="${pt.y}" r="6" fill="#2ec4b6"/>`;
+    const t = TIPOS[i - 1], hecho = state.tipos[t].cerrado, actual = state.nivelActual === t;
+    return `<g class="hito" data-n="${t}" role="button" tabindex="0" aria-label="Ir a ${niveles()[t].nombre}${hecho ? ' (superada)' : ''}">
+      <circle cx="${pt.x}" cy="${pt.y}" r="18" fill="transparent"/>
+      <circle ${actual ? 'class="punto-actual"' : ''} cx="${pt.x}" cy="${pt.y}" r="10" fill="${hecho ? '#f4b942' : (actual ? '#ff6b5b' : '#1c304f')}" stroke="#eaf1fb" stroke-width="${actual ? 2 : 1}"/>
+      <text x="${pt.x}" y="${pt.y + 4}" text-anchor="middle" ${FUENTE} font-weight="800" font-size="11" fill="${hecho ? '#0e1726' : '#eaf1fb'}" style="pointer-events:none">${hecho ? '✓' : i}</text></g>`;
+  }).join('');
+  const pos = rutaEl.getPointAtLength(rutaLong * total);
+  $('explorador').style.transform = `translate(${(pos.x - 23).toFixed(1)}px,${(pos.y - 50).toFixed(1)}px)`;
+}
+
+/* ---------- Acceso libre a cualquier zona ---------- */
+const pendientesAntesDe = t => TIPOS.slice(0, TIPOS.indexOf(t)).filter(x => !state.tipos[x].superado);
+function irANivel(t, forzar = false) {
+  if (!state || !TIPOS.includes(t)) return;
+  const juegoVisible = !$('zonaJuego').classList.contains('oculto');
+  if (t === state.nivelActual && juegoVisible) return;   // ya estás aquí
+  const pend = pendientesAntesDe(t);
+  if (pend.length && !forzar) {   // aviso, pero se permite entrar
+    destinoPendiente = t;
+    $('pendLista').innerHTML = pend.map(x => `<li>${niveles()[x].nombre}</li>`).join('');
+    $('pendTexto').textContent = pend.length === 1 ? 'Todavía no has superado la zona anterior:' : 'Todavía no has superado estas zonas anteriores:';
+    $('modalPendientes').classList.add('visible');
+    return;
+  }
+  state.nivelActual = t;
+  nuevoEjercicio(); actualizarUI();
+  window.scrollTo({ top: document.getElementById('pantallaRuta').offsetTop - 10, behavior: 'smooth' });
+}
+$('mapa').addEventListener('click', e => { const g = e.target.closest('.hito'); if (g) irANivel(g.dataset.n); });
+$('mapa').addEventListener('keydown', e => {
+  if (e.key !== 'Enter' && e.key !== ' ') return;
+  const g = e.target.closest('.hito'); if (g) { e.preventDefault(); irANivel(g.dataset.n); }
+});
+$('navNiveles').addEventListener('click', e => { const b = e.target.closest('.nav-nivel'); if (b) irANivel(b.dataset.n); });
+$('pendNo').addEventListener('click', () => { destinoPendiente = null; $('modalPendientes').classList.remove('visible'); });
+$('pendSi').addEventListener('click', () => {
+  $('modalPendientes').classList.remove('visible');
+  const t = destinoPendiente; destinoPendiente = null;
+  if (t) irANivel(t, true);
+});
+/* Tras superar una zona: la siguiente pendiente; si no queda ninguna por delante, la primera pendiente; si no, el final */
+function destinoTras(t) {
+  const pendiente = x => !state.tipos[x].superado;
+  return TIPOS.slice(TIPOS.indexOf(t) + 1).find(pendiente) || TIPOS.find(pendiente) || null;
+}
+
+/* ---------- Generación de ejercicios ---------- */
+const claveHecho = (a, b) => `${a}×${b}`;
+function elegirHechoAleatorio(t) {
+  const vistos = state.tipos[t].vistos;
+  if (state.tablas.every(a => rango(2, 10).every(b => vistos.has(claveHecho(a, b))))) vistos.clear();   // ronda agotada: empieza otra
+  let pool = [];
+  for (const a of state.tablas) for (let b = 2; b <= 10; b++) {
+    const k = claveHecho(a, b);
+    if (k === state.ultimoHecho || vistos.has(k)) continue;
+    let peso = b === 10 ? 1 : 3;
+    const h = G.hechos[k]; if (h && h.ko > 0) peso *= 3;   // los hechos fallados en otras zonas reaparecen más
+    if (state.tablas.length > 1 && !state.tipos[t].tablasOk.has(a)) peso *= 4;   // mezcla: antes las tablas aún sin acertar en esta zona
+    for (let i = 0; i < peso; i++) pool.push([a, b]);
+  }
+  if (!pool.length) { // salvaguarda: todo fallado en esta zona → se permite repetir, nunca el inmediatamente anterior
+    for (const a of state.tablas) for (let b = 2; b <= 10; b++) if (claveHecho(a, b) !== state.ultimoHecho) pool.push([a, b]);
+  }
+  return azar(pool);
+}
+function generarOpciones(a, b) {
+  const p = a * b, cand = barajar([a * (b - 1), a * (b + 1), a + b, (a + 1) * b, (a - 1) * b, p + 10, p - 10]).filter(v => v > 0 && v !== p);
+  const dist = [];
+  for (const v of cand) { if (!dist.includes(v)) dist.push(v); if (dist.length === 2) break; }
+  return barajar([p, ...dist]);
+}
+function generarRuta(t) {
+  let a, b, forma = 'directa';
+  if (t === 'n1' && state.n1Recorrido < 10) { b = state.n1Recorrido + 1; a = state.tablas[(b - 1) % state.tablas.length]; }
+  else [a, b] = elegirHechoAleatorio(t);
+  if (t === 'n4') { // con una sola tabla, «? × b» sería trivial (la respuesta es siempre esa tabla): solo se usa en mezcla
+    forma = azar(state.tablas.length > 1 ? ['directa', 'directa', 'faltaB', 'faltaA'] : ['directa', 'faltaB']);
+  }
+  const ej = { tipo: t, a, b, p: a * b, forma, respondido: false };
+  ej.correcta = forma === 'faltaB' ? b : forma === 'faltaA' ? a : a * b;
+  if (t === 'n2') ej.opciones = generarOpciones(a, b);
+  if (t === 'n1' && state.n1Recorrido < 10) ej.fila = state.n1Recorrido + 1;   // fila de la tabla que se está construyendo
+  return ej;
+}
+function generarCons(t) {
+  const vistos = state.tipos[t].vistos;
+  if (state.tablas.every(a => POOLS_CONS[t].every(b => vistos.has(claveHecho(a, b))))) vistos.clear();   // ronda agotada: empieza otra
+  let cand = [];
+  for (const a of state.tablas) for (const b of POOLS_CONS[t]) {
+    const k = claveHecho(a, b); if (k === state.ultimoHecho || vistos.has(k)) continue;
+    const veces = state.tablas.length > 1 && !state.tipos[t].tablasOk.has(a) ? 4 : 1;   // varias tablas: antes las aún sin acertar
+    for (let i = 0; i < veces; i++) cand.push([a, b]);
+  }
+  if (!cand.length) for (const a of state.tablas) for (const b of POOLS_CONS[t]) if (claveHecho(a, b) !== state.ultimoHecho) cand.push([a, b]);
+  const [a, b] = azar(cand);
+  return construirCons(t, a, b);
+}
+function construirCons(t, a, b) {
+  const ej = { tipo: t, a, b, p: a * b, forma: 'directa', respondido: false };
+  if (t === 'n1') ej.campos = { total: a * b };
+  if (t === 'n2' || t === 'n3') {
+    ej.base = Math.floor(b / 10) * 10; ej.k = b - ej.base;
+    ej.campos = { p1: a * ej.base, p2: a * ej.k, total: a * b };
+  }
+  if (t === 'n4') { ej.B = Math.ceil(b / 10) * 10; ej.s = ej.B - b; ej.campos = { grande: a * ej.B, franja: a * ej.s, total: a * b }; }
+  return ej;
+}
+function nuevoEjercicio() {
+  const t = state.nivelActual;
+  const ej = state.modo === 'cons' ? generarCons(t) : generarRuta(t);
+  state.ejercicio = ej;
+  state.ultimoHecho = claveHecho(ej.a, ej.b);
+  const enRecorrido = state.modo === 'ruta' && t === 'n1' && state.n1Recorrido < 10;
+  if (!enRecorrido) state.tipos[t].vistos.add(state.ultimoHecho);   // una operación no se repite en la misma estación
+  cronoContexto(`${state.modo}|${state.tablas.join(',')}|${t}`);      // el cronómetro mide cada zona por separado
+  pintarEjercicio();
+}
+
+/* ---------- Pintado del ejercicio ---------- */
+const inputNum = (extra, aria) => `<input class="caja ${extra}" type="text" inputmode="numeric" autocomplete="off" aria-label="${aria}"`;
+function pintarEjercicio() {
+  const ej = state.ejercicio, t = ej.tipo, niv = niveles()[t];
+  $('zonaJuego').classList.remove('oculto'); $('zonaFinal').classList.add('oculto'); $('progreso').classList.remove('oculto');
+  $('guardianActual').innerHTML = svgGuardian(ej.a, t === 'n4', ej.forma === 'faltaA'); // en «? × b» el número del guardián delataría la respuesta
+  $('bocadillo').innerHTML = `<b style="font-family:var(--display)">${niv.nombre}</b><br><span class="suave">${niv.instr}</span>`;
+  $('chipNivel').textContent = `${niv.zona} · ${niv.verbo}`;
+  if (state.modo === 'cons') {
+    $('pregunta').innerHTML = `${ej.a}<span class="x">×</span>${ej.b}`;
+    $('pregunta').setAttribute('aria-label', `${ej.a} por ${ej.b}`);
+    $('matriz').innerHTML = '';
+    pintarCons(ej);
+  } else {
+    const hueco = '<span class="hueco">?</span>';
+    const A = ej.forma === 'faltaA' ? hueco : ej.a, B = ej.forma === 'faltaB' ? hueco : ej.b, P = ej.forma === 'directa' ? hueco : ej.p;
+    $('pregunta').innerHTML = `${A}<span class="x">×</span>${B}<span class="x">=</span>${P}`;
+    $('pregunta').setAttribute('aria-label', `${ej.forma === 'faltaA' ? 'interrogación' : ej.a} por ${ej.forma === 'faltaB' ? 'interrogación' : ej.b} igual a ${ej.forma === 'directa' ? 'interrogación' : ej.p}`);
+    const enRecorrido = t === 'n1' && state.n1Recorrido < 10;
+    $('matriz').innerHTML = t === 'n1' ? svgCeldas(ej.a, ej.b, enRecorrido && ej.b > 1 ? 'parcial' : 'ninguna', enRecorrido && ej.b > 1 && state.tablas.length === 1) : '';
+    if (t === 'n2') {
+      $('zonaRespuesta').innerHTML = `<div class="opciones" role="group" aria-label="Opciones de respuesta">${ej.opciones.map(v => `<button type="button" class="opcion" data-v="${v}">${v}</button>`).join('')}</div>`;
+    } else {
+      $('zonaRespuesta').innerHTML = `<div class="respuesta"><input id="resp" type="text" inputmode="numeric" autocomplete="off" aria-label="Tu respuesta"><button type="button" class="btn btn-principal" id="btnComprobar">Comprobar</button></div>`;
+      setTimeout(() => { const r = $('resp'); if (r && punteroFino() && !document.activeElement.matches('input')) r.focus({ preventScroll: true }); }, 30);
+    }
+  }
+  $('cronoCtrl').classList.toggle('oculto', t !== 'n4');
+  $('cronoTexto').textContent = `Contrarreloj por pregunta (${SEGUNDOS_CRONO[state.modo]} s)`;
+  $('avisoEntrada').textContent = '';
+  $('feedback').className = 'feedback'; $('feedback').innerHTML = '';
+  $('banner').className = 'banner'; $('banner').innerHTML = '';
+  $('accionesEj').classList.remove('visible');
+  iniciarCrono();
+}
+function htmlCons(ej, idBoton) {   // figura con casillas; la usan Construcción y el Duelo
+  const fig = svgArea(ej, false);
+  const campos = fig.campos.map(c => `<label class="campo ${c.tipo}" style="left:${(c.x / fig.W * 100).toFixed(2)}%;top:${(c.y / fig.H * 100).toFixed(2)}%;--cc:${c.color}">${c.etq ? `<small>${c.etq}</small>` : ''}${inputNum('', c.aria)} data-campo="${c.id}"></label>`).join('');
+  let html = `<div class="figura" style="max-width:${fig.W.toFixed(0)}px">${fig.svg}${campos}</div>`;
+  const boton = `<button type="button" class="btn btn-principal" id="${idBoton}">Comprobar</button>`;
+  html += ej.tipo === 'n1' ? `<div class="fila-total">${boton}</div>`
+    : `<div class="fila-total"><span class="eq">${ej.a} × ${ej.b} =</span>${inputNum('caja-total', `Total: ${ej.a} por ${ej.b}`)} data-campo="total">${boton}</div>`;
+  return html;
+}
+function pintarCons(ej) {
+  $('zonaRespuesta').innerHTML = htmlCons(ej, 'btnComprobar');
+  setTimeout(() => { const c = document.querySelector('#zonaRespuesta [data-campo]'); if (c && punteroFino() && !document.activeElement.matches('input')) c.focus({ preventScroll: true }); }, 30);
+}
+$('zonaRespuesta').addEventListener('click', e => {
+  if (e.target.id === 'btnComprobar') state.modo === 'cons' ? leerYComprobarCons() : leerYComprobar();
+  const op = e.target.closest('.opcion'); if (op && !op.disabled) comprobar(+op.dataset.v, op);
+});
+$('zonaRespuesta').addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  if (e.target.id === 'resp') { e.preventDefault(); leerYComprobar(); }
+  else if (e.target.dataset && e.target.dataset.campo) {   // Enter salta a la siguiente casilla vacía; si no queda ninguna, corrige
+    e.preventDefault();
+    const vacia = [...document.querySelectorAll('#zonaRespuesta [data-campo]')].find(i => i.value.trim() === '');
+    vacia ? vacia.focus() : leerYComprobarCons();
+  }
+});
+function leerYComprobar() {
+  const txt = ($('resp').value || '').trim();
+  if (txt === '') { $('avisoEntrada').textContent = 'Escribe tu respuesta antes de comprobar.'; return; }
+  if (!/^\d{1,3}$/.test(txt)) { $('avisoEntrada').textContent = 'Escribe solo un número, sin letras ni signos.'; return; }
+  comprobar(parseInt(txt, 10));
+}
+function leerYComprobarCons() {
+  const inputs = [...document.querySelectorAll('#zonaRespuesta [data-campo]')];
+  for (const inp of inputs) {
+    const txt = inp.value.trim();
+    if (txt === '') { $('avisoEntrada').textContent = 'Rellena todas las casillas antes de comprobar.'; inp.focus(); return; }
+    if (!/^\d{1,4}$/.test(txt)) { $('avisoEntrada').textContent = 'Escribe solo números, sin letras ni signos.'; inp.focus(); return; }
+  }
+  comprobarCons(Object.fromEntries(inputs.map(i => [i.dataset.campo, parseInt(i.value.trim(), 10)])));
+}
+
+/* ---------- Contrarreloj (opcional, solo en el jefe final) ---------- */
+$('interruptorCrono').addEventListener('click', () => {
+  state.cronoActivo = !state.cronoActivo;
+  $('interruptorCrono').setAttribute('aria-checked', state.cronoActivo);
+  if (state.cronoActivo && state.ejercicio && !state.ejercicio.respondido) iniciarCrono();
+  if (!state.cronoActivo) pararCrono();
+});
+function pararCrono() { clearInterval(state.cronoTimer); state.cronoTimer = null; $('barraTiempo').classList.remove('visible'); }
+function iniciarCrono() {
+  pararCrono();
+  if (!state.cronoActivo || state.ejercicio.tipo !== 'n4' || state.ejercicio.respondido) return;
+  const seg = SEGUNDOS_CRONO[state.modo], fin = Date.now() + seg * 1000, barra = $('barraTiempoRelleno');
+  $('barraTiempo').classList.add('visible');
+  state.cronoTimer = setInterval(() => {
+    const queda = Math.max(0, fin - Date.now());
+    barra.style.transform = `scaleX(${queda / (seg * 1000)})`;
+    if (queda === 0) {
+      pararCrono();
+      if (!exigirNombre()) { $('avisoEntrada').textContent = 'Escribe tu nombre; el tiempo se reiniciará en la siguiente pregunta.'; return; }
+      state.modo === 'cons' ? comprobarCons(null) : comprobar(null);
+    }
+  }, 100);
+}
+
+/* ---------- Corrección y puntuación (ventana móvil 4 de 5) ---------- */
+const sumaBruta = () => { const p = puntosBrutos(); return p.ruta + p.cons; };
+function registrarIntento(tipo, correcto, tabla) {
+  const t = state.tipos[tipo];
+  if (t.cerrado) return false;   // zona ya superada: se puede seguir practicando sin que cuente
+  const st = G.stats[state.modo][tipo];
+  t.intentos.push(correcto);
+  if (t.intentos.length > VENTANA) t.intentos.shift();
+  t.total++; st.total++;
+  if (correcto) { t.aciertos++; st.aciertos++; t.tablasOk.add(tabla); }
+  else { t.fallos++; st.fallos++; G.fallosTotales++; }   // la penalización se aplica en calcularNota()
+  const aciertosEnVentana = t.intentos.filter(Boolean).length;
+  const recorridoCompleto = state.modo !== 'ruta' || tipo !== 'n1' || state.n1Recorrido >= 10;
+  const todasAcertadas = state.tablas.every(n => t.tablasOk.has(n));   // en mezcla, cada tabla al menos una vez
+  if (!t.superado && aciertosEnVentana >= ACIERTOS_NECESARIOS && recorridoCompleto && todasAcertadas) {
+    t.superado = true; t.cerrado = true;
+    const destino = state.modo === 'cons' ? G.consTabla : G.zonasTabla;
+    state.tablas.forEach(n => destino[n].add(tipo));   // la zona se acredita a todas las tablas del reto
+    return true;
+  }
+  return false;
+}
+function anotarHecho(a, b, correcto) {
+  const k = claveHecho(a, b); G.hechos[k] = G.hechos[k] || { ok: 0, ko: 0 };
+  correcto ? G.hechos[k].ok++ : G.hechos[k].ko++;
+}
+function comprobar(valor, botonOpcion) {   // Ruta
+  const ej = state.ejercicio;
+  if (!ej || ej.respondido) return;
+  if (!exigirNombre()) return;
+  pararCrono();
+  ej.respondido = true;
+  const correcto = valor === ej.correcta;
+  anotarHecho(ej.a, ej.b, correcto);
+  if (ej.tipo === 'n1' && state.n1Recorrido < 10) state.n1Recorrido++;
+  const antes = sumaBruta();
+  const superado = registrarIntento(ej.tipo, correcto, ej.a);
+  ej.ganancia = sumaBruta() - antes;
+  if (ej.tipo === 'n2') {
+    document.querySelectorAll('.opcion').forEach(b => { b.disabled = true; if (+b.dataset.v === ej.p) b.classList.add('bien'); });
+    if (!correcto && botonOpcion) botonOpcion.classList.add('mal');
+  } else {
+    $('resp').disabled = true; $('btnComprobar').disabled = true;
+  }
+  cerrarCorreccion(ej, correcto, superado, correcto ? textoAcierto(ej) : textoFallo(ej, valor));
+}
+function comprobarCons(vals) {   // Construcción: el intento es correcto solo si TODAS las casillas lo son
+  const ej = state.ejercicio;
+  if (!ej || ej.respondido) return;
+  if (!exigirNombre()) return;
+  pararCrono();
+  ej.respondido = true;
+  const res = {}; let correcto = vals !== null;
+  for (const [id, v] of Object.entries(ej.campos)) { res[id] = vals !== null && vals[id] === v; if (!res[id]) correcto = false; }
+  document.querySelectorAll('#zonaRespuesta [data-campo]').forEach(i => { i.disabled = true; if (vals) i.classList.add(res[i.dataset.campo] ? 'bien' : 'mal'); });
+  $('btnComprobar').disabled = true;
+  if (!correcto) G.fallosCons.push({ prod: `${ej.a} × ${ej.b}`, tipo: ej.tipo, detalle: describirFallo(ej, res, vals) });
+  const antes = sumaBruta();
+  const superado = registrarIntento(ej.tipo, correcto, ej.a);
+  ej.ganancia = sumaBruta() - antes;
+  cerrarCorreccion(ej, correcto, superado, correcto ? textoAciertoCons(ej) : textoFalloCons(ej, vals, res));
+}
+function cerrarCorreccion(ej, correcto, superado, html) {
+  if (!correcto) { $('tarjetaEjercicio').classList.remove('sacude'); void $('tarjetaEjercicio').offsetWidth; $('tarjetaEjercicio').classList.add('sacude'); }
+  $('avisoEntrada').textContent = '';
+  const fb = $('feedback');
+  fb.className = 'feedback visible ' + (correcto ? 'ok' : 'ko');
+  fb.innerHTML = html;
+  const u = UNIDAD[state.modo], i = TIPOS.indexOf(ej.tipo) + 1;
+  ej.superaAhora = superado;   // este intento es el que acaba de superar la zona
+  if (superado) {
+    const dest = destinoTras(ej.tipo);
+    const txtDest = dest
+      ? (TIPOS.indexOf(dest) + 1 < i ? 'Te queda pendiente la ' : 'Se abre la ') + niveles()[dest].nombre + '.'
+      : 'Has derrotado al guardián.';
+    const puntos = ej.ganancia > 0.004 ? ` +${fmtNota(ej.ganancia)} ${ej.ganancia === 1 ? 'punto' : 'puntos'}` : '';
+    const sinPuntos = ej.ganancia > 0.004 ? '' : '<br><span class="suave">Esta estación ya la tenías con otra tabla: no suma más, pero cuenta como práctica.</span>';
+    const marca = cronoMarca(niveles()[ej.tipo].nombre + ' · ' + (state.tablas.length === 1 ? `tabla del ${state.tablas[0]}` : `tablas del ${state.tablas.join(', ')}`));
+    const txtMarca = marca ? `<br><span class="suave">Tiempo en esta ${u.toLowerCase()}: <b>${fmtTiempo(marca.ms)}</b>${marca.record ? ' · ¡tu mejor marca!' : ` · tu mejor marca es ${fmtTiempo(marca.mejor)}`}</span>` : '';
+    $('banner').className = 'banner visible';
+    $('banner').innerHTML = `<b>¡${u} ${i} superada!${puntos}</b>${sinPuntos}<br><span class="suave">${txtDest}</span>${txtMarca}`
+      + (dest ? '' : `<div class="consejo" style="margin:.7rem 0 0;text-align:left"><span class="ico" aria-hidden="true">!</span><div>${consejo()}</div></div>`);
+    $('btnSiguiente').textContent = dest ? `Ir a la ${u.toLowerCase()} ${TIPOS.indexOf(dest) + 1}` : (state.modo === 'ruta' && tocaConstruccion() ? 'Siguiente paso: Construcción' : 'Ver el final');
+  } else {
+    $('btnSiguiente').textContent = 'Siguiente';
+  }
+  $('accionesEj').classList.add('visible');
+  if (punteroFino()) $('btnSiguiente').focus({ preventScroll: true });
+  actualizarUI();
+}
+$('btnSiguiente').addEventListener('click', () => {
+  const ej = state.ejercicio;
+  if (ej.superaAhora) {
+    const dest = destinoTras(ej.tipo);
+    if (!dest) { mostrarFinal(); return; }
+    state.nivelActual = dest;
+  }
+  nuevoEjercicio(); actualizarUI();
+});
+function mostrarFinal() {
+  pararCrono(); cronoParar();
+  $('zonaJuego').classList.add('oculto'); $('zonaFinal').classList.remove('oculto'); $('progreso').classList.add('oculto');
+  const cons = state.modo === 'cons';
+  const pasarACons = !cons && tocaConstruccion();   // acaba de completar las 9 tablas: se le lleva a Construcción
+  $('finalTitulo').textContent = cons ? 'Construcción completada' : pasarACons ? '¡Las 9 tablas, completadas!' : 'Ruta completada';
+  $('finalTexto').innerHTML = pasarACons
+    ? 'Ya tienes los 7 puntos de las tablas. Los 3 que faltan para llegar al 10 están en Construcción.'
+    : `Has superado las cuatro ${cons ? 'estaciones' : 'zonas'}. Pulsa «Cambiar de reto» para seguir sumando puntos o toca una ${cons ? 'estación' : 'zona'} del mapa para seguir practicando.`
+      + `<span class="consejo" style="display:flex;margin:.8rem 0 0;text-align:left"><span class="ico" aria-hidden="true">!</span><span>${consejo()}</span></span>`;
+  $('btnFinalCons').classList.toggle('oculto', !pasarACons);
+  $('guardianActual').innerHTML = svgGuardian(state.tablas[state.tablas.length - 1], true);
+  $('bocadillo').innerHTML = '<b style="font-family:var(--display)">¡Me has vencido!</b><br><span class="suave">Pocos exploradores llegan hasta la torre.</span>';
+  $('chipNivel').textContent = cons ? 'Construcción completada' : 'Ruta completada';
+  if (pasarACons) avisoConstruccion();
+}
+
+/* ---------- Cronómetro global (opcional, no afecta a la nota) ---------- */
+const fmtTiempo = ms => { const s = Math.round(ms / 1000); return `${dos(Math.floor(s / 60))}:${dos(s % 60)}`; };
+const CG = { activo: false, inicio: null, clave: null, completo: false };
+function cronoPintar() {
+  const t = $('cronoGlobalT');
+  if (!CG.activo) { t.textContent = 'Crono'; return; }
+  t.textContent = CG.inicio ? fmtTiempo(Date.now() - CG.inicio) : '00:00';
+}
+function cronoContexto(clave) {   // se llama al entrar en una zona o en un duelo
+  if (clave === CG.clave) return;
+  CG.clave = clave;
+  CG.inicio = CG.activo ? Date.now() : null; CG.completo = CG.activo;
+  cronoPintar();
+}
+function cronoParar() { CG.clave = null; CG.inicio = null; CG.completo = false; cronoPintar(); }
+function cronoMarca(etiqueta) {   // solo registra si el cronómetro estuvo encendido desde el principio de la zona
+  if (!CG.activo || !CG.inicio || !CG.completo) return null;
+  const ms = Date.now() - CG.inicio, clave = CG.clave;
+  const previas = G.marcas.filter(m => m.clave === clave).map(m => m.ms);
+  const mejorAntes = previas.length ? Math.min(...previas) : Infinity;
+  G.marcas.push({ clave, etiqueta, ms });
+  CG.completo = false;
+  return { ms, record: ms < mejorAntes, mejor: Math.min(ms, mejorAntes) };
+}
+$('cronoGlobal').addEventListener('click', () => {
+  CG.activo = !CG.activo;
+  $('cronoGlobal').setAttribute('aria-pressed', String(CG.activo));
+  if (CG.activo && CG.clave) { CG.inicio = Date.now(); CG.completo = false; }   // encendido a mitad: mide, pero no guarda marca
+  if (!CG.activo) { CG.inicio = null; CG.completo = false; }
+  cronoPintar();
+});
+setInterval(cronoPintar, 250);
+
+/* ---------- Textos de feedback ---------- */
+const PAL = ['cero', 'una', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve', 'diez'];
+const veces = n => n === 1 ? 'una vez' : n <= 10 ? `${PAL[n]} veces` : `${n} veces`;
+const filasTxt = n => n === 1 ? '1 fila' : `${n} filas`;
+const saltos = (paso, n) => Array.from({ length: n }, (_, i) => paso * (i + 1)).join(', ');
+const pinta = (color, txt) => `<span style="color:${color};font-weight:700">${txt}</span>`;
+const figuraHTML = svg => `<div class="matriz" style="margin-top:.6rem">${svg}</div>`;
+const tituloFallo = r => `<div class="tit">${r === null ? 'Tiempo agotado' : 'Todavía no'}</div>`;
+const MSG_TIEMPO = 'Se acabó el tiempo. No pasa nada: el contrarreloj es opcional y puedes desactivarlo.';
+
+/* Errores típicos en un producto a × b (b filas de a cuadrados) */
+function diagnostico(a, b, r) {
+  const p = a * b;
+  if (r === a + b) return `Has sumado ${a} + ${b}. Multiplicar no es sumar los lados: ${a} × ${b} son ${filasTxt(b)} de ${a} cuadrados.`;
+  if (b > 1 && r === a * (b - 1)) return `Te has quedado en ${a} × ${b - 1} = ${r}: te falta una fila de ${a}. ${r} + ${a} = ${p}.`;
+  if (r === a * (b + 1)) return `Te has pasado: ${r} es ${a} × ${b + 1}. Te sobra una fila de ${a}: ${r} − ${a} = ${p}.`;
+  if (r === (a + 1) * b || (a > 1 && r === (a - 1) * b)) { const o = r / b; return `Has usado la tabla del ${o}: ${o} × ${b} = ${r}. Aquí cada fila tiene ${a} cuadrados, no ${o}.`; }
+  if (r > 9 && p > 9 && String(r) === String(p).split('').reverse().join('')) return `Has dado la vuelta a las cifras: escribiste ${r} y el resultado es ${p}.`;
+  if (r > 0 && r % a === 0) return `${r} es ${a} × ${r / a}: has contado ${filasTxt(r / a)} de ${a}, pero hay ${b}.`;
+  return null;
+}
+/* Errores típicos al multiplicar por 10, 20, 100, 200, 300… (n = m × 10^z) */
+function ceros(n) { let z = 0; while (n % 10 === 0) { n /= 10; z++; } return { m: n, z, pot: 10 ** z }; }
+const cerosTxt = z => z === 1 ? 'un cero' : 'dos ceros';
+function diagDecenas(a, n, r) {
+  const { m, z, pot } = ceros(n), p = a * n;
+  if (r === a * m) return m === 1 ? `En ${a} × ${n} te ${z === 1 ? 'falta el cero' : 'faltan los dos ceros'}: multiplicar por ${n} es añadir ${cerosTxt(z)}, ${a} → ${p}.`
+    : `Te ${z === 1 ? 'falta el cero' : 'faltan los dos ceros'}: ${a} × ${m} = ${a * m} y, al multiplicar por ${pot}, ${p}.`;
+  if (z === 2 && r === a * m * 10) return `Te falta un cero: ${a} × ${n} = ${p}, no ${r}.`;
+  if (r === a + n) return `Has sumado ${a} + ${n}. Son ${n} filas de ${a}: ${a} × ${n} = ${p}.`;
+  if (n > 10 && r === a * 10) return `Eso es ${a} × 10, pero el rectángulo tiene ${n} filas: ${a} × ${n} = ${p}.`;
+  return n <= 10 ? diagnostico(a, n, r) : null;
+}
+function trucoDecenas(a, n) {
+  const { m, z, pot } = ceros(n);
+  return m === 1 ? `Truco: multiplicar por ${n} es añadir ${cerosTxt(z)}. ${a} × ${n} = ${a * n}.`
+    : `Truco: ${a} × ${n} = ${a} × ${m} × ${pot} = ${a * m} × ${pot} = ${a * n}.`;
+}
+
+function textoAcierto(ej) {   // Ruta
+  const { a, b, p } = ej;
+  let porque;
+  if (ej.forma === 'faltaB') porque = `${a} × ${b} = ${p}: en ${p} caben exactamente ${b} grupos de ${a}.`;
+  else if (ej.forma === 'faltaA') porque = `${a} × ${b} = ${p}: el ${a} repetido ${veces(b)} da ${p}.`;
+  else porque = `${a} × ${b} = ${p}: son ${filasTxt(b)} de ${a} cuadrados.`;
+  return `<div class="tit">${azar(['¡Correcto!', '¡Bien hecho!', '¡Exacto!'])}</div><p>${porque}</p>`;
+}
+function textoFallo(ej, r) {   // Ruta
+  const { a, b, p } = ej;
+  const partes = [];
+  const sec = `<span class="saltos">${saltos(a, b)}</span>`;
+  if (r === null) partes.push(MSG_TIEMPO);
+  else if (ej.forma === 'directa') partes.push(diagnostico(a, b, r) || `${a} × ${b} son ${filasTxt(b)} de ${a} cuadrados.`);
+  else if (ej.forma === 'faltaB') {
+    if (r === p - a) partes.push(`Has restado ${p} − ${a}. Aquí hay que buscar cuántas veces cabe el ${a} en ${p}.`);
+    else partes.push(`${a} × ${r} = ${a * r}, no ${p}. Busca cuántos grupos de ${a} caben en ${p}.`);
+  } else {
+    if (r === p - b) partes.push(`Has restado ${p} − ${b}. Aquí hay que buscar qué número, repetido ${veces(b)}, da ${p}.`);
+    else partes.push(`${r} × ${b} = ${r * b}, no ${p}. Busca qué número, repetido ${veces(b)}, da ${p}.`);
+  }
+  if (ej.forma === 'faltaB') partes.push(`Cuenta de ${a} en ${a} hasta llegar a ${p}: ${sec}. Son ${b} saltos, así que ${a} × <b>${b}</b> = ${p}.`);
+  else if (ej.forma === 'faltaA') partes.push(`El ${a} repetido ${veces(b)}: ${sec}. Por tanto <b>${a}</b> × ${b} = ${p}.`);
+  else partes.push(`Cuenta de ${a} en ${a}, ${veces(b)}: ${sec}. Por tanto ${a} × ${b} = <b>${p}</b>.`);
+  if (b < a && b <= 5) partes.push(`<span class="truco">Truco: ${a} × ${b} es lo mismo que ${b} × ${a}. Si te sabes la tabla del ${b}, ya lo tienes.</span>`);
+  return tituloFallo(r) + partes.map(x => `<p>${x}</p>`).join('') + figuraHTML(svgCeldas(a, b, 'todas'));
+}
+
+function textoAciertoCons(ej) {
+  const { a, b, p } = ej;
+  let porque;
+  if (ej.tipo === 'n1') porque = `${filasTxt(b)} de ${a} cuadrados: ${a} × ${b} = ${p}. Los cuadrados de dentro son el área, y se calcula multiplicando los lados.`;
+  else if (ej.tipo === 'n4') porque = `${a} × ${ej.B} = ${a * ej.B}. Le quitas la franja, ${a} × ${ej.s} = ${a * ej.s}, y quedan ${a * ej.B} − ${a * ej.s} = ${p}.`;
+  else porque = `${a} × ${ej.base} = ${a * ej.base} y ${a} × ${ej.k} = ${a * ej.k}. Juntas: ${a * ej.base} + ${a * ej.k} = ${p}.`;
+  return `<div class="tit">${azar(['¡Correcto!', '¡Bien construido!', '¡Exacto!'])}</div><p>${porque}</p>`;
+}
+function describirFallo(ej, res, vals) {
+  if (vals === null) return 'tiempo agotado';
+  const n = { p1: `la parte ${ej.a} × ${ej.base}`, p2: `la parte ${ej.a} × ${ej.k}`, grande: `el rectángulo ${ej.a} × ${ej.B}`, franja: `la franja ${ej.a} × ${ej.s}`, total: 'el total' };
+  const mal = Object.keys(res).filter(k => !res[k]).map(k => n[k]);
+  return 'falló ' + (mal.length > 1 ? mal.slice(0, -1).join(', ') + ' y ' + mal[mal.length - 1] : mal[0]);
+}
+function textoFalloCons(ej, vals, res) {
+  const { a, b, p, tipo } = ej;
+  const partes = [];
+  if (vals === null) partes.push(MSG_TIEMPO);
+  if (tipo === 'n1') {
+    if (vals) partes.push(diagnostico(a, b, vals.total) || `Dentro hay ${filasTxt(b)} de ${a} cuadrados.`);
+    partes.push(`Cuenta de ${a} en ${a}, ${veces(b)}: <span class="saltos">${saltos(a, b)}</span>. Por tanto ${a} × ${b} = <b>${p}</b>.`);
+    return tituloFallo(vals) + partes.map(x => `<p>${x}</p>`).join('') + figuraHTML(svgCeldas(a, b, 'todas'));
+  }
+  if (tipo === 'n2' || tipo === 'n3') {
+    const P1 = a * ej.base, P2 = a * ej.k, base = ej.base, k = ej.k;
+    if (vals) {
+      if (!res.p1) partes.push(diagDecenas(a, base, vals.p1) || `La parte de arriba tiene ${base} filas de ${a}: ${a} × ${base} = ${P1}.`);
+      if (!res.p2) partes.push(diagnostico(a, k, vals.p2) || `La parte de abajo tiene ${filasTxt(k)} de ${a}: ${a} × ${k} = ${P2}.`);
+      if (!res.total) {
+        if (res.p1 && res.p2) partes.push(`Las dos partes están bien; falla la suma: ${P1} + ${P2} = ${p}.`);
+        else if (vals.total === vals.p1 + vals.p2) partes.push('Has sumado bien tus dos partes; el total falla porque alguna parte estaba mal.');
+        else partes.push(`El total es la suma de las dos partes: ${P1} + ${P2} = ${p}.`);
+      }
+    }
+    partes.push(`${a} × ${b} = ${pinta(COL.base, `${a} × ${base}`)} + ${pinta(COL.parte, `${a} × ${k}`)} = ${pinta(COL.base, P1)} + ${pinta(COL.parte, P2)} = <b>${p}</b>.`);
+    partes.push(`<span class="truco">${trucoDecenas(a, base)}</span>`);
+    return tituloFallo(vals) + partes.map(x => `<p>${x}</p>`).join('') + figuraHTML(svgArea(ej, true).svg);
+  }
+  // n4: resta
+  const B = ej.B, s = ej.s, G = a * B, F = a * s;
+  if (vals) {
+    if (!res.grande) partes.push(diagDecenas(a, B, vals.grande) || `El rectángulo grande tiene ${B} filas de ${a}: ${a} × ${B} = ${G}.`);
+    if (!res.franja) partes.push(diagnostico(a, s, vals.franja) || `La franja roja tiene ${filasTxt(s)} de ${a}: ${a} × ${s} = ${F}.`);
+    if (!res.total) {
+      const t = vals.total;
+      if (t === G + F) partes.push(`Has sumado la franja roja, pero la franja sobra: hay que restarla. ${G} − ${F} = ${p}.`);
+      else if (t === G) partes.push(`Te has olvidado de quitar la franja roja: ${G} − ${F} = ${p}.`);
+      else if (res.grande && res.franja) partes.push(`Las dos casillas de la derecha están bien; falla la resta: ${G} − ${F} = ${p}.`);
+      else if (t === vals.grande - vals.franja) partes.push('Has restado bien tus números; el total falla porque alguna casilla de la derecha estaba mal.');
+      else partes.push(`Lo que queda es el rectángulo grande menos la franja: ${G} − ${F} = ${p}.`);
+    }
+  }
+  partes.push(`${a} × ${b} = ${pinta(COL.grande, `${a} × ${B}`)} − ${pinta(COL.franja, `${a} × ${s}`)} = ${pinta(COL.grande, G)} − ${pinta(COL.franja, F)} = <b>${p}</b>.`);
+  partes.push(`<span class="truco">${trucoDecenas(a, B)}</span>`);
+  return tituloFallo(vals) + partes.map(x => `<p>${x}</p>`).join('') + figuraHTML(svgArea(ej, true).svg);
+}
+
+/* ---------- Conexión con el panel de duelos (Apps Script) ---------- */
+// Pega aquí la URL de la aplicación web de Apps Script (termina en /exec).
+// Si se deja vacía, el duelo funciona igual, pero sin panel ni clasificación.
+const URL_DUELOS = 'https://script.google.com/macros/s/AKfycbx-D9cQjryXV89FNyPCUDiVFs9lgHE0-WVwLbw8pyRW9-0o_ZzL6325c1tEphp9PaRRmA/exec';
+const idPartida = () => (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 12);
+async function enviarPanel(datos, reintentos = 0) {
+  if (!URL_DUELOS) return null;
+  for (let k = 0; k <= reintentos; k++) {
+    try {
+      // text/plain evita la petición previa CORS, que Apps Script no responde
+      const r = await fetch(URL_DUELOS, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(datos) });
+      return await r.json();
+    } catch (e) {
+      if (k < reintentos) await new Promise(ok => setTimeout(ok, 1500 * (k + 1)));
+    }
+  }
+  return null;
+}
+async function pedirRanking(codigo, id) {
+  if (!URL_DUELOS) return null;
+  try {
+    const r = await fetch(`${URL_DUELOS}?accion=ranking&codigo=${encodeURIComponent(codigo)}&id=${encodeURIComponent(id)}`);
+    return await r.json();
+  } catch (e) { return null; }
+}
+
+/* ---------- Duelo galáctico: partida ---------- */
+let D = null;   // duelo en curso
+const fmtPreciso = ms => { const d = Math.round(ms / 100), s = Math.floor(d / 10); return `${Math.floor(s / 60)}:${dos(s % 60)},${d % 10}`; };
+const textoTablas = t => t.length === 1 ? `tabla del ${t[0]}` : `tablas del ${listaY(t)}`;
+function empezarDuelo(d) {
+  if (!exigirNombre()) return;
+  const previos = G.duelos.filter(x => x.codigo === d.codigo).length;
+  D = { ...d, qs: preguntasDuelo(d), i: 0, aciertos: 0, acum: 0, tramo: null, respondida: false, fallos: [], intento: previos + 1,
+    timer: null, terminado: false, id: idPartida(), nombre: nombreAlumno(), finEnviado: false };
+  $('pantallaSelector').classList.add('oculto'); $('pantallaDuelo').classList.remove('oculto');
+  $('btnCambiar').classList.remove('oculto'); $('btnCambiar').textContent = 'Abandonar el duelo';
+  $('dueloChip').textContent = `${verCodigo(d.codigo)} · ${textoTablas(d.tablas)}`;
+  $('dueloJuego').classList.remove('oculto'); $('dueloFinal').classList.add('oculto'); $('dueloRegla').classList.remove('oculto');
+  cronoContexto('duelo|' + d.codigo + '|' + D.intento);
+  D.timer = setInterval(pintarRelojDuelo, 200);
+  const partida = D;
+  enviarPanel({ evento: 'inicio', id: D.id, codigo: D.codigo, nombre: D.nombre }, 1).then(r => { if (r && r.ok && r.intento) partida.intentoPanel = r.intento; });
+  pintarPreguntaDuelo();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+// El reloj del duelo solo corre mientras hay una pregunta sin responder: leer la corrección no cuenta.
+const msDuelo = () => D.acum + (D.tramo ? Date.now() - D.tramo : 0);
+function pintarRelojDuelo() { if (D) $('dueloReloj').textContent = fmtTiempo(msDuelo()); }
+function pintarPreguntaDuelo() {
+  const q = D.qs[D.i], hueco = '<span class="hueco">?</span>';
+  $('dueloNum').textContent = `Pregunta ${D.i + 1} de ${DUELO_N}`;
+  $('dueloBarra').style.width = `${(D.i / DUELO_N * 100).toFixed(1)}%`;
+  if (q.cons) {
+    const niv = NIVELES.cons[q.tipo];
+    $('dueloTipo').className = 'duelo-tipo cons';
+    $('dueloTipo').innerHTML = `Construcción · ${niv.zona}<div class="suave" style="text-transform:none;letter-spacing:0;font-family:var(--texto);font-weight:500;font-size:.9rem;margin-top:.2rem">${niv.instr}</div>`;
+    $('dueloPregunta').innerHTML = `${q.a}<span class="x">×</span>${q.b}`;
+    $('dueloPregunta').setAttribute('aria-label', `${q.a} por ${q.b}`);
+    $('dueloZona').innerHTML = htmlCons(q, 'dueloComprobar');
+  } else {
+    $('dueloTipo').className = 'duelo-tipo'; $('dueloTipo').textContent = 'Tablas';
+    $('dueloPregunta').innerHTML = `${q.a}<span class="x">×</span>${q.forma === 'faltaB' ? hueco : q.b}<span class="x">=</span>${q.forma === 'faltaB' ? q.p : hueco}`;
+    $('dueloPregunta').setAttribute('aria-label', q.forma === 'faltaB' ? `${q.a} por interrogación igual a ${q.p}` : `${q.a} por ${q.b} igual a interrogación`);
+    $('dueloZona').innerHTML = `<div class="respuesta"><input id="dueloResp" class="caja" style="width:7.5rem;font-size:2rem" type="text" inputmode="numeric" autocomplete="off" aria-label="Tu respuesta"><button type="button" class="btn btn-principal" id="dueloComprobar">Comprobar</button></div>`;
+  }
+  $('dueloAviso').textContent = ''; $('dueloFeedback').className = 'feedback'; $('dueloFeedback').innerHTML = '';
+  $('dueloAcciones').classList.remove('visible');
+  D.respondida = false; D.tramo = Date.now();
+  const primero = document.querySelector('#dueloZona input');
+  if (primero && punteroFino()) primero.focus({ preventScroll: true });
+}
+function comprobarDuelo() {
+  if (!D || D.respondida || D.terminado) return;
+  const q = D.qs[D.i];
+  let correcto, html;
+  if (q.cons) {
+    const inputs = [...document.querySelectorAll('#dueloZona [data-campo]')];
+    for (const inp of inputs) {
+      const txt = inp.value.trim();
+      if (txt === '') { $('dueloAviso').textContent = 'Rellena todas las casillas antes de comprobar.'; inp.focus(); return; }
+      if (!/^\d{1,4}$/.test(txt)) { $('dueloAviso').textContent = 'Escribe solo números, sin letras ni signos.'; inp.focus(); return; }
+    }
+    const vals = Object.fromEntries(inputs.map(i => [i.dataset.campo, parseInt(i.value.trim(), 10)]));
+    const res = {}; correcto = true;
+    for (const [id, v] of Object.entries(q.campos)) { res[id] = vals[id] === v; if (!res[id]) correcto = false; }
+    inputs.forEach(i => { i.disabled = true; i.classList.add(res[i.dataset.campo] ? 'bien' : 'mal'); });
+    html = correcto ? textoAciertoCons(q) : textoFalloCons(q, vals, res);
+  } else {
+    const txt = $('dueloResp').value.trim();
+    if (txt === '') { $('dueloAviso').textContent = 'Escribe tu respuesta antes de comprobar.'; return; }
+    if (!/^\d{1,3}$/.test(txt)) { $('dueloAviso').textContent = 'Escribe solo un número, sin letras ni signos.'; return; }
+    const v = parseInt(txt, 10);
+    correcto = v === q.correcta;
+    anotarHecho(q.a, q.b, correcto);
+    $('dueloResp').disabled = true; $('dueloResp').classList.add(correcto ? 'bien' : 'mal');
+    if (correcto) html = `<div class="tit">${azar(['¡Correcto!', '¡Bien!', '¡Exacto!'])}</div><p>${q.a} × ${q.b} = ${q.p}.</p>`;
+    else {
+      const motivo = q.forma === 'faltaB'
+        ? `${q.a} × ${v} = ${q.a * v}, no ${q.p}. Busca cuántos grupos de ${q.a} caben en ${q.p}.`
+        : (diagnostico(q.a, q.b, v) || `${q.a} × ${q.b} son ${filasTxt(q.b)} de ${q.a}.`);
+      html = `<div class="tit">Todavía no</div><p>${motivo}</p><p>De ${q.a} en ${q.a}: <span class="saltos">${saltos(q.a, q.b)}</span>. Por tanto ${q.a} × ${q.forma === 'faltaB' ? `<b>${q.b}</b>` : q.b} = ${q.forma === 'faltaB' ? q.p : `<b>${q.p}</b>`}.</p>`;
+    }
+  }
+  D.acum += Date.now() - D.tramo; D.tramo = null; D.respondida = true;
+  if (correcto) D.aciertos++; else D.fallos.push(`${q.a} × ${q.b} = ${q.p}`);
+  $('dueloComprobar').disabled = true;
+  $('dueloAviso').textContent = '';
+  $('dueloFeedback').className = 'feedback visible ' + (correcto ? 'ok' : 'ko');
+  $('dueloFeedback').innerHTML = html;
+  $('dueloSiguiente').textContent = D.i === DUELO_N - 1 ? 'Ver mi resultado' : 'Siguiente';
+  $('dueloAcciones').classList.add('visible');
+  if (punteroFino()) $('dueloSiguiente').focus({ preventScroll: true });
+  pintarRelojDuelo();
+  if (D.i < DUELO_N - 1) enviarPanel({ evento: 'progreso', id: D.id, codigo: D.codigo, nombre: D.nombre, respondidas: D.i + 1, aciertos: D.aciertos });
+}
+$('dueloZona').addEventListener('click', e => { if (e.target.id === 'dueloComprobar') comprobarDuelo(); });
+$('dueloZona').addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  if (e.target.id === 'dueloResp') { e.preventDefault(); comprobarDuelo(); }
+  else if (e.target.dataset && e.target.dataset.campo) {   // Enter salta a la siguiente casilla vacía; si no queda ninguna, corrige
+    e.preventDefault();
+    const vacia = [...document.querySelectorAll('#dueloZona [data-campo]')].find(i => i.value.trim() === '');
+    vacia ? vacia.focus() : comprobarDuelo();
+  }
+});
+$('dueloSiguiente').addEventListener('click', () => {
+  if (!D || !D.respondida) return;
+  D.i++;
+  D.i >= DUELO_N ? terminarDuelo(false) : pintarPreguntaDuelo();
+});
+function terminarDuelo(abandonado) {
+  clearInterval(D.timer);
+  if (D.tramo) { D.acum += Date.now() - D.tramo; D.tramo = null; }
+  const respondidas = abandonado ? D.i + (D.respondida ? 1 : 0) : DUELO_N;
+  const registro = { id: D.id, codigo: D.codigo, tablas: D.tablas, aciertos: D.aciertos, respondidas, ms: D.acum, fallos: D.fallos.slice(), intento: D.intento, estado: abandonado ? 'abandonado' : 'terminado', puesto: '' };
+  G.duelos.push(registro);
+  D.terminado = true; D.registro = registro;
+  cronoParar();
+  const partida = D;
+  const envio = { evento: abandonado ? 'abandono' : 'fin', id: D.id, codigo: D.codigo, nombre: D.nombre, respondidas, aciertos: D.aciertos, ms: Math.round(D.acum) };
+  partida.envioFin = envio;
+  const promesa = enviarPanel(envio, 2).then(r => { partida.respFin = r; if (r && r.ok) partida.finEnviado = true; return r; });
+  if (abandonado) return;
+  $('dueloBarra').style.width = '100%';
+  $('dueloJuego').classList.add('oculto'); $('dueloRegla').classList.add('oculto'); $('dueloFinal').classList.remove('oculto');
+  $('btnCambiar').textContent = 'Volver a los retos';
+  const a = D.aciertos;
+  const valoracion = a === DUELO_N ? '¡Pleno! Ningún fallo.' : a >= DUELO_N - 3 ? 'Muy buen duelo.' : a >= DUELO_N / 2 ? 'Buen intento: repasa los productos fallados.' : 'Te conviene repasar estas tablas en el modo «Una tabla».';
+  $('dueloFinal').innerHTML = `
+    <div class="etiqueta" style="color:var(--cielo);text-align:center">Duelo terminado</div>
+    <div class="rd-cifra">${a}<span style="font-size:1.4rem;color:var(--tinta-suave)"> / ${DUELO_N}</span></div>
+    <div class="suave">aciertos</div>
+    <div class="rd-fila"><div><span>Fallos</span><b style="font-family:var(--display);font-size:1.3rem;color:var(--coral)">${DUELO_N - a}</b></div><div><span>Tiempo</span><b class="duelo-reloj" style="font-size:1.3rem">${fmtPreciso(D.acum)}</b></div><div><span>Código</span><b style="font-family:var(--display);font-size:1.3rem;letter-spacing:.08em">${verCodigo(D.codigo)}</b></div></div>
+    <p>${valoracion}</p>
+    ${D.fallos.length ? `<p class="suave" style="margin-top:.4rem">Para repasar: ${D.fallos.join(' · ')}</p>` : ''}
+    ${URL_DUELOS ? '<div class="clasif" id="dueloClasif" aria-live="polite"><p class="suave">Enviando tu resultado al panel…</p></div>'
+      : '<p class="nota-duelo">Comparad vuestras pantallas: gana quien tenga más aciertos y, si empatáis, quien haya tardado menos. El resultado queda guardado en tu informe.</p>'}`;
+  if (URL_DUELOS) promesa.then(() => cargarClasificacion(partida));
+  actualizarUI();
+}
+const ordinal = n => `${n}.º`;
+async function cargarClasificacion(partida) {
+  const caja = () => (D === partida ? $('dueloClasif') : null);   // si el alumno ya ha salido, no se pinta nada
+  if (!caja()) return;
+  if (!partida.finEnviado) {   // el envío falló o fue rechazado: se reintenta antes de pedir la clasificación
+    const r = await enviarPanel(partida.envioFin, 1);
+    partida.respFin = r || partida.respFin;
+    if (r && r.ok) partida.finEnviado = true;
+  }
+  if (!caja()) return;
+  if (!partida.finEnviado) {
+    const motivo = partida.respFin && partida.respFin.error ? ` El panel ha respondido: «${escapar(String(partida.respFin.error))}».` : ' Puede que no haya conexión.';
+    caja().innerHTML = `<div class="clasif-cab"><b>Clasificación</b><button type="button" class="btn-mini" id="clasifAct">Reintentar</button></div><p class="suave">No se ha podido enviar tu resultado al panel.${motivo} Tu resultado sí está guardado en tu informe.</p>`;
+    $('clasifAct').addEventListener('click', () => cargarClasificacion(partida));
+    return;
+  }
+  const r = await pedirRanking(partida.codigo, partida.id);
+  if (!caja()) return;
+  if (!r || !r.ok) {
+    caja().innerHTML = `<div class="clasif-cab"><b>Clasificación</b><button type="button" class="btn-mini" id="clasifAct">Actualizar</button></div><p class="suave">Tu resultado se ha enviado, pero no se ha podido leer la clasificación. Prueba a actualizar.</p>`;
+    $('clasifAct').addEventListener('click', () => cargarClasificacion(partida));
+    return;
+  }
+  const lista = r.podio.map((p, k) => `<li class="${p.yo ? 'yo' : ''}"><span class="med m${k + 1}">${k + 1}</span><b>${escapar(p.nombre)}</b><span class="dat">${p.aciertos} ✓ · ${p.fallos} ✗ · ${fmtPreciso(p.ms)}</span></li>`).join('');
+  let tu;
+  if (r.tu && r.tu.cuenta && r.tu.posicion) tu = `Tu puesto: ${ordinal(r.tu.posicion)} de ${r.terminados} que han terminado.`;
+  else if (r.tu && !r.tu.cuenta) tu = `Este es tu intento n.º ${r.tu.intento} con este código: solo cuenta el primero, así que no entra en la clasificación.`;
+  else tu = 'Tu resultado se está registrando.';
+  partida.registro.puesto = r.tu && r.tu.cuenta && r.tu.posicion ? `${ordinal(r.tu.posicion)} de ${r.terminados}` : r.tu && !r.tu.cuenta ? `No cuenta (intento ${r.tu.intento})` : '';
+  caja().innerHTML = `<div class="clasif-cab"><b>Clasificación del duelo</b><button type="button" class="btn-mini" id="clasifAct">Actualizar</button></div>
+    ${lista ? `<ol>${lista}</ol>` : '<p class="suave">Todavía no ha terminado nadie.</p>'}
+    <p class="tu">${tu}</p>
+    <p class="nota-duelo">${r.enJuego ? `Todavía ${r.enJuego === 1 ? 'juega 1 compañero' : `juegan ${r.enJuego} compañeros`}: actualiza en un rato. ` : ''}Gana quien más acierte; si hay empate, quien tarde menos.</p>`;
+  $('clasifAct').addEventListener('click', () => cargarClasificacion(partida));
+}
+
+/* ---------- UI general ---------- */
+function actualizarUI() {
+  $('mNota').textContent = fmtNota(calcularNota());
+  $('mTablas').textContent = `${TODAS.filter(tablaRepasada).length}/9`;
+  $('mCons').textContent = `${maxEstaciones()}/4`;
+  $('mFallos').textContent = G.fallosTotales;
+  if (!state) return;
+  $('navNiveles').innerHTML = TIPOS.map((t, i) => {
+    const hecho = state.tipos[t].superado, actual = state.nivelActual === t;
+    return `<button type="button" class="nav-nivel${actual ? ' actual' : ''}${hecho ? ' hecho' : ''}" data-n="${t}" aria-current="${actual}" aria-label="${niveles()[t].nombre}${hecho ? ', superada' : ''}">${hecho ? '✓' : i + 1} · ${niveles()[t].zona}</button>`;
+  }).join('');
+  const t = state.tipos[state.nivelActual];
+  const huecos = Array.from({ length: VENTANA }, (_, i) => t.intentos[i]);
+  $('pips').innerHTML = huecos.map(v => `<span class="pip ${v === true ? 'a' : v === false ? 'f' : ''}"></span>`).join('');
+  const zona1 = state.modo === 'ruta' && state.nivelActual === 'n1' && !t.cerrado;
+  $('filaProgreso').classList.toggle('oculto', !zona1);
+  if (zona1) {
+    const r = state.n1Recorrido, respondido = state.ejercicio && state.ejercicio.respondido;
+    $('fpTxt').textContent = state.ejercicio && state.ejercicio.fila
+      ? `Fila ${state.ejercicio.fila} de 10`
+      : 'Tabla completa ✓ · ahora necesitas 4 aciertos en tus 5 últimas respuestas';
+    $('fpBarras').innerHTML = Array.from({ length: 10 }, (_, i) => `<i class="${i < r ? 'hecha' : (i === r && r < 10 && !respondido ? 'actual' : '')}"></i>`).join('');
+  }
+  const sinAcertar = state.tablas.filter(n => !t.tablasOk.has(n));
+  const faltaMezcla = !t.cerrado && state.tablas.length > 1 && sinAcertar.length ? ` · aún sin acertar: ${textoTablas(sinAcertar)}` : '';
+  $('textoProgreso').textContent = (t.cerrado
+    ? `${UNIDAD[state.modo]} ya superada${t.previa ? ' en otro reto' : ''} · puedes practicar sin que cuente`
+    : state.modo === 'ruta' && state.nivelActual === 'n1' && state.n1Recorrido < 10
+      ? `Recorrido: ${state.n1Recorrido}/10 · luego 4 aciertos de tus últimos 5`
+      : 'Necesitas 4 aciertos en tus últimos 5 intentos') + faltaMezcla;
+  actualizarMapa();
+}
+
+/* ---------- Cambiar de reto / abandonar duelo (con confirmación propia) ---------- */
+let accionConfirma = null;
+function pedirConfirmacion(titulo, texto, si, accion) {
+  $('confTitulo').textContent = titulo; $('confTexto').textContent = texto; $('confSi').textContent = si;
+  accionConfirma = accion; $('modalConfirma').classList.add('visible');
+}
+const hayProgresoAMedias = () => state && TIPOS.some(t => !state.tipos[t].cerrado && state.tipos[t].total > 0);
+$('btnCambiar').addEventListener('click', () => {
+  if (D && !D.terminado) pedirConfirmacion('¿Abandonar el duelo?', 'El duelo quedará en tu informe como abandonado, con los aciertos que lleves. Tu progreso en las tablas no se pierde.', 'Sí, abandonar', () => { terminarDuelo(true); volverSelector(); });
+  else if (hayProgresoAMedias()) pedirConfirmacion('¿Cambiar de reto?', 'Lo que ya has superado queda guardado y sigue contando para tu nota. Solo se pierde el avance de la zona que tienes a medias.', 'Sí, cambiar', volverSelector);
+  else volverSelector();
+});
+$('confNo').addEventListener('click', () => { accionConfirma = null; $('modalConfirma').classList.remove('visible'); });
+$('confSi').addEventListener('click', () => { $('modalConfirma').classList.remove('visible'); const f = accionConfirma; accionConfirma = null; if (f) f(); });
+function volverSelector() {
+  if (state) pararCrono();
+  if (D) clearInterval(D.timer);
+  state = null; rutaEl = null; D = null;
+  seleccion = new Set();   // cada reto nuevo empieza sin guardianes marcados
+  dueloListo = null; $('codigoUnir').value = ''; $('avisoCodigo').textContent = '';
+  if (tocaConstruccion() && modoSel !== 'duelo') modoSel = 'cons';   // con las 9 tablas hechas, el selector abre directamente en Construcción
+  cronoParar();
+  document.body.classList.remove('todo-verde');
+  $('pantallaRuta').classList.add('oculto'); $('pantallaDuelo').classList.add('oculto'); $('pantallaSelector').classList.remove('oculto'); $('btnCambiar').classList.add('oculto');
+  actualizarUI(); pintarSelector(); window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ---------- Informe ---------- */
+function colorNota(n) {
+  if (n >= 10) return ['#1a7a1a', '#fff']; if (n >= 9) return ['#6dbf6d', '#fff']; if (n >= 8) return ['#1a4f8a', '#fff'];
+  if (n >= 7) return ['#5b9bd5', '#fff']; if (n >= 6) return ['#c05c00', '#fff']; if (n >= 5) return ['#f5a623', '#000'];
+  return ['#c0392b', '#fff'];
+}
+const dos = n => String(n).padStart(2, '0');
+const escapar = t => t.replace(/[<>&"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]));
+const pipsInf = set => `<span class="inf-pips" aria-hidden="true">${TIPOS.map(t => `<i class="${set.has(t) ? 'on' : ''}"></i>`).join('')}</span>`;
+function seccionTablas() {
+  const filas = TODAS.map(n => {
+    const z = G.zonasTabla[n].size, c = G.consTabla[n].size;
+    const estado = z === 4 ? 'Repasada' : z > 0 ? 'A medias' : 'Sin empezar';
+    return `<tr><td>Tabla del ${n}</td><td>${pipsInf(G.zonasTabla[n])} ${z}/4</td><td>${c ? `${pipsInf(G.consTabla[n])} ${c}/4` : '—'}</td><td><b>${estado}</b></td></tr>`;
+  }).join('');
+  const rep = TODAS.filter(tablaRepasada), pend = TODAS.filter(n => !tablaRepasada(n));
+  return `<h3>Tablas repasadas</h3>
+    <table class="tabla-niveles"><thead><tr><th>Tabla</th><th>Ruta (zonas)</th><th>Construcción</th><th>Estado</th></tr></thead><tbody>${filas}</tbody></table>
+    <p style="margin-top:.5rem;font-size:.9rem"><b>Repasadas:</b> ${rep.length ? rep.join(', ') : 'ninguna'} · <b>Pendientes:</b> ${pend.length ? pend.join(', ') : 'ninguna'}${G.usoMezcla ? ' · Ha usado el modo Mezcla.' : ''}</p>`;
+}
+function seccionZonas() {
+  const fila = (m, t, i) => {
+    const x = G.stats[m][t], tablas = TODAS.filter(n => (m === 'cons' ? G.consTabla : G.zonasTabla)[n].has(t));
+    return `<tr><td>${UNIDAD[m]} ${i + 1} · ${NIVELES[m][t].verbo}</td><td>${tablas.length ? tablas.join(', ') : '—'}</td><td>${x.total}</td><td>${x.aciertos}</td><td>${x.fallos}</td></tr>`;
+  };
+  return `<h3>Desglose por zona</h3>
+    <table class="tabla-niveles"><thead><tr><th>Zona</th><th>Superada con</th><th>Intentos</th><th>Aciertos</th><th>Fallos</th></tr></thead>
+    <tbody>${TIPOS.map((t, i) => fila('ruta', t, i)).join('')}${TIPOS.map((t, i) => fila('cons', t, i)).join('')}</tbody></table>
+    <p style="font-size:.8rem;opacity:.85;margin-top:.3rem">Intentos que cuentan para la nota (no incluye la práctica en zonas ya superadas ni los duelos).</p>`;
+}
+function seccionDuelos() {
+  if (!G.duelos.length) return '';
+  const filas = G.duelos.map(d => `<tr><td>${verCodigo(d.codigo)}${d.intento > 1 ? ` (intento ${d.intento})` : ''}</td><td>${d.tablas.join(', ')}</td><td>${d.aciertos}/${d.estado === 'terminado' ? DUELO_N : d.respondidas}</td><td>${fmtPreciso(d.ms)}</td><td>${d.estado === 'terminado' ? 'Terminado' : `Abandonado (${d.respondidas}/${DUELO_N})`}</td><td>${d.puesto || '—'}</td></tr>`).join('');
+  return `<hr><h3>Duelo galáctico</h3>
+    <table class="tabla-niveles"><thead><tr><th>Código</th><th>Tablas</th><th>Aciertos</th><th>Tiempo</th><th>Estado</th><th>Puesto (última consulta)</th></tr></thead><tbody>${filas}</tbody></table>
+    <p style="font-size:.8rem;opacity:.85;margin-top:.3rem">El duelo no cambia la nota. Gana quien más acierte; en caso de empate, el menor tiempo. En la clasificación solo cuenta el primer intento.</p>`;
+}
+function seccionMarcas() {
+  if (!G.marcas.length) return '';
+  const mejores = {};
+  G.marcas.forEach(m => { if (!mejores[m.clave] || m.ms < mejores[m.clave].ms) mejores[m.clave] = m; });
+  return `<hr><h3>Mejores tiempos con cronómetro</h3><ul class="inf-lista">${Object.values(mejores).map(m => `<li>${m.etiqueta}: <b>${fmtTiempo(m.ms)}</b></li>`).join('')}</ul>`;
+}
+function seccionProductos() {
+  const tablas = TODAS.filter(a => rango(1, 10).some(b => G.hechos[claveHecho(a, b)]));
+  if (!tablas.length) return '';
+  let celdas = '<div class="cab"></div>' + Array.from({ length: 10 }, (_, i) => `<div class="cab">×${i + 1}</div>`).join('');
+  const repasar = [];
+  for (const a of tablas) {
+    celdas += `<div class="cab">${a}</div>`;
+    for (let b = 1; b <= 10; b++) {
+      const h = G.hechos[claveHecho(a, b)];
+      let cl = 'c-vacio', txt = '';
+      if (h) { if (h.ko && h.ok) { cl = 'c-mix'; txt = h.ko; } else if (h.ko) { cl = 'c-ko'; txt = h.ko; } else { cl = 'c-ok'; } }
+      if (h && h.ko) repasar.push(`${a} × ${b}`);
+      celdas += `<div class="${cl}" title="${a} × ${b}">${txt}</div>`;
+    }
+  }
+  return `<hr><h3>Mapa de productos</h3>
+      <div class="cuadricula" style="grid-template-columns:28px repeat(10,1fr)">${celdas}</div>
+      <div class="leyenda"><span style="--b:#2fae74">Acertado</span><span style="--b:#e8a23a">Fallado y luego acertado</span><span style="--b:#d63c2f">Solo fallado</span><span style="--b:rgba(127,127,127,.4)">No preguntado</span></div>
+      <p style="margin-top:.6rem;font-size:.9rem"><b>Para repasar:</b> ${repasar.length ? repasar.join(' · ') : 'ningún producto fallado.'}</p>`;
+}
+function seccionCons() {
+  const f = G.fallosCons;
+  if (!f.length) return '';
+  return `<hr><h3>Construcción: ejercicios fallados</h3><ul class="lista-fallos">${f.map(x => `<li><b>${x.prod}</b> · Estación ${TIPOS.indexOf(x.tipo) + 1}: ${x.detalle}</li>`).join('')}</ul>`;
+}
+$('btnFinalizar').addEventListener('click', () => {
+  if (!exigirNombre()) return;
+  const ahora = new Date(), nota = calcularNota(), p = puntosBrutos();
+  const minutos = Math.ceil((Date.now() - estadoGlobalInicio) / 60000);
+  const [bg, fg] = colorNota(nota);
+  const titulo = document.querySelector('.titulo-ficha').textContent, sub = document.querySelector('.subtitulo').textContent;
+  const inf = $('informe');
+  inf.style.background = bg; inf.style.color = fg;
+  inf.classList.toggle('texto-negro', fg === '#000');
+  inf.innerHTML = `
+    <div class="inf-titulo" id="infTitulo">${titulo}</div>
+    <div class="inf-sub">${sub}</div>
+    <hr>
+    <h3>Informe de la actividad</h3>
+    <dl class="inf-datos">
+      <dt>Alumno/a</dt><dd>${escapar(nombreAlumno())}</dd>
+      <dt>Nota</dt><dd><span class="inf-nota">${fmtNota(nota)}</span> / 10</dd>
+      <dt>Fecha</dt><dd>${dos(ahora.getDate())}/${dos(ahora.getMonth() + 1)}/${ahora.getFullYear()}</dd>
+      <dt>Hora</dt><dd>${dos(ahora.getHours())}:${dos(ahora.getMinutes())}:${dos(ahora.getSeconds())}</dd>
+      <dt>Tiempo total</dt><dd>${dos(Math.floor(minutos / 60))}:${dos(minutos % 60)}</dd>
+    </dl>
+    <div class="inf-calculo">Tablas: <b>${fmtNota(p.ruta)}</b> / 7 · Construcción: <b>${fmtNota(p.cons)}</b> / 3 · Fallos: ${G.fallosTotales} × −${fmtNota(PENALIZACION_FALLO)} = <b>−${fmtNota(G.fallosTotales * PENALIZACION_FALLO)}</b></div>
+    <hr>${seccionTablas()}
+    <hr>${seccionZonas()}
+    ${seccionDuelos()}${seccionMarcas()}${seccionProductos()}${seccionCons()}
+    <button class="btn inf-cerrar" id="infCerrar">Cerrar y seguir practicando</button>`;
+  document.body.classList.toggle('todo-verde', nota >= 10);
+  $('modalInforme').classList.add('visible');
+  $('infCerrar').addEventListener('click', () => $('modalInforme').classList.remove('visible'));
+});
+
+pintarSelector(); actualizarUI();
+window.__ficha = { get state() { return state; }, G, calcularNota, leerCodigo, crearCodigo, preguntasDuelo, generarOpciones, // acceso para QA
+  get duelo() { return D; },
+  probar(t, a, b) { state.nivelActual = t; state.ejercicio = construirCons(t, a, b); pintarEjercicio(); } };
+})();
+
+</script>
+</body>
+</html>
