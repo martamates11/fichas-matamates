@@ -1,0 +1,1812 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>El Laboratorio de los Enteros</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700;800&family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --papel:#f6f3ec; --papel-2:#fffdf8; --papel-3:#efe9dd;
+  --tinta:#1b2232; --tinta-suave:#5b6475; --linea:#e4ddce; --linea-2:#d4c9b3;
+  --cal:#2f6fdb; --cal-osc:#1b4ca3; --cal-claro:#e3edff;
+  --fri:#e2572a; --fri-osc:#a83c16; --fri-claro:#ffe2d3;
+  --vio:#7a5af8; --vio-osc:#5a3ad8; --vio-claro:#efeaff;
+  --tur:#0f8f7e; --tur-claro:#dcf4ef;
+  --ok:#14885a; --ok-claro:#e1f5ea; --ko:#c43d5a; --ko-claro:#fde9ee;
+  --cab:#1b2232;
+  --display:'Unbounded','Trebuchet MS',sans-serif;
+  --texto:'Lexend','Segoe UI',sans-serif;
+  --sombra:0 10px 30px rgba(40,30,10,.08),0 2px 6px rgba(40,30,10,.05);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--texto);color:var(--tinta);font-size:17px;line-height:1.5;min-height:100vh;
+  background:
+    radial-gradient(700px 420px at 100% 0,rgba(240,138,36,.13),transparent 65%),
+    radial-gradient(700px 420px at 0 100%,rgba(47,111,219,.11),transparent 65%),
+    var(--papel);
+  background-attachment:fixed}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(rgba(27,34,50,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(27,34,50,.045) 1px,transparent 1px);
+  background-size:26px 26px}
+body.perfecta{background:#e3f6ea}
+button{font:inherit;color:inherit}
+.oculto{display:none!important}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* Franja de autoría */
+.franja{position:relative;z-index:2;background:var(--cab);color:#d9deea;text-align:center;font-size:.8rem;letter-spacing:.02em;padding:.45rem 1rem}
+
+.envoltura{position:relative;z-index:1;max-width:1160px;margin:0 auto;padding:1.4rem 16px 2rem}
+
+/* Título */
+.portada{display:flex;align-items:center;gap:1.1rem;margin-bottom:.9rem}
+.portada svg{width:84px;height:62px;flex:0 0 84px}
+.titulo-ficha{font-family:var(--display);font-weight:800;font-size:clamp(1.55rem,4.4vw,2.6rem);line-height:1.08;letter-spacing:-.02em}
+.titulo-ficha em{font-style:normal;background:linear-gradient(95deg,var(--cal) 0%,#d9604f 45%,var(--fri) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.subtitulo{font-family:var(--display);font-weight:500;font-size:clamp(.72rem,1.8vw,.86rem);letter-spacing:.06em;text-transform:uppercase;color:var(--tinta-suave);margin-top:.35rem}
+
+/* Barra del alumno */
+.barra-alumno{position:sticky;top:0;z-index:20;display:flex;flex-wrap:wrap;align-items:center;gap:.6rem 1rem;
+  background:rgba(255,253,248,.94);backdrop-filter:blur(6px);border:1.5px solid var(--linea-2);border-radius:16px;padding:.55rem .8rem;margin-bottom:1rem;box-shadow:0 6px 18px rgba(40,30,10,.06)}
+.barra-alumno label{font-weight:600;font-size:.9rem;color:var(--tinta-suave)}
+#nombre{flex:1 1 220px;min-width:0;font:inherit;font-weight:500;border:1.5px solid var(--linea-2);border-radius:10px;padding:.42rem .7rem;background:#fff}
+#nombre:focus{outline:none;border-color:var(--vio);box-shadow:0 0 0 3px rgba(122,90,248,.2)}
+#nombre.falta{border-color:var(--ko);box-shadow:0 0 0 3px rgba(196,61,90,.18)}
+.marcador{display:flex;gap:.5rem;flex-wrap:wrap}
+.dato{display:flex;align-items:baseline;gap:.35rem;background:var(--papel-2);border:1px solid var(--linea);border-radius:999px;padding:.22rem .75rem}
+.dato span{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--tinta-suave);font-weight:600}
+.dato b{font-family:var(--display);font-weight:700;font-size:1.02rem;font-variant-numeric:tabular-nums}
+.dato.nota b{color:var(--vio-osc)}
+.dato.fallos b{color:var(--ko)}
+.aviso-nombre{flex-basis:100%;font-size:.85rem;color:var(--ko);font-weight:600}
+.aviso-nombre:empty{display:none}
+
+/* Tarjetas */
+.tarjeta{background:var(--papel-2);border:1px solid var(--linea);border-radius:22px;box-shadow:var(--sombra);padding:1.2rem 1.25rem}
+.como{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;margin-bottom:1.1rem}
+.como div{display:flex;gap:.65rem;align-items:flex-start;background:var(--papel-2);border:1px solid var(--linea);border-radius:16px;padding:.7rem .8rem;font-size:.92rem}
+.como svg{flex:0 0 30px;width:30px;height:30px}
+.como b{font-weight:700}
+@media (max-width:820px){.como{grid-template-columns:1fr}}
+
+/* Tabla periódica de niveles */
+.etiqueta{font-family:var(--display);font-weight:600;font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--tinta-suave);margin-bottom:.5rem}
+.tabla{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:.55rem}
+@media (max-width:860px){.tabla{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.elem{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.1rem;min-height:104px;cursor:pointer;
+  border:2px solid var(--f);border-radius:14px;background:linear-gradient(160deg,#fff,var(--fc));padding:.5rem .3rem .45rem;transition:transform .15s,box-shadow .15s}
+.elem:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(40,30,10,.1)}
+.elem:focus-visible{outline:3px solid var(--vio);outline-offset:2px}
+.elem .z{position:absolute;top:.3rem;left:.5rem;font-size:.72rem;font-weight:700;color:var(--tinta-suave)}
+.elem .sim{font-family:var(--display);font-weight:800;font-size:1.75rem;line-height:1;color:var(--fo)}
+.elem .nom{font-size:.74rem;font-weight:600;text-align:center;line-height:1.15;color:var(--tinta)}
+.elem .dots{display:flex;gap:4px;margin-top:.3rem;min-height:12px;align-items:center}
+.elem .dots i{width:9px;height:9px;border-radius:50%;background:#fff;border:1.5px solid var(--linea-2)}
+.elem .dots i.b{background:var(--ok);border-color:var(--ok)}
+.elem .dots i.m{background:var(--ko);border-color:var(--ko)}
+.elem .dots svg{width:16px;height:16px}
+.elem.fam-sr{--f:#f2b77c;--fc:#fff1e0;--fo:#c4610b}
+.elem.fam-md{--f:#8fb2ef;--fc:#e8f0ff;--fo:#1f55b8}
+.elem.fam-cb{--f:#b5a3fb;--fc:#f1edff;--fo:#5a3ad8}
+.elem.activo{box-shadow:0 0 0 4px color-mix(in srgb,var(--fo) 28%,transparent),0 10px 22px rgba(40,30,10,.12);transform:translateY(-2px)}
+.elem.hecho{background:linear-gradient(160deg,#fff,#e2f5ea);border-color:#7ccaa2}
+.elem.hecho .sim{color:var(--ok)}
+.elem.cerrado{cursor:not-allowed;filter:grayscale(1);opacity:.5}
+.elem.cerrado:hover{transform:none;box-shadow:none}
+.leyenda{display:flex;flex-wrap:wrap;gap:.4rem 1.1rem;margin:.55rem 0 1.1rem;font-size:.8rem;color:var(--tinta-suave)}
+.leyenda span{display:inline-flex;align-items:center;gap:.35rem}
+.leyenda i{width:12px;height:12px;border-radius:4px;border:2px solid}
+.elem.celebra{animation:celebra .9s cubic-bezier(.2,.9,.3,1.4)}
+@keyframes celebra{0%{transform:scale(1)}40%{transform:scale(1.13) rotate(-2deg)}100%{transform:scale(1)}}
+
+/* Zona de trabajo */
+.banco{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:1.1rem;align-items:start}
+@media (max-width:980px){.banco{grid-template-columns:1fr}}
+.trabajo-cab{display:flex;justify-content:space-between;align-items:flex-start;gap:.8rem;flex-wrap:wrap;margin-bottom:.4rem}
+.chip-nivel{display:inline-block;font-family:var(--display);font-weight:600;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;padding:.25rem .6rem;border-radius:999px;background:var(--vio-claro);color:var(--vio-osc)}
+.trabajo-cab h2{font-family:var(--display);font-weight:700;font-size:clamp(1.15rem,2.6vw,1.45rem);margin-top:.35rem;line-height:1.2}
+.ventana{display:flex;flex-direction:column;align-items:flex-end;gap:.25rem}
+.ventana .bolas{display:flex;gap:6px}
+.ventana .bolas i{width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--linea-2)}
+.ventana .bolas i.b{background:var(--ok);border-color:var(--ok)}
+.ventana .bolas i.m{background:var(--ko);border-color:var(--ko)}
+.ventana small{font-size:.76rem;color:var(--tinta-suave);text-align:right}
+.instr{color:var(--tinta-suave);font-size:.95rem;margin:.3rem 0 .2rem}
+
+.pregunta{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:.15rem .35rem;font-family:var(--display);font-weight:700;
+  font-size:clamp(1.55rem,5.2vw,2.5rem);line-height:1.25;text-align:center;padding:.9rem .5rem;margin:.6rem 0;border-radius:18px;background:var(--papel);border:1px dashed var(--linea-2)}
+.n.pos{color:var(--cal-osc)} .n.neg{color:var(--fri-osc)}
+.pregunta .simb{color:var(--tinta-suave);font-weight:600}
+.ds{display:inline-flex;align-items:center;gap:.35rem;border-radius:12px;padding:0;transition:background .3s,box-shadow .3s}
+.ds .ds-op,.ds .ds-sig,.ds .ds-par,.ds-prim .ds-sig,.ds-prim .ds-par{display:inline-block}
+.ds-prim{display:inline-block;border-radius:12px;padding:0;transition:background .3s,box-shadow .3s}
+.ds-prim.ds-activo{background:var(--vio-claro);box-shadow:0 0 0 4px var(--vio-claro)}
+.ds .ds-op{position:relative;z-index:3}
+.ds.ds-activo{background:var(--vio-claro);box-shadow:0 0 0 4px var(--vio-claro)}
+
+/* Fichas bicolor */
+.mesa{position:relative;display:flex;flex-wrap:wrap;gap:.7rem;justify-content:center;padding:.8rem;border-radius:18px;
+  background:repeating-linear-gradient(45deg,#fbf8f1,#fbf8f1 10px,#f7f3ea 10px,#f7f3ea 20px);border:1.5px solid var(--linea)}
+.grupo{display:flex;flex-direction:column;align-items:center;gap:.4rem;padding:.55rem .6rem .7rem;border-radius:14px;background:rgba(255,255,255,.75);border:1.5px dashed var(--linea-2);min-width:110px;max-width:100%}
+.grupo-et{font-family:var(--display);font-weight:700;font-size:.92rem}
+.grupo-fichas{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;max-width:300px}
+.signo-mesa{align-self:center;font-family:var(--display);font-weight:800;font-size:1.8rem;color:var(--tinta-suave)}
+.fc{width:38px;height:38px;display:grid;place-items:center;border:0;color:#fff;font-family:var(--display);font-weight:800;font-size:1.3rem;line-height:1;cursor:pointer;
+  transition:transform .18s,opacity .18s;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18),0 2px 4px rgba(0,0,0,.12);user-select:none;-webkit-tap-highlight-color:transparent}
+.fc:hover{transform:translateY(-2px) scale(1.06)}
+.fc:focus-visible{outline:3px solid var(--vio);outline-offset:2px}
+.fc.pos{border-radius:50%;background:radial-gradient(circle at 35% 30%,#9cc0ff,var(--cal) 58%,#1f57bd)}
+.fc.neg{border-radius:10px;background:radial-gradient(circle at 35% 30%,#ffc3a8,var(--fri) 58%,#a83c16)}
+.fc.nueva{animation:entra .35s ease-out}
+@keyframes entra{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+.fc.boom{animation:boom .42s ease-in forwards;pointer-events:none}
+.fc.yendo{pointer-events:none}
+.btn-par:disabled{opacity:.45;cursor:default}
+@keyframes boom{40%{transform:scale(1.25);filter:brightness(1.4)}100%{transform:scale(0);opacity:0}}
+.fc.fuera{animation:fuera .45s ease-in forwards;pointer-events:none}
+@keyframes fuera{to{transform:translateY(-40px) rotate(25deg);opacity:0}}
+.fc.no{animation:no .35s}
+@keyframes no{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.puff{position:absolute;pointer-events:none;font-family:var(--display);font-weight:800;font-size:1.3rem;color:var(--vio);animation:puff .8s ease-out forwards}
+@keyframes puff{0%{opacity:0;transform:translateY(0) scale(.6)}30%{opacity:1;transform:translateY(-6px) scale(1.2)}100%{opacity:0;transform:translateY(-30px) scale(1)}}
+.estado-mesa{text-align:center;font-size:.93rem;margin:.55rem 0 .2rem;min-height:1.4em}
+.estado-mesa b{font-family:var(--display);font-weight:700}
+.btn-par{display:inline-flex;align-items:center;gap:.45rem;font-weight:600;font-size:.9rem;background:#fff;border:1.5px solid var(--linea-2);border-radius:999px;padding:.35rem .9rem;cursor:pointer}
+.btn-par:hover{border-color:var(--vio)}
+.btn-par .mini{width:16px;height:16px;display:inline-block}
+.btn-par .mini.pos{border-radius:50%;background:var(--cal)} .btn-par .mini.neg{border-radius:4px;background:var(--fri)}
+.centro{text-align:center;margin-top:.5rem}
+.rejilla-ayuda{display:grid;gap:5px;justify-content:center;margin:.6rem auto 0}
+.rejilla-ayuda i{width:20px;height:20px;border-radius:50%;background:#c9c2b3;display:block}
+.rejilla-ayuda.pos i{background:var(--cal)} .rejilla-ayuda.neg i{background:var(--fri);border-radius:5px}
+.leyenda-ayuda{text-align:center;font-size:.88rem;color:var(--tinta-suave);margin-top:.45rem}
+
+/* Respuesta con signo */
+.fila-resp{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:.6rem 1rem;margin-top:.9rem}
+.fila-resp .rot{font-weight:600}
+.resp{display:inline-flex;align-items:stretch;gap:.35rem}
+.signos{display:flex;flex-direction:column;gap:4px}
+.sg{width:42px;flex:1;min-height:26px;border-radius:9px;border:2px solid var(--linea-2);background:#fff;font-family:var(--display);font-weight:800;font-size:1.05rem;line-height:1;cursor:pointer;color:var(--tinta-suave)}
+.sg.pos[aria-pressed="true"]{background:var(--cal);border-color:var(--cal);color:#fff}
+.sg.neg[aria-pressed="true"]{background:var(--fri);border-color:var(--fri);color:#fff}
+.sg:disabled{cursor:default;opacity:.8}
+.signo-fijo{display:grid;place-items:center;width:42px;border-radius:9px;font-family:var(--display);font-weight:800;font-size:1.3rem;color:#fff}
+.signo-fijo.pos{background:var(--cal)} .signo-fijo.neg{background:var(--fri)}
+.caja{width:5.2rem;font-family:var(--display);font-weight:700;font-size:1.65rem;text-align:center;border:2px solid var(--linea-2);border-radius:12px;padding:.3rem .2rem;background:#fff;color:var(--tinta)}
+.caja:focus{outline:none;border-color:var(--vio);box-shadow:0 0 0 3px rgba(122,90,248,.22)}
+.resp.bien .caja{border-color:var(--ok);background:var(--ok-claro)}
+.resp.mal .caja{border-color:var(--ko);background:var(--ko-claro)}
+.campos-ca{display:grid;grid-template-columns:repeat(3,auto);justify-content:center;gap:.8rem 1.2rem;margin-top:.8rem}
+.campo{display:flex;flex-direction:column;align-items:center;gap:.35rem;padding:.6rem .7rem;border-radius:14px;border:1.5px solid var(--linea)}
+.campo.c-pos{background:var(--cal-claro);border-color:#f6cf9f} .campo.c-neg{background:var(--fri-claro);border-color:#b8cff5} .campo.c-res{background:var(--vio-claro);border-color:#d3c8fd}
+.campo span{font-size:.82rem;font-weight:600;text-align:center}
+@media (max-width:620px){.campos-ca{grid-template-columns:1fr 1fr}.campo.c-res{grid-column:1/-1;justify-self:center}}
+.paso-ca{margin-top:.7rem;padding:.85rem .8rem;border-radius:18px;border:1.5px solid var(--linea);background:#fff;transition:border-color .3s,background .3s}
+.paso-ca.hecho{border-color:#9fd6b8;background:#f6fcf8}
+.paso-ca-tit{display:flex;align-items:center;justify-content:center;gap:.5rem;font-family:var(--display);font-weight:700;font-size:.95rem;margin-bottom:.65rem;text-align:center}
+.paso-ca-tit b{flex:0 0 26px;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--vio);color:#fff;font-size:.8rem}
+.paso-ca.hecho .paso-ca-tit b{background:var(--ok)}
+.paso-ca.revisar{border-color:#efb3c1;background:#fff7f9}
+.paso-ca.revisar .paso-ca-tit b{background:var(--ko)}
+.paso-ca .campos-ca{margin-top:0}
+.terminos{display:flex;flex-wrap:wrap;justify-content:center;gap:.6rem}
+.termino{display:flex;flex-direction:column;align-items:center;gap:.3rem;min-width:92px;padding:.55rem .6rem;border-radius:14px;background:var(--vio-claro);border:1.5px solid #d3c8fd}
+.termino.dado{background:var(--papel);border-color:var(--linea)}
+.termino .t-orig{font-family:var(--display);font-weight:700;font-size:1.08rem;white-space:nowrap}
+.termino .flecha{color:var(--tinta-suave);font-size:.9rem;line-height:1}
+.termino .chip{font-size:1.15rem;padding:.3rem .75rem}
+.termino .caja{width:3.6rem;font-size:1.35rem}
+.termino .corr{font-size:.8rem;font-weight:700;color:var(--ko)}
+.paso-ca .msg{text-align:center;font-size:.93rem;margin-top:.55rem}
+.paso-ca .msg:empty{display:none}
+.paso-ca .msg.ok{color:var(--ok);font-weight:600}
+.paso-ca .msg.ko{color:var(--ko);font-weight:600}
+
+/* Botones */
+.btn{font-family:var(--display);font-weight:700;font-size:.95rem;border:0;border-radius:12px;padding:.7rem 1.3rem;cursor:pointer;transition:transform .12s,box-shadow .12s}
+.btn:hover{transform:translateY(-1px)}
+.btn:disabled{opacity:.5;cursor:default;transform:none}
+.btn-principal{background:linear-gradient(100deg,var(--vio),#9b62f2);color:#fff;box-shadow:0 6px 16px rgba(122,90,248,.3)}
+.btn-sec{background:#fff;color:var(--tinta);border:1.5px solid var(--linea-2)}
+.btn-ancho{width:100%}
+.acciones{display:flex;justify-content:center;gap:.6rem;flex-wrap:wrap;margin-top:1rem}
+.aviso-entrada{text-align:center;color:var(--ko);font-weight:600;font-size:.92rem;margin-top:.5rem}
+.aviso-entrada:empty{margin:0}
+
+/* Feedback */
+.feedback{display:none;margin-top:1rem;border-radius:16px;padding:.9rem 1rem;border-left:6px solid}
+.feedback.visible{display:block;animation:entra-fb .3s ease-out}
+@keyframes entra-fb{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.feedback.ok{background:var(--ok-claro);border-color:var(--ok)}
+.feedback.ko{background:var(--ko-claro);border-color:var(--ko)}
+.feedback .tit{font-family:var(--display);font-weight:700;font-size:1.05rem;margin-bottom:.25rem}
+.feedback.ok .tit{color:var(--ok)} .feedback.ko .tit{color:var(--ko)}
+.feedback p+p{margin-top:.4rem}
+.dinero{display:flex;gap:.6rem;align-items:flex-start;margin-top:.6rem;padding:.55rem .75rem;border-radius:12px;background:#fff8e6;border:1.5px solid #f3d9a4;font-size:.97rem}
+.dinero-ico{font-size:1.2rem;line-height:1.3}
+.feedback .concepto{font-size:.92rem;color:var(--tinta-suave);border-top:1px dashed rgba(0,0,0,.12);padding-top:.45rem;margin-top:.55rem}
+.chips{display:flex;flex-wrap:wrap;gap:.35rem;margin:.4rem 0}
+.chip{font-family:var(--display);font-weight:700;font-size:.9rem;padding:.15rem .55rem;border-radius:8px;color:#fff}
+.chip.pos{background:var(--cal)} .chip.neg{background:var(--fri)}
+
+/* Combinadas */
+.op{display:inline-grid;place-items:center;min-width:46px;height:50px;padding:0 .3rem;border-radius:12px;border:2px dashed #b9aef0;background:#fff;color:var(--tinta);
+  font-family:var(--display);font-weight:700;font-size:inherit;line-height:1;cursor:pointer;transition:background .15s,border-color .15s,transform .12s}
+.op:hover{border-style:solid;border-color:var(--vio);background:var(--vio-claro)}
+.op:focus-visible{outline:3px solid var(--vio);outline-offset:2px}
+.op.sel{background:var(--vio);border:2px solid var(--vio);color:#fff}
+.op.mal{animation:no .35s;border-color:var(--ko);background:var(--ko-claro)}
+.op:disabled{cursor:default}
+.pregunta .num{padding:0 .08em;border-radius:8px;transition:background .2s}
+.pregunta .num.sel{background:var(--vio-claro);box-shadow:0 0 0 3px var(--vio-claro)}
+.br{font-weight:600}
+.br.p{color:var(--vio)} .br.c{color:var(--tur);font-weight:700}
+.paso{margin-top:.6rem;padding:.8rem;border-radius:16px;background:var(--vio-claro);border:1.5px solid #d3c8fd;text-align:center}
+.paso .que{font-family:var(--display);font-weight:700;font-size:1.3rem}
+.paso .msg{margin-top:.5rem;font-size:.93rem}
+.paso .msg.ko{color:var(--ko);font-weight:600}
+.paso-hint{text-align:center;color:var(--tinta-suave);font-size:.93rem;margin-top:.4rem}
+.rastro{margin-top:.9rem;padding:.6rem 1rem;border-radius:14px;background:#fff;border:1px solid var(--linea);
+  background-image:linear-gradient(transparent 31px,#ece6da 32px);background-size:100% 32px;line-height:32px}
+.rastro .linea{font-family:var(--display);font-weight:600;font-size:1.02rem;white-space:normal}
+.rastro .linea .eq{color:var(--vio);margin-right:.35rem}
+.rastro-tit{font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--tinta-suave);font-weight:600;line-height:1.6;margin-bottom:.1rem}
+
+/* Recuerda */
+.recuerda{position:sticky;top:84px}
+@media (max-width:980px){.recuerda{position:static}}
+.recuerda h3{font-family:var(--display);font-weight:700;font-size:1.02rem;margin-bottom:.6rem;display:flex;align-items:center;gap:.45rem}
+.recuerda p{font-size:.92rem}
+.recuerda p+p{margin-top:.45rem}
+.demo{display:flex;align-items:center;justify-content:center;gap:.5rem;margin:.6rem 0;font-family:var(--display);font-weight:800;font-size:1.25rem}
+.demo .fc{cursor:default;width:34px;height:34px;font-size:1.1rem}
+.demo .fc:hover{transform:none}
+.reglas-signo{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin:.6rem 0}
+.reglas-signo div{display:flex;align-items:center;justify-content:center;gap:.25rem;padding:.4rem;border-radius:10px;font-family:var(--display);font-weight:700;font-size:.95rem;background:var(--papel);border:1.5px solid var(--linea)}
+.reglas-signo div.res-pos b:last-child{color:var(--cal-osc)} .reglas-signo div.res-neg b:last-child{color:var(--fri-osc)}
+.reglas-signo div.luz{border-color:var(--vio);background:var(--vio-claro);box-shadow:0 0 0 3px rgba(122,90,248,.2)}
+.piramide{display:grid;gap:.35rem;margin:.6rem 0}
+.piramide div{display:flex;align-items:center;gap:.6rem;padding:.45rem .7rem;border-radius:12px;font-weight:600;font-size:.92rem}
+.piramide b{font-family:var(--display);font-weight:800;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;color:#fff;flex:0 0 26px;font-size:.85rem}
+.piramide .p1{background:var(--vio-claro);margin:0 1.6rem} .piramide .p1 b{background:var(--vio)}
+.piramide .p2{background:#fde6d0;margin:0 .8rem} .piramide .p2 b{background:var(--cal)}
+.piramide .p3{background:var(--fri-claro)} .piramide .p3 b{background:var(--fri)}
+.cebolla{position:relative;margin:.7rem auto;width:230px;max-width:100%;border:3px solid var(--tur);border-radius:16px;padding:.9rem .6rem .6rem;text-align:center;font-weight:600;font-size:.82rem;color:var(--tur)}
+.cebolla .in{border:3px solid var(--vio);border-radius:12px;padding:.8rem .5rem .5rem;color:var(--vio);margin-top:.35rem}
+.cebolla .core{background:var(--vio);color:#fff;border-radius:8px;padding:.35rem;margin-top:.35rem;font-family:var(--display);font-size:.8rem}
+.tabla-dobles{display:grid;gap:.3rem;margin:.6rem 0}
+.tabla-dobles div{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:.4rem;padding:.35rem .6rem;border-radius:10px;font-family:var(--display);font-weight:700;font-size:.95rem}
+.tabla-dobles .d-pos{background:var(--cal-claro)} .tabla-dobles .d-neg{background:var(--fri-claro)}
+.tabla-dobles span{text-align:center;color:var(--tinta-suave);font-family:var(--texto);font-weight:500;font-size:.8rem}
+
+/* Superado */
+.superado-caja{text-align:center;padding:1.2rem .5rem}
+.superado-caja .gran{font-family:var(--display);font-weight:800;font-size:1.6rem;color:var(--ok)}
+.superado-caja p{margin-top:.4rem}
+
+/* Duelo */
+.duelo-tarjeta{margin-top:1.2rem;position:relative;overflow:hidden;background:linear-gradient(135deg,#1e2540 0%,#2a2357 55%,#1b3a62 100%);color:#eef1fb;border:0}
+.duelo-tarjeta::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.55;
+  background-image:radial-gradient(1.6px 1.6px at 12% 22%,#fff,transparent),radial-gradient(1.2px 1.2px at 78% 30%,#fff,transparent),radial-gradient(1.4px 1.4px at 40% 80%,#fff,transparent),radial-gradient(1.2px 1.2px at 90% 75%,#fff,transparent),radial-gradient(1px 1px at 60% 12%,#fff,transparent)}
+.duelo-tarjeta > *{position:relative}
+.duelo-tarjeta h2{font-family:var(--display);font-weight:800;font-size:1.35rem;display:flex;align-items:center;gap:.6rem}
+.duelo-tarjeta .txt{color:#c3cae0;font-size:.93rem;margin:.3rem 0 .9rem}
+.pestanas{display:inline-flex;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:3px;margin-bottom:.8rem}
+.pestanas button{white-space:nowrap;font-weight:700;font-size:.88rem;color:#c3cae0;background:none;border:0;border-radius:999px;padding:.4rem 1rem;cursor:pointer}
+.pestanas button[aria-selected="true"]{background:#fff;color:#1e2540}
+.bloques{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem}
+@media (max-width:760px){.bloques{grid-template-columns:1fr 1fr}}
+@media (max-width:420px){.pestanas{display:flex;width:100%}.pestanas button{flex:1;white-space:normal;padding:.4rem .5rem;font-size:.8rem;line-height:1.2}.elem .nom{font-size:.64rem}.elem .sim{font-size:1.5rem}}
+.bloque{text-align:left;border:2px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:#eef1fb;border-radius:14px;padding:.6rem .7rem;cursor:pointer}
+.bloque b{display:block;font-family:var(--display);font-weight:700;font-size:.88rem}
+.bloque span{font-size:.78rem;color:#b9c1da}
+.bloque[aria-pressed="true"]{border-color:#ffd18f;background:rgba(255,209,143,.14)}
+.bloque[aria-pressed="true"] b::before{content:"✓ ";color:#ffd18f}
+.codigo-grande{font-family:var(--display);font-weight:800;font-size:clamp(1.8rem,8vw,2.6rem);letter-spacing:.14em;text-align:center;color:#ffd18f;background:rgba(0,0,0,.25);border:2px dashed rgba(255,209,143,.6);border-radius:16px;padding:.5rem;margin:.7rem 0 .3rem}
+#codigoUnir{width:100%;font-family:var(--display);font-weight:800;font-size:1.6rem;letter-spacing:.12em;text-align:center;text-transform:uppercase;border-radius:12px;border:2px solid rgba(255,255,255,.3);background:rgba(0,0,0,.25);color:#fff;padding:.4rem}
+#codigoUnir:focus{outline:none;border-color:#ffd18f}
+.nota-duelo{font-size:.88rem;color:#c3cae0;margin-top:.5rem}
+.aviso-cod{font-size:.9rem;color:#ffd18f;min-height:1.3em;margin-top:.35rem}
+.btn-oro{background:linear-gradient(100deg,#ffd18f,#f08a24);color:#2a1a06;box-shadow:0 6px 16px rgba(240,138,36,.35)}
+
+#pantallaDuelo .tarjeta{max-width:780px;margin:0 auto}
+.duelo-cab{display:flex;justify-content:space-between;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.6rem}
+.chip-d{font-family:var(--display);font-weight:600;font-size:.78rem;padding:.25rem .65rem;border-radius:999px;background:var(--papel);border:1px solid var(--linea)}
+.duelo-reloj{font-family:var(--display);font-weight:800;font-size:1.35rem;font-variant-numeric:tabular-nums;color:var(--vio-osc)}
+.duelo-barra{height:9px;border-radius:999px;background:var(--papel-3);overflow:hidden;margin-bottom:.6rem}
+.duelo-barra i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cal),var(--vio),var(--fri));transition:width .3s}
+.duelo-tipo{text-align:center;font-family:var(--display);font-weight:600;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--vio-osc)}
+.resultado-duelo{text-align:center}
+.rd-cifra{font-family:var(--display);font-weight:800;font-size:3rem;line-height:1;color:var(--vio-osc)}
+.rd-fila{display:flex;justify-content:center;gap:1.6rem;margin:.7rem 0;flex-wrap:wrap}
+.rd-fila span{display:block;font-size:.76rem;color:var(--tinta-suave);text-transform:uppercase;letter-spacing:.06em}
+.rd-fila b{font-family:var(--display);font-size:1.25rem}
+.clasif{margin-top:1rem;text-align:left;background:var(--papel);border:1px solid var(--linea);border-radius:16px;padding:.8rem .9rem}
+.clasif-cab{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-bottom:.5rem}
+.clasif-cab b{font-family:var(--display);font-size:1rem}
+.clasif ol{list-style:none;display:grid;gap:.4rem}
+.clasif li{display:grid;grid-template-columns:32px 1fr auto;align-items:center;gap:.6rem;background:#fff;border:1px solid var(--linea);border-radius:12px;padding:.4rem .6rem}
+.clasif li.yo{border-color:var(--vio);box-shadow:0 0 0 2px rgba(122,90,248,.25)}
+.med{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:800;color:#1a1206}
+.m1{background:#f4b942} .m2{background:#c9d4e6} .m3{background:#e0915a}
+.clasif .dat{font-size:.82rem;color:var(--tinta-suave);white-space:nowrap}
+.clasif .tu{margin-top:.6rem;font-weight:700;color:var(--vio-osc)}
+.clasif .nota-duelo{color:var(--tinta-suave)}
+.btn-mini{font-weight:700;font-size:.82rem;background:#fff;border:1px solid var(--linea-2);border-radius:999px;padding:.3rem .8rem;cursor:pointer}
+
+/* Pie */
+.pie{display:flex;justify-content:center;gap:.7rem;flex-wrap:wrap;margin-top:1.6rem}
+.pie .btn{min-width:240px}
+
+/* Modales */
+.modal{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:rgba(20,24,36,.55);padding:16px}
+.modal-caja{width:min(720px,100%);max-height:calc(100vh - 32px);overflow:auto;background:#fff;border-radius:22px;box-shadow:0 30px 70px rgba(0,0,0,.35)}
+.informe-cab{padding:1.1rem 1.3rem;border-radius:22px 22px 0 0}
+.informe-cab .if-titulo{font-family:var(--display);font-weight:800;font-size:1.25rem;line-height:1.2}
+.informe-cab .if-sub{font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;opacity:.9;margin-top:.2rem}
+.informe-cab hr{border:0;border-top:1px solid currentColor;opacity:.35;margin:.7rem 0}
+.informe-cab .if-h{font-weight:700;font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;opacity:.9}
+.informe-cab .if-nota{font-family:var(--display);font-weight:800;font-size:2.6rem;line-height:1.1}
+.informe-cuerpo{padding:1rem 1.3rem 1.3rem}
+.if-datos{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.5rem;margin-bottom:1rem}
+.if-datos div{background:var(--papel);border-radius:12px;padding:.45rem .7rem}
+.if-datos span{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--tinta-suave);font-weight:600}
+.if-datos b{font-weight:700}
+.if-sec{font-family:var(--display);font-weight:700;font-size:.95rem;margin:1rem 0 .45rem}
+.tabla-inf{width:100%;border-collapse:collapse;font-size:.9rem}
+.tabla-inf th,.tabla-inf td{padding:.4rem .5rem;border-bottom:1px solid var(--linea);text-align:center}
+.tabla-inf th:first-child,.tabla-inf td:first-child{text-align:left}
+.tabla-inf th{font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--tinta-suave)}
+.est-ok{color:var(--ok);font-weight:700} .est-no{color:var(--ko);font-weight:600} .est-bl{color:var(--tinta-suave)}
+.errores{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem}
+.errores div{border-radius:12px;padding:.5rem .6rem;background:var(--papel);text-align:center}
+.errores b{display:block;font-family:var(--display);font-size:1.4rem}
+.errores span{font-size:.8rem;color:var(--tinta-suave)}
+@media (max-width:520px){.errores{grid-template-columns:1fr}}
+.if-acciones{display:flex;justify-content:flex-end;gap:.6rem;margin-top:1.1rem;flex-wrap:wrap}
+.modal-simple{padding:1.3rem}
+.modal-simple h3{font-family:var(--display);font-weight:700;font-size:1.1rem;margin-bottom:.5rem}
+
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);z-index:60;background:var(--tinta);color:#fff;font-weight:600;font-size:.93rem;padding:.65rem 1.1rem;border-radius:999px;box-shadow:0 10px 30px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:all .25s;max-width:calc(100vw - 32px);text-align:center}
+.toast.ver{opacity:1;transform:translateX(-50%)}
+.estallido{position:fixed;pointer-events:none;z-index:55;width:14px;height:14px;animation:estalla 1s ease-out forwards}
+.estallido.pos{border-radius:50%;background:var(--cal)} .estallido.neg{border-radius:4px;background:var(--fri)}
+@keyframes estalla{to{transform:translate(var(--dx),var(--dy)) rotate(200deg);opacity:0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="franja">Material elaborado por Marta L Letona S.</div>
+
+<div class="envoltura">
+  <header class="portada">
+    <svg viewBox="0 0 84 62" aria-hidden="true">
+      <circle cx="18" cy="31" r="15" fill="#2f6fdb"/><circle cx="14" cy="26" r="5" fill="#9cc0ff" opacity=".7"/>
+      <path d="M11 31h14M18 24v14" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/>
+      <rect x="40" y="16" width="30" height="30" rx="7" fill="#e2572a"/><rect x="43" y="19" width="10" height="9" rx="3" fill="#ffb49c" opacity=".6"/>
+      <path d="M47 31h16" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/>
+      <path d="M34 9l1.6 4.2M36 31h-2M34 53l1.6-4.2" stroke="#7a5af8" stroke-width="2.4" stroke-linecap="round"/>
+      <text x="76" y="58" font-family="Unbounded,sans-serif" font-weight="800" font-size="13" fill="#7a5af8">0</text>
+    </svg>
+    <div>
+      <h1 class="titulo-ficha">El Laboratorio de los <em>Enteros</em></h1>
+      <div class="subtitulo">Números enteros · Suma, resta, multiplicación, división y operaciones combinadas</div>
+    </div>
+  </header>
+
+  <div class="barra-alumno" id="barraAlumno">
+    <label for="nombre">Nombre</label>
+    <input id="nombre" type="text" autocomplete="off" placeholder="Escribe tu nombre y apellidos" maxlength="60">
+    <div class="marcador" aria-live="polite">
+      <div class="dato nota"><span>Nota</span><b id="mNota">0</b></div>
+      <div class="dato"><span>Niveles</span><b id="mNiveles">0/8</b></div>
+      <div class="dato fallos"><span>Fallos</span><b id="mFallos">0</b></div>
+    </div>
+    <div class="aviso-nombre" id="avisoNombre" aria-live="polite"></div>
+  </div>
+
+  <section id="pantallaFicha">
+    <div class="como">
+      <div><svg viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="13" fill="#e1f5ea"/><path d="M9 15.5l4 4 8-9" fill="none" stroke="#14885a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <p>Superas un nivel con <b>3 aciertos en tus 4 últimos intentos</b>. Las bolitas te enseñan cómo vas.</p></div>
+      <div><svg viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="13" fill="#efeaff"/><path d="M15 8v8l5 3" fill="none" stroke="#7a5af8" stroke-width="3" stroke-linecap="round"/></svg>
+        <p>Todos los niveles están abiertos: hazlos <b>en el orden que quieras</b>. Cada nivel superado suma <b>1,25 puntos</b>.</p></div>
+      <div><svg viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="13" fill="#fde9ee"/><path d="M10 10l10 10M20 10L10 20" stroke="#c43d5a" stroke-width="3" stroke-linecap="round"/></svg>
+        <p>Cada fallo resta <b>0,25</b>. Piensa antes de comprobar: las fichas de colores te ayudan.</p></div>
+    </div>
+
+    <div class="etiqueta">Tabla de niveles</div>
+    <div class="tabla" id="tabla"></div>
+    <div class="leyenda" aria-hidden="true">
+      <span><i style="border-color:#f2b77c;background:#fff1e0"></i>Sumar y restar</span>
+      <span><i style="border-color:#8fb2ef;background:#e8f0ff"></i>Multiplicar y dividir</span>
+      <span><i style="border-color:#b5a3fb;background:#f1edff"></i>Operaciones combinadas</span>
+    </div>
+
+    <div class="banco">
+      <article class="tarjeta" id="trabajo">
+        <div class="trabajo-cab">
+          <div><span class="chip-nivel" id="chipNivel"></span><h2 id="nombreNivel"></h2></div>
+          <div class="ventana" id="ventana"></div>
+        </div>
+        <div id="cuerpoEj">
+          <p class="instr" id="instr"></p>
+          <div class="pregunta" id="pregunta"></div>
+          <div id="extraPregunta"></div>
+          <div id="zona"></div>
+          <div class="aviso-entrada" id="aviso" aria-live="polite"></div>
+          <div class="acciones" id="accComprobar"><button type="button" class="btn btn-principal" id="btnComprobar">Comprobar</button></div>
+          <div class="feedback" id="feedback" aria-live="polite"></div>
+          <div class="acciones oculto" id="accSiguiente"><button type="button" class="btn btn-principal" id="btnSiguiente">Otro ejercicio</button></div>
+        </div>
+        <div id="cuerpoSuperado" class="oculto"></div>
+      </article>
+      <aside class="tarjeta recuerda" id="recuerda" aria-label="Recuerda"></aside>
+    </div>
+
+    <section class="tarjeta duelo-tarjeta" id="tarjetaDuelo" aria-labelledby="tituloDuelo">
+      <h2 id="tituloDuelo"><svg viewBox="0 0 40 40" width="34" height="34" aria-hidden="true"><circle cx="20" cy="21" r="9" fill="#ffd18f"/><ellipse cx="20" cy="21" rx="18" ry="5" fill="none" stroke="#9cc0ff" stroke-width="2.6" transform="rotate(-20 20 21)"/><circle cx="6" cy="7" r="1.5" fill="#fff"/><circle cx="35" cy="34" r="1.3" fill="#fff"/></svg>Reta a tus compañeros</h2>
+      <p class="txt">Todos recibís las mismas 15 preguntas en el mismo orden. Gana quien más acierte y, si hay empate, quien tarde menos. El duelo no cambia tu nota, pero aparece en tu informe.</p>
+      <div class="pestanas" role="tablist" aria-label="Crear o unirse a un duelo">
+        <button type="button" role="tab" id="tabCrear" aria-selected="true">Crear un duelo</button>
+        <button type="button" role="tab" id="tabUnir" aria-selected="false">Unirme con un código</button>
+      </div>
+      <div id="zonaCrear">
+        <p class="nota-duelo" style="margin:0 0 .5rem">¿Qué entra en el duelo?</p>
+        <div class="bloques" id="bloques"></div>
+        <button type="button" class="btn btn-oro btn-ancho" id="btnCrearCodigo" style="margin-top:.9rem">Generar el código del duelo</button>
+        <div id="codigoCreado" class="oculto">
+          <div class="codigo-grande" id="codigoTexto" aria-live="polite"></div>
+          <p class="nota-duelo" id="codigoAyuda"></p>
+        </div>
+      </div>
+      <div id="zonaUnir" class="oculto">
+        <label for="codigoUnir" class="nota-duelo" style="display:block;margin:0 0 .4rem">Escribe el código que te han dado</label>
+        <input id="codigoUnir" type="text" autocomplete="off" maxlength="9" placeholder="ABC-1234" spellcheck="false">
+        <div class="aviso-cod" id="avisoCodigo" aria-live="polite"></div>
+      </div>
+      <button type="button" class="btn btn-principal btn-ancho oculto" id="btnEmpezar" style="margin-top:.8rem">Empezar el duelo</button>
+    </section>
+  </section>
+
+  <section id="pantallaDuelo" class="oculto">
+    <div class="tarjeta">
+      <div class="duelo-cab">
+        <span class="chip-d" id="dueloChip">Duelo</span>
+        <span class="chip-d" id="dueloNum">Pregunta 1 de 15</span>
+        <span class="duelo-reloj" id="dueloReloj" aria-label="Tiempo de duelo">00:00</span>
+      </div>
+      <div class="duelo-barra" aria-hidden="true"><i id="dueloBarra"></i></div>
+      <div id="dueloJuego">
+        <div class="duelo-tipo" id="dueloTipo"></div>
+        <div class="pregunta" id="dueloPregunta"></div>
+        <div id="dueloZona"></div>
+        <div class="aviso-entrada" id="dueloAviso" aria-live="polite"></div>
+        <div class="feedback" id="dueloFeedback" aria-live="polite"></div>
+        <div class="acciones oculto" id="dueloAcciones"><button type="button" class="btn btn-principal btn-ancho" id="dueloSiguiente">Siguiente</button></div>
+      </div>
+      <div id="dueloFinal" class="oculto resultado-duelo"></div>
+      <p class="nota-duelo" id="dueloRegla" style="text-align:center;color:var(--tinta-suave)">Gana quien más acierte. Si hay empate, gana quien tarde menos. El reloj se para mientras lees la corrección.</p>
+    </div>
+  </section>
+
+  <footer class="pie">
+    <button type="button" class="btn btn-sec oculto" id="btnCambiar">Abandonar el duelo</button>
+    <button type="button" class="btn btn-principal" id="btnFinalizar">Finalizar y Calificar</button>
+  </footer>
+</div>
+
+<div class="modal oculto" id="modalInforme" role="dialog" aria-modal="true" aria-labelledby="ifTitulo">
+  <div class="modal-caja" id="informeCaja"></div>
+</div>
+<div class="modal oculto" id="modalAbandono" role="dialog" aria-modal="true" aria-labelledby="abTitulo">
+  <div class="modal-caja modal-simple" style="max-width:440px">
+    <h3 id="abTitulo">¿Abandonar el duelo?</h3>
+    <p>Si sales ahora, este intento cuenta igualmente y no podrás repetirlo para la clasificación.</p>
+    <div class="if-acciones"><button type="button" class="btn btn-sec" id="abNo">Seguir jugando</button><button type="button" class="btn btn-principal" id="abSi">Abandonar</button></div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+'use strict';
+/* =====================================================================
+   Utilidades
+   ===================================================================== */
+const $ = id => document.getElementById(id);
+const MENOS = '−';
+const fmt = n => n < 0 ? MENOS + (-n) : String(n);
+const fmtS = n => n < 0 ? MENOS + (-n) : n > 0 ? '+' + n : '0';
+const parS = n => '(' + fmtS(n) + ')';
+const par = n => n < 0 ? '(' + fmt(n) + ')' : String(n);
+const dos = n => String(n).padStart(2, '0');
+const escapar = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const listaY = a => a.length > 1 ? a.slice(0, -1).join(', ') + ' y ' + a[a.length - 1] : String(a[0] || '');
+const punteroFino = () => window.matchMedia && matchMedia('(pointer: fine)').matches;
+const coma = x => String(Math.round(x * 100) / 100).replace('.', ',');
+const colorN = (n, txt) => `<span class="n ${n < 0 ? 'neg' : 'pos'}">${txt}</span>`;
+const nf = (k, pos) => `${k} ficha${k === 1 ? '' : 's'} de ${pos ? 'tener' : 'deuda'}`;
+const signoTxt = n => n > 0 ? 'positivo' : 'negativo';
+
+function generadorDe(n) {   // mulberry32
+  let s = n >>> 0;
+  return () => { s += 0x6D2B79F5; let t = s; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+}
+// Semilla fija solo para pruebas (?seed=123). En clase, sin semilla: cada alumno recibe ejercicios distintos.
+const SEED = new URLSearchParams(location.search).get('seed');
+const rnd = SEED !== null ? generadorDe(Number(SEED) || 1) : Math.random;
+const ent = (r, a, b) => a + Math.floor(r() * (b - a + 1));
+const nz = (r, a, b) => { let v; do v = ent(r, a, b); while (v === 0); return v; };
+const elegir = (r, arr) => arr[Math.floor(r() * arr.length)];
+const azar = arr => elegir(rnd, arr);
+const conSigno = (r, pNeg, min = 2, max = 9) => (r() < pNeg ? -1 : 1) * ent(r, min, max);
+
+let toastT = null;
+function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('ver'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('ver'), 2600); }
+
+/* =====================================================================
+   Respuesta con signo (botones + y − y casilla para el número)
+   ===================================================================== */
+function htmlResp(id, opts = {}) {
+  const etq = opts.label || 'Tu respuesta';
+  if (opts.fijo) return `<div class="resp fijo" data-fijo="${opts.fijo}"><span class="signo-fijo ${opts.fijo === '+' ? 'pos' : 'neg'}" aria-hidden="true">${opts.fijo === '+' ? '+' : MENOS}</span><input class="caja" id="${id}" type="text" inputmode="numeric" autocomplete="off" maxlength="3" aria-label="${etq}"></div>`;
+  return `<div class="resp" data-signo="">
+    <div class="signos" role="group" aria-label="Signo"><button type="button" class="sg pos" data-s="+" aria-pressed="false" aria-label="Signo más">+</button><button type="button" class="sg neg" data-s="-" aria-pressed="false" aria-label="Signo menos">${MENOS}</button></div>
+    <input class="caja" id="${id}" type="text" inputmode="numeric" autocomplete="off" maxlength="3" aria-label="${etq}"></div>`;
+}
+function ponerSigno(box, s) {
+  box.dataset.signo = s;
+  box.querySelectorAll('.sg').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.s === s)));
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('.sg');
+  if (!b || b.disabled) return;
+  const box = b.closest('.resp'); ponerSigno(box, b.dataset.s);
+  const inp = box.querySelector('input'); if (inp && punteroFino()) inp.focus({ preventScroll: true });
+});
+document.addEventListener('keydown', e => {
+  const inp = e.target;
+  if (!inp.classList || !inp.classList.contains('caja')) return;
+  const box = inp.closest('.resp');
+  if (['-', '−', 'Subtract'].includes(e.key) || e.key === '+') {
+    e.preventDefault();
+    if (!box.classList.contains('fijo')) ponerSigno(box, e.key === '+' ? '+' : '-');
+  }
+});
+document.addEventListener('input', e => {
+  const inp = e.target;
+  if (!inp.classList || !inp.classList.contains('caja')) return;
+  const box = inp.closest('.resp');
+  const m = inp.value.match(/^\s*([+\-−])/);
+  if (m && !box.classList.contains('fijo')) ponerSigno(box, m[1] === '+' ? '+' : '-');
+  const limpio = inp.value.replace(/[^0-9]/g, '').slice(0, 3);
+  if (limpio !== inp.value) inp.value = limpio;
+});
+function leerResp(id) {
+  const inp = $(id), box = inp.closest('.resp'), t = inp.value.trim();
+  if (t === '') return { error: 'Escribe el número antes de comprobar.', el: inp };
+  if (!/^\d{1,3}$/.test(t)) return { error: 'Escribe solo cifras.', el: inp };
+  const n = parseInt(t, 10);
+  if (box.classList.contains('fijo')) return { v: box.dataset.fijo === '+' ? n : -n };
+  const s = box.dataset.signo;
+  if (n !== 0 && !s) return { error: 'Elige el signo del resultado: pulsa + o −.', el: box.querySelector('.sg') };
+  return { v: s === '-' ? -n : n };
+}
+function marcarResp(id, ok) {
+  const inp = $(id), box = inp.closest('.resp');
+  inp.disabled = true; box.querySelectorAll('.sg').forEach(b => b.disabled = true);
+  box.classList.add(ok ? 'bien' : 'mal');
+}
+
+/* =====================================================================
+   Fichas bicolor (mesa)
+   ===================================================================== */
+const htmlFicha = (pos, extra = '') => `<button type="button" class="fc ${pos ? 'pos' : 'neg'} ${extra}" data-s="${pos ? 1 : -1}" aria-label="${pos ? 'Ficha de tener, más uno' : 'Ficha de deuda, menos uno'}">${pos ? '+' : MENOS}</button>`;
+function htmlGrupo(n, etiqueta, id) {
+  return `<div class="grupo" ${id ? `id="${id}"` : ''}><div class="grupo-et">${etiqueta}</div><div class="grupo-fichas">${Array.from({ length: Math.abs(n) }, () => htmlFicha(n > 0)).join('')}</div></div>`;
+}
+function puff(mesa, el, txt = '0') {
+  const r = el.getBoundingClientRect(), m = mesa.getBoundingClientRect();
+  const p = document.createElement('span'); p.className = 'puff'; p.textContent = txt;
+  p.style.left = (r.left - m.left + r.width / 2 - 8) + 'px'; p.style.top = (r.top - m.top - 4) + 'px';
+  mesa.appendChild(p); setTimeout(() => p.remove(), 850);
+}
+function fichasVivas(mesa, s) { return [...mesa.querySelectorAll('.fc:not(.boom):not(.fuera):not(.yendo)')].filter(f => s === undefined || Number(f.dataset.s) === s); }
+const sinMovimiento = () => window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+const espera = ms => new Promise(ok => setTimeout(ok, ms));
+function cercana(f, lista) {
+  const r0 = f.getBoundingClientRect(); let mejor = lista[0], dm = Infinity;
+  for (const c of lista) { const r = c.getBoundingClientRect(); const d = Math.hypot(r.left - r0.left, r.top - r0.top); if (d < dm) { dm = d; mejor = c; } }
+  return mejor;
+}
+// La ficha de deuda viaja hasta la de tener; al juntarse, las dos desaparecen (juntas valen 0).
+function juntarPar(mesa, neg, pos) {
+  neg.classList.add('yendo'); pos.classList.add('yendo');
+  const rn = neg.getBoundingClientRect(), rp = pos.getBoundingClientRect();
+  const dx = rp.left - rn.left, dy = rp.top - rn.top;
+  const dur = Math.min(750, 380 + Math.hypot(dx, dy) * .6);
+  neg.style.position = 'relative'; neg.style.zIndex = 5;
+  const viaje = neg.animate([{ transform: 'translate(0,0)' }, { transform: `translate(${dx}px,${dy}px)` }], { duration: dur, easing: 'cubic-bezier(.5,0,.6,1)', fill: 'forwards' });
+  return viaje.finished.then(() => {
+    puff(mesa, pos);
+    const fin = 380;
+    neg.animate([{ transform: `translate(${dx}px,${dy}px) scale(1)`, opacity: 1 }, { transform: `translate(${dx}px,${dy}px) scale(1.3)`, opacity: 1, offset: .35 }, { transform: `translate(${dx}px,${dy}px) scale(0)`, opacity: 0 }], { duration: fin, fill: 'forwards' });
+    return pos.animate([{ transform: 'scale(1)', filter: 'brightness(1)' }, { transform: 'scale(1.3)', filter: 'brightness(1.5)', offset: .35 }, { transform: 'scale(0)', opacity: 0 }], { duration: fin, fill: 'forwards' }).finished;
+  }).then(() => { neg.remove(); pos.remove(); });
+}
+function anular(mesa, f) {   // une la ficha tocada con la contraria más cercana
+  const s = Number(f.dataset.s), contrarias = fichasVivas(mesa, -s);
+  if (!contrarias.length) { f.classList.remove('no'); void f.offsetWidth; f.classList.add('no'); return false; }
+  const otra = cercana(f, contrarias);
+  juntarPar(mesa, s < 0 ? f : otra, s < 0 ? otra : f);
+  return true;
+}
+async function anularTodo(mesa, alAnular) {   // al comprobar: se anulan solas todas las parejas que queden
+  for (;;) {
+    const negs = fichasVivas(mesa, -1), poss = fichasVivas(mesa, 1);
+    if (!negs.length || !poss.length || !mesa.isConnected) return;
+    const n = negs[0], p = cercana(n, poss);
+    await juntarPar(mesa, n, p);
+    if (alAnular) alAnular();
+    await espera(120);
+  }
+}
+
+/* =====================================================================
+   Expresiones combinadas: árbol, jerarquía y resolución paso a paso
+   Un grupo es { br: '' | '(' | '[', it: [operando, op, operando, ...] }
+   ===================================================================== */
+const OPS = { '+': '+', '-': MENOS, '*': '·', '/': ':' };
+const NOMBRE_OP = { '+': 'suma', '-': 'resta', '*': 'multiplicación', '/': 'división' };
+const esGrupo = x => x !== null && typeof x === 'object';
+function parsePlantilla(s) {
+  let i = 0;
+  function grupo(br) {
+    const g = { br, it: [] };
+    while (i < s.length) {
+      const ch = s[i++];
+      if (ch === '(' || ch === '[') g.it.push(grupo(ch));
+      else if (ch === ')' || ch === ']') return g;
+      else if ('+-*/'.includes(ch)) g.it.push(ch);
+      else g.it.push({ letra: ch });
+    }
+    return g;
+  }
+  return grupo('');
+}
+function rellenar(g, vals) { return { br: g.br, it: g.it.map(x => esGrupo(x) ? (x.letra ? vals[x.letra] : rellenar(x, vals)) : x) }; }
+function clonar(g) { return { br: g.br, it: g.it.map(x => esGrupo(x) ? clonar(x) : x) }; }
+function nodo(root, path) { let g = root; for (const k of path) g = g.it[k]; return g; }
+function gruposListos(g, path = [], out = []) {   // grupos sin paréntesis dentro: los únicos donde se puede operar
+  let tiene = false;
+  g.it.forEach((x, k) => { if (k % 2 === 0 && esGrupo(x)) { tiene = true; gruposListos(x, path.concat(k), out); } });
+  if (!tiene) out.push(path);
+  return out;
+}
+function opsValidas(root) {
+  const res = [];
+  for (const p of gruposListos(root)) {
+    const g = nodo(root, p), mult = [];
+    for (let k = 1; k < g.it.length; k += 2) if ('*/'.includes(g.it[k])) mult.push(k);
+    if (mult.length) mult.forEach(k => { if (!(k >= 3 && '*/'.includes(g.it[k - 2]))) res.push(p.concat(k).join('.')); });
+    else if (g.it.length > 1) res.push(p.concat(1).join('.'));
+  }
+  return res;
+}
+function calc(a, op, b) { return op === '+' ? a + b : op === '-' ? a - b : op === '*' ? a * b : a / b; }
+function aplicar(root, path, k, val) {
+  const g = nodo(root, path);
+  g.it.splice(k - 1, 3, val);
+  if (g.it.length === 1 && path.length) nodo(root, path.slice(0, -1)).it[path[path.length - 1]] = val;
+}
+const cierre = br => br === '(' ? ')' : ']';
+function txtExpr(g) {   // texto plano (para el rastro y el duelo)
+  let h = g.br || '';
+  g.it.forEach((x, k) => {
+    if (k % 2 === 1) h += ' ' + OPS[x] + ' ';
+    else if (esGrupo(x)) h += txtExpr(x);
+    else h += k === 0 ? fmt(x) : par(x);
+  });
+  return h + (g.br ? cierre(g.br) : '');
+}
+function htmlExpr(g, botones, path = []) {
+  let h = g.br ? `<span class="br ${g.br === '(' ? 'p' : 'c'}">${g.br}</span>` : '';
+  g.it.forEach((x, k) => {
+    const key = path.concat(k).join('.');
+    if (k % 2 === 1) h += botones ? `<button type="button" class="op" data-k="${key}" aria-label="${NOMBRE_OP[x]}">${OPS[x]}</button>` : `<span class="simb">${OPS[x]}</span>`;
+    else if (esGrupo(x)) h += htmlExpr(x, botones, path.concat(k));
+    else h += `<span class="num n ${x < 0 ? 'neg' : 'pos'}" data-k="${key}">${k === 0 ? fmt(x) : par(x)}</span>`;
+  });
+  if (g.br) h += `<span class="br ${g.br === '(' ? 'p' : 'c'}">${cierre(g.br)}</span>`;
+  return h;
+}
+function resolver(root0) {   // sigue siempre la primera operación válida; comprueba que todo sea entero y manejable
+  const root = clonar(root0), pasos = [txtExpr(root)];
+  let ok = true;
+  while (root.it.length > 1 || esGrupo(root.it[0])) {
+    const key = opsValidas(root)[0].split('.').map(Number), k = key.pop(), g = nodo(root, key);
+    const a = g.it[k - 1], op = g.it[k], b = g.it[k + 1];
+    if (op === '/' && (b === 0 || a % b !== 0)) ok = false;
+    const v = calc(a, op, b);
+    if (!Number.isInteger(v) || Math.abs(v) > 50) ok = false;
+    if (!ok) break;
+    aplicar(root, key, k, v);
+    pasos.push(txtExpr(root));
+  }
+  return { ok, valor: ok ? root.it[0] : null, pasos };
+}
+function naive(root) {   // de izquierda a derecha y sin respetar nada: para comprobar que la jerarquía importa
+  const plano = [];
+  (function aplanar(g) { g.it.forEach((x, k) => { if (esGrupo(x)) aplanar(x); else plano.push(x); }); })(root);
+  let v = plano[0];
+  for (let i = 1; i < plano.length; i += 2) v = calc(v, plano[i], plano[i + 1]);
+  return v;
+}
+function motivoJerarquia(root, key) {
+  const path = key.split('.').map(Number), k = path.pop(), g = nodo(root, path), op = g.it[k];
+  const listo = gruposListos(root).some(p => p.join('.') === path.join('.'));
+  if (!listo) {
+    const hay = (function busca(x) { return x.it.some(y => esGrupo(y) && (y.br === '[' || busca(y))); })(g) ? 'paréntesis y corchetes' : 'paréntesis';
+    return `Todavía no. Dentro de esa parte hay ${hay} sin resolver: <b>primero se resuelve lo de dentro</b>, empezando por los paréntesis más interiores.`;
+  }
+  if ('+-'.includes(op) && g.it.some((x, i) => i % 2 === 1 && '*/'.includes(x)))
+    return `Todavía no. En ese tramo hay una ${g.it.some((x, i) => i % 2 === 1 && x === '*') ? 'multiplicación' : 'división'}: <b>la multiplicación y la división van antes que la suma y la resta</b>.`;
+  if ('*/'.includes(op)) return 'Todavía no. Cuando hay multiplicaciones y divisiones seguidas, <b>se hacen de izquierda a derecha</b>.';
+  return 'Todavía no. Cuando solo quedan sumas y restas, <b>se hacen de izquierda a derecha</b>.';
+}
+function explicaPaso(a, op, b, v, c) {
+  if ('*/'.includes(op)) {
+    if (Math.abs(v) === Math.abs(c) && v !== c) return `El número está bien, pero el signo no. ${par(a)} ${OPS[op]} ${par(b)}: signos ${Math.sign(a) === Math.sign(b) ? 'iguales → resultado positivo' : 'distintos → resultado negativo'}.`;
+    if (op === '*' && v === a + b) return 'Has sumado. El punto (·) significa multiplicar.';
+    return `${Math.abs(a)} ${OPS[op]} ${Math.abs(b)} = ${Math.abs(c)}; después se aplica la regla de los signos.`;
+  }
+  if (Math.abs(v) === Math.abs(c) && v !== c) return 'El número está bien, pero el signo no. Piensa en las fichas: ¿qué sobra, tener o deber?';
+  if (op === '-' && v === a + b) return `Has sumado ${par(b)} en vez de restarlo. Restar ${par(b)} es lo mismo que sumar su opuesto, ${par(-b)}.`;
+  if (op === '+' && Math.sign(a) !== Math.sign(b) && Math.abs(v) === Math.abs(a) + Math.abs(b)) return 'Con signos distintos, las fichas se anulan por parejas: los valores absolutos se restan, no se suman.';
+  if (op === '-') return `Restar es sumar el opuesto: ${fmt(a)} ${MENOS} ${par(b)} = ${fmt(a)} + ${par(-b)}.`;
+  return 'Revisa la cuenta: junta las fichas de tener por un lado, las de deuda por otro, y mira cuáles sobran.';
+}
+
+/* =====================================================================
+   Niveles
+   ===================================================================== */
+const VENTANA = 4, ACIERTOS_NECESARIOS = 3, PENALIZACION_FALLO = 0.25;
+
+const RECUERDA = {
+  su: `<h3>🧪 Recuerda</h3>
+    <div class="demo">${htmlFicha(true)}<span>+</span>${htmlFicha(false)}<span>=</span><span style="color:var(--vio)">0</span></div>
+    <p>Cada ficha de <b style="color:var(--cal-osc)">tener</b> vale +1 y cada ficha de <b style="color:var(--fri-osc)">deuda</b> vale −1. <b>Una de tener y una de deuda juntas valen 0</b>: se anulan.</p>
+    <p><b>Mismo signo:</b> se juntan todas y se mantiene el signo.<br><b>Signos distintos:</b> se anulan por parejas y gana lo que sobra, tener o deber.</p>`,
+  re: `<h3>🧪 Recuerda</h3>
+    <p><b>Restar es sumar el opuesto.</b> Elimina el paréntesis y cambia el signo de dentro:</p>
+    <div class="tabla-dobles">
+      <div class="d-pos"><b>− (−3)</b><span>→</span><b>+3</b></div>
+      <div class="d-neg"><b>− (+3)</b><span>→</span><b>−3</b></div>
+    </div>
+    <p style="background:var(--vio-claro);border-radius:10px;padding:.45rem .6rem"><b>Atajo:</b> restar un número es sumar su opuesto.<br>(+3) − (−2) = (+3) + (+2) = +5</p>`,
+  ca: `<h3>🧪 Recuerda</h3>
+    <p>Primero quita los dobles signos:</p>
+    <div class="tabla-dobles">
+      <div class="d-pos"><b>+ (+3)</b><span>→</span><b>+3</b></div>
+      <div class="d-pos"><b>− (−3)</b><span>→</span><b>+3</b></div>
+      <div class="d-neg"><b>+ (−3)</b><span>→</span><b>−3</b></div>
+      <div class="d-neg"><b>− (+3)</b><span>→</span><b>−3</b></div>
+    </div>
+    <p><b>Signos iguales → +.</b> <b>Signos distintos → −.</b></p>
+    <p>Después: junta todo lo positivo, junta todo lo negativo y réstalos. El resultado lleva el signo del que es mayor.</p>`,
+  mu: `<h3>🧪 Regla de los signos</h3>
+    <div class="reglas-signo" id="reglaSignos">
+      <div class="res-pos" data-r="++"><b>+</b>·<b>+</b>=<b>+</b></div><div class="res-pos" data-r="--"><b>−</b>·<b>−</b>=<b>+</b></div>
+      <div class="res-neg" data-r="+-"><b>+</b>·<b>−</b>=<b>−</b></div><div class="res-neg" data-r="-+"><b>−</b>·<b>+</b>=<b>−</b></div>
+    </div>
+    <p><b>Signos iguales → positivo.</b><br><b>Signos distintos → negativo.</b></p>
+    <p>El número sale de la tabla de multiplicar como siempre; la regla solo decide el signo.</p>`,
+  di: `<h3>🧪 Regla de los signos</h3>
+    <div class="reglas-signo" id="reglaSignos">
+      <div class="res-pos" data-r="++"><b>+</b>:<b>+</b>=<b>+</b></div><div class="res-pos" data-r="--"><b>−</b>:<b>−</b>=<b>+</b></div>
+      <div class="res-neg" data-r="+-"><b>+</b>:<b>−</b>=<b>−</b></div><div class="res-neg" data-r="-+"><b>−</b>:<b>+</b>=<b>−</b></div>
+    </div>
+    <p><b>¡La misma regla que en la multiplicación!</b></p>
+    <p>Para el número piensa al revés: 24 : 6 = 4 porque 6 · 4 = 24.</p>`,
+  je: `<h3>🧪 ¿Qué va primero?</h3>
+    <div class="piramide"><div class="p1"><b>1</b>( ) y [ ]</div><div class="p2"><b>2</b>Multiplicar · y dividir :</div><div class="p3"><b>3</b>Sumar + y restar −</div></div>
+    <p>Si hay empate de nivel, <b>de izquierda a derecha</b>.</p>
+    <p>Ejemplo: 2 + 3 · 4 = 2 + 12 = 14 (¡no 20!).</p>`,
+  pa: `<h3>🧪 ¿Qué va primero?</h3>
+    <div class="cebolla">( paréntesis )<div class="core">¡Primero lo de dentro!</div></div>
+    <div class="piramide"><div class="p1"><b>1</b>( ) y [ ]</div><div class="p2"><b>2</b>· y :</div><div class="p3"><b>3</b>+ y −</div></div>
+    <p>Dentro del paréntesis también se respeta la jerarquía.</p>`,
+  co: `<h3>🧪 De dentro afuera</h3>
+    <div class="cebolla">[ corchetes ]<div class="in">( paréntesis )<div class="core">1.º lo de dentro</div></div></div>
+    <p>Primero los <b style="color:var(--vio)">paréntesis</b>, después los <b style="color:var(--tur)">corchetes</b>, y al final lo de fuera.</p>
+    <p>En cada paso: <b>· y : antes que + y −</b>.</p>`
+};
+
+/* ---- Nivel 1 · Sumas con fichas ---- */
+const N_SU = {
+  id: 'su', sym: 'Su', nombre: 'Sumar enteros', corto: 'Sumas', fam: 'sr',
+  instr: 'Toca una ficha: se une con una del tipo contrario (tener con deuda) y las dos desaparecen, porque juntas valen 0. Cuenta las que sobran.',
+  gen(r) {
+    for (;;) {
+      const a = nz(r, -9, 9); let b = nz(r, -9, 9);
+      if (r() < .65 && Math.sign(a) === Math.sign(b)) b = -b;
+      if (a > 0 && b > 0) continue;   // dos positivos es la suma de siempre: no aporta nada en este nivel
+      if (Math.abs(a + b) <= 12) return { a, b, c: a + b };
+    }
+  },
+  clave: ex => ex.a + '|' + ex.b,
+  enunciado: ex => `${colorN(ex.a, parS(ex.a))}<span class="simb">+</span>${colorN(ex.b, parS(ex.b))}`,
+  montar(ex) {
+    return `<div class="mesa" id="mesa">${htmlGrupo(ex.a, colorN(ex.a, parS(ex.a)))}<span class="signo-mesa">+</span>${htmlGrupo(ex.b, colorN(ex.b, parS(ex.b)))}</div>
+      <div class="estado-mesa" id="estadoMesa">Parejas anuladas: <b>0</b></div>
+      <div class="fila-resp"><span class="rot">Resultado:</span>${htmlResp('r1')}</div>`;
+  },
+  activar(ex) {
+    ex.pares = 0;
+    $('mesa').addEventListener('click', e => {
+      const f = e.target.closest('.fc'); if (!f || f.classList.contains('yendo') || ex.cerrado) return;
+      if (anular($('mesa'), f)) { ex.pares++; $('estadoMesa').innerHTML = `Parejas anuladas: <b>${ex.pares}</b>`; }
+      else $('estadoMesa').innerHTML = `No quedan fichas del otro tipo: <b>ya no se puede anular nada más</b>. Cuenta las que quedan.`;
+    });
+  },
+  async animarSolucion(ex) {   // al comprobar, las parejas que queden se anulan solas
+    const mesa = $('mesa');
+    await anularTodo(mesa, () => { ex.pares++; if ($('estadoMesa')) $('estadoMesa').innerHTML = `Parejas anuladas: <b>${ex.pares}</b>`; });
+    if (mesa.isConnected) $('estadoMesa').innerHTML = ex.c === 0 ? 'Se han anulado todas: el resultado es <b>0</b>.' : `Quedan ${nf(Math.abs(ex.c), ex.c > 0)}: el resultado es <b>${fmtS(ex.c)}</b>.`;
+  },
+  explica(ex) {
+    const { a, b, c } = ex, pos = Math.max(a, 0) + Math.max(b, 0), neg = Math.max(-a, 0) + Math.max(-b, 0), pares = Math.min(pos, neg);
+    const e = `${parS(a)} + ${parS(b)} = ${fmtS(c)}`;
+    if (!pares) return `Todas las fichas son del mismo tipo: no hay parejas que se anulen. Se juntan ${nf(Math.abs(c), c > 0)}. Por eso ${e}.`;
+    if (c === 0) return `Hay ${nf(pos, true)} y ${nf(neg, false)}: se anulan todas por parejas y no sobra ninguna. Por eso ${e}.`;
+    return `Hay ${nf(pos, true)} y ${nf(neg, false)}: se anulan ${pares} ${pares === 1 ? 'pareja' : 'parejas'} y sobran ${nf(Math.abs(c), c > 0)}. Por eso ${e}.`;
+  },
+  diagnostico(ex, v) {
+    const { a, b, c } = ex;
+    if (Math.abs(v) === Math.abs(c) && v !== c) return { tipo: 'signo', txt: `El número está bien, pero el signo no: sobran fichas de ${c > 0 ? 'tener' : 'deuda'}, así que el resultado es ${signoTxt(c)}.` };
+    if (Math.sign(a) !== Math.sign(b) && Math.abs(v) === Math.abs(a) + Math.abs(b)) return { tipo: 'calculo', txt: 'Has juntado todas las fichas como si fueran del mismo tipo. Con signos distintos se anulan por parejas: los números se restan.' };
+    if (Math.sign(a) === Math.sign(b) && Math.abs(v) === Math.abs(Math.abs(a) - Math.abs(b))) return { tipo: 'calculo', txt: 'Con el mismo signo no hay parejas que se anulen: se juntan todas las fichas, los números se suman.' };
+    return { tipo: 'calculo', txt: 'Ese no es el resultado. Usa las fichas: anula las parejas y cuenta las que sobran.' };
+  },
+  concepto: 'Mismo signo: se suman y se mantiene el signo. Signos distintos: se restan y se pone el signo del que tiene más fichas.'
+};
+
+/* ---- Nivel 2 · Restas con fichas ---- */
+const N_RE = {
+  id: 're', sym: 'Re', nombre: 'Restar enteros', corto: 'Restas', fam: 'sr',
+  instr: 'Restar es sumar el opuesto: elimina los paréntesis y después escribe el resultado.',
+  gen(r) {
+    for (;;) {
+      const a = nz(r, -9, 9), b = nz(r, -9, 9);
+      const necesita = Math.sign(b) !== Math.sign(a) || Math.abs(b) > Math.abs(a);
+      if (!necesita && r() < .55) continue;
+      if (Math.abs(a - b) <= 15) return { a, b, c: a - b };
+    }
+  },
+  clave: ex => ex.a + '|' + ex.b,
+  enunciado: ex => `${htmlPrimero(ex.a)}${htmlDoble('-', ex.b < 0 ? '-' : '+', Math.abs(ex.b))}`,
+  montar(ex) {
+    return `<div class="centro"><button type="button" class="btn-par" id="btnVerSignos">👀 Pulsa para ver cómo se eliminan los paréntesis</button></div>
+      <div class="fila-resp"><span class="rot">Resultado:</span>${htmlResp('r1')}</div>`;
+  },
+  activar(ex) {
+    $('btnVerSignos').addEventListener('click', () => { if (!ex.cerrado) animarDobles($('pregunta')); });
+  },
+  explica(ex) {
+    const { a, b, c } = ex;
+    const dobles = b < 0 ? ` Fíjate arriba: los dos menos juntos, − (−${-b}), se convierten en un +.` : ` Fíjate arriba: el + de dentro del paréntesis desaparece.`;
+    return `Restar ${parS(b)} es lo mismo que sumar su opuesto: ${parS(a)} − ${parS(b)} = ${parS(a)} + ${parS(-b)} = ${fmtS(c)}.${dobles}`;
+  },
+  diagnostico(ex, v) {
+    const { a, b, c } = ex;
+    if (v === a + b) return { tipo: 'signo', txt: `Has sumado ${parS(b)} en lugar de restarlo. Restar un número es sumar su opuesto: restar ${parS(b)} es sumar ${parS(-b)}.` };
+    if (Math.abs(v) === Math.abs(c) && v !== c) return { tipo: 'signo', txt: 'El número está bien, pero el signo no. Mira si lo que queda al final es tener o deber.' };
+    return { tipo: 'calculo', txt: 'Ese no es el resultado. Elimina los paréntesis (pulsa el botón si lo necesitas) y suma.' };
+  },
+  concepto: 'Restar es sumar el opuesto: a − (b) = a + (−b). Por eso restar un negativo hace que el resultado suba.'
+};
+
+/* ---- Nivel 3 · Sumas y restas encadenadas ---- */
+const N_CA = {
+  id: 'ca', sym: 'Ca', nombre: 'Sumas y restas encadenadas', corto: 'Cadenas', fam: 'sr',
+  instr: 'Paso 1: quita los paréntesis de cada término. Paso 2: junta lo positivo, junta lo negativo y calcula el resultado.',
+  gen(r) {
+    for (;;) {
+      const n = r() < .5 ? 3 : 4, terms = [];
+      let raros = 0;
+      for (let i = 0; i < n; i++) {
+        const v = nz(r, -9, 9);
+        if (i === 0) { terms.push({ v, txt: fmt(v) }); continue; }
+        const f = r(); let txt, ds;
+        if (f < .5) txt = v > 0 ? `+ ${v}` : `${MENOS} ${-v}`;
+        if (f < .5) { terms.push({ v, txt }); continue; }
+        if (f < .82) { txt = v > 0 ? `${MENOS} (${MENOS}${v})` : `+ (${MENOS}${-v})`; ds = v > 0 ? ['-', '-'] : ['+', '-']; raros++; }
+        else { txt = v > 0 ? `+ (+${v})` : `${MENOS} (+${-v})`; ds = v > 0 ? ['+', '+'] : ['-', '+']; raros++; }
+        terms.push({ v, txt, ds: { op: ds[0], dentro: ds[1], k: Math.abs(v) } });
+      }
+      const P = terms.reduce((s, t) => s + Math.max(t.v, 0), 0), N = terms.reduce((s, t) => s + Math.min(t.v, 0), 0);
+      if (!P || !N || P > 30 || -N > 30 || !raros) continue;
+      return { terms, P, N, c: P + N };
+    }
+  },
+  clave: ex => ex.terms.map(t => t.txt).join(''),
+  enunciado: ex => ex.terms.map(t => t.ds ? htmlDoble(t.ds.op, t.ds.dentro, t.ds.k) : `<span>${t.txt}</span>`).join(' '),
+  montar(ex) {
+    const terminos = ex.terms.map((t, i) => t.ds
+      ? `<div class="termino"><span class="t-orig">${t.txt}</span><span class="flecha" aria-hidden="true">↓</span>${htmlResp('rT' + i, { label: `Término ${i + 1} sin paréntesis` })}</div>`
+      : `<div class="termino dado"><span class="t-orig">${t.txt}</span><span class="flecha" aria-hidden="true">↓</span><span class="chip ${t.v > 0 ? 'pos' : 'neg'}">${fmtS(t.v)}</span></div>`).join('');
+    return `<div class="paso-ca" id="pasoCa1">
+        <div class="paso-ca-tit"><b>1</b>Quita los paréntesis de cada término</div>
+        <div class="terminos">${terminos}</div>
+        <div class="acciones" style="margin-top:.7rem"><button type="button" class="btn btn-principal" id="btnPaso1">Comprobar paso 1</button></div>
+        <div class="msg" id="msgPaso1" aria-live="polite"></div>
+      </div>
+      <div class="paso-ca oculto" id="pasoCa2">
+        <div class="paso-ca-tit"><b>2</b>Junta lo positivo, junta lo negativo y calcula</div>
+        <div class="campos-ca">
+          <div class="campo c-pos"><span>Todo lo positivo</span>${htmlResp('rP', { fijo: '+', label: 'Suma de los positivos' })}</div>
+          <div class="campo c-neg"><span>Todo lo negativo</span>${htmlResp('rN', { fijo: '-', label: 'Suma de los negativos' })}</div>
+          <div class="campo c-res"><span>Resultado</span>${htmlResp('r1', { label: 'Resultado' })}</div>
+        </div>
+      </div>`;
+  },
+  activar(ex) {
+    ex.fase = 1; ex.falloPaso1 = false;
+    $('accComprobar').classList.add('oculto');
+    $('btnPaso1').addEventListener('click', () => comprobarPaso1Ca(ex));
+  },
+  leer() {
+    const res = {};
+    for (const id of ['rP', 'rN', 'r1']) { const x = leerResp(id); if (x.error) return x; res[id] = x.v; }
+    return { v: res.r1, sub: res };
+  },
+  explica(ex) {
+    const chips = ex.terms.map(t => `<span class="chip ${t.v > 0 ? 'pos' : 'neg'}">${fmtS(t.v)}</span>`).join('');
+    const pos = ex.terms.filter(t => t.v > 0).map(t => t.v), neg = ex.terms.filter(t => t.v < 0).map(t => -t.v);
+    return `Sin dobles signos queda: <div class="chips">${chips}</div>Positivos: ${pos.join(' + ')} = <b>+${ex.P}</b>. Negativos: ${neg.join(' + ')} = <b>${fmt(ex.N)}</b>. Resultado: ${ex.P} − ${-ex.N} → <b>${fmtS(ex.c)}</b>.`;
+  },
+  diagnostico(ex, v, sub) {
+    const raros = ex.terms.filter(t => t.txt.includes('('));
+    if (!sub) {
+      if (Math.abs(v) === Math.abs(ex.c) && v !== ex.c) return { tipo: 'signo', txt: `El número está bien, pero el signo no: el grupo ${ex.P > -ex.N ? 'positivo' : 'negativo'} es mayor, así que gana su signo.` };
+      return { tipo: 'calculo', txt: `Quita primero los dobles signos (${raros.map(t => `${t.txt} → ${fmtS(t.v)}`).join(' · ')}) y después junta lo positivo y lo negativo.` };
+    }
+    if (ex.falloPaso1 && sub.rP === ex.P && sub.rN === ex.N && v === ex.c)
+      return { tipo: null, txt: 'El paso 2 está perfecto, pero en el paso 1 te equivocaste al quitar algún paréntesis, así que este ejercicio cuenta como fallo.' };
+    if (!ex.falloPaso1 && (sub.rP !== ex.P || sub.rN !== ex.N)) {
+      const pos = ex.terms.filter(t => t.v > 0).map(t => t.v), neg = ex.terms.filter(t => t.v < 0).map(t => -t.v);
+      const que = [sub.rP !== ex.P ? `positivos: ${pos.join(' + ')} = +${ex.P}` : '', sub.rN !== ex.N ? `negativos: ${neg.join(' + ')} = ${fmt(ex.N)}` : ''].filter(Boolean).join('; ');
+      return { tipo: 'calculo', txt: `Has quitado bien los paréntesis, pero al agrupar te has equivocado. Suma de nuevo los ${que}.` };
+    }
+    if ((sub.rP !== ex.P || sub.rN !== ex.N)) {
+      const lista = raros.map(t => `${t.txt} → ${fmtS(t.v)}`).join(' · ');
+      return { tipo: 'signo', txt: `Los grupos de positivos o negativos no están bien. Fíjate en los dobles signos: ${lista}.` };
+    }
+    if (Math.abs(v) === Math.abs(ex.c) && v !== ex.c) return { tipo: 'signo', txt: `El número está bien, pero el signo no: el grupo ${ex.P > -ex.N ? 'positivo' : 'negativo'} es mayor, así que gana su signo.` };
+    return { tipo: 'calculo', txt: `Tienes bien los dos grupos, pero el resultado no: +${ex.P} y ${fmt(ex.N)} se anulan en parte; resta ${Math.max(ex.P, -ex.N)} − ${Math.min(ex.P, -ex.N)} y pon el signo del mayor.` };
+  },
+  concepto: 'Dos signos seguidos: si son iguales dan +, si son distintos dan −. Después, junta y resta como con las fichas.'
+};
+
+function comprobarPaso1Ca(ex) {
+  if (ex !== EX || ex.fase !== 1) return;
+  if (!exigirNombre()) return;
+  const idx = ex.terms.map((t, i) => t.ds ? i : -1).filter(i => i >= 0), vals = {};
+  for (const i of idx) {
+    const x = leerResp('rT' + i);
+    if (x.error) { $('msgPaso1').className = 'msg ko'; $('msgPaso1').textContent = x.error; if (x.el) x.el.focus({ preventScroll: true }); return; }
+    vals[i] = x.v;
+  }
+  ex.fase = 2;
+  const mal = idx.filter(i => vals[i] !== ex.terms[i].v);
+  idx.forEach(i => marcarResp('rT' + i, vals[i] === ex.terms[i].v));
+  mal.forEach(i => $('rT' + i).closest('.termino').insertAdjacentHTML('beforeend', `<span class="corr">Es ${fmtS(ex.terms[i].v)}</span>`));
+  $('btnPaso1').closest('.acciones').remove();
+  if (mal.length) {
+    ex.falloPaso1 = true; S.errores.signo++;
+    $('msgPaso1').className = 'msg ko';
+    $('msgPaso1').innerHTML = `Revisa: ${mal.map(i => `${ex.terms[i].txt} → ${fmtS(ex.terms[i].v)}`).join(' · ')}. Signos iguales dan +; signos distintos dan −. Ya está corregido: sigue con el paso 2.`;
+  } else {
+    $('msgPaso1').className = 'msg ok';
+    $('msgPaso1').textContent = '✓ ¡Bien! Ya no quedan paréntesis. Ahora agrupa.';
+  }
+  $('pasoCa1').classList.add(mal.length ? 'revisar' : 'hecho');
+  $('pasoCa2').classList.remove('oculto');
+  $('accComprobar').classList.remove('oculto'); $('btnComprobar').disabled = false;
+  animarDobles($('pregunta'));
+  if (punteroFino()) $('rP').focus({ preventScroll: true });
+}
+
+/* ---- Niveles 4 y 5 · Multiplicar y dividir ---- */
+function patronSignos(r) { const p = elegir(r, ['++', '+-', '+-', '-+', '-+', '--', '--']); return p; }
+function rejilla(filas, cols, signo) {
+  return `<div class="rejilla-ayuda ${signo || ''}" style="grid-template-columns:repeat(${cols},20px)">${'<i></i>'.repeat(filas * cols)}</div>`;
+}
+const N_MU = {
+  id: 'mu', sym: 'Mu', nombre: 'Multiplicar enteros', corto: 'Multiplicar', fam: 'md',
+  instr: 'El número sale de la tabla; el signo, de la regla de los signos.',
+  gen(r) {
+    const p = patronSignos(r);
+    const a = (p[0] === '-' ? -1 : 1) * (r() < .1 ? 1 : ent(r, 2, 9)), b = (p[1] === '-' ? -1 : 1) * ent(r, 2, 9);
+    return { a, b, c: a * b, forma: r() < .5 ? 'par' : 'libre' };
+  },
+  clave: ex => ex.a + '|' + ex.b,
+  enunciado: ex => ex.forma === 'par' ? `${colorN(ex.a, parS(ex.a))}<span class="simb">·</span>${colorN(ex.b, parS(ex.b))}` : `${colorN(ex.a, fmt(ex.a))}<span class="simb">·</span>${colorN(ex.b, par(ex.b))}`,
+  montar(ex) {
+    return `<div class="centro"><button type="button" class="btn-par" id="btnAyuda">👀 Ver con fichas</button></div><div id="ayuda"></div>
+      <div class="fila-resp"><span class="rot">Resultado:</span>${htmlResp('r1')}</div>`;
+  },
+  activar(ex) {
+    $('btnAyuda').addEventListener('click', () => {
+      const A = Math.abs(ex.a), B = Math.abs(ex.b);
+      $('ayuda').innerHTML = `${rejilla(A, B)}<p class="leyenda-ayuda">${A} ${A === 1 ? 'fila' : 'filas'} de ${B}: cuenta las fichas para el número. El signo lo decide la regla.</p>`;
+      $('btnAyuda').remove();
+    });
+  },
+  explica(ex) {
+    const { a, b, c } = ex;
+    return `${Math.abs(a)} · ${Math.abs(b)} = ${Math.abs(c)}. Los signos son <b>${Math.sign(a) === Math.sign(b) ? 'iguales → positivo' : 'distintos → negativo'}</b>. Por eso ${par(a)} · ${par(b)} = ${fmtS(c)}.`;
+  },
+  diagnostico(ex, v) {
+    const { a, b, c } = ex;
+    if (Math.abs(v) === Math.abs(c) && v !== c) return { tipo: 'signo', txt: `El número está bien, pero el signo no: ${signoTxt(a)} por ${signoTxt(b)} da ${signoTxt(c)}.` };
+    if (v === a + b) return { tipo: 'calculo', txt: 'Has sumado. El punto (·) significa multiplicar.' };
+    return { tipo: 'calculo', txt: `El número no es correcto: ${Math.abs(a)} · ${Math.abs(b)} = ${Math.abs(c)}.` };
+  },
+  concepto: 'Signos iguales → positivo. Signos distintos → negativo.'
+};
+const N_DI = {
+  id: 'di', sym: 'Di', nombre: 'Dividir enteros', corto: 'Dividir', fam: 'md',
+  instr: 'Piensa la división al revés (¿qué número por el divisor da el dividendo?) y aplica la regla de los signos.',
+  gen(r) {
+    const p = patronSignos(r);
+    const b = (p[1] === '-' ? -1 : 1) * (r() < .08 ? 1 : ent(r, 2, 9)), q = (p[0] === p[1] ? 1 : -1) * ent(r, 2, 9);
+    return { a: q * b, b, c: q };
+  },
+  clave: ex => ex.a + '|' + ex.b,
+  enunciado: ex => `${colorN(ex.a, parS(ex.a))}<span class="simb">:</span>${colorN(ex.b, parS(ex.b))}`,
+  montar(ex) {
+    return `<div class="centro"><button type="button" class="btn-par" id="btnAyuda">👀 Ver con fichas</button></div><div id="ayuda"></div>
+      <div class="fila-resp"><span class="rot">Resultado:</span>${htmlResp('r1')}</div>`;
+  },
+  activar(ex) {
+    $('btnAyuda').addEventListener('click', () => {
+      const A = Math.abs(ex.a), B = Math.abs(ex.b);
+      $('ayuda').innerHTML = `${rejilla(B, A / B)}<p class="leyenda-ayuda">${A} fichas repartidas en ${B} ${B === 1 ? 'fila igual' : 'filas iguales'}: cuenta cuántas hay en cada fila. El signo lo decide la regla.</p>`;
+      $('btnAyuda').remove();
+    });
+  },
+  explica(ex) {
+    const { a, b, c } = ex;
+    return `${Math.abs(b)} · ${Math.abs(c)} = ${Math.abs(a)}, así que ${Math.abs(a)} : ${Math.abs(b)} = ${Math.abs(c)}. Los signos son <b>${Math.sign(a) === Math.sign(b) ? 'iguales → positivo' : 'distintos → negativo'}</b>: ${par(a)} : ${par(b)} = ${fmtS(c)}.`;
+  },
+  diagnostico(ex, v) {
+    const { a, b, c } = ex;
+    if (Math.abs(v) === Math.abs(c) && v !== c) return { tipo: 'signo', txt: `El número está bien, pero el signo no: ${signoTxt(a)} entre ${signoTxt(b)} da ${signoTxt(c)}. La regla es la misma que al multiplicar.` };
+    if (v === a - b) return { tipo: 'calculo', txt: 'Has restado. Los dos puntos (:) significan dividir.' };
+    return { tipo: 'calculo', txt: `El número no es correcto. Piensa: ${Math.abs(b)} por ¿cuánto? da ${Math.abs(a)}.` };
+  },
+  concepto: 'Para dividir enteros se usa la misma regla de los signos que para multiplicar.'
+};
+
+/* ---- Niveles 6, 7 y 8 · Operaciones combinadas ---- */
+function genCombinada(r, plantillas, exigeTrampa) {
+  for (let intento = 0; intento < 5000; intento++) {
+    const pl = elegir(r, plantillas), arbol = parsePlantilla(pl);
+    const letras = [...new Set(pl.replace(/[^a-e]/g, ''))], vals = {};
+    letras.forEach(l => vals[l] = conSigno(r, .4, r() < .15 ? 1 : 2, 9));
+    const tree = rellenar(arbol, vals), sol = resolver(tree);
+    if (!sol.ok) continue;
+    if (exigeTrampa && naive(tree) === sol.valor) continue;
+    return { tree, c: sol.valor, pasos: sol.pasos, pl };
+  }
+  throw new Error('No se pudo generar la expresión');
+}
+const PL_JE = ['a+b*c', 'a*b-c', 'a-b*c', 'a+b/c', 'a*b+c*d', 'a-b/c+d', 'a*b-c/d', 'a+b*c-d', 'a-b*c+d'];
+const PL_PA = ['a*(b+c)', '(a-b)*c', 'a-(b+c)', '(a+b)/c', 'a+b*(c-d)', '(a+b)*(c-d)', 'a-(b-c)*d', '(a-b)/c+d', 'a*(b-c)+d'];
+const PL_CO = ['[a+(b-c)]*d', 'a*[b-(c+d)]', 'a-[b*(c+d)]', '[a*(b-c)+d]/e', 'a+[b-(c-d)]*e', '[(a+b)*c-d]/e', 'a-[b+(c-d)*e]'];
+function hacerComb(id, sym, nombre, corto, plantillas, trampa) {
+  return {
+    id, sym, nombre, corto, fam: 'cb', comb: true,
+    instr: 'Toca la operación que se hace PRIMERO. Después escribe su resultado. Repite hasta terminar.',
+    gen: r => genCombinada(r, plantillas, trampa),
+    clave: ex => txtExpr(ex.tree),
+    enunciado: ex => htmlExpr(ex.tree, false),
+    explica: ex => `Paso a paso:<br>${ex.pasos.map((p, i) => (i ? '= ' : '') + p).join('<br>')}`,
+    diagnostico(ex, v) {
+      if (Math.abs(v) === Math.abs(ex.c) && v !== ex.c) return { tipo: 'signo', txt: 'El número está bien, pero el signo no.' };
+      if (naive(ex.tree) === v) return { tipo: 'jerarquia', txt: 'Has operado de izquierda a derecha sin respetar la jerarquía: primero paréntesis, después · y :, y al final + y −.' };
+      return { tipo: 'calculo', txt: 'Revisa el orden de las operaciones y los signos en cada paso.' };
+    },
+    concepto: 'Orden: 1.º paréntesis y corchetes (de dentro afuera), 2.º multiplicaciones y divisiones, 3.º sumas y restas. Empates, de izquierda a derecha.'
+  };
+}
+const N_JE = hacerComb('je', 'Je', 'Jerarquía de operaciones', 'Jerarquía', PL_JE, true);
+const N_PA = hacerComb('pa', 'Pa', 'Operaciones con paréntesis', 'Paréntesis', PL_PA, false);
+const N_CO = hacerComb('co', 'Co', 'Operaciones con corchetes', 'Corchetes', PL_CO, false);
+
+const NIVELES = [N_SU, N_RE, N_CA, N_MU, N_DI, N_JE, N_PA, N_CO];
+const NIV = Object.fromEntries(NIVELES.map(n => [n.id, n]));
+
+/* Explicación con dinero: positivo = lo que tengo, negativo = lo que debo */
+function cuentaDinero(vals) {
+  const expr = vals.map((v, i) => i === 0 ? fmtS(v) : (v > 0 ? `+ ${v}` : `${MENOS} ${-v}`)).join(' ');
+  const total = vals.reduce((a, b) => a + b, 0);
+  const verbo = v => v > 0 ? `tengo ${v}` : `debo ${-v}`;
+  let partes;
+  if (vals.length === 2) partes = `${verbo(vals[0])} y ${verbo(vals[1])}`;
+  else {
+    const P = vals.filter(v => v > 0), N = vals.filter(v => v < 0).map(v => -v);
+    const suma = arr => arr.length > 1 ? `${arr.join(' + ')} = ${arr.reduce((a, b) => a + b, 0)}` : String(arr[0]);
+    partes = [P.length ? `tengo ${suma(P)}` : '', N.length ? `debo ${suma(N)}` : ''].filter(Boolean).join(' y ');
+  }
+  const fin = total > 0 ? `en total <b>tengo ${total}</b>` : total < 0 ? `en total <b>debo ${-total}</b>` : 'en total <b>ni tengo ni debo nada</b>: 0';
+  return `<span class="dinero"><span class="dinero-ico" aria-hidden="true">💰</span><span><b>${expr}</b>: si ${partes}, ${fin}.</span></span>`;
+}
+const VALORES_DINERO = { su: ex => [ex.a, ex.b], re: ex => [ex.a, -ex.b], ca: ex => ex.terms.map(t => t.v) };
+for (const id of Object.keys(VALORES_DINERO)) {
+  const n = NIV[id], original = n.explica;
+  n.explica = ex => original.call(n, ex) + cuentaDinero(VALORES_DINERO[id](ex));
+}
+const PUNTO_POR_TIPO = 10 / NIVELES.length;
+
+/* =====================================================================
+   Estado y puntuación (modelo por tipos con ventana móvil)
+   ===================================================================== */
+const S = {
+  fallosTotales: 0,
+  tipos: Object.fromEntries(NIVELES.map(n => [n.id, { intentos: [], superado: false, cerrado: false, fallos: 0, aciertos: 0, total: 0 }])),
+  errores: { jerarquia: 0, signo: 0, calculo: 0 },
+  inicio: Date.now(),
+  actual: null,
+  duelos: []
+};
+let EX = null;            // ejercicio en curso
+const ultimos = {};       // evita repetir el mismo ejercicio seguido
+
+function calcularNota() {
+  const superados = Object.values(S.tipos).filter(t => t.superado).length;
+  const bruta = superados * PUNTO_POR_TIPO - S.fallosTotales * PENALIZACION_FALLO;
+  return Math.round(Math.min(10, Math.max(0, bruta)) * 100) / 100;
+}
+function registrarIntento(tipo, correcto) {
+  const t = S.tipos[tipo];
+  if (t.cerrado) return false;
+  t.intentos.push(correcto);
+  if (t.intentos.length > VENTANA) t.intentos.shift();
+  t.total++;
+  if (correcto) t.aciertos++; else { t.fallos++; S.fallosTotales++; }
+  let recien = false;
+  if (!t.superado && t.intentos.filter(Boolean).length >= ACIERTOS_NECESARIOS) { t.superado = true; t.cerrado = true; recien = true; }
+  actualizarUI();
+  return recien;
+}
+
+/* =====================================================================
+   Interfaz general
+   ===================================================================== */
+function bolas(intentos, clase) {
+  return Array.from({ length: VENTANA }, (_, k) => { const x = intentos[k]; return `<i class="${x === undefined ? '' : x ? 'b' : 'm'}"></i>`; }).join('');
+}
+function pintarTabla() {
+  $('tabla').innerHTML = NIVELES.map((n, i) => {
+    const t = S.tipos[n.id];
+    const cls = ['elem', 'fam-' + n.fam, t.superado ? 'hecho' : '', S.actual === n.id && !D ? 'activo' : ''].filter(Boolean).join(' ');
+    const pie = t.superado ? '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="8" fill="#14885a"/><path d="M4.5 8.3l2.3 2.3 4.7-5" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' : bolas(t.intentos);
+    return `<button type="button" class="${cls}" data-niv="${n.id}" aria-label="Nivel ${i + 1}: ${n.nombre}${t.superado ? ', superado' : ''}" ${S.actual === n.id ? 'aria-current="true"' : ''}>
+      <span class="z">${i + 1}</span><span class="sim">${n.sym}</span><span class="nom">${n.corto}</span><span class="dots">${pie}</span></button>`;
+  }).join('');
+}
+function actualizarUI() {
+  $('mNota').textContent = coma(calcularNota());
+  $('mNiveles').textContent = `${Object.values(S.tipos).filter(t => t.superado).length}/${NIVELES.length}`;
+  $('mFallos').textContent = S.fallosTotales;
+  pintarTabla();
+  if (S.actual) pintarVentana();
+}
+function pintarVentana() {
+  const t = S.tipos[S.actual];
+  const ac = t.intentos.filter(Boolean).length;
+  $('ventana').innerHTML = t.superado ? '<small style="color:var(--ok);font-weight:700">Nivel superado ✓</small>'
+    : `<div class="bolas" aria-hidden="true">${bolas(t.intentos)}</div><small>Últimos ${VENTANA} intentos: ${ac} ${ac === 1 ? 'acierto' : 'aciertos'}. Necesitas ${ACIERTOS_NECESARIOS}.</small>`;
+}
+
+/* ---- Nombre ---- */
+const nombreAlumno = () => $('nombre').value.replace(/\s+/g, ' ').trim();
+function exigirNombre() {
+  if (nombreAlumno()) { $('avisoNombre').textContent = ''; $('nombre').classList.remove('falta'); return true; }
+  $('avisoNombre').textContent = 'Escribe tu nombre antes de seguir.';
+  $('nombre').classList.add('falta');
+  $('nombre').focus({ preventScroll: true });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  return false;
+}
+$('nombre').addEventListener('input', () => { if (nombreAlumno()) { $('avisoNombre').textContent = ''; $('nombre').classList.remove('falta'); } });
+
+/* =====================================================================
+   Flujo de ejercicios
+   ===================================================================== */
+function seleccionarNivel(id) {
+  S.actual = id;
+  const n = NIV[id], i = NIVELES.indexOf(n);
+  $('chipNivel').textContent = `Nivel ${i + 1} · ${n.sym}`;
+  $('nombreNivel').textContent = n.nombre;
+  $('recuerda').innerHTML = RECUERDA[id];
+  pintarTabla(); pintarVentana();
+  if (S.tipos[id].superado) { mostrarSuperado(id); return; }
+  nuevoEjercicio();
+}
+function nuevoEjercicio() {
+  const n = NIV[S.actual];
+  let ex, k = 0;
+  do ex = n.gen(rnd); while (n.clave(ex) === ultimos[n.id] && ++k < 20);
+  ultimos[n.id] = n.clave(ex);
+  EX = { ...ex, nivel: n.id, cerrado: false, errores: { jerarquia: 0, signo: 0, calculo: 0 }, falloRegistrado: false };
+  $('cuerpoEj').classList.remove('oculto'); $('cuerpoSuperado').classList.add('oculto');
+  $('instr').textContent = n.instr;
+  $('aviso').textContent = ''; $('extraPregunta').innerHTML = ''; animDobles++;
+  $('feedback').className = 'feedback'; $('feedback').innerHTML = '';
+  $('accSiguiente').classList.add('oculto');
+  if (n.comb) montarComb();
+  else {
+    $('pregunta').innerHTML = n.enunciado(EX);
+    $('zona').innerHTML = n.montar(EX);
+    $('accComprobar').classList.remove('oculto'); $('btnComprobar').disabled = false;
+    n.activar(EX);
+    const primero = $('zona').querySelector('input.caja');
+    if (primero && punteroFino() && !n.id.match(/su|re/)) primero.focus({ preventScroll: true });
+  }
+  const rs = $('reglaSignos'); if (rs) rs.querySelectorAll('div').forEach(d => d.classList.remove('luz'));
+}
+
+function comprobar() {
+  if (!EX || EX.cerrado) return;
+  const n = NIV[EX.nivel];
+  if (n.id === 'ca' && EX.fase === 1) return;
+  if (!exigirNombre()) return;
+  const lectura = n.leer ? n.leer() : leerResp('r1');
+  if (lectura.error) { $('aviso').textContent = lectura.error; if (lectura.el) lectura.el.focus({ preventScroll: true }); return; }
+  $('aviso').textContent = '';
+  const v = lectura.v, sub = lectura.sub;
+  const correcto = n.id === 'ca' ? (!EX.falloPaso1 && sub.rP === EX.P && sub.rN === EX.N && v === EX.c) : v === EX.c;
+  EX.cerrado = true;
+  if (n.id === 'ca') { marcarResp('rP', sub.rP === EX.P); marcarResp('rN', sub.rN === EX.N); marcarResp('r1', v === EX.c); }
+  else marcarResp('r1', correcto);
+  $('btnComprobar').disabled = true; $('accComprobar').classList.add('oculto');
+  let html;
+  if (correcto) {
+    html = `<div class="tit">${azar(['¡Correcto!', '¡Muy bien!', '¡Exacto!'])}</div><p>${n.explica(EX)}</p>`;
+  } else {
+    const d = n.diagnostico(EX, v, sub);
+    if (d.tipo) S.errores[d.tipo]++;
+    html = `<div class="tit">Todavía no</div><p>${d.txt}</p><p>${n.explica(EX)}</p><p class="concepto">${n.concepto}</p>`;
+  }
+  if (n.id === 'mu' || n.id === 'di') {   // ilumina la fila de la regla de los signos que se aplicaba
+    const r = (EX.a > 0 ? '+' : '-') + (EX.b > 0 ? '+' : '-');
+    const fila = document.querySelector(`#reglaSignos [data-r="${r}"]`); if (fila) fila.classList.add('luz');
+  }
+  $('feedback').className = 'feedback visible ' + (correcto ? 'ok' : 'ko');
+  $('feedback').innerHTML = html;
+  if (n.id === 're' || n.id === 'ca') animarDobles($('pregunta'));
+  if (n.animarSolucion && $('mesa')) { const b = $('btnPar'); if (b) b.disabled = true; n.animarSolucion(EX); }
+  const recien = registrarIntento(n.id, correcto);
+  cerrarEjercicio(recien);
+}
+function cerrarEjercicio(recien) {
+  $('accSiguiente').classList.remove('oculto');
+  if (recien) {
+    const sig = siguientePendiente(S.actual);
+    celebrar(S.actual);
+    $('btnSiguiente').textContent = sig ? `¡Nivel superado! Ir a ${sig.sym} · ${sig.corto}` : '¡Laboratorio completo! Ver mi informe';
+    $('btnSiguiente').dataset.accion = sig ? 'nivel:' + sig.id : 'informe';
+  } else {
+    $('btnSiguiente').textContent = 'Otro ejercicio';
+    $('btnSiguiente').dataset.accion = 'otro';
+  }
+  if (punteroFino()) $('btnSiguiente').focus({ preventScroll: true });
+}
+$('btnComprobar').addEventListener('click', comprobar);
+$('zona').addEventListener('keydown', e => {
+  if (e.key !== 'Enter' || !e.target.classList.contains('caja')) return;
+  e.preventDefault();
+  if (EX && NIV[EX.nivel].comb) { const b = $('btnPaso'); if (b) b.click(); return; }
+  if (EX && EX.nivel === 'ca' && EX.fase === 1) {
+    const vacia = [...$('pasoCa1').querySelectorAll('input.caja')].find(i => i.value.trim() === '');
+    if (vacia && vacia !== e.target) vacia.focus(); else { const b = $('btnPaso1'); if (b) b.click(); }
+    return;
+  }
+  const vacia = [...$('zona').querySelectorAll('input.caja')].find(i => i.value.trim() === '');
+  vacia && vacia !== e.target ? vacia.focus() : comprobar();
+});
+$('btnSiguiente').addEventListener('click', () => {
+  const a = $('btnSiguiente').dataset.accion || 'otro';
+  if (a === 'informe') abrirInforme();
+  else if (a.startsWith('nivel:')) { seleccionarNivel(a.slice(6)); $('trabajo').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  else nuevoEjercicio();
+});
+/* Dobles signos. − (−3): el menos de fuera viaja hasta el de dentro, gira 90° y juntos forman un +.
+   − (+3) y + (+3): desaparece el + de dentro. + (−3): desaparece el + de fuera. En todos, desaparece el paréntesis. */
+const glifo = s => s === '-' ? MENOS : '+';
+function htmlDoble(op, dentro, k) {
+  return `<span class="ds" data-op="${op}" data-dentro="${dentro}" data-k="${k}"><span class="simb ds-op">${glifo(op)}</span><span class="n ${dentro === '-' ? 'neg' : 'pos'} ds-num"><span class="ds-par">(</span><span class="ds-sig">${glifo(dentro)}</span>${k}<span class="ds-par">)</span></span></span>`;
+}
+function htmlPrimero(a) {   // primer número con su signo y su paréntesis: (+5) o (−4)
+  return `<span class="ds-prim n ${a < 0 ? 'neg' : 'pos'}" data-v="${a}"><span class="ds-par">(</span><span class="ds-sig">${a < 0 ? MENOS : '+'}</span>${Math.abs(a)}<span class="ds-par">)</span></span>`;
+}
+async function transformarPrimero(el, turno) {   // (+5) → 5 ; (−4) → −4
+  const v = Number(el.dataset.v), sig = el.querySelector('.ds-sig'), pars = [...el.querySelectorAll('.ds-par')];
+  const vivo = () => turno === animDobles && el.isConnected;
+  el.classList.add('ds-activo');
+  await espera(350); if (!vivo()) return;
+  const fuera = x => x.animate([{ opacity: 1, transform: 'scale(1)' }, { opacity: 0, transform: 'scale(.2) translateY(-12px)' }], { duration: 650, easing: 'ease-in', fill: 'forwards' }).finished;
+  await Promise.all([...(v > 0 ? [fuera(sig)] : []), ...pars.map(fuera)]);
+  if (!vivo()) return;
+  el.innerHTML = fmt(v);
+  el.animate([{ transform: 'scale(1.25)' }, { transform: 'scale(1)' }], { duration: 400, easing: 'ease-out' });
+  await espera(250);
+  el.classList.remove('ds-activo'); el.classList.add('ds-listo');
+}
+let animDobles = 0;   // si cambia (otro ejercicio, repetir), la animación en curso se detiene
+async function transformarDoble(ds, turno) {
+  const op = ds.querySelector('.ds-op'), sig = ds.querySelector('.ds-sig'), pars = [...ds.querySelectorAll('.ds-par')];
+  const o = ds.dataset.op, d = ds.dataset.dentro, k = ds.dataset.k, res = o === d ? '+' : '-';
+  const vivo = () => turno === animDobles && ds.isConnected;
+  ds.classList.add('ds-activo');
+  await espera(350); if (!vivo()) return;
+  const fuera = el => el.animate([{ opacity: 1, transform: 'scale(1)' }, { opacity: 0, transform: 'scale(.2) translateY(-12px)' }], { duration: 650, easing: 'ease-in', fill: 'forwards' }).finished;
+  if (o === '-' && d === '-') {
+    const ro = op.getBoundingClientRect(), rs = sig.getBoundingClientRect();
+    const dx = (rs.left + rs.width / 2) - (ro.left + ro.width / 2), dy = (rs.top + rs.height / 2) - (ro.top + ro.height / 2);
+    await op.animate([{ transform: 'translate(0,0)' }, { transform: `translate(${dx}px,${dy}px)` }], { duration: 1000, easing: 'cubic-bezier(.5,0,.4,1)', fill: 'forwards' }).finished;
+    if (!vivo()) return;
+    op.animate([{ transform: `translate(${dx}px,${dy}px) rotate(0deg)`, color: 'var(--tinta-suave)' }, { transform: `translate(${dx}px,${dy}px) rotate(90deg)`, color: 'var(--cal-osc)' }], { duration: 800, easing: 'ease-in-out', fill: 'forwards' });
+    await sig.animate([{ color: 'var(--fri-osc)' }, { color: 'var(--cal-osc)' }], { duration: 800, fill: 'forwards' }).finished;
+  } else if (d === '+') await fuera(sig);    // − (+3) o + (+3): sobra el + de dentro
+  else await fuera(op);                      // + (−3): sobra el + de fuera
+  if (!vivo()) return;
+  await Promise.all(pars.map(pp => pp.animate([{ opacity: 1, transform: 'scale(1)' }, { opacity: 0, transform: 'scale(.3)' }], { duration: 500, fill: 'forwards' }).finished));
+  await espera(150); if (!vivo()) return;
+  ds.innerHTML = `<span class="simb ds-op">${glifo(res)}</span><span class="n ${res === '+' ? 'pos' : 'neg'}">${k}</span>`;
+  ds.querySelector('.ds-op').animate([{ transform: 'scale(1.8)', color: res === '+' ? 'var(--cal)' : 'var(--fri)' }, { transform: 'scale(1)' }], { duration: 500, easing: 'ease-out' });
+  await espera(250);
+  ds.classList.remove('ds-activo'); ds.classList.add('ds-listo');
+}
+async function animarDobles(caja) {
+  if (!caja.querySelector('.ds:not(.ds-listo), .ds-prim:not(.ds-listo)')) return;
+  const turno = ++animDobles, original = caja.innerHTML;
+  const r = caja.getBoundingClientRect();
+  if (r.top < 70 || r.bottom > window.innerHeight) { caja.scrollIntoView({ behavior: 'smooth', block: 'center' }); await espera(450); }
+  for (const el of [...caja.querySelectorAll('.ds-prim:not(.ds-listo), .ds:not(.ds-listo)')]) { if (turno !== animDobles) return; await (el.classList.contains('ds-prim') ? transformarPrimero(el, turno) : transformarDoble(el, turno)); }
+  if (turno !== animDobles) return;
+  $('extraPregunta').innerHTML = '<div class="centro" style="margin:-.2rem 0 .6rem"><button type="button" class="btn-par" id="btnRepetirDs">↺ Ver otra vez cómo cambian los signos</button></div>';
+  $('btnRepetirDs').addEventListener('click', () => { $('extraPregunta').innerHTML = ''; caja.innerHTML = original; animarDobles(caja); });
+}
+function siguientePendiente(id) {   // el siguiente nivel sin superar, dando la vuelta a la tabla
+  const i = NIVELES.findIndex(n => n.id === id);
+  for (let k = 1; k < NIVELES.length; k++) { const n = NIVELES[(i + k) % NIVELES.length]; if (!S.tipos[n.id].superado) return n; }
+  return null;
+}
+function mostrarSuperado(id) {
+  const sig = siguientePendiente(id);
+  $('cuerpoEj').classList.add('oculto'); $('cuerpoSuperado').classList.remove('oculto');
+  $('cuerpoSuperado').innerHTML = `<div class="superado-caja"><div class="gran">✓ Nivel superado</div><p>Este nivel ya está cerrado y cuenta ${coma(PUNTO_POR_TIPO)} puntos en tu nota.</p>
+    ${sig ? `<div class="acciones"><button type="button" class="btn btn-principal" id="btnIrSig">Seguir con ${sig.sym} · ${sig.corto}</button></div>` : '<p>Has superado todos los niveles. Pulsa «Finalizar y Calificar».</p>'}</div>`;
+  if (sig) $('btnIrSig').addEventListener('click', () => seleccionarNivel(sig.id));
+}
+$('tabla').addEventListener('click', e => {
+  const b = e.target.closest('.elem'); if (!b) return;
+  if (D && !D.terminado) { toast('Estás en un duelo: termínalo o abandónalo primero.'); return; }
+  if (D) salirDuelo();
+  seleccionarNivel(b.dataset.niv);
+  if (window.innerWidth < 980) $('trabajo').scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+function celebrar(id) {
+  const el = document.querySelector(`.elem[data-niv="${id}"]`);
+  toast(`¡Nivel superado! +${coma(PUNTO_POR_TIPO)} puntos`);
+  if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  el.classList.add('celebra');
+  const r = el.getBoundingClientRect();
+  for (let k = 0; k < 18; k++) {
+    const p = document.createElement('i');
+    p.className = 'estallido ' + (k % 2 ? 'pos' : 'neg');
+    p.style.left = (r.left + r.width / 2) + 'px'; p.style.top = (r.top + r.height / 2) + 'px';
+    const ang = Math.random() * Math.PI * 2, dist = 60 + Math.random() * 90;
+    p.style.setProperty('--dx', Math.cos(ang) * dist + 'px'); p.style.setProperty('--dy', Math.sin(ang) * dist + 'px');
+    document.body.appendChild(p); setTimeout(() => p.remove(), 1050);
+  }
+}
+
+/* ---- Combinadas: elegir la operación y calcularla ---- */
+function montarComb() {
+  EX.root = clonar(EX.tree); EX.sel = null; EX.fallosPaso = 0;
+  EX.rastro = [txtExpr(EX.root)];
+  $('accComprobar').classList.add('oculto');
+  $('zona').innerHTML = `<div id="pasoZona"><p class="paso-hint">👆 Toca el signo de la operación que va primero.</p></div><div class="rastro" id="rastro"></div>`;
+  pintarComb();
+}
+function pintarComb() {
+  $('pregunta').innerHTML = htmlExpr(EX.root, !EX.cerrado);
+  $('rastro').innerHTML = `<div class="rastro-tit">Tu cuaderno</div>` + EX.rastro.map((l, i) => `<div class="linea">${i ? '<span class="eq">=</span>' : ''}${l}</div>`).join('');
+  if (EX.sel) marcarSel(EX.sel);
+}
+function marcarSel(key) {
+  const p = key.split('.').map(Number), k = p.pop(), pre = p.length ? p.join('.') + '.' : '';
+  [pre + (k - 1), pre + k, pre + (k + 1)].forEach(kk => { const el = $('pregunta').querySelector(`[data-k="${kk}"]`); if (el) el.classList.add('sel'); });
+}
+function fallarComb(tipo) {
+  EX.errores[tipo]++; S.errores[tipo]++;
+  if (!EX.falloRegistrado) { EX.falloRegistrado = true; registrarIntento(EX.nivel, false); }
+}
+$('pregunta').addEventListener('click', e => {
+  const b = e.target.closest('.op');
+  if (!b || !EX || !NIV[EX.nivel].comb || EX.cerrado) return;
+  if (!exigirNombre()) return;
+  if (EX.sel) { toast('Primero calcula la operación marcada.'); return; }
+  const key = b.dataset.k;
+  if (!opsValidas(EX.root).includes(key)) {
+    fallarComb('jerarquia');
+    b.classList.remove('mal'); void b.offsetWidth; b.classList.add('mal');
+    $('pasoZona').innerHTML = `<div class="paso"><p class="msg ko">${motivoJerarquia(EX.root, key)}</p><p class="msg">Elige otra operación.</p></div>`;
+    return;
+  }
+  EX.sel = key; EX.fallosPaso = 0;
+  const p = key.split('.').map(Number), k = p.pop(), g = nodo(EX.root, p);
+  const a = g.it[k - 1], op = g.it[k], c = g.it[k + 1];
+  pintarComb();
+  $('pasoZona').innerHTML = `<div class="paso"><div class="que">${colorN(a, k - 1 === 0 ? fmt(a) : par(a))} ${OPS[op]} ${colorN(c, par(c))} =</div>
+    <div class="fila-resp" style="margin-top:.5rem">${htmlResp('rPaso', { label: 'Resultado de la operación' })}<button type="button" class="btn btn-principal" id="btnPaso">Calcular</button></div>
+    <div class="msg" id="msgPaso" aria-live="polite"></div></div>`;
+  $('btnPaso').addEventListener('click', calcularPaso);
+  if (punteroFino()) $('rPaso').focus({ preventScroll: true });
+});
+function calcularPaso() {
+  const x = leerResp('rPaso');
+  if (x.error) { $('msgPaso').className = 'msg ko'; $('msgPaso').textContent = x.error; return; }
+  const p = EX.sel.split('.').map(Number), k = p.pop(), g = nodo(EX.root, p);
+  const a = g.it[k - 1], op = g.it[k], b = g.it[k + 1], val = calc(a, op, b);
+  if (x.v !== val) {
+    const tipo = Math.abs(x.v) === Math.abs(val) ? 'signo' : 'calculo';
+    fallarComb(tipo);
+    EX.fallosPaso++;
+    if (EX.fallosPaso >= 2) {
+      $('pasoZona').innerHTML = `<div class="paso"><p class="msg ko">${explicaPaso(a, op, b, x.v, val)}</p><p class="msg">El resultado es <b>${fmt(val)}</b>. Lo apuntamos y seguimos.</p><div class="acciones" style="margin-top:.5rem"><button type="button" class="btn btn-principal" id="btnSeguirPaso">Seguir</button></div></div>`;
+      $('btnSeguirPaso').addEventListener('click', () => avanzarPaso(p, k, val));
+      if (punteroFino()) $('btnSeguirPaso').focus({ preventScroll: true });
+    } else {
+      $('msgPaso').className = 'msg ko'; $('msgPaso').innerHTML = explicaPaso(a, op, b, x.v, val) + ' Inténtalo otra vez.';
+      $('rPaso').value = ''; ponerSigno($('rPaso').closest('.resp'), '');
+      if (punteroFino()) $('rPaso').focus({ preventScroll: true });
+    }
+    return;
+  }
+  avanzarPaso(p, k, val);
+}
+function avanzarPaso(p, k, val) {
+  aplicar(EX.root, p, k, val);
+  EX.sel = null;
+  EX.rastro.push(txtExpr(EX.root));
+  const fin = EX.root.it.length === 1 && !esGrupo(EX.root.it[0]);
+  if (!fin) {
+    $('pasoZona').innerHTML = `<p class="paso-hint">✓ ¡Bien! Ahora, ¿qué operación va primero?</p>`;
+    pintarComb();
+    return;
+  }
+  EX.cerrado = true;
+  pintarComb();
+  $('pasoZona').innerHTML = '';
+  const e = EX.errores, total = e.jerarquia + e.signo + e.calculo;
+  let recien = false;
+  if (!EX.falloRegistrado) recien = registrarIntento(EX.nivel, true);
+  const n = NIV[EX.nivel];
+  const html = total === 0
+    ? `<div class="tit">¡Expresión resuelta sin errores!</div><p>Resultado: <b>${fmtS(EX.c)}</b>. Has respetado el orden de las operaciones en todos los pasos.</p>`
+    : `<div class="tit">Resuelta, pero con errores por el camino</div><p>Resultado: <b>${fmtS(EX.c)}</b>. Has tenido ${[e.jerarquia ? `${e.jerarquia} ${e.jerarquia === 1 ? 'error' : 'errores'} de orden` : '', e.signo ? `${e.signo} de signo` : '', e.calculo ? `${e.calculo} de cálculo` : ''].filter(Boolean).join(', ')}. Este ejercicio cuenta como fallo.</p><p class="concepto">${n.concepto}</p>`;
+  $('feedback').className = 'feedback visible ' + (total === 0 ? 'ok' : 'ko');
+  $('feedback').innerHTML = html;
+  cerrarEjercicio(recien);
+}
+
+/* =====================================================================
+   Duelo galáctico
+   ===================================================================== */
+const ALFA = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+const DUELO_N = 15;
+const BLOQUES = [
+  { bit: 0, nombre: 'Sumas y restas', desc: 'Niveles Su, Re y Ca', niveles: ['su', 're', 'ca'] },
+  { bit: 1, nombre: 'Multiplicar y dividir', desc: 'Niveles Mu y Di', niveles: ['mu', 'di'] },
+  { bit: 2, nombre: 'Jerarquía', desc: 'Nivel Je', niveles: ['je'] },
+  { bit: 3, nombre: 'Paréntesis y corchetes', desc: 'Niveles Pa y Co', niveles: ['pa', 'co'] }
+];
+const digitoControl = s => ALFA[[...s].reduce((acc, c, i) => acc + ALFA.indexOf(c) * (2 * i + 1), 0) % 32];
+function crearCodigo(mascara) {
+  const semilla = Math.floor(rnd() * 2 ** 21);
+  let v = mascara * 2 ** 21 + semilla, s = '';
+  for (let i = 0; i < 6; i++) { s = ALFA[v % 32] + s; v = Math.floor(v / 32); }
+  return s + digitoControl(s);
+}
+function leerCodigo(txt) {
+  const s = String(txt || '').toUpperCase().replace(/[^0-9A-Z]/g, '');
+  if (s.length !== 7 || [...s].some(c => !ALFA.includes(c)) || digitoControl(s.slice(0, 6)) !== s[6]) return null;
+  let v = 0; for (const c of s.slice(0, 6)) v = v * 32 + ALFA.indexOf(c);
+  const mascara = Math.floor(v / 2 ** 21), semilla = v % 2 ** 21;
+  if (mascara & ~15) return null;
+  const bloques = BLOQUES.filter(b => mascara & (1 << b.bit));
+  return bloques.length ? { codigo: s, mascara, semilla, bloques } : null;
+}
+const verCodigo = s => s.slice(0, 3) + '-' + s.slice(3);
+const textoBloques = bl => bl.map(b => b.nombre).join(' · ');
+/* 15 preguntas de dificultad creciente: se reparten por igual entre los niveles de los bloques elegidos */
+function preguntasDuelo(d) {
+  const r = generadorDe(d.semilla + d.mascara * 2 ** 21);
+  const ids = NIVELES.filter(n => d.bloques.some(b => b.niveles.includes(n.id)));
+  const qs = [], vistos = new Set();
+  for (let i = 0; i < DUELO_N; i++) {
+    const n = ids[Math.floor(i * ids.length / DUELO_N)];
+    let ex, k = 0;
+    do ex = n.gen(r); while (vistos.has(n.clave(ex)) && ++k < 30);
+    vistos.add(n.clave(ex));
+    qs.push({ nivel: n.id, ex });
+  }
+  return qs;
+}
+
+let seleccionBloques = new Set([0, 1, 2, 3]), dueloTab = 'crear', dueloListo = null, D = null;
+function pintarSelector() {
+  $('bloques').innerHTML = BLOQUES.map(b => `<button type="button" class="bloque" data-bit="${b.bit}" aria-pressed="${seleccionBloques.has(b.bit)}"><b>${b.nombre}</b><span>${b.desc}</span></button>`).join('');
+  $('tabCrear').setAttribute('aria-selected', String(dueloTab === 'crear'));
+  $('tabUnir').setAttribute('aria-selected', String(dueloTab === 'unir'));
+  $('zonaCrear').classList.toggle('oculto', dueloTab !== 'crear');
+  $('zonaUnir').classList.toggle('oculto', dueloTab !== 'unir');
+  $('btnCrearCodigo').disabled = seleccionBloques.size === 0;
+  $('codigoCreado').classList.toggle('oculto', !(dueloTab === 'crear' && dueloListo));
+  $('btnEmpezar').classList.toggle('oculto', !dueloListo);
+}
+$('bloques').addEventListener('click', e => {
+  const b = e.target.closest('.bloque'); if (!b) return;
+  const bit = Number(b.dataset.bit);
+  seleccionBloques.has(bit) ? seleccionBloques.delete(bit) : seleccionBloques.add(bit);
+  dueloListo = null; pintarSelector();
+});
+$('tabCrear').addEventListener('click', () => { dueloTab = 'crear'; dueloListo = null; pintarSelector(); });
+$('tabUnir').addEventListener('click', () => { dueloTab = 'unir'; dueloListo = leerCodigo($('codigoUnir').value); pintarSelector(); $('codigoUnir').focus(); });
+$('codigoUnir').addEventListener('input', () => {
+  const txt = $('codigoUnir').value;
+  dueloListo = leerCodigo(txt);
+  const limpio = txt.toUpperCase().replace(/[^0-9A-Z]/g, '');
+  $('avisoCodigo').textContent = dueloListo ? `Duelo: ${textoBloques(dueloListo.bloques)} · ${DUELO_N} preguntas`
+    : limpio.length >= 7 ? 'Ese código no es válido. Revisa que lo hayas copiado bien.' : '';
+  pintarSelector();
+});
+$('codigoUnir').addEventListener('keydown', e => { if (e.key === 'Enter' && dueloListo) $('btnEmpezar').click(); });
+$('btnCrearCodigo').addEventListener('click', () => {
+  if (!seleccionBloques.size) return;
+  const mascara = [...seleccionBloques].reduce((m, b) => m | (1 << b), 0);
+  dueloListo = leerCodigo(crearCodigo(mascara));
+  $('codigoTexto').textContent = verCodigo(dueloListo.codigo);
+  $('codigoAyuda').textContent = `Díctalo a tus rivales: lo escriben en «Unirme con un código». Cuando estéis todos, pulsad «Empezar el duelo». ${textoBloques(dueloListo.bloques)} · ${DUELO_N} preguntas.`;
+  pintarSelector();
+  $('codigoCreado').scrollIntoView({ behavior: 'smooth', block: 'center' });
+});
+$('btnEmpezar').addEventListener('click', () => { if (dueloListo) empezarDuelo(dueloListo); });
+
+/* Conexión con el panel (Apps Script). Pega aquí la URL /exec. Vacía: el duelo funciona, sin clasificación. */
+const URL_DUELOS = 'https://script.google.com/macros/s/AKfycbwrmsM2MmoySljDFl6tt4Twf04C6vcokDGGyx2tUw-UZTCe_XFR10APJs0quCEwtVJt/exec';
+const idPartida = () => (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 12);
+async function enviarPanel(datos, reintentos = 0) {
+  if (!URL_DUELOS) return null;
+  for (let k = 0; k <= reintentos; k++) {
+    try {
+      const r = await fetch(URL_DUELOS, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(datos) });
+      return await r.json();
+    } catch (e) { if (k < reintentos) await new Promise(ok => setTimeout(ok, 1500 * (k + 1))); }
+  }
+  return null;
+}
+async function pedirRanking(codigo, id) {
+  if (!URL_DUELOS) return null;
+  try { const r = await fetch(`${URL_DUELOS}?accion=ranking&codigo=${encodeURIComponent(codigo)}&id=${encodeURIComponent(id)}`); return await r.json(); }
+  catch (e) { return null; }
+}
+const fmtPreciso = ms => { const d = Math.round(ms / 100), s = Math.floor(d / 10); return `${Math.floor(s / 60)}:${dos(s % 60)},${d % 10}`; };
+const fmtTiempo = ms => { const s = Math.floor(ms / 1000); return `${dos(Math.floor(s / 60))}:${dos(s % 60)}`; };
+
+function empezarDuelo(d) {
+  if (!exigirNombre()) return;
+  const previos = S.duelos.filter(x => x.codigo === d.codigo).length;
+  D = { ...d, qs: preguntasDuelo(d), i: 0, aciertos: 0, acum: 0, tramo: null, respondida: false, fallos: [], intento: previos + 1,
+    timer: null, terminado: false, id: idPartida(), nombre: nombreAlumno(), finEnviado: false };
+  $('pantallaFicha').classList.add('oculto'); $('pantallaDuelo').classList.remove('oculto');
+  $('btnCambiar').classList.remove('oculto'); $('btnCambiar').textContent = 'Abandonar el duelo';
+  $('dueloChip').textContent = `${verCodigo(d.codigo)} · ${textoBloques(d.bloques)}`;
+  $('dueloJuego').classList.remove('oculto'); $('dueloFinal').classList.add('oculto'); $('dueloRegla').classList.remove('oculto');
+  D.timer = setInterval(pintarRelojDuelo, 200);
+  const partida = D;
+  enviarPanel({ evento: 'inicio', id: D.id, codigo: D.codigo, nombre: D.nombre }, 1).then(r => { if (r && r.ok && r.intento) partida.intentoPanel = r.intento; });
+  pintarPreguntaDuelo();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+const msDuelo = () => D.acum + (D.tramo ? Date.now() - D.tramo : 0);
+function pintarRelojDuelo() { if (D) $('dueloReloj').textContent = fmtTiempo(msDuelo()); }
+function pintarPreguntaDuelo() {
+  const q = D.qs[D.i], n = NIV[q.nivel];
+  $('dueloNum').textContent = `Pregunta ${D.i + 1} de ${DUELO_N}`;
+  $('dueloBarra').style.width = `${(D.i / DUELO_N * 100).toFixed(1)}%`;
+  $('dueloTipo').textContent = `${n.sym} · ${n.nombre}`;
+  $('dueloPregunta').innerHTML = n.enunciado(q.ex);
+  $('dueloZona').innerHTML = `<div class="fila-resp"><span class="rot">Resultado:</span>${htmlResp('dueloResp')}<button type="button" class="btn btn-principal" id="dueloComprobar">Comprobar</button></div>`;
+  $('dueloAviso').textContent = ''; $('dueloFeedback').className = 'feedback'; $('dueloFeedback').innerHTML = '';
+  $('dueloAcciones').classList.add('oculto');
+  D.respondida = false; D.tramo = Date.now();
+  if (punteroFino()) $('dueloResp').focus({ preventScroll: true });
+}
+function comprobarDuelo() {
+  if (!D || D.respondida || D.terminado) return;
+  const q = D.qs[D.i], n = NIV[q.nivel];
+  const x = leerResp('dueloResp');
+  if (x.error) { $('dueloAviso').textContent = x.error; return; }
+  const correcto = x.v === q.ex.c;
+  marcarResp('dueloResp', correcto);
+  D.acum += Date.now() - D.tramo; D.tramo = null; D.respondida = true;
+  if (correcto) D.aciertos++; else D.fallos.push(`${n.sym}: ${n.comb ? txtExpr(q.ex.tree) : n.enunciado(q.ex).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()} = ${fmt(q.ex.c)}`);
+  const html = correcto
+    ? `<div class="tit">${azar(['¡Correcto!', '¡Bien!', '¡Exacto!'])}</div>${n.comb ? '' : `<p>${n.explica(q.ex)}</p>`}`
+    : `<div class="tit">Todavía no</div><p>${n.diagnostico(q.ex, x.v).txt}</p><p>${n.explica(q.ex)}</p>`;
+  $('dueloComprobar').disabled = true;
+  $('dueloAviso').textContent = '';
+  $('dueloFeedback').className = 'feedback visible ' + (correcto ? 'ok' : 'ko');
+  $('dueloFeedback').innerHTML = html;
+  $('dueloSiguiente').textContent = D.i === DUELO_N - 1 ? 'Ver mi resultado' : 'Siguiente';
+  $('dueloAcciones').classList.remove('oculto');
+  if (punteroFino()) $('dueloSiguiente').focus({ preventScroll: true });
+  pintarRelojDuelo();
+  if (D.i < DUELO_N - 1) enviarPanel({ evento: 'progreso', id: D.id, codigo: D.codigo, nombre: D.nombre, respondidas: D.i + 1, aciertos: D.aciertos });
+}
+$('dueloZona').addEventListener('click', e => { if (e.target.id === 'dueloComprobar') comprobarDuelo(); });
+$('dueloZona').addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.id === 'dueloResp') { e.preventDefault(); comprobarDuelo(); } });
+$('dueloSiguiente').addEventListener('click', () => {
+  if (!D || !D.respondida) return;
+  D.i++;
+  D.i >= DUELO_N ? terminarDuelo(false) : pintarPreguntaDuelo();
+});
+function terminarDuelo(abandonado) {
+  clearInterval(D.timer);
+  if (D.tramo) { D.acum += Date.now() - D.tramo; D.tramo = null; }
+  const respondidas = abandonado ? D.i + (D.respondida ? 1 : 0) : DUELO_N;
+  const registro = { id: D.id, codigo: D.codigo, bloques: textoBloques(D.bloques), aciertos: D.aciertos, respondidas, ms: D.acum, fallos: D.fallos.slice(), intento: D.intento, estado: abandonado ? 'abandonado' : 'terminado', puesto: '' };
+  S.duelos.push(registro);
+  D.terminado = true; D.registro = registro;
+  const partida = D;
+  const envio = { evento: abandonado ? 'abandono' : 'fin', id: D.id, codigo: D.codigo, nombre: D.nombre, respondidas, aciertos: D.aciertos, ms: Math.round(D.acum) };
+  partida.envioFin = envio;
+  const promesa = enviarPanel(envio, 2).then(r => { partida.respFin = r; if (r && r.ok) partida.finEnviado = true; return r; });
+  if (abandonado) { salirDuelo(); toast('Has abandonado el duelo. Queda anotado en tu informe.'); return; }
+  $('dueloBarra').style.width = '100%';
+  $('dueloJuego').classList.add('oculto'); $('dueloRegla').classList.add('oculto'); $('dueloFinal').classList.remove('oculto');
+  $('btnCambiar').textContent = 'Volver al laboratorio';
+  const a = D.aciertos;
+  const valoracion = a === DUELO_N ? '¡Pleno! Ningún fallo.' : a >= DUELO_N - 3 ? 'Muy buen duelo.' : a >= DUELO_N / 2 ? 'Buen intento: repasa las preguntas falladas.' : 'Te conviene repasar los niveles en el laboratorio.';
+  $('dueloFinal').innerHTML = `
+    <div class="etiqueta" style="text-align:center;color:var(--vio-osc)">Duelo terminado</div>
+    <div class="rd-cifra">${a}<span style="font-size:1.4rem;color:var(--tinta-suave)"> / ${DUELO_N}</span></div>
+    <div style="color:var(--tinta-suave)">aciertos</div>
+    <div class="rd-fila"><div><span>Fallos</span><b style="color:var(--ko)">${DUELO_N - a}</b></div><div><span>Tiempo</span><b>${fmtPreciso(D.acum)}</b></div><div><span>Código</span><b style="letter-spacing:.08em">${verCodigo(D.codigo)}</b></div></div>
+    <p>${valoracion}</p>
+    ${D.fallos.length ? `<p style="color:var(--tinta-suave);margin-top:.4rem;font-size:.92rem">Para repasar: ${D.fallos.map(escapar).join(' · ')}</p>` : ''}
+    ${URL_DUELOS ? '<div class="clasif" id="dueloClasif" aria-live="polite"><p class="nota-duelo">Enviando tu resultado al panel…</p></div>'
+      : '<p class="nota-duelo" style="color:var(--tinta-suave)">Comparad vuestras pantallas: gana quien tenga más aciertos y, si empatáis, quien haya tardado menos. El resultado queda guardado en tu informe.</p>'}`;
+  if (URL_DUELOS) promesa.then(() => cargarClasificacion(partida));
+}
+const ordinal = n => `${n}.º`;
+async function cargarClasificacion(partida) {
+  const caja = () => (D === partida ? $('dueloClasif') : null);
+  if (!caja()) return;
+  if (!partida.finEnviado) {
+    const r = await enviarPanel(partida.envioFin, 1);
+    partida.respFin = r || partida.respFin;
+    if (r && r.ok) partida.finEnviado = true;
+  }
+  if (!caja()) return;
+  if (!partida.finEnviado) {
+    const motivo = partida.respFin && partida.respFin.error ? ` El panel ha respondido: «${escapar(String(partida.respFin.error))}».` : ' Puede que no haya conexión.';
+    caja().innerHTML = `<div class="clasif-cab"><b>Clasificación</b><button type="button" class="btn-mini" id="clasifAct">Reintentar</button></div><p class="nota-duelo">No se ha podido enviar tu resultado al panel.${motivo} Tu resultado sí está guardado en tu informe.</p>`;
+    $('clasifAct').addEventListener('click', () => cargarClasificacion(partida));
+    return;
+  }
+  const r = await pedirRanking(partida.codigo, partida.id);
+  if (!caja()) return;
+  if (!r || !r.ok) {
+    caja().innerHTML = `<div class="clasif-cab"><b>Clasificación</b><button type="button" class="btn-mini" id="clasifAct">Actualizar</button></div><p class="nota-duelo">Tu resultado se ha enviado, pero no se ha podido leer la clasificación. Prueba a actualizar.</p>`;
+    $('clasifAct').addEventListener('click', () => cargarClasificacion(partida));
+    return;
+  }
+  const lista = r.podio.map((p, k) => `<li class="${p.yo ? 'yo' : ''}"><span class="med m${k + 1}">${k + 1}</span><b>${escapar(p.nombre)}</b><span class="dat">${p.aciertos} ✓ · ${p.fallos} ✗ · ${fmtPreciso(p.ms)}</span></li>`).join('');
+  let tu;
+  if (r.tu && r.tu.cuenta && r.tu.posicion) tu = `Tu puesto: ${ordinal(r.tu.posicion)} de ${r.terminados} que han terminado.`;
+  else if (r.tu && !r.tu.cuenta) tu = `Este es tu intento n.º ${r.tu.intento} con este código: solo cuenta el primero, así que no entra en la clasificación.`;
+  else tu = 'Tu resultado se está registrando.';
+  partida.registro.puesto = r.tu && r.tu.cuenta && r.tu.posicion ? `${ordinal(r.tu.posicion)} de ${r.terminados}` : r.tu && !r.tu.cuenta ? `No cuenta (intento ${r.tu.intento})` : '';
+  caja().innerHTML = `<div class="clasif-cab"><b>Clasificación del duelo</b><button type="button" class="btn-mini" id="clasifAct">Actualizar</button></div>
+    ${lista ? `<ol>${lista}</ol>` : '<p class="nota-duelo">Todavía no ha terminado nadie.</p>'}
+    <p class="tu">${tu}</p>
+    <p class="nota-duelo">${r.enJuego ? `Todavía ${r.enJuego === 1 ? 'juega 1 compañero' : `juegan ${r.enJuego} compañeros`}: actualiza en un rato. ` : ''}Gana quien más acierte; si hay empate, quien tarde menos.</p>`;
+  $('clasifAct').addEventListener('click', () => cargarClasificacion(partida));
+}
+function salirDuelo() {
+  if (D && D.timer) clearInterval(D.timer);
+  D = null; dueloListo = null; $('codigoUnir').value = ''; $('avisoCodigo').textContent = '';
+  $('pantallaDuelo').classList.add('oculto'); $('pantallaFicha').classList.remove('oculto');
+  $('btnCambiar').classList.add('oculto');
+  pintarSelector(); pintarTabla();
+}
+$('btnCambiar').addEventListener('click', () => {
+  if (!D) return;
+  if (D.terminado) { salirDuelo(); $('tarjetaDuelo').scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+  $('modalAbandono').classList.remove('oculto'); $('abNo').focus();
+});
+$('abNo').addEventListener('click', () => $('modalAbandono').classList.add('oculto'));
+$('abSi').addEventListener('click', () => { $('modalAbandono').classList.add('oculto'); if (D && !D.terminado) terminarDuelo(true); });
+
+/* =====================================================================
+   Informe final
+   ===================================================================== */
+const COLORES_NOTA = [[10, '#1a7a1a', '#fff'], [9, '#6dbf6d', '#fff'], [8, '#1a4f8a', '#fff'], [7, '#5b9bd5', '#fff'], [6, '#c05c00', '#fff'], [5, '#f5a623', '#000'], [0, '#c0392b', '#fff']];
+function abrirInforme() {
+  if (!exigirNombre()) return;
+  const nota = calcularNota(), ahora = new Date();
+  const [, fondo, texto] = COLORES_NOTA.find(([m]) => nota >= m);
+  const min = Math.ceil((Date.now() - S.inicio) / 60000);
+  document.body.classList.toggle('perfecta', nota === 10);
+  const filas = NIVELES.map((n, i) => {
+    const t = S.tipos[n.id];
+    const est = t.superado ? '<span class="est-ok">Superado</span>' : t.total ? '<span class="est-no">No superado</span>' : '<span class="est-bl">Sin empezar</span>';
+    return `<tr><td>${i + 1}. ${n.nombre}</td><td>${est}</td><td>${t.total}</td><td>${t.aciertos}</td><td>${t.fallos}</td></tr>`;
+  }).join('');
+  const duelos = S.duelos.length ? `<div class="if-sec">Reta a tus compañeros</div><table class="tabla-inf"><thead><tr><th>Código</th><th>Contenido</th><th>Aciertos</th><th>Tiempo</th><th>Estado</th><th>Puesto (última consulta)</th></tr></thead><tbody>${S.duelos.map(d =>
+      `<tr><td>${verCodigo(d.codigo)}${d.intento > 1 ? ` (intento ${d.intento})` : ''}</td><td>${escapar(d.bloques)}</td><td>${d.aciertos}/${d.respondidas}</td><td>${fmtPreciso(d.ms)}</td><td>${d.estado}</td><td>${escapar(d.puesto || '—')}</td></tr>`).join('')}</tbody></table>` : '';
+  $('informeCaja').innerHTML = `
+    <div class="informe-cab" style="background:${fondo};color:${texto}">
+      <div class="if-titulo" id="ifTitulo">${escapar(document.querySelector('.titulo-ficha').textContent)}</div>
+      <div class="if-sub">${escapar(document.querySelector('.subtitulo').textContent)}</div>
+      <hr>
+      <div class="if-h">Informe de la actividad</div>
+      <div class="if-nota">${coma(nota)} <span style="font-size:1.1rem;font-weight:600">/ 10</span></div>
+    </div>
+    <div class="informe-cuerpo">
+      <div class="if-datos">
+        <div><span>Alumno</span><b>${escapar(nombreAlumno())}</b></div>
+        <div><span>Fecha</span><b>${dos(ahora.getDate())}/${dos(ahora.getMonth() + 1)}/${ahora.getFullYear()}</b></div>
+        <div><span>Hora</span><b>${dos(ahora.getHours())}:${dos(ahora.getMinutes())}:${dos(ahora.getSeconds())}</b></div>
+        <div><span>Tiempo empleado</span><b>${dos(Math.floor(min / 60))}:${dos(min % 60)}</b></div>
+      </div>
+      <div class="if-sec">Niveles · ${Object.values(S.tipos).filter(t => t.superado).length} de ${NIVELES.length} superados · ${S.fallosTotales} ${S.fallosTotales === 1 ? 'fallo' : 'fallos'} (−${coma(S.fallosTotales * PENALIZACION_FALLO)})</div>
+      <div style="overflow-x:auto"><table class="tabla-inf"><thead><tr><th>Nivel</th><th>Estado</th><th>Intentos</th><th>Aciertos</th><th>Fallos</th></tr></thead><tbody>${filas}</tbody></table></div>
+      <div class="if-sec">¿Dónde se equivoca?</div>
+      <div class="errores">
+        <div><b style="color:var(--vio-osc)">${S.errores.jerarquia}</b><span>De orden (jerarquía de operaciones)</span></div>
+        <div><b style="color:var(--fri-osc)">${S.errores.signo}</b><span>De signo</span></div>
+        <div><b style="color:var(--cal-osc)">${S.errores.calculo}</b><span>De cálculo</span></div>
+      </div>
+      ${duelos ? `<div style="overflow-x:auto">${duelos}</div>` : ''}
+      <div class="if-acciones"><button type="button" class="btn btn-sec" id="ifCerrar">Seguir practicando</button></div>
+    </div>`;
+  $('modalInforme').classList.remove('oculto');
+  $('ifCerrar').addEventListener('click', () => $('modalInforme').classList.add('oculto'));
+  $('ifCerrar').focus();
+}
+$('btnFinalizar').addEventListener('click', abrirInforme);
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  $('modalInforme').classList.add('oculto'); $('modalAbandono').classList.add('oculto');
+});
+
+/* ---- Arranque ---- */
+pintarSelector();
+actualizarUI();
+seleccionarNivel('su');
+</script>
+</body>
+</html>
