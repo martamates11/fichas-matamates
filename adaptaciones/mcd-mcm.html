@@ -1,0 +1,1614 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MCD y mcm con bloques</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Paleta «Grafito y frambuesa» */
+  --bg:#F6F4F1; --tarjeta:#FFFFFF; --texto:#2B2D3A; --suave:#5E6170; --borde:#E7E3DD; --borde-2:#D6D1C9;
+  --grafito:#2B2D3A; --grafito-2:#3A3D4E; --gris-fondo:#F2F0EC;
+  --acento:#C8217A; --acento-2:#A3155F; --acento-osc:#9F175F; --acento-claro:#F2C4DA; --acento-suave:#FCEBF3;
+  --ok:#0F9D58; --ok-fondo:#E7F8EF; --error:#D93A3A; --error-fondo:#FDECEC;
+  --aviso:#B26A00; --aviso-fondo:#FFF5DF;
+  --p2:#DC3D45; --p3:#1F6FEB; --p5:#FFB21E; --p5-texto:#2B1D00; --p7:#0B8A5E;
+  --A:#C8217A; --A-suave:#FBE4EF; --B:#3B4A6B; --B-suave:#E3E7EF;
+  --apagado:#A29E97; --apagado-fondo:#F2F0EC;
+  --radio:16px; --sombra:0 6px 24px rgba(43,45,58,.07), 0 1px 3px rgba(43,45,58,.06);
+  --brillo:#FFC21A; --hb:38px;
+  /* Escala logarítmica de los bloques: largo(x) = U · log2(x) */
+  --U:48px;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:'Nunito',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;color:var(--texto);
+  background:radial-gradient(circle at 8% 0%,rgba(200,33,122,.045) 0,transparent 36%),radial-gradient(circle at 96% 8%,rgba(59,74,107,.08) 0,transparent 34%),var(--bg);
+  line-height:1.5;font-size:16px;transition:background .6s}
+button,input{font-family:inherit;font-size:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--acento);outline-offset:2px}
+
+/* Franja de autoría */
+.franja{background:var(--grafito);color:#D9D7DF;border-bottom:3px solid var(--acento);font-size:.8rem;text-align:center;padding:9px 14px;letter-spacing:.02em}
+
+.ficha{max-width:980px;margin:0 auto;padding:22px 16px 40px}
+.titulo-ficha{font-family:'Poppins','Nunito',sans-serif;font-weight:700;font-size:clamp(1.6rem,4.5vw,2.3rem);margin:6px 0 2px;line-height:1.2;
+  color:var(--grafito);letter-spacing:-.01em}
+.titulo-ficha::after{content:'';display:block;width:64px;height:5px;border-radius:3px;margin-top:8px;background:linear-gradient(90deg,var(--acento),#E5609F)}
+.subtitulo{margin:0 0 16px;color:var(--suave);font-weight:600}
+
+/* Barra del alumno */
+.barra-alumno{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  border:1.5px solid var(--borde);border-radius:var(--radio);box-shadow:var(--sombra);padding:10px 14px;margin-bottom:16px}
+.fila-barra{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px}
+.campo-nombre{display:flex;align-items:center;gap:8px;flex:1 1 220px;min-width:0}
+.campo-nombre span{font-weight:800;font-size:.9rem}
+.campo-nombre input{flex:1;min-width:0;border:2px solid var(--borde);border-radius:10px;padding:7px 10px;background:#fff;color:var(--texto);transition:border-color .2s,box-shadow .2s}
+.campo-nombre input:focus{border-color:var(--acento);box-shadow:0 0 0 3px var(--acento-suave);outline:none}
+.campo-nombre input.falta{border-color:var(--error);box-shadow:0 0 0 3px var(--error-fondo)}
+.marcador{display:flex;align-items:center;flex-wrap:wrap;gap:8px 14px}
+.racha{display:flex;align-items:center;gap:3px}
+.racha-txt{font-size:.78rem;color:var(--suave);font-weight:700;margin-left:4px;white-space:nowrap}
+.estrella{width:22px;height:22px;display:inline-block}
+.estrella svg{width:100%;height:100%;display:block}
+.estrella path{fill:#ECE9E4;stroke:#D3CEC6;stroke-width:1.2;transition:fill .3s,stroke .3s}
+.estrella.on path{fill:url(#gradEstrella);stroke:#E39A00}
+.estrella.pop{animation:pop .6s cubic-bezier(.3,1.6,.5,1)}
+@keyframes pop{0%{transform:scale(.4) rotate(-30deg)}60%{transform:scale(1.35) rotate(8deg)}100%{transform:none}}
+.dato{font-size:.85rem;color:var(--suave);font-weight:700;white-space:nowrap}
+.dato b{font-size:1.05rem;color:var(--grafito)}
+.dato.nota b{display:inline-block;min-width:2.6em;text-align:center;background:var(--acento);box-shadow:0 2px 8px rgba(200,33,122,.28);color:#fff;border-radius:999px;padding:1px 10px;margin-left:3px}
+.aviso-nombre{margin:8px 0 0;color:var(--error);font-weight:700;font-size:.88rem}
+
+/* Instrucciones */
+.instrucciones{background:var(--tarjeta);border:1.5px solid var(--borde);border-left:5px solid var(--acento);border-radius:var(--radio);margin-bottom:16px;font-size:.93rem;color:var(--suave);box-shadow:var(--sombra)}
+.instrucciones summary{list-style:none;cursor:pointer;display:flex;align-items:center;flex-wrap:wrap;gap:4px 10px;padding:12px 20px;font-family:'Poppins','Nunito',sans-serif;font-size:1.02rem;font-weight:600;color:var(--texto);user-select:none;border-radius:var(--radio)}
+.instrucciones summary::-webkit-details-marker{display:none}
+.instrucciones summary::after{content:'';margin-left:auto;width:9px;height:9px;border-right:2.5px solid var(--acento-osc);border-bottom:2.5px solid var(--acento-osc);transform:rotate(45deg);transition:transform .25s;margin-top:-4px}
+.instrucciones[open] summary::after{transform:rotate(-135deg);margin-top:4px}
+.instrucciones summary:hover{background:var(--acento-suave)}
+.instrucciones .resumen-cerrado{font-family:'Nunito',sans-serif;font-weight:600;font-size:.82rem;color:var(--suave)}
+.instrucciones[open] .resumen-cerrado{display:none}
+.instrucciones ul{margin:0 20px 14px 38px;padding:0}
+.instrucciones li{margin:5px 0}
+.instrucciones b{color:var(--texto)}
+
+/* Leyenda */
+.leyenda{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;background:var(--tarjeta);border:1.5px solid var(--borde);border-radius:var(--radio);padding:10px 16px;margin-bottom:18px;box-shadow:var(--sombra);font-size:.88rem;font-weight:700;color:var(--suave)}
+.leyenda .items{display:flex;gap:8px;flex-wrap:wrap}
+.leyenda .item{display:flex;align-items:center;gap:6px}
+.leyenda .blk{height:30px;font-size:.95rem}
+.leyenda .txt-ley{flex:1 1 260px;min-width:0}
+
+/* Bloques de primos: largo logarítmico, U · log2(p). El borde blanco va dentro del ancho (border-box),
+   así que los bloques pegados suman exactamente U · log2(producto). */
+.blk{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;width:calc(var(--U) * var(--lw));height:var(--hb);
+  border:1.5px solid rgba(255,255,255,.95);border-radius:8px;color:#fff;font-weight:800;font-size:1.08rem;
+  box-shadow:inset 0 -3px 0 rgba(0,0,0,.16);user-select:none;flex:none;overflow:hidden}
+.p2{background:var(--p2)}.p3{background:var(--p3)}.p5{background:var(--p5);color:var(--p5-texto)}.p7{background:var(--p7)}
+.blk.p2{--lw:1}.blk.p3{--lw:1.5849625}.blk.p5{--lw:2.3219281}.blk.p7{--lw:2.8073549}
+.blk.entra{animation:entra .35s cubic-bezier(.3,1.5,.5,1);transform-origin:left center}
+@keyframes entra{from{transform:scaleX(.2);opacity:0}to{transform:none;opacity:1}}
+.hueco{display:block;width:100%;height:var(--hb);border:2px dashed #D6D1C9;border-radius:9px;background:repeating-linear-gradient(45deg,#FAF9F7 0 6px,#F1EEEA 6px 12px)}
+.chip-num{display:inline-flex;align-items:center;justify-content:center;min-width:46px;height:38px;padding:0 10px;border-radius:10px;color:#fff;font-weight:800;font-size:1.15rem;font-family:'Poppins','Nunito',sans-serif;flex:none}
+.chip-num.A{background:var(--A)}.chip-num.B{background:var(--B)}
+.num-a{color:var(--A)}.num-b{color:var(--B)}
+
+/* Ejercicio */
+.ej-cabecera{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin-bottom:12px}
+.ej-num{font-family:'Poppins','Nunito',sans-serif;font-weight:700;font-size:1.25rem}
+.ej-pareja{font-weight:700;color:var(--suave)}
+.ej-pareja b{font-size:1.2rem}
+.tag-practica{background:#E7F8EF;color:#0B6B3A;border:1.5px solid #9ED9B8;border-radius:999px;padding:2px 10px;font-size:.78rem;font-weight:800}
+.pasos{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.paso-pill{display:flex;align-items:center;gap:6px;padding:5px 12px 5px 6px;border-radius:999px;background:#fff;border:1.5px solid var(--borde);font-weight:700;font-size:.85rem;color:var(--suave);transition:all .3s}
+.paso-pill i{font-style:normal;width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:#ECE9E4;color:var(--suave);font-size:.78rem}
+.paso-pill.activo{border-color:var(--acento);color:var(--acento-osc);box-shadow:0 0 0 3px var(--acento-suave)}
+.paso-pill.activo i{background:var(--acento);color:#fff}
+.paso-pill.hecho i{background:var(--ok);color:#fff}
+.tarjeta{background:var(--tarjeta);border:1.5px solid var(--borde);border-radius:var(--radio);box-shadow:var(--sombra);padding:16px 18px;margin-bottom:16px;animation:aparece .45s ease}
+@keyframes aparece{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.tarjeta h2{font-family:'Poppins','Nunito',sans-serif;font-size:1.08rem;font-weight:600;margin:0 0 4px}
+.tarjeta h2 .n{display:inline-flex;width:26px;height:26px;border-radius:8px;background:var(--grafito);color:#fff;align-items:center;justify-content:center;margin-right:8px;font-size:.9rem;box-shadow:inset 0 -3px 0 var(--acento)}
+.ayuda{margin:0 0 12px;color:var(--suave);font-size:.93rem}
+
+/* Paso 1: rectángulos que se llenan */
+.fila-num{padding:10px 0 12px;border-top:1px dashed var(--borde)}
+.fila-num:first-child{border-top:0;padding-top:2px}
+.marco-zona{padding-top:24px}
+.marco{--c:var(--A);--c-suave:var(--A-suave);position:relative;box-sizing:content-box;width:calc(var(--U) * var(--ln));height:var(--hb);
+  border:2.5px solid var(--c);border-radius:10px;display:flex;align-items:stretch;justify-content:flex-start;
+  background:repeating-linear-gradient(135deg,#FFFFFF 0 7px,var(--c-suave) 7px 11px);transition:border-color .25s,box-shadow .25s}
+.marco[data-fila="B"]{--c:var(--B);--c-suave:var(--B-suave)}
+.marco-tab{position:absolute;left:-2.5px;bottom:100%;background:var(--c);color:#fff;font-family:'Poppins','Nunito',sans-serif;font-weight:700;font-size:.92rem;line-height:1;
+  padding:4px 10px 3px;border-radius:8px 8px 0 0;white-space:nowrap;transition:background .25s}
+.marco .blk{height:100%;position:relative;z-index:1}
+.marco.completo{border-color:var(--ok);box-shadow:0 0 0 4px rgba(15,157,88,.16),0 0 16px rgba(15,157,88,.35)}
+.marco.completo .marco-tab{background:var(--ok)}
+.marco.completo.recien{animation:completo .9s ease}
+.marco.completo.recien::after{content:'';position:absolute;inset:0;z-index:2;border-radius:8px;pointer-events:none;
+  background:linear-gradient(100deg,transparent 35%,rgba(255,255,255,.85) 50%,transparent 65%);background-size:250% 100%;background-position:130% 0;animation:barrido 1s ease forwards}
+@keyframes completo{0%{box-shadow:0 0 0 0 rgba(15,157,88,.55)}45%{box-shadow:0 0 0 9px rgba(15,157,88,.18),0 0 28px rgba(15,157,88,.7)}100%{box-shadow:0 0 0 4px rgba(15,157,88,.16),0 0 16px rgba(15,157,88,.35)}}
+@keyframes barrido{to{background-position:-30% 0;opacity:.2}}
+.marco.pasado{border-color:var(--error)}
+.marco.pasado .marco-tab{background:var(--error)}
+/* Línea del final del rectángulo, visible por encima del bloque que se pasa */
+.marco.pasado::before{content:'';position:absolute;right:-2.5px;top:-7px;bottom:-7px;width:3px;border-radius:2px;background:var(--error);z-index:3}
+.blk.pasa{background:repeating-linear-gradient(45deg,#E23D3D 0 6px,#F48A8A 6px 12px)!important;color:#fff!important;opacity:.92}
+.producto{margin:8px 0;font-weight:800;font-size:.98rem;color:var(--suave);font-variant-numeric:tabular-nums}
+.producto.vacio{font-weight:600;font-style:italic;opacity:.85}
+.producto.lleno{color:#0B6B3A}
+.producto.pasado{color:#B42323}
+.teclado{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn-primo:disabled{opacity:.35;cursor:default;transform:none;filter:grayscale(.3)}
+
+/* Paso 1, segunda parte: potencias */
+.potencias{margin-top:14px;padding-top:14px;border-top:1.5px dashed var(--borde);animation:aparece .45s ease}
+.potencias h3{font-family:'Poppins','Nunito',sans-serif;font-size:1rem;font-weight:600;margin:0 0 4px}
+.pot-fila{display:flex;align-items:center;gap:10px;margin:8px 0;flex-wrap:wrap;border-radius:12px;padding:4px 6px;margin-left:-6px;transition:background .2s}
+.pot-fila.activa{background:var(--acento-suave)}
+.pot-fila label{font-weight:800;font-size:1.25rem;display:flex;align-items:center;gap:8px;cursor:pointer}
+/* La caja es un <input> real (teclado físico, lectores de pantalla, valor que se valida), pero su texto es
+   transparente: lo que se ve es .pot-vista, que dibuja los exponentes con CSS (sin depender de glifos ²³⁴
+   de la fuente) y el hueco del exponente cuando «Elevar» está activo. */
+.pot-caja{position:relative;display:inline-block;width:220px;max-width:100%;flex:0 1 220px;min-width:0}
+.pot-in{display:block;width:100%;height:50px;border:2px solid var(--borde-2);border-radius:12px;padding:0 12px;font-weight:800;font-size:1.3rem;
+  color:transparent;-webkit-text-fill-color:transparent;caret-color:transparent;background:#fff;transition:border-color .2s,box-shadow .2s,background .2s;cursor:pointer}
+.pot-in::selection{background:transparent}
+.pot-fila.activa .pot-in{border-color:var(--acento);box-shadow:0 0 0 3px var(--acento-claro)}
+.pot-in:focus{outline:none}
+.pot-in.ok{border-color:var(--ok);background:var(--ok-fondo);box-shadow:none}
+.pot-in.sol{border-color:#C2BCB3;border-style:dashed;background:var(--apagado-fondo);box-shadow:none}
+.pot-in.mal{border-color:var(--error);background:var(--error-fondo)}
+.pot-in:disabled{opacity:1;-webkit-text-fill-color:transparent;cursor:default}
+.pot-vista{position:absolute;inset:2px;padding:0 12px;display:flex;align-items:center;white-space:nowrap;overflow:hidden;pointer-events:none;
+  font-weight:800;font-size:1.35rem;line-height:1;color:var(--texto);font-variant-numeric:tabular-nums}
+.pot-in.ok+.pot-vista{color:#0B4F2C}
+.pot-in.sol+.pot-vista{color:var(--grafito-2)}
+.pot-in.mal+.pot-vista{color:#7A1B1B}
+.pot-vista .e{font-size:.64em;position:relative;top:-.62em;margin-left:.04em}
+.pot-vista .por{margin:0 .14em;font-weight:900}
+.pot-vista .cursor{display:inline-block;width:2px;height:1.05em;margin-left:2px;background:var(--acento);border-radius:1px;animation:parpadeo 1.05s steps(1) infinite}
+.pot-vista .hueco-exp{display:inline-block;width:.5em;height:.6em;margin-left:.06em;position:relative;top:-.5em;border:2px solid var(--acento);border-radius:3px;
+  background:var(--acento-suave);animation:parpadeo-hueco 1.05s ease-in-out infinite}
+.pot-vista .pista-vacia{font-weight:600;font-size:.6em;color:var(--suave);margin-left:8px;letter-spacing:0}
+@keyframes parpadeo{50%{opacity:0}}
+@keyframes parpadeo-hueco{50%{background:#fff;border-color:var(--acento-claro)}}
+.pot-marca{font-weight:800;color:var(--ok);font-size:1.2rem}
+
+/* Teclado de potencias: rejilla 4 × 3 (1-9 y, a la derecha, Elevar / borrar último / Borrar).
+   Sin alturas fijas ni overflow oculto: las teclas crecen si la fuente es más grande y la rejilla
+   encoge con el ancho disponible (mínimo 44 px por tecla), así que se ve entera de 320 px en adelante. */
+.teclado-pot{display:grid;grid-template-columns:repeat(3,minmax(44px,1fr)) minmax(74px,1.35fr);gap:8px;width:100%;max-width:372px;margin:12px 0 4px;
+  padding:10px;background:var(--gris-fondo);border:1.5px solid var(--borde);border-radius:16px}
+.tecla{min-width:0;min-height:52px;border-radius:12px;font-weight:800;font-size:1.4rem;line-height:1.1;padding:4px 6px;
+  display:flex;align-items:center;justify-content:center;gap:2px;touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+  background:#fff;color:var(--grafito);border:1.5px solid var(--borde-2);box-shadow:inset 0 -3px 0 rgba(43,45,58,.08);
+  transition:transform .1s,background .15s,border-color .15s,color .15s,box-shadow .15s}
+.tecla.dig{font-family:'Poppins','Nunito',sans-serif;font-weight:600}
+.tecla:hover{border-color:var(--acento)}
+.tecla:active{transform:translateY(1px);background:var(--acento-suave);box-shadow:none}
+.tecla.elevar{flex-direction:column;gap:1px;background:var(--acento-suave);color:var(--acento-osc);border-color:var(--acento-claro)}
+.tecla.elevar .ico{display:flex;align-items:flex-start;font-family:'Poppins','Nunito',sans-serif;font-weight:600;font-size:1.25rem;line-height:1}
+.tecla.elevar .ico i{display:block;width:9px;height:9px;margin:-1px 0 0 2px;border:2px solid currentColor;border-radius:2px}
+.tecla.elevar .tx{font-size:.72rem;font-weight:800;letter-spacing:.02em}
+.tecla.elevar.on{background:var(--acento);color:#fff;border-color:var(--acento-osc);box-shadow:0 0 0 3px var(--acento-claro)}
+.tecla.edit{color:var(--suave)}
+.tecla.edit svg{width:26px;height:26px;display:block}
+.tecla.edit.txt{font-size:.92rem}
+.aviso-tecla{margin:4px 0 0;min-height:1.3em;font-size:.86rem;font-weight:700;color:#8A5300}
+.btn-primo{border:0;width:50px;height:42px;border-radius:11px;color:#fff;font-weight:800;font-size:1.15rem;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18),0 3px 8px rgba(0,0,0,.12);transition:transform .12s,filter .15s}
+.btn-primo:hover{filter:brightness(1.07);transform:translateY(-2px)}
+.btn-primo:active{transform:translateY(1px)}
+.btn-primo.p5{color:var(--p5-texto)}
+.btn-mini{border:1.5px solid var(--borde);background:#fff;color:var(--suave);border-radius:10px;padding:7px 12px;font-weight:700;font-size:.86rem;transition:all .15s}
+.btn-mini:hover:not(:disabled){border-color:var(--acento);color:var(--acento-osc)}
+.btn-mini:disabled{opacity:.45;cursor:default}
+
+/* Paso 1 → 2: tablero alineado */
+.alineado{display:flex;gap:10px;align-items:flex-start;overflow-x:auto;padding:4px 2px 6px}
+.etiquetas{display:flex;flex-direction:column;gap:6px;padding-top:8px;flex:none}
+.etiquetas .chip-num{font-size:1rem;min-width:44px;padding:0 6px;height:var(--hb)}
+.etiquetas .chip-num.MCD{background:#fff;color:var(--grafito);box-shadow:inset 0 0 0 2px var(--grafito);font-size:.78rem}
+.etiquetas .chip-num.MCM{background:var(--grafito);font-size:.78rem}
+.columnas{display:grid;grid-template-columns:repeat(var(--n),auto);justify-content:start;gap:8px}
+.col{display:flex;flex-direction:column;gap:6px;padding:6px 4px;border:2.5px solid transparent;border-radius:13px;background:transparent;transition:border-color .2s,box-shadow .2s,background .2s,transform .15s;color:inherit}
+.col:not(:disabled){border-color:#DAD5CD;border-style:dashed}
+.col:not(:disabled):hover{background:#F7F4F0;transform:translateY(-2px)}
+.col:disabled{cursor:default}
+.col.sel{border-color:var(--brillo);background:#FFF8E1;box-shadow:0 0 0 3px rgba(255,194,26,.35),0 0 18px rgba(255,194,26,.65)}
+.col.ok{border-color:var(--ok);background:var(--ok-fondo);box-shadow:0 0 14px rgba(15,157,88,.35)}
+.col.mal{border-color:var(--error);background:var(--error-fondo)}
+.col.falta{border-color:var(--ok);border-style:dashed;background:var(--ok-fondo)}
+.col.comun-sol{border-color:#9C978F;border-style:dashed;background:var(--apagado-fondo)}
+.col-res{display:flex;flex-direction:column;gap:6px;padding:8px 4px}
+
+/* Paso 2 */
+.fila-ctrl{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;margin:12px 0 4px}
+.btn-toggle{border:2px solid var(--borde);background:#fff;color:var(--texto);border-radius:999px;padding:7px 16px;font-weight:700;transition:all .2s}
+.btn-toggle[aria-pressed="true"]{border-color:var(--brillo);background:#FFF8E1;box-shadow:0 0 0 3px rgba(255,194,26,.35)}
+.btn-toggle:disabled{opacity:.55;cursor:default}
+.sel-info{font-weight:700;color:var(--suave);font-size:.92rem}
+.respuesta{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:10px}
+.respuesta label{font-weight:800;font-size:1.05rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.respuesta input{width:96px;border:2px solid var(--borde);border-radius:10px;padding:8px 10px;font-weight:800;font-size:1.1rem;text-align:center;color:var(--texto);background:#fff}
+.respuesta input:focus{border-color:var(--acento);box-shadow:0 0 0 3px var(--acento-suave);outline:none}
+.respuesta input:disabled{background:var(--gris-fondo)}
+
+/* Botones */
+.btn{border:0;border-radius:12px;padding:10px 18px;font-weight:800;transition:transform .12s,box-shadow .2s,filter .2s}
+.btn-primario{background:linear-gradient(135deg,var(--acento),var(--acento-2));color:#fff;box-shadow:0 6px 16px rgba(200,33,122,.26)}
+.btn-primario:hover:not(:disabled){transform:translateY(-2px);background:linear-gradient(135deg,var(--acento-2),var(--acento-osc));box-shadow:0 9px 20px rgba(200,33,122,.32)}
+.btn-primario:disabled{filter:grayscale(.8);opacity:.5;cursor:default;box-shadow:none}
+.btn-secundario{background:#fff;color:var(--texto);border:2px solid var(--borde)}
+.btn-secundario:hover{border-color:var(--acento);color:var(--acento-osc)}
+.btn-grande{font-size:1.08rem;padding:13px 28px}
+.acciones{margin-top:12px;display:flex;gap:10px;flex-wrap:wrap}
+
+/* Feedback */
+.feedback{margin-top:12px;border-radius:12px;padding:0;font-size:.95rem;line-height:1.55}
+.feedback:empty{display:none}
+.feedback>div{padding:11px 14px;border-radius:12px;animation:aparece .35s ease}
+.fb-ok{background:var(--ok-fondo);border:1.5px solid #9ED9B8;color:#0B4F2C}
+.fb-error{background:var(--error-fondo);border:1.5px solid #F2B1B1;color:#7A1B1B}
+.fb-aviso{background:var(--aviso-fondo);border:1.5px solid #F3D28A;color:#6A4200}
+.feedback-solucion{background:var(--apagado-fondo);border:1.5px dashed #C2BCB3;color:var(--grafito-2)}
+.feedback ul{margin:6px 0 4px 18px;padding:0}
+.feedback li{margin:3px 0}
+.feedback p{margin:6px 0 0}
+.feedback .concepto{font-style:italic}
+
+/* Paso 3: recta */
+.ctrl-mcm{display:flex;flex-wrap:wrap;gap:10px 22px;margin:4px 0 12px}
+.ctrl-fila{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.btn-add{border:0;border-radius:11px;color:#fff;font-weight:800;font-size:1.05rem;padding:8px 16px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18),0 4px 10px rgba(0,0,0,.14);transition:transform .12s,filter .15s}
+.btn-add.A{background:var(--A)}.btn-add.B{background:var(--B)}
+.btn-add:hover:not(:disabled){transform:translateY(-2px);filter:brightness(1.08)}
+.btn-add:disabled{opacity:.4;cursor:default;transform:none}
+.recta{padding:4px 18px 4px;background:#FBFAF8;border:1.5px solid var(--borde);border-radius:14px}
+.recta-zona{position:relative;padding-bottom:26px}
+.pista{position:relative;height:50px}
+.pista::before{content:'';position:absolute;left:0;right:0;top:18px;height:28px;border-radius:7px;background:repeating-linear-gradient(90deg,#EEEBE6 0 2px,transparent 2px 12px)}
+.copia{position:absolute;top:18px;height:28px;border-radius:7px;overflow:hidden;border:2px solid #fff;transform-origin:left center}
+.copia-A{background:var(--A)}.copia-B{background:var(--B)}
+.copia.nueva{animation:crece .45s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes crece{from{transform:scaleX(0);opacity:.3}to{transform:none;opacity:1}}
+.marca{position:absolute;top:0;transform:translateX(-50%);font-size:.72rem;font-weight:800;line-height:16px;white-space:nowrap;z-index:4}
+/* Marca del punto de coincidencia: va encima de la línea dorada, con fondo, para que el número se lea entero */
+.marca.en-coincide{top:-1px;padding:0 5px;border-radius:6px;background:#FFF8E1;box-shadow:0 0 0 1.5px var(--brillo),0 1px 4px rgba(43,45,58,.18);font-size:.76rem}
+.marca-A{color:var(--A)}.marca-B{color:var(--B)}
+.eje{position:absolute;left:0;right:0;bottom:16px;height:3px;background:#C4BEB5;border-radius:2px}
+.tick0{position:absolute;left:0;top:5px;transform:translateX(-50%);font-size:.72rem;font-weight:800;color:var(--suave)}
+.eje::before{content:'';position:absolute;left:-1px;top:-5px;width:3px;height:13px;background:#C4BEB5;border-radius:2px}
+.coincide{position:absolute;top:2px;bottom:12px;width:4px;margin-left:-2px;border-radius:3px;background:linear-gradient(var(--brillo),#FF6B6B);box-shadow:0 0 10px var(--brillo),0 0 22px rgba(255,194,26,.8);animation:late 1.4s ease-in-out infinite;z-index:3}
+@keyframes late{0%,100%{box-shadow:0 0 8px var(--brillo),0 0 16px rgba(255,194,26,.6)}50%{box-shadow:0 0 16px var(--brillo),0 0 34px rgba(255,194,26,1)}}
+.recta-estado{margin:8px 0 0;font-weight:700;color:var(--suave);font-size:.9rem;min-height:1.4em}
+.recta-estado.brilla{color:#8A5A00}
+
+/* Resumen */
+.resumen{margin-top:14px;border-radius:14px;padding:14px 16px;background:linear-gradient(135deg,#FAF8F5,#FCF1F6);border:1.5px solid #ECE0E6;animation:aparece .5s ease}
+.resumen h3{font-family:'Poppins','Nunito',sans-serif;font-size:1rem;margin:0 0 8px}
+.resumen p{margin:8px 0 0}
+.res-wrap{display:flex;flex-wrap:wrap;align-items:flex-start;gap:4px 20px}
+.res-wrap .alineado{max-width:100%}
+.exprs{display:flex;flex-direction:column;gap:6px;padding:8px 0 0;margin:0;list-style:none}
+.expr{height:var(--hb);display:flex;align-items:center;font-weight:800;font-size:1.12rem;white-space:nowrap;color:var(--texto);font-variant-numeric:tabular-nums}
+.expr.A{color:var(--A)}.expr.B{color:var(--B)}.expr.MCD{color:var(--grafito)}.expr.MCM{color:var(--grafito)}
+.regla{margin:10px 0 0!important;background:#fff;border-radius:10px;padding:8px 12px;border:1.5px solid #ECE0E6;font-weight:600}
+.regla b{color:var(--acento-osc)}
+.curioso{background:#fff;border-radius:10px;padding:8px 12px;border:1.5px dashed #E3C3D3}
+
+/* Resultado */
+.resultado{border-radius:var(--radio);padding:16px 18px;margin-bottom:16px;display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px;justify-content:space-between;animation:aparece .45s ease;box-shadow:var(--sombra)}
+.resultado p{margin:0;font-weight:700}
+.res-acierto{background:linear-gradient(135deg,#E3F9EC,#F0FFF6);border:2px solid #7CD3A2;color:#0B4F2C}
+.res-fallo{background:linear-gradient(135deg,#FFF0F0,#FFF8F3);border:2px solid #F2B1B1;color:#7A1B1B}
+.res-neutro{background:var(--apagado-fondo);border:2px dashed #C2BCB3;color:var(--grafito-2)}
+
+/* Pie */
+.pie{display:flex;flex-direction:column;align-items:center;gap:16px;margin-top:26px}
+.btn-soluciones{background:transparent;color:#6B6E7C;border:1px solid #DDD8D0;border-radius:8px;padding:5px 14px;font-size:.78rem;font-weight:600;transition:color .2s,border-color .2s}
+.btn-soluciones:hover:not(:disabled){color:var(--suave);border-color:#C2BCB3}
+.btn-soluciones:disabled{opacity:.4;cursor:default}
+
+/* Modal */
+.modal-fondo{position:fixed;inset:0;background:rgba(32,33,43,.55);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:16px;z-index:100;animation:fundido .2s ease}
+.modal-fondo[hidden]{display:none}
+@keyframes fundido{from{opacity:0}to{opacity:1}}
+.modal{background:#fff;border-radius:20px;max-width:560px;width:100%;max-height:calc(100vh - 32px);overflow:auto;padding:22px 22px 18px;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:sube .3s cubic-bezier(.2,.9,.3,1.1)}
+.modal.ancho{max-width:760px}
+@keyframes sube{from{transform:translateY(20px) scale(.97);opacity:0}to{transform:none;opacity:1}}
+.modal h2{font-family:'Poppins','Nunito',sans-serif;font-size:1.25rem;margin:0 0 10px}
+.modal p{margin:8px 0}
+.modal-botones{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end;margin-top:18px}
+.informe-cab{padding:2px 2px 6px}
+.informe-cab .inf-titulo{font-family:'Poppins','Nunito',sans-serif;font-size:1.35rem;font-weight:700;margin:0;line-height:1.25}
+.informe-cab .inf-sub{margin:2px 0 10px;font-weight:600;opacity:.92}
+.informe-cab hr{border:0;border-top:1.5px solid currentColor;opacity:.4;margin:8px 0 10px}
+.informe-cab h3{margin:0 0 8px;font-size:1rem;text-transform:uppercase;letter-spacing:.06em}
+.inf-datos{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:6px 16px;font-weight:700}
+.inf-datos .nota-grande{font-size:1.9rem;font-family:'Poppins','Nunito',sans-serif;line-height:1.1}
+.inf-cuerpo{background:#fff;color:var(--texto);border-radius:14px;padding:14px;margin-top:12px}
+.inf-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:8px}
+.inf-stat{background:#F5F3F0;border-radius:10px;padding:8px 10px;font-size:.85rem;color:var(--suave);font-weight:700}
+.inf-stat b{display:block;color:var(--texto);font-size:1.15rem}
+.inf-stat small{display:block;font-weight:600}
+.tabla-wrap{overflow-x:auto;margin-top:12px}
+.tabla{border-collapse:collapse;width:100%;font-size:.85rem;min-width:520px}
+.tabla th,.tabla td{border-bottom:1px solid var(--borde);padding:6px 8px;text-align:center}
+.tabla th{background:#F1EEEA;font-weight:800}
+.tabla td.r-acierto{color:#0B6B3A;font-weight:800}
+.tabla td.r-fallo{color:#B42323;font-weight:800}
+.tabla td.r-neutro{color:#5E6170;font-weight:800}
+.tabla .mal{color:#B42323;font-weight:800}
+.vacio-hist{color:var(--suave);font-style:italic;margin:10px 0 0}
+
+/* Ficha superada: toda en verde */
+body.superada{background:radial-gradient(circle at 10% 0%,#C9EFCF 0,transparent 45%),#E4F6E6}
+body.superada .barra-alumno{border-color:#7CC98B;background:rgba(240,252,242,.95)}
+body.superada .dato.nota b{background:#1a7a1a;box-shadow:none}
+body.superada .titulo-ficha{color:#1a7a1a}
+body.superada .titulo-ficha::after{background:linear-gradient(90deg,#1a7a1a,#2EAA4A)}
+body.superada .tarjeta,body.superada .instrucciones,body.superada .leyenda{border-color:#A8DDB3}
+body.superada .instrucciones{border-left-color:#1a7a1a}
+
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+
+@media (max-width:520px){
+  .ficha{padding:16px 10px 32px}
+  .tarjeta{padding:14px 12px}
+  .barra-alumno{padding:8px 10px}
+  .estrella{width:19px;height:19px}
+  .racha-txt{display:none}
+  .marcador{gap:6px 12px}
+  :root{--hb:36px;--U:26px}
+  .blk{font-size:1rem;border-radius:7px}
+  .btn-primo{width:46px}
+  .pot-fila label{font-size:1.12rem}
+  .pot-caja{width:190px;flex-basis:190px}
+  .teclado-pot{padding:8px;gap:7px}
+  .resumen{padding:12px 9px}
+  .alineado{gap:8px}
+  .res-wrap{flex-direction:column;gap:6px}
+  .exprs{padding-top:2px;gap:3px}
+  .expr{height:auto;white-space:normal;font-size:1.02rem}
+  .expr::before{content:'';display:inline-block;width:8px;height:8px;border-radius:50%;background:currentColor;margin-right:8px;flex:none}
+  .columnas{gap:5px}
+  .col{padding:5px 2px}
+  .recta{padding:4px 14px}
+  .modal{padding:18px 14px 14px}
+}
+@media (max-width:420px){
+  .estrella{width:17px;height:17px}
+  .dato{font-size:.8rem}
+  .dato b{font-size:1rem}
+  .dato.nota b{padding:1px 8px;min-width:2.2em}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gradEstrella" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE066"/><stop offset="1" stop-color="#FFA81A"/></linearGradient></defs></svg>
+
+<header class="franja">Material elaborado por Marta López de Letona Sánchez</header>
+
+<main class="ficha" id="ficha">
+  <h1 class="titulo-ficha">MCD y mcm con bloques</h1>
+  <p class="subtitulo">1.º ESO · Divisibilidad: máximo común divisor y mínimo común múltiplo</p>
+
+  <div class="barra-alumno" id="barraAlumno">
+    <div class="fila-barra">
+      <label class="campo-nombre"><span>Nombre</span>
+        <input id="nombre" type="text" autocomplete="off" placeholder="Escribe tu nombre y apellidos" aria-describedby="avisoNombre">
+      </label>
+      <div class="marcador">
+        <div class="racha" id="racha" role="img" aria-label="Racha actual: 0 de 6"></div>
+        <div class="dato">Mejor racha: <b id="mejorRacha">0</b></div>
+        <div class="dato nota">Nota <b id="nota">0</b></div>
+      </div>
+    </div>
+    <p class="aviso-nombre" id="avisoNombre" hidden role="alert">Escribe tu nombre antes de comprobar o de finalizar.</p>
+  </div>
+
+  <details class="instrucciones" open>
+    <summary>Cómo funciona <span class="resumen-cerrado">· 6 aciertos seguidos = 10 · nota = mejor racha · 10 / 6</span></summary>
+    <ul>
+      <li>En cada ejercicio trabajas con dos números en tres pasos: <b>1)</b> descomponerlos en factores primos, <b>2)</b> hallar el <b>MCD</b> marcando los factores comunes y <b>3)</b> hallar el <b>mcm</b> en la recta numérica.</li>
+      <li><b>Paso 1.</b> Cada número tiene un rectángulo. Pulsa los primos para llenarlo con bloques: queda <b>justo lleno</b> cuando el producto de los bloques es el número. Si te pasas, quita el último bloque. Después escribe cada descomposición en <b>forma de potencias</b> con el teclado de la ficha: pulsa los números (el punto «·» de multiplicar se pone solo) y, para poner un exponente, pulsa <b>Elevar</b> y después el exponente. Por ejemplo, para escribir 2² pulsa 2, Elevar, 2; para 12 = 2²·3 pulsa 2, Elevar, 2, 3. La tecla con la X borra lo último y «Borrar» vacía la caja.</li>
+      <li>El paso 1 (bloques y potencias) se puede corregir tantas veces como necesites: sus fallos <b>no bajan la nota ni cortan la racha</b>, aunque quedan anotados en el informe.</li>
+      <li>El <b>MCD</b> se obtiene con los <b>factores comunes elevados al menor exponente</b>, y el <b>mcm</b>, con los <b>factores comunes y no comunes elevados al mayor exponente</b>.</li>
+      <li>El MCD y el mcm tienen <b>un solo intento</b> cada uno. Un ejercicio es <b>acierto</b> si aciertas los dos a la primera; si fallas alguno, es <b>fallo</b>.</li>
+      <li>Cada acierto suma 1 a tu <b>racha</b> (las estrellas). Un fallo la devuelve a 0, pero tu <b>mejor racha</b> se guarda.</li>
+      <li>Tu nota es <b>mejor racha · 10 / 6</b>. Con <b>6 aciertos seguidos</b> superas la ficha y tienes un <b>10</b>.</li>
+      <li>Si pulsas «Mostrar soluciones», verás resuelto el ejercicio en curso con sus explicaciones: ese ejercicio <b>no cuenta</b> (ni acierto ni fallo), pero tu <b>racha actual vuelve a 0</b>. Tu mejor racha y tu nota no cambian.</li>
+      <li>Escribe tu nombre arriba. Al terminar, pulsa «Finalizar y Calificar» para ver tu informe.</li>
+    </ul>
+  </details>
+
+  <section class="leyenda" aria-label="Leyenda de colores">
+    <span class="txt-ley">Colores de los primos <small style="font-weight:600">(los bloques más grandes son los primos más grandes; el rectángulo de cada número se llena justo con sus factores)</small>:</span>
+    <span class="items">
+      <span class="item"><span class="blk p2">2</span></span>
+      <span class="item"><span class="blk p3">3</span></span>
+      <span class="item"><span class="blk p5">5</span></span>
+      <span class="item"><span class="blk p7">7</span></span>
+    </span>
+  </section>
+
+  <section id="ejercicio" aria-live="polite"></section>
+
+  <footer class="pie">
+    <button type="button" id="btnFinalizar" class="btn btn-primario btn-grande">Finalizar y Calificar</button>
+    <button type="button" id="btnSoluciones" class="btn-soluciones">Mostrar soluciones</button>
+  </footer>
+</main>
+
+<div class="modal-fondo" id="modalFondo" hidden>
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitulo"></div>
+</div>
+
+<script>
+/*
+ * MODELO DE PUNTUACIÓN — RACHA (excepción acordada al modelo de ventana móvil de la skill)
+ * - Ejercicio = pareja (a, b) en 3 pasos: descomposición (puerta de paso, sin efecto en nota),
+ *   MCD (1 intento) y mcm (1 intento).
+ * - ACIERTO: MCD y mcm acertados ambos al primer intento. FALLO: se falla alguno de los dos.
+ * - racha: +1 por acierto; un fallo la pone a 0 (en el momento del fallo). mejorRacha = máximo histórico.
+ * - nota = min(10, mejorRacha / 6 · 10), redondeada a 2 decimales. Sin penalización adicional.
+ * - mejorRacha = 6 → ficha superada: nota 10, ficha en verde; los ejercicios siguientes son de práctica
+ *   (no cambian ningún contador ni la nota).
+ * - «Mostrar soluciones»: el ejercicio no cuenta (ni acierto ni fallo) pero la racha actual vuelve a 0
+ *   (mejorRacha intacta). Si ya se había fallado el MCD en ese ejercicio, ese fallo se mantiene.
+ * - Fallos de descomposición (bloques del rectángulo y escritura en potencias): solo informativos (informe);
+ *   se cuentan solo cuando la respuesta errónea cambia respecto a la anterior.
+ * - Escala de los bloques: logarítmica, largo(x) = U · log2(x), para que el rectángulo de n se llene justo con sus factores.
+ * - Seed: fija solo con ?seed=N en la URL; en producción, Math.random.
+ */
+(function () {
+'use strict';
+
+const PRIMOS = [2, 3, 5, 7];
+const OBJETIVO = 6;
+const MAX_BLOQUES = 8;
+const ORD = ['primer', 'segundo', 'tercer', 'cuarto', 'quinto'];
+
+/* ---------- Aleatoriedad ---------- */
+function mulberry32(s) {
+  return function () {
+    s |= 0; s = (s + 0x6D2B79F5) | 0;
+    let t = Math.imul(s ^ (s >>> 15), 1 | s);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const seedParam = new URLSearchParams(location.search).get('seed');
+const rnd = (seedParam !== null && /^-?\d+$/.test(seedParam)) ? mulberry32(parseInt(seedParam, 10)) : Math.random;
+const azar = n => Math.floor(rnd() * n);
+
+/* ---------- Aritmética ---------- */
+const mcdNum = (a, b) => { while (b) { [a, b] = [b, a % b]; } return a; };
+const producto = l => l.reduce((x, y) => x * y, 1);
+const esPrimo = n => { if (n < 2) return false; for (let d = 2; d * d <= n; d++) if (n % d === 0) return false; return true; };
+function factores(n) {
+  const f = [];
+  for (const p of PRIMOS) while (n % p === 0) { f.push(p); n /= p; }
+  return n === 1 ? f : null;
+}
+function contar(lista) { const c = { 2: 0, 3: 0, 5: 0, 7: 0 }; lista.forEach(p => c[p]++); return c; }
+const pto = l => l.join(' · ');
+const fmt = n => n.toLocaleString('es-ES', { maximumFractionDigits: 2 });
+
+/* ---------- Potencias ---------- */
+const SUP = { 0: '⁰', 1: '¹', 2: '²', 3: '³', 4: '⁴', 5: '⁵', 6: '⁶', 7: '⁷', 8: '⁸', 9: '⁹' };
+const DESUP = {}; Object.keys(SUP).forEach(k => { DESUP[SUP[k]] = k; });
+const sup = e => e === 1 ? '' : String(e).split('').map(c => SUP[c]).join('');
+/* Forma en potencias de una lista de primos, en orden creciente: [2,2,3] → «2²·3»; [] → «1» */
+function potencias(lista) {
+  if (!lista.length) return '1';
+  const c = contar(lista);
+  return PRIMOS.filter(p => c[p]).map(p => p + sup(c[p])).join('·');
+}
+/* «12 = 2²·3» o «7 es primo» */
+const exprNum = (n, f) => esPrimo(n) ? n + ' es primo' : n + ' = ' + potencias(f);
+/* Normaliza lo que se escribe en las cajas de potencias */
+function normalizar(s) {
+  return String(s)
+    .replace(/\s+/g, '')
+    .replace(/[*xX.×∙•⋅]/g, '·')
+    .replace(/\^([0-9]+)/g, (m, d) => d.split('').map(c => SUP[c]).join(''));
+}
+
+function validarPotencias(n, raw) {
+  let s = normalizar(raw || '');
+  if (s.indexOf(n + '=') === 0) s = s.slice(String(n).length + 1);
+  if (!s) return { estado: 'incompleto', html: 'Escribe la descomposición de <b>' + n + '</b> en su caja.' };
+  const f = factores(n), forma = potencias(f), ok = contar(f);
+  const err = h => ({ estado: 'error', html: h });
+  const ej = ' Por ejemplo: 12 = 2²·3.';
+  if (s.indexOf('=') >= 0) return err('Escribe solo la descomposición, sin «=»: el «' + n + ' =» ya está puesto.');
+  if (s.indexOf('^') >= 0) return err('Después de «^» tiene que ir el exponente (por ejemplo, 2^2 se convierte en 2²).');
+  if (/[^0-9·⁰¹²³⁴⁵⁶⁷⁸⁹]/.test(s)) return err('En la expresión solo pueden aparecer números, exponentes y el punto «·» de multiplicar.' + ej);
+  const partes = s.split('·');
+  if (partes.some(p => p === '')) return err('Sobra un «·»: entre cada dos factores va un solo punto, y no puede haber ninguno al principio ni al final.');
+  const terminos = [];
+  for (const p of partes) {
+    const m = /^([0-9]+)([⁰¹²³⁴⁵⁶⁷⁸⁹]*)$/.exec(p);
+    if (m && parseInt(m[1], 10) > 0 && ((m[1].length > 1 && m[1][0] === '0') || (m[2].length > 1 && m[2][0] === '⁰' && /[¹²³⁴⁵⁶⁷⁸⁹]/.test(m[2])))) return err('No hace falta poner ceros delante de un número: escribe «' + parseInt(m[1], 10) + '»' + (m[2] ? ' con su exponente sin ceros delante' : '') + '.');
+    if (!m) {
+      if (/^[⁰¹²³⁴⁵⁶⁷⁸⁹]/.test(p)) return err('El exponente se escribe arriba a la derecha, <b>después</b> del primo: 2², no ²2.');
+      if (/[⁰¹²³⁴⁵⁶⁷⁸⁹][0-9]/.test(p)) return err('Falta un «·» entre dos factores: después de un exponente, el siguiente primo va separado con «·» (2²·3, no 2²3).');
+      return err('La expresión está mal formada: escribe los primos separados por «·» y, si un primo se repite, ponle un exponente.' + ej);
+    }
+    const e = m[2] ? parseInt(m[2].split('').map(c => DESUP[c]).join(''), 10) : 1;
+    terminos.push({ b: parseInt(m[1], 10), e, uno: m[2] === '¹', txt: p });
+  }
+  // Exponente 0 y base 1
+  if (terminos.some(t => t.e === 0)) return err('Un exponente 0 no tiene sentido aquí: cualquier número elevado a 0 vale 1. El exponente dice <b>cuántas veces</b> aparece el primo.');
+  if (terminos.some(t => t.b === 0)) return err('El 0 no es un factor primo: multiplicar por 0 daría siempre 0. Los factores de ' + n + ' son números primos (2, 3, 5, 7…).');
+  if (terminos.some(t => t.b === 1)) return err('El 1 no es primo y no se escribe en la descomposición: multiplicar por 1 no cambia nada.');
+  // Base y exponente confundidos (2³ en vez de 3²) y bases no primas
+  const errBase = [];
+  terminos.forEach(t => {
+    const confundido = t.e > 1 && esPrimo(t.e) && ok[t.e] === t.b && ok[t.b] !== t.e;
+    if (confundido) errBase.push('Has escrito ' + t.txt + ', pero en tu rectángulo hay ' + t.b + ' bloques de ' + t.e + ': eso se escribe <b>' + t.e + sup(t.b) + '</b>. Abajo va el primo (la base) y arriba, cuántas veces aparece (el exponente).');
+    else if (!esPrimo(t.b)) {
+      const fb = factores(t.b);
+      if (t.b >= 10 && n % t.b !== 0 && String(t.b).split('').every(c => esPrimo(+c))) errBase.push('Has escrito «' + t.b + '» todo junto. Si son varios factores, sepáralos con «·» (' + String(t.b).split('').join('·') + ').');
+      else errBase.push('El ' + t.b + ' no es primo: en la descomposición solo pueden aparecer números primos' + (fb ? ' (' + t.b + ' = ' + potencias(fb) + ')' : '') + '.');
+    } else if (t.b >= 10 && n % t.b !== 0 && String(t.b).split('').every(c => esPrimo(+c))) {
+      errBase.push('Has escrito «' + t.b + '» todo junto. Si son varios factores, sepáralos con «·» (' + String(t.b).split('').join('·') + ').');
+    }
+  });
+  if (errBase.length) return err(errBase.join(' '));
+  // Agrupar repetidos y comparar exponentes con el rectángulo
+  const errores = [];
+  const usu = {}, porBase = {};
+  terminos.forEach(t => { usu[t.b] = (usu[t.b] || 0) + t.e; (porBase[t.b] = porBase[t.b] || []).push(t.txt); });
+  Object.keys(porBase).forEach(b => {
+    if (porBase[b].length > 1) errores.push('Has escrito el ' + b + ' más de una vez. Cuando un primo se repite se agrupa en una potencia: ' + porBase[b].join('·') + ' = ' + b + sup(usu[b]) + '.');
+  });
+  const vez = k => k === 1 ? '1 vez' : k + ' veces';
+  const bases = [...new Set(PRIMOS.concat(Object.keys(usu).map(Number)))].sort((x, y) => x - y);
+  bases.forEach(p => {
+    const co = ok[p] || 0, cu = usu[p] || 0;
+    if (co === cu) return;
+    if (co > 0 && cu === 0) errores.push('Falta el factor ' + p + ': en tu rectángulo el ' + p + ' aparece ' + vez(co) + (co > 1 ? ', así que se escribe ' + p + sup(co) : '') + '.');
+    else if (co === 0) errores.push('Sobra el ' + p + ': en tu rectángulo de ' + n + ' no hay ningún bloque ' + p + '.');
+    else errores.push('En tu rectángulo el ' + p + ' aparece ' + vez(co) + ', así que ' + (co === 1 ? 'va sin exponente: <b>' + p + '</b>' : 'su exponente es ' + co + ': <b>' + p + sup(co) + '</b>') + '.');
+  });
+  if (errores.length) return err(errores.join(' '));
+  // Correcto: notas de estilo
+  const notas = [];
+  if (terminos.some(t => t.uno)) notas.push('El exponente 1 no se escribe: ' + terminos.filter(t => t.uno).map(t => t.txt + ' = ' + t.b).join(', ') + '.');
+  const orden = terminos.map(t => t.b);
+  if (orden.some((b, i) => i > 0 && b < orden[i - 1])) notas.push('Está bien, aunque los primos se suelen ordenar de menor a mayor: ' + forma + '.');
+  return { estado: 'ok', html: n + ' = ' + forma, notas, forma };
+}
+
+/* ---------- Parejas ---------- */
+const NUMEROS = [];
+for (let n = 4; n <= 30; n++) if (factores(n)) NUMEROS.push(n);
+const PAREJAS = { coprimos: [], multiplo: [], general: [] };
+for (let i = 0; i < NUMEROS.length; i++) for (let j = i + 1; j < NUMEROS.length; j++) {
+  const menor = NUMEROS[i], mayor = NUMEROS[j];
+  const d = mcdNum(menor, mayor), m = menor * mayor / d;
+  if (m > 120 || m / menor > 15) continue;
+  const cat = d === 1 ? 'coprimos' : (mayor % menor === 0 ? 'multiplo' : 'general');
+  PAREJAS[cat].push({ menor, mayor, clave: menor + '-' + mayor });
+}
+const PESOS = { coprimos: 0.15, multiplo: 0.15, general: 0.70 };
+const usadas = new Set();
+
+function generarPareja() {
+  const libresDe = c => PAREJAS[c].filter(p => !usadas.has(p.clave));
+  let cats = Object.keys(PAREJAS).filter(c => libresDe(c).length > 0);
+  if (!cats.length) { usadas.clear(); cats = Object.keys(PAREJAS).filter(c => PAREJAS[c].length > 0); }
+  const total = cats.reduce((s, c) => s + PESOS[c], 0);
+  let r = rnd() * total, cat = cats[cats.length - 1];
+  for (const c of cats) { if (r < PESOS[c]) { cat = c; break; } r -= PESOS[c]; }
+  const libres = libresDe(cat);
+  const p = libres[azar(libres.length)];
+  usadas.add(p.clave);
+  const mayorArriba = rnd() < 0.5;
+  return mayorArriba ? { a: p.mayor, b: p.menor, categoria: cat } : { a: p.menor, b: p.mayor, categoria: cat };
+}
+
+/* ---------- Estado ---------- */
+const state = {
+  racha: 0, mejorRacha: 0, superada: false,
+  ejercicios: 0, aciertos: 0, fallos: 0, fallosMCD: 0, fallosMCM: 0,
+  fallosDescomposicion: 0, solucionesVistas: 0,
+  historial: [], inicio: Date.now()
+};
+let ex = null;
+let contadorEj = 0;
+
+function calcularNota(mejor) {
+  const m = (mejor === undefined) ? state.mejorRacha : mejor;
+  return Math.round(Math.min(10, m / OBJETIVO * 10) * 100) / 100;
+}
+
+/* ---------- Utilidades DOM ---------- */
+const $ = s => document.querySelector(s);
+const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function parseEntero(raw) { const t = String(raw).trim(); return /^\d+$/.test(t) ? parseInt(t, 10) : null; }
+function mostrarFb(id, tipo, html) {
+  const el = document.getElementById(id);
+  const clase = { ok: 'fb-ok', error: 'fb-error', aviso: 'fb-aviso', solucion: 'feedback-solucion' }[tipo];
+  el.innerHTML = '<div class="' + clase + '">' + html + '</div>';
+}
+function blk(p, extra, key) {
+  return '<span class="blk p' + p + (extra ? ' ' + extra : '') + '"' + (key ? ' data-key="' + key + '"' : '') + '>' + p + '</span>';
+}
+
+/* ---------- Nombre ---------- */
+const inNombre = $('#nombre'), avisoNombre = $('#avisoNombre');
+function exigirNombre() {
+  if (inNombre.value.trim()) return true;
+  avisoNombre.hidden = false; inNombre.classList.add('falta');
+  inNombre.focus({ preventScroll: true });
+  $('#barraAlumno').scrollIntoView({ block: 'nearest', behavior: reduceMotion ? 'auto' : 'smooth' });
+  return false;
+}
+inNombre.addEventListener('input', () => {
+  if (inNombre.value.trim()) { avisoNombre.hidden = true; inNombre.classList.remove('falta'); }
+});
+
+/* ---------- Marcador ---------- */
+const ESTRELLA = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 6 6.5.8-4.8 4.5 1.2 6.5L12 17.3l-5.8 3.1 1.2-6.5L2.6 9.4l6.5-.8z"/></svg>';
+let rachaPintada = 0;
+function actualizarMarcador() {
+  const cont = $('#racha');
+  if (!cont.children.length) {
+    let h = '';
+    for (let i = 0; i < OBJETIVO; i++) h += '<span class="estrella">' + ESTRELLA + '</span>';
+    h += '<span class="racha-txt" id="rachaTxt"></span>';
+    cont.innerHTML = h;
+  }
+  const visible = state.superada ? OBJETIVO : state.racha;
+  cont.querySelectorAll('.estrella').forEach((e, i) => {
+    const on = i < visible;
+    e.classList.toggle('on', on);
+    if (on && i >= rachaPintada && !reduceMotion) { e.classList.remove('pop'); void e.offsetWidth; e.classList.add('pop'); }
+  });
+  rachaPintada = visible;
+  $('#rachaTxt').textContent = state.superada ? '¡Superada!' : 'Racha ' + state.racha + '/' + OBJETIVO;
+  cont.setAttribute('aria-label', 'Racha actual: ' + state.racha + ' de ' + OBJETIVO);
+  $('#mejorRacha').textContent = state.mejorRacha;
+  $('#nota').textContent = fmt(calcularNota());
+  document.body.classList.toggle('superada', state.superada);
+  $('#btnSoluciones').disabled = !ex || ex.terminado;
+}
+
+/* ---------- Validadores ---------- */
+function validarDesc(n, bloques) {
+  if (!bloques.length) return { ok: false, vacio: true, html: 'Aún no has puesto ningún bloque en <b>' + n + '</b>.' };
+  const p = producto(bloques);
+  if (p === n) return { ok: true };
+  let msg = 'En <b>' + n + '</b> tu producto da <b>' + (bloques.length > 1 ? pto(bloques) + ' = ' : '') + p + '</b>, no ' + n + '. ';
+  if (p < n && n % p === 0) {
+    const falta = n / p;
+    msg += esPrimo(falta)
+      ? 'Te falta un factor: multiplica también por <b>' + falta + '</b>.'
+      : 'Te falta multiplicar por ' + falta + ', que no es primo: descompón también ' + falta + ' en primos y añade esos bloques.';
+  } else if (p > n && p % n === 0) {
+    const sobra = p / n;
+    msg += esPrimo(sobra)
+      ? 'Te sobra un factor <b>' + sobra + '</b>: quita uno de esos bloques.'
+      : 'Te sobran factores (su producto es ' + sobra + '): quita bloques hasta que el producto sea ' + n + '.';
+  } else {
+    const noDivide = [...new Set(bloques)].filter(q => n % q !== 0);
+    msg += noDivide.length
+      ? 'El ' + noDivide.join(' y el ') + ' no ' + (noDivide.length > 1 ? 'dividen' : 'divide') + ' a ' + n + ', así que no puede' + (noDivide.length > 1 ? 'n' : '') + ' estar en su descomposición.'
+      : (() => {
+          const ok = contar(factores(n)), mio = contar(bloques);
+          const dif = PRIMOS.filter(q => ok[q] !== mio[q]);
+          return dif.length ? 'Revisa cuántas veces aparece el ' + dif.join(' y el ') + ': la cantidad de bloques que has puesto no es la correcta.' : 'Revisa los bloques.';
+        })();
+  }
+  return { ok: false, html: msg };
+}
+
+function columnasComunes(e) { return e.cols.map((c, i) => c.comun ? i : -1).filter(i => i >= 0); }
+function factoresComunes(e) { return columnasComunes(e).map(i => e.cols[i].p); }
+function factoresMCM(e) { return e.cols.map(c => c.p); }
+const conValor = (forma, v) => forma === String(v) ? forma : forma + ' = ' + v;
+function exprAB(e) { return exprNum(e.a, e.fa) + ' y ' + exprNum(e.b, e.fb); }
+/* «12 = 2²·3 y 18 = 2·3²; comunes al menor exponente: 2·3 = 6» */
+function explMCD(e) {
+  const fc = factoresComunes(e);
+  if (!fc.length) return exprAB(e) + ': no tienen ningún factor común, así que MCD = 1';
+  return exprAB(e) + '; factores comunes elevados al menor exponente: ' + conValor(potencias(fc), e.mcd);
+}
+function explMCM(e) {
+  return exprAB(e) + '; factores comunes y no comunes elevados al mayor exponente: ' + conValor(potencias(factoresMCM(e)), e.mcm);
+}
+
+function notaCaso(e) {
+  const menor = Math.min(e.a, e.b), mayor = Math.max(e.a, e.b);
+  if (e.mcd === 1) return '<p class="concepto">' + e.a + ' y ' + e.b + ' no comparten ningún factor primo: no hay ninguna columna completa. Cuando pasa esto, su único divisor común es 1 y se dice que son <b>primos entre sí</b> (el 1 no es primo, pero divide a todos los números).</p>';
+  if (mayor % menor === 0) return '<p class="concepto">Aquí ' + menor + ' divide a ' + mayor + ' (' + mayor + ' = ' + menor + ' · ' + (mayor / menor) + '): todos los factores de ' + menor + ' están también en ' + mayor + ', así que el MCD es el propio <b>' + menor + '</b>, el menor de los dos.</p>';
+  return '';
+}
+
+function validarMCD(e, sel, ninguno, raw) {
+  const comunes = columnasComunes(e);
+  if (!ninguno && sel.size === 0) return { estado: 'incompleto', html: 'Primero toca las columnas comunes o, si no hay ninguna, pulsa «Ninguno en común».' };
+  const v = parseEntero(raw);
+  if (v === null) return { estado: 'incompleto', html: 'Escribe el MCD como un número entero antes de comprobar.' };
+  const { a, b, mcd, mcm } = e;
+  const fc = factoresComunes(e);
+  const selOk = comunes.length === 0 ? ninguno : (!ninguno && sel.size === comunes.length && comunes.every(i => sel.has(i)));
+  if (selOk && v === mcd) {
+    let h;
+    if (mcd === 1) h = '<b>Correcto.</b> ' + exprAB(e) + ': no tienen ningún factor primo en común, así que el único divisor que comparten es 1: MCD(' + a + ', ' + b + ') = 1. Son <b>primos entre sí</b>.';
+    else {
+      h = '<b>Correcto.</b> ' + explMCD(e) + '. El MCD se obtiene con los <b>factores comunes elevados al menor exponente</b>; en las columnas, son las columnas completas (con bloque arriba y abajo): MCD(' + a + ', ' + b + ') = ' + mcd + '.';
+      const menor = Math.min(a, b), mayor = Math.max(a, b);
+      if (mayor % menor === 0) h += ' Fíjate: como ' + menor + ' divide a ' + mayor + ', el MCD es el propio ' + menor + '.';
+    }
+    return { estado: 'ok', html: h };
+  }
+  const errores = [];
+  const marcados = ninguno ? [] : [...sel].sort((x, y) => x - y).map(i => e.cols[i].p);
+  if (ninguno && comunes.length > 0) {
+    errores.push('Has marcado «Ninguno en común», pero sí hay factores comunes: ' + (fc.length > 1 ? 'los factores ' + pto(fc) + ' aparecen' : 'el ' + fc[0] + ' aparece') + ' en las dos barras.');
+  }
+  if (!ninguno) {
+    [...sel].sort((x, y) => x - y).forEach(i => {
+      const c = e.cols[i];
+      if (c.comun) return;
+      const enNum = c.enA ? a : b, otro = c.enA ? b : a;
+      const cntOtro = contar(c.enA ? e.fb : e.fa)[c.p];
+      if (cntOtro === 0) errores.push('El ' + c.p + ' que has marcado solo está en ' + enNum + '; ' + otro + ' no tiene ningún factor ' + c.p + ', así que no es común.');
+      else errores.push('Has marcado el ' + ORD[c.k] + ' ' + c.p + ', que solo está en ' + enNum + ': ' + otro + ' solo tiene ' + (cntOtro === 1 ? 'un factor ' : cntOtro + ' factores ') + c.p + ' (' + c.p + sup(cntOtro) + '). El MCD toma el <b>menor</b> exponente, así que ese bloque no es común.');
+    });
+    comunes.forEach(i => {
+      if (sel.has(i)) return;
+      const c = e.cols[i];
+      const menorExp = Math.min(contar(e.fa)[c.p], contar(e.fb)[c.p]);
+      if (c.k === 0) errores.push('Te ha faltado la pareja de ' + c.p + ': hay un ' + c.p + ' en las dos barras, así que el ' + c.p + ' es un factor común.');
+      else errores.push('Te ha faltado la pareja del ' + ORD[c.k] + ' ' + c.p + ': el menor exponente del ' + c.p + ' es ' + menorExp + ' (' + exprAB(e) + '), así que el ' + c.p + ' tiene ' + menorExp + ' columnas completas.');
+    });
+  }
+  const menor = Math.min(a, b), mayor = Math.max(a, b);
+  if (v !== mcd) {
+    if (v === a * b) errores.push('Has escrito ' + v + ' = ' + a + ' · ' + b + ', el producto de todos los bloques de las dos barras' + (mcd > 1 ? ' (' + potencias(e.fa.concat(e.fb)) + ': se suman los exponentes)' : '') + '. Así juntas todos los factores, también los que no son comunes. El MCD solo toma los <b>factores comunes elevados al menor exponente</b>.');
+    else if (v === mcm) errores.push('Has escrito ' + v + ', que es el <b>mcm</b> (factores comunes y no comunes elevados al mayor exponente). El MCD es un divisor: solo usa los factores comunes elevados al <b>menor</b> exponente y nunca puede ser mayor que el menor de los números.');
+    else if (v === menor) errores.push('Has escrito ' + menor + ', el menor de los dos números. Pero ' + menor + ' no divide a ' + mayor + ' (' + mayor + ' : ' + menor + ' no es una división exacta), así que no es un divisor común.');
+    else if (ninguno && v !== 1) errores.push('Si no hubiera factores comunes, el único divisor común sería 1, no ' + v + '.');
+    else if (!ninguno && sel.size > 0 && v !== producto(marcados)) errores.push('El número que has escrito, ' + v + ', no es el producto de los bloques que has marcado (' + pto(marcados) + (marcados.length > 1 ? ' = ' + producto(marcados) : '') + ').');
+    else if (v > menor) errores.push('Un divisor común nunca puede ser mayor que el menor de los números (' + menor + ').');
+    else if (a % v !== 0 || b % v !== 0) errores.push(v + ' no divide a ' + (a % v !== 0 ? a : b) + ', así que no es un divisor común.');
+  } else if (!selOk) {
+    errores.push('El número es correcto, pero la selección de bloques no: el MCD tiene que salir de marcar <b>exactamente</b> los factores comunes.');
+  }
+  if (!errores.length) errores.push('Revisa qué columnas tienen bloque en las dos barras.');
+  let h = '<b>No es correcto.</b><ul>' + errores.map(t => '<li>' + t + '</li>').join('') + '</ul>';
+  h += notaCaso(e);
+  h += '<p class="concepto">Recuerda: el MCD se obtiene con los factores comunes elevados al menor exponente; en las columnas, son las columnas completas.</p>';
+  h += '<p><b>Solución:</b> ' + explMCD(e) + '. MCD(' + a + ', ' + b + ') = ' + mcd + '.</p>';
+  return { estado: 'error', html: h };
+}
+
+function notaCasoMCM(e) {
+  const menor = Math.min(e.a, e.b), mayor = Math.max(e.a, e.b);
+  if (mayor % menor === 0) return 'Como ' + mayor + ' es múltiplo de ' + menor + ', el mcm es directamente el mayor: <b>' + mayor + '</b>.';
+  if (e.mcd === 1) return 'Como son primos entre sí (MCD = 1), no comparten factores y el mcm es su producto: ' + e.a + ' · ' + e.b + ' = <b>' + e.mcm + '</b>.';
+  return '';
+}
+
+function validarMCM(e, raw) {
+  const v = parseEntero(raw);
+  if (v === null) return { estado: 'incompleto', html: 'Escribe el mcm como un número entero antes de comprobar.' };
+  const { a, b, mcd, mcm } = e;
+  const menor = Math.min(a, b), mayor = Math.max(a, b);
+  const caso = notaCasoMCM(e);
+  if (v === mcm) {
+    let h = '<b>Correcto.</b> ' + mcm + ' es el primer punto en el que coinciden las dos filas: es múltiplo de ' + a + ' (' + a + ' · ' + (mcm / a) + ') y de ' + b + ' (' + b + ' · ' + (mcm / b) + '), y no hay ningún múltiplo común más pequeño.';
+    h += ' Con potencias: ' + explMCM(e) + '.';
+    if (caso) h += ' ' + caso;
+    return { estado: 'ok', html: h };
+  }
+  let err;
+  if (v === 0) err = 'El 0 no cuenta: buscamos el menor múltiplo común <b>distinto de 0</b>.';
+  else if (v % a === 0 && v % b === 0) {
+    if (v === a * b && mcd > 1) err = 'Has escrito ' + a + ' · ' + b + ' = ' + v + '. Es un múltiplo común, pero no el menor: al multiplicar ' + a + ' · ' + b + ' se suman los exponentes (' + potencias(e.fa.concat(e.fb)) + ') y los factores comunes se cuentan dos veces. El mcm toma los factores comunes y no comunes elevados al <b>mayor</b> exponente: ' + conValor(potencias(factoresMCM(e)), mcm) + '. Por eso a · b solo es el mcm cuando los números son primos entre sí.';
+    else err = v + ' es múltiplo de ' + a + ' y de ' + b + ', pero no es el <b>menor</b>: las dos filas ya coinciden antes, en ' + mcm + ' (' + v + ' = ' + mcm + ' · ' + (v / mcm) + ').';
+  } else if (v === mcd) err = 'Has escrito el MCD (' + mcd + '), que usa los factores comunes elevados al menor exponente. El mcm es un <b>múltiplo</b>: toma los factores comunes y no comunes elevados al mayor exponente y tiene que ser igual o mayor que el mayor de los números (' + mayor + ').';
+  else if (v % a === 0 || v % b === 0) {
+    const x = v % a === 0 ? a : b, y = x === a ? b : a;
+    err = v + ' es múltiplo de ' + x + ' (' + x + ' · ' + (v / x) + '), pero no de ' + y + ': ' + v + ' : ' + y + ' no es una división exacta. En la recta, la fila de ' + y + ' no termina en ' + v + '.';
+  } else if (v < mayor) err = 'El mcm nunca puede ser menor que el mayor de los dos números (' + mayor + '), porque tiene que ser múltiplo de él.';
+  else err = v + ' no es múltiplo ni de ' + a + ' ni de ' + b + '. Los múltiplos de un número son los puntos donde termina cada copia de su barra.';
+  let h = '<b>No es correcto.</b> ' + err;
+  if (caso) h += '<p class="concepto">' + caso + '</p>';
+  h += '<p class="concepto">Recuerda: el mcm se obtiene con los factores comunes y no comunes elevados al mayor exponente.</p>';
+  h += '<p><b>Solución:</b> ' + explMCM(e) + '. mcm(' + a + ', ' + b + ') = ' + mcm + '.</p>';
+  return { estado: 'error', html: h };
+}
+
+/* ---------- Ejercicio ---------- */
+function construirColumnas(e) {
+  const ca = contar(e.fa), cb = contar(e.fb), cols = [];
+  for (const p of PRIMOS) {
+    const m = Math.max(ca[p], cb[p]);
+    for (let k = 0; k < m; k++) cols.push({ p, k, enA: k < ca[p], enB: k < cb[p], comun: k < ca[p] && k < cb[p] });
+  }
+  return cols;
+}
+
+function crearEjercicio(forzada) {
+  const { a, b, categoria } = forzada || generarPareja();
+  const fa = factores(a), fb = factores(b);
+  const mcd = mcdNum(a, b), mcm = a * b / mcd;
+  ex = {
+    n: ++contadorEj, a, b, fa, fb, mcd, mcm, categoria,
+    paso: 1, fase1: 'bloques', barras: { A: [], B: [] }, cols: null, sel: new Set(), ninguno: false,
+    pot: { A: { ok: false, ultima: null }, B: { ok: false, ultima: null } }, potActiva: 'A',
+    copias: { A: 0, B: 0 }, mcdDado: null, mcmDado: null, mcdOk: null, mcmOk: null,
+    fallado: false, terminado: false, fallosDesc: 0,
+    puntuable: !state.superada, axisMax: mcm + Math.max(a, b)
+  };
+  renderEjercicio();
+  actualizarMarcador();
+}
+
+function renderEjercicio() {
+  const e = ex;
+  const cont = $('#ejercicio');
+  cont.innerHTML =
+    '<div class="ej-cabecera"><span class="ej-num">' + (e.puntuable ? 'Ejercicio ' : 'Práctica ') + e.n + '</span>' +
+    '<span class="ej-pareja">Números: <b class="num-a">' + e.a + '</b> y <b class="num-b">' + e.b + '</b></span>' +
+    (e.puntuable ? '' : '<span class="tag-practica">Práctica: no cuenta para la nota</span>') + '</div>' +
+    '<div class="pasos" id="pasos"><span class="paso-pill" data-p="1"><i>1</i>Descomponer</span><span class="paso-pill" data-p="2"><i>2</i>MCD</span><span class="paso-pill" data-p="3"><i>3</i>mcm</span></div>' +
+    '<section class="tarjeta" id="t1"><h2><span class="n">1</span>Descompón en factores primos</h2>' +
+    '<p class="ayuda" id="ayuda1">Pulsa los primos para llenar el rectángulo de cada número. Cada bloque que añades multiplica: el rectángulo queda <b>justo lleno</b> cuando el producto de los bloques es el número. Si te pasas, quita el último bloque.</p>' +
+    '<div id="tablero"></div>' +
+    '<div class="acciones" id="acc1"><button type="button" class="btn btn-primario" id="btnDesc">Comprobar descomposición</button></div>' +
+    '<div class="feedback" id="fb1"></div>' +
+    '<div id="potencias"></div></section>' +
+    '<section class="tarjeta" id="t2" hidden></section>' +
+    '<section class="tarjeta" id="t3" hidden></section>' +
+    '<div id="final"></div>';
+  renderTableroEdicion();
+  $('#btnDesc').addEventListener('click', comprobarDescomposicion);
+  actualizarPasos();
+}
+
+function actualizarPasos() {
+  document.querySelectorAll('#pasos .paso-pill').forEach(el => {
+    const p = +el.dataset.p;
+    el.classList.toggle('activo', !ex.terminado && p === ex.paso);
+    el.classList.toggle('hecho', p < ex.paso || ex.terminado);
+  });
+}
+
+/* Paso 1: rectángulos (marcos) que se llenan con bloques de largo U · log2(p) */
+function renderTableroEdicion(animarFila) {
+  const t = $('#tablero');
+  const editable = ex.paso === 1 && ex.fase1 === 'bloques' && !ex.terminado;
+  let h = '';
+  ['A', 'B'].forEach(fila => {
+    const n = fila === 'A' ? ex.a : ex.b, bl = ex.barras[fila];
+    const prod = producto(bl), lleno = prod === n, pasado = prod > n;
+    const limite = Math.log2(n) + 1e-9;
+    const occ = {};
+    let acum = 0;
+    const bloques = bl.map((p, i) => {
+      occ[p] = (occ[p] || 0); const k = occ[p]++;
+      acum += Math.log2(p);
+      const cls = [];
+      if (animarFila === fila && i === bl.length - 1) cls.push('entra');
+      if (acum > limite) cls.push('pasa');
+      return blk(p, cls.join(' '), fila + '-' + p + '-' + k);
+    }).join('');
+    let prodTxt, prodCls = '';
+    const cuenta = bl.length > 1 ? pto(bl) + ' = ' + prod : String(prod);
+    if (!bl.length) { prodTxt = 'Rectángulo vacío: pulsa un primo para empezar a llenarlo.'; prodCls = ' vacio'; }
+    else if (lleno) { prodTxt = bl.length > 1 ? '¡Lleno! ' + cuenta + '.' : '¡Lleno! ' + n + ' es primo: un solo bloque lo llena.'; prodCls = ' lleno'; }
+    else if (pasado) { prodTxt = 'Te has pasado: ' + cuenta + ', mayor que ' + n + '. Ya no puedes añadir más bloques: quita el último.'; prodCls = ' pasado'; }
+    else prodTxt = 'Producto: ' + cuenta + ' · aún no llega a ' + n + '.';
+    const sinSitio = prod >= n || bl.length >= MAX_BLOQUES;
+    h += '<div class="fila-num" data-fila="' + fila + '">' +
+      '<div class="marco-zona"><div class="marco' + (lleno ? ' completo' : '') + (lleno && animarFila === fila ? ' recien' : '') + (pasado ? ' pasado' : '') +
+      '" data-fila="' + fila + '" style="--ln:' + Math.log2(n) + '" aria-label="Rectángulo de ' + n + '">' +
+      '<span class="marco-tab">' + n + (lleno ? ' ✓' : '') + '</span>' + bloques + '</div></div>' +
+      '<p class="producto' + prodCls + '" aria-live="polite">' + prodTxt + '</p>' +
+      (editable ? '<div class="teclado">' + PRIMOS.map(p => '<button type="button" class="btn-primo p' + p + '" data-p="' + p + '" aria-label="Añadir un bloque ' + p + ' a ' + n + '"' + (sinSitio ? ' disabled' : '') + '>' + p + '</button>').join('') +
+      '<button type="button" class="btn-mini" data-act="quitar"' + (bl.length ? '' : ' disabled') + '>↶ Quitar último</button>' +
+      '<button type="button" class="btn-mini" data-act="vaciar"' + (bl.length ? '' : ' disabled') + '>Vaciar</button></div>' : '') +
+      '</div>';
+  });
+  t.innerHTML = h;
+}
+
+function onTableroClick(ev) {
+  if (!ex) return;
+  const btn = ev.target.closest('button');
+  if (!btn) return;
+  if (ex.paso === 1 && ex.fase1 === 'bloques' && !ex.terminado) {
+    const fila = btn.closest('.fila-num') && btn.closest('.fila-num').dataset.fila;
+    if (!fila) return;
+    const n = fila === 'A' ? ex.a : ex.b, bl = ex.barras[fila];
+    let foco = null, anim = null;
+    if (btn.dataset.p) {
+      if (producto(bl) < n && bl.length < MAX_BLOQUES) { bl.push(+btn.dataset.p); anim = fila; }
+      foco = '[data-p="' + btn.dataset.p + '"]';
+    }
+    else if (btn.dataset.act === 'quitar') { bl.pop(); foco = bl.length ? '[data-act="quitar"]' : '[data-p="2"]'; }
+    else if (btn.dataset.act === 'vaciar') { bl.length = 0; foco = '[data-p="2"]'; }
+    renderTableroEdicion(anim);
+    let f = document.querySelector('.fila-num[data-fila="' + fila + '"] ' + foco);
+    if (!f || f.disabled) f = document.querySelector('.fila-num[data-fila="' + fila + '"] [data-act="quitar"]');
+    if (f && !f.disabled) f.focus();
+    return;
+  }
+  if (ex.paso === 2 && btn.classList.contains('col') && !btn.disabled) {
+    const i = +btn.dataset.i;
+    if (ex.sel.has(i)) ex.sel.delete(i); else ex.sel.add(i);
+    ex.ninguno = false;
+    actualizarSeleccion();
+  }
+}
+$('#ejercicio').addEventListener('click', ev => { if (ev.target.closest('#tablero')) onTableroClick(ev); });
+
+function comprobarDescomposicion() {
+  if (!ex || ex.paso !== 1 || ex.fase1 !== 'bloques') return;
+  if (!exigirNombre()) return;
+  const rA = validarDesc(ex.a, ex.barras.A), rB = validarDesc(ex.b, ex.barras.B);
+  if (rA.ok && rB.ok) { entrarPotencias(false); return; }
+  let fallosAhora = 0;
+  const msgs = [];
+  [rA, rB].forEach(r => { if (!r.ok) { msgs.push(r.html); if (!r.vacio) fallosAhora++; } });
+  const firma = rA.ok ? '' : ex.barras.A.join(',');
+  const firmaB = rB.ok ? '' : ex.barras.B.join(',');
+  let nuevos = 0;
+  if (!rA.ok && !rA.vacio && firma !== ex.ultimaA) nuevos++;
+  if (!rB.ok && !rB.vacio && firmaB !== ex.ultimaB) nuevos++;
+  ex.ultimaA = rA.ok ? null : firma; ex.ultimaB = rB.ok ? null : firmaB;
+  sumarFallosDesc(nuevos);
+  const algunoBien = rA.ok ? ex.a : (rB.ok ? ex.b : null);
+  let h = (fallosAhora ? '<b>Revisa la descomposición.</b>' : '<b>Te falta completar.</b>') + '<ul>' + msgs.map(m => '<li>' + m + '</li>').join('') + '</ul>';
+  if (algunoBien !== null) h += '<p>El rectángulo de ' + algunoBien + ' ya está bien.</p>';
+  h += '<p class="concepto">Truco: divide el número entre el primo más pequeño que puedas (2, 3, 5, 7…) y repite con el cociente hasta llegar a 1. Solo valen números primos; el 1 no es primo (multiplicar por 1 no cambia nada), por eso no hay bloque de 1.</p>';
+  h += '<p>Corrígelo y vuelve a comprobar: este paso no afecta a tu racha ni a tu nota.</p>';
+  mostrarFb('fb1', fallosAhora ? 'error' : 'aviso', h);
+}
+
+function sumarFallosDesc(k) {
+  if (!k) return;
+  ex.fallosDesc += k;
+  if (ex.puntuable) state.fallosDescomposicion += k;
+}
+
+/* Paso 1, segunda parte: escribir en potencias */
+function entrarPotencias(solucion) {
+  ex.fase1 = 'potencias';
+  renderTableroEdicion();
+  $('#acc1').hidden = true;
+  $('#ayuda1').innerHTML = 'Los dos rectángulos están llenos. Ahora escribe cada descomposición en <b>forma de potencias</b>.';
+  mostrarFb('fb1', solucion ? 'solucion' : 'ok', (solucion ? '<b>Solución.</b> ' : '<b>¡Rectángulos llenos!</b> ') +
+    ex.a + ' = ' + pto(ex.fa) + ' y ' + ex.b + ' = ' + pto(ex.fb) + '.');
+  const fila = f => {
+    const n = f === 'A' ? ex.a : ex.b;
+    return '<div class="pot-fila" data-fila="' + f + '"><label for="pot' + f + '"><span class="chip-num ' + f + '">' + n + '</span>=</label>' +
+      '<span class="pot-caja"><input id="pot' + f + '" class="pot-in" type="text" inputmode="none" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="16" aria-label="Descomposición de ' + n + ' en potencias">' +
+      '<span class="pot-vista" aria-hidden="true"></span></span>' +
+      '<span class="pot-marca" aria-hidden="true"></span></div>';
+  };
+  /* Teclado propio: 1-9 en rejilla de teclado numérico + Elevar, borrar último y Borrar.
+     Ninguna tecla depende de glifos especiales: el icono de Elevar y el de borrar se dibujan con CSS/SVG. */
+  const ICO_ATRAS = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 5h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9l-6-7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9.5l5 5M17 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+  const dig = d => '<button type="button" class="tecla dig" data-d="' + d + '">' + d + '</button>';
+  const teclas =
+    dig(1) + dig(2) + dig(3) +
+    '<button type="button" class="tecla elevar" data-k="elevar" aria-label="Elevar" aria-pressed="false"><span class="ico" aria-hidden="true">x<i></i></span><span class="tx" aria-hidden="true">Elevar</span></button>' +
+    dig(4) + dig(5) + dig(6) +
+    '<button type="button" class="tecla edit" data-k="atras" aria-label="Borrar el último">' + ICO_ATRAS + '</button>' +
+    dig(7) + dig(8) + dig(9) +
+    '<button type="button" class="tecla edit txt" data-k="borrar" aria-label="Borrar la caja">Borrar</button>';
+  ex.potExp = false;
+  $('#potencias').innerHTML = '<div class="potencias"><h3>Escribe en forma de potencias</h3>' +
+    '<p class="ayuda">Cuando un primo se repite, se escribe una sola vez con un exponente que dice cuántas veces aparece: 2·2 = 2². Toca una caja y usa el teclado: pulsa los números y el punto «·» se pone solo; para un exponente, pulsa <b>Elevar</b> y después el exponente. Por ejemplo, para escribir <b>2²·3</b> pulsa 2, Elevar, 2, 3.</p>' +
+    fila('A') + fila('B') +
+    '<div class="teclado-pot" id="tecladoPot" role="group" aria-label="Teclado de potencias">' + teclas + '</div>' +
+    '<p class="aviso-tecla" id="avisoTecla" role="status" aria-live="polite"></p>' +
+    '<div class="acciones" id="accPot"><button type="button" class="btn btn-primario" id="btnPot">Comprobar potencias</button></div>' +
+    '<div class="feedback" id="fbPot"></div></div>';
+  ['A', 'B'].forEach(f => {
+    const inp = $('#pot' + f);
+    inp.addEventListener('focus', () => { activarCaja(f); alFinal(inp); });
+    // La caja funciona como la de una calculadora: siempre se escribe y se borra al final.
+    ['click', 'select', 'mouseup', 'keyup'].forEach(t => inp.addEventListener(t, () => alFinal(inp)));
+    inp.addEventListener('input', () => {
+      // Teclado físico (o pegar): «*», «x», «.» → «·»; «^2» → «²»; un «^» al final, tras una base, activa el modo exponente.
+      let v = normalizar(inp.value).replace(/^·+/, '').replace(/·{2,}/g, '·');
+      const entra = /[0-9]\^$/.test(v);
+      if (entra) v = v.slice(0, -1);
+      ex.potExp = entra;
+      if (v !== inp.value) inp.value = v;
+      alFinal(inp);
+      inp.classList.remove('mal');
+      avisoTecla('');
+      pintarVista(f); pintarElevar();
+    });
+    inp.addEventListener('keydown', ev => {
+      if (ev.key === 'Enter') { comprobarPotencias(); return; }
+      if (ev.ctrlKey || ev.metaKey || ev.altKey) return;
+      if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].indexOf(ev.key) >= 0) { ev.preventDefault(); return; }
+      if (ev.key === '^') { ev.preventDefault(); teclear(f, 'elevar'); return; }
+      if (ex.potExp && /^[0-9]$/.test(ev.key)) { ev.preventDefault(); teclear(f, 'exp', ev.key); return; }
+      if (ex.potExp && (ev.key === 'Backspace' || ev.key === 'Escape')) { ev.preventDefault(); teclear(f, 'atras'); }
+    });
+  });
+  const tp = $('#tecladoPot');
+  // Que tocar una tecla no quite el foco a la caja activa
+  ['mousedown', 'pointerdown'].forEach(t => tp.addEventListener(t, ev => { if (ev.target.closest('button')) ev.preventDefault(); }));
+  tp.addEventListener('click', ev => { const b = ev.target.closest('button'); if (b) pulsarTecla(b); });
+  $('#btnPot').addEventListener('click', comprobarPotencias);
+  activarCaja('A');
+  if (!solucion) {
+    $('#potA').focus({ preventScroll: true });
+    if (!reduceMotion) $('#potencias').scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+}
+
+function alFinal(inp) {
+  const L = inp.value.length;
+  if (inp.selectionStart !== L || inp.selectionEnd !== L) { try { inp.setSelectionRange(L, L); } catch (err) { /* nada */ } }
+}
+
+/* Dibuja lo escrito en la caja: exponentes con CSS, punto «·», cursor o hueco del exponente */
+function pintarVista(f) {
+  const inp = $('#pot' + f);
+  if (!inp) return;
+  const vista = inp.nextElementSibling;
+  let h = '';
+  for (const c of inp.value) {
+    if (DESUP[c] !== undefined) h += '<span class="e">' + DESUP[c] + '</span>';
+    else if (c === '·') h += '<span class="por">·</span>';
+    else h += c.replace(/[&<>"]/g, x => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[x]));
+  }
+  const activa = ex.fase1 === 'potencias' && !ex.terminado && ex.potActiva === f && !inp.disabled;
+  if (activa) h += ex.potExp ? '<span class="hueco-exp"></span>' : '<span class="cursor"></span>';
+  if (activa && !inp.value) h += '<span class="pista-vacia">pulsa los números</span>';
+  vista.innerHTML = h;
+  vista.style.fontSize = '';
+  // Si no cabe, se reduce la letra para que se vea siempre entera la caja (nunca se esconde el principio)
+  let tam = parseFloat(getComputedStyle(vista).fontSize);
+  while (vista.scrollWidth > vista.clientWidth && tam > 11) { tam -= 1; vista.style.fontSize = tam + 'px'; }
+  vista.scrollLeft = vista.scrollWidth;
+}
+
+function pintarElevar() {
+  const b = document.querySelector('#tecladoPot [data-k="elevar"]');
+  if (!b) return;
+  b.classList.toggle('on', !!ex.potExp);
+  b.setAttribute('aria-pressed', ex.potExp ? 'true' : 'false');
+}
+
+let tAviso = null;
+function avisoTecla(txt) {
+  const el = $('#avisoTecla');
+  if (!el) return;
+  el.textContent = txt;
+  clearTimeout(tAviso);
+  if (txt) tAviso = setTimeout(() => { el.textContent = ''; }, 2800);
+}
+
+function activarCaja(f) {
+  if (ex.pot[f].ok) f = f === 'A' ? 'B' : 'A';
+  if (f !== ex.potActiva) ex.potExp = false;
+  ex.potActiva = f;
+  document.querySelectorAll('.pot-fila').forEach(el => el.classList.toggle('activa', el.dataset.fila === f && !ex.pot[f].ok && ex.fase1 === 'potencias'));
+  if (ex.fase1 !== 'potencias') ex.potExp = false;
+  pintarVista('A'); pintarVista('B'); pintarElevar();
+}
+
+function pulsarTecla(b) {
+  if (!ex || ex.fase1 !== 'potencias' || ex.terminado) return;
+  if (b.dataset.d) teclear(ex.potActiva, ex.potExp ? 'exp' : 'dig', b.dataset.d);
+  else teclear(ex.potActiva, b.dataset.k);
+}
+
+/* Lógica común del teclado propio (y de «^»/exponente desde el teclado físico).
+   - dígito: empieza un factor nuevo; si ya había uno, pone «·» delante.
+   - elevar: activa el modo exponente (solo justo después de una base sin exponente).
+   - exp: escribe el dígito como exponente y sale del modo exponente.
+   - atras: en modo exponente, sale de él; si no, borra el último carácter y el «·» que quede colgando.
+   - borrar: vacía la caja. */
+function teclear(f, accion, d) {
+  const inp = $('#pot' + f);
+  if (!inp || inp.disabled || ex.fase1 !== 'potencias' || ex.terminado) return;
+  const v = inp.value, ult = v.slice(-1);
+  let nuevo = v;
+  avisoTecla('');
+  if (accion === 'borrar') { nuevo = ''; ex.potExp = false; }
+  else if (accion === 'atras') {
+    if (ex.potExp) ex.potExp = false;
+    else { nuevo = v.slice(0, -1); if (nuevo.slice(-1) === '·') nuevo = nuevo.slice(0, -1); }
+  } else if (accion === 'elevar') {
+    if (ex.potExp) avisoTecla('Ya está activado: ahora pulsa el número del exponente.');
+    else if (/[0-9]/.test(ult)) ex.potExp = true;
+    else if (DESUP[ult] !== undefined) avisoTecla('Ese factor ya tiene exponente. Si quieres cambiarlo, bórralo primero.');
+    else avisoTecla('Primero pulsa la base (el primo) y después «Elevar».');
+  } else if (accion === 'exp') {
+    nuevo = v + SUP[d]; ex.potExp = false;
+  } else if (accion === 'dig') {
+    nuevo = v + (v && ult !== '·' ? '·' : '') + d;
+  }
+  if (nuevo.length > 16) { nuevo = v; ex.potExp = false; avisoTecla('La expresión ya es demasiado larga: revisa lo que has escrito.'); }
+  inp.value = nuevo;
+  inp.classList.remove('mal');
+  alFinal(inp);
+  pintarVista(f); pintarElevar();
+}
+
+function comprobarPotencias() {
+  if (!ex || ex.paso !== 1 || ex.fase1 !== 'potencias') return;
+  if (!exigirNombre()) return;
+  const items = [];
+  let errores = 0, incompletos = 0, nuevos = 0;
+  ['A', 'B'].forEach(f => {
+    const n = f === 'A' ? ex.a : ex.b, est = ex.pot[f], inp = $('#pot' + f);
+    if (est.ok) return;
+    const r = validarPotencias(n, inp.value);
+    if (r.estado === 'incompleto') { incompletos++; items.push(r.html); return; }
+    if (r.estado === 'error') {
+      errores++;
+      const firma = normalizar(inp.value);
+      if (firma !== est.ultima) nuevos++;
+      est.ultima = firma;
+      inp.classList.add('mal');
+      items.push('<b>' + n + '</b>: ' + r.html);
+      return;
+    }
+    est.ok = true; est.ultima = null;
+    inp.value = r.forma; inp.disabled = true; inp.classList.remove('mal'); inp.classList.add('ok');
+    inp.closest('.pot-fila').querySelector('.pot-marca').textContent = '✓';
+    est.notas = r.notas;
+    if (r.notas.length) items.push('<b>' + n + ' = ' + r.forma + '</b>. ' + r.notas.join(' '));
+  });
+  sumarFallosDesc(nuevos);
+  activarCaja(ex.potActiva);
+  if (ex.pot.A.ok && ex.pot.B.ok) {
+    const notas = items.length ? '<ul>' + items.map(t => '<li>' + t + '</li>').join('') + '</ul>' : '';
+    completarPaso1(false, notas);
+    return;
+  }
+  let h = (errores ? '<b>Revisa las potencias.</b>' : '<b>Te falta completar.</b>') + '<ul>' + items.map(t => '<li>' + t + '</li>').join('') + '</ul>';
+  const bien = ex.pot.A.ok ? ex.a : (ex.pot.B.ok ? ex.b : null);
+  if (bien !== null && errores + incompletos === 1) h += '<p>La de ' + bien + ' ya está bien.</p>';
+  if (errores) h += '<p>Corrígelo y vuelve a comprobar: este apartado no afecta a tu racha ni a tu nota.</p>';
+  mostrarFb('fbPot', errores ? 'error' : 'aviso', h);
+  const sig = $('#pot' + ex.potActiva); if (sig && !sig.disabled) sig.focus({ preventScroll: true });
+}
+
+function rellenarPotenciasSolucion() {
+  ['A', 'B'].forEach(f => {
+    const n = f === 'A' ? ex.a : ex.b, est = ex.pot[f], inp = $('#pot' + f);
+    if (est.ok) return;
+    const r = validarPotencias(n, potencias(f === 'A' ? ex.fa : ex.fb));
+    if (r.estado !== 'ok') console.warn('Validador de potencias no acepta su solución', n);
+    est.ok = true;
+    inp.value = r.forma || potencias(f === 'A' ? ex.fa : ex.fb);
+    inp.disabled = true; inp.classList.remove('mal'); inp.classList.add('sol');
+  });
+}
+
+function completarPaso1(solucion, notas) {
+  const prev = new Map();
+  document.querySelectorAll('#tablero [data-key]').forEach(el => prev.set(el.dataset.key, el.getBoundingClientRect()));
+  ex.cols = construirColumnas(ex);
+  ex.paso = 2; ex.fase1 = 'hecho';
+  renderTableroAlineado();
+  if (!reduceMotion && typeof Element.prototype.animate === 'function') {
+    document.querySelectorAll('#tablero [data-key]').forEach((el, idx) => {
+      const r0 = prev.get(el.dataset.key), r1 = el.getBoundingClientRect();
+      if (r0) el.animate([{ transform: 'translate(' + (r0.left - r1.left) + 'px,' + (r0.top - r1.top) + 'px)' }, { transform: 'none' }], { duration: 700, easing: 'cubic-bezier(.2,.8,.2,1)', delay: idx * 25 });
+      else el.animate([{ opacity: 0, transform: 'scale(.4)' }, { opacity: 1, transform: 'none' }], { duration: 400, delay: 200 });
+    });
+    document.querySelectorAll('#tablero .hueco').forEach(el => el.animate([{ opacity: 0 }, { opacity: 0 }, { opacity: 1 }], { duration: 900 }));
+  }
+  $('#acc1').hidden = true;
+  $('#fb1').innerHTML = '';
+  $('#ayuda1').textContent = 'Los bloques se han colocado por columnas: cada primo en su columna y, cada vez que se repite, en una columna nueva (por eso 2² ocupa dos columnas de 2). Las columnas con bloque arriba y abajo son los factores comunes.';
+  $('#tecladoPot').hidden = true; $('#accPot').hidden = true; $('#avisoTecla').hidden = true;
+  activarCaja(ex.potActiva);
+  const txt = exprAB(ex) + '. Ahora cada primo ocupa su columna: donde hay bloque en las dos barras, ese factor es común.';
+  mostrarFb('fbPot', solucion ? 'solucion' : 'ok', (solucion ? '<b>Solución.</b> ' : '<b>Correcto.</b> ') + txt + (notas || ''));
+  irAPaso2();
+}
+
+function renderTableroAlineado() {
+  const e = ex;
+  let h = '<div class="alineado"><div class="etiquetas"><span class="chip-num A">' + e.a + '</span><span class="chip-num B">' + e.b + '</span></div>' +
+    '<div class="columnas" style="--n:' + e.cols.length + '" role="group" aria-label="Columnas de factores primos">';
+  e.cols.forEach((c, i) => {
+    const desc = 'Columna del ' + c.p + (c.k ? ' (' + ORD[c.k] + ')' : '') + ': ' + (c.enA ? 'está' : 'no está') + ' en ' + e.a + ', ' + (c.enB ? 'está' : 'no está') + ' en ' + e.b;
+    h += '<button type="button" class="col" data-i="' + i + '" aria-pressed="false" aria-label="' + desc + '">' +
+      (c.enA ? blk(c.p, '', 'A-' + c.p + '-' + c.k) : '<span class="hueco"></span>') +
+      (c.enB ? blk(c.p, '', 'B-' + c.p + '-' + c.k) : '<span class="hueco"></span>') + '</button>';
+  });
+  h += '</div></div>';
+  $('#tablero').innerHTML = h;
+}
+
+/* Paso 2 */
+function irAPaso2() {
+  const e = ex, t2 = $('#t2');
+  t2.hidden = false;
+  t2.innerHTML = '<h2><span class="n">2</span>Máximo común divisor</h2>' +
+    '<p class="ayuda">Toca las columnas que tienen bloque en las <b>dos</b> barras (factores comunes): se iluminarán. Si no hay ninguna, pulsa «Ninguno en común». Después escribe el MCD. Fíjate: cada primo tiene tantas columnas completas como su <b>menor exponente</b>.</p>' +
+    '<div class="fila-ctrl"><button type="button" class="btn-toggle" id="btnNinguno" aria-pressed="false">Ninguno en común</button><span class="sel-info" id="selInfo">Marcado: nada</span></div>' +
+    '<div class="respuesta"><label for="inMcd">MCD(' + e.a + ', ' + e.b + ') =</label><input id="inMcd" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" maxlength="4">' +
+    '<button type="button" class="btn btn-primario" id="btnMcd">Comprobar MCD</button></div>' +
+    '<div class="feedback" id="fb2"></div>';
+  $('#btnNinguno').addEventListener('click', () => {
+    if (ex.paso !== 2) return;
+    ex.ninguno = !ex.ninguno;
+    if (ex.ninguno) ex.sel.clear();
+    actualizarSeleccion();
+  });
+  $('#btnMcd').addEventListener('click', comprobarMCD);
+  $('#inMcd').addEventListener('keydown', ev => { if (ev.key === 'Enter') comprobarMCD(); });
+  actualizarPasos();
+  actualizarMarcador();
+}
+
+function actualizarSeleccion() {
+  document.querySelectorAll('#tablero .col').forEach(el => {
+    const on = ex.sel.has(+el.dataset.i);
+    el.classList.toggle('sel', on);
+    el.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+  $('#btnNinguno').setAttribute('aria-pressed', ex.ninguno ? 'true' : 'false');
+  const m = [...ex.sel].sort((x, y) => x - y).map(i => ex.cols[i].p);
+  $('#selInfo').textContent = ex.ninguno ? 'Marcado: ninguno en común' : (m.length ? 'Marcado: ' + pto(m) : 'Marcado: nada');
+}
+
+function bloquearPaso2() {
+  document.querySelectorAll('#tablero .col').forEach(el => { el.disabled = true; });
+  $('#btnNinguno').disabled = true; $('#inMcd').disabled = true; $('#btnMcd').disabled = true;
+}
+
+function pintarColumnasCorreccion(modo) {
+  const comunes = new Set(columnasComunes(ex));
+  document.querySelectorAll('#tablero .col').forEach(el => {
+    const i = +el.dataset.i, s = ex.sel.has(i), c = comunes.has(i);
+    el.classList.remove('sel', 'ok', 'mal', 'falta', 'comun-sol');
+    if (modo === 'solucion') { if (c) el.classList.add('comun-sol'); return; }
+    if (s && c) el.classList.add('ok');
+    else if (s && !c) el.classList.add('mal');
+    else if (!s && c) el.classList.add('falta');
+  });
+}
+
+function registrarFallo(tipo) {
+  if (!ex.puntuable) return;
+  if (tipo === 'mcd') state.fallosMCD++; else state.fallosMCM++;
+  if (!ex.fallado) { ex.fallado = true; state.fallos++; state.racha = 0; }
+  actualizarMarcador();
+}
+
+function comprobarMCD() {
+  if (!ex || ex.paso !== 2 || ex.mcdOk !== null) return;
+  if (!exigirNombre()) return;
+  const r = validarMCD(ex, ex.sel, ex.ninguno, $('#inMcd').value);
+  if (r.estado === 'incompleto') { mostrarFb('fb2', 'aviso', r.html); return; }
+  ex.mcdDado = parseEntero($('#inMcd').value);
+  ex.mcdOk = r.estado === 'ok';
+  bloquearPaso2();
+  pintarColumnasCorreccion('correccion');
+  if (ex.mcdOk) mostrarFb('fb2', 'ok', r.html);
+  else {
+    mostrarFb('fb2', 'error', r.html + (ex.puntuable ? '<p>Este ejercicio ya cuenta como fallo, pero sigue al paso 3 para practicar el mcm.</p>' : ''));
+    registrarFallo('mcd');
+  }
+  irAPaso3();
+}
+
+/* Paso 3 */
+function irAPaso3() {
+  const e = ex;
+  e.paso = 3;
+  const t3 = $('#t3');
+  t3.hidden = false;
+  t3.innerHTML = '<h2><span class="n">3</span>Mínimo común múltiplo</h2>' +
+    '<p class="ayuda">Añade copias de cada barra en su fila. Los puntos donde termina cada copia son múltiplos del número. Busca el <b>primer</b> punto en el que las dos filas terminan a la vez.</p>' +
+    '<div class="ctrl-mcm">' + ['A', 'B'].map(f => {
+      const v = f === 'A' ? e.a : e.b;
+      return '<div class="ctrl-fila"><span class="chip-num ' + f + '">' + v + '</span><button type="button" class="btn-add ' + f + '" data-add="' + f + '" aria-label="Añadir una copia de ' + v + '">+' + v + '</button><button type="button" class="btn-mini" data-quitar="' + f + '" aria-label="Quitar la última copia de ' + v + '">↶ Quitar última</button></div>';
+    }).join('') + '</div>' +
+    '<div class="recta"><div class="recta-zona" id="rectaZona"></div></div>' +
+    '<p class="recta-estado" id="rectaEstado" aria-live="polite"></p>' +
+    '<div class="respuesta"><label for="inMcm">mcm(' + e.a + ', ' + e.b + ') =</label><input id="inMcm" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" maxlength="4">' +
+    '<button type="button" class="btn btn-primario" id="btnMcm">Comprobar mcm</button></div>' +
+    '<div class="feedback" id="fb3"></div><div id="resumen"></div>';
+  t3.querySelectorAll('[data-add]').forEach(b => b.addEventListener('click', () => cambiarCopias(b.dataset.add, +1)));
+  t3.querySelectorAll('[data-quitar]').forEach(b => b.addEventListener('click', () => cambiarCopias(b.dataset.quitar, -1)));
+  $('#btnMcm').addEventListener('click', comprobarMCM);
+  $('#inMcm').addEventListener('keydown', ev => { if (ev.key === 'Enter') comprobarMCM(); });
+  renderRecta();
+  actualizarPasos();
+  if (!reduceMotion) t3.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+}
+
+function cambiarCopias(fila, d) {
+  if (!ex || ex.paso !== 3 || ex.mcmOk !== null || ex.terminado) return;
+  const v = fila === 'A' ? ex.a : ex.b;
+  const n = ex.copias[fila] + d;
+  if (n < 0 || n * v > ex.axisMax) return;
+  ex.copias[fila] = n;
+  renderRecta(d > 0 ? fila : null);
+}
+
+function renderRecta(animarFila) {
+  const zona = $('#rectaZona');
+  if (!zona) return;
+  const e = ex, M = e.axisMax, W = zona.clientWidth || 600;
+  const finA = e.copias.A * e.a, coincidenAntes = finA > 0 && finA === e.copias.B * e.b;
+  let h = '';
+  ['A', 'B'].forEach(fila => {
+    const v = fila === 'A' ? e.a : e.b, n = e.copias[fila];
+    const px = W * v / M;
+    h += '<div class="pista" aria-label="Fila de ' + v + ': ' + n + (n === 1 ? ' copia' : ' copias') + '">';
+    for (let i = 0; i < n; i++) {
+      const nueva = animarFila === fila && i === n - 1;
+      const enCoincide = coincidenAntes && (i + 1) * v === finA;
+      h += '<div class="copia copia-' + fila + (nueva ? ' nueva' : '') + '" style="left:' + (i * v / M * 100) + '%;width:' + (v / M * 100) + '%"></div>';
+      if (px >= 26 || i === n - 1) h += '<span class="marca marca-' + fila + (enCoincide ? ' en-coincide' : '') + '" style="left:' + ((i + 1) * v / M * 100) + '%">' + ((i + 1) * v) + '</span>';
+    }
+    h += '</div>';
+  });
+  const eA = e.copias.A * e.a, eB = e.copias.B * e.b;
+  const coinciden = eA > 0 && eA === eB;
+  if (coinciden) h += '<div class="coincide" style="left:' + (eA / M * 100) + '%"></div>';
+  h += '<div class="eje"><span class="tick0">0</span></div>';
+  zona.innerHTML = h;
+  const bloqueado = e.mcmOk !== null || e.terminado;
+  document.querySelectorAll('#t3 [data-add]').forEach(b => {
+    const val = b.dataset.add === 'A' ? e.a : e.b;
+    b.disabled = bloqueado || (e.copias[b.dataset.add] + 1) * val > M;
+  });
+  document.querySelectorAll('#t3 [data-quitar]').forEach(b => { b.disabled = bloqueado || e.copias[b.dataset.quitar] === 0; });
+  const est = $('#rectaEstado');
+  est.classList.toggle('brilla', coinciden);
+  if (coinciden) est.textContent = '¡Las dos filas terminan en el mismo punto! ¿Es el primero en el que coinciden?';
+  else if (!eA && !eB) est.textContent = 'Pulsa los botones de colores para añadir copias de cada barra.';
+  else est.textContent = 'Todavía no terminan en el mismo punto.';
+}
+let tResize = null;
+window.addEventListener('resize', () => { clearTimeout(tResize); tResize = setTimeout(() => { if (ex && ex.paso === 3) renderRecta(); }, 120); });
+
+function comprobarMCM() {
+  if (!ex || ex.paso !== 3 || ex.mcmOk !== null || ex.terminado) return;
+  if (!exigirNombre()) return;
+  const r = validarMCM(ex, $('#inMcm').value);
+  if (r.estado === 'incompleto') { mostrarFb('fb3', 'aviso', r.html); return; }
+  ex.mcmDado = parseEntero($('#inMcm').value);
+  ex.mcmOk = r.estado === 'ok';
+  $('#inMcm').disabled = true; $('#btnMcm').disabled = true;
+  if (ex.mcmOk) mostrarFb('fb3', 'ok', r.html);
+  else { mostrarFb('fb3', 'error', r.html); registrarFallo('mcm'); }
+  ex.copias.A = ex.mcm / ex.a; ex.copias.B = ex.mcm / ex.b;
+  renderRecta();
+  renderResumen();
+  terminarEjercicio(ex.fallado ? 'fallo' : 'acierto');
+}
+
+function renderResumen() {
+  const e = ex, fc = factoresComunes(e), fm = factoresMCM(e);
+  let h = '<div class="resumen"><h3>Las dos ideas juntas</h3><div class="res-wrap"><div class="alineado"><div class="etiquetas">' +
+    '<span class="chip-num A">' + e.a + '</span><span class="chip-num B">' + e.b + '</span><span class="chip-num MCD">MCD</span><span class="chip-num MCM">mcm</span></div>' +
+    '<div class="columnas" style="--n:' + e.cols.length + '">';
+  e.cols.forEach(c => {
+    h += '<div class="col-res">' + (c.enA ? blk(c.p) : '<span class="hueco"></span>') + (c.enB ? blk(c.p) : '<span class="hueco"></span>') +
+      (c.comun ? blk(c.p) : '<span class="hueco"></span>') + blk(c.p) + '</div>';
+  });
+  h += '</div></div>';
+  h += '<ul class="exprs" aria-label="Expresiones en potencias">' +
+    '<li class="expr A">' + exprNum(e.a, e.fa) + '</li>' +
+    '<li class="expr B">' + exprNum(e.b, e.fb) + '</li>' +
+    '<li class="expr MCD">MCD = ' + (fc.length ? conValor(potencias(fc), e.mcd) : '1') + '</li>' +
+    '<li class="expr MCM">mcm = ' + conValor(potencias(fm), e.mcm) + '</li></ul></div>';
+  h += '<p class="regla"><b>MCD:</b> factores comunes elevados al menor exponente. <b>mcm:</b> factores comunes y no comunes elevados al mayor exponente.</p>';
+  h += '<p class="curioso">Dato curioso: MCD · mcm = ' + e.mcd + ' · ' + e.mcm + ' = ' + (e.mcd * e.mcm) + ', que es justo ' + e.a + ' · ' + e.b + '. ¡Siempre se cumple!</p></div>';
+  $('#resumen').innerHTML = h;
+}
+
+/* Fin del ejercicio */
+function terminarEjercicio(tipo) {
+  const e = ex;
+  e.terminado = true;
+  let resultado, clase, msg;
+  if (!e.puntuable) {
+    resultado = 'Práctica';
+    clase = tipo === 'acierto' ? 'res-acierto' : (tipo === 'revelado' ? 'res-neutro' : 'res-fallo');
+    msg = tipo === 'acierto' ? '¡Bien hecho! Ejercicio de práctica resuelto a la primera.' : (tipo === 'revelado' ? 'Soluciones mostradas · ejercicio de práctica.' : 'Ejercicio de práctica con algún fallo. Revisa las explicaciones.');
+  } else {
+    state.ejercicios++;
+    if (tipo === 'acierto') {
+      state.aciertos++; state.racha++;
+      state.mejorRacha = Math.max(state.mejorRacha, state.racha);
+      resultado = 'Acierto'; clase = 'res-acierto';
+      msg = '¡Acierto! MCD y mcm a la primera. Racha: ' + state.racha + ' de ' + OBJETIVO + '.';
+    } else if (tipo === 'fallo') {
+      resultado = 'Fallo'; clase = 'res-fallo';
+      msg = 'Ejercicio con fallo: la racha vuelve a 0. Tu mejor racha sigue siendo ' + state.mejorRacha + '.';
+    } else {
+      state.solucionesVistas++;
+      if (e.fallado) { resultado = 'Fallo (soluciones vistas)'; clase = 'res-fallo'; msg = 'Soluciones mostradas. Este ejercicio ya contaba como fallo: la racha está a 0.'; }
+      else { state.racha = 0; resultado = 'Soluciones vistas'; clase = 'res-neutro'; msg = 'Soluciones mostradas · ejercicio sin calificar. Tu racha actual vuelve a 0.'; }
+    }
+  }
+  state.historial.push({ n: e.n, a: e.a, b: e.b, mcdDado: e.mcdDado, mcd: e.mcd, mcmDado: e.mcmDado, mcm: e.mcm, fallosDesc: e.fallosDesc, resultado });
+  const recienSuperada = e.puntuable && !state.superada && state.mejorRacha >= OBJETIVO;
+  if (recienSuperada) state.superada = true;
+  const textoBoton = state.superada ? 'Seguir practicando (no cuenta)' : 'Siguiente pareja →';
+  $('#final').innerHTML = '<div class="resultado ' + clase + '"><p>' + msg + '</p><button type="button" class="btn btn-primario" id="btnSiguiente">' + textoBoton + '</button></div>';
+  $('#btnSiguiente').addEventListener('click', () => {
+    crearEjercicio();
+    $('#ejercicio').scrollIntoView({ block: 'start', behavior: reduceMotion ? 'auto' : 'smooth' });
+    const b = document.querySelector('#tablero [data-p="2"]'); if (b) b.focus({ preventScroll: true });
+  });
+  actualizarPasos();
+  actualizarMarcador();
+  if (recienSuperada) {
+    abrirModal('<h2 id="modalTitulo">¡Ficha superada!</h2><p>Has conseguido <b>' + OBJETIVO + ' aciertos seguidos</b>: tu nota es un <b>10</b>.</p><p>Pulsa «Finalizar y Calificar» para ver tu informe. Si quieres, puedes seguir practicando: esos ejercicios ya no cambian tu nota.</p>' +
+      '<div class="modal-botones"><button type="button" class="btn btn-primario" data-cerrar>¡Genial!</button></div>');
+  } else {
+    $('#btnSiguiente').focus({ preventScroll: true });
+  }
+}
+
+/* ---------- Mostrar soluciones ---------- */
+function revelarSoluciones() {
+  if (!ex || ex.terminado) return;
+  if (ex.paso === 1) {
+    if (ex.fase1 === 'bloques') {
+      ['A', 'B'].forEach(f => {
+        const n = f === 'A' ? ex.a : ex.b;
+        ex.barras[f] = (f === 'A' ? ex.fa : ex.fb).slice();
+        if (!validarDesc(n, ex.barras[f]).ok) console.warn('Validador de bloques no acepta su solución', n);
+      });
+      renderTableroEdicion();
+      entrarPotencias(true);
+    }
+    rellenarPotenciasSolucion();
+    completarPaso1(true);
+  }
+  if (ex.paso === 2) {
+    const comunes = columnasComunes(ex);
+    ex.sel = new Set(comunes); ex.ninguno = comunes.length === 0;
+    actualizarSeleccion();
+    $('#inMcd').value = ex.mcd;
+    const r = validarMCD(ex, ex.sel, ex.ninguno, String(ex.mcd));
+    if (r.estado !== 'ok') console.warn('Validador MCD no acepta su solución', ex);
+    bloquearPaso2();
+    pintarColumnasCorreccion('solucion');
+    mostrarFb('fb2', 'solucion', r.html.replace('<b>Correcto.</b>', '<b>Solución.</b>'));
+    irAPaso3();
+  }
+  if (ex.paso === 3) {
+    ex.copias.A = ex.mcm / ex.a; ex.copias.B = ex.mcm / ex.b;
+    $('#inMcm').value = ex.mcm;
+    const r = validarMCM(ex, String(ex.mcm));
+    if (r.estado !== 'ok') console.warn('Validador mcm no acepta su solución', ex);
+    $('#inMcm').disabled = true; $('#btnMcm').disabled = true;
+    mostrarFb('fb3', 'solucion', r.html.replace('<b>Correcto.</b>', '<b>Solución.</b>'));
+    renderResumen();
+  }
+  terminarEjercicio('revelado');
+  renderRecta();
+}
+
+/* ---------- Modales ---------- */
+const fondo = $('#modalFondo'), modal = $('#modal');
+let focoPrevio = null;
+function abrirModal(html, ancho, estilo) {
+  focoPrevio = document.activeElement;
+  modal.className = 'modal' + (ancho ? ' ancho' : '');
+  modal.removeAttribute('style');
+  if (estilo) Object.assign(modal.style, estilo);
+  modal.innerHTML = html;
+  fondo.hidden = false;
+  modal.querySelectorAll('[data-cerrar]').forEach(b => b.addEventListener('click', cerrarModal));
+  const f = modal.querySelector('[data-foco]') || modal.querySelector('button');
+  if (f) f.focus({ preventScroll: true });
+  modal.scrollTop = 0;
+}
+function cerrarModal() {
+  fondo.hidden = true; modal.innerHTML = '';
+  if (focoPrevio && document.contains(focoPrevio)) focoPrevio.focus();
+}
+fondo.addEventListener('click', ev => { if (ev.target === fondo) cerrarModal(); });
+document.addEventListener('keydown', ev => {
+  if (fondo.hidden) return;
+  if (ev.key === 'Escape') { ev.preventDefault(); cerrarModal(); return; }
+  if (ev.key === 'Tab') {
+    const foc = [...modal.querySelectorAll('button,input,[tabindex]:not([tabindex="-1"])')].filter(x => !x.disabled);
+    if (!foc.length) return;
+    const i = foc.indexOf(document.activeElement);
+    if (ev.shiftKey && (i <= 0)) { ev.preventDefault(); foc[foc.length - 1].focus(); }
+    else if (!ev.shiftKey && i === foc.length - 1) { ev.preventDefault(); foc[0].focus(); }
+  }
+});
+
+$('#btnSoluciones').addEventListener('click', () => {
+  if (!ex || ex.terminado) return;
+  const ya = ex.fallado ? '<p>Ya has fallado el MCD en este ejercicio: ese fallo <b>sigue contando</b>.</p>' : '';
+  const racha = ex.puntuable ? '<p>Ese ejercicio <b>no contará</b> ni como acierto ni como fallo, pero tu <b>racha actual volverá a 0</b>. Tu mejor racha y tu nota se conservan.</p>' : '<p>Es un ejercicio de práctica: no afecta a tu nota.</p>';
+  abrirModal('<h2 id="modalTitulo">¿Mostrar las soluciones?</h2><p>Verás resuelto, con sus explicaciones, lo que te queda del <b>ejercicio en curso</b>.</p>' + racha + ya + '<p>Después podrás seguir con una pareja nueva.</p>' +
+    '<div class="modal-botones"><button type="button" class="btn btn-secundario" id="btnSiVer">Sí, mostrar soluciones</button><button type="button" class="btn btn-primario" data-cerrar data-foco>Volver al ejercicio</button></div>');
+  $('#btnSiVer').addEventListener('click', () => { cerrarModal(); revelarSoluciones(); });
+});
+
+/* ---------- Informe ---------- */
+const pad = n => String(n).padStart(2, '0');
+function colorNota(n) {
+  if (n >= 10) return ['#1a7a1a', '#fff'];
+  if (n >= 9) return ['#6dbf6d', '#fff'];
+  if (n >= 8) return ['#1a4f8a', '#fff'];
+  if (n >= 7) return ['#5b9bd5', '#fff'];
+  if (n >= 6) return ['#c05c00', '#fff'];
+  if (n >= 5) return ['#f5a623', '#000'];
+  return ['#c0392b', '#fff'];
+}
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+function abrirInforme() {
+  if (!exigirNombre()) return;
+  const nota = calcularNota(), [bg, fg] = colorNota(nota);
+  const ahora = new Date();
+  const fecha = pad(ahora.getDate()) + '/' + pad(ahora.getMonth() + 1) + '/' + ahora.getFullYear();
+  const hora = pad(ahora.getHours()) + ':' + pad(ahora.getMinutes()) + ':' + pad(ahora.getSeconds());
+  const min = Math.max(1, Math.ceil((Date.now() - state.inicio) / 60000));
+  const tiempo = pad(Math.floor(min / 60)) + ':' + pad(min % 60);
+  const titulo = $('.titulo-ficha').textContent.trim(), sub = $('.subtitulo').textContent.trim();
+  const filas = state.historial.slice();
+  if (ex && !ex.terminado && ex.fallado) filas.push({ n: ex.n, a: ex.a, b: ex.b, mcdDado: ex.mcdDado, mcd: ex.mcd, mcmDado: ex.mcmDado, mcm: ex.mcm, fallosDesc: ex.fallosDesc, resultado: 'Fallo (sin terminar)' });
+  const celda = (dado, ok) => dado === null || dado === undefined ? '—' : (dado === ok ? String(dado) : '<span class="mal">' + dado + '</span>');
+  const claseRes = r => r === 'Acierto' ? 'r-acierto' : (r.indexOf('Fallo') === 0 ? 'r-fallo' : 'r-neutro');
+  let tabla = filas.length ? '<div class="tabla-wrap"><table class="tabla"><thead><tr><th>N.º</th><th>Pareja</th><th>MCD dado / correcto</th><th>mcm dado / correcto</th><th>Fallos descomp.</th><th>Resultado</th></tr></thead><tbody>' +
+    filas.map(f => '<tr><td>' + f.n + '</td><td>' + f.a + ' y ' + f.b + '</td><td>' + celda(f.mcdDado, f.mcd) + ' / ' + f.mcd + '</td><td>' + celda(f.mcmDado, f.mcm) + ' / ' + f.mcm + '</td><td>' + f.fallosDesc + '</td><td class="' + claseRes(f.resultado) + '">' + f.resultado + '</td></tr>').join('') +
+    '</tbody></table></div>' : '<p class="vacio-hist">Todavía no has terminado ningún ejercicio.</p>';
+  const stat = (t, v, s) => '<div class="inf-stat">' + t + '<b>' + v + '</b>' + (s ? '<small>' + s + '</small>' : '') + '</div>';
+  const html = '<div class="informe-cab"><p class="inf-titulo" id="modalTitulo">' + esc(titulo) + '</p><p class="inf-sub">' + esc(sub) + '</p><hr>' +
+    '<h3>Informe de la actividad</h3><div class="inf-datos">' +
+    '<div>Nombre<br><span style="font-size:1.1rem">' + esc(inNombre.value.trim()) + '</span></div>' +
+    '<div>Nota<br><span class="nota-grande">' + fmt(nota) + '</span> / 10</div>' +
+    '<div>Fecha: ' + fecha + '<br>Hora: ' + hora + '<br>Tiempo: ' + tiempo + '</div></div></div>' +
+    '<div class="inf-cuerpo"><div class="inf-stats">' +
+    stat('Mejor racha', state.mejorRacha + ' / ' + OBJETIVO) + stat('Racha actual', state.racha) +
+    stat('Ejercicios hechos', state.ejercicios) + stat('Aciertos', state.aciertos) +
+    stat('Fallos', state.fallos, 'de MCD: ' + state.fallosMCD + ' · de mcm: ' + state.fallosMCM) +
+    stat('Fallos de descomposición', state.fallosDescomposicion, 'bloques y potencias') + stat('Soluciones vistas', state.solucionesVistas) +
+    '</div>' + tabla + '<div class="modal-botones"><button type="button" class="btn btn-primario" data-cerrar data-foco>Cerrar y seguir</button></div></div>';
+  abrirModal(html, true, { background: bg, color: fg });
+}
+$('#btnFinalizar').addEventListener('click', abrirInforme);
+
+/* ---------- QA ---------- */
+window.__test = {
+  get state() { return state; },
+  generarPareja, calcularNota, validarMCD, validarMCM, validarDesc, validarPotencias, normalizar, potencias,
+  get pareja() { return ex ? { a: ex.a, b: ex.b, mcd: ex.mcd, mcm: ex.mcm, fa: ex.fa.slice(), fb: ex.fb.slice(), paso: ex.paso, fase1: ex.fase1, cols: ex.cols } : null; },
+  parejasPosibles: PAREJAS,
+  numeros: NUMEROS,
+  /* Solo para QA: carga una pareja concreta y coloca bloques sin pulsar botones */
+  cargarPareja(a, b) { crearEjercicio({ a, b, categoria: 'qa' }); },
+  ponerBloques(fila, lista) { if (ex && ex.paso === 1 && ex.fase1 === 'bloques') { ex.barras[fila] = lista.slice(); renderTableroEdicion(); } }
+};
+
+crearEjercicio();
+})();
+</script>
+</body>
+</html>
