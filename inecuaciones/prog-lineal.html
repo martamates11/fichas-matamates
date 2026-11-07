@@ -33,6 +33,8 @@
   --color-r1: #A0522D;
   --color-r2: #3F6E8C;
   --color-min: #8A6D2F;
+  --color-apagado: #A8998A;
+  --color-apagado-fondo: #F3EFE6;
 }
 * { box-sizing: border-box; }
 body { margin: 0; font-family: 'Lato', sans-serif; font-size: 16px; color: var(--color-texto); background: var(--color-fondo); }
@@ -134,6 +136,13 @@ table.vert td { background: var(--color-fondo-card); }
 .feedback-correcto { background: #EAF4EC; border: 1.5px solid var(--color-correcto); color: var(--color-correcto); border-radius: 4px; padding: 10px 14px; }
 .feedback-incorrecto { background: #F9EAEA; border: 1.5px solid var(--color-incorrecto); color: var(--color-incorrecto); border-radius: 4px; padding: 10px 14px; }
 .feedback-incorrecto .solucion, .feedback-correcto .solucion { margin-top: 8px; color: var(--color-texto); }
+.feedback-solucion { background: var(--color-apagado-fondo); border: 1.5px dashed var(--color-apagado); color: var(--color-texto-suave); border-radius: 4px; padding: 10px 14px; }
+.feedback-solucion .solucion { margin-top: 8px; color: var(--color-texto); }
+.paso.revelado { border-left-color: var(--color-apagado); }
+.paso.revelado h3 .n { background: var(--color-apagado); color: #FDFAF3; }
+.paso h3 .pts.visto { color: var(--color-apagado); border-color: var(--color-apagado); border-style: dashed; }
+.resultado-sol { margin-top: 18px; background: var(--color-apagado-fondo); border: 1.5px dashed var(--color-apagado); border-radius: 4px; padding: 12px 18px; display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; justify-content: center; color: var(--color-texto-suave); font-size: .92rem; }
+.resultado-sol[hidden] { display: none; }
 .feedback-aviso { background: #FBF3E2; border: 1.5px solid var(--color-borde); color: var(--color-texto-suave); border-radius: 4px; padding: 8px 14px; }
 .fb ul { margin: 6px 0 0; padding-left: 20px; }
 .fb li { margin: 3px 0; }
@@ -162,7 +171,11 @@ table.vert td { background: var(--color-fondo-card); }
 .glosario-lista dt:first-child { margin-top: 0; }
 .glosario-lista dd { margin: 1px 0 0; color: var(--color-texto-suave); }
 
-.pie { margin-top: 26px; padding-top: 18px; border-top: 1px solid var(--color-borde-suave); display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
+.pie { margin-top: 26px; padding-top: 18px; border-top: 1px solid var(--color-borde-suave); display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.pie-fila { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
+.btn-soluciones { background: transparent; color: var(--color-apagado); border: 1px solid #DDD0B6; border-radius: 4px; padding: 5px 14px; font-family: 'Lato', sans-serif; font-size: .78rem; font-weight: 400; cursor: pointer; transition: color .2s, border-color .2s; }
+.btn-soluciones:hover:not(:disabled) { color: var(--color-texto-suave); border-color: var(--color-borde); }
+.btn-soluciones:disabled { opacity: .4; cursor: default; }
 .btn-finalizar { background: var(--color-cabecera); color: var(--color-cabecera-txt); border: 2px solid var(--color-borde); border-radius: 4px; padding: 10px 24px; font-family: 'Libre Baskerville', serif; font-size: .95rem; font-weight: 700; cursor: pointer; letter-spacing: .04em; transition: background-color .2s; }
 .btn-finalizar:hover { background: #2C1A0A; }
 
@@ -214,7 +227,7 @@ table.vert td { background: var(--color-fondo-card); }
       <li>La <b>región factible</b> es la parte común de todos los semiplanos. Sus <b>vértices</b> son los cortes de las rectas que la delimitan: márcalos y calcula sus coordenadas resolviendo los sistemas.</li>
       <li>Evalúa <i>Z</i> en cada vértice: el mayor valor da la <b>solución óptima</b>.</li>
     </ol>
-    <p class="puntuacion">Cada paso vale <b>2,5 puntos</b> y cuenta la <b>primera comprobación</b>. En las restricciones, cada restricción que falte o esté mal resta 0,5. Después de comprobar puedes corregir para aprender, pero ya no suma (en el paso 3, al comprobar, el plano muestra la región y sus vértices). La nota es la del ejercicio actual: si pides otro, empiezas de cero.</p>
+    <p class="puntuacion">Cada paso vale <b>2,5 puntos</b> y cuenta la <b>primera comprobación</b>. En las restricciones, cada restricción que falte o esté mal resta 0,5. Después de comprobar puedes corregir para aprender, pero ya no suma (en el paso 3, al comprobar, el plano muestra la región y sus vértices). La nota es la del ejercicio actual: si pides otro, empiezas de cero. Si pulsas «Mostrar soluciones», verás resueltos los pasos que te falten, pero esos pasos no contarán para la nota.</p>
   </details>
 
   <div class="enunciado" id="enunciado"></div>
@@ -263,13 +276,31 @@ table.vert td { background: var(--color-fondo-card); }
     </div>
   </div>
 
+  <div class="resultado-sol" id="resultado-sol" hidden>
+    <span><b>Soluciones mostradas</b> · los pasos revelados no puntúan</span>
+    <button class="btn-primario" id="btn-siguiente">Siguiente ejercicio</button>
+  </div>
+
   <div class="pie">
-    <button class="btn-secundario" id="btn-nuevo">Nuevo ejercicio</button>
-    <button class="btn-finalizar" id="btn-finalizar">Finalizar y Calificar</button>
+    <div class="pie-fila">
+      <button class="btn-secundario" id="btn-nuevo">Nuevo ejercicio</button>
+      <button class="btn-finalizar" id="btn-finalizar">Finalizar y Calificar</button>
+    </div>
+    <button class="btn-soluciones" id="btn-soluciones">Mostrar soluciones</button>
   </div>
 </div>
 
 <div class="overlay" id="overlay"><div class="modal-calificacion" id="modal"></div></div>
+<div class="overlay" id="overlay-sol">
+  <div class="modal-aviso" role="dialog" aria-modal="true" aria-labelledby="sol-titulo">
+    <h3 id="sol-titulo">¿Mostrar las soluciones?</h3>
+    <p>Verás resueltos, con sus explicaciones, los pasos que te quedan de <b>este ejercicio</b>. Esos pasos <b>no contarán para la nota</b> (0 puntos); los que ya hayas comprobado conservan su puntuación. Después podrás seguir con un ejercicio nuevo.</p>
+    <div class="acciones">
+      <button class="btn-secundario" id="sol-aceptar">Sí, mostrar soluciones</button>
+      <button class="btn-primario" id="sol-cancelar">Volver al ejercicio</button>
+    </div>
+  </div>
+</div>
 <div class="overlay" id="overlay-aviso">
   <div class="modal-aviso" role="dialog" aria-modal="true">
     <h3>¿Empezar otro ejercicio?</h3>
@@ -794,11 +825,13 @@ function actualizarPasos() {
     const desbloqueado = n === 1 || ex.estado[n - 1].comprobado;
     d.classList.toggle('bloqueado', !desbloqueado);
     d.classList.toggle('activo', n === act);
-    d.classList.toggle('hecho', st.comprobado && st.correcto);
+    d.classList.toggle('hecho', st.comprobado && st.correcto && !st.revelado);
     d.classList.toggle('fallado', st.comprobado && !st.correcto);
-    d.querySelectorAll('input, select, button').forEach(c => { c.disabled = !desbloqueado || (st.comprobado && (st.correcto || n === 3)); });
+    d.classList.toggle('revelado', !!st.revelado);
+    d.querySelectorAll('input, select, button').forEach(c => { c.disabled = !desbloqueado || ex.revelado || (st.comprobado && (st.correcto || n === 3)); });
     const pts = $('pts-' + n);
-    if (!st.comprobado) { pts.textContent = '2,5 pts'; pts.className = 'pts'; }
+    if (st.revelado) { pts.textContent = 'Solución vista · 0 / 2,5'; pts.className = 'pts visto'; }
+    else if (!st.comprobado) { pts.textContent = '2,5 pts'; pts.className = 'pts'; }
     else { pts.textContent = `${fmt(st.puntos)} / 2,5`; pts.className = 'pts ' + (st.puntos >= PUNTOS_PASO ? 'ganado' : 'perdido'); }
   }
   svg.classList.toggle('interactivo', act === 3);
@@ -811,6 +844,7 @@ function actualizarPasos() {
   };
   $('graf-ayuda').textContent = ayudas[act];
   if (act === 3) { renderTablaVertices(); dibujarCandidatos(); }
+  $('btn-soluciones').disabled = ex.revelado || act === 0;   // sin ejercicio en curso, no hay nada que revelar
   actualizarMarcador();
 }
 
@@ -1003,7 +1037,7 @@ function validar4() {
 /* ---------- Corrección ---------- */
 const VALIDAR = { 1: validar1, 2: validar2, 3: validar3, 4: validar4 };
 function comprobar(n) {
-  if (!ex) return;
+  if (!ex || ex.revelado) return;
   const st = ex.estado[n];
   if (n > 1 && !ex.estado[n - 1].comprobado) return;
   if (st.comprobado && (st.correcto || n === 3)) return;
@@ -1026,6 +1060,58 @@ function comprobar(n) {
   actualizarPasos();
   if (n === 3 && st.comprobado) { dibujarSolucionVertices(); }
 }
+/* ---------- Mostrar soluciones ----------
+   Perfil proporcional: cada paso pendiente queda bloqueado con 0 puntos.
+   Los pasos ya comprobados conservan su puntuación. Se reutilizan los
+   validadores para la explicación («Correcto.» → «Solución.»). */
+function rellenarPaso(n) {
+  if (n === 1) { $('fo-a').value = fmt(ex.cx); $('fo-b').value = fmt(ex.cy); $('fo-obj').value = 'max'; return; }
+  if (n === 2) {
+    for (let i = 0; i < 5; i++) {
+      const r = ex.R[i];
+      $(`r${i}-a`).value = r ? fmt(r.a) : ''; $(`r${i}-b`).value = r ? fmt(r.b) : '';
+      $(`r${i}-s`).value = r ? r.s : ''; $(`r${i}-c`).value = r ? fmt(r.c) : '';
+      let cumple = '';
+      if (r) cumple = cumpleR(r, puntoPrueba(r.c)) ? 'si' : 'no';
+      $(`r${i}-cumple`).value = cumple; actualizarPuntoPrueba(i);
+    }
+    return;
+  }
+  if (n === 3) {
+    ex.sel = ex.verts.map(v => ex.candidatos.findIndex(c => Math.abs(c[0] - v[0]) < 1e-6 && Math.abs(c[1] - v[1]) < 1e-6));
+    ex.coords = ex.verts.map(v => [fmt(v[0]), fmt(v[1])]);
+    renderTablaVertices(); return;
+  }
+  $('s-x').value = fmt(ex.opt[0]); $('s-y').value = fmt(ex.opt[1]); $('s-z').value = fmt(ex.zmax);
+}
+function revelarSoluciones() {
+  if (!ex || ex.revelado || pasoActivo() === 0) return;
+  for (let n = 1; n <= 4; n++) {
+    const st = ex.estado[n];
+    if (st.comprobado) continue;
+    rellenarPaso(n);
+    const r = VALIDAR[n]();
+    const html = r.ok === true ? r.html.replace('<b>Correcto.</b>', '<b>Solución.</b>') : '<b>Solución.</b> ' + r.html;
+    fb(n, 'solucion', html);
+    Object.assign(st, { comprobado: true, correcto: true, puntos: 0, primera: false, revelado: true, validadorOk: r.ok === true });
+    if (n === 2) dibujarRestricciones();
+    if (n === 3) { dibujarRegion(); dibujarSolucionVertices(); }
+    if (n === 4) dibujarNivel();
+  }
+  ex.revelado = true;
+  actualizarPasos();
+  $('resultado-sol').hidden = false;
+}
+const cerrarSol = () => { $('overlay-sol').classList.remove('visible'); $('btn-soluciones').focus(); };
+$('btn-soluciones').addEventListener('click', () => {
+  if (!ex || ex.revelado || pasoActivo() === 0) return;
+  $('overlay-sol').classList.add('visible'); $('sol-cancelar').focus();
+});
+$('sol-cancelar').addEventListener('click', cerrarSol);
+$('sol-aceptar').addEventListener('click', () => { $('overlay-sol').classList.remove('visible'); revelarSoluciones(); $('resultado-sol').scrollIntoView({ behavior: 'smooth', block: 'center' }); });
+$('overlay-sol').addEventListener('click', e => { if (e.target === $('overlay-sol')) cerrarSol(); });
+$('btn-siguiente').addEventListener('click', () => $('btn-nuevo').click());
+
 function calcularNota() {
   const s = [1, 2, 3, 4].reduce((acc, n) => acc + ex.estado[n].puntos, 0);
   return Math.round(Math.min(10, Math.max(0, s)) * 100) / 100;
@@ -1045,17 +1131,19 @@ $('pasos').addEventListener('keydown', e => {
   const paso = e.target.closest('.paso'); if (!paso) return;
   e.preventDefault(); comprobar(+paso.id.split('-')[1]);
 });
-const historial = { abandonados: 0, completados: 0, inicio: Date.now() };
+const historial = { abandonados: 0, completados: 0, revelados: 0, inicio: Date.now() };
 function nuevoEjercicio() {
   if (ex) {
     const todos = [1, 2, 3, 4].every(n => ex.estado[n].comprobado);
-    if (todos) historial.completados++;
+    if (ex.revelado) historial.revelados++;
+    else if (todos) historial.completados++;
     else if ([1, 2, 3, 4].some(n => ex.estado[n].comprobado)) historial.abandonados++;
   }
   ex = generar();
   ex.estado = {};
   for (let n = 1; n <= 4; n++) ex.estado[n] = { comprobado: false, correcto: false, puntos: 0, intentos: 0, primera: false };
-  ex.sel = []; ex.coords = [];
+  ex.sel = []; ex.coords = []; ex.revelado = false;
+  $('resultado-sol').hidden = true;
   renderEjercicio();
 }
 $('btn-nuevo').addEventListener('click', () => {
@@ -1089,7 +1177,7 @@ $('btn-finalizar').addEventListener('click', () => {
   const min = Math.ceil((Date.now() - historial.inicio) / 60000);
   const filas = [1, 2, 3, 4].map(n => {
     const st = ex.estado[n];
-    const estado = !st.comprobado ? 'Sin comprobar' : st.primera ? 'Bien a la primera' : st.correcto ? 'Corregido después' : 'Con errores';
+    const estado = st.revelado ? 'Solución vista' : !st.comprobado ? 'Sin comprobar' : st.primera ? 'Bien a la primera' : st.correcto ? 'Corregido después' : 'Con errores';
     return `<tr><td>${n}. ${PASOS[n]}</td><td>${estado}</td><td>${st.intentos}</td><td>${fmt(st.puntos)} / 2,5</td></tr>`;
   }).join('');
   const modal = $('modal');
@@ -1107,16 +1195,16 @@ $('btn-finalizar').addEventListener('click', () => {
       <span>Hora: ${dos(ahora.getHours())}:${dos(ahora.getMinutes())}:${dos(ahora.getSeconds())}</span>
       <span>Tiempo empleado: ${dos(Math.floor(min / 60))}:${dos(min % 60)}</span>
     </div>
-    <div class="m-datos"><span>Ejercicio: ${ex.ctx.nombre}</span></div>
+    <div class="m-datos"><span>Ejercicio: ${ex.ctx.nombre}</span><span>Pasos con solución vista: <b>${[1, 2, 3, 4].filter(n => ex.estado[n].revelado).length}</b></span></div>
     <h4>Desglose por paso (ejercicio actual)</h4>
     <table><tr><th>Paso</th><th>Estado</th><th>Comprobaciones</th><th>Puntos</th></tr>${filas}</table>
-    <div class="m-datos"><span>Ejercicios anteriores completados: <b>${historial.completados}</b></span><span>Ejercicios abandonados: <b>${historial.abandonados}</b></span></div>
+    <div class="m-datos"><span>Ejercicios anteriores completados: <b>${historial.completados}</b></span><span>Ejercicios abandonados: <b>${historial.abandonados}</b></span><span>Ejercicios con soluciones vistas: <b>${historial.revelados}</b></span></div>
     <button class="btn-cerrar" id="btn-cerrar">Cerrar y seguir practicando</button>`;
   $('overlay').classList.add('visible');
   $('btn-cerrar').addEventListener('click', () => $('overlay').classList.remove('visible'));
 });
 $('overlay').addEventListener('click', e => { if (e.target === $('overlay')) $('overlay').classList.remove('visible'); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { $('overlay').classList.remove('visible'); $('overlay-aviso').classList.remove('visible'); } });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { $('overlay').classList.remove('visible'); $('overlay-aviso').classList.remove('visible'); if ($('overlay-sol').classList.contains('visible')) cerrarSol(); } });
 
 nuevoEjercicio();
 </script>
