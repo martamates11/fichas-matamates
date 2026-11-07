@@ -210,7 +210,7 @@ table.vert td { background: var(--color-fondo-card); }
     <summary>Método gráfico</summary>
     <ol>
       <li>Define las variables y escribe la <b>función objetivo</b> <span class="mat"><i>Z</i> = <i>a</i><i>x</i> + <i>b</i><i>y</i></span> que hay que maximizar.</li>
-      <li>Traduce cada condición del enunciado a una <b>restricción</b>. Para saber qué semiplano vale, comprueba si un punto (normalmente el origen) la cumple.</li>
+      <li>Traduce cada condición del enunciado a una <b>restricción</b>. Si no se exige ningún mínimo, no olvides <span class="mat"><i>x</i> ≥ 0</span> e <span class="mat"><i>y</i> ≥ 0</span>. Para saber qué semiplano vale, comprueba si un punto (normalmente el origen) la cumple.</li>
       <li>La <b>región factible</b> es la parte común de todos los semiplanos. Sus <b>vértices</b> son los cortes de las rectas que la delimitan: márcalos y calcula sus coordenadas resolviendo los sistemas.</li>
       <li>Evalúa <i>Z</i> en cada vértice: el mayor valor da la <b>solución óptima</b>.</li>
     </ol>
@@ -248,7 +248,7 @@ table.vert td { background: var(--color-fondo-card); }
         <div class="leyenda-fija">
           <span><i class="l" style="border-color:var(--color-r1)"></i>Restricción r<sub>1</sub> (primer recurso)</span>
           <span><i class="l" style="border-color:var(--color-r2)"></i>Restricción r<sub>2</sub> (segundo recurso)</span>
-          <span><i class="l punteada" style="border-color:var(--color-min)"></i>Mínimos exigidos</span>
+          <span><i class="l punteada" style="border-color:var(--color-min)"></i>Mínimos exigidos (si los hay)</span>
           <span><i class="l punteada" style="border-color:#B8892E"></i>Recta de nivel (en el óptimo)</span>
         </div>
         <h4>Glosario</h4>
@@ -303,6 +303,7 @@ const $ = id => document.getElementById(id);
 const N = n => n < 0 ? '−' + fmt(Math.abs(n)) : fmt(n);
 function fmt(n) { const r = Math.round(n * 100) / 100; return String(r).replace('.', ','); }
 const miles = n => Math.round(n).toLocaleString('es-ES');
+const eur = n => { const r = Math.round(n * 100) / 100; return Number.isInteger(r) ? miles(r) : r.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); };
 const P = n => n < 0 ? '(' + N(n) + ')' : N(n);
 const V = v => `<i>${v}</i>`;
 const M = h => `<span class="mat">${h}</span>`;
@@ -318,47 +319,173 @@ const plural = (n, sing, plu) => `${n} ${n === 1 ? sing : plu}`;
 
 /* =========================================================
    Contextos
+   Cada contexto: dos recursos (r1, r2) con sus rangos de consumo por unidad
+   en «unidades internas» enteras; k = factor con el que se muestran
+   (1000 → miles de euros, 0,5 → medios m²). P = rangos del punto de corte
+   r1 ∩ r2; paso = múltiplo para ese punto; minimos: 'x', 'xy', 'x+y?'
+   (y a veces), 'x?' (x a veces) o 'no' (solo x, y ≥ 0).
+   pau = datos originales de la PAU de Extremadura (variante fija).
    ========================================================= */
+const lab = (n, pl, pre) => Array.isArray(n) ? n[pl ? 1 : 0] : (pre ? pre[pl ? 1 : 0] : '') + n;
 const CONTEXTOS = [
   {
-    id: 'rutas', nombre: 'Rutas gastronómicas · Feria de San Juan', unidad: ['ruta', 'rutas'],
+    id: 'rutas', nombre: 'Rutas gastronómicas · Feria de San Juan', pre: ['ruta de ', 'rutas de '],
     pares: [['Toro de Lidia', 'Jamón Ibérico'], ['Queso Extremeño', 'Cerdo Ibérico'], ['Vino de Pitarra', 'Migas Extremeñas'],
             ['Cordero al Ajillo', 'Torta del Casar'], ['Morcilla Patatera', 'Cecina de Caza'], ['Caldereta', 'Pimentón de La Vera']],
-    r1: { sing: 'guía', plu: 'guías' }, r2: { sing: 'autobús pequeño', plu: 'autobuses pequeños' },
-    rP: [[10, 40], [10, 50]], coefs: () => [ri(10, 25) * 10, ri(10, 25) * 10], minY: () => rand() < 0.5, tierra: false,
+    r1: { A: [1, 4], B: [1, 4] }, r2: { A: [1, 4], B: [1, 4] }, P: [[10, 40], [10, 50]], minimos: 'x+y?',
+    coefs: () => [ri(10, 25) * 10, ri(10, 25) * 10], rtxt: ['guías disponibles', 'autobuses disponibles'],
     texto(e) {
       return `<p>La <b>Diputación de Badajoz</b> organiza dos rutas gastronómicas durante la <b>Feria de San Juan</b>.</p>
-        <p>Cada ruta de <b>${e.X}</b> necesita ${plural(e.a1, 'guía', 'guías')} y ${plural(e.a2, 'autobús pequeño', 'autobuses pequeños')}, y deja un beneficio de <b>${miles(e.cx)} €</b>.
-        Cada ruta de <b>${e.Y}</b> necesita ${plural(e.b1, 'guía', 'guías')} y ${plural(e.b2, 'autobús pequeño', 'autobuses pequeños')}, y deja <b>${miles(e.cy)} €</b>.</p>
+        <p>Cada ruta de <b>${e.X}</b> necesita ${plural(e.a1, 'guía', 'guías')} y ${plural(e.a2, 'autobús pequeño', 'autobuses pequeños')}, y deja un beneficio de <b>${eur(e.cx)} €</b>.
+        Cada ruta de <b>${e.Y}</b> necesita ${plural(e.b1, 'guía', 'guías')} y ${plural(e.b2, 'autobús pequeño', 'autobuses pequeños')}, y deja <b>${eur(e.cy)} €</b>.</p>
         <p>Se dispone de <b>${e.G} guías</b> y <b>${e.B} autobuses pequeños</b>. Por tradición, deben realizarse al menos <b>${e.mx} rutas de ${e.X}</b>${e.my > 0 ? ` y al menos <b>${e.my} rutas de ${e.Y}</b>` : ''}.</p>
         <p class="pregunta">¿Cuántas rutas de cada tipo hay que organizar para que el beneficio sea máximo? ¿A cuánto asciende?</p>
         <p class="variables">Llama ${V('x')} al número de rutas de ${e.X} e ${V('y')} al número de rutas de ${e.Y}.</p>`;
     }
   },
   {
-    id: 'granja', nombre: 'Explotación agrícola · Vegas del Guadiana', unidad: ['hectárea', 'hectáreas'],
+    id: 'granja', nombre: 'Explotación agrícola · Vegas del Guadiana', pre: ['hectárea de ', 'hectáreas de '],
     pares: [['maíz', 'trigo'], ['tomate', 'pimiento'], ['girasol', 'cebada'], ['arroz', 'maíz']],
-    rP: [[20, 70], [20, 70]], coefs: () => [ri(10, 30) * 20, ri(10, 30) * 20], minY: () => true, tierra: true,
+    r1: { A: [1, 1], B: [1, 1] }, r2: { A: [1, 4], B: [1, 4] }, P: [[20, 70], [20, 70]], minimos: 'xy',
+    coefs: () => [ri(10, 30) * 20, ri(10, 30) * 20], rtxt: ['hectáreas disponibles', 'depósitos de agua disponibles'],
+    pau: { a1: 1, b1: 1, a2: 3, b2: 2, px: 60, py: 60, mx: 20, my: 15, cx: 50, cy: 40, par: 0 },
     texto(e) {
-      return `<p>Una explotación de las <b>Vegas del Guadiana</b> dispone de <b>${e.G} hectáreas</b> de cultivo y de <b>${e.B} jornales de riego</b> para la campaña.</p>
-        <p>Cada hectárea de <b>${e.X}</b> necesita ${plural(e.a2, 'jornal', 'jornales')} de riego y deja un beneficio de <b>${miles(e.cx)} €</b>.
-        Cada hectárea de <b>${e.Y}</b> necesita ${plural(e.b2, 'jornal', 'jornales')} y deja <b>${miles(e.cy)} €</b>.</p>
-        <p>Por las condiciones de la explotación, hay que dedicar al menos <b>${e.mx} ha al ${e.X}</b> y al menos <b>${e.my} ha al ${e.Y}</b>.</p>
+      return `<p>Una explotación de las <b>Vegas del Guadiana</b> dispone de <b>${e.G} hectáreas</b> para cultivar <b>${e.X}</b> y <b>${e.Y}</b>, y de <b>${e.B} depósitos de agua</b> para la campaña.</p>
+        <p>Cada hectárea de ${e.X} requiere ${plural(e.a2, 'depósito', 'depósitos')} de agua y deja un beneficio de <b>${eur(e.cx)} €</b>.
+        Cada hectárea de ${e.Y} requiere ${plural(e.b2, 'depósito', 'depósitos')} y deja <b>${eur(e.cy)} €</b>.</p>
+        <p>Además, hay que dedicar al menos <b>${e.mx} ha de ${e.X}</b> y al menos <b>${e.my} ha de ${e.Y}</b>.</p>
         <p class="pregunta">¿Cuántas hectáreas hay que dedicar a cada cultivo para que el beneficio sea máximo? ¿A cuánto asciende?</p>
         <p class="variables">Llama ${V('x')} a las hectáreas de ${e.X} e ${V('y')} a las de ${e.Y}.</p>`;
     }
   },
   {
-    id: 'obrador', nombre: 'Obrador de dulces · Mérida', unidad: ['bandeja', 'bandejas'],
+    id: 'obrador', nombre: 'Obrador de dulces · Mérida', pre: ['bandeja de ', 'bandejas de '],
     pares: [['perrunillas', 'bollos de Pascua'], ['roscas fritas', 'repápalos'], ['técula mécula', 'coquillos'], ['flores fritas', 'pestiños']],
-    rP: [[10, 40], [10, 45]], coefs: () => [ri(4, 20), ri(4, 20)], minY: () => false, tierra: false,
+    r1: { A: [1, 4], B: [1, 4] }, r2: { A: [1, 4], B: [1, 4] }, P: [[10, 40], [10, 45]], minimos: 'x',
+    coefs: () => [ri(4, 20), ri(4, 20)], rtxt: ['harina disponible', 'horas de horno'],
     texto(e) {
       return `<p>Un obrador de <b>Mérida</b> prepara bandejas de <b>${e.X}</b> y de <b>${e.Y}</b> para la Semana Santa.</p>
-        <p>Cada bandeja de ${e.X} lleva ${plural(e.a1, 'kg', 'kg')} de harina y ${plural(e.a2, 'hora', 'horas')} de horno, y deja un beneficio de <b>${miles(e.cx)} €</b>.
-        Cada bandeja de ${e.Y} lleva ${plural(e.b1, 'kg', 'kg')} de harina y ${plural(e.b2, 'hora', 'horas')} de horno, y deja <b>${miles(e.cy)} €</b>.</p>
+        <p>Cada bandeja de ${e.X} lleva ${plural(e.a1, 'kg', 'kg')} de harina y ${plural(e.a2, 'hora', 'horas')} de horno, y deja un beneficio de <b>${eur(e.cx)} €</b>.
+        Cada bandeja de ${e.Y} lleva ${plural(e.b1, 'kg', 'kg')} de harina y ${plural(e.b2, 'hora', 'horas')} de horno, y deja <b>${eur(e.cy)} €</b>.</p>
         <p>El obrador dispone de <b>${e.G} kg de harina</b> y <b>${e.B} horas de horno</b>, y tiene un encargo de al menos <b>${e.mx} bandejas de ${e.X}</b>.</p>
         <p class="pregunta">¿Cuántas bandejas de cada tipo debe preparar para que el beneficio sea máximo? ¿A cuánto asciende?</p>
         <p class="variables">Llama ${V('x')} al número de bandejas de ${e.X} e ${V('y')} al de ${e.Y}.</p>`;
+    }
+  },
+  {
+    id: 'charcuteria', nombre: 'Charcutería · Montánchez', pre: ['lote ', 'lotes '],
+    pares: [['A', 'B'], ['Degustación', 'Familiar'], ['Tradición', 'Ibérico']],
+    r1: { A: [2, 5], B: [3, 6], k: 2 }, r2: { A: [2, 5], B: [4, 8], k: 2 }, P: [[10, 60], [10, 40]], minimos: 'x?',
+    coefs: () => [ri(10, 30), ri(15, 45)], rtxt: ['chorizos disponibles', 'salchichones disponibles'],
+    pau: { a1: 3, b1: 5, a2: 3, b2: 8, px: 40, py: 15, mx: 0, my: 0, cx: 20, cy: 36, par: 0 },
+    texto(e) {
+      return `<p>Un charcutero de <b>Montánchez</b> dispone de <b>${e.G} chorizos</b> y <b>${e.B} salchichones</b> para su venta, y los organiza en dos tipos de lotes, ${e.X} y ${e.Y}.</p>
+        <p>Cada lote ${e.X} contiene ${e.a1} chorizos y ${e.a2} salchichones, y le reporta un beneficio de <b>${eur(e.cx)} €</b>.
+        Cada lote ${e.Y} contiene ${e.b1} chorizos y ${e.b2} salchichones, y le reporta <b>${eur(e.cy)} €</b>.</p>
+        ${e.mx > 0 ? `<p>Además, un cliente le ha encargado al menos <b>${e.mx} lotes ${e.X}</b>.</p>` : ''}
+        <p class="pregunta">¿Cuántos lotes de cada tipo debe vender para que el beneficio sea máximo? ¿A cuánto asciende?</p>
+        <p class="variables">Llama ${V('x')} al número de lotes ${e.X} e ${V('y')} al de lotes ${e.Y}.</p>`;
+    }
+  },
+  {
+    id: 'vehiculos', nombre: 'Compraventa de vehículos · Cáceres',
+    pares: [[['coche', 'coches'], ['motocicleta', 'motocicletas']], [['furgoneta', 'furgonetas'], ['turismo', 'turismos']], [['todoterreno', 'todoterrenos'], ['utilitario', 'utilitarios']]],
+    r1: { A: [2, 6], B: [1, 3], k: 1000 }, r2: { A: [1, 1], B: [1, 1] }, P: [[20, 80], [20, 100]], minimos: 'no',
+    coefs: () => [ri(3, 10) * 100, ri(3, 10) * 100], rtxt: ['dinero disponible para comprar', 'espacio: vehículos como máximo'],
+    pau: { a1: 3, b1: 2, a2: 1, b2: 1, px: 50, py: 75, mx: 0, my: 0, cx: 500, cy: 400, par: 0 },
+    texto(e) {
+      return `<p>Una empresa de compraventa de vehículos usados de <b>Cáceres</b> compra ${e.xp} y ${e.yp}, y obtiene un beneficio de <b>${eur(e.cx)} €</b> por cada ${e.xs} y de <b>${eur(e.cy)} €</b> por cada ${e.ys} al venderlos después.</p>
+        <p>Dispone de <b>${miles(e.G)} €</b> para comprar vehículos, al precio de ${miles(e.a1)} € cada ${e.xs} y ${miles(e.b1)} € cada ${e.ys}, y por limitaciones de espacio no puede comprar más de <b>${e.B} vehículos</b>.</p>
+        <p class="pregunta">¿Cuántos vehículos de cada tipo debe comprar para que el beneficio sea máximo? ¿A cuánto asciende?</p>
+        <p class="variables">Llama ${V('x')} al número de ${e.xp} e ${V('y')} al de ${e.yp}.</p>`;
+    }
+  },
+  {
+    id: 'pasteleria', nombre: 'Pastelería · Plasencia', pre: ['pastel ', 'pasteles '],
+    pares: [['de tipo A', 'de tipo B'], ['de nata', 'de crema'], ['de hojaldre', 'de bizcocho']],
+    r1: { A: [2, 8], B: [2, 8] }, r2: { A: [1, 5], B: [1, 5] }, P: [[10, 50], [10, 50]], minimos: 'no',
+    coefs: () => [ri(6, 14) / 2, ri(6, 14) / 2], rtxt: ['azúcar disponible', 'levadura disponible'],
+    pau: { a1: 6, b1: 4, a2: 3, b2: 4, px: 20, py: 30, mx: 0, my: 0, cx: 4.5, cy: 5.5, par: 0 },
+    texto(e) {
+      return `<p>En una pastelería de <b>Plasencia</b> se elaboran ${e.xp} y ${e.yp}.</p>
+        <p>Cada ${e.xs} necesita ${e.a1} g de azúcar y ${e.a2} g de levadura, con un beneficio de <b>${eur(e.cx)} €</b>.
+        Cada ${e.ys} necesita ${e.b1} g de azúcar y ${e.b2} g de levadura, con un beneficio de <b>${eur(e.cy)} €</b>.</p>
+        <p>Solo se dispone de <b>${e.G} g de azúcar</b> y <b>${e.B} g de levadura</b>.</p>
+        <p class="pregunta">¿Cuántos pasteles de cada tipo deben elaborarse para que el beneficio sea máximo? ¿A cuánto asciende?</p>
+        <p class="variables">Llama ${V('x')} al número de ${e.xp} e ${V('y')} al de ${e.yp}.</p>`;
+    }
+  },
+  {
+    id: 'decoracion', nombre: 'Taller de decoración · Trujillo',
+    pares: [[['espejo', 'espejos'], ['cuadro', 'cuadros']], [['lámpara', 'lámparas'], ['jarrón', 'jarrones']], [['marco', 'marcos'], ['reloj de pared', 'relojes de pared']]],
+    r1: { A: [1, 1], B: [1, 1] }, r2: { A: [1, 3], B: [2, 6] }, P: [[10, 60], [3, 30]], minimos: 'no',
+    coefs: () => [ri(8, 20) * 10, ri(8, 20) * 10], rtxt: ['artículos a la venta como máximo', 'horas de fabricación disponibles'],
+    pau: { a1: 1, b1: 1, a2: 1, b2: 4, px: 40, py: 5, mx: 0, my: 0, cx: 120, cy: 180, par: 0 },
+    texto(e) {
+      return `<p>En un taller de decoración de <b>Trujillo</b> se venden ${e.xp} y ${e.yp}, con un beneficio de <b>${eur(e.cx)} €</b> por cada ${e.xs} y de <b>${eur(e.cy)} €</b> por cada ${e.ys}.</p>
+        <p>El taller dispone para la venta de, como mucho, <b>${e.G} artículos</b> entre ambos productos, que ha fabricado previamente: cada ${e.xs} ha necesitado ${plural(e.a2, 'hora', 'horas')} y cada ${e.ys}, ${plural(e.b2, 'hora', 'horas')}, con una disponibilidad de, como mucho, <b>${e.B} horas</b>.</p>
+        <p class="pregunta">¿Cuántos artículos de cada tipo debe vender para que el beneficio sea máximo? ¿A cuánto asciende?</p>
+        <p class="variables">Llama ${V('x')} al número de ${e.xp} e ${V('y')} al de ${e.yp}.</p>`;
+    }
+  },
+  {
+    id: 'confeccion', nombre: 'Taller de confección · Don Benito',
+    pares: [[['abrigo', 'abrigos'], ['cazadora', 'cazadoras']], [['chaqueta', 'chaquetas'], ['falda', 'faldas']], [['gabardina', 'gabardinas'], ['chaleco', 'chalecos']]],
+    r1: { A: [1, 3], B: [1, 3] }, r2: { A: [1, 4], B: [1, 3] }, P: [[10, 40], [10, 40]], minimos: 'x?',
+    coefs: () => [ri(5, 12) * 10, ri(5, 12) * 10], rtxt: ['tela de forro disponible', 'tela de paño disponible'],
+    pau: { a1: 1, b1: 2, a2: 3, b2: 2, px: 20, py: 30, mx: 0, my: 0, cx: 80, cy: 70, par: 0 },
+    texto(e) {
+      return `<p>Un taller de confección de <b>Don Benito</b> fabrica ${e.xp} y ${e.yp}. Para ello dispone semanalmente de <b>${e.G} m² de tela de forro</b> y <b>${e.B} m² de tela de paño</b>.</p>
+        <p>Cada ${e.xs} requiere ${e.a1} m² de forro y ${e.a2} m² de paño, y deja un beneficio de <b>${eur(e.cx)} €</b>.
+        Cada ${e.ys} requiere ${e.b1} m² de forro y ${e.b2} m² de paño, y deja <b>${eur(e.cy)} €</b>.</p>
+        ${e.mx > 0 ? `<p>Además, tiene un pedido de al menos <b>${e.mx} ${e.xp}</b> para esta semana.</p>` : ''}
+        <p class="pregunta">¿Cuántas prendas de cada tipo debe confeccionar a la semana para que el beneficio sea máximo? ¿A cuánto asciende?</p>
+        <p class="variables">Llama ${V('x')} al número de ${e.xp} e ${V('y')} al de ${e.yp}.</p>`;
+    }
+  },
+  {
+    id: 'abonos', nombre: 'Tienda de productos agrícolas · Villanueva de la Serena', pre: ['envase del compuesto ', 'envases del compuesto '],
+    pares: [['A', 'B'], ['Huerta', 'Frutal'], ['Olivar', 'Viñedo']],
+    r1: { A: [1, 4], B: [2, 8] }, r2: { A: [1, 2], B: [1, 2] }, P: [[10, 80], [5, 50]], minimos: 'x?',
+    coefs: () => [ri(5, 15) * 10, ri(5, 15) * 10], rtxt: ['abono de nitrógeno disponible', 'abono de potasio disponible'],
+    pau: { a1: 3, b1: 6, a2: 1, b2: 1, px: 60, py: 20, mx: 0, my: 0, cx: 100, cy: 120, par: 0 },
+    texto(e) {
+      return `<p>Una tienda de productos agrícolas de <b>Villanueva de la Serena</b> dispone de <b>${e.G} kg de abono de nitrógeno</b> y de <b>${e.B} kg de abono de potasio</b> para fabricar dos compuestos, ${e.X} y ${e.Y}.</p>
+        <p>Cada envase del compuesto ${e.X} contiene ${e.a1} kg de nitrógeno y ${e.a2} kg de potasio, y deja un beneficio de <b>${eur(e.cx)} €</b>.
+        Cada envase del compuesto ${e.Y} contiene ${e.b1} kg de nitrógeno y ${e.b2} kg de potasio, y deja <b>${eur(e.cy)} €</b>.</p>
+        ${e.mx > 0 ? `<p>Además, una cooperativa le ha encargado al menos <b>${e.mx} envases del compuesto ${e.X}</b>.</p>` : ''}
+        <p class="pregunta">¿Cuántos envases de cada compuesto debe fabricar para que el beneficio sea máximo? ¿A cuánto asciende?</p>
+        <p class="variables">Llama ${V('x')} al número de envases del compuesto ${e.X} e ${V('y')} al del compuesto ${e.Y}.</p>`;
+    }
+  },
+  {
+    id: 'calzado', nombre: 'Calzado artesano · Zafra',
+    pares: [[['par de zapatos', 'pares de zapatos'], ['par de botas', 'pares de botas']], [['par de sandalias', 'pares de sandalias'], ['par de botines', 'pares de botines']], [['par de mocasines', 'pares de mocasines'], ['par de botas camperas', 'pares de botas camperas']]],
+    r1: { A: [1, 2], B: [1, 2] }, r2: { A: [1, 3], B: [1, 4], k: 0.5 }, P: [[10, 50], [10, 40]], minimos: 'no',
+    coefs: () => [ri(4, 10) * 10, ri(4, 10) * 10], rtxt: ['horas de trabajo disponibles', 'piel disponible'],
+    pau: { a1: 1, b1: 1, a2: 1, b2: 2, px: 30, py: 20, mx: 0, my: 0, cx: 70, cy: 80, par: 0 },
+    texto(e) {
+      return `<p>Una tienda de calzado artesano de <b>Zafra</b> fabrica ${e.xp} y ${e.yp}.</p>
+        <p>Cada ${e.xs} requiere ${plural(e.a1, 'hora', 'horas')} de trabajo y ${fmt(e.a2)} m² de piel, con un beneficio de <b>${eur(e.cx)} €</b>.
+        Cada ${e.ys} requiere ${plural(e.b1, 'hora', 'horas')} de trabajo y ${fmt(e.b2)} m² de piel, con un beneficio de <b>${eur(e.cy)} €</b>.</p>
+        <p>Solo dispone de <b>${e.G} horas de trabajo</b> y de <b>${fmt(e.B)} m² de piel</b>.</p>
+        <p class="pregunta">¿Cuántos pares de cada tipo hay que fabricar para que el beneficio sea máximo? ¿A cuánto asciende?</p>
+        <p class="variables">Llama ${V('x')} al número de ${e.xp} e ${V('y')} al de ${e.yp}.</p>`;
+    }
+  },
+  {
+    id: 'apicultor', nombre: 'Apicultor hurdano · Las Hurdes', pre: ['lote ', 'lotes '],
+    pares: [['A', 'B'], ['Brezo', 'Castaño'], ['Tradicional', 'Regalo']],
+    r1: { A: [1, 4], B: [1, 4] }, r2: { A: [1, 3], B: [1, 3] }, P: [[5, 30], [5, 30]], paso: 10, minimos: 'x?',
+    coefs: () => [ri(8, 20), ri(8, 20)], rtxt: ['botes de miel disponibles', 'botes de polen disponibles'],
+    pau: { a1: 2, b1: 3, a2: 2, b2: 1, px: 150, py: 200, mx: 0, my: 0, cx: 15, cy: 12, par: 0 },
+    texto(e) {
+      return `<p>Un apicultor de <b>Las Hurdes</b> tiene <b>${e.G} botes de miel</b> y <b>${e.B} botes de polen</b>, con los que elabora dos lotes, ${e.X} y ${e.Y}, que pone a la venta.</p>
+        <p>Cada lote ${e.X} contiene ${plural(e.a1, 'bote', 'botes')} de miel y ${plural(e.a2, 'bote', 'botes')} de polen, con un beneficio de <b>${eur(e.cx)} €</b>.
+        Cada lote ${e.Y} contiene ${plural(e.b1, 'bote', 'botes')} de miel y ${plural(e.b2, 'bote', 'botes')} de polen, con un beneficio de <b>${eur(e.cy)} €</b>.</p>
+        ${e.mx > 0 ? `<p>Además, una tienda de Caminomorisco le ha encargado al menos <b>${e.mx} lotes ${e.X}</b>.</p>` : ''}
+        <p class="pregunta">¿Cuántos lotes de cada tipo debe organizar para que el beneficio sea máximo? ¿A cuánto asciende?</p>
+        <p class="variables">Llama ${V('x')} al número de lotes ${e.X} e ${V('y')} al de lotes ${e.Y}.</p>`;
     }
   }
 ];
@@ -373,50 +500,85 @@ function cortes(l1, l2) {
   return [(l1.c * l2.b - l2.c * l1.b) / d, (l1.a * l2.c - l2.a * l1.c) / d];
 }
 const cumpleR = (r, p) => r.s === '≤' ? r.a * p[0] + r.b * p[1] <= r.c + 1e-9 : r.a * p[0] + r.b * p[1] >= r.c - 1e-9;
-let ultimaFirma = '';
+const valorZ = (e, v) => Math.round((e.cx * v[0] + e.cy * v[1]) * 100) / 100;
+/* Construye el ejercicio a partir de datos en unidades internas (enteros).
+   Devuelve null si no cumple alguna condición de calidad. */
+function construir(ctx, d) {
+  const { a1, b1, a2, b2, px, py, mx, my, cx, cy } = d;
+  if (a1 * b2 - a2 * b1 === 0 || mx >= px || my >= py) return null;
+  const G = a1 * px + b1 * py, B = a2 * px + b2 * py;
+  const Ri = [
+    { id: 'r1', a: a1, b: b1, c: G, s: '≤' }, { id: 'r2', a: a2, b: b2, c: B, s: '≤' },
+    { id: 'rx', a: 1, b: 0, c: mx, s: '≥' }, { id: 'ry', a: 0, b: 1, c: my, s: '≥' }
+  ];
+  const verts = [];
+  for (let i = 0; i < 4; i++) for (let j = i + 1; j < 4; j++) {
+    const p = cortes(Ri[i], Ri[j]);
+    if (!p || !Ri.every(r => cumpleR(r, p))) continue;
+    if (verts.some(q => Math.abs(q[0] - p[0]) < 1e-9 && Math.abs(q[1] - p[1]) < 1e-9)) continue;
+    if (!Number.isInteger(p[0] + 0) || !Number.isInteger(p[1] + 0)) return null;
+    verts.push([p[0] + 0, p[1] + 0, [Ri[i].id, Ri[j].id]]);
+  }
+  if (verts.length !== 4 || !verts.some(v => v[0] === px && v[1] === py)) return null;
+  const k1 = ctx.r1.k || 1, k2 = ctx.r2.k || 1;
+  const par = ctx.pares[d.par];
+  const e = {
+    ctx, X: par[0], Y: par[1], xs: lab(par[0], 0, ctx.pre), xp: lab(par[0], 1, ctx.pre), ys: lab(par[1], 0, ctx.pre), yp: lab(par[1], 1, ctx.pre),
+    a1: a1 * k1, b1: b1 * k1, G: G * k1, a2: a2 * k2, b2: b2 * k2, B: B * k2, mx, my, cx, cy, verts, pau: !!d.esPau
+  };
+  e.R = [
+    { id: 'r1', a: e.a1, b: e.b1, c: e.G, s: '≤' }, { id: 'r2', a: e.a2, b: e.b2, c: e.B, s: '≤' },
+    { id: 'rx', a: 1, b: 0, c: mx, s: '≥' }, { id: 'ry', a: 0, b: 1, c: my, s: '≥' }
+  ];
+  const zs = verts.map(v => valorZ(e, v)).sort((p, q) => q - p);
+  if (zs[0] - zs[1] < Math.max(1, zs[0] * 0.01)) return null;   // óptimo único y claro
+  e.opt = verts.reduce((m, v) => (valorZ(e, v) > valorZ(e, m) ? v : m));
+  e.zmax = valorZ(e, e.opt);
+  e.optEnCorte = e.opt[0] === px && e.opt[1] === py;
+  e.firma = [ctx.id, a1, b1, a2, b2, px, py, mx, my, cx, cy].join(',');
+  e.candidatos = calcularCandidatos(e);
+  prepararEscala(e);   // descarta ejercicios con puntos de corte demasiado juntos para hacer clic
+  const c = e.candidatos;
+  for (let i = 0; i < c.length; i++) for (let j = i + 1; j < c.length; j++)
+    if (Math.hypot(X(c[i][0]) - X(c[j][0]), Y(c[i][1]) - Y(c[j][1])) < 22) return null;
+  return e;
+}
+function minimo(p, paso) {
+  const lo = Math.max(1, Math.ceil(4 / paso)), hi = Math.max(lo, Math.floor(p * 0.6 / paso));
+  return paso * ri(lo, hi);
+}
+function aleatorio(ctx) {
+  const paso = ctx.paso || 1;
+  const px = paso * ri(...ctx.P[0]), py = paso * ri(...ctx.P[1]);
+  const m = ctx.minimos;
+  const conX = m === 'x' || m === 'xy' || m === 'x+y?' || (m === 'x?' && rand() < 0.35);
+  const conY = m === 'xy' || (m === 'x+y?' && rand() < 0.5);
+  const [cx, cy] = ctx.coefs();
+  return {
+    a1: ri(...ctx.r1.A), b1: ri(...ctx.r1.B), a2: ri(...ctx.r2.A), b2: ri(...ctx.r2.B), px, py,
+    mx: conX ? minimo(px, paso) : 0, my: conY ? minimo(py, paso) : 0, cx, cy, par: ri(0, ctx.pares.length - 1)
+  };
+}
+let ultimaFirma = '', ultimoCtx = '';
+const PROB_PAU = 0.25;
 function generar() {
-  for (let t = 0; t < 20000; t++) {
-    const ctx = pick(CONTEXTOS);
-    const a1 = ctx.tierra ? 1 : ri(1, 4), b1 = ctx.tierra ? 1 : ri(1, 4);
-    const a2 = ri(1, 4), b2 = ri(1, 4);
-    if (a1 * b2 - a2 * b1 === 0) continue;
-    const px = ri(...ctx.rP[0]), py = ri(...ctx.rP[1]);
-    const G = a1 * px + b1 * py, B = a2 * px + b2 * py;
-    const mx = ri(4, Math.max(4, Math.floor(px * 0.6)));
-    const my = ctx.minY() ? ri(4, Math.max(4, Math.floor(py * 0.6))) : 0;
-    if (mx >= px || my >= py) continue;
-    const R = [
-      { id: 'r1', a: a1, b: b1, c: G, s: '≤' }, { id: 'r2', a: a2, b: b2, c: B, s: '≤' },
-      { id: 'rx', a: 1, b: 0, c: mx, s: '≥' }, { id: 'ry', a: 0, b: 1, c: my, s: '≥' }
-    ];
-    const verts = [];
-    let enteros = true;
-    for (let i = 0; i < 4; i++) for (let j = i + 1; j < 4; j++) {
-      const p = cortes(R[i], R[j]);
-      if (!p || !R.every(r => cumpleR(r, p))) continue;
-      if (verts.some(q => Math.abs(q[0] - p[0]) < 1e-9 && Math.abs(q[1] - p[1]) < 1e-9)) continue;
-      if (!Number.isInteger(p[0] + 0) || !Number.isInteger(p[1] + 0)) enteros = false;
-      verts.push([p[0] + 0, p[1] + 0, [R[i].id, R[j].id]]);
+  const posibles = CONTEXTOS.filter(c => c.id !== ultimoCtx);
+  for (let intento = 0; intento < 50; intento++) {
+    const ctx = pick(posibles);
+    let e = null;
+    if (ctx.pau && rand() < PROB_PAU) {
+      e = construir(ctx, Object.assign({ esPau: true }, ctx.pau));
+      if (e && e.firma === ultimaFirma) e = null;
     }
-    if (!enteros || verts.length !== 4) continue;
-    if (!verts.some(v => v[0] === px && v[1] === py)) continue;
-    const [cx, cy] = ctx.coefs();
-    const zs = verts.map(v => cx * v[0] + cy * v[1]).sort((a, b) => b - a);
-    if (zs[0] - zs[1] < Math.max(1, zs[0] * 0.01)) continue;   // óptimo único y claro
-    const opt = verts.reduce((m, v) => (cx * v[0] + cy * v[1] > cx * m[0] + cy * m[1] ? v : m));
-    if (rand() < 0.7 && !(opt[0] === px && opt[1] === py)) continue;  // casi siempre el corte de r1 y r2
-    const par = pick(ctx.pares);
-    const firma = [ctx.id, a1, b1, a2, b2, px, py, mx, my, cx, cy].join(',');
-    if (firma === ultimaFirma) continue;
-    ultimaFirma = firma;
-    const e = { ctx, X: par[0], Y: par[1], a1, b1, a2, b2, G, B, mx, my, cx, cy, R, verts, opt, zmax: cx * opt[0] + cy * opt[1] };
-    e.candidatos = calcularCandidatos(e);
-    prepararEscala(e);   // descarta ejercicios con puntos de corte demasiado juntos para hacer clic
-    const c = e.candidatos;
-    let juntos = false;
-    for (let i = 0; i < c.length && !juntos; i++) for (let j = i + 1; j < c.length; j++)
-      if (Math.hypot(X(c[i][0]) - X(c[j][0]), Y(c[i][1]) - Y(c[j][1])) < 22) { juntos = true; break; }
-    if (juntos) continue;
+    for (let t = 0; !e && t < 4000; t++) {
+      const cand = construir(ctx, aleatorio(ctx));
+      if (!cand || cand.firma === ultimaFirma) continue;
+      if (rand() < 0.7 && !cand.optEnCorte) continue;   // casi siempre el corte de r1 y r2
+      e = cand;
+    }
+    if (!e) continue;
+    ultimaFirma = e.firma; ultimoCtx = ctx.id;
+    prepararEscala(e);
     return e;
   }
   throw new Error('No se pudo generar un ejercicio válido');
@@ -474,12 +636,12 @@ function dibujarRecta(r) {
 }
 function dibujarRestricciones() {
   limpiar('g-rectas');
-  ex.R.forEach(r => { if (!(r.id === 'ry' && r.c === 0)) dibujarRecta(r); });
+  ex.R.forEach(r => { if (!((r.id === 'rx' || r.id === 'ry') && r.c === 0)) dibujarRecta(r); });
   const ley = [
     `<span><i class="l" style="border-color:${COLOR.r1}"></i>${M(restr(ex.a1, ex.b1, ex.G, '≤'))}</span>`,
-    `<span><i class="l" style="border-color:${COLOR.r2}"></i>${M(restr(ex.a2, ex.b2, ex.B, '≤'))}</span>`,
-    `<span><i class="l" style="border-color:${COLOR.rx};border-top-style:dashed"></i>${M(V('x') + ' ≥ ' + ex.mx)}</span>`
+    `<span><i class="l" style="border-color:${COLOR.r2}"></i>${M(restr(ex.a2, ex.b2, ex.B, '≤'))}</span>`
   ];
+  if (ex.mx > 0) ley.push(`<span><i class="l" style="border-color:${COLOR.rx};border-top-style:dashed"></i>${M(V('x') + ' ≥ ' + ex.mx)}</span>`);
   if (ex.my > 0) ley.push(`<span><i class="l" style="border-color:${COLOR.ry};border-top-style:dashed"></i>${M(V('y') + ' ≥ ' + ex.my)}</span>`);
   $('leyenda').innerHTML = ley.join('');
 }
@@ -494,7 +656,7 @@ function calcularCandidatos(e) {
     const p = cortes(lineas[i], lineas[j]);
     if (!p || p[0] < -1e-9 || p[1] < -1e-9) continue;
     const q = [Math.round(p[0] * 1000) / 1000 + 0, Math.round(p[1] * 1000) / 1000 + 0];
-    if (q[0] === 0 && q[1] === 0) continue;
+    if (q[0] === 0 && q[1] === 0 && !(e.mx === 0 && e.my === 0)) continue;   // el origen solo si es vértice
     if (out.some(o => Math.abs(o[0] - q[0]) < 1e-6 && Math.abs(o[1] - q[1]) < 1e-6)) continue;
     out.push(q);
   }
@@ -538,7 +700,7 @@ function dibujarNivel() {
   const y = x => (zmax - cx * x) / cy;
   el('line', { x1: X(-esc.xmax), y1: Y(y(-esc.xmax)), x2: X(2 * esc.xmax), y2: Y(y(2 * esc.xmax)), stroke: '#B8892E', 'stroke-width': 2, 'stroke-dasharray': '3 4' }, g);
   el('circle', { cx: X(opt[0]), cy: Y(opt[1]), r: 9, fill: 'none', stroke: '#B8892E', 'stroke-width': 2.5 }, g);
-  $('leyenda').insertAdjacentHTML('beforeend', `<span><i class="l" style="border-color:#B8892E;border-top-style:dotted"></i>Recta de nivel ${M(V('Z') + ' = ' + miles(zmax))}</span>`);
+  $('leyenda').insertAdjacentHTML('beforeend', `<span><i class="l" style="border-color:#B8892E;border-top-style:dotted"></i>Recta de nivel ${M(V('Z') + ' = ' + eur(zmax))}</span>`);
 }
 function aMat(evt) {
   const pt = svg.createSVGPoint(); pt.x = evt.clientX; pt.y = evt.clientY;
@@ -593,7 +755,7 @@ function htmlPaso(n) {
   return `
     <p class="instr">Evalúa <i>Z</i> en cada vértice y completa la conclusión.</p>
     <div class="sol-frase">El beneficio máximo se obtiene con
-      <input class="num ancho" id="s-x" aria-label="valor óptimo de x"> <span id="s-ux"></span> e
+      <input class="num ancho" id="s-x" aria-label="valor óptimo de x"> <span id="s-ux"></span> y
       <input class="num ancho" id="s-y" aria-label="valor óptimo de y"> <span id="s-uy"></span>,
       y asciende a <input class="num ancho" id="s-z" aria-label="beneficio máximo"> €.</div>
     <div class="acciones"><button class="btn-primario" data-comprobar="4">Comprobar</button></div>`;
@@ -606,8 +768,8 @@ function renderEjercicio() {
       ${htmlPaso(n)}
       <div class="fb" id="fb-${n}" aria-live="polite"></div>
     </div>`).join('');
-  $('s-ux').textContent = `${ex.ctx.unidad[1]} de ${ex.X}`;
-  $('s-uy').textContent = `${ex.ctx.unidad[1]} de ${ex.Y}`;
+  $('s-ux').textContent = ex.xp;
+  $('s-uy').textContent = ex.yp;
   document.querySelectorAll('[data-comprobar]').forEach(b => b.addEventListener('click', () => comprobar(+b.dataset.comprobar)));
   for (let i = 0; i < 5; i++) $('r' + i + '-c').addEventListener('input', () => actualizarPuntoPrueba(i));
   prepararEscala(ex); dibujarCuadricula();
@@ -655,7 +817,9 @@ function actualizarPasos() {
 /* ---------- utilidades ---------- */
 function leerNum(str) {
   if (str == null) return null;
-  str = String(str).trim().replace(/[−–]/g, '-').replace(/\s+/g, '').replace(',', '.');
+  str = String(str).trim().replace(/[−–]/g, '-').replace(/\s+/g, '');
+  if (/^[-+]?\d{1,3}(\.\d{3})+(,\d+)?$/.test(str)) str = str.replace(/\./g, '');   // punto de millar: 300.000
+  str = str.replace(',', '.');
   if (!/^[-+]?\d+(\.\d+)?$/.test(str)) return null;
   return parseFloat(str);
 }
@@ -673,10 +837,11 @@ function validar1() {
   const a = leerNum($('fo-a').value), b = leerNum($('fo-b').value), obj = $('fo-obj').value;
   if (a === null || b === null || !obj) return { ok: null, html: 'Escribe los dos coeficientes y elige si se maximiza o se minimiza.' };
   const correcta = M(V('Z') + ' = ' + expr(ex.cx, ex.cy));
-  const coefOk = a === ex.cx && b === ex.cy;
-  if (coefOk && obj === 'max') return { ok: true, html: `<b>Correcto.</b> ${correcta}: cada ${ex.ctx.unidad[0]} de ${ex.X} aporta ${miles(ex.cx)} € y cada una de ${ex.Y}, ${miles(ex.cy)} €. Se busca el beneficio <b>máximo</b>.` };
+  const igual = (u, v) => Math.abs(u - v) < 1e-9;
+  const coefOk = igual(a, ex.cx) && igual(b, ex.cy);
+  if (coefOk && obj === 'max') return { ok: true, html: `<b>Correcto.</b> ${correcta}: cada ${ex.xs} aporta ${eur(ex.cx)} € y cada ${ex.ys}, ${eur(ex.cy)} €. Se busca el beneficio <b>máximo</b>.` };
   const motivos = [];
-  if (a === ex.cy && b === ex.cx) motivos.push(`Has intercambiado los coeficientes: ${V('x')} son las ${ex.ctx.unidad[1]} de ${ex.X}, así que su coeficiente es el beneficio de ${ex.X}.`);
+  if (igual(a, ex.cy) && igual(b, ex.cx)) motivos.push(`Has intercambiado los coeficientes: ${V('x')} es el número de ${ex.xp}, así que su coeficiente es el beneficio de cada ${ex.xs}.`);
   else if (!coefOk) motivos.push('Los coeficientes de la función objetivo son los <b>beneficios unitarios</b>, no los recursos que consume cada unidad.');
   if (obj === 'min') motivos.push('Se pide el beneficio <b>máximo</b>: la función objetivo se maximiza.');
   return { ok: false, html: `<b>Incorrecto.</b> ${motivos.join(' ')}<div class="solucion">La función objetivo es ${correcta}, que hay que maximizar.</div>` };
@@ -743,10 +908,9 @@ function validar2() {
     $(`r${i}-marca`).innerHTML = m ? m.txt : '';
   }
   const lista = '<ul>' + necesarias.map(r => {
-    const txt = r.id === 'ry' && r.c === 0 ? `${M(V('y') + ' ≥ 0')}: no se pueden hacer cantidades negativas`
-      : r.id === 'r1' ? `${M(restr(r.a, r.b, r.c, '≤'))}: ${ex.ctx.tierra ? 'hectáreas disponibles' : ex.ctx.id === 'rutas' ? 'guías disponibles' : 'harina disponible'}`
-      : r.id === 'r2' ? `${M(restr(r.a, r.b, r.c, '≤'))}: ${ex.ctx.tierra ? 'jornales de riego' : ex.ctx.id === 'rutas' ? 'autobuses disponibles' : 'horas de horno'}`
-      : `${M((r.id === 'rx' ? V('x') : V('y')) + ' ≥ ' + r.c)}: mínimo exigido`;
+    const txt = r.id === 'r1' ? `${M(restr(r.a, r.b, r.c, '≤'))}: ${ex.ctx.rtxt[0]}`
+      : r.id === 'r2' ? `${M(restr(r.a, r.b, r.c, '≤'))}: ${ex.ctx.rtxt[1]}`
+      : `${M((r.id === 'rx' ? V('x') : V('y')) + ' ≥ ' + r.c)}: ${r.c === 0 ? 'no se pueden hacer cantidades negativas' : 'mínimo exigido'}`;
     return `<li>${hechas[r.id] ? '✓ ' : '✗ '}${txt}</li>`;
   }).join('') + '</ul>';
   const puntos = Math.max(0, PUNTOS_PASO - 0.5 * penal);
@@ -754,7 +918,14 @@ function validar2() {
   const partes = [];
   if (faltan.length) partes.push(`Te ${faltan.length === 1 ? 'falta o está mal 1 restricción' : `faltan o están mal ${faltan.length} restricciones`}`);
   if (filasMal) partes.push(`${filasMal === 1 ? 'hay 1 fila' : `hay ${filasMal} filas`} que no corresponde${filasMal === 1 ? '' : 'n'} a ninguna condición`);
-  return { ok: false, puntos, html: `<b>Incorrecto.</b> ${partes.join(' y ')} (−0,5 cada una). El motivo de cada fila aparece bajo ella.<div class="solucion">Restricciones del problema:${lista}${ex.my === 0 ? '<span style="font-size:.85rem">(No hace falta escribir <i>x</i> ≥ 0: ya la incluye el mínimo de <i>x</i>.)</span>' : ''}</div>` };
+  return { ok: false, puntos, html: `<b>Incorrecto.</b> ${partes.join(' y ')} (−0,5 cada una). El motivo de cada fila aparece bajo ella.<div class="solucion">Restricciones del problema:${lista}${notaNoNeg()}</div>` };
+}
+
+function notaNoNeg() {   // x ≥ 0 / y ≥ 0 que ya quedan incluidas en un mínimo
+  const inc = [];
+  if (ex.mx > 0) inc.push(`${V('x')} ≥ 0: ya la incluye el mínimo de ${V('x')}`);
+  if (ex.my > 0) inc.push(`${V('y')} ≥ 0: ya la incluye el mínimo de ${V('y')}`);
+  return inc.length ? `<span style="font-size:.85rem">(No hace falta escribir ${inc.join('; ni ')}.)</span>` : '';
 }
 
 /* ---------- Paso 3 ---------- */
@@ -773,7 +944,7 @@ function renderTablaVertices() {
   cont.querySelectorAll('input').forEach(i => i.addEventListener('input', () => { guardarCoordsDesdeDOM(); }));
 }
 function nombreRecta(id) {
-  return { r1: M(restr(ex.a1, ex.b1, ex.G, '=')), r2: M(restr(ex.a2, ex.b2, ex.B, '=')), rx: M(V('x') + ' = ' + ex.mx), ry: M(V('y') + ' = ' + ex.my) }[id];
+  return { r1: M(restr(ex.a1, ex.b1, ex.G, '=')), r2: M(restr(ex.a2, ex.b2, ex.B, '=')), rx: ex.mx === 0 ? 'el eje ' + M(V('y') + ' (' + V('x') + ' = 0)') : M(V('x') + ' = ' + ex.mx), ry: ex.my === 0 ? 'el eje ' + M(V('x') + ' (' + V('y') + ' = 0)') : M(V('y') + ' = ' + ex.my) }[id];
 }
 function validar3() {
   guardarCoordsDesdeDOM();
@@ -808,21 +979,21 @@ function validar3() {
 /* ---------- Paso 4 ---------- */
 function tablaZ() {
   return '<table><tr><th>Vértice</th><th><i>Z</i> = ' + expr(ex.cx, ex.cy) + '</th></tr>' + ex.verts.map(v => {
-    const z = ex.cx * v[0] + ex.cy * v[1], esOpt = v === ex.opt;
-    return `<tr class="${esOpt ? 'opt' : ''}"><td>(${fmt(v[0])}, ${fmt(v[1])})</td><td>${miles(ex.cx)}·${fmt(v[0])} + ${miles(ex.cy)}·${fmt(v[1])} = ${miles(z)} €</td></tr>`;
+    const z = valorZ(ex, v), esOpt = v === ex.opt;
+    return `<tr class="${esOpt ? 'opt' : ''}"><td>(${fmt(v[0])}, ${fmt(v[1])})</td><td>${eur(ex.cx)}·${fmt(v[0])} + ${eur(ex.cy)}·${fmt(v[1])} = ${eur(z)} €</td></tr>`;
   }).join('') + '</table>';
 }
 function validar4() {
-  const x = leerNum($('s-x').value), y = leerNum($('s-y').value), z = leerNum($('s-z').value.replace(/\./g, ''));
+  const x = leerNum($('s-x').value), y = leerNum($('s-y').value), z = leerNum($('s-z').value);
   if (x === null || y === null || z === null) return { ok: null, html: 'Completa los tres huecos con números.' };
   const { opt, zmax, cx, cy } = ex;
   const xyOk = x === opt[0] && y === opt[1];
-  const zOk = z === zmax;
-  const conclusion = `El beneficio máximo es <b>${miles(zmax)} €</b>, con ${fmt(opt[0])} ${ex.ctx.unidad[1]} de ${ex.X} y ${fmt(opt[1])} de ${ex.Y}.`;
+  const zOk = Math.abs(z - zmax) < 1e-6;
+  const conclusion = `El beneficio máximo es <b>${eur(zmax)} €</b>, con ${fmt(opt[0])} ${opt[0] === 1 ? ex.xs : ex.xp} y ${fmt(opt[1])} ${opt[1] === 1 ? ex.ys : ex.yp}.`;
   if (xyOk && zOk) return { ok: true, html: `<b>Correcto.</b> ${conclusion}<div class="solucion">${tablaZ()}</div>` };
   let motivo;
   const vEleg = ex.verts.find(v => v[0] === x && v[1] === y);
-  if (xyOk) motivo = `El vértice es el correcto, pero el valor de ${V('Z')} no: ${M(`${miles(cx)}·${fmt(x)} + ${miles(cy)}·${fmt(y)} = ${miles(zmax)}`)}.`;
+  if (xyOk) motivo = `El vértice es el correcto, pero el valor de ${V('Z')} no: ${M(`${eur(cx)}·${fmt(x)} + ${eur(cy)}·${fmt(y)} = ${eur(zmax)}`)}.`;
   else if (x === opt[1] && y === opt[0]) motivo = `Has intercambiado ${V('x')} e ${V('y')}.`;
   else if (vEleg) motivo = `(${fmt(x)}, ${fmt(y)}) es un vértice, pero no el que da el mayor valor de ${V('Z')}: hay que evaluar la función en <b>todos</b> los vértices y quedarse con el mayor.`;
   else motivo = `(${fmt(x)}, ${fmt(y)}) no es un vértice de la región factible: el óptimo de un problema lineal se alcanza siempre en un vértice.`;
