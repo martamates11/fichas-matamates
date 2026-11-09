@@ -9,4 +9,4 @@ biblioteca con todas mis fichas interactivas y videos de matemátias
 
 ## Licencia
 
-© Marta López de Letona. Material publicado con licencia [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/): se puede usar y adaptar con fines educativos no comerciales, citando la autoría y compartiendo con la misma licencia.
+© Marta López de Letona Sánchez. Todos los derechos reservados. Las fichas pueden usarse libremente en el aula **enlazando a la web original** (https://martamates11.github.io/fichas-matamates/). No está permitido copiarlas, alojarlas en otros sitios, modificarlas, venderlas ni usarlas para entrenar modelos de IA sin permiso escrito de la autora. Términos completos en [aviso-legal.html](aviso-legal.html).
