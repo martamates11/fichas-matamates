@@ -12,7 +12,7 @@
 <meta name="copyright" content="© 2026 Marta López de Letona Sánchez · Todos los derechos reservados">
 <link rel="canonical" href="https://martamates11.github.io/fichas-matamates/grafos/matriz-de-influencia.html">
 <link rel="license" href="https://martamates11.github.io/fichas-matamates/aviso-legal.html">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "LearningResource", "name": "Matriz de influencia", "description": "Grafos dirigidos: matriz de influencia directa M, influencia a través de un intermediario M² e influencia total M + M².", "url": "https://martamates11.github.io/fichas-matamates/grafos/matriz-de-influencia.html", "inLanguage": "es", "learningResourceType": ["Ejercicio interactivo"], "interactivityType": "active", "isAccessibleForFree": true, "about": "Grafos", "teaches": "Matriz de influencia", "author": {"@type": "Person", "name": "Marta López de Letona Sánchez"}, "copyrightHolder": {"@type": "Person", "name": "Marta López de Letona Sánchez"}, "license": "https://martamates11.github.io/fichas-matamates/aviso-legal.html", "isPartOf": {"@type": "WebSite", "name": "Martamates Interactivo", "url": "https://martamates11.github.io/fichas-matamates/"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "LearningResource", "name": "Matriz de influencia", "description": "Grafos dirigidos: matriz de influencia directa M, influencia a través de un intermediario M² e influencia total M + M².", "url": "https://martamates11.github.io/fichas-matamates/grafos/matriz-de-influencia.html", "inLanguage": "es", "learningResourceType": ["Ejercicio interactivo"], "interactivityType": "active", "isAccessibleForFree": true, "educationalLevel": "2.º Bachillerato", "about": "Grafos", "teaches": "Matriz de influencia", "author": {"@type": "Person", "name": "Marta López de Letona Sánchez"}, "copyrightHolder": {"@type": "Person", "name": "Marta López de Letona Sánchez"}, "license": "https://martamates11.github.io/fichas-matamates/aviso-legal.html", "isPartOf": {"@type": "WebSite", "name": "Martamates Interactivo", "url": "https://martamates11.github.io/fichas-matamates/"}}</script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap');
 
@@ -345,7 +345,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--color-acent
 
 <main class="ficha-container">
   <h1 class="titulo-ficha">Grafos · Matriz de influencia</h1>
-  <p class="subtitulo">Matemática discreta · Influencia directa e indirecta en un grupo</p>
+  <p class="subtitulo">2.º Bachillerato · Grafos: influencia directa e indirecta</p>
 
   <div class="barra">
     <label for="nombre">Alumno/a:</label>
@@ -368,7 +368,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--color-acent
         </ul>
       </li>
       <li>Cada apartado se comprueba <b>una sola vez por grafo</b>. Si fallas, verás la corrección explicada y podrás volver a intentarlo con un grafo nuevo.</li>
-      <li>Cada apartado vale <b>3,33 puntos</b> y se supera con <b>2 aciertos entre tus 3 últimos intentos</b> de ese apartado. Cada fallo resta <b>0,5 puntos</b>. Un apartado superado aparece ya resuelto en los grafos siguientes.</li>
+      <li>Cada apartado vale <b>3,33 puntos</b>. El apartado A se supera con <b>un acierto</b>; los apartados B y C, con <b>2 aciertos entre tus 3 últimos intentos</b>. Cada fallo resta <b>0,5 puntos</b>. Un apartado superado aparece ya resuelto en los grafos siguientes.</li>
       <li><b>Mostrar soluciones</b> enseña resuelto lo que te queda del grafo actual. Esos apartados <b>no cuentan para la nota</b> (ni suman ni restan), pero los fallos que ya hayas cometido siguen restando.</li>
       <li>En la matriz M escribe solo <b>0</b> o <b>1</b>. Puedes comprobar con la tecla <b>Intro</b>. Al terminar, pulsa <b>Finalizar y calificar</b>, haz una captura del informe y entrégala en Google Classroom.</li>
     </ul>
@@ -460,6 +460,8 @@ const TIPOS = {
   total: { nombre: 'C · Influencia total (M + M²)' }
 };
 const ORDEN = ['m', 'm2', 'total'];
+// Aciertos necesarios (dentro de la ventana de los 3 últimos intentos) para superar cada apartado
+const ACIERTOS_NECESARIOS = { m: 1, m2: 2, total: 2 };
 const state = { fallosTotales: 0, tipos: {}, inicio: Date.now(), rondas: [] };
 ORDEN.forEach(k => state.tipos[k] = { intentos: [], superado: false, cerrado: false, aciertos: 0, fallos: 0, solucionesVistas: 0, superadoTrasSolucion: false });
 const PUNTO_POR_TIPO = 10 / ORDEN.length;
@@ -478,7 +480,7 @@ function registrarIntento(tipo, correcto) {
   t.intentos.push(correcto);
   if (t.intentos.length > 3) t.intentos.shift();
   if (correcto) t.aciertos++; else { t.fallos++; state.fallosTotales++; }
-  if (!t.superado && t.intentos.filter(Boolean).length >= 2) {
+  if (!t.superado && t.intentos.filter(Boolean).length >= ACIERTOS_NECESARIOS[tipo]) {
     t.superado = true; t.cerrado = true;
     if (t.solucionesVistas > 0) t.superadoTrasSolucion = true;
   }
@@ -493,6 +495,7 @@ function textoProgreso(tipo) {
   const t = state.tipos[tipo];
   if (t.superado) return '¡Apartado superado!';
   const ac = t.intentos.filter(Boolean).length;
+  if (ACIERTOS_NECESARIOS[tipo] === 1) return 'Necesitas un acierto para superar este apartado.';
   return `Llevas ${ac} ${ac === 1 ? 'acierto' : 'aciertos'} en tus últimos intentos de este apartado (necesitas 2 de 3).`;
 }
 
