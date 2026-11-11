@@ -12,7 +12,7 @@
 <meta name="copyright" content="© 2026 Marta López de Letona Sánchez · Todos los derechos reservados">
 <link rel="canonical" href="https://martamates11.github.io/fichas-matamates/grafos/matriz-de-influencia.html">
 <link rel="license" href="https://martamates11.github.io/fichas-matamates/aviso-legal.html">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "LearningResource", "name": "Matriz de influencia", "description": "Grafos dirigidos: matriz de influencia directa M, influencia a través de un intermediario M² e influencia total M + M².", "url": "https://martamates11.github.io/fichas-matamates/grafos/matriz-de-influencia.html", "inLanguage": "es", "learningResourceType": ["Ejercicio interactivo"], "interactivityType": "active", "isAccessibleForFree": true, "educationalLevel": "2.º Bachillerato", "about": "Grafos", "teaches": "Matriz de influencia", "author": {"@type": "Person", "name": "Marta López de Letona Sánchez"}, "copyrightHolder": {"@type": "Person", "name": "Marta López de Letona Sánchez"}, "license": "https://martamates11.github.io/fichas-matamates/aviso-legal.html", "isPartOf": {"@type": "WebSite", "name": "Martamates Interactivo", "url": "https://martamates11.github.io/fichas-matamates/"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "LearningResource", "name": "Matriz de influencia", "description": "Grafos dirigidos: matriz de influencia directa M, influencia a través de un intermediario M² e influencia total M + M².", "url": "https://martamates11.github.io/fichas-matamates/grafos/matriz-de-influencia.html", "inLanguage": "es", "learningResourceType": ["Ejercicio interactivo"], "interactivityType": "active", "isAccessibleForFree": true, "educationalLevel": "Bachillerato", "about": "Grafos", "teaches": "Matriz de influencia", "author": {"@type": "Person", "name": "Marta López de Letona Sánchez"}, "copyrightHolder": {"@type": "Person", "name": "Marta López de Letona Sánchez"}, "license": "https://martamates11.github.io/fichas-matamates/aviso-legal.html", "isPartOf": {"@type": "WebSite", "name": "Martamates Interactivo", "url": "https://martamates11.github.io/fichas-matamates/"}}</script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap');
 
@@ -23,6 +23,7 @@
   --color-texto-suave: #6B4F35;
   --color-acento: #2F4A6B;        /* azul tinta (sustituye a la terracota) */
   --color-acento-hover: #1E3350;
+  --color-acento-suave: #E3EAF2;   /* fondo claro del acento: casilla destacada, fila y columna resaltadas */
   --color-borde: #C9A96E;
   --color-borde-suave: #E0CEAA;
   --color-cabecera: #3B2510;
@@ -141,7 +142,7 @@ h1, h2, h3, .titulo-ficha { font-family: 'Libre Baskerville', serif; color: var(
   margin-top: 20px; transition: border-color .3s, background-color .3s, opacity .3s;
 }
 .apartado.bloqueado { opacity: .5; }
-.apartado.bloqueado .contenido { pointer-events: none; }
+.apartado.bloqueado .contenido { display: none; }
 .apartado.acierto { border-left-color: var(--color-correcto); background: #F1F6EF; }
 .apartado.fallo { border-left-color: var(--color-incorrecto); }
 .apartado.solucion { border-left: 4px dashed var(--color-apagado); }
@@ -168,7 +169,9 @@ table.matriz th { background: var(--color-barra-alumno); font-size: .95rem; }
 table.matriz th.esquina { font-size: .8rem; color: var(--color-texto-suave); }
 table.matriz td { background: #FFFDF8; }
 table.matriz td.dato { color: var(--color-texto-suave); font-weight: 700; }
-table.matriz td.objetivo { background: #E3EAF2; }
+table.matriz td.objetivo { background: var(--color-acento-suave); }
+table.matriz .resaltada { background: var(--color-acento-suave); color: var(--color-acento); }
+table.matriz td.resaltada { font-weight: 700; }
 table.matriz.pequena th, table.matriz.pequena td { padding: 4px 6px; min-width: 34px; font-size: .88rem; }
 .input-m {
   width: 48px; padding: 6px 2px; text-align: center; border: 1.5px solid var(--color-borde);
@@ -189,7 +192,7 @@ td.objetivo .input-m { border: 2px solid var(--color-acento); }
   font-family: 'Libre Baskerville', serif; font-size: .98rem; transition: border-color .2s, background-color .2s;
 }
 .opcion:hover { border-color: var(--color-borde); }
-.opcion:has(input:checked) { border-color: var(--color-acento); background: #E9EEF4; }
+.opcion:has(input:checked) { border-color: var(--color-acento); background: var(--color-acento-suave); }
 .opcion input { accent-color: var(--color-acento); margin: 0; }
 .opcion.correcta { border-color: var(--color-correcto); background: #EAF4EC; }
 .opcion.elegida-mal { border-color: var(--color-incorrecto); background: #F9EAEA; }
@@ -345,7 +348,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--color-acent
 
 <main class="ficha-container">
   <h1 class="titulo-ficha">Grafos · Matriz de influencia</h1>
-  <p class="subtitulo">2.º Bachillerato · Grafos: influencia directa e indirecta</p>
+  <p class="subtitulo">Bachillerato · Grafos: influencia directa e indirecta</p>
 
   <div class="barra">
     <label for="nombre">Alumno/a:</label>
@@ -368,7 +371,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--color-acent
         </ul>
       </li>
       <li>Cada apartado se comprueba <b>una sola vez por grafo</b>. Si fallas, verás la corrección explicada y podrás volver a intentarlo con un grafo nuevo.</li>
-      <li>Cada apartado vale <b>3,33 puntos</b>. El apartado A se supera con <b>un acierto</b>; los apartados B y C, con <b>2 aciertos entre tus 3 últimos intentos</b>. Cada fallo resta <b>0,5 puntos</b>. Un apartado superado aparece ya resuelto en los grafos siguientes.</li>
+      <li>Cada apartado vale <b>3,33 puntos</b> y se supera con <b>un acierto</b>. Cada fallo resta <b>0,5 puntos</b>. Un apartado superado aparece ya resuelto en los grafos siguientes.</li>
       <li><b>Mostrar soluciones</b> enseña resuelto lo que te queda del grafo actual. Esos apartados <b>no cuentan para la nota</b> (ni suman ni restan), pero los fallos que ya hayas cometido siguen restando.</li>
       <li>En la matriz M escribe solo <b>0</b> o <b>1</b>. Puedes comprobar con la tecla <b>Intro</b>. Al terminar, pulsa <b>Finalizar y calificar</b>, haz una captura del informe y entrégala en Google Classroom.</li>
     </ul>
@@ -450,7 +453,7 @@ function barajar(arr) { for (let i = arr.length - 1; i > 0; i--) { const j = Mat
 const $ = id => document.getElementById(id);
 
 // =====================================================================
-//  Estado y puntuación (ventana móvil: 2 aciertos de los 3 últimos)
+//  Estado y puntuación (cada apartado se supera con un acierto)
 // =====================================================================
 const NODOS = ['A', 'B', 'C', 'D', 'E'];
 const N = NODOS.length;
@@ -461,7 +464,7 @@ const TIPOS = {
 };
 const ORDEN = ['m', 'm2', 'total'];
 // Aciertos necesarios (dentro de la ventana de los 3 últimos intentos) para superar cada apartado
-const ACIERTOS_NECESARIOS = { m: 1, m2: 2, total: 2 };
+const ACIERTOS_NECESARIOS = { m: 1, m2: 1, total: 1 };
 const state = { fallosTotales: 0, tipos: {}, inicio: Date.now(), rondas: [] };
 ORDEN.forEach(k => state.tipos[k] = { intentos: [], superado: false, cerrado: false, aciertos: 0, fallos: 0, solucionesVistas: 0, superadoTrasSolucion: false });
 const PUNTO_POR_TIPO = 10 / ORDEN.length;
@@ -571,19 +574,20 @@ function nuevaRonda() {
 }
 
 function tablaMatriz(A, nombre, opciones = {}) {
-  const { editable = false, celda = null, prefijo = '', pequena = false } = opciones;
+  const { editable = false, celda = null, prefijo = '', pequena = false, resaltar = null } = opciones;
+  const res = (i, j) => resaltar && (i === resaltar.i || j === resaltar.j) ? ' resaltada' : '';
   let h = `<div class="tabla-wrap"><table class="matriz${pequena ? ' pequena' : ''}"><thead><tr><th class="esquina">${nombre}</th>`;
-  NODOS.forEach(n => h += `<th scope="col">${n}</th>`);
+  NODOS.forEach((n, j) => h += `<th scope="col" class="${res(-1, j).trim()}">${n}</th>`);
   h += '</tr></thead><tbody>';
   for (let i = 0; i < N; i++) {
-    h += `<tr><th scope="row">${NODOS[i]}</th>`;
+    h += `<tr><th scope="row" class="${res(i, -1).trim()}">${NODOS[i]}</th>`;
     for (let j = 0; j < N; j++) {
       if (editable) {
         h += `<td><label class="sr-only" for="${prefijo}_${i}_${j}">${nombre}: fila ${NODOS[i]}, columna ${NODOS[j]}</label><input type="text" inputmode="numeric" maxlength="1" class="input-m" id="${prefijo}_${i}_${j}" autocomplete="off"></td>`;
       } else if (celda && celda.i === i && celda.j === j) {
         h += `<td class="objetivo"><label class="sr-only" for="inp-m2">${nombre}: fila ${NODOS[i]}, columna ${NODOS[j]}</label><input type="text" inputmode="numeric" maxlength="2" class="input-m" id="inp-m2" placeholder="?" autocomplete="off"></td>`;
       } else {
-        h += `<td class="dato">${A[i][j]}</td>`;
+        h += `<td class="dato${res(i, j)}">${A[i][j]}</td>`;
       }
     }
     h += '</tr>';
@@ -622,9 +626,10 @@ function renderRonda() {
     h += `<p>Ya has superado este apartado: aquí tienes M² completa.</p>
       <div class="matrices"><div class="matriz-bloque">${tablaMatriz(g.M2, 'M²')}</div></div>`;
   } else {
-    h += `<p>Cada casilla de M² cuenta los caminos de <b>exactamente dos pasos</b> entre dos personas, es decir, cuántos intermediarios transmiten la influencia. Calcula la casilla destacada: la influencia de <b>${ci}</b> sobre <b>${cj}</b> a través de otra persona. El resto ya está calculado.</p>
+    h += `<p>Cada casilla de M² cuenta los caminos de <b>exactamente dos pasos</b> entre dos personas, es decir, cuántos intermediarios transmiten la influencia. Ya tienes M² calculada salvo una casilla.</p>
+      <p>Calcula la casilla destacada, en la <b>fila ${ci}</b> y la <b>columna ${cj}</b> de M² (posición ${celda.i + 1}, ${celda.j + 1}): la influencia de ${ci} sobre ${cj} a través de otra persona. Se obtiene multiplicando la <b>fila ${ci}</b> de M por la <b>columna ${cj}</b> de M, que aparecen resaltadas.</p>
       <div class="matrices">
-        <div class="matriz-bloque"><div class="matriz-nombre">Influencia directa</div>${tablaMatriz(g.M, 'M', { pequena: true })}</div>
+        <div class="matriz-bloque"><div class="matriz-nombre">Influencia directa</div>${tablaMatriz(g.M, 'M', { pequena: true, resaltar: celda })}</div>
         <div class="matriz-bloque"><div class="matriz-nombre">Influencia con un intermediario</div>${tablaMatriz(g.M2, 'M²', { celda })}</div>
       </div>
       <div class="acciones"><button type="button" class="btn-primario" id="btn-m2">Comprobar casilla</button></div>
@@ -718,7 +723,7 @@ function dibujarGrafo(g) {
       elements,
       style: [
         { selector: 'node', style: {
-          'background-color': '#2F4A6B', 'label': 'data(id)', 'color': '#FDFAF3',
+          'background-color': getComputedStyle(document.documentElement).getPropertyValue('--color-acento').trim() || '#2F4A6B', 'label': 'data(id)', 'color': '#FDFAF3',
           'text-valign': 'center', 'text-halign': 'center', 'font-family': 'Libre Baskerville, serif',
           'font-weight': 'bold', 'font-size': '18px', 'width': '48px', 'height': '48px',
           'border-width': 3, 'border-color': '#C9A96E' } },
