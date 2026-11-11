@@ -14,91 +14,137 @@
 <link rel="license" href="https://martamates11.github.io/fichas-matamates/aviso-legal.html">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "LearningResource", "name": "Matriz de influencia", "url": "https://martamates11.github.io/fichas-matamates/grafos/matriz-de-influencia.html", "inLanguage": "es", "learningResourceType": "Ejercicio interactivo", "interactivityType": "active", "isAccessibleForFree": true, "about": "Grafos", "author": {"@type": "Person", "name": "Marta López de Letona"}, "copyrightHolder": {"@type": "Person", "name": "Marta López de Letona"}, "license": "https://martamates11.github.io/fichas-matamates/aviso-legal.html", "isPartOf": {"@type": "WebSite", "name": "Martamates Interactivo", "url": "https://martamates11.github.io/fichas-matamates/"}}</script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap');
 :root{
-  --cream:#faf6ef;--cream2:#f3ece0;--cream3:#e8dece;
-  --brown:#6b4c2a;--brown-light:#8b6340;--brown-dark:#3e2a14;
-  --gold:#b8860b;--gold-light:#d4a843;
-  --green:#3a6b4a;--green-light:#eaf3ec;
-  --red:#8b2020;--red-light:#fdf0f0;
-  --blue:#1e3a5f;--blue-light:#eaf0f8;
-  --text:#2c1f0e;--text-muted:#8a7560;
-  --border:#d6c8b0;
+  --color-fondo:#F5F0E8;--color-fondo-card:#FDFAF3;
+  --color-texto:#2C1F0E;--color-texto-suave:#6B4F35;
+  --color-acento:#A0522D;--color-acento-hover:#7B3B1E;
+  --color-borde:#C9A96E;--color-borde-suave:#E0CEAA;
+  --color-cabecera:#3B2510;--color-cabecera-txt:#F5EDD8;
+  --color-barra-alumno:#EFE4CC;
+  --color-correcto:#2E6B3E;--color-correcto-fondo:#EAF4EC;
+  --color-incorrecto:#8B1A1A;--color-incorrecto-fondo:#F9EAEA;
+  --color-neutro:#E8DFC8;
+  --color-pista:#7A5A1E;--color-pista-fondo:#FBF3DF;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Lato',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
-body.success-mode-full{background:#1a7a1a !important;}
-#topbar{background:var(--brown-dark);border-bottom:3px solid var(--gold);padding:10px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.topbar-left{flex:1;min-width:160px}
-.topbar-credit{font-size:.65rem;color:var(--gold-light);letter-spacing:1px;text-transform:uppercase;display:block}
-.topbar-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:#faf6ef}
-#name-field{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3);border-radius:8px;color:#faf6ef;padding:7px 14px;font-size:.9rem;width:220px}
-#name-field::placeholder{color:rgba(255,255,255,.45)}
-#scorebar{background:var(--cream2);border-bottom:1px solid var(--border);padding:7px 20px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px}
-.score-item{text-align:center}
-.score-label{font-size:.6rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.2px;font-weight:700}
-.score-val{font-size:1.1rem;font-weight:700}
-#score-pts{color:var(--gold)}#score-ok{color:var(--green)}#score-fail{color:var(--red)}
-main{flex:1;max-width:1000px;width:100%;margin:0 auto;padding:20px 16px 90px}
-.card{background:#fff;border-radius:12px;border:1px solid var(--border);padding:22px;margin-bottom:16px;box-shadow:0 2px 12px rgba(0,0,0,.08)}
-.card h2{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--brown-dark);margin-bottom:10px}
-.enunciado{background:var(--blue-light);padding:14px 18px;border-radius:12px;border-left:5px solid var(--blue);margin-bottom:20px;font-weight:500;}
-#cy{width:100%;height:350px;border-radius:14px;background:#fff;border:1px solid var(--border);margin:15px 0}
-.section{border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-top:18px;background:var(--cream);transition:all 0.1s}
-.section.locked{opacity:.55;pointer-events:none}
-.section.done-ok{border-color:var(--green);background:var(--green-light)}
-.section.done-err{border-color:var(--red);background:var(--red-light)}
-.section-title{font-weight:700;color:var(--brown-dark);font-size:.95rem;margin-bottom:12px;display:flex;align-items:center;gap:6px}
-.fb-inline{font-size:.85rem;margin-top:10px;padding:10px 12px;border-radius:9px;display:none;line-height:1.5}
-.fb-inline.ok{background:var(--green-light);color:var(--green);border-left:3px solid var(--green);display:block}
-.fb-inline.err{background:var(--red-light);color:var(--red);border-left:3px solid var(--red);display:block}
-.fb-inline.hint{background:var(--blue-light);color:var(--blue);border-left:3px solid var(--blue);display:block}
-.btn{padding:8px 20px;border-radius:8px;border:none;cursor:pointer;font-size:.85rem;font-weight:700;font-family:'Lato',sans-serif;margin-right:8px;margin-top:6px}
-.btn-check{background:var(--gold);color:#fff}.btn-check:hover{background:#9a7209}
-.btn-reset{background:var(--cream2);color:var(--brown-light);border:1px solid var(--border)}.btn-reset:hover{background:var(--cream3)}
-#actionbar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:2px solid var(--border);padding:12px 20px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;z-index:100}
-.btn-finish{background:var(--brown);color:var(--cream)}.btn-finish:hover{background:var(--brown-dark)}
-table.matriz-vacia{border-collapse:collapse;margin:12px 0;background:#fff9f0;border-radius:10px;overflow:hidden;width:auto}
-table.matriz-vacia td, table.matriz-vacia th{padding:10px 12px;border:1px solid var(--border);text-align:center;font-family:'Courier New', monospace;font-weight:500}
-table.matriz-vacia th{background:var(--cream2);font-weight:700;font-size:1rem}
-table.matriz-vacia td{background:white}
-.input-m{width:60px;padding:8px;text-align:center;border:2px solid var(--border);border-radius:8px;background:white;font-weight:600;font-size:0.9rem}
-.input-m:focus{outline:none;border-color:var(--gold)}
-.input-m.ok{border-color:var(--green);background:var(--green-light);pointer-events:none}
-.opciones-group{display:flex;flex-direction:column;gap:8px;margin:12px 0;background:#fef8e7;padding:12px;border-radius:12px}
-.opcion-radio{display:flex;align-items:center;gap:10px;cursor:pointer;font-size:0.95rem}
-.explicacion-detalle{background:#f0f2f5;padding:10px;border-radius:8px;margin-top:8px;font-size:0.85rem;border-left:3px solid var(--gold)}
-#modal-overlay, #confirm-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:998;align-items:center;justify-content:center}
-#modal-box, #confirm-box{background:white;border-radius:16px;padding:28px 32px;max-width:450px;width:90%;text-align:center}
+body{font-family:'Lato',sans-serif;font-size:16px;background:var(--color-fondo);color:var(--color-texto);min-height:100vh;transition:background-color .6s}
+body.success-mode-full{background:#E3F0E4}
+body.success-mode-full .ficha-container{border-color:var(--color-correcto)}
+h1,h2,h3,.titulo-ficha{font-family:'Libre Baskerville',serif;color:var(--color-texto)}
+
+/* Cabecera: solo autoría */
+.cabecera{background:var(--color-cabecera);color:var(--color-cabecera-txt);font-family:'Libre Baskerville',serif;text-align:center;padding:12px 20px;border-bottom:3px solid var(--color-borde);font-size:.78rem;letter-spacing:.04em}
+
+/* Contenedor */
+.ficha-container{max-width:820px;margin:28px auto 100px;background:var(--color-fondo-card);border:2px solid var(--color-borde);border-radius:6px;box-shadow:0 3px 12px rgba(44,31,14,.15);padding:32px 36px}
+.titulo-ficha{font-size:1.6rem;text-align:center;margin:0 0 6px;line-height:1.3}
+.titulo-ficha::after{content:'';display:block;width:60px;height:3px;background:var(--color-borde);margin:12px auto 0;border-radius:2px}
+.subtitulo{text-align:center;color:var(--color-texto-suave);font-family:'Libre Baskerville',serif;font-style:italic;font-size:.95rem;margin:10px 0 22px}
+
+/* Barra del alumno */
+.barra{position:sticky;top:0;z-index:50;background:var(--color-barra-alumno);border:1.5px solid var(--color-borde);border-radius:6px;margin:0 0 22px;box-shadow:0 2px 6px rgba(44,31,14,.08);padding:9px 20px;display:flex;flex-wrap:wrap;gap:10px 26px;align-items:center;justify-content:center;font-size:.92rem}
+.barra label{font-family:'Libre Baskerville',serif;font-size:.85rem;color:var(--color-texto-suave)}
+.barra input#name-field{background:var(--color-fondo-card);border:1.5px solid var(--color-borde);border-radius:4px;padding:6px 10px;font-family:'Lato',sans-serif;font-size:.95rem;color:var(--color-texto);width:230px;max-width:60vw;outline:none}
+.barra input#name-field:focus{border-color:var(--color-acento)}
+.barra .dato{color:var(--color-texto-suave);white-space:nowrap}
+.barra .dato b{color:var(--color-acento);font-family:'Libre Baskerville',serif}
+.barra .dato b#score-ok{color:var(--color-correcto)}
+.barra .dato b#score-fail{color:var(--color-incorrecto)}
+
+/* Tarjeta y apartados */
+.card h2{font-size:1.1rem;color:var(--color-texto);margin-bottom:12px}
+.enunciado{background:var(--color-fondo);border:1.5px solid var(--color-borde-suave);border-left:4px solid var(--color-borde);border-radius:4px;padding:14px 18px;margin-bottom:18px;color:var(--color-texto-suave);line-height:1.55;font-size:.95rem}
+#cy{position:relative;width:100%;height:360px;border-radius:6px;background:#FFFDF8;border:1.5px solid var(--color-borde-suave);margin:15px 0;overflow:hidden;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.cy-nota{font-size:.78rem;color:var(--color-texto-suave);font-style:italic;text-align:center;margin:-8px 0 6px}
+.section{background:var(--color-fondo);border:1.5px solid var(--color-borde-suave);border-left:4px solid var(--color-borde);border-radius:4px;padding:18px 22px;margin-top:20px;transition:border-color .2s,background-color .2s,opacity .2s}
+.section.locked{opacity:.5;pointer-events:none}
+.section.done-ok{border-color:var(--color-correcto);border-left-color:var(--color-correcto);background:var(--color-correcto-fondo)}
+.section.done-err{border-color:var(--color-incorrecto);border-left-color:var(--color-incorrecto);background:var(--color-incorrecto-fondo)}
+.section-title{font-family:'Libre Baskerville',serif;font-weight:700;color:var(--color-texto);font-size:.98rem;margin-bottom:12px;line-height:1.4}
+.section p{line-height:1.55}
+.nota-apartado{font-size:.88rem;color:var(--color-texto-suave)}
+.fb-inline{font-size:.88rem;margin-top:12px;padding:10px 16px;border-radius:4px;display:none;line-height:1.55}
+.fb-inline.ok{background:var(--color-correcto-fondo);color:var(--color-correcto);border:1.5px solid var(--color-correcto);display:block}
+.fb-inline.err{background:var(--color-incorrecto-fondo);color:var(--color-incorrecto);border:1.5px solid var(--color-incorrecto);display:block}
+.fb-inline.hint{background:var(--color-pista-fondo);color:var(--color-pista);border:1.5px solid var(--color-borde);display:block}
+
+/* Botones */
+.btn{padding:9px 20px;border-radius:4px;cursor:pointer;font-size:.92rem;font-weight:700;font-family:'Lato',sans-serif;letter-spacing:.03em;margin-right:8px;margin-top:10px;transition:background-color .2s,border-color .2s,color .2s}
+.btn-check{background:var(--color-acento);color:#FDFAF3;border:none}.btn-check:hover{background:var(--color-acento-hover)}
+.btn-reset{background:transparent;color:var(--color-acento);border:2px solid var(--color-borde)}.btn-reset:hover{border-color:var(--color-acento);color:var(--color-acento-hover)}
+.btn-finish{background:var(--color-cabecera);color:var(--color-cabecera-txt);border:2px solid var(--color-borde);font-family:'Libre Baskerville',serif;letter-spacing:.04em}.btn-finish:hover{background:#2C1A0A}
+#actionbar{position:fixed;bottom:0;left:0;right:0;background:var(--color-barra-alumno);border-top:2px solid var(--color-borde);padding:8px 20px 14px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;z-index:100;box-shadow:0 -2px 8px rgba(44,31,14,.08)}
+
+/* Matrices */
+table.matriz-vacia{border-collapse:collapse;margin:12px 0;background:var(--color-fondo-card);width:auto}
+table.matriz-vacia td,table.matriz-vacia th{padding:8px 10px;border:1px solid var(--color-borde-suave);text-align:center;font-family:'Libre Baskerville',serif}
+table.matriz-vacia th{background:var(--color-barra-alumno);color:var(--color-texto);font-weight:700;font-size:1rem}
+table.matriz-vacia td{background:#FFFDF8;min-width:52px}
+table.matriz-vacia td.dado{background:var(--color-fondo);color:var(--color-texto-suave);font-weight:700}
+table.matriz-vacia td.destacada{background:#F6E7C4}
+.input-m{width:56px;padding:7px 4px;text-align:center;border:1.5px solid var(--color-borde);border-radius:4px;background:var(--color-fondo-card);color:var(--color-texto);font-family:'Lato',sans-serif;font-weight:700;font-size:.95rem;outline:none;transition:border-color .2s}
+.input-m:focus{border-color:var(--color-acento)}
+.input-m.ok{border-color:var(--color-correcto);background:var(--color-correcto-fondo);color:var(--color-correcto);pointer-events:none}
+.input-m.err{border-color:var(--color-incorrecto);background:var(--color-incorrecto-fondo)}
+td.destacada .input-m{border:2px solid var(--color-acento)}
+.aviso-casilla{font-size:.86rem;margin-top:10px;background:var(--color-pista-fondo);border:1px solid var(--color-borde-suave);padding:8px 12px;border-radius:4px;color:var(--color-texto-suave);line-height:1.5}
+.interpret-box{margin-top:18px;padding-top:16px;border-top:1px solid var(--color-borde-suave)}
+.interpret-box > label{font-family:'Libre Baskerville',serif;font-weight:700;font-size:.92rem;line-height:1.5;display:block}
+.opciones-group{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}
+.opcion-radio{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.98rem;background:var(--color-fondo-card);border:1.5px solid var(--color-borde-suave);border-radius:4px;padding:7px 14px;font-family:'Libre Baskerville',serif;transition:border-color .2s}
+.opcion-radio:hover{border-color:var(--color-borde)}
+.opcion-radio:has(input:checked){border-color:var(--color-acento);background:var(--color-barra-alumno)}
+.opcion-radio input{accent-color:var(--color-acento)}
+.explicacion-detalle{background:var(--color-fondo-card);color:var(--color-texto);padding:10px 14px;border-radius:4px;margin-top:8px;font-size:.86rem;border-left:3px solid var(--color-borde);line-height:1.6}
+
+/* Modales */
+#modal-overlay,#confirm-overlay{display:none;position:fixed;inset:0;background:rgba(44,31,14,.55);z-index:998;align-items:center;justify-content:center}
+#modal-box,#confirm-box{background:var(--color-fondo-card);border:3px solid var(--color-borde);border-radius:8px;box-shadow:0 6px 24px rgba(44,31,14,.35);padding:28px 32px;max-width:450px;width:90%;text-align:center;font-family:'Libre Baskerville',serif}
+#confirm-box p{line-height:1.6}
 .confirm-buttons{display:flex;gap:12px;justify-content:center;margin-top:18px}
-.btn-confirm-yes{background:#1a7a1a;color:white;padding:10px 24px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
-.btn-confirm-no{background:#c0392b;color:white;padding:10px 24px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
-#modal-nota{font-family:'Playfair Display',serif;font-size:3rem;font-weight:700;margin:8px 0}
-#modal-data{text-align:left;background:rgba(0,0,0,.1);border-radius:10px;padding:14px;margin-bottom:16px}
-.casilla-destacada{background:#fff1b5 !important; border:2px solid var(--gold) !important}
+.btn-confirm-yes{background:var(--color-acento);color:#FDFAF3;padding:10px 24px;border-radius:4px;border:none;cursor:pointer;font-weight:700;font-family:'Lato',sans-serif}.btn-confirm-yes:hover{background:var(--color-acento-hover)}
+.btn-confirm-no{background:transparent;color:var(--color-acento);padding:9px 22px;border-radius:4px;border:2px solid var(--color-borde);cursor:pointer;font-weight:700;font-family:'Lato',sans-serif}
+#modal-nota{font-size:3rem;font-weight:700;margin:8px 0}
+#modal-data{text-align:left;background:rgba(0,0,0,.1);border-radius:6px;padding:14px;margin-bottom:16px;font-family:'Lato',sans-serif;line-height:1.7}
+#modal-box h2,#modal-box button{color:inherit}
+#modal-box .btn-reset{border-color:currentColor}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .tabla-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
-.cy-fallback{display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-muted);font-size:.82rem;text-align:left;padding:16px;line-height:1.5}
+.cy-fallback{display:flex;align-items:center;justify-content:center;height:100%;color:var(--color-texto-suave);font-size:.85rem;text-align:left;padding:16px;line-height:1.5}
+@media (max-width:600px){
+  .ficha-container{margin:12px 8px 100px;padding:22px 14px}
+  .titulo-ficha{font-size:1.3rem}
+  .section{padding:14px 12px}
+  #cy{height:300px}
+}
 @media (max-width:480px){
-  main{padding:16px 8px 90px}
-  .card{padding:14px 10px}
-  .input-m{width:34px;padding:4px 2px;font-size:.72rem}
-  table.matriz-vacia td, table.matriz-vacia th{padding:4px 5px;font-size:.78rem}
-  #topbar{padding:8px 10px}
-  #name-field{width:100%}
+  .input-m{width:36px;padding:4px 2px;font-size:.8rem}
+  table.matriz-vacia td,table.matriz-vacia th{padding:4px 5px;font-size:.8rem}
+  .barra input#name-field{width:100%;max-width:100%}
 }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.21.1/cytoscape.min.js"></script>
 </head>
 <body>
 
-<div id="confirm-overlay"><div id="confirm-box"><p>⚠️ <strong>¿Finalizar y calificar?</strong></p><p style="font-size:0.9rem;">No podrás modificar los ejercicios.</p><div class="confirm-buttons"><button class="btn-confirm-yes" onclick="proceedToFinalize()">✅ Sí</button><button class="btn-confirm-no" onclick="closeConfirm()">❌ Seguir</button></div></div></div>
+<div id="confirm-overlay"><div id="confirm-box"><p><strong>¿Finalizar y calificar?</strong></p><p style="font-size:0.9rem;font-family:'Lato',sans-serif">No podrás modificar los ejercicios.</p><div class="confirm-buttons"><button class="btn-confirm-yes" onclick="proceedToFinalize()">Sí, finalizar</button><button class="btn-confirm-no" onclick="closeConfirm()">Seguir trabajando</button></div></div></div>
 <div id="modal-overlay"><div id="modal-box"><button onclick="closeResultModal()" style="float:right;background:none;border:none;font-size:1.5rem;cursor:pointer">✕</button><div style="font-size:2rem">📊</div><h2 id="modal-title"></h2><div id="modal-nota"></div><div id="modal-data"></div><div id="modal-screenshot">📸 Captura y entrega en Classroom</div><button class="btn-reset" style="margin-top:16px" onclick="closeResultModal()">Cerrar</button></div></div>
 
-<div id="topbar"><div class="topbar-left"><span class="topbar-credit">Material elaborado por Marta López de Letona Sánchez</span><span class="topbar-title">GRAFOS · Matriz de influencia</span></div><input id="name-field" type="text" placeholder="Tu nombre y apellidos..." maxlength="60"></div>
-<div id="scorebar"><div class="score-item"><div class="score-label">Puntuación</div><div class="score-val" id="score-pts">0</div></div><div class="score-item"><div class="score-label">Máxima</div><div class="score-val">10</div></div><div class="score-item"><div class="score-label">Aciertos</div><div class="score-val" id="score-ok">0</div></div><div class="score-item"><div class="score-label">Fallos</div><div class="score-val" id="score-fail">0</div></div></div>
-<main><div id="app"></div></main>
-<div id="actionbar"><button class="btn btn-reset" onclick="resetGlobalScore()">⟳ Reiniciar</button><button class="btn btn-finish" onclick="openConfirmModal()">🏁 Finalizar</button></div>
+<div class="cabecera">Material elaborado por Marta López de Letona Sánchez</div>
+<main class="ficha-container">
+  <h1 class="titulo-ficha">Grafos · Matriz de influencia</h1>
+  <p class="subtitulo">Matemáticas aplicadas · Influencia directa e indirecta en un grupo</p>
+  <div class="barra">
+    <label for="name-field">Alumno/a:</label>
+    <input id="name-field" type="text" placeholder="Nombre y apellidos" maxlength="60" autocomplete="off">
+    <span class="dato">Nota: <b id="score-pts">0</b> / 10</span>
+    <span class="dato">Aciertos: <b id="score-ok">0</b></span>
+    <span class="dato">Fallos: <b id="score-fail">0</b></span>
+  </div>
+  <div id="app"></div>
+</main>
+<div id="actionbar"><button class="btn btn-reset" onclick="resetGlobalScore()">⟳ Reiniciar</button><button class="btn btn-finish" onclick="openConfirmModal()">Finalizar y calificar</button></div>
 
 <script>
 const NODOS = ['A','B','C','D','E'];
@@ -107,6 +153,8 @@ let secState = { mat:0, m2:0, interpretacion:0 };
 let currentExerciseCompleted = false, isFinalized = false;
 let score = 0, aciertos = 0, fallos = 0, startTime = new Date();
 let cyInstance = null;
+// Al cambiar el tamaño de la ventana, el grafo se reencuadra para no salirse del recuadro
+window.addEventListener('resize', ()=>{ if(cyInstance){ cyInstance.resize(); cyInstance.fit(undefined, 35); } });
 const appDiv = document.getElementById('app');
 
 function addPts(v){ if(!isFinalized){ score = Math.min(10, Math.max(0, score+v)); document.getElementById('score-pts').textContent = score; } }
@@ -156,9 +204,10 @@ function drawGraph(edges){
       { 
         selector: 'node', 
         style: { 
-          'background-color': '#2c6e9e', 
+          'background-color': '#A0522D', 
           'label': 'data(id)', 
-          'color': '#ffffff', 
+          'color': '#FDFAF3', 
+          'font-family': 'Libre Baskerville, serif',
           'text-valign': 'center', 
           'text-halign': 'center', 
           'font-weight': 'bold',
@@ -166,15 +215,15 @@ function drawGraph(edges){
           'width': '48px',
           'height': '48px',
           'border-width': 2,
-          'border-color': '#ffffff'
+          'border-color': '#C9A96E'
         } 
       },
       { 
         selector: 'edge', 
         style: { 
           'width': 3, 
-          'line-color': '#b8860b', 
-          'target-arrow-color': '#b8860b', 
+          'line-color': '#6B4F35', 
+          'target-arrow-color': '#6B4F35', 
           'target-arrow-shape': 'triangle',
           'curve-style': 'bezier',
           'arrow-scale': 1.3,
@@ -182,7 +231,13 @@ function drawGraph(edges){
         } 
       }
     ],
-    layout: { name: 'circle', padding: 35 }
+    layout: { name: 'circle', padding: 35 },
+    // Grafo estático: sin zoom con la rueda, sin arrastrar el lienzo ni los nodos
+    userZoomingEnabled: false,
+    userPanningEnabled: false,
+    boxSelectionEnabled: false,
+    autoungrabify: true,
+    autounselectify: true
   });
   } catch(e){
     console.error('Error al dibujar el grafo:', e);
@@ -211,21 +266,21 @@ function generarNuevoEjercicio(){
 }
 
 function renderVista(){
-  let html = `<div class="card"><h2>📈 Influencia en un grupo social</h2><div class="enunciado">📢 El siguiente grafo muestra la influencia DIRECTA entre los miembros (A → B significa que A influye directamente sobre B). Las flechas indican el sentido de la influencia.</div><div id="cy"></div>
+  let html = `<div class="card"><h2>Influencia en un grupo social</h2><div class="enunciado">📢 El siguiente grafo muestra la influencia DIRECTA entre los miembros (A → B significa que A influye directamente sobre B). Las flechas indican el sentido de la influencia.</div><div id="cy" role="img" aria-label="Grafo dirigido de influencia entre A, B, C, D y E"></div><p class="cy-nota">El grafo está fijo: puedes desplazar la página con la rueda sin que se mueva.</p>
   <div class="section" id="sec-mat"><div class="section-title">✏️ Apartado A — Matriz de influencia DIRECTA (M)</div><div class="tabla-wrap" id="matrizA"></div><div id="fb-mat" class="fb-inline" aria-live="polite"></div><button class="btn btn-check" onclick="verificarMatrizM()">✓ Verificar M</button></div>
-  <div class="section locked" id="sec-m2"><div class="section-title">📐 Apartado B — Matriz de influencia a través de UNA PERSONA INTERMEDIA (M²)</div><p style="font-size:0.85rem"><strong>📌 M² (influencia indirecta):</strong> Cuenta cuántos caminos de EXACTAMENTE 2 pasos existen (es decir, A influye sobre C porque A influye sobre B y B influye sobre C). Aquí sólo calcularás una casilla para entender el método. El resto de valores ya están dados para que no te canses haciendo cuentas repetitivas.</p><div class="tabla-wrap" id="matrizM2Preview"></div><div id="fb-m2" class="fb-inline" aria-live="polite"></div><button class="btn btn-check" onclick="verificarM2()">✓ Verificar casilla</button>
-  <div class="interpret-box" style="margin-top:16px; background:#fef4e8; border-radius:12px; padding:12px"><label style="font-weight:700" id="lbl-interpret">💬 Interpretación: Sumando la influencia DIRECTA (M) + la influencia a través de UNA PERSONA INTERMEDIA (M²), ¿quién tiene la mayor influencia TOTAL en el grupo?</label><div id="opciones-group" role="group" aria-labelledby="lbl-interpret"></div><div id="fb-interpret" class="fb-inline" aria-live="polite"></div><button class="btn btn-check" onclick="verificarInterpretacion()">✓ Verificar interpretación</button></div></div></div>`;
+  <div class="section locked" id="sec-m2"><div class="section-title">📐 Apartado B — Matriz de influencia a través de UNA PERSONA INTERMEDIA (M²)</div><p class="nota-apartado"><strong>M² (influencia indirecta):</strong> Cuenta cuántos caminos de EXACTAMENTE 2 pasos existen (es decir, A influye sobre C porque A influye sobre B y B influye sobre C). Aquí sólo calcularás una casilla para entender el método. El resto de valores ya están dados para que no te canses haciendo cuentas repetitivas.</p><div class="tabla-wrap" id="matrizM2Preview"></div><div id="fb-m2" class="fb-inline" aria-live="polite"></div><button class="btn btn-check" onclick="verificarM2()">✓ Verificar casilla</button>
+  <div class="interpret-box"><label id="lbl-interpret">💬 Interpretación: Sumando la influencia DIRECTA (M) + la influencia a través de UNA PERSONA INTERMEDIA (M²), ¿quién tiene la mayor influencia TOTAL en el grupo?</label><div id="opciones-group" class="opciones-group" role="group" aria-labelledby="lbl-interpret"></div><div id="fb-interpret" class="fb-inline" aria-live="polite"></div><button class="btn btn-check" onclick="verificarInterpretacion()">✓ Verificar interpretación</button></div></div></div>`;
   appDiv.innerHTML = html;
   
   // Matriz A con cabeceras claras de filas y columnas
-  let tablaA = '<table class="matriz-vacia" style="border-collapse:collapse">';
-  tablaA += '<thead><tr><th style="background:#e8dece;">→</th>';
-  for(let col of NODOS) tablaA += `<th style="background:#e8dece; font-size:1rem;">${col}</th>`;
+  let tablaA = '<table class="matriz-vacia">';
+  tablaA += '<thead><tr><th>→</th>';
+  for(let col of NODOS) tablaA += `<th>${col}</th>`;
   tablaA += '</tr></thead><tbody>';
   for(let i=0;i<5;i++){
-    tablaA += `<tr><th style="background:#e8dece; font-size:1rem;">${NODOS[i]}</th>`;
+    tablaA += `<tr><th>${NODOS[i]}</th>`;
     for(let j=0;j<5;j++){
-      tablaA += `<td><label class="sr-only" for="mat_${i}_${j}">Influencia de ${NODOS[i]} sobre ${NODOS[j]}</label><input type="text" inputmode="numeric" id="mat_${i}_${j}" class="input-m" placeholder="0/1" style="width:60px" onkeydown="if(event.key==='Enter'){event.preventDefault();verificarMatrizM();}"></td>`;
+      tablaA += `<td><label class="sr-only" for="mat_${i}_${j}">Influencia de ${NODOS[i]} sobre ${NODOS[j]}</label><input type="text" inputmode="numeric" id="mat_${i}_${j}" class="input-m" placeholder="0/1" onkeydown="if(event.key==='Enter'){event.preventDefault();verificarMatrizM();}"></td>`;
     }
     tablaA += '</tr>';
   }
@@ -240,23 +295,23 @@ function renderVista(){
   } while (filaRandom === colRandom); // se excluye la diagonal: "influencia de X sobre sí mismo" no se explica en la ficha
   window.casillaM2 = {i:filaRandom, j:colRandom};
   
-  let tablaM2 = '<table class="matriz-vacia" style="border-collapse:collapse">';
-  tablaM2 += '<thead><tr><th style="background:#e8dece;">M²</th>';
-  for(let col of NODOS) tablaM2 += `<th style="background:#e8dece; font-size:1rem;">${col}</th>`;
+  let tablaM2 = '<table class="matriz-vacia">';
+  tablaM2 += '<thead><tr><th>M²</th>';
+  for(let col of NODOS) tablaM2 += `<th>${col}</th>`;
   tablaM2 += '</tr></thead><tbody>';
   for(let i=0;i<5;i++){
-    tablaM2 += `<tr><th style="background:#e8dece; font-size:1rem;">${NODOS[i]}</th>`;
+    tablaM2 += `<tr><th>${NODOS[i]}</th>`;
     for(let j=0;j<5;j++){
       if(i===filaRandom && j===colRandom){
-        tablaM2 += `<td style="background:#fff1b5;"><label class="sr-only" for="m2_casilla">Valor de M² de ${NODOS[filaRandom]} sobre ${NODOS[colRandom]}</label><input type="text" inputmode="numeric" id="m2_casilla" class="input-m" placeholder="?" style="width:60px; border:2px solid #b8860b;" onkeydown="if(event.key==='Enter'){event.preventDefault();verificarM2();}"></td>`;
+        tablaM2 += `<td class="destacada"><label class="sr-only" for="m2_casilla">Valor de M² de ${NODOS[filaRandom]} sobre ${NODOS[colRandom]}</label><input type="text" inputmode="numeric" id="m2_casilla" class="input-m" placeholder="?" onkeydown="if(event.key==='Enter'){event.preventDefault();verificarM2();}"></td>`;
       } else {
-        tablaM2 += `<td style="background:#f5f2ed; font-weight:600; text-align:center; padding:10px;">${currentM2[i][j]}</td>`;
+        tablaM2 += `<td class="dado">${currentM2[i][j]}</td>`;
       }
     }
     tablaM2 += '</tr>';
   }
   tablaM2 += '</tbody></table>';
-  tablaM2 += `<p style="font-size:0.85rem; margin-top:10px; background:#fef0d8; padding:8px; border-radius:8px;">⭐ <strong>Casilla destacada en amarillo:</strong> ${NODOS[filaRandom]} → ${NODOS[colRandom]}. Corresponde a la influencia que ejerce ${NODOS[filaRandom]} sobre ${NODOS[colRandom]} a través de otra persona. Es la única que debes calcular. El resto de valores ya están dados para que aprendas el concepto sin cansarte.</p>`;
+  tablaM2 += `<p class="aviso-casilla"><strong>Casilla destacada:</strong> ${NODOS[filaRandom]} → ${NODOS[colRandom]}. Corresponde a la influencia que ejerce ${NODOS[filaRandom]} sobre ${NODOS[colRandom]} a través de otra persona. Es la única que debes calcular. El resto de valores ya están dados para que aprendas el concepto sin cansarte.</p>`;
   document.getElementById('matrizM2Preview').innerHTML = tablaM2;
   
   // Opciones interpretación (4 opciones)
@@ -316,7 +371,7 @@ function verificarM2(){
   let raw = inputVal.value.trim();
   if(!/^\d+$/.test(raw)){
     document.getElementById('fb-m2').className='fb-inline hint';
-    document.getElementById('fb-m2').innerHTML='⚠️ Introduce un número entero (sin letras ni decimales) en la casilla destacada (amarilla). Recuerda que mide cuántos caminos de 2 pasos existen.';
+    document.getElementById('fb-m2').innerHTML='⚠️ Introduce un número entero (sin letras ni decimales) en la casilla destacada. Recuerda que mide cuántos caminos de 2 pasos existen.';
     return;
   }
   let respuesta = parseInt(raw,10);
