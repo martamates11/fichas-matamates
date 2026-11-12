@@ -162,7 +162,7 @@ button,input,select{font:inherit;color:inherit}
 @media (hover:none){.otro{opacity:.85}}
 
 /* Soluciones */
-.sol-ej{margin-top:6mm;display:block}.sol-ej>*+*{margin-top:3.5mm}
+.sol-ej{margin-top:6mm;display:block}.sol-ej>*+*{margin-top:3.5mm}.sol-ej:first-child{margin-top:0}
 .sol-ej h3{break-after:avoid;margin:0;font-family:var(--f-texto);font-size:12pt;font-weight:600;display:flex;justify-content:space-between;gap:4mm;border-bottom:.25mm solid #999;padding-bottom:1mm}
 .sol-ej h3 span{font-weight:400;color:var(--papel-suave);font-size:.9em}
 .sol-ap{display:block}.sol-ap>*+*{margin-top:1.5mm}
@@ -512,8 +512,9 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
   }
 
   function renderSoluciones() {
-    let h = cabecera('soluciones');
-    if (!estado.items.length) return h + '<p style="margin-top:12mm;color:#888;text-align:center;font-style:italic">Las soluciones aparecerán aquí.</p>';
+    /* La hoja de soluciones no lleva encabezado: así aprovecha mejor el folio. */
+    let h = '';
+    if (!estado.items.length) return '<p style="margin-top:12mm;color:#888;text-align:center;font-style:italic">Las soluciones aparecerán aquí.</p>';
     h += estado.items.map((it, k) => {
       const e = buscarEj(buscarFicha(it.ficha), it.ej);
       const aps = materializar(it);
