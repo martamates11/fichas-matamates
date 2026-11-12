@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Generador de exámenes · Departamento de Matemáticas · IES Castelar</title>
+<!-- © 2026 Marta López de Letona · Martamates Interactivo · https://martamates11.github.io/fichas-matamates/
+     Todos los derechos reservados. Herramienta de uso interno del Departamento de Matemáticas.
+     Prohibido copiar, alojar en otros sitios, modificar o vender sin permiso escrito de la autora. Términos: https://martamates11.github.io/fichas-matamates/aviso-legal.html -->
+<meta name="robots" content="noindex, nofollow">
+<meta name="author" content="Marta López de Letona">
+<meta name="copyright" content="© 2026 Marta López de Letona · Todos los derechos reservados">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%231a2744'/%3E%3Ctext x='16' y='23' text-anchor='middle' font-family='Georgia,serif' font-size='20' font-style='italic' fill='%23d4aa4a'%3E%CE%BC%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+    chtml: { scale: 1, matchFontHeight: false, displayAlign: 'left', displayIndent: '0' },
+    startup: { typeset: false }
+  };
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+<style>
+/* Disposición: panel de configuración a la izquierda y folios A4 a la derecha;
+   el folio es siempre papel blanco, la interfaz sigue el tema del sistema. */
+:root{
+  --fondo:#eef0f4; --panel:#ffffff; --tinta:#1a2033; --suave:#5b6478; --linea:#d9dde6; --linea-fuerte:#b9c0ce;
+  --marino:#1a2744; --oro:#b8922a; --oro-suave:#f4ecd8; --ok:#2e6b3e; --ok-fondo:#e6f1e8; --aviso:#9a5b12; --aviso-fondo:#fbf0de;
+  --peligro:#a33a2c; --sombra:0 1px 2px rgba(20,30,60,.06),0 8px 24px rgba(20,30,60,.08);
+  --papel:#ffffff; --papel-tinta:#141414; --papel-suave:#555;
+  --f-ui:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-texto:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --f-titulo:"Playfair Display",Georgia,serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --fondo:#12161f; --panel:#1b212d; --tinta:#e7eaf0; --suave:#9aa3b5; --linea:#2c3445; --linea-fuerte:#3c465a;
+  --marino:#9fb6e0; --oro:#d4aa4a; --oro-suave:#2e2817; --ok:#7cc48e; --ok-fondo:#1c2e22; --aviso:#e6b35c; --aviso-fondo:#33270f;
+  --peligro:#f08f80; --sombra:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.3); color-scheme:dark }}
+:root[data-theme="dark"]{
+  --fondo:#12161f; --panel:#1b212d; --tinta:#e7eaf0; --suave:#9aa3b5; --linea:#2c3445; --linea-fuerte:#3c465a;
+  --marino:#9fb6e0; --oro:#d4aa4a; --oro-suave:#2e2817; --ok:#7cc48e; --ok-fondo:#1c2e22; --aviso:#e6b35c; --aviso-fondo:#33270f;
+  --peligro:#f08f80; --sombra:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.3); color-scheme:dark }
+
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--fondo);color:var(--tinta);font-family:var(--f-ui);font-size:14px;line-height:1.45}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--oro);outline-offset:2px}
+
+/* ---------- Barra superior ---------- */
+.barra{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 14px;padding:18px max(16px,env(safe-area-inset-left)) 14px;border-bottom:1px solid var(--linea);background:var(--panel)}
+.barra h1{margin:0;font-family:var(--f-titulo);font-weight:600;font-size:22px;color:var(--tinta)}
+.barra p{margin:0;color:var(--suave);font-size:13px}
+
+/* ---------- Estructura ---------- */
+.app{display:grid;grid-template-columns:minmax(330px,400px) 1fr;min-height:calc(100vh - 62px)}
+.panel{background:var(--panel);border-right:1px solid var(--linea);padding:18px 18px 40px;display:grid;gap:22px;align-content:start}
+.vista{padding:18px max(16px,env(safe-area-inset-right)) 48px 24px;min-width:0;display:grid;gap:14px;align-content:start}
+@media (max-width:880px){.app{grid-template-columns:1fr}.panel{border-right:0;border-bottom:1px solid var(--linea)}.vista{padding-left:16px}}
+
+.seccion{display:grid;gap:10px}
+.seccion h2{margin:0;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--suave)}
+.campos{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.campo{display:grid;gap:4px;min-width:0}
+.campo.ancho{grid-column:1/-1}
+.campo label{font-size:12px;color:var(--suave)}
+.campo input,.campo select{width:100%;padding:8px 10px;border:1px solid var(--linea-fuerte);border-radius:7px;background:var(--panel)}
+.check{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--tinta);padding:9px 0;white-space:nowrap}
+
+/* ---------- Botones ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 12px;border-radius:8px;border:1px solid var(--linea-fuerte);background:var(--panel);cursor:pointer;font-weight:500;font-size:13px;white-space:nowrap}
+.btn:hover{border-color:var(--marino)}
+.btn.primario{background:var(--marino);border-color:var(--marino);color:var(--panel)}
+.btn.primario:hover{filter:brightness(1.12)}
+.btn.oro{background:var(--oro-suave);border-color:var(--oro);color:var(--tinta)}
+.btn.mini{padding:4px 8px;font-size:12px;border-radius:6px}
+.btn.icono{padding:4px 7px;min-width:28px}
+.btn[disabled]{opacity:.4;cursor:default}
+.acciones{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.acciones .ancho{grid-column:1/-1}
+.nota-print{font-size:12px;color:var(--suave);margin:0}
+
+/* ---------- Lista de ejercicios del examen ---------- */
+.items{display:grid;gap:10px}
+.vacio{border:1.5px dashed var(--linea-fuerte);border-radius:10px;padding:18px;text-align:center;color:var(--suave)}
+.item{border:1px solid var(--linea);border-radius:10px;padding:10px 12px;display:grid;gap:8px;background:var(--panel)}
+.item-cab{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:start}
+.item-num{font-family:var(--f-titulo);font-weight:700;font-size:20px;line-height:1;color:var(--oro)}
+.item-txt{min-width:0}
+.item-ficha{font-size:11.5px;color:var(--suave)}
+.item-tipo{font-weight:600;font-size:13.5px}
+.item-mover{display:flex;gap:4px}
+.item-ctrl{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+.paso{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--suave)}
+.contador{display:inline-flex;align-items:center;border:1px solid var(--linea-fuerte);border-radius:7px;overflow:hidden}
+.contador button{border:0;background:transparent;width:26px;height:28px;cursor:pointer;font-size:15px}
+.contador span{min-width:22px;text-align:center;font-weight:600;color:var(--tinta);font-variant-numeric:tabular-nums}
+.pts-in{width:64px;padding:5px 6px;border:1px solid var(--linea-fuerte);border-radius:7px;background:var(--panel);text-align:right;font-variant-numeric:tabular-nums}
+.pts-in.manual{border-color:var(--oro);background:var(--oro-suave)}
+.total{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:13px;padding:8px 12px;border-radius:8px;background:var(--fondo)}
+.total b{font-variant-numeric:tabular-nums}
+.total.mal b{color:var(--peligro)}
+
+/* ---------- Mis exámenes ---------- */
+.guardados{display:grid;gap:6px;max-height:240px;overflow:auto}
+.guardado{display:grid;grid-template-columns:1fr auto auto;gap:6px;align-items:center;padding:7px 10px;border:1px solid var(--linea);border-radius:8px}
+.guardado .g-nom{font-weight:500;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.guardado .g-det{font-size:11.5px;color:var(--suave)}
+
+/* ---------- Vista previa ---------- */
+.vista-cab{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between}
+.pestanas{display:inline-flex;background:var(--panel);border:1px solid var(--linea);border-radius:9px;padding:3px}
+.pestanas button{border:0;background:transparent;padding:6px 14px;border-radius:7px;cursor:pointer;font-weight:500;color:var(--suave)}
+.pestanas button[aria-selected="true"]{background:var(--marino);color:var(--panel)}
+.estado{font-size:12.5px;padding:5px 10px;border-radius:999px;font-weight:500}
+.estado.ok{background:var(--ok-fondo);color:var(--ok)}
+.estado.aviso{background:var(--aviso-fondo);color:var(--aviso)}
+.lienzo{min-width:0;overflow:hidden}
+.escala{transform-origin:top left;width:210mm}
+.hojas{display:grid;gap:24px}
+
+/* ---------- Folio A4 ---------- */
+.hoja{width:210mm;min-height:297mm;padding:14mm 16mm;background:var(--papel);color:var(--papel-tinta);box-shadow:var(--sombra);position:relative;font-family:var(--f-texto);font-size:11.5pt;line-height:1.4}
+.hoja[hidden]{display:none!important}
+.marca-cara{position:absolute;left:0;right:0;top:297mm;border-top:1.5px dashed #c2410c;pointer-events:none}
+.marca-cara span{position:absolute;right:6mm;top:-9px;transform:translateY(-100%);font:600 10px var(--f-ui);color:#c2410c;background:#fff;padding:1px 6px;border-radius:4px;letter-spacing:.04em}
+
+.cab{display:grid;grid-template-columns:24mm 1fr 24mm;align-items:center;gap:4mm}
+.cab-logo{width:24mm;height:auto;display:block}
+.cab-centro{text-align:center}
+.cab-ies{font-variant:small-caps;letter-spacing:.14em;font-weight:600;font-size:13pt}
+.cab-dpto{font-size:9.5pt;letter-spacing:.06em;color:#444;margin-top:.6mm}
+.cab-titulo{font-family:var(--f-titulo);font-weight:600;font-size:19pt;line-height:1.15;margin-top:2.5mm;text-wrap:balance}
+.cab-modelo{font-variant:small-caps;letter-spacing:.12em;font-size:10pt;color:#444;margin-top:1mm}
+.cab-nota{justify-self:end;width:22mm;height:22mm;border:.3mm solid #111;border-radius:50%;display:grid;place-items:start center;padding-top:3mm;font:500 7.5pt var(--f-ui);letter-spacing:.14em;text-transform:uppercase;color:#444}
+.cab-sello{justify-self:end;border:.35mm solid #111;padding:2mm 2.5mm;font:600 7.5pt var(--f-ui);letter-spacing:.14em;text-transform:uppercase;text-align:center;line-height:1.3}
+.filete{margin-top:4mm;border-top:.7mm solid #111;padding-top:.8mm}
+.filete::after{content:"";display:block;border-top:.2mm solid #111}
+.cab-campos{display:grid;grid-template-columns:3fr 1fr 1.2fr;gap:5mm;margin-top:5mm}
+.cab-campos .f{display:flex;gap:2mm;align-items:baseline;min-width:0}
+.cab-campos b{font-variant:small-caps;letter-spacing:.08em;font-weight:600}
+.cab-campos i{flex:1;border-bottom:.25mm dotted #111;font-style:normal;text-align:center;min-height:1.2em;white-space:nowrap;overflow:hidden}
+
+/* Ejercicios del examen */
+.ejercicios{list-style:none;margin:7mm 0 0;padding:0;display:grid;gap:6.5mm}
+.ej{break-inside:avoid}
+.ej-cab{display:grid;grid-template-columns:auto 1fr auto;gap:2.5mm;align-items:baseline}
+.ej-num{font-weight:600}
+.ej-pts{color:var(--papel-suave);font-size:.88em;white-space:nowrap}
+.aps{display:grid;gap:4mm 6mm;margin-top:3mm;padding-left:6mm}
+.aps.c1{grid-template-columns:1fr}.aps.c2{grid-template-columns:1fr 1fr}.aps.c3{grid-template-columns:1fr 1fr 1fr}
+.ap{display:flex;gap:2mm;align-items:baseline;position:relative;min-width:0}
+.ap-letra{font-style:italic}
+.ap.unico{padding-left:0}
+.otro{position:absolute;right:-2mm;top:-2mm;opacity:0;transition:opacity .15s;border:1px solid #c9ced8;background:#fff;color:#1a2744;border-radius:6px;font:500 11px var(--f-ui);padding:2px 6px;cursor:pointer}
+.ap:hover .otro,.otro:focus-visible{opacity:1}
+@media (hover:none){.otro{opacity:.85}}
+
+/* Soluciones */
+.sol-ej{margin-top:6mm;display:grid;gap:3.5mm}
+.sol-ej h3{break-after:avoid;margin:0;font-family:var(--f-texto);font-size:12pt;font-weight:600;display:flex;justify-content:space-between;gap:4mm;border-bottom:.25mm solid #999;padding-bottom:1mm}
+.sol-ej h3 span{font-weight:400;color:var(--papel-suave);font-size:.9em}
+.sol-ap{break-inside:avoid;display:grid;gap:1.5mm}
+.sol-enun{break-after:avoid;display:flex;gap:2mm;align-items:baseline}
+.sol-pasos{margin:0;padding:0 0 0 6mm;list-style:none;display:grid;gap:.8mm;font-size:10.5pt}
+.sol-pasos li>p{margin:0;color:#333}
+.sol-pasos .m{overflow-x:auto;overflow-y:hidden;padding-left:5mm}
+.sol-res{margin-left:6mm;border:.3mm solid #111;border-radius:1.5mm;padding:1.5mm 3mm;display:flex;gap:3mm;align-items:baseline;justify-self:start;max-width:100%;overflow-x:auto}
+.sol-res b{font:600 7.5pt var(--f-ui);letter-spacing:.12em;text-transform:uppercase}
+.hoja mjx-container[display="true"]{margin:.6mm 0!important}
+.pie{position:absolute;left:16mm;right:16mm;bottom:8mm;display:flex;justify-content:space-between;font:400 7.5pt var(--f-ui);color:#888}
+
+/* ---------- Catálogo (diálogo) ---------- */
+dialog{border:0;border-radius:14px;padding:0;width:min(640px,calc(100vw - 32px));max-height:min(80vh,760px);background:var(--panel);color:var(--tinta);box-shadow:0 20px 60px rgba(0,0,0,.3)}
+dialog::backdrop{background:rgba(15,20,35,.45)}
+.dlg{display:grid;grid-template-rows:auto auto 1fr auto;max-height:min(80vh,760px)}
+.dlg-cab{display:flex;justify-content:space-between;align-items:center;padding:16px 18px 8px}
+.dlg-cab h2{margin:0;font-family:var(--f-titulo);font-weight:600;font-size:20px}
+.dlg-busca{padding:4px 18px 10px}
+.dlg-busca input{width:100%;padding:9px 12px;border:1px solid var(--linea-fuerte);border-radius:8px;background:var(--panel)}
+.dlg-lista{overflow:auto;padding:0 18px 12px;display:grid;gap:16px;align-content:start}
+.grupo h3{margin:0 0 6px;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--suave)}
+.ficha{border:1px solid var(--linea);border-radius:10px;margin-bottom:8px;overflow:hidden}
+.ficha>button{width:100%;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border:0;background:transparent;cursor:pointer;text-align:left}
+.ficha>button .f-nom{font-weight:600}
+.ficha>button .f-det{color:var(--suave);font-size:12.5px}
+.ficha>button .f-n{font-size:12px;color:var(--suave);white-space:nowrap}
+.tipos{display:grid;border-top:1px solid var(--linea)}
+.tipo{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 12px 8px 22px}
+.tipo+.tipo{border-top:1px solid var(--linea)}
+.dlg-pie{padding:10px 18px 14px;border-top:1px solid var(--linea);font-size:12px;color:var(--suave)}
+
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--marino);color:var(--panel);padding:9px 16px;border-radius:9px;font-weight:500;box-shadow:var(--sombra);z-index:50;max-width:calc(100vw - 32px)}
+
+/* ---------- Impresión ---------- */
+@page{size:A4;margin:14mm 16mm}
+@media print{
+  body{background:#fff}
+  .barra,.panel,.vista-cab,.toast,dialog,.otro,.marca-cara{display:none!important}
+  .app{display:block}
+  .vista{padding:0}
+  .lienzo{overflow:visible;height:auto!important}
+  .escala{transform:none!important;width:auto}
+  .hoja{width:auto;min-height:0;padding:0;box-shadow:none;display:none}
+  body.imprimir-examen #hoja-examen,body.imprimir-soluciones #hoja-soluciones{display:block!important}
+  .pie{display:none}
+}
+</style>
+</head>
+<body>
+
+<header class="barra">
+  <h1>Generador de exámenes</h1>
+  <p>Departamento de Matemáticas · IES Castelar · con los ejercicios de las fichas Martamates</p>
+</header>
+
+<div class="app">
+  <aside class="panel" aria-label="Configuración del examen">
+    <section class="seccion">
+      <h2>Datos del examen</h2>
+      <div class="campos">
+        <div class="campo ancho"><label for="in-titulo">Título</label><input id="in-titulo" type="text" placeholder="Se propone según las fichas elegidas" autocomplete="off"></div>
+        <div class="campo"><label for="in-curso">Curso</label><input id="in-curso" type="text" placeholder="Ej.: 4.º ESO B" autocomplete="off"></div>
+        <div class="campo"><label for="in-fecha">Fecha</label><input id="in-fecha" type="date"></div>
+        <div class="campo"><label for="in-modelo">Modelo</label>
+          <select id="in-modelo"><option value="">Sin modelo</option><option>A</option><option>B</option><option>C</option><option>D</option></select></div>
+        <div class="campo" style="align-self:end"><label class="check" for="in-verpts"><input id="in-verpts" type="checkbox" checked> Mostrar la puntuación</label></div>
+      </div>
+      <p class="nota-print">Si dejas curso o fecha en blanco, salen como línea para que la rellene el alumno.</p>
+    </section>
+
+    <section class="seccion">
+      <h2>Ejercicios</h2>
+      <div class="items" id="items"></div>
+      <button class="btn oro" id="btn-anadir" type="button">＋ Añadir ejercicio de una ficha</button>
+      <div class="total" id="total"></div>
+    </section>
+
+    <section class="seccion">
+      <h2>Imprimir</h2>
+      <div class="acciones">
+        <button class="btn primario" id="btn-imp-examen" type="button">Imprimir examen</button>
+        <button class="btn primario" id="btn-imp-sol" type="button">Imprimir soluciones</button>
+      </div>
+      <p class="nota-print">En el cuadro de impresión elige «Guardar como PDF» si lo quieres en archivo y desmarca «Encabezados y pies de página».</p>
+    </section>
+
+    <section class="seccion">
+      <h2>Guardar y modelos</h2>
+      <div class="acciones">
+        <button class="btn" id="btn-guardar" type="button">Guardar examen</button>
+        <button class="btn" id="btn-modelo" type="button">Crear otro modelo</button>
+        <button class="btn" id="btn-enlace" type="button">Copiar enlace</button>
+        <button class="btn" id="btn-nuevo" type="button">Nuevo examen</button>
+      </div>
+      <p class="nota-print">«Crear otro modelo» guarda el actual y genera el mismo examen con números distintos. Los exámenes se guardan en este navegador; el enlace sirve para abrirlo en otro ordenador.</p>
+      <div class="guardados" id="guardados"></div>
+    </section>
+  </aside>
+
+  <main class="vista">
+    <div class="vista-cab">
+      <div class="pestanas" role="tablist" aria-label="Hoja que se muestra">
+        <button type="button" role="tab" id="tab-examen" aria-selected="true">Examen</button>
+        <button type="button" role="tab" id="tab-sol" aria-selected="false">Soluciones</button>
+      </div>
+      <span class="estado" id="estado-cara" hidden></span>
+    </div>
+    <div class="lienzo" id="lienzo">
+      <div class="escala" id="escala">
+        <div class="hojas">
+          <article class="hoja" id="hoja-examen" aria-label="Hoja del examen"></article>
+          <article class="hoja" id="hoja-soluciones" aria-label="Hoja de soluciones" hidden></article>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<dialog id="dlg-catalogo" aria-labelledby="dlg-titulo">
+  <div class="dlg">
+    <div class="dlg-cab"><h2 id="dlg-titulo">Elige ficha y ejercicio</h2><button class="btn mini" type="button" id="dlg-cerrar">Cerrar</button></div>
+    <div class="dlg-busca"><input id="dlg-buscar" type="search" placeholder="Buscar ficha…" autocomplete="off" aria-label="Buscar ficha"></div>
+    <div class="dlg-lista" id="dlg-lista"></div>
+    <div class="dlg-pie" id="dlg-pie"></div>
+  </div>
+</dialog>
+
+<script src="generadores/_comun.js"></script>
+<script src="generadores/ecuaciones.js"></script>
+<script src="generadores/sistemas.js"></script>
+<script src="generadores/matrices.js"></script>
+<script>
+(function () {
+  'use strict';
+  const EX = window.EX;
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const nuevaSemilla = () => (Math.random() * 4294967296) >>> 0;
+  const LETRAS = 'abcdefghij';
+  const TOTAL_FICHAS_WEB = 100;   // fichas publicadas en la web (aprox.), para el aviso del catálogo
+  const CLAVE = 'martamates-examenes-v1';
+
+  /* ================= Estado ================= */
+  const vacio = () => ({ titulo: '', curso: '', fecha: '', modelo: '', verPts: true, items: [] });
+  let estado = vacio();
+  let vista = 'examen';
+  let uid = 1;
+
+  const buscarFicha = id => EX.fichas.find(f => f.id === id);
+  const buscarEj = (f, id) => f && f.ejercicios.find(e => e.id === id);
+
+  /* ================= Almacenamiento ================= */
+  function leerAlmacen() {
+    try { return JSON.parse(localStorage.getItem(CLAVE)) || { borrador: null, guardados: [] }; }
+    catch (e) { return { borrador: null, guardados: [] }; }
+  }
+  function escribirAlmacen(a) { try { localStorage.setItem(CLAVE, JSON.stringify(a)); } catch (e) { /* sin almacenamiento */ } }
+  function guardarBorrador() { const a = leerAlmacen(); a.borrador = estado; escribirAlmacen(a); }
+
+  /* ================= Generación ================= */
+  const cache = new Map();
+  function generarApartado(item, i) {
+    const clave = `${item.ficha}|${item.ej}|${item.semillas[i]}|${i}`;
+    if (!cache.has(clave)) {
+      const ej = buscarEj(buscarFicha(item.ficha), item.ej);
+      cache.set(clave, ej.generar(EX.crearAzar(item.semillas[i]), i));
+    }
+    return cache.get(clave);
+  }
+  /* Asegura que hay una semilla por apartado y que no se repite ningún enunciado */
+  function materializar(item) {
+    while (item.semillas.length < item.n) item.semillas.push(nuevaSemilla());
+    item.semillas.length = item.n;
+    const vistos = new Set();
+    return item.semillas.map((_, i) => {
+      let r = generarApartado(item, i), k = 0;
+      while (vistos.has(r.enun) && k < 30) { item.semillas[i] = nuevaSemilla(); r = generarApartado(item, i); k++; }
+      vistos.add(r.enun);
+      return r;
+    });
+  }
+
+  /* ================= Puntuación ================= */
+  const redondear = x => Math.round(x * 4) / 4;
+  function repartir() {
+    const libres = estado.items.filter(it => !it.manual);
+    const fijos = estado.items.filter(it => it.manual).reduce((s, it) => s + it.puntos, 0);
+    const resto = Math.max(0, 10 - fijos);
+    if (!libres.length) return;
+    const peso = it => buscarEj(buscarFicha(it.ficha), it.ej).peso * it.n;
+    const suma = libres.reduce((s, it) => s + peso(it), 0);
+    libres.forEach(it => { it.puntos = redondear(resto * peso(it) / suma); });
+    const dif = redondear(resto - libres.reduce((s, it) => s + it.puntos, 0));
+    if (dif) { const mayor = libres.reduce((a, b) => (peso(b) > peso(a) ? b : a)); mayor.puntos = redondear(mayor.puntos + dif); }
+  }
+  const fmtPts = x => (Math.round(x * 100) / 100).toLocaleString('es-ES', { maximumFractionDigits: 2 });
+  const txtPts = x => `${fmtPts(x)} ${x === 1 ? 'punto' : 'puntos'}`;
+
+  /* ================= Título propuesto ================= */
+  function tituloPropuesto() {
+    if (estado.titulo.trim()) return estado.titulo.trim();
+    const tit = [...new Set(estado.items.map(it => buscarFicha(it.ficha).grupo))];
+    if (tit.length === 1) return tit[0];
+    return 'Examen de Matemáticas';
+  }
+  function fechaTexto() {
+    if (!estado.fecha) return '';
+    const [a, m, d] = estado.fecha.split('-');
+    return `${d}/${m}/${a}`;
+  }
+
+  /* ================= Render del panel ================= */
+  function renderItems() {
+    const cont = $('items');
+    if (!estado.items.length) {
+      cont.innerHTML = '<div class="vacio">Aún no hay ejercicios. Pulsa «Añadir ejercicio de una ficha» para empezar.</div>';
+    } else {
+      cont.innerHTML = estado.items.map((it, k) => {
+        const f = buscarFicha(it.ficha), e = buscarEj(f, it.ej);
+        return `<div class="item" data-uid="${it.uid}">
+          <div class="item-cab">
+            <span class="item-num">${k + 1}</span>
+            <div class="item-txt"><div class="item-ficha">${esc(f.titulo)}${f.detalle ? ' · ' + esc(f.detalle) : ''}</div><div class="item-tipo">${esc(e.nombre)}</div></div>
+            <div class="item-mover">
+              <button class="btn icono mini" data-acc="subir" type="button" aria-label="Subir" ${k === 0 ? 'disabled' : ''}>↑</button>
+              <button class="btn icono mini" data-acc="bajar" type="button" aria-label="Bajar" ${k === estado.items.length - 1 ? 'disabled' : ''}>↓</button>
+              <button class="btn icono mini" data-acc="quitar" type="button" aria-label="Quitar ejercicio">✕</button>
+            </div>
+          </div>
+          <div class="item-ctrl">
+            <span class="paso">Apartados
+              <span class="contador"><button type="button" data-acc="menos" aria-label="Un apartado menos">−</button><span>${it.n}</span><button type="button" data-acc="mas" aria-label="Un apartado más">+</button></span></span>
+            <span class="paso"><label for="pts-${it.uid}">Puntos</label>
+              <input class="pts-in ${it.manual ? 'manual' : ''}" id="pts-${it.uid}" data-acc="pts" type="number" min="0" max="10" step="0.25" value="${it.puntos}"></span>
+            <button class="btn mini" data-acc="otros" type="button">↻ Otros números</button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+    const suma = estado.items.reduce((s, it) => s + it.puntos, 0);
+    const ok = Math.abs(suma - 10) < 1e-9;
+    const hayManual = estado.items.some(it => it.manual);
+    $('total').className = 'total' + (ok || !estado.items.length ? '' : ' mal');
+    $('total').innerHTML = `<span>Total: <b>${fmtPts(suma)}</b> de 10 puntos</span>${hayManual ? '<button class="btn mini" type="button" id="btn-repartir">Repartir automáticamente</button>' : ''}`;
+    const br = $('btn-repartir');
+    if (br) br.onclick = () => { estado.items.forEach(it => { it.manual = false; }); repartir(); actualizar(); };
+  }
+
+  $('items').addEventListener('click', ev => {
+    const b = ev.target.closest('button[data-acc]'); if (!b) return;
+    const card = b.closest('.item'); const k = estado.items.findIndex(it => it.uid === Number(card.dataset.uid));
+    const it = estado.items[k];
+    switch (b.dataset.acc) {
+      case 'subir': [estado.items[k - 1], estado.items[k]] = [estado.items[k], estado.items[k - 1]]; break;
+      case 'bajar': [estado.items[k + 1], estado.items[k]] = [estado.items[k], estado.items[k + 1]]; break;
+      case 'quitar': estado.items.splice(k, 1); repartir(); break;
+      case 'menos': if (it.n > 1) { it.n--; repartir(); } break;
+      case 'mas': if (it.n < 6) { it.n++; repartir(); } break;
+      case 'otros': it.semillas = it.semillas.map(nuevaSemilla); break;
+    }
+    actualizar();
+  });
+  $('items').addEventListener('change', ev => {
+    const inp = ev.target.closest('input[data-acc="pts"]'); if (!inp) return;
+    const it = estado.items.find(x => x.uid === Number(inp.closest('.item').dataset.uid));
+    const v = parseFloat(String(inp.value).replace(',', '.'));
+    if (!Number.isFinite(v) || v < 0) { inp.value = it.puntos; return; }
+    it.puntos = redondear(v); it.manual = true;
+    repartir();
+    actualizar();
+  });
+
+  /* ================= Render de las hojas ================= */
+  function cabecera(tipo) {
+    const modelo = estado.modelo ? `<div class="cab-modelo">Modelo ${esc(estado.modelo)}</div>` : '';
+    const derecha = tipo === 'examen'
+      ? '<div class="cab-nota">Nota</div>'
+      : `<div class="cab-sello">Hoja de<br>soluciones</div>`;
+    let h = `<header class="cab">
+      <img class="cab-logo" src="logo-ies-castelar.png" alt="Escudo del IES Castelar">
+      <div class="cab-centro"><div class="cab-ies">IES Castelar</div><div class="cab-dpto">Departamento de Matemáticas</div>
+        <div class="cab-titulo">${esc(tituloPropuesto())}</div>${modelo}</div>
+      ${derecha}</header><div class="filete"></div>`;
+    if (tipo === 'examen') {
+      h += `<div class="cab-campos"><div class="f"><b>Nombre</b><i></i></div><div class="f"><b>Curso</b><i>${esc(estado.curso)}</i></div><div class="f"><b>Fecha</b><i>${esc(fechaTexto())}</i></div></div>`;
+    }
+    return h;
+  }
+
+  function renderExamen() {
+    let h = cabecera('examen');
+    if (!estado.items.length) {
+      h += '<p style="margin-top:12mm;color:#888;text-align:center;font-style:italic">Los ejercicios aparecerán aquí.</p>';
+    } else {
+      h += '<ol class="ejercicios">' + estado.items.map((it, k) => {
+        const e = buscarEj(buscarFicha(it.ficha), it.ej);
+        const aps = materializar(it);
+        const cols = Math.min(e.columnas, it.n);
+        const pts = estado.verPts ? `<span class="ej-pts">(${txtPts(it.puntos)})</span>` : '<span></span>';
+        const cuerpo = aps.map((r, i) => `<div class="ap ${it.n === 1 ? 'unico' : ''}">${it.n > 1 ? `<span class="ap-letra">${LETRAS[i]})</span>` : ''}<span>\\(\\displaystyle ${r.enun}\\)</span>
+          <button class="otro" type="button" data-uid="${it.uid}" data-i="${i}" title="Cambiar solo este apartado">↻ otro</button></div>`).join('');
+        return `<li class="ej"><div class="ej-cab"><span class="ej-num">${k + 1}.</span><span>${e.enunciado[it.n > 1 ? 1 : 0]}</span>${pts}</div>
+          <div class="aps c${cols}">${cuerpo}</div></li>`;
+      }).join('') + '</ol>';
+    }
+    h += '<div class="marca-cara" id="marca-cara" hidden><span>Fin de la primera cara</span></div>';
+    return h;
+  }
+
+  function renderSoluciones() {
+    let h = cabecera('soluciones');
+    if (!estado.items.length) return h + '<p style="margin-top:12mm;color:#888;text-align:center;font-style:italic">Las soluciones aparecerán aquí.</p>';
+    h += estado.items.map((it, k) => {
+      const e = buscarEj(buscarFicha(it.ficha), it.ej);
+      const aps = materializar(it);
+      const cuerpo = aps.map((r, i) => {
+        const pasos = r.pasos.map(p => {
+          const m = p.m ? `<div class="m">\\[${p.multilinea ? `\\begin{gathered}${p.m}\\end{gathered}` : p.m}\\]</div>` : '';
+          return `<li><p>${p.t}</p>${m}</li>`;
+        }).join('');
+        return `<div class="sol-ap">
+          <div class="sol-enun">${it.n > 1 ? `<span class="ap-letra">${LETRAS[i]})</span>` : ''}<span>\\(\\displaystyle ${r.enun}\\)</span></div>
+          <ol class="sol-pasos">${pasos}</ol>
+          <div class="sol-res"><b>Solución</b><span>\\(\\displaystyle ${r.res}\\)</span></div></div>`;
+      }).join('');
+      return `<section class="sol-ej"><h3>Ejercicio ${k + 1}. ${e.enunciado[it.n > 1 ? 1 : 0].replace(/:$/, '')}<span>${txtPts(it.puntos)}</span></h3>${cuerpo}</section>`;
+    }).join('');
+    return h;
+  }
+
+  let tipografiando = Promise.resolve();
+  function tipografiar(els) {
+    if (!(window.MathJax && MathJax.typesetPromise)) return Promise.resolve();
+    tipografiando = tipografiando.then(() => {
+      MathJax.typesetClear(els);
+      return MathJax.typesetPromise(els);
+    }).catch(() => {});
+    return tipografiando;
+  }
+
+  function renderHojas() {
+    const he = $('hoja-examen'), hs = $('hoja-soluciones');
+    he.innerHTML = renderExamen();
+    hs.innerHTML = renderSoluciones();
+    tipografiar([he, hs]).then(() => { comprobarCara(); escalar(); });
+    comprobarCara(); escalar();
+  }
+
+  /* ¿Cabe el examen en una cara? (A4 menos los márgenes de impresión) */
+  function comprobarCara() {
+    const he = $('hoja-examen'), est = $('estado-cara'), marca = $('marca-cara');
+    if (!estado.items.length) { est.hidden = true; if (marca) marca.hidden = true; return; }
+    const mm = he.offsetWidth / 210;
+    let alto = 0;
+    [...he.children].forEach(c => { if (c.id !== 'marca-cara') alto = Math.max(alto, c.offsetTop + c.offsetHeight); });
+    const util = 14 * mm + 269 * mm;          // margen superior + alto útil de la página
+    const cabe = alto <= util + 1;
+    est.hidden = false;
+    est.className = 'estado ' + (cabe ? 'ok' : 'aviso');
+    est.textContent = cabe ? 'El examen cabe en una cara' : 'El examen ocupa más de una cara: quita apartados o ejercicios';
+    if (marca) { marca.hidden = cabe; marca.style.top = util + 'px'; }
+  }
+
+  /* Escala los folios para que quepan en la columna de vista previa */
+  function escalar() {
+    const lienzo = $('lienzo'), esc_ = $('escala');
+    const ancho = esc_.offsetWidth || 1;
+    const s = Math.min(1, lienzo.clientWidth / ancho);
+    esc_.style.transform = s < 1 ? `scale(${s})` : '';
+    lienzo.style.height = (esc_.offsetHeight * s) + 'px';
+  }
+  new ResizeObserver(() => escalar()).observe($('lienzo'));
+
+  /* Cambiar un solo apartado desde la vista previa */
+  $('hoja-examen').addEventListener('click', ev => {
+    const b = ev.target.closest('.otro'); if (!b) return;
+    const it = estado.items.find(x => x.uid === Number(b.dataset.uid));
+    it.semillas[Number(b.dataset.i)] = nuevaSemilla();
+    actualizar();
+  });
+
+  /* ================= Datos del examen ================= */
+  function leerCampos() {
+    estado.titulo = $('in-titulo').value;
+    estado.curso = $('in-curso').value;
+    estado.fecha = $('in-fecha').value;
+    estado.modelo = $('in-modelo').value;
+    estado.verPts = $('in-verpts').checked;
+  }
+  function escribirCampos() {
+    $('in-titulo').value = estado.titulo;
+    $('in-curso').value = estado.curso;
+    $('in-fecha').value = estado.fecha;
+    $('in-modelo').value = estado.modelo;
+    $('in-verpts').checked = estado.verPts !== false;
+  }
+  ['in-titulo', 'in-curso', 'in-fecha', 'in-modelo', 'in-verpts'].forEach(id =>
+    $(id).addEventListener(id === 'in-titulo' || id === 'in-curso' ? 'input' : 'change', () => { leerCampos(); actualizar(false); }));
+
+  function actualizar(conPanel = true) {
+    if (conPanel) renderItems();
+    $('in-titulo').placeholder = estado.items.length ? `Propuesto: ${tituloPropuesto()}` : 'Se propone según las fichas elegidas';
+    renderHojas();
+    guardarBorrador();
+  }
+
+  /* ================= Pestañas ================= */
+  function mostrar(v) {
+    vista = v;
+    $('tab-examen').setAttribute('aria-selected', String(v === 'examen'));
+    $('tab-sol').setAttribute('aria-selected', String(v === 'soluciones'));
+    $('hoja-examen').hidden = v !== 'examen';
+    $('hoja-soluciones').hidden = v !== 'soluciones';
+    $('estado-cara').style.visibility = v === 'examen' ? 'visible' : 'hidden';
+    escalar();
+  }
+  $('tab-examen').onclick = () => mostrar('examen');
+  $('tab-sol').onclick = () => mostrar('soluciones');
+
+  /* ================= Catálogo ================= */
+  const dlg = $('dlg-catalogo');
+  function renderCatalogo() {
+    const q = $('dlg-buscar').value.trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+    const norm = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+    const grupos = [];
+    EX.fichas.forEach(f => {
+      const texto = norm([f.titulo, f.detalle, f.grupo, ...f.ejercicios.map(e => e.nombre)].join(' '));
+      if (q && !texto.includes(q)) return;
+      let g = grupos.find(x => x.nombre === f.grupo);
+      if (!g) grupos.push(g = { nombre: f.grupo, fichas: [] });
+      g.fichas.push(f);
+    });
+    $('dlg-lista').innerHTML = grupos.length ? grupos.map(g => `<div class="grupo"><h3>${esc(g.nombre)}</h3>${g.fichas.map(f => `
+      <div class="ficha" data-ficha="${f.id}">
+        <button type="button" aria-expanded="${f.ejercicios.length === 1 || q ? 'true' : 'false'}"><span><span class="f-nom">${esc(f.titulo)}</span>${f.detalle ? ` <span class="f-det">· ${esc(f.detalle)}</span>` : ''}</span>
+          <span class="f-n">${f.ejercicios.length} ${f.ejercicios.length === 1 ? 'tipo' : 'tipos'}</span></button>
+        <div class="tipos" ${f.ejercicios.length === 1 || q ? '' : 'hidden'}>${f.ejercicios.map(e => `
+          <div class="tipo"><span>${esc(e.nombre)}</span><button class="btn mini primario" type="button" data-ej="${e.id}">Añadir</button></div>`).join('')}</div>
+      </div>`).join('')}</div>`).join('') : '<p style="color:var(--suave)">Ninguna ficha disponible coincide con la búsqueda.</p>';
+    $('dlg-pie').textContent = `Disponibles ${EX.fichas.length} fichas de la web. Las demás se irán incorporando al generador poco a poco.`;
+  }
+  $('dlg-buscar').addEventListener('input', renderCatalogo);
+  $('dlg-lista').addEventListener('click', ev => {
+    const add = ev.target.closest('button[data-ej]');
+    if (add) {
+      const fid = add.closest('.ficha').dataset.ficha;
+      estado.items.push({ uid: uid++, ficha: fid, ej: add.dataset.ej, n: 1, puntos: 0, manual: false, semillas: [nuevaSemilla()] });
+      repartir(); actualizar();
+      aviso('Ejercicio añadido. Puedes añadir más o cerrar.');
+      return;
+    }
+    const cab = ev.target.closest('.ficha>button');
+    if (cab) {
+      const abierto = cab.getAttribute('aria-expanded') === 'true';
+      cab.setAttribute('aria-expanded', String(!abierto));
+      cab.nextElementSibling.hidden = abierto;
+    }
+  });
+  $('btn-anadir').onclick = () => { $('dlg-buscar').value = ''; renderCatalogo(); dlg.showModal(); };
+  $('dlg-cerrar').onclick = () => dlg.close();
+  dlg.addEventListener('click', ev => { if (ev.target === dlg) dlg.close(); });
+
+  /* ================= Avisos ================= */
+  let tAviso;
+  function aviso(txt) {
+    let t = document.querySelector('.toast');
+    if (!t) { t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); document.body.appendChild(t); }
+    t.textContent = txt; t.hidden = false;
+    clearTimeout(tAviso); tAviso = setTimeout(() => { t.hidden = true; }, 2600);
+  }
+
+  /* ================= Imprimir ================= */
+  function imprimir(cual) {
+    if (!estado.items.length) { aviso('Añade al menos un ejercicio antes de imprimir.'); return; }
+    tipografiando.then(() => {
+      document.body.classList.add('imprimir-' + cual);
+      window.print();
+    });
+  }
+  window.addEventListener('afterprint', () => document.body.classList.remove('imprimir-examen', 'imprimir-soluciones'));
+  $('btn-imp-examen').onclick = () => imprimir('examen');
+  $('btn-imp-sol').onclick = () => imprimir('soluciones');
+
+  /* ================= Guardar, modelos y enlace ================= */
+  const copia = o => JSON.parse(JSON.stringify(o));
+  function nombreExamen(e) {
+    return [e.titulo.trim() || tituloPropuesto(), e.modelo ? 'Modelo ' + e.modelo : '', e.curso].filter(Boolean).join(' · ');
+  }
+  function guardar(silencioso) {
+    if (!estado.items.length) { if (!silencioso) aviso('No hay nada que guardar todavía.'); return; }
+    const a = leerAlmacen();
+    const reg = { id: Date.now() + '-' + Math.floor(Math.random() * 1e4), nombre: nombreExamen(estado), cuando: new Date().toISOString(), estado: copia(estado) };
+    a.guardados.unshift(reg); a.guardados = a.guardados.slice(0, 60);
+    escribirAlmacen(a); renderGuardados();
+    if (!silencioso) aviso('Examen guardado en «Mis exámenes».');
+  }
+  function renderGuardados() {
+    const g = leerAlmacen().guardados;
+    $('guardados').innerHTML = g.length ? g.map(r => `<div class="guardado" data-id="${r.id}">
+        <div style="min-width:0"><div class="g-nom">${esc(r.nombre)}</div><div class="g-det">${new Date(r.cuando).toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' })}</div></div>
+        <button class="btn mini" type="button" data-acc="abrir">Abrir</button><button class="btn mini" type="button" data-acc="borrar">Borrar</button></div>`).join('')
+      : '<p class="nota-print">Todavía no has guardado ningún examen.</p>';
+  }
+  $('guardados').addEventListener('click', ev => {
+    const b = ev.target.closest('button[data-acc]'); if (!b) return;
+    const id = b.closest('.guardado').dataset.id;
+    const a = leerAlmacen(); const r = a.guardados.find(x => x.id === id); if (!r) return;
+    if (b.dataset.acc === 'abrir') { cargar(r.estado); aviso('Examen abierto.'); }
+    else if (b.dataset.confirmar) { a.guardados = a.guardados.filter(x => x.id !== id); escribirAlmacen(a); renderGuardados(); aviso('Examen borrado.'); }
+    else { b.dataset.confirmar = '1'; b.textContent = '¿Seguro?'; setTimeout(() => { if (b.isConnected) { delete b.dataset.confirmar; b.textContent = 'Borrar'; } }, 3000); }
+  });
+  function cargar(e) {
+    estado = Object.assign(vacio(), copia(e));
+    estado.items.forEach(it => { it.uid = uid++; });
+    escribirCampos(); actualizar();
+  }
+  $('btn-guardar').onclick = () => guardar(false);
+  $('btn-modelo').onclick = () => {
+    if (!estado.items.length) { aviso('Añade ejercicios antes de crear modelos.'); return; }
+    const sig = { '': 'A', A: 'B', B: 'C', C: 'D', D: 'D' };
+    if (!estado.modelo) { estado.modelo = 'A'; }
+    guardar(true);
+    const anterior = estado.modelo;
+    estado.modelo = sig[anterior];
+    estado.items.forEach(it => { it.semillas = it.semillas.map(nuevaSemilla); });
+    escribirCampos(); actualizar();
+    aviso(`Modelo ${anterior} guardado. Ahora estás viendo el modelo ${estado.modelo}.`);
+  };
+  $('btn-nuevo').onclick = function () {
+    if (estado.items.length && !this.dataset.confirmar) {
+      this.dataset.confirmar = '1'; this.textContent = '¿Empezar de cero?';
+      setTimeout(() => { delete this.dataset.confirmar; this.textContent = 'Nuevo examen'; }, 3000);
+      return;
+    }
+    delete this.dataset.confirmar; this.textContent = 'Nuevo examen';
+    estado = vacio(); escribirCampos(); actualizar();
+  };
+  function codificar(e) {
+    const datos = { t: e.titulo, c: e.curso, f: e.fecha, m: e.modelo, v: e.verPts ? 1 : 0,
+      i: e.items.map(it => [it.ficha, it.ej, it.n, it.puntos, it.manual ? 1 : 0, it.semillas]) };
+    return btoa(unescape(encodeURIComponent(JSON.stringify(datos)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  }
+  function decodificar(s) {
+    const d = JSON.parse(decodeURIComponent(escape(atob(s.replace(/-/g, '+').replace(/_/g, '/')))));
+    return { titulo: d.t || '', curso: d.c || '', fecha: d.f || '', modelo: d.m || '', verPts: d.v !== 0,
+      items: (d.i || []).filter(x => buscarEj(buscarFicha(x[0]), x[1])).map(x => ({ ficha: x[0], ej: x[1], n: x[2], puntos: x[3], manual: !!x[4], semillas: x[5] })) };
+  }
+  $('btn-enlace').onclick = () => {
+    if (!estado.items.length) { aviso('Añade ejercicios antes de copiar el enlace.'); return; }
+    const url = location.href.split('#')[0] + '#e=' + codificar(estado);
+    const ok = () => aviso('Enlace copiado. Al abrirlo aparece este mismo examen.');
+    if (navigator.clipboard) navigator.clipboard.writeText(url).then(ok, () => { prompt('Copia este enlace:', url); });
+    else prompt('Copia este enlace:', url);
+  };
+
+  /* ================= Inicio ================= */
+  function iniciar() {
+    let inicial = null;
+    const m = location.hash.match(/^#e=(.+)$/);
+    if (m) { try { inicial = decodificar(m[1]); } catch (e) { inicial = null; } history.replaceState(null, '', location.pathname); }
+    if (!inicial) {
+      const a = leerAlmacen();
+      if (a.borrador) inicial = a.borrador;
+    }
+    if (inicial) cargar(inicial); else { escribirCampos(); actualizar(); }
+    renderGuardados();
+    mostrar('examen');
+  }
+  // Se espera a MathJax para la primera maquetación; si no carga, se muestra igualmente
+  if (window.MathJax && MathJax.startup && MathJax.startup.promise) MathJax.startup.promise.then(iniciar);
+  else window.addEventListener('load', () => {
+    if (window.MathJax && MathJax.startup && MathJax.startup.promise) MathJax.startup.promise.then(iniciar);
+    else iniciar();
+  });
+})();
+</script>
+</body>
+</html>
