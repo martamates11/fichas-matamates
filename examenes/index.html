@@ -162,7 +162,10 @@ button,input,select{font:inherit;color:inherit}
 @media (hover:none){.otro{opacity:.85}}
 
 /* Soluciones */
-.sol-ej{margin-top:6mm;display:block}.sol-ej>*+*{margin-top:3.5mm}
+.sol-ej{margin-top:6mm;display:block}.sol-ej>*+*{margin-top:3.5mm}.sol-ej:first-child{margin-top:0}
+.sol-modelo{font:600 9pt var(--f-ui);letter-spacing:.14em;text-transform:uppercase;color:#444;text-align:right;border-bottom:.25mm solid #999;padding-bottom:1.2mm}
+.sol-modelo+.sol-ej{margin-top:5mm}
+.hoja.estilo-a .sol-modelo{font-family:var(--f-comic);font-size:10pt;font-weight:700}
 .sol-ej h3{break-after:avoid;margin:0;font-family:var(--f-texto);font-size:12pt;font-weight:600;display:flex;justify-content:space-between;gap:4mm;border-bottom:.25mm solid #999;padding-bottom:1mm}
 .sol-ej h3 span{font-weight:400;color:var(--papel-suave);font-size:.9em}
 .sol-ap{display:block}.sol-ap>*+*{margin-top:1.5mm}
@@ -512,8 +515,9 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
   }
 
   function renderSoluciones() {
-    let h = cabecera('soluciones');
-    if (!estado.items.length) return h + '<p style="margin-top:12mm;color:#888;text-align:center;font-style:italic">Las soluciones aparecerán aquí.</p>';
+    /* La hoja de soluciones no lleva encabezado: así aprovecha mejor el folio. */
+    let h = estado.modelo ? `<div class="sol-modelo">Soluciones · Modelo ${esc(estado.modelo)}</div>` : '';
+    if (!estado.items.length) return '<p style="margin-top:12mm;color:#888;text-align:center;font-style:italic">Las soluciones aparecerán aquí.</p>';
     h += estado.items.map((it, k) => {
       const e = buscarEj(buscarFicha(it.ficha), it.ej);
       const aps = materializar(it);
@@ -548,8 +552,8 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
     he.classList.toggle('estilo-a', a); hs.classList.toggle('estilo-a', a);
     he.innerHTML = renderExamen();
     hs.innerHTML = renderSoluciones();
-    tipografiar([he, hs]).then(() => { comprobarCara(); escalar(); });
-    comprobarCara(); escalar();
+    tipografiar([he, hs]).then(() => { comprobarCara(); marcarCortes(); escalar(); });
+    comprobarCara(); marcarCortes(); escalar();
   }
 
   /* ¿Cabe el examen en una cara? (A4 menos los márgenes de impresión) */
@@ -565,6 +569,25 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
     est.className = 'estado ' + (cabe ? 'ok' : 'aviso');
     est.textContent = cabe ? 'El examen cabe en una cara' : 'El examen ocupa más de una cara: quita apartados o ejercicios';
     if (marca) { marca.hidden = cabe; marca.style.top = util + 'px'; }
+  }
+
+  /* Marcas de corte en la hoja de soluciones: indican dónde empieza cada página al imprimir.
+     Son aproximadas, porque el navegador mueve a la página siguiente los bloques que no deben partirse. */
+  function marcarCortes() {
+    const hs = $('hoja-soluciones');
+    hs.querySelectorAll('.marca-cara').forEach(m => m.remove());
+    if (!estado.items.length || !hs.offsetWidth) return;   // oculta: se recalcula al abrir la pestaña
+    const mm = hs.offsetWidth / 210;
+    let fin = 0;
+    [...hs.children].forEach(c => { fin = Math.max(fin, c.offsetTop + c.offsetHeight); });
+    const util = 269 * mm;
+    for (let n = 1; 14 * mm + n * util < fin - 2 * mm; n++) {
+      const m = document.createElement('div');
+      m.className = 'marca-cara';
+      m.style.top = (14 * mm + n * util) + 'px';
+      m.innerHTML = `<span>Fin de la página ${n} (aprox.)</span>`;
+      hs.appendChild(m);
+    }
   }
 
   /* Escala los folios para que quepan en la columna de vista previa */
@@ -620,6 +643,7 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
     $('hoja-examen').hidden = v !== 'examen';
     $('hoja-soluciones').hidden = v !== 'soluciones';
     $('estado-cara').style.visibility = v === 'examen' ? 'visible' : 'hidden';
+    if (v === 'soluciones') marcarCortes();
     escalar();
   }
   $('tab-examen').onclick = () => mostrar('examen');
