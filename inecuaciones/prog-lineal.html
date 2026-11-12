@@ -7,7 +7,7 @@
 <!-- © 2026 Marta López de Letona · Martamates Interactivo · https://martamates11.github.io/fichas-matamates/
      Todos los derechos reservados. Uso en el aula permitido enlazando a la dirección original.
      Prohibido copiar, alojar en otros sitios, modificar o vender sin permiso escrito de la autora. Términos: https://martamates11.github.io/fichas-matamates/aviso-legal.html -->
-<meta name="description" content="Ficha interactiva y gratuita de matemáticas: programación lineal (optimización). Ejercicios con datos aleatorios, corrección automática y explicación paso a paso de cada error.">
+<meta name="description" content="Ficha interactiva y gratuita de matemáticas: programación lineal (optimización): maximizar beneficios y minimizar costes. Ejercicios con datos aleatorios, corrección automática y explicación paso a paso de cada error.">
 <meta name="author" content="Marta López de Letona">
 <meta name="copyright" content="© 2026 Marta López de Letona · Todos los derechos reservados">
 <link rel="canonical" href="https://martamates11.github.io/fichas-matamates/inecuaciones/prog-lineal.html">
@@ -61,6 +61,15 @@ details.metodo summary { cursor: pointer; font-family: 'Libre Baskerville', seri
 details.metodo ol { margin: 10px 0 6px; padding-left: 22px; line-height: 1.55; }
 details.metodo .puntuacion { margin: 8px 0 0; padding-top: 8px; border-top: 1px dashed var(--color-borde-suave); }
 
+.selector-tipo { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px 14px; margin: 0 0 18px; }
+.selector-etq { font-family: 'Libre Baskerville', serif; font-size: .85rem; color: var(--color-texto-suave); font-style: italic; }
+.segmentos { display: inline-flex; background: var(--color-fondo-card); border: 1.5px solid var(--color-borde); border-radius: 22px; overflow: hidden; box-shadow: 0 1px 4px rgba(44,31,14,.06); }
+.segmentos button { background: transparent; border: none; border-left: 1px solid var(--color-borde-suave); padding: 7px 18px; font-family: 'Lato', sans-serif; font-size: .88rem; font-weight: 700; color: var(--color-texto-suave); cursor: pointer; letter-spacing: .02em; transition: background-color .2s, color .2s; }
+.segmentos button:first-child { border-left: none; }
+.segmentos button:hover:not([aria-checked="true"]) { background: var(--color-barra-alumno); color: var(--color-acento-hover); }
+.segmentos button[aria-checked="true"] { background: var(--color-acento); color: #FDFAF3; cursor: default; }
+.segmentos button:focus-visible { outline: 2px solid var(--color-acento-hover); outline-offset: -3px; }
+@media (max-width: 560px) { .segmentos button { padding: 7px 12px; font-size: .84rem; } .segmentos .largo { display: none; } }
 .enunciado { background: var(--color-fondo); border: 1.5px solid var(--color-borde-suave); border-left: 4px solid var(--color-borde); border-radius: 4px; padding: 18px 24px; margin-bottom: 20px; line-height: 1.7; font-size: .97rem; }
 .enunciado .contexto { display: inline-block; font-size: .75rem; font-weight: 700; color: var(--color-acento); border: 1.5px solid var(--color-borde); border-radius: 20px; padding: 2px 12px; margin-bottom: 8px; background: var(--color-fondo-card); letter-spacing: .04em; }
 .enunciado p { margin: 6px 0; }
@@ -222,13 +231,22 @@ table.vert td { background: var(--color-fondo-card); }
   <details class="metodo" open>
     <summary>Método gráfico</summary>
     <ol>
-      <li>Define las variables y escribe la <b>función objetivo</b> <span class="mat"><i>Z</i> = <i>a</i><i>x</i> + <i>b</i><i>y</i></span> que hay que maximizar.</li>
+      <li>Define las variables y escribe la <b>función objetivo</b> <span class="mat"><i>Z</i> = <i>a</i><i>x</i> + <i>b</i><i>y</i></span> que hay que maximizar (beneficios) o minimizar (costes).</li>
       <li>Traduce cada condición del enunciado a una <b>restricción</b>. Si no se exige ningún mínimo, no olvides <span class="mat"><i>x</i> ≥ 0</span> e <span class="mat"><i>y</i> ≥ 0</span>. Para saber qué semiplano vale, comprueba si un punto (normalmente el origen) la cumple.</li>
-      <li>La <b>región factible</b> es la parte común de todos los semiplanos. Sus <b>vértices</b> son los cortes de las rectas que la delimitan: márcalos y calcula sus coordenadas resolviendo los sistemas.</li>
-      <li>Evalúa <i>Z</i> en cada vértice: el mayor valor da la <b>solución óptima</b>.</li>
+      <li>La <b>región factible</b> es la parte común de todos los semiplanos (en los problemas de costes suele ser <b>no acotada</b>). Sus <b>vértices</b> son los cortes de las rectas que la delimitan: márcalos y calcula sus coordenadas resolviendo los sistemas.</li>
+      <li>Evalúa <i>Z</i> en cada vértice: el mayor valor (si se maximiza) o el menor (si se minimiza) da la <b>solución óptima</b>.</li>
     </ol>
     <p class="puntuacion">Cada paso vale <b>2,5 puntos</b> y cuenta la <b>primera comprobación</b>. En las restricciones, cada restricción que falte o esté mal resta 0,5. Después de comprobar puedes corregir para aprender, pero ya no suma (en el paso 3, al comprobar, el plano muestra la región y sus vértices). La nota es la del ejercicio actual: si pides otro, empiezas de cero. Si pulsas «Mostrar soluciones», verás resueltos los pasos que te falten, pero esos pasos no contarán para la nota.</p>
   </details>
+
+  <div class="selector-tipo">
+    <span class="selector-etq" id="selector-etq">Tipo de problema</span>
+    <div class="segmentos" role="radiogroup" aria-labelledby="selector-etq">
+      <button type="button" role="radio" data-modo="aleatorio" aria-checked="true">Aleatorio</button>
+      <button type="button" role="radio" data-modo="max" aria-checked="false">Maximizar<span class="largo"> beneficios</span></button>
+      <button type="button" role="radio" data-modo="min" aria-checked="false">Minimizar<span class="largo"> costes</span></button>
+    </div>
+  </div>
 
   <div class="enunciado" id="enunciado"></div>
 
@@ -259,8 +277,8 @@ table.vert td { background: var(--color-fondo-card); }
       <div class="glosario-card">
         <h4>Clave de colores</h4>
         <div class="leyenda-fija">
-          <span><i class="l" style="border-color:var(--color-r1)"></i>Restricción r<sub>1</sub> (primer recurso)</span>
-          <span><i class="l" style="border-color:var(--color-r2)"></i>Restricción r<sub>2</sub> (segundo recurso)</span>
+          <span><i class="l" style="border-color:var(--color-r1)"></i>Restricción r<sub>1</sub> (primer recurso o pedido)</span>
+          <span><i class="l" style="border-color:var(--color-r2)"></i>Restricción r<sub>2</sub> (segundo recurso o pedido)</span>
           <span><i class="l punteada" style="border-color:var(--color-min)"></i>Mínimos exigidos (si los hay)</span>
           <span><i class="l punteada" style="border-color:#B8892E"></i>Recta de nivel (en el óptimo)</span>
         </div>
@@ -270,7 +288,8 @@ table.vert td { background: var(--color-fondo-card); }
           <dt>Restricción</dt><dd>Condición del problema escrita como inecuación.</dd>
           <dt>Región factible</dt><dd>Puntos que cumplen todas las restricciones a la vez.</dd>
           <dt>Vértice</dt><dd>Esquina de la región factible: corte de dos rectas frontera.</dd>
-          <dt>Solución óptima</dt><dd>El vértice donde <i>Z</i> alcanza su mayor valor.</dd>
+          <dt>Solución óptima</dt><dd>El vértice donde <i>Z</i> alcanza su mayor valor (al maximizar) o su menor valor (al minimizar).</dd>
+          <dt>Región no acotada</dt><dd>Región factible que se extiende sin límite; puede tener mínimo aunque no tenga máximo.</dd>
         </dl>
       </div>
     </div>
@@ -518,6 +537,62 @@ const CONTEXTOS = [
         <p class="pregunta">¿Cuántos lotes de cada tipo debe organizar para que el beneficio sea máximo? ¿A cuánto asciende?</p>
         <p class="variables">Llama ${V('x')} al número de lotes ${e.X} e ${V('y')} al de lotes ${e.Y}.</p>`;
     }
+  },
+  /* ---------- Minimizar costes: pedidos que hay que cubrir (restricciones ≥) ---------- */
+  {
+    id: 'vacunas', tipo: 'min', nombre: 'Laboratorios farmacéuticos · Vacunas',
+    pares: [[['día del laboratorio A', 'días del laboratorio A'], ['día del laboratorio B', 'días del laboratorio B']]],
+    r1: { A: [1, 4], B: [1, 4], k: 1000 }, r2: { A: [1, 4], B: [1, 4], k: 1000 }, P: [[2, 14], [2, 14]], minimos: 'no',
+    coefs: () => [ri(4, 15) * 1000, ri(4, 15) * 1000], rtxt: ['dosis contra la gripe pedidas (como mínimo)', 'dosis contra la neumonía pedidas (como mínimo)'],
+    pau: { a1: 2, b1: 4, a2: 2, b2: 1, px: 8, py: 2, mx: 0, my: 0, cx: 8000, cy: 10000, par: 0 },
+    texto(e) {
+      return `<p>Una empresa farmacéutica produce vacunas contra la gripe y contra la neumonía en dos laboratorios, A y B.</p>
+        <p>El laboratorio A produce diariamente <b>${miles(e.a1)} dosis</b> de vacunas contra la gripe y <b>${miles(e.a2)}</b> contra la neumonía, con un coste diario de <b>${eur(e.cx)} €</b>.
+        El laboratorio B produce diariamente <b>${miles(e.b1)} dosis</b> contra la gripe y <b>${miles(e.b2)}</b> contra la neumonía, con un coste diario de <b>${eur(e.cy)} €</b>.</p>
+        <p>Se recibe un pedido de <b>${miles(e.G)} dosis</b> de vacunas contra la gripe y <b>${miles(e.B)}</b> contra la neumonía.</p>
+        <p class="pregunta">¿Cuántos días debe funcionar cada laboratorio para satisfacer el pedido con un coste mínimo? ¿Cuál es el valor de dicho coste mínimo?</p>
+        <p class="variables">Llama ${V('x')} al número de días que funciona el laboratorio A e ${V('y')} al de días que funciona el B.</p>`;
+    }
+  },
+  {
+    id: 'factoria', tipo: 'min', nombre: 'Factoría de automóviles · Pedido de temporada',
+    pares: [[['día de la fábrica A', 'días de la fábrica A'], ['día de la fábrica B', 'días de la fábrica B']]],
+    r1: { A: [2, 8], B: [1, 6] }, r2: { A: [1, 6], B: [1, 6] }, P: [[5, 40], [5, 70]], minimos: 'no',
+    coefs: () => [ri(10, 40) * 1000, ri(10, 40) * 1000], rtxt: ['turismos pedidos (como mínimo)', 'furgonetas pedidas (como mínimo)'],
+    pau: { a1: 6, b1: 2, a2: 2, b2: 2, px: 10, py: 60, mx: 0, my: 0, cx: 30000, cy: 20000, par: 0 },
+    texto(e) {
+      return `<p>Una factoría de automóviles tiene pedidos de <b>${e.G} turismos</b> y <b>${e.B} furgonetas</b> para la próxima temporada. Dispone para ello de dos fábricas, A y B.</p>
+        <p>La fábrica A produce diariamente ${plural(e.a1, 'turismo', 'turismos')} y ${plural(e.a2, 'furgoneta', 'furgonetas')}, con un coste diario de <b>${eur(e.cx)} €</b>.
+        La fábrica B produce diariamente ${plural(e.b1, 'turismo', 'turismos')} y ${plural(e.b2, 'furgoneta', 'furgonetas')}, con un coste de <b>${eur(e.cy)} €</b> cada día.</p>
+        <p class="pregunta">¿Cuántos días debe abrir cada fábrica para producir el pedido de la temporada con el mínimo coste? ¿Cuál es el valor de dicho coste mínimo?</p>
+        <p class="variables">Llama ${V('x')} al número de días que abre la fábrica A e ${V('y')} al de días que abre la B.</p>`;
+    }
+  },
+  {
+    id: 'piensos', tipo: 'min', nombre: 'Granja de cerdo ibérico · Jerez de los Caballeros', pre: ['saco de pienso ', 'sacos de pienso '],
+    pares: [['A', 'B'], ['Montanera', 'Engorde'], ['Cebo', 'Crecimiento']],
+    r1: { A: [1, 5], B: [1, 5] }, r2: { A: [1, 5], B: [1, 5] }, P: [[5, 40], [5, 40]], minimos: 'no',
+    coefs: () => [ri(12, 40), ri(12, 40)], rtxt: ['proteína necesaria (como mínimo)', 'fibra necesaria (como mínimo)'],
+    texto(e) {
+      return `<p>Un ganadero de <b>Jerez de los Caballeros</b> necesita este mes, para alimentar a sus cerdos ibéricos, al menos <b>${e.G} kg de proteína</b> y <b>${e.B} kg de fibra</b>. Puede comprar dos piensos, ${e.X} y ${e.Y}.</p>
+        <p>Cada saco de pienso ${e.X} aporta ${e.a1} kg de proteína y ${e.a2} kg de fibra, y cuesta <b>${eur(e.cx)} €</b>.
+        Cada saco de pienso ${e.Y} aporta ${e.b1} kg de proteína y ${e.b2} kg de fibra, y cuesta <b>${eur(e.cy)} €</b>.</p>
+        <p class="pregunta">¿Cuántos sacos de cada pienso debe comprar para cubrir esas necesidades con el menor coste posible? ¿Cuál es ese coste mínimo?</p>
+        <p class="variables">Llama ${V('x')} al número de sacos de pienso ${e.X} e ${V('y')} al de sacos de pienso ${e.Y}.</p>`;
+    }
+  },
+  {
+    id: 'cerezas', tipo: 'min', nombre: 'Cooperativa de cerezas · Valle del Jerte', pre: ['turno en la planta ', 'turnos en la planta '],
+    pares: [['de Cabezuela', 'de Navaconcejo'], ['de Jerte', 'de Valdastillas'], ['de Tornavacas', 'de Piornal']],
+    r1: { A: [1, 6], B: [1, 6], k: 100 }, r2: { A: [1, 5], B: [1, 5], k: 100 }, P: [[3, 20], [3, 20]], minimos: 'no',
+    coefs: () => [ri(6, 20) * 100, ri(6, 20) * 100], rtxt: ['cajas de picotas pedidas (como mínimo)', 'cajas de cerezas Burlat pedidas (como mínimo)'],
+    texto(e) {
+      return `<p>Una cooperativa del <b>Valle del Jerte</b> envasa cerezas en dos plantas, la ${e.X} y la ${e.Y}. Una cadena de supermercados le hace un pedido de al menos <b>${miles(e.G)} cajas de picotas</b> y <b>${miles(e.B)} cajas de cerezas Burlat</b>.</p>
+        <p>Cada turno de trabajo en la planta ${e.X} envasa ${miles(e.a1)} cajas de picotas y ${miles(e.a2)} de Burlat, con un coste de <b>${eur(e.cx)} €</b>.
+        Cada turno en la planta ${e.Y} envasa ${miles(e.b1)} cajas de picotas y ${miles(e.b2)} de Burlat, con un coste de <b>${eur(e.cy)} €</b>.</p>
+        <p class="pregunta">¿Cuántos turnos debe programar en cada planta para servir el pedido con el menor coste? ¿Cuál es ese coste mínimo?</p>
+        <p class="variables">Llama ${V('x')} al número de turnos en la planta ${e.X} e ${V('y')} al de turnos en la planta ${e.Y}.</p>`;
+    }
   }
 ];
 const NOMBRE_R = { r1: 'r<sub>1</sub>', r2: 'r<sub>2</sub>', rx: 'mín. x', ry: 'mín. y' };
@@ -536,10 +611,11 @@ const valorZ = (e, v) => Math.round((e.cx * v[0] + e.cy * v[1]) * 100) / 100;
    Devuelve null si no cumple alguna condición de calidad. */
 function construir(ctx, d) {
   const { a1, b1, a2, b2, px, py, mx, my, cx, cy } = d;
+  const tipo = ctx.tipo || 'max', s = tipo === 'max' ? '≤' : '≥';
   if (a1 * b2 - a2 * b1 === 0 || mx >= px || my >= py) return null;
   const G = a1 * px + b1 * py, B = a2 * px + b2 * py;
   const Ri = [
-    { id: 'r1', a: a1, b: b1, c: G, s: '≤' }, { id: 'r2', a: a2, b: b2, c: B, s: '≤' },
+    { id: 'r1', a: a1, b: b1, c: G, s }, { id: 'r2', a: a2, b: b2, c: B, s },
     { id: 'rx', a: 1, b: 0, c: mx, s: '≥' }, { id: 'ry', a: 0, b: 1, c: my, s: '≥' }
   ];
   const verts = [];
@@ -550,21 +626,23 @@ function construir(ctx, d) {
     if (!Number.isInteger(p[0] + 0) || !Number.isInteger(p[1] + 0)) return null;
     verts.push([p[0] + 0, p[1] + 0, [Ri[i].id, Ri[j].id]]);
   }
-  if (verts.length !== 4 || !verts.some(v => v[0] === px && v[1] === py)) return null;
+  // maximizar: cuadrilátero acotado; minimizar: región no acotada con 3 vértices
+  if (verts.length !== (tipo === 'max' ? 4 : 3) || !verts.some(v => v[0] === px && v[1] === py)) return null;
   const k1 = ctx.r1.k || 1, k2 = ctx.r2.k || 1;
   const par = ctx.pares[d.par];
   const e = {
     ctx, X: par[0], Y: par[1], xs: lab(par[0], 0, ctx.pre), xp: lab(par[0], 1, ctx.pre), ys: lab(par[1], 0, ctx.pre), yp: lab(par[1], 1, ctx.pre),
-    a1: a1 * k1, b1: b1 * k1, G: G * k1, a2: a2 * k2, b2: b2 * k2, B: B * k2, mx, my, cx, cy, verts, pau: !!d.esPau
+    a1: a1 * k1, b1: b1 * k1, G: G * k1, a2: a2 * k2, b2: b2 * k2, B: B * k2, mx, my, cx, cy, verts, pau: !!d.esPau, tipo
   };
   e.R = [
-    { id: 'r1', a: e.a1, b: e.b1, c: e.G, s: '≤' }, { id: 'r2', a: e.a2, b: e.b2, c: e.B, s: '≤' },
+    { id: 'r1', a: e.a1, b: e.b1, c: e.G, s }, { id: 'r2', a: e.a2, b: e.b2, c: e.B, s },
     { id: 'rx', a: 1, b: 0, c: mx, s: '≥' }, { id: 'ry', a: 0, b: 1, c: my, s: '≥' }
   ];
-  const zs = verts.map(v => valorZ(e, v)).sort((p, q) => q - p);
-  if (zs[0] - zs[1] < Math.max(1, zs[0] * 0.01)) return null;   // óptimo único y claro
-  e.opt = verts.reduce((m, v) => (valorZ(e, v) > valorZ(e, m) ? v : m));
-  e.zmax = valorZ(e, e.opt);
+  const mejor = (p, q) => tipo === 'max' ? p > q : p < q;
+  const zs = verts.map(v => valorZ(e, v)).sort((p, q) => tipo === 'max' ? q - p : p - q);
+  if (Math.abs(zs[0] - zs[1]) < Math.max(1, Math.abs(zs[0]) * 0.01)) return null;   // óptimo único y claro
+  e.opt = verts.reduce((m, v) => (mejor(valorZ(e, v), valorZ(e, m)) ? v : m));
+  e.zopt = valorZ(e, e.opt);
   e.optEnCorte = e.opt[0] === px && e.opt[1] === py;
   e.firma = [ctx.id, a1, b1, a2, b2, px, py, mx, my, cx, cy].join(',');
   e.candidatos = calcularCandidatos(e);
@@ -592,8 +670,9 @@ function aleatorio(ctx) {
 }
 let ultimaFirma = '', ultimoCtx = '';
 const PROB_PAU = 0.25;
-function generar() {
-  const posibles = CONTEXTOS.filter(c => c.id !== ultimoCtx);
+function generar(modo) {
+  const tipo = modo === 'max' || modo === 'min' ? modo : (rand() < 0.5 ? 'max' : 'min');
+  const posibles = CONTEXTOS.filter(c => (c.tipo || 'max') === tipo && c.id !== ultimoCtx);
   for (let intento = 0; intento < 50; intento++) {
     const ctx = pick(posibles);
     let e = null;
@@ -668,9 +747,10 @@ function dibujarRecta(r) {
 function dibujarRestricciones() {
   limpiar('g-rectas');
   ex.R.forEach(r => { if (!((r.id === 'rx' || r.id === 'ry') && r.c === 0)) dibujarRecta(r); });
+  const s = ex.R[0].s;
   const ley = [
-    `<span><i class="l" style="border-color:${COLOR.r1}"></i>${M(restr(ex.a1, ex.b1, ex.G, '≤'))}</span>`,
-    `<span><i class="l" style="border-color:${COLOR.r2}"></i>${M(restr(ex.a2, ex.b2, ex.B, '≤'))}</span>`
+    `<span><i class="l" style="border-color:${COLOR.r1}"></i>${M(restr(ex.a1, ex.b1, ex.G, s))}</span>`,
+    `<span><i class="l" style="border-color:${COLOR.r2}"></i>${M(restr(ex.a2, ex.b2, ex.B, s))}</span>`
   ];
   if (ex.mx > 0) ley.push(`<span><i class="l" style="border-color:${COLOR.rx};border-top-style:dashed"></i>${M(V('x') + ' ≥ ' + ex.mx)}</span>`);
   if (ex.my > 0) ley.push(`<span><i class="l" style="border-color:${COLOR.ry};border-top-style:dashed"></i>${M(V('y') + ' ≥ ' + ex.my)}</span>`);
@@ -687,7 +767,7 @@ function calcularCandidatos(e) {
     const p = cortes(lineas[i], lineas[j]);
     if (!p || p[0] < -1e-9 || p[1] < -1e-9) continue;
     const q = [Math.round(p[0] * 1000) / 1000 + 0, Math.round(p[1] * 1000) / 1000 + 0];
-    if (q[0] === 0 && q[1] === 0 && !(e.mx === 0 && e.my === 0)) continue;   // el origen solo si es vértice
+    if (q[0] === 0 && q[1] === 0 && !e.verts.some(v => v[0] === 0 && v[1] === 0)) continue;   // el origen solo si es vértice
     if (out.some(o => Math.abs(o[0] - q[0]) < 1e-6 && Math.abs(o[1] - q[1]) < 1e-6)) continue;
     out.push(q);
   }
@@ -711,6 +791,13 @@ function dibujarCandidatos() {
 }
 function dibujarRegion() {
   limpiar('g-region');
+  if (ex.tipo === 'min') {   // región no acotada: se prolonga más allá del plano (lo recorta el clipPath)
+    const L = 4 * Math.max(esc.xmax, esc.ymax);
+    const cad = ex.verts.map(v => [v[0], v[1]]).sort((p, q) => p[0] - q[0]);
+    const pts = [[0, L], ...cad, [L, 0], [L, L]];
+    el('polygon', { points: pts.map(v => X(v[0]) + ',' + Y(v[1])).join(' '), fill: 'url(#rayado)', stroke: '#2E6B3E', 'stroke-width': 1.2 }, $('g-region'));
+    return;
+  }
   const vs = ex.verts.map(v => [v[0], v[1]]);
   const cx = vs.reduce((s, v) => s + v[0], 0) / vs.length, cy = vs.reduce((s, v) => s + v[1], 0) / vs.length;
   vs.sort((p, q) => Math.atan2(p[1] - cy, p[0] - cx) - Math.atan2(q[1] - cy, q[0] - cx));
@@ -727,11 +814,11 @@ function dibujarSolucionVertices() {
 }
 function dibujarNivel() {
   limpiar('g-nivel');
-  const { cx, cy, zmax, opt } = ex, g = $('g-nivel');
-  const y = x => (zmax - cx * x) / cy;
+  const { cx, cy, zopt, opt } = ex, g = $('g-nivel');
+  const y = x => (zopt - cx * x) / cy;
   el('line', { x1: X(-esc.xmax), y1: Y(y(-esc.xmax)), x2: X(2 * esc.xmax), y2: Y(y(2 * esc.xmax)), stroke: '#B8892E', 'stroke-width': 2, 'stroke-dasharray': '3 4' }, g);
   el('circle', { cx: X(opt[0]), cy: Y(opt[1]), r: 9, fill: 'none', stroke: '#B8892E', 'stroke-width': 2.5 }, g);
-  $('leyenda').insertAdjacentHTML('beforeend', `<span><i class="l" style="border-color:#B8892E;border-top-style:dotted"></i>Recta de nivel ${M(V('Z') + ' = ' + eur(zmax))}</span>`);
+  $('leyenda').insertAdjacentHTML('beforeend', `<span><i class="l" style="border-color:#B8892E;border-top-style:dotted"></i>Recta de nivel ${M(V('Z') + ' = ' + eur(zopt))}</span>`);
 }
 function aMat(evt) {
   const pt = svg.createSVGPoint(); pt.x = evt.clientX; pt.y = evt.clientY;
@@ -774,7 +861,7 @@ function htmlPaso(n) {
         <div class="marca" id="r${i}-marca"></div>
       </div>`;
     return `
-    <p class="instr">Escribe una restricción por fila, en la forma <span class="mat"><i>a</i><i>x</i> + <i>b</i><i>y</i> ≤ <i>c</i></span>. Si una incógnita no aparece, su coeficiente es 0. Deja vacías las filas que no uses.</p>
+    <p class="instr">Escribe una restricción por fila, en la forma <span class="mat"><i>a</i><i>x</i> + <i>b</i><i>y</i> ≤ <i>c</i></span> o <span class="mat"><i>a</i><i>x</i> + <i>b</i><i>y</i> ≥ <i>c</i></span>. Si una incógnita no aparece, su coeficiente es 0. Deja vacías las filas que no uses.</p>
     ${filas}
     <p class="nota-in">El punto de prueba indica qué semiplano corresponde a cada restricción.</p>
     <div class="acciones"><button class="btn-primario" data-comprobar="2">Comprobar</button></div>`;
@@ -783,12 +870,13 @@ function htmlPaso(n) {
     <p class="instr">En el plano, haz clic en los puntos de corte que sean <b>vértices de la región factible</b> (otro clic lo quita). Después escribe sus coordenadas resolviendo el sistema de las dos rectas que se cortan.</p>
     <div id="tabla-vertices"></div>
     <div class="acciones"><button class="btn-primario" data-comprobar="3">Comprobar</button></div>`;
+  const qz = ex.tipo === 'max' ? 'beneficio máximo' : 'coste mínimo';
   return `
     <p class="instr">Evalúa <i>Z</i> en cada vértice y completa la conclusión.</p>
-    <div class="sol-frase">El beneficio máximo se obtiene con
+    <div class="sol-frase">El ${qz} se obtiene con
       <input class="num ancho" id="s-x" aria-label="valor óptimo de x"> <span id="s-ux"></span> y
       <input class="num ancho" id="s-y" aria-label="valor óptimo de y"> <span id="s-uy"></span>,
-      y asciende a <input class="num ancho" id="s-z" aria-label="beneficio máximo"> €.</div>
+      y asciende a <input class="num ancho" id="s-z" aria-label="${qz}"> €.</div>
     <div class="acciones"><button class="btn-primario" data-comprobar="4">Comprobar</button></div>`;
 }
 function renderEjercicio() {
@@ -873,12 +961,16 @@ function validar1() {
   const correcta = M(V('Z') + ' = ' + expr(ex.cx, ex.cy));
   const igual = (u, v) => Math.abs(u - v) < 1e-9;
   const coefOk = igual(a, ex.cx) && igual(b, ex.cy);
-  if (coefOk && obj === 'max') return { ok: true, html: `<b>Correcto.</b> ${correcta}: cada ${ex.xs} aporta ${eur(ex.cx)} € y cada ${ex.ys}, ${eur(ex.cy)} €. Se busca el beneficio <b>máximo</b>.` };
+  const esMax = ex.tipo === 'max';
+  if (coefOk && obj === ex.tipo) return { ok: true, html: esMax
+    ? `<b>Correcto.</b> ${correcta}: cada ${ex.xs} aporta ${eur(ex.cx)} € y cada ${ex.ys}, ${eur(ex.cy)} €. Se busca el beneficio <b>máximo</b>.`
+    : `<b>Correcto.</b> ${correcta}: cada ${ex.xs} cuesta ${eur(ex.cx)} € y cada ${ex.ys}, ${eur(ex.cy)} €. Se busca el coste <b>mínimo</b>.` };
   const motivos = [];
-  if (igual(a, ex.cy) && igual(b, ex.cx)) motivos.push(`Has intercambiado los coeficientes: ${V('x')} es el número de ${ex.xp}, así que su coeficiente es el beneficio de cada ${ex.xs}.`);
-  else if (!coefOk) motivos.push('Los coeficientes de la función objetivo son los <b>beneficios unitarios</b>, no los recursos que consume cada unidad.');
-  if (obj === 'min') motivos.push('Se pide el beneficio <b>máximo</b>: la función objetivo se maximiza.');
-  return { ok: false, html: `<b>Incorrecto.</b> ${motivos.join(' ')}<div class="solucion">La función objetivo es ${correcta}, que hay que maximizar.</div>` };
+  if (igual(a, ex.cy) && igual(b, ex.cx)) motivos.push(`Has intercambiado los coeficientes: ${V('x')} es el número de ${ex.xp}, así que su coeficiente es el ${esMax ? 'beneficio' : 'coste'} de cada ${ex.xs}.`);
+  else if (!coefOk) motivos.push(esMax ? 'Los coeficientes de la función objetivo son los <b>beneficios unitarios</b>, no los recursos que consume cada unidad.'
+    : 'Los coeficientes de la función objetivo son los <b>costes unitarios</b>, no las cantidades que produce o aporta cada unidad.');
+  if (obj !== ex.tipo) motivos.push(esMax ? 'Se pide el beneficio <b>máximo</b>: la función objetivo se maximiza.' : 'Se pide el coste <b>mínimo</b>: la función objetivo se minimiza.');
+  return { ok: false, html: `<b>Incorrecto.</b> ${motivos.join(' ')}<div class="solucion">La función objetivo es ${correcta}, que hay que ${esMax ? 'maximizar' : 'minimizar'}.</div>` };
 }
 
 /* ---------- Paso 2 ---------- */
@@ -895,12 +987,17 @@ function clasificar(f) {
     const esperado = k > 0 ? r.s : GIRA[r.s];
     if (f.s === esperado) return { cat: r.id };
     const estricta = k > 0 ? (r.s === '≤' ? '<' : '>') : (r.s === '≤' ? '>' : '<');
-    if (f.s === estricta) return { cat: null, recta: true, motivo: 'Usa ≤ o ≥, no una desigualdad estricta: el recurso puede agotarse justo y el mínimo puede cumplirse justo.' };
-    if (f.s === '=') return { cat: null, recta: true, motivo: 'No es una igualdad: no hace falta gastar todo el recurso ni quedarse exactamente en el mínimo.' };
-    return { cat: null, recta: true, motivo: k < 0 ? 'Al multiplicar por un número negativo hay que cambiar el sentido de la desigualdad.' : 'La recta es la correcta, pero el sentido de la desigualdad no.' };
+    const esMax = ex.tipo === 'max';
+    if (f.s === estricta) return { cat: null, recta: true, motivo: esMax ? 'Usa ≤ o ≥, no una desigualdad estricta: el recurso puede agotarse justo y el mínimo puede cumplirse justo.'
+      : 'Usa ≥, no una desigualdad estricta: el pedido puede cubrirse exactamente y una cantidad puede valer 0.' };
+    if (f.s === '=') return { cat: null, recta: true, motivo: esMax ? 'No es una igualdad: no hace falta gastar todo el recurso ni quedarse exactamente en el mínimo.'
+      : 'No es una igualdad: basta con cubrir el pedido; puede producirse más de lo pedido.' };
+    return { cat: null, recta: true, motivo: k < 0 ? 'Al multiplicar por un número negativo hay que cambiar el sentido de la desigualdad.'
+      : esMax ? 'La recta es la correcta, pero el sentido de la desigualdad no.' : 'La recta es la correcta, pero el sentido no: el pedido es una cantidad <b>mínima</b> que hay que alcanzar, así que va con ≥.' };
   }
   if (f.s === '≥' && f.c === 0 && ((f.a > 0 && f.b === 0) || (f.a === 0 && f.b > 0))) return { cat: 'redundante' };
-  return { cat: null, motivo: 'No corresponde a ninguna condición del enunciado. Revisa qué consume cada unidad de cada tipo.' };
+  return { cat: null, motivo: ex.tipo === 'max' ? 'No corresponde a ninguna condición del enunciado. Revisa qué consume cada unidad de cada tipo.'
+    : 'No corresponde a ninguna condición del enunciado. Revisa qué produce o aporta cada unidad de cada tipo y cuánto se pide.' };
 }
 function validar2() {
   const filas = [];
@@ -942,8 +1039,8 @@ function validar2() {
     $(`r${i}-marca`).innerHTML = m ? m.txt : '';
   }
   const lista = '<ul>' + necesarias.map(r => {
-    const txt = r.id === 'r1' ? `${M(restr(r.a, r.b, r.c, '≤'))}: ${ex.ctx.rtxt[0]}`
-      : r.id === 'r2' ? `${M(restr(r.a, r.b, r.c, '≤'))}: ${ex.ctx.rtxt[1]}`
+    const txt = r.id === 'r1' ? `${M(restr(r.a, r.b, r.c, r.s))}: ${ex.ctx.rtxt[0]}`
+      : r.id === 'r2' ? `${M(restr(r.a, r.b, r.c, r.s))}: ${ex.ctx.rtxt[1]}`
       : `${M((r.id === 'rx' ? V('x') : V('y')) + ' ≥ ' + r.c)}: ${r.c === 0 ? 'no se pueden hacer cantidades negativas' : 'mínimo exigido'}`;
     return `<li>${hechas[r.id] ? '✓ ' : '✗ '}${txt}</li>`;
   }).join('') + '</ul>';
@@ -1006,7 +1103,9 @@ function validar3() {
       errores.push(`Falta el vértice de corte de ${nombreRecta(v[2][0])} con ${nombreRecta(v[2][1])}.`);
   });
   const lista = ex.verts.map(v => `(${fmt(v[0])}, ${fmt(v[1])})`).join(', ');
-  if (!errores.length) return { ok: true, html: `<b>Correcto.</b> La región factible es el cuadrilátero de vértices ${lista}: en cada uno se cortan dos de las rectas frontera.` };
+  if (!errores.length) return { ok: true, html: ex.tipo === 'max'
+    ? `<b>Correcto.</b> La región factible es el cuadrilátero de vértices ${lista}: en cada uno se cortan dos de las rectas frontera.`
+    : `<b>Correcto.</b> La región factible es <b>no acotada</b> (se extiende sin límite hacia arriba y hacia la derecha) y sus vértices son ${lista}: en cada uno se cortan dos de las rectas frontera.` };
   return { ok: false, html: `<b>Incorrecto.</b><ul>${errores.map(e => `<li>${e}</li>`).join('')}</ul><div class="solucion">Vértices de la región factible: ${lista}. Recuerda que los cortes con los ejes solo son vértices si cumplen <b>todas</b> las restricciones.</div>` };
 }
 
@@ -1020,16 +1119,18 @@ function tablaZ() {
 function validar4() {
   const x = leerNum($('s-x').value), y = leerNum($('s-y').value), z = leerNum($('s-z').value);
   if (x === null || y === null || z === null) return { ok: null, html: 'Completa los tres huecos con números.' };
-  const { opt, zmax, cx, cy } = ex;
+  const { opt, zopt, cx, cy } = ex;
   const xyOk = x === opt[0] && y === opt[1];
-  const zOk = Math.abs(z - zmax) < 1e-6;
-  const conclusion = `El beneficio máximo es <b>${eur(zmax)} €</b>, con ${fmt(opt[0])} ${opt[0] === 1 ? ex.xs : ex.xp} y ${fmt(opt[1])} ${opt[1] === 1 ? ex.ys : ex.yp}.`;
+  const zOk = Math.abs(z - zopt) < 1e-6;
+  const esMax = ex.tipo === 'max';
+  const conclusion = `El ${esMax ? 'beneficio máximo' : 'coste mínimo'} es <b>${eur(zopt)} €</b>, con ${fmt(opt[0])} ${opt[0] === 1 ? ex.xs : ex.xp} y ${fmt(opt[1])} ${opt[1] === 1 ? ex.ys : ex.yp}.`
+    + (esMax ? '' : ' <span style="font-size:.88rem">(Aunque la región no está acotada, el mínimo existe: los costes son positivos y <i>Z</i> crece al alejarse del origen. En cambio, <i>Z</i> no tendría máximo.)</span>');
   if (xyOk && zOk) return { ok: true, html: `<b>Correcto.</b> ${conclusion}<div class="solucion">${tablaZ()}</div>` };
   let motivo;
   const vEleg = ex.verts.find(v => v[0] === x && v[1] === y);
-  if (xyOk) motivo = `El vértice es el correcto, pero el valor de ${V('Z')} no: ${M(`${eur(cx)}·${fmt(x)} + ${eur(cy)}·${fmt(y)} = ${eur(zmax)}`)}.`;
+  if (xyOk) motivo = `El vértice es el correcto, pero el valor de ${V('Z')} no: ${M(`${eur(cx)}·${fmt(x)} + ${eur(cy)}·${fmt(y)} = ${eur(zopt)}`)}.`;
   else if (x === opt[1] && y === opt[0]) motivo = `Has intercambiado ${V('x')} e ${V('y')}.`;
-  else if (vEleg) motivo = `(${fmt(x)}, ${fmt(y)}) es un vértice, pero no el que da el mayor valor de ${V('Z')}: hay que evaluar la función en <b>todos</b> los vértices y quedarse con el mayor.`;
+  else if (vEleg) motivo = `(${fmt(x)}, ${fmt(y)}) es un vértice, pero no el que da el ${esMax ? 'mayor' : 'menor'} valor de ${V('Z')}: hay que evaluar la función en <b>todos</b> los vértices y quedarse con el ${esMax ? 'mayor' : 'menor'}.`;
   else motivo = `(${fmt(x)}, ${fmt(y)}) no es un vértice de la región factible: el óptimo de un problema lineal se alcanza siempre en un vértice.`;
   return { ok: false, html: `<b>Incorrecto.</b> ${motivo}<div class="solucion">${tablaZ()}${conclusion}</div>` };
 }
@@ -1065,7 +1166,7 @@ function comprobar(n) {
    Los pasos ya comprobados conservan su puntuación. Se reutilizan los
    validadores para la explicación («Correcto.» → «Solución.»). */
 function rellenarPaso(n) {
-  if (n === 1) { $('fo-a').value = fmt(ex.cx); $('fo-b').value = fmt(ex.cy); $('fo-obj').value = 'max'; return; }
+  if (n === 1) { $('fo-a').value = fmt(ex.cx); $('fo-b').value = fmt(ex.cy); $('fo-obj').value = ex.tipo; return; }
   if (n === 2) {
     for (let i = 0; i < 5; i++) {
       const r = ex.R[i];
@@ -1082,7 +1183,7 @@ function rellenarPaso(n) {
     ex.coords = ex.verts.map(v => [fmt(v[0]), fmt(v[1])]);
     renderTablaVertices(); return;
   }
-  $('s-x').value = fmt(ex.opt[0]); $('s-y').value = fmt(ex.opt[1]); $('s-z').value = fmt(ex.zmax);
+  $('s-x').value = fmt(ex.opt[0]); $('s-y').value = fmt(ex.opt[1]); $('s-z').value = fmt(ex.zopt);
 }
 function revelarSoluciones() {
   if (!ex || ex.revelado || pasoActivo() === 0) return;
@@ -1139,24 +1240,43 @@ function nuevoEjercicio() {
     else if (todos) historial.completados++;
     else if ([1, 2, 3, 4].some(n => ex.estado[n].comprobado)) historial.abandonados++;
   }
-  ex = generar();
+  ex = generar(modo);
   ex.estado = {};
   for (let n = 1; n <= 4; n++) ex.estado[n] = { comprobado: false, correcto: false, puntos: 0, intentos: 0, primera: false };
   ex.sel = []; ex.coords = []; ex.revelado = false;
   $('resultado-sol').hidden = true;
   renderEjercicio();
 }
-$('btn-nuevo').addEventListener('click', () => {
+/* ---------- Tipo de problema: aleatorio / maximizar / minimizar ----------
+   ?modo=max | min | aleatorio en la URL fija el modo inicial (enlace del profesorado). */
+const NOMBRE_MODO = { aleatorio: 'Aleatorio', max: 'Maximizar beneficios', min: 'Minimizar costes' };
+let modo = NOMBRE_MODO[URLP.get('modo')] ? URLP.get('modo') : 'aleatorio';
+const modosUsados = [modo];
+let modoPendiente = null;
+function pintarModo() {
+  document.querySelectorAll('[data-modo]').forEach(b => b.setAttribute('aria-checked', b.dataset.modo === modo ? 'true' : 'false'));
+}
+function aplicarNuevo() {
+  if (modoPendiente) { modo = modoPendiente; if (!modosUsados.includes(modo)) modosUsados.push(modo); pintarModo(); }
+  modoPendiente = null;
+  nuevoEjercicio();
+}
+function pedirNuevo(m) {
+  modoPendiente = m;
   const algo = [1, 2, 3, 4].some(n => ex.estado[n].comprobado);
-  if (!algo) { nuevoEjercicio(); return; }
-  $('aviso-texto').innerHTML = `Tu nota actual es <b>${fmt(calcularNota())}</b>. Si empiezas otro ejercicio, la nota vuelve a 0 y solo contará el nuevo. ${[1, 2, 3, 4].every(n => ex.estado[n].comprobado) ? '' : 'Este ejercicio quedará registrado como <b>abandonado</b> en el informe.'}`;
+  if (!algo) { aplicarNuevo(); return; }
+  const cambio = m ? `Vas a cambiar el tipo de problema a <b>${NOMBRE_MODO[m]}</b>, y eso genera un ejercicio nuevo. ` : '';
+  $('aviso-texto').innerHTML = `${cambio}Tu nota actual es <b>${fmt(calcularNota())}</b>. Si empiezas otro ejercicio, la nota vuelve a 0 y solo contará el nuevo. ${[1, 2, 3, 4].every(n => ex.estado[n].comprobado) ? '' : 'Este ejercicio quedará registrado como <b>abandonado</b> en el informe.'}`;
   $('overlay-aviso').classList.add('visible');
   $('aviso-cancelar').focus();
-});
-$('aviso-cancelar').addEventListener('click', () => $('overlay-aviso').classList.remove('visible'));
+}
+$('btn-nuevo').addEventListener('click', () => pedirNuevo(null));
+document.querySelectorAll('[data-modo]').forEach(b => b.addEventListener('click', () => { if (b.dataset.modo !== modo) pedirNuevo(b.dataset.modo); }));
+pintarModo();
+$('aviso-cancelar').addEventListener('click', () => { modoPendiente = null; $('overlay-aviso').classList.remove('visible'); });
 $('aviso-aceptar').addEventListener('click', () => {
   $('overlay-aviso').classList.remove('visible');
-  nuevoEjercicio();
+  aplicarNuevo();
   $('enunciado').scrollIntoView({ behavior: 'smooth', block: 'start' });
 });
 
@@ -1195,6 +1315,7 @@ $('btn-finalizar').addEventListener('click', () => {
       <span>Hora: ${dos(ahora.getHours())}:${dos(ahora.getMinutes())}:${dos(ahora.getSeconds())}</span>
       <span>Tiempo empleado: ${dos(Math.floor(min / 60))}:${dos(min % 60)}</span>
     </div>
+    <div class="m-datos"><span>Tipo de problema elegido: <b>${NOMBRE_MODO[modo]}</b>${modo === 'aleatorio' ? ` (este ejercicio: ${ex.tipo === 'max' ? 'maximizar' : 'minimizar'})` : ''}</span>${modosUsados.length > 1 ? `<span>Tipos usados en la sesión: ${modosUsados.map(m => NOMBRE_MODO[m]).join(', ')}</span>` : ''}</div>
     <div class="m-datos"><span>Ejercicio: ${ex.ctx.nombre}</span><span>Pasos con solución vista: <b>${[1, 2, 3, 4].filter(n => ex.estado[n].revelado).length}</b></span></div>
     <h4>Desglose por paso (ejercicio actual)</h4>
     <table><tr><th>Paso</th><th>Estado</th><th>Comprobaciones</th><th>Puntos</th></tr>${filas}</table>
@@ -1204,7 +1325,7 @@ $('btn-finalizar').addEventListener('click', () => {
   $('btn-cerrar').addEventListener('click', () => $('overlay').classList.remove('visible'));
 });
 $('overlay').addEventListener('click', e => { if (e.target === $('overlay')) $('overlay').classList.remove('visible'); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { $('overlay').classList.remove('visible'); $('overlay-aviso').classList.remove('visible'); if ($('overlay-sol').classList.contains('visible')) cerrarSol(); } });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { $('overlay').classList.remove('visible'); $('overlay-aviso').classList.remove('visible'); modoPendiente = null; if ($('overlay-sol').classList.contains('visible')) cerrarSol(); } });
 
 nuevoEjercicio();
 </script>
