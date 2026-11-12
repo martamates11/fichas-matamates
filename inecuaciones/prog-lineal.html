@@ -33,6 +33,7 @@
   --color-r1: #A0522D;
   --color-r2: #3F6E8C;
   --color-min: #8A6D2F;
+  --color-rz: #7A5482;
   --color-apagado: #A8998A;
   --color-apagado-fondo: #F3EFE6;
 }
@@ -232,7 +233,7 @@ table.vert td { background: var(--color-fondo-card); }
     <summary>Método gráfico</summary>
     <ol>
       <li>Define las variables y escribe la <b>función objetivo</b> <span class="mat"><i>Z</i> = <i>a</i><i>x</i> + <i>b</i><i>y</i></span> que hay que maximizar (beneficios) o minimizar (costes).</li>
-      <li>Traduce cada condición del enunciado a una <b>restricción</b>. Si no se exige ningún mínimo, no olvides <span class="mat"><i>x</i> ≥ 0</span> e <span class="mat"><i>y</i> ≥ 0</span>. Para saber qué semiplano vale, comprueba si un punto (normalmente el origen) la cumple.</li>
+      <li>Traduce cada condición del enunciado a una <b>restricción</b>. Si no se exige ningún mínimo, no olvides <span class="mat"><i>x</i> ≥ 0</span> e <span class="mat"><i>y</i> ≥ 0</span>. Para saber qué semiplano vale, comprueba si un punto (normalmente el origen) la cumple. Una condición como «no más del doble» da una recta que pasa por el origen, del tipo <span class="mat"><i>x</i> ≤ 2<i>y</i></span>: pásala a la forma <span class="mat"><i>x</i> − 2<i>y</i> ≤ 0</span> y usa otro punto de prueba.</li>
       <li>La <b>región factible</b> es la parte común de todos los semiplanos (en los problemas de costes suele ser <b>no acotada</b>). Sus <b>vértices</b> son los cortes de las rectas que la delimitan: márcalos y calcula sus coordenadas resolviendo los sistemas.</li>
       <li>Evalúa <i>Z</i> en cada vértice: el mayor valor (si se maximiza) o el menor (si se minimiza) da la <b>solución óptima</b>.</li>
     </ol>
@@ -280,6 +281,7 @@ table.vert td { background: var(--color-fondo-card); }
           <span><i class="l" style="border-color:var(--color-r1)"></i>Restricción r<sub>1</sub> (primer recurso o pedido)</span>
           <span><i class="l" style="border-color:var(--color-r2)"></i>Restricción r<sub>2</sub> (segundo recurso o pedido)</span>
           <span><i class="l punteada" style="border-color:var(--color-min)"></i>Mínimos exigidos (si los hay)</span>
+          <span><i class="l" style="border-color:var(--color-rz)"></i>Proporción entre <i>x</i> e <i>y</i> (si la hay)</span>
           <span><i class="l punteada" style="border-color:#B8892E"></i>Recta de nivel (en el óptimo)</span>
         </div>
         <h4>Glosario</h4>
@@ -595,7 +597,7 @@ const CONTEXTOS = [
     }
   }
 ];
-const NOMBRE_R = { r1: 'r<sub>1</sub>', r2: 'r<sub>2</sub>', rx: 'mín. x', ry: 'mín. y' };
+const NOMBRE_R = { r1: 'r<sub>1</sub>', r2: 'r<sub>2</sub>', rx: 'mín. x', ry: 'mín. y', rz: 'proporción' };
 
 /* =========================================================
    Generador: vértices enteros, región de 4 vértices, óptimo único
@@ -609,6 +611,15 @@ const cumpleR = (r, p) => r.s === '≤' ? r.a * p[0] + r.b * p[1] <= r.c + 1e-9 
 const valorZ = (e, v) => Math.round((e.cx * v[0] + e.cy * v[1]) * 100) / 100;
 /* Construye el ejercicio a partir de datos en unidades internas (enteros).
    Devuelve null si no cumple alguna condición de calidad. */
+/* Restricción de proporción (recta que pasa por el origen), opcional.
+   forma: 'x≤ky' | 'y≤kx' | 'y≥kx' | 'x≥ky'; k ∈ {1, 2, 3}. */
+const FORMAS_REL = {
+  'x≤ky': k => ({ a: 1, b: -k, s: '≤' }), 'y≤kx': k => ({ a: -k, b: 1, s: '≤' }),
+  'y≥kx': k => ({ a: -k, b: 1, s: '≥' }), 'x≥ky': k => ({ a: 1, b: -k, s: '≥' })
+};
+const PROB_REL = 0.4;
+const tensa = (r, p) => Math.abs(r.a * p[0] + r.b * p[1] - r.c) < 1e-9;
+const esOrigen = v => v[0] === 0 && v[1] === 0;
 function construir(ctx, d) {
   const { a1, b1, a2, b2, px, py, mx, my, cx, cy } = d;
   const tipo = ctx.tipo || 'max', s = tipo === 'max' ? '≤' : '≥';
@@ -618,16 +629,27 @@ function construir(ctx, d) {
     { id: 'r1', a: a1, b: b1, c: G, s }, { id: 'r2', a: a2, b: b2, c: B, s },
     { id: 'rx', a: 1, b: 0, c: mx, s: '≥' }, { id: 'ry', a: 0, b: 1, c: my, s: '≥' }
   ];
+  const rz = d.rel ? Object.assign({ id: 'rz', c: 0 }, FORMAS_REL[d.rel.forma](d.rel.k)) : null;
+  if (rz) Ri.push(rz);
   const verts = [];
-  for (let i = 0; i < 4; i++) for (let j = i + 1; j < 4; j++) {
+  for (let i = 0; i < Ri.length; i++) for (let j = i + 1; j < Ri.length; j++) {
     const p = cortes(Ri[i], Ri[j]);
     if (!p || !Ri.every(r => cumpleR(r, p))) continue;
     if (verts.some(q => Math.abs(q[0] - p[0]) < 1e-9 && Math.abs(q[1] - p[1]) < 1e-9)) continue;
     if (!Number.isInteger(p[0] + 0) || !Number.isInteger(p[1] + 0)) return null;
     verts.push([p[0] + 0, p[1] + 0, [Ri[i].id, Ri[j].id]]);
   }
-  // maximizar: cuadrilátero acotado; minimizar: región no acotada con 3 vértices
-  if (verts.length !== (tipo === 'max' ? 4 : 3) || !verts.some(v => v[0] === px && v[1] === py)) return null;
+  if (!rz) {
+    // maximizar: cuadrilátero acotado; minimizar: región no acotada con 3 vértices
+    if (verts.length !== (tipo === 'max' ? 4 : 3) || !verts.some(v => v[0] === px && v[1] === py)) return null;
+  } else {
+    // con proporción: de 3 a 5 vértices y ninguna de r1, r2, rz sobra (todas tocan la región en un vértice)
+    if (verts.length < 3 || verts.length > 5) return null;
+    if (!verts.some(v => !esOrigen(v) && tensa(rz, v))) return null;
+    if (!verts.some(v => tensa(Ri[0], v)) || !verts.some(v => tensa(Ri[1], v))) return null;
+    // en vértices donde se cortan tres rectas, se nombra la de proporción
+    verts.forEach(v => { if (!esOrigen(v) && tensa(rz, v) && !v[2].includes('rz')) v[2] = [v[2][0], 'rz']; });
+  }
   const k1 = ctx.r1.k || 1, k2 = ctx.r2.k || 1;
   const par = ctx.pares[d.par];
   const e = {
@@ -638,13 +660,14 @@ function construir(ctx, d) {
     { id: 'r1', a: e.a1, b: e.b1, c: e.G, s }, { id: 'r2', a: e.a2, b: e.b2, c: e.B, s },
     { id: 'rx', a: 1, b: 0, c: mx, s: '≥' }, { id: 'ry', a: 0, b: 1, c: my, s: '≥' }
   ];
+  if (rz) { e.R.push(rz); e.rz = rz; e.rel = d.rel; }
   const mejor = (p, q) => tipo === 'max' ? p > q : p < q;
   const zs = verts.map(v => valorZ(e, v)).sort((p, q) => tipo === 'max' ? q - p : p - q);
   if (Math.abs(zs[0] - zs[1]) < Math.max(1, Math.abs(zs[0]) * 0.01)) return null;   // óptimo único y claro
   e.opt = verts.reduce((m, v) => (mejor(valorZ(e, v), valorZ(e, m)) ? v : m));
   e.zopt = valorZ(e, e.opt);
-  e.optEnCorte = e.opt[0] === px && e.opt[1] === py;
-  e.firma = [ctx.id, a1, b1, a2, b2, px, py, mx, my, cx, cy].join(',');
+  e.optEnCorte = (e.opt[0] === px && e.opt[1] === py) || (!!rz && tensa(rz, e.opt));
+  e.firma = [ctx.id, a1, b1, a2, b2, px, py, mx, my, cx, cy, rz ? d.rel.forma + d.rel.k : ''].join(',');
   e.candidatos = calcularCandidatos(e);
   prepararEscala(e);   // descarta ejercicios con puntos de corte demasiado juntos para hacer clic
   const c = e.candidatos;
@@ -656,17 +679,36 @@ function minimo(p, paso) {
   const lo = Math.max(1, Math.ceil(4 / paso)), hi = Math.max(lo, Math.floor(p * 0.6 / paso));
   return paso * ri(lo, hi);
 }
-function aleatorio(ctx) {
+const admiteRel = ctx => ctx.minimos === 'no' || ctx.minimos === 'x?';
+function aleatorio(ctx, conRel) {
   const paso = ctx.paso || 1;
   const px = paso * ri(...ctx.P[0]), py = paso * ri(...ctx.P[1]);
   const m = ctx.minimos;
-  const conX = m === 'x' || m === 'xy' || m === 'x+y?' || (m === 'x?' && rand() < 0.35);
-  const conY = m === 'xy' || (m === 'x+y?' && rand() < 0.5);
+  // con proporción no hay mínimos (solo se usa en contextos cuyo texto no obliga a tenerlos)
+  const rel = conRel ? { forma: pick(Object.keys(FORMAS_REL)), k: ri(1, 3) } : null;
+  const conX = !rel && (m === 'x' || m === 'xy' || m === 'x+y?' || (m === 'x?' && rand() < 0.35));
+  const conY = !rel && (m === 'xy' || (m === 'x+y?' && rand() < 0.5));
   const [cx, cy] = ctx.coefs();
   return {
     a1: ri(...ctx.r1.A), b1: ri(...ctx.r1.B), a2: ri(...ctx.r2.A), b2: ri(...ctx.r2.B), px, py,
-    mx: conX ? minimo(px, paso) : 0, my: conY ? minimo(py, paso) : 0, cx, cy, par: ri(0, ctx.pares.length - 1)
+    mx: conX ? minimo(px, paso) : 0, my: conY ? minimo(py, paso) : 0, cx, cy, par: ri(0, ctx.pares.length - 1), rel
   };
+}
+/* Textos de la condición de proporción */
+function relFrase(e) {
+  const { forma, k } = e.rel, cuanto = ['', '', 'el doble del ', 'el triple del '][k];
+  const [A, Bn] = forma[0] === 'x' ? [e.xp, e.yp] : [e.yp, e.xp];
+  if (forma[1] === '≤') return k === 1 ? `El número de ${A} no puede ser mayor que el número de ${Bn}.` : `El número de ${A} no puede superar ${cuanto}número de ${Bn}.`;
+  return k === 1 ? `El número de ${A} debe ser, como mínimo, igual al número de ${Bn}.` : `El número de ${A} debe ser, como mínimo, ${cuanto}número de ${Bn}.`;
+}
+const relCita = e => relFrase(e).replace(/\.$/, '');   // sin punto final, para citarla entre comillas
+function relForma(e) {   // x ≤ 2y, y ≥ x…
+  const { forma, k } = e.rel;
+  return `${V(forma[0])} ${forma[1]} ${k === 1 ? '' : k}${V(forma[3])}`;
+}
+function relEjemplo(e) {
+  const { forma, k } = e.rel, otra = forma[3], una = forma[0];
+  return `si ${V(otra)} = 10, ${V(una)} ${forma[1] === '≤' ? 'puede valer como mucho' : 'tiene que valer al menos'} ${10 * k}`;
 }
 let ultimaFirma = '', ultimoCtx = '';
 const PROB_PAU = 0.25;
@@ -676,12 +718,13 @@ function generar(modo) {
   for (let intento = 0; intento < 50; intento++) {
     const ctx = pick(posibles);
     let e = null;
-    if (ctx.pau && rand() < PROB_PAU) {
+    const conRel = admiteRel(ctx) && rand() < PROB_REL;   // se decide antes: si no, casi nunca saldría
+    if (!conRel && ctx.pau && rand() < PROB_PAU) {
       e = construir(ctx, Object.assign({ esPau: true }, ctx.pau));
       if (e && e.firma === ultimaFirma) e = null;
     }
-    for (let t = 0; !e && t < 4000; t++) {
-      const cand = construir(ctx, aleatorio(ctx));
+    for (let t = 0; !e && t < 6000; t++) {
+      const cand = construir(ctx, aleatorio(ctx, conRel));
       if (!cand || cand.firma === ultimaFirma) continue;
       if (rand() < 0.7 && !cand.optEnCorte) continue;   // casi siempre el corte de r1 y r2
       e = cand;
@@ -736,7 +779,7 @@ function dibujarCuadricula() {
   el('text', { x: X(esc.xmax) - 4, y: Y(0) - 7, 'text-anchor': 'end', 'font-size': 14, fill: '#2C1F0E', 'font-family': 'Libre Baskerville, serif', 'font-style': 'italic' }, g, 'x');
   el('text', { x: X(0) + 7, y: Y(esc.ymax) + 13, 'font-size': 14, fill: '#2C1F0E', 'font-family': 'Libre Baskerville, serif', 'font-style': 'italic' }, g, 'y');
 }
-const COLOR = { r1: '#A0522D', r2: '#3F6E8C', rx: '#8A6D2F', ry: '#8A6D2F' };
+const COLOR = { r1: '#A0522D', r2: '#3F6E8C', rx: '#8A6D2F', ry: '#8A6D2F', rz: '#7A5482' };
 function dibujarRecta(r) {
   const g = $('g-rectas');
   let p1, p2;
@@ -754,6 +797,7 @@ function dibujarRestricciones() {
   ];
   if (ex.mx > 0) ley.push(`<span><i class="l" style="border-color:${COLOR.rx};border-top-style:dashed"></i>${M(V('x') + ' ≥ ' + ex.mx)}</span>`);
   if (ex.my > 0) ley.push(`<span><i class="l" style="border-color:${COLOR.ry};border-top-style:dashed"></i>${M(V('y') + ' ≥ ' + ex.my)}</span>`);
+  if (ex.rz) ley.push(`<span><i class="l" style="border-color:${COLOR.rz}"></i>${M(relForma(ex))}</span>`);
   $('leyenda').innerHTML = ley.join('');
 }
 function calcularCandidatos(e) {
@@ -762,6 +806,7 @@ function calcularCandidatos(e) {
     { id: 'rx', a: 1, b: 0, c: e.mx }, { id: 'ry', a: 0, b: 1, c: e.my },
     { id: 'ejeX', a: 0, b: 1, c: 0 }, { id: 'ejeY', a: 1, b: 0, c: 0 }
   ];
+  if (e.rz) lineas.push(e.rz);
   const out = [];
   for (let i = 0; i < lineas.length; i++) for (let j = i + 1; j < lineas.length; j++) {
     const p = cortes(lineas[i], lineas[j]);
@@ -789,19 +834,26 @@ function dibujarCandidatos() {
     }
   });
 }
+/* Región factible = un cuadrado grande recortado por cada semiplano (Sutherland–Hodgman).
+   Sirve para regiones acotadas y no acotadas, con o sin recta de proporción. */
+function recortar(poli, r) {
+  const f = p => r.a * p[0] + r.b * p[1] - r.c;
+  const dentro = p => r.s === '≤' ? f(p) <= 1e-9 : f(p) >= -1e-9;
+  const out = [];
+  poli.forEach((p, i) => {
+    const q = poli[(i + 1) % poli.length], dp = dentro(p), dq = dentro(q);
+    if (dp) out.push(p);
+    if (dp !== dq) { const t = f(p) / (f(p) - f(q)); out.push([p[0] + t * (q[0] - p[0]), p[1] + t * (q[1] - p[1])]); }
+  });
+  return out;
+}
 function dibujarRegion() {
   limpiar('g-region');
-  if (ex.tipo === 'min') {   // región no acotada: se prolonga más allá del plano (lo recorta el clipPath)
-    const L = 4 * Math.max(esc.xmax, esc.ymax);
-    const cad = ex.verts.map(v => [v[0], v[1]]).sort((p, q) => p[0] - q[0]);
-    const pts = [[0, L], ...cad, [L, 0], [L, L]];
-    el('polygon', { points: pts.map(v => X(v[0]) + ',' + Y(v[1])).join(' '), fill: 'url(#rayado)', stroke: '#2E6B3E', 'stroke-width': 1.2 }, $('g-region'));
-    return;
-  }
-  const vs = ex.verts.map(v => [v[0], v[1]]);
-  const cx = vs.reduce((s, v) => s + v[0], 0) / vs.length, cy = vs.reduce((s, v) => s + v[1], 0) / vs.length;
-  vs.sort((p, q) => Math.atan2(p[1] - cy, p[0] - cx) - Math.atan2(q[1] - cy, q[0] - cx));
-  el('polygon', { points: vs.map(v => X(v[0]) + ',' + Y(v[1])).join(' '), fill: 'url(#rayado)', stroke: '#2E6B3E', 'stroke-width': 1.2 }, $('g-region'));
+  const L = 4 * Math.max(esc.xmax, esc.ymax);
+  let poli = [[-L, -L], [L, -L], [L, L], [-L, L]];
+  ex.R.forEach(r => { poli = recortar(poli, r); });
+  if (poli.length < 3) return;
+  el('polygon', { points: poli.map(v => X(v[0]) + ',' + Y(v[1])).join(' '), fill: 'url(#rayado)', stroke: '#2E6B3E', 'stroke-width': 1.2 }, $('g-region'));
 }
 function dibujarSolucionVertices() {
   limpiar('g-candidatos'); limpiar('g-etiquetas');
@@ -863,7 +915,7 @@ function htmlPaso(n) {
     return `
     <p class="instr">Escribe una restricción por fila, en la forma <span class="mat"><i>a</i><i>x</i> + <i>b</i><i>y</i> ≤ <i>c</i></span> o <span class="mat"><i>a</i><i>x</i> + <i>b</i><i>y</i> ≥ <i>c</i></span>. Si una incógnita no aparece, su coeficiente es 0. Deja vacías las filas que no uses.</p>
     ${filas}
-    <p class="nota-in">El punto de prueba indica qué semiplano corresponde a cada restricción.</p>
+    <p class="nota-in">El punto de prueba indica qué semiplano corresponde a cada restricción. Si la recta pasa por el origen, (0, 0) no sirve y se usa otro punto.</p>
     <div class="acciones"><button class="btn-primario" data-comprobar="2">Comprobar</button></div>`;
   }
   if (n === 3) return `
@@ -880,7 +932,9 @@ function htmlPaso(n) {
     <div class="acciones"><button class="btn-primario" data-comprobar="4">Comprobar</button></div>`;
 }
 function renderEjercicio() {
-  $('enunciado').innerHTML = `<span class="contexto">${ex.ctx.nombre}</span>` + ex.ctx.texto(ex);
+  let texto = ex.ctx.texto(ex);
+  if (ex.rel) texto = texto.replace('<p class="pregunta">', `<p>${relFrase(ex)}</p>\n        <p class="pregunta">`);
+  $('enunciado').innerHTML = `<span class="contexto">${ex.ctx.nombre}</span>` + texto;
   $('pasos').innerHTML = [1, 2, 3, 4].map(n => `
     <div class="paso bloqueado" id="paso-${n}">
       <h3><span class="n">${n}</span>${PASOS[n]}<span class="pts" id="pts-${n}">2,5 pts</span></h3>
@@ -890,16 +944,22 @@ function renderEjercicio() {
   $('s-ux').textContent = ex.xp;
   $('s-uy').textContent = ex.yp;
   document.querySelectorAll('[data-comprobar]').forEach(b => b.addEventListener('click', () => comprobar(+b.dataset.comprobar)));
-  for (let i = 0; i < 5; i++) $('r' + i + '-c').addEventListener('input', () => actualizarPuntoPrueba(i));
+  for (let i = 0; i < 5; i++) ['a', 'b', 'c'].forEach(k => $(`r${i}-${k}`).addEventListener('input', () => actualizarPuntoPrueba(i)));
   prepararEscala(ex); dibujarCuadricula();
   ['g-region', 'g-rectas', 'g-nivel', 'g-candidatos', 'g-etiquetas'].forEach(limpiar);
   $('leyenda').innerHTML = '';
   actualizarPasos();
 }
-function puntoPrueba(c) { return c === 0 ? [1, 1] : [0, 0]; }
+/* Punto de prueba: el primero de la lista que NO esté sobre la recta ax + by = c
+   ((0, 0) siempre que la recta no pase por el origen; si pasa, (1, 1), (1, 0)…). */
+const PRUEBAS = [[0, 0], [1, 1], [1, 0], [0, 1], [2, 1], [1, 2]];
+function puntoPrueba(a, b, c) {
+  if (a === null || b === null) return c === 0 ? [1, 1] : [0, 0];
+  return PRUEBAS.find(p => Math.abs(a * p[0] + b * p[1] - c) > 1e-9) || [1, 1];
+}
 function actualizarPuntoPrueba(i) {
-  const c = leerNum($('r' + i + '-c').value);
-  const p = puntoPrueba(c === null ? 1 : c);
+  const [a, b, c] = ['a', 'b', 'c'].map(k => leerNum($(`r${i}-${k}`).value));
+  const p = puntoPrueba(a, b, c === null ? 1 : c);
   $('r' + i + '-pp').textContent = `(${p[0]}, ${p[1]})`;
 }
 function pasoActivo() {
@@ -988,6 +1048,11 @@ function clasificar(f) {
     if (f.s === esperado) return { cat: r.id };
     const estricta = k > 0 ? (r.s === '≤' ? '<' : '>') : (r.s === '≤' ? '>' : '<');
     const esMax = ex.tipo === 'max';
+    if (r.id === 'rz') {   // proporción: el error típico es el sentido; se razona con un ejemplo
+      if (f.s === estricta) return { cat: null, recta: true, motivo: `Usa ≤ o ≥, no una desigualdad estricta: la condición «${relCita(ex)}» admite la igualdad.` };
+      if (f.s === '=') return { cat: null, recta: true, motivo: `No es una igualdad: «${relCita(ex)}» pone un límite, no obliga a que se cumpla exactamente.` };
+      return { cat: null, recta: true, motivo: `La recta es la correcta, pero el sentido no. Compruébalo con un ejemplo: ${relEjemplo(ex)}. Es decir, ${M(relForma(ex))}.` };
+    }
     if (f.s === estricta) return { cat: null, recta: true, motivo: esMax ? 'Usa ≤ o ≥, no una desigualdad estricta: el recurso puede agotarse justo y el mínimo puede cumplirse justo.'
       : 'Usa ≥, no una desigualdad estricta: el pedido puede cubrirse exactamente y una cantidad puede valer 0.' };
     if (f.s === '=') return { cat: null, recta: true, motivo: esMax ? 'No es una igualdad: no hace falta gastar todo el recurso ni quedarse exactamente en el mínimo.'
@@ -996,6 +1061,8 @@ function clasificar(f) {
       : esMax ? 'La recta es la correcta, pero el sentido de la desigualdad no.' : 'La recta es la correcta, pero el sentido no: el pedido es una cantidad <b>mínima</b> que hay que alcanzar, así que va con ≥.' };
   }
   if (f.s === '≥' && f.c === 0 && ((f.a > 0 && f.b === 0) || (f.a === 0 && f.b > 0))) return { cat: 'redundante' };
+  if (ex.rz && f.c === 0 && f.a * f.b < 0)   // recta por el origen, pero con la proporción al revés
+    return { cat: null, motivo: `Esa recta pasa por el origen, pero no traduce la condición «${relCita(ex)}». Compruébalo con un ejemplo: ${relEjemplo(ex)}.` };
   return { cat: null, motivo: ex.tipo === 'max' ? 'No corresponde a ninguna condición del enunciado. Revisa qué consume cada unidad de cada tipo.'
     : 'No corresponde a ninguna condición del enunciado. Revisa qué produce o aporta cada unidad de cada tipo y cuánto se pide.' };
 }
@@ -1017,7 +1084,7 @@ function validar2() {
   let filasMal = 0;
   filas.forEach(f => {
     const cl = clasificar(f);
-    const p = puntoPrueba(f.c);
+    const p = puntoPrueba(f.a, f.b, f.c);
     const valor = f.a * p[0] + f.b * p[1];
     const cumpleReal = { '≤': valor <= f.c, '≥': valor >= f.c, '<': valor < f.c, '>': valor > f.c, '=': valor === f.c }[f.s];
     const pruebaOk = (f.cumple === 'si') === cumpleReal;
@@ -1041,6 +1108,7 @@ function validar2() {
   const lista = '<ul>' + necesarias.map(r => {
     const txt = r.id === 'r1' ? `${M(restr(r.a, r.b, r.c, r.s))}: ${ex.ctx.rtxt[0]}`
       : r.id === 'r2' ? `${M(restr(r.a, r.b, r.c, r.s))}: ${ex.ctx.rtxt[1]}`
+      : r.id === 'rz' ? `${M(restr(r.a, r.b, 0, r.s))}, es decir, ${M(relForma(ex))}: proporción exigida`
       : `${M((r.id === 'rx' ? V('x') : V('y')) + ' ≥ ' + r.c)}: ${r.c === 0 ? 'no se pueden hacer cantidades negativas' : 'mínimo exigido'}`;
     return `<li>${hechas[r.id] ? '✓ ' : '✗ '}${txt}</li>`;
   }).join('') + '</ul>';
@@ -1075,8 +1143,9 @@ function renderTablaVertices() {
   cont.querySelectorAll('input').forEach(i => i.addEventListener('input', () => { guardarCoordsDesdeDOM(); }));
 }
 function nombreRecta(id) {
-  return { r1: M(restr(ex.a1, ex.b1, ex.G, '=')), r2: M(restr(ex.a2, ex.b2, ex.B, '=')), rx: ex.mx === 0 ? 'el eje ' + M(V('y') + ' (' + V('x') + ' = 0)') : M(V('x') + ' = ' + ex.mx), ry: ex.my === 0 ? 'el eje ' + M(V('x') + ' (' + V('y') + ' = 0)') : M(V('y') + ' = ' + ex.my) }[id];
+  return { r1: M(restr(ex.a1, ex.b1, ex.G, '=')), r2: M(restr(ex.a2, ex.b2, ex.B, '=')), rx: ex.mx === 0 ? 'el eje ' + M(V('y') + ' (' + V('x') + ' = 0)') : M(V('x') + ' = ' + ex.mx), ry: ex.my === 0 ? 'el eje ' + M(V('x') + ' (' + V('y') + ' = 0)') : M(V('y') + ' = ' + ex.my), rz: ex.rz ? M(restr(ex.rz.a, ex.rz.b, 0, '=')) : '' }[id];
 }
+const corteDe = v => esOrigen(v) ? 'el origen (0, 0)' : `el corte de ${nombreRecta(v[2][0])} con ${nombreRecta(v[2][1])}`;
 function validar3() {
   guardarCoordsDesdeDOM();
   if (!ex.sel.length) return { ok: null, html: 'Marca en el plano los vértices de la región factible.' };
@@ -1095,17 +1164,17 @@ function validar3() {
     const okC = Math.abs(tipos[k][0] - v[0]) < 1e-6 && Math.abs(tipos[k][1] - v[1]) < 1e-6;
     $('v' + k + '-x').classList.add(Math.abs(tipos[k][0] - v[0]) < 1e-6 ? 'bien' : 'mal');
     $('v' + k + '-y').classList.add(Math.abs(tipos[k][1] - v[1]) < 1e-6 ? 'bien' : 'mal');
-    if (!okC) errores.push(`El vértice ${L} está bien elegido, pero sus coordenadas son (${fmt(v[0])}, ${fmt(v[1])}): es el corte de ${nombreRecta(v[2][0])} con ${nombreRecta(v[2][1])}; resuelve ese sistema.`);
+    if (!okC) errores.push(`El vértice ${L} está bien elegido, pero sus coordenadas son (${fmt(v[0])}, ${fmt(v[1])}): es ${corteDe(v)}${esOrigen(v) ? '' : '; resuelve ese sistema'}.`);
   });
   const marcados = ex.sel.map(ci => ex.candidatos[ci]);
   ex.verts.forEach(v => {
     if (!marcados.some(c => Math.abs(c[0] - v[0]) < 1e-6 && Math.abs(c[1] - v[1]) < 1e-6))
-      errores.push(`Falta el vértice de corte de ${nombreRecta(v[2][0])} con ${nombreRecta(v[2][1])}.`);
+      errores.push(`Falta el vértice ${esOrigen(v) ? '(0, 0): el origen' : `de corte de ${nombreRecta(v[2][0])} con ${nombreRecta(v[2][1])}`}.`);
   });
   const lista = ex.verts.map(v => `(${fmt(v[0])}, ${fmt(v[1])})`).join(', ');
   if (!errores.length) return { ok: true, html: ex.tipo === 'max'
-    ? `<b>Correcto.</b> La región factible es el cuadrilátero de vértices ${lista}: en cada uno se cortan dos de las rectas frontera.`
-    : `<b>Correcto.</b> La región factible es <b>no acotada</b> (se extiende sin límite hacia arriba y hacia la derecha) y sus vértices son ${lista}: en cada uno se cortan dos de las rectas frontera.` };
+    ? `<b>Correcto.</b> La región factible es el ${['', '', '', 'triángulo', 'cuadrilátero', 'pentágono'][ex.verts.length]} de vértices ${lista}: en cada uno se cortan dos de las rectas frontera.`
+    : `<b>Correcto.</b> La región factible es <b>no acotada</b> (se extiende sin límite${ex.rz ? '' : ' hacia arriba y hacia la derecha'}) y sus vértices son ${lista}: en cada uno se cortan dos de las rectas frontera.` };
   return { ok: false, html: `<b>Incorrecto.</b><ul>${errores.map(e => `<li>${e}</li>`).join('')}</ul><div class="solucion">Vértices de la región factible: ${lista}. Recuerda que los cortes con los ejes solo son vértices si cumplen <b>todas</b> las restricciones.</div>` };
 }
 
@@ -1173,7 +1242,7 @@ function rellenarPaso(n) {
       $(`r${i}-a`).value = r ? fmt(r.a) : ''; $(`r${i}-b`).value = r ? fmt(r.b) : '';
       $(`r${i}-s`).value = r ? r.s : ''; $(`r${i}-c`).value = r ? fmt(r.c) : '';
       let cumple = '';
-      if (r) cumple = cumpleR(r, puntoPrueba(r.c)) ? 'si' : 'no';
+      if (r) cumple = cumpleR(r, puntoPrueba(r.a, r.b, r.c)) ? 'si' : 'no';
       $(`r${i}-cumple`).value = cumple; actualizarPuntoPrueba(i);
     }
     return;
