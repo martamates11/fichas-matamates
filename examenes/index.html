@@ -153,6 +153,7 @@ button,input,select{font:inherit;color:inherit}
 .aps{display:grid;gap:4mm 6mm;margin-top:3mm;padding-left:6mm}
 .aps.c1{grid-template-columns:1fr}.ap-txt{min-width:0}
 .pl-texto p{margin:0 0 1.4mm;text-align:justify;hyphens:auto}.pl-texto b{font-weight:600}.pl-texto .pregunta{font-weight:600}.pl-texto .variables{font-style:italic;color:#444}
+.ine-recta{display:block;width:82mm;max-width:100%;height:auto}.ine-plano{display:block;width:56mm;max-width:100%;height:auto}
 .pl-region{display:flex;flex-wrap:wrap;gap:3mm 6mm;align-items:flex-start}.pl-graf{width:78mm;height:auto;flex:none}.sol-res b+span b{font-weight:600}.aps.c2{grid-template-columns:1fr 1fr}.aps.c3{grid-template-columns:1fr 1fr 1fr}
 .ap{display:flex;gap:2mm;align-items:baseline;position:relative;min-width:0}
 .ap-letra{font-style:italic}
@@ -167,7 +168,8 @@ button,input,select{font:inherit;color:inherit}
 .sol-modelo+.sol-ej{margin-top:5mm}
 .hoja.estilo-a .sol-modelo{font-family:var(--f-comic);font-size:10pt;font-weight:700}
 .sol-ej h3{break-after:avoid;margin:0;font-family:var(--f-texto);font-size:12pt;font-weight:600;display:flex;justify-content:space-between;gap:4mm;border-bottom:.25mm solid #999;padding-bottom:1mm}
-.sol-ej h3 span{font-weight:400;color:var(--papel-suave);font-size:.9em}
+.sol-ej h3 span{font-weight:400;color:var(--papel-suave);font-size:.9em;white-space:nowrap;flex-shrink:0}
+.sol-ej h3 .sol-tit{font-weight:600;color:inherit;font-size:inherit;white-space:normal;flex-shrink:1}
 .sol-ap{display:block}.sol-ap>*+*{margin-top:1.5mm}
 .sol-enun{break-after:avoid;display:flex;gap:2mm;align-items:baseline}
 .sol-pasos{margin:0;padding:0 0 0 6mm;list-style:none;display:block;font-size:10.5pt}.sol-pasos li+li{margin-top:.8mm}
@@ -320,6 +322,8 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
 <script src="generadores/sistemas.js"></script>
 <script src="generadores/matrices.js"></script>
 <script src="generadores/matrices-ecuaciones.js"></script>
+<script src="generadores/sistemas-3x3.js"></script>
+<script src="generadores/inecuaciones.js"></script>
 <script src="generadores/programacion-lineal.js"></script>
 <script>
 (function () {
@@ -533,7 +537,7 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
           <ol class="sol-pasos">${pasos}</ol>
           <div class="sol-res"><b>Solución</b><span>${r.resHtml ? r.resHtml : `\\(\\displaystyle ${r.res}\\)`}</span></div></div>`;
       }).join('');
-      return `<section class="sol-ej"><h3>Ejercicio ${k + 1}. ${e.enunciado[it.n > 1 ? 1 : 0].replace(/:$/, '')}<span>${txtPts(it.puntos)}</span></h3>${cuerpo}</section>`;
+      return `<section class="sol-ej"><h3><span class="sol-tit">Ejercicio ${k + 1}. ${e.enunciado[it.n > 1 ? 1 : 0].replace(/:$/, '')}</span><span>${txtPts(it.puntos)}</span></h3>${cuerpo}</section>`;
     }).join('');
     return h;
   }
