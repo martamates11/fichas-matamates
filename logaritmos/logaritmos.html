@@ -514,7 +514,8 @@ function genT4(){
     else {const y=ri(2,9),n=pick([2,3]);
       if(rnd()<.5){const a=ipow(y,n);if(a>729)continue;ans=F(y);
         enun=R`${n}\,${L}x = ${L}${a}`;
-        steps=[R`${n}\,${L}x = ${L}x^{${n}} = ${L}${a}`,R`x^{${n}} = ${a} \;\Rightarrow\; x = ${n===2?R`\sqrt{${a}}`:R`\sqrt[3]{${a}}`} = ${y}`,R`\text{(la solución negativa no vale: el argumento debe ser positivo)}`];
+        steps=[R`${n}\,${L}x = ${L}x^{${n}} = ${L}${a}`,R`x^{${n}} = ${a} \;\Rightarrow\; x = ${n===2?R`\pm\sqrt{${a}} = \pm ${y}`:R`\sqrt[3]{${a}} = ${y}`}`];
+        if(n===2)steps.push(R`\text{(la solución negativa no vale: el argumento debe ser positivo)}`);
         errs=[{val:a/n,msg:R`Has dividido entre ${n}. El coeficiente es un exponente: $${n}\,${L}x = ${L}x^{${n}}$, y después hay que hacer la raíz.`},
               {val:-y,msg:R`El argumento de un logaritmo debe ser positivo, así que la solución negativa no es válida.`}];}
       else {const a=ri(2,9);if(ipow(a,n)>729)continue;ans=F(ipow(a,n));
