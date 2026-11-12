@@ -433,7 +433,7 @@ const CONFIG = {
 };
 const NIVELES = {
   1: { nombre: 'Forma general',
-       pista: 'La ecuación ya está igualada a cero. Si falta algún término, su coeficiente es 0.' },
+       pista: 'La ecuación ya está igualada a cero. El signo que va delante de cada término forma parte de su coeficiente.' },
   2: { nombre: 'Términos en ambos miembros',
        pista: 'Pasa todos los términos al primer miembro (al cambiar de miembro cambian de signo) y agrupa los semejantes.' },
   3: { nombre: 'Paréntesis y casos especiales',
@@ -549,7 +549,8 @@ function polyDesdeFactores(d1, n1, d2, n2, s = 1) {
 function generar(nv) {
   const st = state.niveles[nv];
   let ej, i = 0;
-  do { ej = generarUno(nv); i++; } while ((!ej || ej.plano === st.ultimo) && i < 40);
+  // Solo ecuaciones completas (b ≠ 0 y c ≠ 0): las incompletas tienen su propia ficha.
+  do { ej = generarUno(nv); i++; } while ((!ej || ej.P.b === 0 || ej.P.c === 0 || ej.plano === st.ultimo) && i < 400);
   st.ultimo = ej.plano;
   return ej;
 }
@@ -557,7 +558,7 @@ function generar(nv) {
 function generarUno(nv) {
   if (nv === 1) {
     let r1, r2;
-    do { r1 = rnd(-6, 6); r2 = rnd(-6, 6); } while (r1 === 0 && r2 === 0);
+    do { r1 = rnd(-6, 6); r2 = rnd(-6, 6); } while (r1 === 0 || r2 === 0 || r1 === -r2);
     const P = polyDesdeFactores(1, r1, 1, r2);
     return montar(nv, P, { L: [P.a, P.b, P.c], R: [0, 0, 0] });
   }
@@ -567,7 +568,7 @@ function generarUno(nv) {
     while (true) {
       const d1 = pick([1, 1, 2]), d2 = pick([1, 1, 1, 2]);
       const n1 = rnd(-5, 5), n2 = rnd(-5, 5);
-      if (n1 === 0 && n2 === 0) continue;
+      if (n1 === 0 || n2 === 0 || n1 * d2 === -n2 * d1) continue;   // evita c = 0 y b = 0
       P = polyDesdeFactores(d1, n1, d2, n2, pick([1, 1, -1]));
       if (Math.abs(P.b) <= 30 && Math.abs(P.c) <= 30) break;
     }
@@ -586,10 +587,10 @@ function generarUno(nv) {
   let P;
   if (tipo === 'normal') {
     let n1, n2;
-    do { n1 = rnd(-5, 5); n2 = rnd(-5, 5); } while (n1 === 0 && n2 === 0);
+    do { n1 = rnd(-5, 5); n2 = rnd(-5, 5); } while (n1 === 0 || n2 === 0);
     P = polyDesdeFactores(1, n1, pick([1, 1, 2]), n2);
   } else if (tipo === 'neg') {
-    const a = pick([1, 1, 2]), b = rnd(-6, 6);
+    const a = pick([1, 1, 2]), b = rndNZ(-6, 6);
     const c = Math.floor(b * b / (4 * a)) + rnd(1, 3);
     P = { a, b, c, raices: [] };
   } else {
@@ -872,7 +873,7 @@ function comprobar1(nv) {
   if (ej.paso !== 1 || ej.terminado) return;
   const u = ['ia', 'ib', 'ic'].map(k => parseEntero($(`${k}-${nv}`).value));
   if (u.some(isNaN)) {
-    mostrarFb(nv, 1, 'info', 'Escribe los tres coeficientes como números enteros. Si falta un término, su coeficiente es 0.');
+    mostrarFb(nv, 1, 'info', 'Escribe los tres coeficientes como números enteros.');
     return;
   }
   interaccion(ej);

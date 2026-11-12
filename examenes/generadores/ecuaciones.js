@@ -20,7 +20,8 @@
 
   function ec2FormaGeneral(R) {
     let r1, r2;
-    do { r1 = R.int(-6, 6); r2 = R.int(-6, 6); } while (r1 === 0 && r2 === 0);
+    // Solo ecuaciones completas (b ≠ 0 y c ≠ 0): las incompletas tienen su propia ficha.
+    do { r1 = R.int(-6, 6); r2 = R.int(-6, 6); } while (r1 === 0 || r2 === 0 || r1 === -r2);
     const P = factores(1, r1, 1, r2);
     const sol = resolverCuadratica(P.a, P.b, P.c);
     return { enun: `${cuad(P.a, P.b, P.c)} = 0`, pasos: sol.pasos, res: resultadoRaices(sol.raices) };
@@ -31,7 +32,7 @@
     while (true) {
       const d1 = R.pick([1, 1, 2]), d2 = R.pick([1, 1, 1, 2]);
       const n1 = R.int(-5, 5), n2 = R.int(-5, 5);
-      if (n1 === 0 && n2 === 0) continue;
+      if (n1 === 0 || n2 === 0 || n1 * d2 === -n2 * d1) continue;   // evita c = 0 y b = 0
       P = factores(d1, n1, d2, n2, R.pick([1, 1, -1]));
       if (Math.abs(P.b) <= 30 && Math.abs(P.c) <= 30) break;
     }
@@ -86,15 +87,16 @@
       let P;
       if (tipo === 'normal') {
         let n1, n2;
-        do { n1 = R.int(-5, 5); n2 = R.int(-5, 5); } while (n1 === 0 && n2 === 0);
+        do { n1 = R.int(-5, 5); n2 = R.int(-5, 5); } while (n1 === 0 || n2 === 0);
         P = factores(1, n1, R.pick([1, 1, 2]), n2);
       } else if (tipo === 'neg') {
-        const a = R.pick([1, 1, 2]), b = R.int(-6, 6);
+        const a = R.pick([1, 1, 2]), b = R.nz(-6, 6);
         P = { a, b, c: Math.floor(b * b / (4 * a)) + R.int(1, 3) };
       } else {
         const r = R.nz(-5, 5);
         P = factores(1, r, 1, r);
       }
+      if (P.b === 0 || P.c === 0) continue;   // solo ecuaciones completas
       const pl = plantillaParentesis(R, P);
       if (!pl) continue;
       const sol = resolverCuadratica(P.a, P.b, P.c);
