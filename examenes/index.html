@@ -181,7 +181,9 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
 .dlg-cab{display:flex;justify-content:space-between;align-items:center;padding:16px 18px 8px}
 .dlg-cab h2{margin:0;font-family:var(--f-titulo);font-weight:600;font-size:20px}
 .dlg-busca{padding:4px 18px 10px}
-.dlg-busca input{width:100%;padding:9px 12px;border:1px solid var(--linea-fuerte);border-radius:8px;background:var(--panel)}
+.dlg-busca select{width:100%;padding:9px 12px;border:1px solid var(--linea-fuerte);border-radius:8px;background:var(--panel)}
+.dlg-etq{display:block;margin-bottom:6px;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--suave)}
+.dlg-lista .dlg-etq{margin:0}
 .dlg-lista{overflow:auto;padding:0 18px 12px;display:grid;gap:16px;align-content:start}
 .grupo h3{margin:0 0 6px;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--suave)}
 .ficha{border:1px solid var(--linea);border-radius:10px;margin-bottom:8px;overflow:hidden}
@@ -284,7 +286,7 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
 <dialog id="dlg-catalogo" aria-labelledby="dlg-titulo">
   <div class="dlg">
     <div class="dlg-cab"><h2 id="dlg-titulo">Elige ficha y ejercicio</h2><button class="btn mini" type="button" id="dlg-cerrar">Cerrar</button></div>
-    <div class="dlg-busca"><input id="dlg-buscar" type="search" placeholder="Buscar ficha…" autocomplete="off" aria-label="Buscar ficha"></div>
+    <div class="dlg-busca"><label for="dlg-ficha" class="dlg-etq">1. Elige la ficha</label><select id="dlg-ficha"></select></div>
     <div class="dlg-lista" id="dlg-lista"></div>
     <div class="dlg-pie" id="dlg-pie"></div>
   </div>
@@ -589,44 +591,34 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
 
   /* ================= Catálogo ================= */
   const dlg = $('dlg-catalogo');
-  function renderCatalogo() {
-    const q = $('dlg-buscar').value.trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-    const norm = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  function rellenarFichas() {
     const grupos = [];
     EX.fichas.forEach(f => {
-      const texto = norm([f.titulo, f.detalle, f.grupo, ...f.ejercicios.map(e => e.nombre)].join(' '));
-      if (q && !texto.includes(q)) return;
       let g = grupos.find(x => x.nombre === f.grupo);
       if (!g) grupos.push(g = { nombre: f.grupo, fichas: [] });
       g.fichas.push(f);
     });
-    $('dlg-lista').innerHTML = grupos.length ? grupos.map(g => `<div class="grupo"><h3>${esc(g.nombre)}</h3>${g.fichas.map(f => `
-      <div class="ficha" data-ficha="${f.id}">
-        <button type="button" aria-expanded="${f.ejercicios.length === 1 || q ? 'true' : 'false'}"><span><span class="f-nom">${esc(f.titulo)}</span>${f.detalle ? ` <span class="f-det">· ${esc(f.detalle)}</span>` : ''}</span>
-          <span class="f-n">${f.ejercicios.length} ${f.ejercicios.length === 1 ? 'tipo' : 'tipos'}</span></button>
-        <div class="tipos" ${f.ejercicios.length === 1 || q ? '' : 'hidden'}>${f.ejercicios.map(e => `
-          <div class="tipo"><span>${esc(e.nombre)}</span><button class="btn mini primario" type="button" data-ej="${e.id}">Añadir</button></div>`).join('')}</div>
-      </div>`).join('')}</div>`).join('') : '<p style="color:var(--suave)">Ninguna ficha disponible coincide con la búsqueda.</p>';
+    $('dlg-ficha').innerHTML = '<option value="">— Selecciona una ficha —</option>' + grupos.map(g =>
+      `<optgroup label="${esc(g.nombre)}">${g.fichas.map(f => `<option value="${esc(f.id)}">${esc(f.titulo)}${f.detalle ? ' · ' + esc(f.detalle) : ''}</option>`).join('')}</optgroup>`).join('');
     $('dlg-pie').textContent = `Disponibles ${EX.fichas.length} fichas de la web. Las demás se irán incorporando al generador poco a poco.`;
   }
-  $('dlg-buscar').addEventListener('input', renderCatalogo);
+  function renderCatalogo() {
+    const f = buscarFicha($('dlg-ficha').value);
+    $('dlg-lista').innerHTML = f
+      ? `<div class="dlg-etq">2. Elige el ejercicio de la ficha</div><div class="ficha" data-ficha="${esc(f.id)}"><div class="tipos" style="border-top:0">${f.ejercicios.map(e => `
+          <div class="tipo"><span>${esc(e.nombre)}</span><button class="btn mini primario" type="button" data-ej="${esc(e.id)}">Añadir</button></div>`).join('')}</div></div>`
+      : '<p style="color:var(--suave);margin:0">Selecciona una ficha en el desplegable para ver sus ejercicios.</p>';
+  }
+  $('dlg-ficha').addEventListener('change', renderCatalogo);
   $('dlg-lista').addEventListener('click', ev => {
     const add = ev.target.closest('button[data-ej]');
-    if (add) {
-      const fid = add.closest('.ficha').dataset.ficha;
-      estado.items.push({ uid: uid++, ficha: fid, ej: add.dataset.ej, n: 1, puntos: 0, manual: false, semillas: [nuevaSemilla()] });
-      repartir(); actualizar();
-      aviso('Ejercicio añadido. Puedes añadir más o cerrar.');
-      return;
-    }
-    const cab = ev.target.closest('.ficha>button');
-    if (cab) {
-      const abierto = cab.getAttribute('aria-expanded') === 'true';
-      cab.setAttribute('aria-expanded', String(!abierto));
-      cab.nextElementSibling.hidden = abierto;
-    }
+    if (!add) return;
+    const fid = add.closest('.ficha').dataset.ficha;
+    estado.items.push({ uid: uid++, ficha: fid, ej: add.dataset.ej, n: 1, puntos: 0, manual: false, semillas: [nuevaSemilla()] });
+    repartir(); actualizar();
+    aviso('Ejercicio añadido. Puedes añadir más o cerrar.');
   });
-  $('btn-anadir').onclick = () => { $('dlg-buscar').value = ''; renderCatalogo(); dlg.showModal(); };
+  $('btn-anadir').onclick = () => { if (!$('dlg-ficha').options.length) rellenarFichas(); $('dlg-ficha').value = ''; renderCatalogo(); dlg.showModal(); };
   $('dlg-cerrar').onclick = () => dlg.close();
   dlg.addEventListener('click', ev => { if (ev.target === dlg) dlg.close(); });
 
