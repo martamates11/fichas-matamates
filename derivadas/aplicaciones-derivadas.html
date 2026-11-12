@@ -118,6 +118,7 @@ input[type=text]{background:var(--color-fondo-card);border:1.5px solid var(--col
 input[type=text]:focus{border-color:var(--color-acento);}
 input[type=text].ok{border-color:var(--color-correcto);background:#EAF4EC;}
 input[type=text].fail{border-color:var(--color-incorrecto);background:#F9EAEA;}
+input[type=text].formato{border-color:#C08A2E;background:#FBF3E1;box-shadow:0 0 0 3px rgba(192,138,46,.18);}
 input[type=text].revelado{border:1.5px dashed var(--color-apagado);background:var(--color-apagado-fondo);color:var(--color-texto-suave);}
 input[type=text]:disabled{cursor:not-allowed;color:var(--color-texto);}
 .w-l{width:260px;}.w-m{width:200px;}.w-s{width:110px;}.w-xs{width:84px;}
@@ -192,7 +193,7 @@ input[type=text]:disabled{cursor:not-allowed;color:var(--color-texto);}
 .modal-calificacion .btn-cerrar{background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.55);border-radius:4px;padding:8px 20px;font-family:'Lato',sans-serif;font-size:.9rem;cursor:pointer;}
 .confirm-modal{background:var(--color-fondo-card);color:var(--color-texto);border:3px solid var(--color-borde);border-radius:8px;padding:24px 28px;max-width:400px;width:100%;text-align:center;box-shadow:0 6px 24px rgba(44,31,14,.35);}
 .confirm-modal h2{font-family:'Libre Baskerville',serif;color:var(--color-acento);font-size:1.15rem;margin-bottom:8px;}
-.confirm-modal .meta{font-size:.93rem;color:var(--color-texto-suave);margin-bottom:16px;}
+.confirm-modal .meta{white-space:pre-line;text-align:left;font-size:.93rem;color:var(--color-texto-suave);margin-bottom:16px;}
 .confirm-botones{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
 .confirm-botones .btn-secundario{display:inline-block;}
 
@@ -219,6 +220,8 @@ input[type=text]:disabled{cursor:not-allowed;color:var(--color-texto);}
 #g-svg .g-punto{cursor:grab;}
 .graf-velo{position:absolute;inset:0;background:rgba(253,250,243,.82);border-radius:6px;display:flex;align-items:center;justify-content:center;text-align:center;padding:20px;font-family:'Libre Baskerville',serif;font-style:italic;font-size:.92rem;color:var(--color-texto-suave);z-index:2;}
 .graf-velo[hidden]{display:none;}
+.graf-velo span{display:block;max-width:380px;background:var(--color-fondo-card);border:1.5px solid var(--color-borde);border-radius:6px;padding:14px 18px;line-height:1.55;box-shadow:0 2px 8px rgba(44,31,14,.10);}
+.graf-velo b{color:var(--color-acento);font-style:normal;}
 .graf-leyenda{display:flex;flex-wrap:wrap;gap:4px 16px;margin-top:8px;font-size:.8rem;color:var(--color-texto-suave);}
 .graf-leyenda[hidden]{display:none;}
 .graf-leyenda i{display:inline-block;width:18px;height:3px;border-radius:2px;vertical-align:middle;margin-right:5px;}
@@ -277,7 +280,7 @@ input[type=text]:disabled{cursor:not-allowed;color:var(--color-texto);}
     <summary><h2>Cómo se puntúa</h2></summary>
     <ul>
       <li>Cada ejercicio vale <b>3,33 puntos</b>, repartidos a partes iguales entre sus apartados (ejercicio 1: 5 apartados; ejercicio 2: 4; ejercicio 3: 12).</li>
-      <li>En el ejercicio 3, la <b>representación gráfica</b> (apartados 11 y 12) se desbloquea cuando hayas resuelto los apartados 1 a 10.</li>
+      <li>En el ejercicio 3, la <b>representación gráfica</b> (apartados 11 y 12) se desbloquea cuando hayas rellenado y <b>comprobado</b> los apartados 1 a 10.</li>
       <li>Puedes comprobar los apartados de uno en uno: solo se corrigen los que tienen todas sus casillas rellenas. Un apartado <b>fallado queda a 0</b> y ya no admite más intentos.</li>
       <li>Para volver a intentarlo, pulsa <b>«Hacer otro ejercicio»</b>: se genera uno nuevo y se pierden los puntos del ejercicio actual.</li>
       <li><b>«Mostrar soluciones»</b> resuelve, con su explicación, los apartados pendientes de ese ejercicio; esos apartados <b>no cuentan para la nota</b>.</li>
@@ -485,7 +488,7 @@ input[type=text]:disabled{cursor:not-allowed;color:var(--color-texto);}
         </div>
         <svg id="g-svg" viewBox="0 0 560 440" tabindex="0" role="application" aria-label="Plano cartesiano para colocar los puntos. Con el teclado, las flechas mueven el punto seleccionado."></svg>
         <div class="graf-leyenda" id="g-leyenda" hidden></div>
-        <div class="graf-velo" id="g-velo">Se desbloquea cuando hayas resuelto los apartados 1 a 10:<br>la gráfica se construye con lo que has obtenido en ellos.</div>
+        <div class="graf-velo" id="g-velo" aria-live="polite"></div>
       </div>
     </div></div>
     <div class="paso"><div class="pnum">12</div><div class="pcont">
@@ -706,6 +709,38 @@ function igualRecta(input, m, n) {
   return true;
 }
 
+// ==================== FORMATO DE LAS RESPUESTAS ====================
+// Una respuesta que no se puede leer (paréntesis sin cerrar, «-3,»…) no se corrige:
+// se avisa al alumno para que la reescriba, sin contarla como fallo.
+const TIPO_CASILLA = {
+  e1_d: 'poli-t', e2_d: 'poli-x', e3_d1: 'poli-x', e3_d2: 'poli-x', e2_r: 'recta',
+  e3_crec: 'intervalo', e3_dec: 'intervalo', e3_conc: 'intervalo', e3_conv: 'intervalo'
+};
+function problemaFormato(id, valor) {
+  const tipo = TIPO_CASILLA[id] || 'numero';
+  if (tipo === 'intervalo') {
+    if (leerIntervalos(valor)) return '';
+    const t = valor.replace(/\[/g, '(').replace(/\]/g, ')');
+    const ab = (t.match(/\(/g) || []).length, ce = (t.match(/\)/g) || []).length;
+    if (ab !== ce) return 'hay algún paréntesis sin cerrar (o sin abrir). Cada intervalo va entre paréntesis: (−∞,\u00A01)\u00A0∪\u00A0(3,\u00A0+∞).';
+    return 'escribe cada intervalo como (a, b), con el menor a la izquierda, y únelos con ∪: (−∞,\u00A01)\u00A0∪\u00A0(3,\u00A0+∞).';
+  }
+  if (tipo === 'poli-t' || tipo === 'poli-x') {
+    const v = tipo === 'poli-t' ? 't' : 'x';
+    const c = limpiar(valor).replace(new RegExp(`^[a-z]'*\\(${v}\\)=`), '');
+    return isNaN(evalExpr(c, { [v]: 1.37 })) ? `escribe un polinomio en ${v}, con las potencias con ^ (por ejemplo, 6${v}^2 − 12${v} + 5).` : '';
+  }
+  if (tipo === 'recta') {
+    let c = limpiar(valor);
+    if (!c.includes('=')) c = 'y=' + c;
+    const l = c.split('=');
+    const ok = l.length === 2 && l.every(x => x !== '' && !isNaN(evalExpr(x, { x: 1.37, y: 0.61 })));
+    return ok ? '' : 'escribe la ecuación de la recta, por ejemplo y = 2x − 3.';
+  }
+  return isNaN(leerNumero(valor)) ? 'escribe solo un número en cada casilla, sin comas ni signos de más.' : '';
+}
+document.addEventListener('input', ev => { if (ev.target.classList) ev.target.classList.remove('formato'); });
+
 // ==================== MODAL DE CONFIRMACIÓN / AVISO ====================
 let confirmCallback = null;
 function pedirConfirmacion(mensaje, callback, opts = {}) {
@@ -782,7 +817,7 @@ document.getElementById('nombre').addEventListener('input', () => {
 
 function markField(id, clase) {
   const el = document.getElementById(id);
-  el.classList.remove('ok', 'fail', 'revelado');
+  el.classList.remove('ok', 'fail', 'revelado', 'formato');
   el.classList.add(clase);
 }
 function lineaFeedback(tipo, etiqueta, solucionTex, explicacion) {
@@ -1125,7 +1160,16 @@ function grafDibujar() {
 
 function grafActualizar() {
   if (!graf || !cur[3]) return;
-  document.getElementById('g-velo').hidden = grafAbierta();
+  const velo = document.getElementById('g-velo');
+  velo.hidden = grafAbierta();
+  if (!velo.hidden) {
+    // Cuántos de los apartados 1-10 siguen pendientes y si ya están rellenos
+    const pend = CAMPOS[3]().filter(f => f.ids.length && est[3].estado[f.key] === 'pendiente');
+    const rellenos = pend.every(f => valores(f).every(v => v.trim() !== ''));
+    velo.innerHTML = rellenos
+      ? '<span>Pulsa <b>«Comprobar»</b> para corregir los apartados 1 a 10 y se desbloqueará la representación.</span>'
+      : `<span>Se desbloquea cuando hayas <b>rellenado y comprobado</b> los apartados 1 a 10. Te ${pend.length === 1 ? 'falta 1 apartado' : `faltan ${pend.length} apartados`} por comprobar.</span>`;
+  }
   const svg = document.getElementById('g-svg');
   svg.classList.toggle('activo', ptsEditables());
   svg.setAttribute('tabindex', ptsEditables() ? '0' : '-1');
@@ -1156,6 +1200,7 @@ function siguienteLibre() {
 }
 
 (function iniciarGrafica() {
+  document.querySelectorAll('[id^="e3_"]').forEach(el => el.addEventListener('input', () => grafActualizar()));
   // Tarjetas de tramos
   document.getElementById('g-tramos').innerHTML = TRAMOS_TXT.map((t, i) => `
     <div class="tramo"><div class="t-tit">Tramo ${i + 1}</div><div class="t-sub">${t}</div>
@@ -1266,8 +1311,23 @@ function corregir(n) {
   if (ex.cerrado) return;
   if (!exigirNombre()) return;
   const pendientes = CAMPOS[n]().filter(f => ex.estado[f.key] === 'pendiente');
-  const aCorregir = pendientes.filter(f => valores(f).every(v => v.trim() !== ''));
+  const llenos = pendientes.filter(f => valores(f).every(v => v.trim() !== ''));
+  // Apartados con alguna casilla ilegible: no se corrigen, se avisa
+  const avisos = [];
+  const malFormato = llenos.filter(f => {
+    let mal = false;
+    f.ids.forEach(id => {
+      const pb = problemaFormato(id, document.getElementById(id).value);
+      if (pb) { mal = true; document.getElementById(id).classList.add('formato'); avisos.push(`· ${f.label}: ${pb}`); }
+    });
+    return mal;
+  });
+  const avisoFormato = () => mostrarAviso(
+    `No he corregido ${malFormato.length === 1 ? 'este apartado' : 'estos apartados'} porque no se ${malFormato.length === 1 ? 'puede' : 'pueden'} leer (casillas en ámbar):\n\n` +
+    `${[...new Set(avisos)].join('\n')}\n\nCorrige la escritura y vuelve a pulsar «Comprobar». No se ha descontado nada.`);
+  const aCorregir = llenos.filter(f => !malFormato.includes(f));
   if (aCorregir.length === 0) {
+    if (malFormato.length) { avisoFormato(); return; }
     const aMedias = pendientes.some(f => valores(f).some(v => v.trim() !== ''));
     mostrarAviso(aMedias
       ? 'Hay apartados incompletos (una casilla vacía, un punto sin colocar o un tramo sin forma). Complétalos para poder corregirlos.'
@@ -1286,6 +1346,7 @@ function corregir(n) {
   recalcPuntos(n);
   pintar(n);
   updateStats();
+  if (malFormato.length) avisoFormato();
 }
 
 // ---------- «Mostrar soluciones» ----------
@@ -1328,7 +1389,7 @@ function reiniciarEj(n) {
   BUILD[n](cur[n]);
   CAMPOS[n]().forEach(f => f.ids.forEach(id => {
     const el = document.getElementById(id);
-    el.value = ''; el.disabled = false; el.classList.remove('ok', 'fail', 'revelado');
+    el.value = ''; el.disabled = false; el.classList.remove('ok', 'fail', 'revelado', 'formato');
   }));
   if (n === 3) { document.querySelectorAll('.simbolos button').forEach(b => { b.disabled = false; }); grafReset(); }
   const I = ids(n);
