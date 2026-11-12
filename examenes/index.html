@@ -13,7 +13,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%231a2744'/%3E%3Ctext x='16' y='23' text-anchor='middle' font-family='Georgia,serif' font-size='20' font-style='italic' fill='%23d4aa4a'%3E%CE%BC%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Inter:wght@400;500;600&family=Comic+Neue:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <script>
   window.MathJax = {
     tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
@@ -33,6 +33,7 @@
   --f-ui:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
   --f-texto:"Source Serif 4",Georgia,"Times New Roman",serif;
   --f-titulo:"Playfair Display",Georgia,serif;
+  --f-comic:"Comic Neue","Comic Sans MS","Chalkboard SE",cursive;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --fondo:#12161f; --panel:#1b212d; --tinta:#e7eaf0; --suave:#9aa3b5; --linea:#2c3445; --linea-fuerte:#3c465a;
@@ -161,17 +162,32 @@ button,input,select{font:inherit;color:inherit}
 @media (hover:none){.otro{opacity:.85}}
 
 /* Soluciones */
-.sol-ej{margin-top:6mm;display:grid;gap:3.5mm}
+.sol-ej{margin-top:6mm;display:block}.sol-ej>*+*{margin-top:3.5mm}
 .sol-ej h3{break-after:avoid;margin:0;font-family:var(--f-texto);font-size:12pt;font-weight:600;display:flex;justify-content:space-between;gap:4mm;border-bottom:.25mm solid #999;padding-bottom:1mm}
 .sol-ej h3 span{font-weight:400;color:var(--papel-suave);font-size:.9em}
-.sol-ap{break-inside:avoid;display:grid;gap:1.5mm}
+.sol-ap{display:block}.sol-ap>*+*{margin-top:1.5mm}
 .sol-enun{break-after:avoid;display:flex;gap:2mm;align-items:baseline}
-.sol-pasos{margin:0;padding:0 0 0 6mm;list-style:none;display:grid;gap:.8mm;font-size:10.5pt}
-.sol-pasos li>p{margin:0;color:#333}
+.sol-pasos{margin:0;padding:0 0 0 6mm;list-style:none;display:block;font-size:10.5pt}.sol-pasos li+li{margin-top:.8mm}
+.sol-pasos li{break-inside:avoid}.sol-pasos li>p{margin:0;color:#333}.sol-res{break-inside:avoid}
 .sol-pasos .m{overflow-x:auto;overflow-y:hidden;padding-left:5mm}
-.sol-res{margin-left:6mm;border:.3mm solid #111;border-radius:1.5mm;padding:1.5mm 3mm;display:flex;gap:3mm;align-items:baseline;justify-self:start;max-width:100%;overflow-x:auto}
+.sol-res{margin-left:6mm;border:.3mm solid #111;border-radius:1.5mm;padding:1.5mm 3mm;display:inline-flex;gap:3mm;align-items:baseline;max-width:calc(100% - 6mm);overflow-x:auto}
 .sol-res b{font:600 7.5pt var(--f-ui);letter-spacing:.12em;text-transform:uppercase}
 .hoja mjx-container[display="true"]{margin:.6mm 0!important}
+.hoja.estilo-a{font-family:var(--f-comic);font-size:12pt}
+.hoja.estilo-a .sol-ej h3,.hoja.estilo-a .cab-campos{font-family:var(--f-comic)}
+.hoja.estilo-a .sol-res b{font-family:var(--f-comic);font-size:8.5pt;font-weight:700}
+.hoja.estilo-a .sol-pasos{font-size:11pt}
+.a-caja{display:grid;grid-template-columns:30mm 1fr;border:.35mm solid #111}
+.a-logo{border-right:.35mm solid #111;padding:2.5mm;display:grid;place-items:center}
+.a-logo .cab-logo{width:24mm}
+.a-txt{padding:4mm 5mm 3mm;display:grid;gap:1.6mm;align-content:center}
+.a-ies{font-weight:700;font-size:15pt}
+.a-dpto{font-size:13pt;letter-spacing:.02em}
+.a-nom{margin-top:2.5mm;font-size:13pt;display:flex;gap:2mm;align-items:baseline}
+.a-nom span{flex:1;border-bottom:.25mm solid #111}
+.a-nom.a-sol{font-weight:700;letter-spacing:.04em}
+.a-titulo{text-align:center;font-weight:700;font-size:15pt;margin-top:6mm;text-wrap:balance}
+.a-datos{text-align:center;font-size:11pt;color:#333;margin-top:1mm}
 .pie{position:absolute;left:16mm;right:16mm;bottom:8mm;display:flex;justify-content:space-between;font:400 7.5pt var(--f-ui);color:#888}
 
 /* ---------- Catálogo (diálogo) ---------- */
@@ -230,6 +246,8 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
         <div class="campo"><label for="in-fecha">Fecha</label><input id="in-fecha" type="date"></div>
         <div class="campo"><label for="in-modelo">Modelo</label>
           <select id="in-modelo"><option value="">Sin modelo</option><option>A</option><option>B</option><option>C</option><option>D</option></select></div>
+        <div class="campo"><label for="in-plantilla">Encabezado</label>
+          <select id="in-plantilla"><option value="A">Plantilla del departamento</option><option value="C">Clásica académica</option></select></div>
         <div class="campo" style="align-self:end"><label class="check" for="in-verpts"><input id="in-verpts" type="checkbox" checked> Mostrar la puntuación</label></div>
       </div>
       <p class="nota-print">Si dejas curso o fecha en blanco, salen como línea para que la rellene el alumno.</p>
@@ -310,7 +328,7 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
   const CLAVE = 'martamates-examenes-v1';
 
   /* ================= Estado ================= */
-  const vacio = () => ({ titulo: '', curso: '', fecha: '', modelo: '', verPts: true, items: [] });
+  const vacio = () => ({ titulo: '', curso: '', fecha: '', modelo: '', verPts: true, plantilla: 'A', items: [] });
   let estado = vacio();
   let vista = 'examen';
   let uid = 1;
@@ -443,7 +461,21 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
   });
 
   /* ================= Render de las hojas ================= */
+  /* Plantilla A: la del departamento (recuadro con escudo, tipografía Comic) */
+  function cabeceraA(tipo) {
+    const linea = tipo === 'examen'
+      ? '<div class="a-nom">NOMBRE:<span></span></div>'
+      : '<div class="a-nom a-sol">HOJA DE SOLUCIONES</div>';
+    const datos = [estado.curso && esc(estado.curso), fechaTexto(), estado.modelo && 'Modelo ' + esc(estado.modelo)].filter(Boolean).join(' · ');
+    return `<header class="a-caja">
+      <div class="a-logo"><img class="cab-logo" src="logo-ies-castelar.png" alt="Escudo del IES Castelar"></div>
+      <div class="a-txt"><div class="a-ies">IES CASTELAR</div><div class="a-dpto">DEPARTAMENTO DE MATEMÁTICAS</div>${linea}</div>
+    </header>
+    <div class="a-titulo">${esc(tituloPropuesto())}</div>${datos ? `<div class="a-datos">${datos}</div>` : ''}`;
+  }
+
   function cabecera(tipo) {
+    if (estado.plantilla !== 'C') return cabeceraA(tipo);
     const modelo = estado.modelo ? `<div class="cab-modelo">Modelo ${esc(estado.modelo)}</div>` : '';
     const derecha = tipo === 'examen'
       ? '<div class="cab-nota">Nota</div>'
@@ -512,6 +544,8 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
 
   function renderHojas() {
     const he = $('hoja-examen'), hs = $('hoja-soluciones');
+    const a = estado.plantilla !== 'C';
+    he.classList.toggle('estilo-a', a); hs.classList.toggle('estilo-a', a);
     he.innerHTML = renderExamen();
     hs.innerHTML = renderSoluciones();
     tipografiar([he, hs]).then(() => { comprobarCara(); escalar(); });
@@ -558,6 +592,7 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
     estado.fecha = $('in-fecha').value;
     estado.modelo = $('in-modelo').value;
     estado.verPts = $('in-verpts').checked;
+    estado.plantilla = $('in-plantilla').value;
   }
   function escribirCampos() {
     $('in-titulo').value = estado.titulo;
@@ -565,8 +600,9 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
     $('in-fecha').value = estado.fecha;
     $('in-modelo').value = estado.modelo;
     $('in-verpts').checked = estado.verPts !== false;
+    $('in-plantilla').value = estado.plantilla === 'C' ? 'C' : 'A';
   }
-  ['in-titulo', 'in-curso', 'in-fecha', 'in-modelo', 'in-verpts'].forEach(id =>
+  ['in-titulo', 'in-curso', 'in-fecha', 'in-modelo', 'in-verpts', 'in-plantilla'].forEach(id =>
     $(id).addEventListener(id === 'in-titulo' || id === 'in-curso' ? 'input' : 'change', () => { leerCampos(); actualizar(false); }));
 
   function actualizar(conPanel = true) {
@@ -698,13 +734,13 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
     estado = vacio(); escribirCampos(); actualizar();
   };
   function codificar(e) {
-    const datos = { t: e.titulo, c: e.curso, f: e.fecha, m: e.modelo, v: e.verPts ? 1 : 0,
+    const datos = { t: e.titulo, c: e.curso, f: e.fecha, m: e.modelo, v: e.verPts ? 1 : 0, p: e.plantilla === 'C' ? 'C' : 'A',
       i: e.items.map(it => [it.ficha, it.ej, it.n, it.puntos, it.manual ? 1 : 0, it.semillas]) };
     return btoa(unescape(encodeURIComponent(JSON.stringify(datos)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
   }
   function decodificar(s) {
     const d = JSON.parse(decodeURIComponent(escape(atob(s.replace(/-/g, '+').replace(/_/g, '/')))));
-    return { titulo: d.t || '', curso: d.c || '', fecha: d.f || '', modelo: d.m || '', verPts: d.v !== 0,
+    return { titulo: d.t || '', curso: d.c || '', fecha: d.f || '', modelo: d.m || '', verPts: d.v !== 0, plantilla: d.p === 'C' ? 'C' : 'A',
       items: (d.i || []).filter(x => buscarEj(buscarFicha(x[0]), x[1])).map(x => ({ ficha: x[0], ej: x[1], n: x[2], puntos: x[3], manual: !!x[4], semillas: x[5] })) };
   }
   $('btn-enlace').onclick = () => {
