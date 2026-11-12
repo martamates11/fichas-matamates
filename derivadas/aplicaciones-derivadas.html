@@ -796,7 +796,9 @@ function buildEn2(e) {
   tipografiar(document.getElementById('en2'));
 }
 function camposEj2(e) {
-  const pp = `y ${terminoConSigno(-e.y0)} = ${e.m}${factorTex('x', e.x0)}`;
+  const pp = e.m === 0
+    ? ''
+    : `y${terminoConSigno(-e.y0)} = ${e.m}${factorTex('x', e.x0)}`;
   return [
     { ids: ['e2_d'], key: 0, label: "Derivada f'(x)",
       ok: v => igualPoli(v[0], e.dcs, 'x'), sol: `\\(f'(x)=${polyTex(e.dcs)}\\)`, solInput: [polyTxt(e.dcs)],
@@ -809,7 +811,9 @@ function camposEj2(e) {
       expl: () => `Se sustituye \\(x=${e.x0}\\) en la función <b>original</b>: \\(f(${e.x0})=${polySust(e.cs, e.x0)}=${e.y0}\\). El punto de tangencia es \\((${e.x0},\\,${e.y0})\\).` },
     { ids: ['e2_r'], key: 3, label: 'Recta tangente',
       ok: v => igualRecta(v[0], e.m, e.n), sol: `\\(${rectaTex(e.m, e.n)}\\)`, solInput: [`y = ${polyTxt([e.m, e.n])}`],
-      expl: () => `Punto-pendiente: \\(${pp}\\). Despejando \\(y\\): \\(${rectaTex(e.m, e.n)}\\).` }
+      expl: () => e.m === 0
+        ? `La pendiente es 0, así que la tangente es horizontal y pasa por \\((${e.x0},\\,${e.y0})\\): \\(${rectaTex(e.m, e.n)}\\).`
+        : `Punto-pendiente: \\(${pp}\\). Despejando \\(y\\): \\(${rectaTex(e.m, e.n)}\\).` }
   ];
 }
 
@@ -839,7 +843,7 @@ function generarEj3() {
 function buildEn3(e) {
   document.getElementById('en3').innerHTML =
     `Estudia la monotonía, los extremos relativos, la curvatura y los puntos de inflexión de` +
-    `<span class="formula">\\(f(x) = ${polyTex(e.cs)}\\)</span>`;
+    `<span class="formula">\\(f(x) = ${polyTex(e.cs)}\\)</span>en \\(\\mathbb{R}\\).`;
   tipografiar(document.getElementById('en3'));
 }
 function camposEj3(e) {
