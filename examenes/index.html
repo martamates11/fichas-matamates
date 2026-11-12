@@ -138,10 +138,10 @@ button,input,select{font:inherit;color:inherit}
 .cab-sello{justify-self:end;border:.35mm solid #111;padding:2mm 2.5mm;font:600 7.5pt var(--f-ui);letter-spacing:.14em;text-transform:uppercase;text-align:center;line-height:1.3}
 .filete{margin-top:4mm;border-top:.7mm solid #111;padding-top:.8mm}
 .filete::after{content:"";display:block;border-top:.2mm solid #111}
-.cab-campos{display:grid;grid-template-columns:3fr 1fr 1.2fr;gap:5mm;margin-top:5mm}
+.cab-campos{display:grid;grid-template-columns:minmax(0,1fr) minmax(30mm,max-content) minmax(30mm,max-content);gap:5mm;margin-top:5mm}
 .cab-campos .f{display:flex;gap:2mm;align-items:baseline;min-width:0}
 .cab-campos b{font-variant:small-caps;letter-spacing:.08em;font-weight:600}
-.cab-campos i{flex:1;border-bottom:.25mm dotted #111;font-style:normal;text-align:center;min-height:1.2em;white-space:nowrap;overflow:hidden}
+.cab-campos i{flex:1;border-bottom:.25mm dotted #111;font-style:normal;text-align:center;min-height:1.2em;white-space:nowrap;padding:0 1.5mm}
 
 /* Ejercicios del examen */
 .ejercicios{list-style:none;margin:7mm 0 0;padding:0;display:grid;gap:6.5mm}
@@ -150,7 +150,9 @@ button,input,select{font:inherit;color:inherit}
 .ej-num{font-weight:600}
 .ej-pts{color:var(--papel-suave);font-size:.88em;white-space:nowrap}
 .aps{display:grid;gap:4mm 6mm;margin-top:3mm;padding-left:6mm}
-.aps.c1{grid-template-columns:1fr}.aps.c2{grid-template-columns:1fr 1fr}.aps.c3{grid-template-columns:1fr 1fr 1fr}
+.aps.c1{grid-template-columns:1fr}.ap-txt{min-width:0}
+.pl-texto p{margin:0 0 1.4mm;text-align:justify;hyphens:auto}.pl-texto b{font-weight:600}.pl-texto .pregunta{font-weight:600}.pl-texto .variables{font-style:italic;color:#444}
+.pl-region{display:flex;flex-wrap:wrap;gap:3mm 6mm;align-items:flex-start}.pl-graf{width:78mm;height:auto;flex:none}.sol-res b+span b{font-weight:600}.aps.c2{grid-template-columns:1fr 1fr}.aps.c3{grid-template-columns:1fr 1fr 1fr}
 .ap{display:flex;gap:2mm;align-items:baseline;position:relative;min-width:0}
 .ap-letra{font-style:italic}
 .ap.unico{padding-left:0}
@@ -292,6 +294,8 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
 <script src="generadores/ecuaciones.js"></script>
 <script src="generadores/sistemas.js"></script>
 <script src="generadores/matrices.js"></script>
+<script src="generadores/matrices-ecuaciones.js"></script>
+<script src="generadores/programacion-lineal.js"></script>
 <script>
 (function () {
   'use strict';
@@ -342,6 +346,9 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
       return r;
     });
   }
+
+  /* Enunciado: fórmula (TeX) o texto con fórmulas (problemas) */
+  const enunHTML = r => (r.html ? r.enun : `\\(\\displaystyle ${r.enun}\\)`);
 
   /* ================= Puntuación ================= */
   const redondear = x => Math.round(x * 4) / 4;
@@ -460,7 +467,7 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
         const aps = materializar(it);
         const cols = Math.min(e.columnas, it.n);
         const pts = estado.verPts ? `<span class="ej-pts">(${txtPts(it.puntos)})</span>` : '<span></span>';
-        const cuerpo = aps.map((r, i) => `<div class="ap ${it.n === 1 ? 'unico' : ''}">${it.n > 1 ? `<span class="ap-letra">${LETRAS[i]})</span>` : ''}<span>\\(\\displaystyle ${r.enun}\\)</span>
+        const cuerpo = aps.map((r, i) => `<div class="ap ${it.n === 1 ? 'unico' : ''}">${it.n > 1 ? `<span class="ap-letra">${LETRAS[i]})</span>` : ''}<span class="ap-txt">${enunHTML(r)}</span>
           <button class="otro" type="button" data-uid="${it.uid}" data-i="${i}" title="Cambiar solo este apartado">↻ otro</button></div>`).join('');
         return `<li class="ej"><div class="ej-cab"><span class="ej-num">${k + 1}.</span><span>${e.enunciado[it.n > 1 ? 1 : 0]}</span>${pts}</div>
           <div class="aps c${cols}">${cuerpo}</div></li>`;
@@ -478,13 +485,13 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
       const aps = materializar(it);
       const cuerpo = aps.map((r, i) => {
         const pasos = r.pasos.map(p => {
-          const m = p.m ? `<div class="m">\\[${p.multilinea ? `\\begin{gathered}${p.m}\\end{gathered}` : p.m}\\]</div>` : '';
+          const m = (p.m ? `<div class="m">\\[${p.multilinea ? `\\begin{gathered}${p.m}\\end{gathered}` : p.m}\\]</div>` : '') + (p.html ? `<div class="m">${p.html}</div>` : '');
           return `<li><p>${p.t}</p>${m}</li>`;
         }).join('');
         return `<div class="sol-ap">
-          <div class="sol-enun">${it.n > 1 ? `<span class="ap-letra">${LETRAS[i]})</span>` : ''}<span>\\(\\displaystyle ${r.enun}\\)</span></div>
+          <div class="sol-enun">${it.n > 1 ? `<span class="ap-letra">${LETRAS[i]})</span>` : ''}<span class="ap-txt">${enunHTML(r)}</span></div>
           <ol class="sol-pasos">${pasos}</ol>
-          <div class="sol-res"><b>Solución</b><span>\\(\\displaystyle ${r.res}\\)</span></div></div>`;
+          <div class="sol-res"><b>Solución</b><span>${r.resHtml ? r.resHtml : `\\(\\displaystyle ${r.res}\\)`}</span></div></div>`;
       }).join('');
       return `<section class="sol-ej"><h3>Ejercicio ${k + 1}. ${e.enunciado[it.n > 1 ? 1 : 0].replace(/:$/, '')}<span>${txtPts(it.puntos)}</span></h3>${cuerpo}</section>`;
     }).join('');
