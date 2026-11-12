@@ -36,7 +36,7 @@
     r.forEach((c, j) => {
       const cuerpo = c === 0 ? '' : (Math.abs(c) === 1 ? '' : Math.abs(c)) + VARS[j];
       if (j > 0) celdas.push(c === 0 || primero ? '' : `{}${c < 0 ? '-' : '+'}{}`);
-      celdas.push(c === 0 ? '' : (primero && c < 0 ? '-' : '') + cuerpo);
+      celdas.push(c === 0 ? '' : (primero && c < 0 ? `{-${cuerpo}}` : cuerpo));
       if (c !== 0) primero = false;
     });
     return `${celdas.join(' && ')} &&{}={}& {${n(bi)}}`;
@@ -320,6 +320,164 @@
       { id: 'rouche-scd', nombre: 'Discutir y resolver: compatible determinado', peso: 2.5, columnas: 2, enunciado: ENUN_R, generar: rouche('SCD') },
       { id: 'rouche-sci', nombre: 'Discutir y resolver: compatible indeterminado', peso: 2.5, columnas: 2, enunciado: ENUN_R, generar: rouche('SCI') },
       { id: 'rouche-si', nombre: 'Discutir: incompatible', peso: 1.5, columnas: 2, enunciado: ENUN_R, generar: rouche('SI') }
+    ]
+  });
+
+  /* ================= Ficha: Rouché-Frobenius con parámetro ================= */
+  /* Cada elemento es [c0, c1] = c0 + c1·m. Polinomios en m: [c0, c1, c2]. */
+  const { resolverCuadratica } = window.EX;
+  const evalE = (e, m) => e[0] + e[1] * m;
+  const pmul = (a, b) => { const r = [0, 0, 0, 0, 0]; a.forEach((x, i) => b.forEach((y, j) => { r[i + j] += x * y; })); return r; };
+  const padd = (a, b) => a.map((x, i) => x + (b[i] || 0));
+  const polyTeX = P => poli([[P[4] || 0, 'm^4'], [P[3] || 0, 'm^3'], [P[2] || 0, 'm^2'], [P[1] || 0, 'm'], [P[0], '']]);
+  const entTeX = e => poli([[e[1], 'm'], [e[0], '']]);
+  const rango = M => {
+    const k = M[0].length;
+    for (let a = 0; a < k; a++) for (let b = a + 1; b < k; b++) for (let c = b + 1; c < k; c++) if (det3(M.map(r => [r[a], r[b], r[c]])) !== 0) return 3;
+    for (let r1 = 0; r1 < 3; r1++) for (let r2 = r1 + 1; r2 < 3; r2++) for (let c1 = 0; c1 < k; c1++) for (let c2 = c1 + 1; c2 < k; c2++) if (M[r1][c1] * M[r2][c2] - M[r1][c2] * M[r2][c1] !== 0) return 2;
+    return M.flat().some(v => v !== 0) ? 1 : 0;
+  };
+  const evalA = (P, m) => P.A.map(r => r.map(e => evalE(e, m)));
+  const evalAmp = (P, m) => P.A.map((r, i) => [...r.map(e => evalE(e, m)), evalE(P.b[i], m)]);
+  /* |A| como polinomio (exacto: producto de Sarrus a Sarrus) */
+  const SARRUS_P = [[[0, 0], [1, 1], [2, 2]], [[0, 1], [1, 2], [2, 0]], [[0, 2], [1, 0], [2, 1]]];
+  const SARRUS_N = [[[0, 2], [1, 1], [2, 0]], [[0, 0], [1, 2], [2, 1]], [[0, 1], [1, 0], [2, 2]]];
+  const prodP = (P, cel) => cel.reduce((acc, [i, j]) => pmul(acc, P.A[i][j]), [1]);
+  function detPoly(P) {
+    let d = [0, 0, 0, 0, 0];
+    SARRUS_P.forEach(c => { d = padd(d, prodP(P, c)); });
+    SARRUS_N.forEach(c => { d = padd(d, prodP(P, c).map(x => -x)); });
+    return d;
+  }
+
+  /* Generador de la ficha: a = un valor crítico (SI), b = un valor crítico (SCI), c = dos valores críticos */
+  function genParam(R, tipo, patron) {
+    for (let k = 0; k < 300000; k++) {
+      const P = { A: [0, 1, 2].map(() => [0, 1, 2].map(() => [R.int(-3, 3), 0])) };
+      let pos;
+      if (tipo === 'c') {
+        const i1 = R.int(0, 2), j1 = R.int(0, 2); let i2, j2;
+        do { i2 = R.int(0, 2); j2 = R.int(0, 2); } while (i2 === i1 || j2 === j1);
+        pos = [[i1, j1], [i2, j2]];
+      } else pos = [[R.int(0, 2), R.int(0, 2)]];
+      pos.forEach(([i, j]) => { P.A[i][j][1] = R.pick([1, 1, -1]); if (R.rand() < 0.55) P.A[i][j][0] = 0; });
+      if (P.A.flat().filter(e => e[0] === 0 && e[1] === 0).length > 2) continue;
+      if (P.A.some(r => r.every(e => e[0] === 0 && e[1] === 0))) continue;
+      P.b = [0, 1, 2].map(() => [R.int(-5, 5), 0]);
+      if (R.rand() < 0.45) { const i = R.int(0, 2); P.b[i][1] = R.pick([1, 1, -1]); if (R.rand() < 0.5) P.b[i][0] = 0; }
+      if (P.b.every(e => e[0] === 0 && e[1] === 0)) continue;
+      const d = detPoly(P);
+      if (d[3] || d[4]) continue;
+      const [c, b, a] = d;
+      let raices;
+      if (tipo === 'c') {
+        if (a === 0 || Math.abs(a) > 3 || Math.abs(b) > 16 || Math.abs(c) > 20) continue;
+        const D = b * b - 4 * a * c; if (D <= 0) continue;
+        const s = Math.round(Math.sqrt(D)); if (s * s !== D) continue;
+        const r1 = (-b - s) / (2 * a), r2 = (-b + s) / (2 * a);
+        if (!Number.isInteger(r1) || !Number.isInteger(r2)) continue;
+        raices = [r1, r2].sort((x, y) => x - y);
+        if (raices.some(r => Math.abs(r) > 4)) continue;
+      } else {
+        if (a !== 0 || b === 0 || Math.abs(b) > 8 || Math.abs(c) > 20 || c % b !== 0) continue;
+        const r = -c / b; if (r === 0 || Math.abs(r) > 4) continue;
+        raices = [r];
+      }
+      if (raices.some(r => rango(evalA(P, r)) !== 2)) continue;
+      const casos = raices.map(r => (rango(evalAmp(P, r)) === 2 ? 'SCI' : 'SI'));
+      if (tipo === 'a' && casos[0] !== 'SI') continue;
+      if (tipo === 'b' && casos[0] !== 'SCI') continue;
+      if (tipo === 'c') {
+        const key = [...casos].sort().join('/');
+        if (patron === 'mixto' && key !== 'SCI/SI') continue;
+        if (patron === 'SI' && key !== 'SI/SI') continue;
+        if (patron === 'SCI' && key !== 'SCI/SCI') continue;
+      }
+      return { P, d, raices, casos };
+    }
+    return null;
+  }
+
+  /* Escritura del sistema con parámetro, alineado por incógnitas */
+  function celdaParam(e, v) {
+    const [c0, c1] = e;
+    if (c0 === 0 && c1 === 0) return null;
+    if (c1 === 0) return { neg: c0 < 0, cuerpo: (Math.abs(c0) === 1 ? '' : Math.abs(c0)) + v };
+    if (c0 === 0) return { neg: c1 < 0, cuerpo: (Math.abs(c1) === 1 ? '' : Math.abs(c1)) + 'm' + v };
+    if (c0 < 0 && c1 < 0) return { neg: true, cuerpo: `(${entTeX([-c0, -c1])})${v}` };
+    return { neg: false, cuerpo: `(${entTeX(e)})${v}` };
+  }
+  function sistemaParamTeX(P) {
+    const filas = P.A.map((r, i) => {
+      const celdas = []; let primero = true;
+      r.forEach((e, j) => {
+        const c = celdaParam(e, VARS[j]);
+        if (j > 0) celdas.push(!c || primero ? '' : `{}${c.neg ? '-' : '+'}{}`);
+        celdas.push(!c ? '' : (primero && c.neg ? `{-${c.cuerpo}}` : c.cuerpo));
+        if (c) primero = false;
+      });
+      return `${celdas.join(' && ')} &&{}={}& {${entTeX(P.b[i])}}`;
+    });
+    return `\\left\\{\\begin{alignedat}{7} ${filas.join(' \\\\ ')} \\end{alignedat}\\right.`;
+  }
+  const ampParamTeX = P => `\\left(\\begin{array}{ccc|c} ${P.A.map((r, i) => [...r.map(entTeX), entTeX(P.b[i])].join(' & ')).join(' \\\\ ')} \\end{array}\\right)`;
+  /* Un producto de Sarrus: entre paréntesis si tiene varios términos o es negativo */
+  const prodTeX = Pp => { const t = polyTeX(Pp); return /[+]|.-/.test(t) || t.startsWith('-') ? `(${t})` : t; };
+
+  function discutirParam(tipoFijo) {
+    return R => {
+      const tipo = tipoFijo === 'azar' ? R.pick(['a', 'b', 'c']) : tipoFijo;
+      const patron = tipo === 'c' ? R.pick(['mixto', 'mixto', 'mixto', 'SI', 'SI', 'SCI']) : null;
+      let g = genParam(R, tipo, patron);
+      if (!g && tipo === 'c') g = genParam(R, 'c', 'SI');
+      const { P, d, raices, casos } = g;
+      const pasos = [];
+      pasos.push({ t: 'Matriz ampliada del sistema (la matriz de coeficientes A son las tres primeras columnas):', m: `A^* = ${ampParamTeX(P)}` });
+      pasos.push({ t: 'Determinante de A por la regla de Sarrus, en función de \\(m\\):',
+        m: `|A| = \\big[${SARRUS_P.map(c => prodTeX(prodP(P, c))).join(' + ')}\\big] - \\big[${SARRUS_N.map(c => prodTeX(prodP(P, c))).join(' + ')}\\big] = ${polyTeX(d)}` });
+      if (raices.length === 1) {
+        pasos.push({ t: 'Valores críticos: igualamos el determinante a 0.',
+          m: `${polyTeX(d)} = 0 \\;\\Rightarrow\\; ${n(d[1])}m = ${n(-d[0])} \\;\\Rightarrow\\; m = ${n(raices[0])}` });
+      } else {
+        pasos.push({ t: 'Valores críticos: igualamos el determinante a 0.', m: `${polyTeX(d)} = 0` });
+        resolverCuadratica(d[2], d[1], d[0], 'm').pasos.forEach(q => pasos.push(q));
+      }
+      const distinto = raices.map(r => `m \\neq ${n(r)}`).join(' \\text{ y } ');
+      pasos.push({ t: `<b>Caso</b> \\(${distinto}\\): \\(|A| \\neq 0\\), así que \\(\\text{rg}(A) = 3 = \\text{rg}(A^*) =\\) número de incógnitas. <b>Sistema compatible determinado</b> (solución única).` });
+      raices.forEach((r, k) => {
+        const M = evalAmp(P, r), A = M.map(f => f.slice(0, 3));
+        let menor = null;
+        for (let r1 = 0; r1 < 3 && !menor; r1++) for (let r2 = r1 + 1; r2 < 3 && !menor; r2++)
+          for (let c1 = 0; c1 < 3 && !menor; c1++) for (let c2 = c1 + 1; c2 < 3 && !menor; c2++)
+            if (A[r1][c1] * A[r2][c2] - A[r1][c2] * A[r2][c1] !== 0) menor = [r1, r2, c1, c2];
+        const [r1, r2, c1, c2] = menor;
+        const vM = A[r1][c1] * A[r2][c2] - A[r1][c2] * A[r2][c1];
+        const orl = M.map(f => [f[c1], f[c2], f[3]]);
+        const dO = det3(orl);
+        pasos.push({ t: `<b>Caso</b> \\(m = ${n(r)}\\): sustituimos en la matriz ampliada. Como \\(|A| = 0\\), \\(\\text{rg}(A) < 3\\), y hay un menor de orden 2 no nulo (filas ${r1 + 1} y ${r2 + 1}, columnas de ${VARS[c1]} ${VARS[c2] === 'y' ? 'e' : 'y'} ${VARS[c2]}), así que \\(\\text{rg}(A) = 2\\).`,
+          m: `A^* = ${ampTeX(M.map(f => f.map(Q.of)))} \\qquad ${vm([[A[r1][c1], A[r1][c2]], [A[r2][c1], A[r2][c2]]])} = ${n(vM)} \\neq 0` });
+        pasos.push({ t: 'Orlamos ese menor con la fila que falta y la columna de términos independientes:',
+          m: `${sarrus(orl, '\\Delta')}${dO === 0 ? '' : ' \\neq 0'}` });
+        pasos.push({ t: casos[k] === 'SI'
+          ? `\\(\\Delta \\neq 0 \\Rightarrow \\text{rg}(A^*) = 3 \\neq \\text{rg}(A) = 2\\). <b>Sistema incompatible</b>: no tiene solución.`
+          : `Los dos orlados (\\(|A|\\) y \\(\\Delta\\)) valen 0 \\(\\Rightarrow \\text{rg}(A^*) = 2 = \\text{rg}(A) < 3\\). <b>Sistema compatible indeterminado</b>: infinitas soluciones con un parámetro.` });
+      });
+      const res = [`m \\neq ${raices.map(n).join(',\\ ')}: & \\text{SCD}`, ...raices.map((r, k) => `m = ${n(r)}: & \\text{${casos[k]}}`)];
+      return { enun: sistemaParamTeX(P), pasos, res: `\\begin{array}{rl} ${res.join(' \\\\ ')} \\end{array}` };
+    };
+  }
+  const ENUN_P = ['Discute el siguiente sistema según los valores del parámetro \\(m\\):', 'Discute los siguientes sistemas según los valores del parámetro \\(m\\):'];
+  registrarFicha({
+    id: 'rouche-parametro',
+    titulo: 'Rouché-Frobenius con parámetros',
+    detalle: '2.º Bachillerato',
+    grupo: 'Ecuaciones matriciales y sistemas',
+    enlace: '../sistemas-ec-matriciales/ruche-parametro.html',
+    ejercicios: [
+      { id: 'param-azar', nombre: 'Discutir con parámetro (tipo al azar)', peso: 2.5, columnas: 2, enunciado: ENUN_P, generar: discutirParam('azar') },
+      { id: 'param-a', nombre: 'Un valor crítico que da SI', peso: 2.5, columnas: 2, enunciado: ENUN_P, generar: discutirParam('a') },
+      { id: 'param-b', nombre: 'Un valor crítico que da SCI', peso: 2.5, columnas: 2, enunciado: ENUN_P, generar: discutirParam('b') },
+      { id: 'param-c', nombre: 'Dos valores críticos', peso: 3, columnas: 2, enunciado: ENUN_P, generar: discutirParam('c') }
     ]
   });
 })();
