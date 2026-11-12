@@ -3,8 +3,8 @@
    Los números se generan con los mismos criterios que las fichas interactivas. */
 (function () {
   'use strict';
-  const { fr, tex, resolverCuadratica, divisores, registrarFicha } = window.EX;
-  const { n, frac, poli, cuad, bin } = tex;
+  const { fr, mcd, tex, resolverCuadratica, divisores, registrarFicha } = window.EX;
+  const { n, frac, poli, cuad, bin, por } = tex;
 
   const ordenar = rs => rs.slice().sort((u, v) => u.n / u.d - v.n / v.d);
   function resultadoRaices(raices, v = 'x') {
@@ -129,6 +129,111 @@
       { id: 'parentesis', nombre: 'Paréntesis y casos especiales', peso: 1.5, columnas: 2,
         enunciado: ['Resuelve la siguiente ecuación:', 'Resuelve las siguientes ecuaciones:'],
         generar: ec2Parentesis }
+    ]
+  });
+
+  /* ================= Ecuaciones de segundo grado incompletas =================
+     Mismos rangos que la ficha ec-2-grado-incompletas.html.
+     L y R = coeficientes [x², x, número] de cada miembro; reducida: L − R = 0. */
+  function enunciadoIncompleta(R, L, Rm, inverso) {
+    const izq = inverso
+      ? poli(L[2] !== 0 ? [[L[2], ''], [L[0], 'x^2']] : [[L[1], 'x'], [L[0], 'x^2']])
+      : cuad(...L);
+    return `${izq} = ${cuad(...Rm)}`;
+  }
+
+  function incSinB(R) {
+    const clase = R.pick(['entera', 'entera', 'entera', 'entera', 'fraccion', 'fraccion', 'sin', 'sin']);
+    let a, c;
+    if (clase === 'entera') {
+      let r;
+      do { r = R.int(1, 10); a = R.int(1, 5); } while (a * r * r > 150 || (a === 1 && r === 1));
+      c = -a * r * r;
+    } else if (clase === 'fraccion') {
+      let s, p, k;
+      do { s = R.int(2, 5); p = R.int(1, 9); k = R.pick([1, 1, 2, 3]); }
+      while (mcd(p, s) !== 1 || s * s * k > 75 || p * p * k > 150);
+      a = s * s * k; c = -p * p * k;
+    } else {
+      a = R.int(1, 6); c = R.int(1, 50);
+    }
+    const forma = R.pick(['cero', 'cero', 'despejada', 'ambos', 'ambos']);
+    if (forma !== 'despejada' && R.rand() < 0.3) { a = -a; c = -c; }
+    let L, Rm;
+    if (forma === 'cero') { L = [a, 0, c]; Rm = [0, 0, 0]; }
+    else if (forma === 'despejada') { L = [a, 0, 0]; Rm = [0, 0, -c]; }
+    else {
+      let a2, c2;
+      do { a2 = R.nz(-4, 4); c2 = R.nz(-20, 20); } while (a + a2 === 0 || c + c2 === 0);
+      L = [a + a2, 0, c + c2]; Rm = [a2, 0, c2];
+    }
+    const enun = enunciadoIncompleta(R, L, Rm, forma === 'cero' && R.rand() < 0.25);
+
+    const q = fr(-c, a), pasos = [];
+    if (forma === 'ambos') pasos.push({ t: 'Agrupamos los términos en \\(x^2\\) en el primer miembro y los números en el segundo:', m: `${por(a, 'x^2')} = ${n(-c)}` });
+    else if (forma === 'cero') pasos.push({ t: 'Pasamos el término independiente al segundo miembro:', m: `${por(a, 'x^2')} = ${n(-c)}` });
+    if (a === -1) pasos.push({ t: 'Multiplicamos por −1:', m: `x^2 = ${frac(q)}` });
+    else if (a !== 1) {
+      const directa = q.n === -c && q.d === a;
+      pasos.push({ t: `Despejamos \\(x^2\\): ${n(a).replace('-', '−')} pasa dividiendo.`,
+        m: `x^2 = \\frac{${n(-c)}}{${n(a)}}${directa ? '' : ' = ' + frac(q)}` });
+    }
+    if (q.n < 0) {
+      pasos.push({ t: 'Ningún número real elevado al cuadrado da un resultado negativo, así que la ecuación no tiene soluciones reales.' });
+      return { enun, pasos, res: '\\text{No tiene soluciones reales}' };
+    }
+    const r = fr(Math.round(Math.sqrt(q.n)), Math.round(Math.sqrt(q.d)));
+    pasos.push({ t: 'Hacemos la raíz cuadrada. Hay dos soluciones opuestas:', m: `x = \\pm\\sqrt{${frac(q)}} = \\pm ${frac(r)}` });
+    return { enun, pasos, res: resultadoRaices([r, fr(-r.n, r.d)]) };
+  }
+
+  function incSinC(R) {
+    const clase = R.pick(['entera', 'entera', 'fraccion']);
+    let a, b;
+    if (clase === 'entera') {
+      let r;
+      do { r = R.nz(-9, 9); a = R.int(1, 5); } while (Math.abs(a * r) > 40);
+      b = -a * r;
+    } else {
+      let s, p, k;
+      do { s = R.int(2, 5); p = R.nz(-9, 9); k = R.pick([1, 1, 2]); }
+      while (mcd(p, s) !== 1 || Math.abs(p * k) > 30);
+      a = s * k; b = -p * k;
+    }
+    const forma = R.pick(['cero', 'cero', 'despejada', 'ambos', 'ambos']);
+    if (forma !== 'despejada' && R.rand() < 0.3) { a = -a; b = -b; }
+    let L, Rm;
+    if (forma === 'cero') { L = [a, b, 0]; Rm = [0, 0, 0]; }
+    else if (forma === 'despejada') { L = [a, 0, 0]; Rm = [0, -b, 0]; }
+    else {
+      let a2, b2;
+      do { a2 = R.int(-3, 3); b2 = R.nz(-9, 9); } while (a + a2 === 0 || b + b2 === 0);
+      L = [a + a2, b + b2, 0]; Rm = [a2, b2, 0];
+    }
+    const enun = enunciadoIncompleta(R, L, Rm, forma === 'cero' && R.rand() < 0.25);
+
+    const raiz = fr(-b, a), pasos = [];
+    if (forma !== 'cero') pasos.push({ t: 'Pasamos todos los términos al primer miembro y agrupamos:', m: `${cuad(a, b, 0)} = 0` });
+    pasos.push({ t: 'Sacamos factor común \\(x\\):', m: `x(${bin(a, b)}) = 0` });
+    const desp = a === 1 ? `x = ${n(-b)}` : `${por(a, 'x')} = ${n(-b)} \\;\\Rightarrow\\; x = ${frac(raiz)}`;
+    pasos.push({ t: 'Un producto vale cero si alguno de sus factores vale cero:',
+      m: `x = 0 \\qquad\\text{o}\\qquad ${bin(a, b)} = 0 \\;\\Rightarrow\\; ${desp}` });
+    return { enun, pasos, res: resultadoRaices([fr(0, 1), raiz]) };
+  }
+
+  registrarFicha({
+    id: 'ec-2-grado-incompletas',
+    titulo: 'Ecuaciones de segundo grado incompletas',
+    detalle: 'Despejar x y factor común',
+    grupo: 'Polinomios y ecuaciones',
+    enlace: '../ecuaciones/ec-2-grado-incompletas.html',
+    ejercicios: [
+      { id: 'sin-b', nombre: 'Sin término en x (b = 0)', peso: 1, columnas: 3,
+        enunciado: ['Resuelve la siguiente ecuación de segundo grado incompleta:', 'Resuelve las siguientes ecuaciones de segundo grado incompletas:'],
+        generar: incSinB },
+      { id: 'sin-c', nombre: 'Sin término independiente (c = 0)', peso: 1, columnas: 3,
+        enunciado: ['Resuelve la siguiente ecuación de segundo grado incompleta:', 'Resuelve las siguientes ecuaciones de segundo grado incompletas:'],
+        generar: incSinC }
     ]
   });
 
