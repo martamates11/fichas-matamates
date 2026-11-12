@@ -219,6 +219,8 @@ input[type=text]:disabled{cursor:not-allowed;color:var(--color-texto);}
 #g-svg .g-punto{cursor:grab;}
 .graf-velo{position:absolute;inset:0;background:rgba(253,250,243,.82);border-radius:6px;display:flex;align-items:center;justify-content:center;text-align:center;padding:20px;font-family:'Libre Baskerville',serif;font-style:italic;font-size:.92rem;color:var(--color-texto-suave);z-index:2;}
 .graf-velo[hidden]{display:none;}
+.graf-velo span{display:block;max-width:380px;background:var(--color-fondo-card);border:1.5px solid var(--color-borde);border-radius:6px;padding:14px 18px;line-height:1.55;box-shadow:0 2px 8px rgba(44,31,14,.10);}
+.graf-velo b{color:var(--color-acento);font-style:normal;}
 .graf-leyenda{display:flex;flex-wrap:wrap;gap:4px 16px;margin-top:8px;font-size:.8rem;color:var(--color-texto-suave);}
 .graf-leyenda[hidden]{display:none;}
 .graf-leyenda i{display:inline-block;width:18px;height:3px;border-radius:2px;vertical-align:middle;margin-right:5px;}
@@ -277,7 +279,7 @@ input[type=text]:disabled{cursor:not-allowed;color:var(--color-texto);}
     <summary><h2>Cómo se puntúa</h2></summary>
     <ul>
       <li>Cada ejercicio vale <b>3,33 puntos</b>, repartidos a partes iguales entre sus apartados (ejercicio 1: 5 apartados; ejercicio 2: 4; ejercicio 3: 12).</li>
-      <li>En el ejercicio 3, la <b>representación gráfica</b> (apartados 11 y 12) se desbloquea cuando hayas resuelto los apartados 1 a 10.</li>
+      <li>En el ejercicio 3, la <b>representación gráfica</b> (apartados 11 y 12) se desbloquea cuando hayas rellenado y <b>comprobado</b> los apartados 1 a 10.</li>
       <li>Puedes comprobar los apartados de uno en uno: solo se corrigen los que tienen todas sus casillas rellenas. Un apartado <b>fallado queda a 0</b> y ya no admite más intentos.</li>
       <li>Para volver a intentarlo, pulsa <b>«Hacer otro ejercicio»</b>: se genera uno nuevo y se pierden los puntos del ejercicio actual.</li>
       <li><b>«Mostrar soluciones»</b> resuelve, con su explicación, los apartados pendientes de ese ejercicio; esos apartados <b>no cuentan para la nota</b>.</li>
@@ -485,7 +487,7 @@ input[type=text]:disabled{cursor:not-allowed;color:var(--color-texto);}
         </div>
         <svg id="g-svg" viewBox="0 0 560 440" tabindex="0" role="application" aria-label="Plano cartesiano para colocar los puntos. Con el teclado, las flechas mueven el punto seleccionado."></svg>
         <div class="graf-leyenda" id="g-leyenda" hidden></div>
-        <div class="graf-velo" id="g-velo">Se desbloquea cuando hayas resuelto los apartados 1 a 10:<br>la gráfica se construye con lo que has obtenido en ellos.</div>
+        <div class="graf-velo" id="g-velo" aria-live="polite"></div>
       </div>
     </div></div>
     <div class="paso"><div class="pnum">12</div><div class="pcont">
@@ -1125,7 +1127,16 @@ function grafDibujar() {
 
 function grafActualizar() {
   if (!graf || !cur[3]) return;
-  document.getElementById('g-velo').hidden = grafAbierta();
+  const velo = document.getElementById('g-velo');
+  velo.hidden = grafAbierta();
+  if (!velo.hidden) {
+    // Cuántos de los apartados 1-10 siguen pendientes y si ya están rellenos
+    const pend = CAMPOS[3]().filter(f => f.ids.length && est[3].estado[f.key] === 'pendiente');
+    const rellenos = pend.every(f => valores(f).every(v => v.trim() !== ''));
+    velo.innerHTML = rellenos
+      ? '<span>Pulsa <b>«Comprobar»</b> para corregir los apartados 1 a 10 y se desbloqueará la representación.</span>'
+      : `<span>Se desbloquea cuando hayas <b>rellenado y comprobado</b> los apartados 1 a 10. Te ${pend.length === 1 ? 'falta 1 apartado' : `faltan ${pend.length} apartados`} por comprobar.</span>`;
+  }
   const svg = document.getElementById('g-svg');
   svg.classList.toggle('activo', ptsEditables());
   svg.setAttribute('tabindex', ptsEditables() ? '0' : '-1');
@@ -1156,6 +1167,7 @@ function siguienteLibre() {
 }
 
 (function iniciarGrafica() {
+  document.querySelectorAll('[id^="e3_"]').forEach(el => el.addEventListener('input', () => grafActualizar()));
   // Tarjetas de tramos
   document.getElementById('g-tramos').innerHTML = TRAMOS_TXT.map((t, i) => `
     <div class="tramo"><div class="t-tit">Tramo ${i + 1}</div><div class="t-sub">${t}</div>
