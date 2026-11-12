@@ -118,6 +118,7 @@ input[type=text]{background:var(--color-fondo-card);border:1.5px solid var(--col
 input[type=text]:focus{border-color:var(--color-acento);}
 input[type=text].ok{border-color:var(--color-correcto);background:#EAF4EC;}
 input[type=text].fail{border-color:var(--color-incorrecto);background:#F9EAEA;}
+input[type=text].formato{border-color:#C08A2E;background:#FBF3E1;box-shadow:0 0 0 3px rgba(192,138,46,.18);}
 input[type=text].revelado{border:1.5px dashed var(--color-apagado);background:var(--color-apagado-fondo);color:var(--color-texto-suave);}
 input[type=text]:disabled{cursor:not-allowed;color:var(--color-texto);}
 .w-l{width:260px;}.w-m{width:200px;}.w-s{width:110px;}.w-xs{width:84px;}
@@ -192,7 +193,7 @@ input[type=text]:disabled{cursor:not-allowed;color:var(--color-texto);}
 .modal-calificacion .btn-cerrar{background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.55);border-radius:4px;padding:8px 20px;font-family:'Lato',sans-serif;font-size:.9rem;cursor:pointer;}
 .confirm-modal{background:var(--color-fondo-card);color:var(--color-texto);border:3px solid var(--color-borde);border-radius:8px;padding:24px 28px;max-width:400px;width:100%;text-align:center;box-shadow:0 6px 24px rgba(44,31,14,.35);}
 .confirm-modal h2{font-family:'Libre Baskerville',serif;color:var(--color-acento);font-size:1.15rem;margin-bottom:8px;}
-.confirm-modal .meta{font-size:.93rem;color:var(--color-texto-suave);margin-bottom:16px;}
+.confirm-modal .meta{white-space:pre-line;text-align:left;font-size:.93rem;color:var(--color-texto-suave);margin-bottom:16px;}
 .confirm-botones{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
 .confirm-botones .btn-secundario{display:inline-block;}
 
@@ -708,6 +709,38 @@ function igualRecta(input, m, n) {
   return true;
 }
 
+// ==================== FORMATO DE LAS RESPUESTAS ====================
+// Una respuesta que no se puede leer (paréntesis sin cerrar, «-3,»…) no se corrige:
+// se avisa al alumno para que la reescriba, sin contarla como fallo.
+const TIPO_CASILLA = {
+  e1_d: 'poli-t', e2_d: 'poli-x', e3_d1: 'poli-x', e3_d2: 'poli-x', e2_r: 'recta',
+  e3_crec: 'intervalo', e3_dec: 'intervalo', e3_conc: 'intervalo', e3_conv: 'intervalo'
+};
+function problemaFormato(id, valor) {
+  const tipo = TIPO_CASILLA[id] || 'numero';
+  if (tipo === 'intervalo') {
+    if (leerIntervalos(valor)) return '';
+    const t = valor.replace(/\[/g, '(').replace(/\]/g, ')');
+    const ab = (t.match(/\(/g) || []).length, ce = (t.match(/\)/g) || []).length;
+    if (ab !== ce) return 'hay algún paréntesis sin cerrar (o sin abrir). Cada intervalo va entre paréntesis: (−∞,\u00A01)\u00A0∪\u00A0(3,\u00A0+∞).';
+    return 'escribe cada intervalo como (a, b), con el menor a la izquierda, y únelos con ∪: (−∞,\u00A01)\u00A0∪\u00A0(3,\u00A0+∞).';
+  }
+  if (tipo === 'poli-t' || tipo === 'poli-x') {
+    const v = tipo === 'poli-t' ? 't' : 'x';
+    const c = limpiar(valor).replace(new RegExp(`^[a-z]'*\\(${v}\\)=`), '');
+    return isNaN(evalExpr(c, { [v]: 1.37 })) ? `escribe un polinomio en ${v}, con las potencias con ^ (por ejemplo, 6${v}^2 − 12${v} + 5).` : '';
+  }
+  if (tipo === 'recta') {
+    let c = limpiar(valor);
+    if (!c.includes('=')) c = 'y=' + c;
+    const l = c.split('=');
+    const ok = l.length === 2 && l.every(x => x !== '' && !isNaN(evalExpr(x, { x: 1.37, y: 0.61 })));
+    return ok ? '' : 'escribe la ecuación de la recta, por ejemplo y = 2x − 3.';
+  }
+  return isNaN(leerNumero(valor)) ? 'escribe solo un número en cada casilla, sin comas ni signos de más.' : '';
+}
+document.addEventListener('input', ev => { if (ev.target.classList) ev.target.classList.remove('formato'); });
+
 // ==================== MODAL DE CONFIRMACIÓN / AVISO ====================
 let confirmCallback = null;
 function pedirConfirmacion(mensaje, callback, opts = {}) {
@@ -784,7 +817,7 @@ document.getElementById('nombre').addEventListener('input', () => {
 
 function markField(id, clase) {
   const el = document.getElementById(id);
-  el.classList.remove('ok', 'fail', 'revelado');
+  el.classList.remove('ok', 'fail', 'revelado', 'formato');
   el.classList.add(clase);
 }
 function lineaFeedback(tipo, etiqueta, solucionTex, explicacion) {
@@ -1278,8 +1311,23 @@ function corregir(n) {
   if (ex.cerrado) return;
   if (!exigirNombre()) return;
   const pendientes = CAMPOS[n]().filter(f => ex.estado[f.key] === 'pendiente');
-  const aCorregir = pendientes.filter(f => valores(f).every(v => v.trim() !== ''));
+  const llenos = pendientes.filter(f => valores(f).every(v => v.trim() !== ''));
+  // Apartados con alguna casilla ilegible: no se corrigen, se avisa
+  const avisos = [];
+  const malFormato = llenos.filter(f => {
+    let mal = false;
+    f.ids.forEach(id => {
+      const pb = problemaFormato(id, document.getElementById(id).value);
+      if (pb) { mal = true; document.getElementById(id).classList.add('formato'); avisos.push(`· ${f.label}: ${pb}`); }
+    });
+    return mal;
+  });
+  const avisoFormato = () => mostrarAviso(
+    `No he corregido ${malFormato.length === 1 ? 'este apartado' : 'estos apartados'} porque no se ${malFormato.length === 1 ? 'puede' : 'pueden'} leer (casillas en ámbar):\n\n` +
+    `${[...new Set(avisos)].join('\n')}\n\nCorrige la escritura y vuelve a pulsar «Comprobar». No se ha descontado nada.`);
+  const aCorregir = llenos.filter(f => !malFormato.includes(f));
   if (aCorregir.length === 0) {
+    if (malFormato.length) { avisoFormato(); return; }
     const aMedias = pendientes.some(f => valores(f).some(v => v.trim() !== ''));
     mostrarAviso(aMedias
       ? 'Hay apartados incompletos (una casilla vacía, un punto sin colocar o un tramo sin forma). Complétalos para poder corregirlos.'
@@ -1298,6 +1346,7 @@ function corregir(n) {
   recalcPuntos(n);
   pintar(n);
   updateStats();
+  if (malFormato.length) avisoFormato();
 }
 
 // ---------- «Mostrar soluciones» ----------
@@ -1340,7 +1389,7 @@ function reiniciarEj(n) {
   BUILD[n](cur[n]);
   CAMPOS[n]().forEach(f => f.ids.forEach(id => {
     const el = document.getElementById(id);
-    el.value = ''; el.disabled = false; el.classList.remove('ok', 'fail', 'revelado');
+    el.value = ''; el.disabled = false; el.classList.remove('ok', 'fail', 'revelado', 'formato');
   }));
   if (n === 3) { document.querySelectorAll('.simbolos button').forEach(b => { b.disabled = false; }); grafReset(); }
   const I = ids(n);
