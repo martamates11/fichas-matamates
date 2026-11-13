@@ -329,7 +329,7 @@ function fmtNum(v, fmt){
   if(fmt==='pct') return (v*100).toLocaleString('es-ES',{maximumFractionDigits:2})+' %';
   if(fmt==='eur') return v.toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
   if(Math.abs(v)>=1e10) return v.toExponential(4).replace('.',',');
-  return v.toLocaleString('es-ES',{maximumFractionDigits:4});
+  return v.toLocaleString('es-ES',{maximumFractionDigits:Math.abs(v)>=1?2:4});
 }
 const eur = v => fmtNum(v,'eur');
 const pct = v => fmtNum(v,'pct');
@@ -882,20 +882,19 @@ const conPct=(v,x)=>igual(v,x)||igual(v,x*100);
 function genTabla(){
   const C0=ri(12,160)*50, r=ri(6,20)/200, t=ri(3,4);
   const Cf=C0*Math.pow(1+r,t), Cs=C0*(1+r*t);
-  const R0=5, fin=R0+t, fTot=fin+2, fCf=fin+3, fDif=fin+4;
+  const R0=5, fin=R0+t, fTot=fin+2, fCf=fin+3;
   const enun=pick([
-    `Colocamos <b>${eur(C0)}</b> en una entidad bancaria que ofrece un interés compuesto anual del <b>${pct(r)}</b> durante <b>${t} años</b>. ¿Cuál es el capital final? ¿Cuánto más se gana que a interés simple?`,
-    `Lucía ingresa <b>${eur(C0)}</b> en un depósito al <b>${pct(r)}</b> de interés compuesto anual (los intereses se suman al capital cada año). ¿Cuánto tendrá al cabo de <b>${t} años</b>? Compáralo con lo que tendría a interés simple.`,
-    `Una empresa invierte <b>${eur(C0)}</b> a un <b>${pct(r)}</b> anual con capitalización anual durante <b>${t} años</b>. Calcula el capital acumulado y la diferencia con un interés simple del mismo tipo.`
+    `Colocamos <b>${eur(C0)}</b> en una entidad bancaria que ofrece un interés compuesto anual del <b>${pct(r)}</b> durante <b>${t} años</b>. ¿Cuál es el capital final?`,
+    `Lucía ingresa <b>${eur(C0)}</b> en un depósito al <b>${pct(r)}</b> de interés compuesto anual (los intereses se suman al capital cada año). ¿Cuánto tendrá al cabo de <b>${t} años</b>?`,
+    `Una empresa invierte <b>${eur(C0)}</b> a un <b>${pct(r)}</b> anual con capitalización anual durante <b>${t} años</b>. Calcula el capital acumulado al final.`
   ]);
   const cel=[
     {a:'A1',raw:'Capital inicial (C₀)',tipo:'etq'},{a:'B1',raw:rawNum(C0),fmt:'eur',tipo:'dato',v:C0},
     {a:'A2',raw:'Rédito anual (r)',tipo:'etq'},{a:'B2',raw:rawNum(r*100)+'%',fmt:'pct',tipo:'dato',v:r},
     {a:'A3',raw:'Tiempo (años)',tipo:'etq'},{a:'B3',raw:String(t),tipo:'dato',v:t},
-    {a:'A5',raw:'Año',tipo:'cab'},{a:'B5',raw:'Capital al inicio del año',tipo:'cab'},{a:'C5',raw:'Intereses del año',tipo:'cab'},{a:'D5',raw:'Capital al final del año',tipo:'cab'},{a:'E5',raw:'Capital a interés simple',tipo:'cab'},
+    {a:'A5',raw:'Año',tipo:'cab'},{a:'B5',raw:'Capital al inicio del año',tipo:'cab'},{a:'C5',raw:'Intereses del año',tipo:'cab'},{a:'D5',raw:'Capital al final del año',tipo:'cab'},
     {a:'A'+fTot,raw:'Intereses totales (con SUMA)',tipo:'etq'},
-    {a:'A'+fCf,raw:'Cf con la fórmula C₀·(1+r)^t',tipo:'etq'},
-    {a:'A'+fDif,raw:'Diferencia compuesto − simple',tipo:'etq'}
+    {a:'A'+fCf,raw:'Cf con la fórmula C₀·(1+r)^t',tipo:'etq'}
   ];
   const obj=[];
   for(let k=1;k<=t;k++){
@@ -903,14 +902,12 @@ function genTabla(){
     obj.push({a:'B'+f,sol:k===1?'=B1':'=D'+(f-1),esp:ini,et:`capital al inicio del año ${k}`,fila:f,col:'B',k,fmtSol:'eur'});
     obj.push({a:'C'+f,sol:`=B${f}*$B$2`,esp:ini*r,et:`intereses del año ${k}`,fila:f,col:'C',k,fmtSol:'eur'});
     obj.push({a:'D'+f,sol:`=B${f}+C${f}`,esp:ini*(1+r),et:`capital al final del año ${k}`,fila:f,col:'D',k,fmtSol:'eur'});
-    obj.push({a:'E'+f,sol:`=$B$1*(1+$B$2*A${f})`,esp:C0*(1+r*k),et:`capital a interés simple, año ${k}`,fila:f,col:'E',k,fmtSol:'eur'});
   }
   obj.push({a:'B'+fTot,sol:`=SUMA(C${R0+1}:C${fin})`,esp:Cf-C0,et:'intereses totales',col:'T',fmtSol:'eur'});
   obj.push({a:'B'+fCf,sol:'=B1*(1+B2)^B3',esp:Cf,et:'capital final con la fórmula',col:'F',fmtSol:'eur'});
-  obj.push({a:'B'+fDif,sol:`=B${fCf}-E${fin}`,esp:Cf-Cs,et:'diferencia con el interés simple',col:'X',fmtSol:'eur'});
   obj.forEach(o=>cel.push({a:o.a,tipo:'obj',raw:''}));
-  const ex={tipo:'tabla',C0,r,t,Cf,Cs,enun,cel,obj,filas:fDif+1,
-    inst:`Completa la tabla año a año: en compuesto, los intereses de cada año se calculan sobre el capital que hay <b>al inicio de ese año</b>. En la columna E calcula el capital que habría con interés simple, <i>C</i><sub>0</sub>·(1 + <i>r</i>·año). Después, los intereses totales con <b>SUMA</b>, el capital final con <i>C</i><sub>0</sub>·(1 + <i>r</i>)<sup><i>t</i></sup> y la diferencia con el simple. <b>Pista:</b> escribe la primera fila y cópiala hacia abajo; piensa qué referencias deben quedar fijas con <code>$</code>. Si seleccionas la tabla y pulsas <b>€</b>, verás los importes con dos decimales.`};
+  const ex={tipo:'tabla',C0,r,t,Cf,Cs,enun,cel,obj,filas:fCf+1,
+    inst:`Completa la tabla año a año: en compuesto, los intereses de cada año se calculan sobre el capital que hay <b>al inicio de ese año</b>. Después calcula los intereses totales con <b>SUMA</b> y el capital final con la fórmula <i>C</i><sub>0</sub>·(1 + <i>r</i>)<sup><i>t</i></sup>: los dos caminos deben dar lo mismo. <b>Pista:</b> escribe la primera fila y cópiala hacia abajo; piensa qué referencias deben quedar fijas con <code>$</code>.`};
   ex.datos=ctxDatos(cel);
   ex.revisar=H=>ex.obj.map(o=>{
     const D={};
@@ -929,13 +926,6 @@ function genTabla(){
       const sB=val(H,'B'+o.fila), sC=val(H,'C'+o.fila);
       if(typeof sB==='number'&&typeof sC==='number'&&igual(v,sB+sC)) return {cat:null,msg:`La suma B${o.fila}+C${o.fila} está bien planteada, pero arrastra un error de esas celdas.`};
       return {cat:'otros',msg:`El capital al final del año es el del inicio más los intereses de ese año: <code>=B${o.fila}+C${o.fila}</code>.`}; };
-    if(o.col==='E') D.diag=(v,an)=>{
-      if(igual(v,C0*Math.pow(1+r,o.k))) return {cat:'otros',msg:'Ese es el capital a interés compuesto. En la columna E va el capital a interés simple: C₀·(1 + r·año).'};
-      if(igual(v,C0*r*o.k)||igual(v,C0*r)) return {cat:'capInt',msg:'Eso son solo intereses. El capital a interés simple es C₀ más los intereses acumulados: C₀·(1 + r·año).'};
-      if(igual(v,C0*1+r*o.k)) return {cat:'parentesis',msg:'Falta un paréntesis: C₀·(1 + r·año), es decir <code>=$B$1*(1+$B$2*A'+o.fila+')</code>.'};
-      const raras=[...an.refs].filter(x=>!['B1','B2','A'+o.fila,'E'+(o.fila-1)].includes(x));
-      if(raras.length) return {cat:'referencias',msg:`La fórmula <code>${esc(an.raw)}</code> usa ${raras.join(', ')}: al copiarla, C₀ y r se han desplazado. Fíjalas con <code>$</code>: <code>=$B$1*(1+$B$2*A${o.fila})</code>.`};
-      return null; };
     if(o.col==='T'){
       D.requisito=an=>an.funcs.some(f=>f==='SUMA'||f==='SUM')?null:{cat:'funcion',msg:`El valor es correcto, pero se pide calcularlo con la función SUMA: <code>${o.sol}</code>.`};
       D.diag=(v,an)=>{
@@ -954,15 +944,9 @@ function genTabla(){
         if(igual(v,Cf-C0)) return {cat:'capInt',msg:'Eso son los intereses. El capital final es C₀·(1 + r)<sup>t</sup>.'};
         return null; };
     }
-    if(o.col==='X') D.diag=v=>{
-      if(igual(v,-(Cf-Cs))) return {cat:'resta',msg:`Has restado al revés: el compuesto da más, así que la diferencia es compuesto − simple (<code>=B${fCf}-E${fin}</code>).`};
-      if(igual(v,Cf-C0)) return {cat:'otros',msg:'Eso son los intereses compuestos. Hay que restar el capital final a interés simple (la última fila de la columna E).'};
-      const a1=val(H,'B'+fCf), a2=val(H,'E'+fin);
-      if(typeof a1==='number'&&typeof a2==='number'&&igual(v,a1-a2)) return {cat:null,msg:'La resta está bien planteada, pero arrastra errores de las celdas que usa.'};
-      return null; };
     return {...o, ...revisar(H,ex,o.a,o.esp,D)};
   });
-  ex.explic=()=>`En interés compuesto los intereses de cada año se calculan sobre el capital acumulado al inicio de ese año, así que crecen cada año: en la hoja, <code>=B6*$B$2</code> (el capital es relativo y r está fija). El capital final es <i>C</i><sub>f</sub> = <i>C</i><sub>0</sub>·(1 + <i>r</i>)<sup><i>t</i></sup> = ${eur(C0)} · ${num(1+r)}<sup>${t}</sup> = <b>${eur(Cf)}</b>. A interés simple tendríamos ${eur(C0)} · (1 + ${num(r)} · ${t}) = ${eur(Cs)}, así que el compuesto da <b>${eur(Cf-Cs)}</b> más: son los «intereses de los intereses».`;
+  ex.explic=()=>`En interés compuesto los intereses de cada año se calculan sobre el capital acumulado al inicio de ese año, así que crecen cada año: en la hoja, <code>=B6*$B$2</code> (el capital es relativo y r está fija). El capital final es <i>C</i><sub>f</sub> = <i>C</i><sub>0</sub>·(1 + <i>r</i>)<sup><i>t</i></sup> = ${eur(C0)} · ${num(1+r)}<sup>${t}</sup> = <b>${eur(Cf)}</b>. Los intereses totales son ${eur(Cf-C0)}: incluyen los «intereses de los intereses».`;
   return ex;
 }
 
