@@ -231,7 +231,11 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--marino);color:var(--panel);padding:9px 16px;border-radius:9px;font-weight:500;box-shadow:var(--sombra);z-index:50;max-width:calc(100vw - 32px)}
 
 /* ---------- Impresión ---------- */
-@page{size:A4;margin:14mm 16mm}
+/* Márgenes de página: cabecera repetida (arriba) y numeración (abajo) en cada folio */
+@page{size:A4;margin:14mm 16mm;
+  @top-left{content:"Nombre: ________________________________";font:400 8pt 'Inter',sans-serif;color:#555}
+  @bottom-center{content:"Página " counter(page) " de " counter(pages);font:400 7.5pt 'Inter',sans-serif;color:#888}
+}
 @media print{
   body{background:#fff}
   .barra,.panel,.vista-cab,.toast,dialog,.otro,.marca-cara{display:none!important}
@@ -515,7 +519,18 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
     return h;
   }
 
+  /* Curso y modelo para el margen superior derecho de cada folio impreso (regla @page dinámica) */
+  function actualizarCabeceraImpresa(modo = 'examen') {
+    let st = $('pag-dinamica');
+    if (!st) { st = document.createElement('style'); st.id = 'pag-dinamica'; document.head.appendChild(st); }
+    if (modo === 'soluciones') { st.textContent = '@page{@top-left{content:none}@top-right{content:none}}'; return; }
+    const sitio = [estado.curso, estado.modelo && 'Modelo ' + estado.modelo].filter(Boolean).join(' · ');
+    const cad = sitio.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, ' ');
+    st.textContent = `@page{@top-right{content:"${cad}";font:400 8pt 'Inter',sans-serif;color:#555}}`;
+  }
+
   function renderExamen() {
+    actualizarCabeceraImpresa();
     let h = cabecera('examen');
     if (!estado.items.length) {
       h += '<p style="margin-top:12mm;color:#888;text-align:center;font-style:italic">Los ejercicios aparecerán aquí.</p>';
@@ -717,10 +732,14 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
     if (!estado.items.length) { aviso('Añade al menos un ejercicio antes de imprimir.'); return; }
     tipografiando.then(() => {
       document.body.classList.add('imprimir-' + cual);
+      actualizarCabeceraImpresa(cual);
       window.print();
     });
   }
-  window.addEventListener('afterprint', () => document.body.classList.remove('imprimir-examen', 'imprimir-soluciones'));
+  window.addEventListener('afterprint', () => {
+    document.body.classList.remove('imprimir-examen', 'imprimir-soluciones');
+    actualizarCabeceraImpresa('examen');
+  });
   $('btn-imp-examen').onclick = () => imprimir('examen');
   $('btn-imp-sol').onclick = () => imprimir('soluciones');
 
