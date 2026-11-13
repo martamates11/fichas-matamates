@@ -7,12 +7,12 @@
 <!-- © 2026 Marta López de Letona · Martamates Interactivo · https://martamates11.github.io/fichas-matamates/
      Todos los derechos reservados. Uso en el aula permitido enlazando a la dirección original.
      Prohibido copiar, alojar en otros sitios, modificar o vender sin permiso escrito de la autora. Términos: https://martamates11.github.io/fichas-matamates/aviso-legal.html -->
-<meta name="description" content="Juego interactivo y gratuito de matemáticas de 1.º ESO sobre fracciones: fracciones equivalentes, operaciones y fracción de una cantidad. Corrección automática y explicación paso a paso de cada error.">
+<meta name="description" content="Juego interactivo y gratuito de matemáticas de 1.º ESO sobre fracciones: fracciones equivalentes, simplificación, operaciones y fracción de una cantidad. Corrección automática y explicación paso a paso de cada error.">
 <meta name="author" content="Marta López de Letona">
 <meta name="copyright" content="© 2026 Marta López de Letona · Todos los derechos reservados">
 <link rel="canonical" href="https://martamates11.github.io/fichas-matamates/adaptaciones/fracciones.html">
 <link rel="license" href="https://martamates11.github.io/fichas-matamates/aviso-legal.html">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "LearningResource", "name": "Isla de las Fracciones", "description": "Fracciones equivalentes, operaciones y fracción de una cantidad", "url": "https://martamates11.github.io/fichas-matamates/adaptaciones/fracciones.html", "inLanguage": "es", "learningResourceType": ["Juego educativo", "Ejercicio interactivo"], "interactivityType": "active", "isAccessibleForFree": true, "about": "Juegos y retos", "teaches": "fracciones", "author": {"@type": "Person", "name": "Marta López de Letona"}, "copyrightHolder": {"@type": "Person", "name": "Marta López de Letona"}, "license": "https://martamates11.github.io/fichas-matamates/aviso-legal.html", "isPartOf": {"@type": "WebSite", "name": "Martamates Interactivo", "url": "https://martamates11.github.io/fichas-matamates/"}, "educationalLevel": "1.º ESO"}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "LearningResource", "name": "Isla de las Fracciones", "description": "Fracciones equivalentes, simplificación, operaciones y fracción de una cantidad", "url": "https://martamates11.github.io/fichas-matamates/adaptaciones/fracciones.html", "inLanguage": "es", "learningResourceType": ["Juego educativo", "Ejercicio interactivo"], "interactivityType": "active", "isAccessibleForFree": true, "about": "Juegos y retos", "teaches": "fracciones", "author": {"@type": "Person", "name": "Marta López de Letona"}, "copyrightHolder": {"@type": "Person", "name": "Marta López de Letona"}, "license": "https://martamates11.github.io/fichas-matamates/aviso-legal.html", "isPartOf": {"@type": "WebSite", "name": "Martamates Interactivo", "url": "https://martamates11.github.io/fichas-matamates/"}, "educationalLevel": "1.º ESO"}</script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
 <style>
@@ -200,14 +200,14 @@ table.desglose td:first-child { text-align: left; }
 
 <div class="contenedor">
   <h1 class="titulo-ficha">La Isla de las Fracciones</h1>
-  <p class="subtitulo">1.º ESO · Fracciones equivalentes, operaciones y fracción de una cantidad</p>
+  <p class="subtitulo">1.º ESO · Fracciones equivalentes, simplificación, operaciones y fracción de una cantidad</p>
 
   <div class="barra-alumno">
     <div class="barra-fila">
       <label for="nombre">Alumno/a:</label>
       <input id="nombre" type="text" placeholder="Nombre y apellidos" autocomplete="off">
       <span class="dato">Nota: <b id="m-nota">0</b>/10</span>
-      <span class="dato">Zonas superadas: <b id="m-zonas">0/5</b></span>
+      <span class="dato">Zonas superadas: <b id="m-zonas">0/6</b></span>
       <span class="dato">Fallos: <b id="m-fallos">0</b></span>
     </div>
     <div class="aviso-nombre" id="aviso-nombre">Escribe tu nombre antes de continuar.</div>
@@ -218,7 +218,7 @@ table.desglose td:first-child { text-align: left; }
     Mueve al explorador con las flechas (o WASD) o pulsando sobre el mapa. Al entrar en una zona se abre la pantalla de su reto; para seguir explorando, pulsa «Volver al mapa» o la tecla Esc. Cada zona de la isla tiene un tipo de reto:
     <ul>
       <li>Superas una zona con <b>4 aciertos en tus últimos 5 intentos</b>. Entonces se cierra y gana su estrella.</li>
-      <li>Hay 5 zonas y cada una vale 2 puntos. Cada fallo resta 0,5 (aunque la zona ya esté superada).</li>
+      <li>Hay 6 zonas y todas valen lo mismo: 10 puntos entre 6, unos 1,67 cada una. Cada fallo resta 0,5 (aunque la zona ya esté superada).</li>
       <li>Recuerda: <b>se multiplica en línea</b> y <b>se divide en caramelo</b>.</li>
       <li>Si usas «Mostrar soluciones», ese reto no cuenta para la nota (ni suma ni resta más).</li>
       <li>La isla guarda alguna sorpresa: el explorador no sabe nadar… y las aspas del molino giran con fuerza. Nada de eso cambia tu nota.</li>
@@ -449,6 +449,28 @@ function diagramaEquivalencia({ a, b, k, faltaNum }) {
     (faltaNum ? hueco(170, 70, n2) : t(170, 70, n2)) + barra(170) + (faltaNum ? t(170, 114, d2) : hueco(170, 114, d2)) + '</svg>';
 }
 
+// Simplificación: arco arriba y arco abajo con «: g»; la fracción irreducible aparece en recuadros verdes
+function diagramaSimplificacion(N, D, g) {
+  const id = 'flecha-eq-' + (++idFlecha);
+  const t = (x, y, txt, cl = '') => `<text x="${x}" y="${y}" class="${cl}">${txt}</text>`;
+  const barra = x => `<line class="barra" x1="${x - 22}" y1="92" x2="${x + 22}" y2="92"/>`;
+  const hueco = (x, y, v) => `<rect class="hueco-sol" x="${x - 23}" y="${y - 17}" width="46" height="34" rx="6"/>` + t(x, y, v, 'sol');
+  const arco = d => `<path class="flecha-eq" marker-end="url(#${id})" d="${d}"/>`;
+  return `<svg class="diagrama diagrama-eq" viewBox="0 0 220 190" role="img" aria-label="Arriba y abajo se divide entre ${g}">` +
+    `<defs><marker id="${id}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="punta-eq"/></marker></defs>` +
+    arco('M 58 50 Q 110 2 160 50') + t(110, 12, `: ${g}`, 'etq-eq') +
+    arco('M 58 134 Q 110 182 160 134') + t(110, 176, `: ${g}`, 'etq-eq') +
+    t(50, 70, N) + barra(50) + t(50, 114, D) + t(110, 92, '=', 'op') +
+    hueco(170, 70, N / g) + barra(170) + hueco(170, 114, D / g) + '</svg>';
+}
+// Numerador y denominador en factores primos, con los comunes tachados
+function factoresTachados(N, D) {
+  const fn = factorizar(N), fd = factorizar(D), tachD = fd.map(() => false);
+  const tachN = fn.map(p => { const i = fd.findIndex((q, j) => q === p && !tachD[j]); if (i < 0) return false; tachD[i] = true; return true; });
+  const pinta = (fs, tach) => fs.map((p, i) => tach[i] ? `<s class="tachado">${p}</s>` : p).join(' · ');
+  return fr(pinta(fn, tachN), pinta(fd, tachD));
+}
+
 // Suma ya con denominador común y, si hace falta, simplificación tachando el factor común
 function cadenaSuma(suma, L) {
   const g = mcd(suma, L), x = `<s class="tachado">${g}</s>`;
@@ -478,6 +500,37 @@ const TIPOS = {
       const sumaMal = e.faltaNum ? e.a + (e.b * e.k - e.b) : e.b + (e.a * e.k - e.a);
       if (x === sumaMal) return { ok: false, html: `<b>Incorrecto: has sumado.</b> Hay que <b>multiplicar</b>.${dibujo}` };
       return { ok: false, html: `<b>Incorrecto.</b>${dibujo}` };
+    }
+  },
+  simplificacion: {
+    nombre: 'Faro de las Simplificaciones',
+    generar() {
+      let p, q; do { q = ent(2, 9); p = ent(1, q - 1); } while (mcd(p, q) !== 1);
+      const k = [2, 3, 4, 5, 6, 8, 9, 10, 12][ent(0, 8)];      // con 4, 6, 8, 9, 10 y 12 hace falta más de un paso
+      return { N: p * k, D: q * k };
+    },
+    pintar(e) {
+      return `Simplifica hasta que no se pueda más: ${fr(e.N, e.D)} = ` +
+        fr('<input data-campo="n" inputmode="numeric">', '<input data-campo="d" inputmode="numeric">');
+    },
+    solucion(e) { return simplificar(e.N, e.D); },
+    validar(e, r) {
+      const s = this.solucion(e), g = mcd(e.N, e.D);
+      const pasos = `El mayor número que divide a la vez a ${e.N} y a ${e.D} es <b>${g}</b>: se divide arriba y abajo entre ${g}.` +
+        diagramaSimplificacion(e.N, e.D, g) +
+        `<div class="paso-factores">Con factores primos, se tachan los que se repiten arriba y abajo: ${fr(e.N, e.D)} = ${factoresTachados(e.N, e.D)} = ${fr(s.n, s.d)}</div>` +
+        `<div class="recordatorio">Arriba y abajo, <b>: ${g}</b>. Una fracción está simplificada cuando numerador y denominador ya no tienen divisores comunes.</div>`;
+      if (r.d === 0) return { ok: false, html: `<b>Incorrecto: el denominador no puede ser 0.</b> ${pasos}` };
+      if (r.n === s.n && r.d === s.d) return { ok: true, html: `<b>Correcto.</b> ${pasos}` };
+      if (r.n === e.N && r.d === e.D) return { ok: false, html: `<b>Incorrecto: has dejado la fracción como estaba.</b> ${pasos}` };
+      if (r.n * s.d === s.n * r.d) {
+        if (r.n > 0 && r.n < e.N) return { ok: false, html: `<b>Casi: vas por buen camino, pero te has quedado a medias.</b> ${fr(r.n, r.d)} aún se puede dividir arriba y abajo entre ${mcd(r.n, r.d)}. ${pasos}` };
+        return { ok: false, html: `<b>Incorrecto: la fracción vale lo mismo, pero no la has simplificado.</b> Simplificar es dividir, no multiplicar. ${pasos}` };
+      }
+      if (r.n === s.d && r.d === s.n) return { ok: false, html: `<b>Incorrecto: has intercambiado numerador y denominador.</b> ${pasos}` };
+      if (r.n > 0 && r.n < e.N && e.N - r.n === e.D - r.d) return { ok: false, html: `<b>Incorrecto: has restado el mismo número arriba y abajo.</b> Restar cambia el valor de la fracción; solo se conserva si se <b>divide</b> arriba y abajo entre el mismo número. ${pasos}` };
+      if (r.n > 0 && r.d > 0 && e.N % r.n === 0 && e.D % r.d === 0) return { ok: false, html: `<b>Incorrecto: has dividido arriba entre ${e.N / r.n} y abajo entre ${e.D / r.d}.</b> Tiene que ser el mismo número en los dos. ${pasos}` };
+      return { ok: false, html: `<b>Incorrecto.</b> ${pasos}` };
     }
   },
   suma: {
@@ -642,7 +695,7 @@ function avisoMundo(texto, ms = 3400) {
   el.textContent = texto; el.classList.add('visible');
   clearTimeout(avisoTemporizador); avisoTemporizador = setTimeout(() => el.classList.remove('visible'), ms);
 }
-const ESTADO_INICIAL = '<h2>Bienvenido/a a la isla</h2><div>Camina hasta una de las cinco zonas: su reto se abrirá en pantalla.</div>';
+const ESTADO_INICIAL = '<h2>Bienvenido/a a la isla</h2><div>Camina hasta una de las seis zonas: su reto se abrirá en pantalla.</div>';
 function pintarEstado(html) { estadoIsla.innerHTML = html; }
 function salirZona() { pintarEstado('<h2>Explorando la isla</h2><div>Camina hasta una zona sin estrella para abrir su reto.</div>'); }
 pintarEstado(ESTADO_INICIAL);
@@ -1169,6 +1222,7 @@ pintarSelector();
 /* ===================== Mundo Phaser ===================== */
 const ZONAS = [
   { tipo: 'equivalentes',   x: 220, y: 170, color: 0xC9A24B, icono: '½ = ²⁄₄', etiqueta: 'Equivalencias', etiquetaY: 214 },
+  { tipo: 'simplificacion', x: 405, y: 142, color: 0x7B3FA0, icono: '⁶⁄₈ = ¾',  etiqueta: 'Simplificar',   etiquetaY: 128, etiquetaX: 494 },
   { tipo: 'suma',           x: 590, y: 170, color: 0xB5543C, icono: '⅓ + ¼',  etiqueta: 'Sumas',         etiquetaY: 214 },
   { tipo: 'multiplicacion', x: 190, y: 325, color: 0x5E9A3E, icono: '⅔ · ¾',  etiqueta: 'Multiplicar',   etiquetaY: 369 },
   { tipo: 'division',       x: 610, y: 325, color: 0xC2477A, icono: '½ : ¼',  etiqueta: 'Dividir',       etiquetaY: 369 },
@@ -1181,7 +1235,9 @@ const MOLINO = { x: 165, y: 160, ejeY: 68 };
 const ESC_JUGADOR = 1.25, PIES = 43.7;                  // escala del explorador y altura de sus pies en la textura
 const PLAZA = { x: 400, y: 258 };
 const HUERTO = { x: 88, y: 228, w: 76, h: 44 };
-const CONTROL_CAMINO = { equivalentes: [300, 250], suma: [500, 250], multiplicacion: [290, 300], division: [510, 300], cantidad: [385, 330] };
+const FARO = { x: 346, y: 134, luzY: 43 };
+const ISLOTE = { x: 757, y: 462 };
+const CONTROL_CAMINO = { simplificacion: [392, 205], equivalentes: [300, 250], suma: [500, 250], multiplicacion: [290, 300], division: [510, 300], cantidad: [385, 330] };
 
 const ondulacion = a => 1 + 0.04 * Math.sin(3 * a + 1) + 0.025 * Math.sin(5 * a + 2) + 0.015 * Math.sin(7 * a);
 // Distancia relativa al centro de la isla: 1 = orilla, menos de 1 = tierra, más de 1 = mar
@@ -1279,6 +1335,50 @@ function crearTexturas(e) {
     g.fillStyle(0x3B2A1A).fillRect(46, 76, 8, 10); g.fillStyle(0xF2D37A, 0.6).fillRect(47, 77, 3, 4);
     g.fillStyle(0xA0442C); poligono(g, [[31, 55], [69, 55], [50, 22]]);
     g.fillStyle(0x7E3320); poligono(g, [[50, 55], [69, 55], [50, 22]]);
+  });
+  textura(e, 'faro', 72, 124, g => {
+    g.fillStyle(0x000000, 0.22).fillEllipse(38, 118, 66, 12);
+    g.fillStyle(0x8F8A84); poligono(g, [[6, 119], [12, 106], [26, 100], [48, 100], [62, 107], [68, 119]]);          // rocas de la base
+    g.fillStyle(0xB9B4AC); poligono(g, [[14, 108], [26, 102], [40, 102], [30, 109]]);
+    g.fillStyle(0x7A756F); poligono(g, [[50, 119], [56, 109], [66, 112], [68, 119]]);
+    g.fillStyle(0xF6F1E4); poligono(g, [[23, 108], [49, 108], [44, 34], [28, 34]]);                                  // torre
+    g.fillStyle(0xDDD5C2); poligono(g, [[38, 108], [49, 108], [44, 34], [38, 34]]);
+    [[92, 78], [62, 48]].forEach(([y1, y0]) => {                                                                     // franjas rojas
+      const w = y => 8 + (y - 34) / 74 * 5;
+      g.fillStyle(0xC8483A); poligono(g, [[36 - w(y1), y1], [36 + w(y1), y1], [36 + w(y0), y0], [36 - w(y0), y0]]);
+      g.fillStyle(0xA63A2E); poligono(g, [[38, y1], [36 + w(y1), y1], [36 + w(y0), y0], [38, y0]]);
+    });
+    g.fillStyle(0x5C3A1E).fillRoundedRect(32, 96, 8, 12, { tl: 4, tr: 4, bl: 0, br: 0 });                            // puerta
+    g.fillStyle(0x3B2A1A).fillRect(34, 68, 4, 6);
+    g.fillStyle(0x4A4640).fillRect(22, 30, 28, 4); g.lineStyle(1.5, 0x4A4640);                                       // balcón
+    for (let x = 23; x <= 49; x += 5.2) g.lineBetween(x, 24, x, 31); g.lineBetween(22, 24, 50, 24);
+    g.fillStyle(0xFFE58A).fillRect(29, 14, 14, 16); g.fillStyle(0xFFFFFF, 0.7).fillRect(31, 16, 4, 12);              // linterna
+    g.lineStyle(1.5, 0x4A4640).strokeRect(29, 14, 14, 16).lineBetween(36, 14, 36, 30);
+    g.fillStyle(0xC8483A); poligono(g, [[26, 14], [46, 14], [36, 3]]); g.fillStyle(0xA63A2E); poligono(g, [[36, 14], [46, 14], [36, 3]]);
+    g.fillStyle(0xC9A24B).fillCircle(36, 3, 2);
+  });
+  textura(e, 'haz', 130, 60, g => {                                          // haz de luz: tres conos superpuestos, más intenso en el centro
+    g.fillStyle(0xFFF3B0, 0.22); poligono(g, [[0, 30], [130, 2], [130, 58]]);
+    g.fillStyle(0xFFF3B0, 0.25); poligono(g, [[0, 30], [130, 13], [130, 47]]);
+    g.fillStyle(0xFFFFFF, 0.3); poligono(g, [[0, 30], [130, 23], [130, 37]]);
+  });
+  textura(e, 'destello', 40, 40, g => { g.fillStyle(0xFFF3B0, 0.25).fillCircle(20, 20, 19); g.fillStyle(0xFFF8D8, 0.5).fillCircle(20, 20, 11); g.fillStyle(0xFFFFFF, 0.9).fillCircle(20, 20, 5); });
+  textura(e, 'pez', 26, 14, g => {
+    g.fillStyle(0xF08A3C); poligono(g, [[0, 2], [8, 7], [0, 12]]);            // cola
+    g.fillStyle(0xF5A14E).fillEllipse(15, 7, 20, 10);
+    g.fillStyle(0xFFD9A8).fillEllipse(15, 9, 14, 4);
+    g.fillStyle(0xD9722A); poligono(g, [[12, 3], [18, 0], [19, 4]]);
+    g.fillStyle(0x2E2A24).fillCircle(21, 6, 1.3);
+  });
+  textura(e, 'mariposa', 14, 10, g => {
+    g.fillStyle(0xFFFFFF).fillEllipse(4, 4, 7, 7).fillEllipse(10, 4, 7, 7).fillEllipse(4.5, 8, 4, 3.5).fillEllipse(9.5, 8, 4, 3.5);
+    g.fillStyle(0x3B2A1A).fillRect(6.5, 2, 1, 7);
+  });
+  textura(e, 'cofre', 26, 22, g => {
+    g.fillStyle(0x000000, 0.2).fillEllipse(13, 20, 24, 5);
+    g.fillStyle(0x8B5A2B).fillRect(3, 10, 20, 9); g.fillStyle(0xA87545).fillRoundedRect(3, 3, 20, 9, { tl: 5, tr: 5, bl: 0, br: 0 });
+    g.fillStyle(0xC9A24B).fillRect(3, 10, 20, 2).fillRect(6, 3, 2, 16).fillRect(18, 3, 2, 16).fillRect(11, 9, 4, 5);
+    g.fillStyle(0xF2C230).fillCircle(9, 2.5, 1.8).fillCircle(14, 1.8, 1.8).fillCircle(18, 3, 1.5);
   });
   textura(e, 'aspas', 124, 124, g => {
     for (let k = 0; k < 4; k++) {
@@ -1407,8 +1507,25 @@ class Isla extends Phaser.Scene {
       this.tweens.add({ targets: b, alpha: 0.9, yoyo: true, repeat: -1, duration: 500, delay: rnd(0, 5000), repeatDelay: rnd(1500, 5000) });
     }
 
+    // Rosa náutica en la esquina del mapa, como en las cartas marinas
+    const rn = this.add.graphics({ x: 752, y: 46 }).setDepth(-24).setAlpha(0.6);
+    rn.lineStyle(1.5, 0xFFFFFF, 0.8).strokeCircle(0, 0, 27).strokeCircle(0, 0, 21);
+    for (let k = 0; k < 16; k++) { const a = k * Math.PI / 8; rn.lineBetween(Math.cos(a) * 21, Math.sin(a) * 21, Math.cos(a) * 27, Math.sin(a) * 27); }
+    rn.fillStyle(0xFFFFFF, 0.55); for (let k = 0; k < 4; k++) poligono(rn, [[0, -14], [3.5, 0], [0, 2], [-3.5, 0]], Math.PI / 4 + k * Math.PI / 2);
+    for (let k = 0; k < 4; k++) { rn.fillStyle(k ? 0xFFFFFF : 0xF2C230, 0.95); poligono(rn, [[0, -24], [4.5, 0], [0, 3], [-4.5, 0]], k * Math.PI / 2); }
+    this.add.text(752, 9, 'N', { fontFamily: 'Playfair Display', fontSize: '13px', fontStyle: 'bold', color: '#ffffff' }).setOrigin(0.5).setDepth(-24).setAlpha(0.85);
+
     // --- Isla: aguas someras, espuma, arena y césped ---
     const suelo = this.add.graphics().setDepth(-20);
+    // Islote del tesoro (solo decorado: está en mar abierto)
+    suelo.fillStyle(0x5FB3D3, 0.55).fillEllipse(ISLOTE.x, ISLOTE.y + 2, 84, 42);
+    suelo.fillStyle(0x86CDE0, 0.7).fillEllipse(ISLOTE.x, ISLOTE.y + 1, 70, 33);
+    suelo.fillStyle(0xD7BD86).fillEllipse(ISLOTE.x, ISLOTE.y + 1, 56, 25);
+    suelo.fillStyle(0xEFDDB0).fillEllipse(ISLOTE.x, ISLOTE.y - 1, 50, 20);
+    this.add.image(ISLOTE.x + 12, ISLOTE.y + 2, 'palmera').setOrigin(0.5, 0.92).setScale(0.62).setDepth(ISLOTE.y + 2);
+    this.add.image(ISLOTE.x - 11, ISLOTE.y + 5, 'cofre').setOrigin(0.5, 1).setDepth(ISLOTE.y + 5);
+    const brilloCofre = this.add.image(ISLOTE.x - 9, ISLOTE.y - 14, 'chispa').setDepth(ISLOTE.y + 6).setScale(0.3);
+    this.tweens.add({ targets: brilloCofre, scale: 0.9, alpha: 0.2, yoyo: true, repeat: -1, duration: 700, ease: 'Sine.inOut' });
     suelo.fillStyle(0x5FB3D3, 0.55).fillPoints(contornoIsla(1.11), true);
     suelo.fillStyle(0x86CDE0, 0.7).fillPoints(contornoIsla(1.05), true);
     const espuma = this.add.graphics({ x: ISLA.cx, y: ISLA.cy }).setDepth(-19);
@@ -1473,11 +1590,17 @@ class Isla extends Phaser.Scene {
 
     // --- Edificios de cada zona ---
     const ocupados = [{ x: PLAZA.x, y: PLAZA.y, r: 55 }, { x: 165, y: 125, r: 50 }, { x: est.x, y: est.y, r: 92 }, { x: 505, y: 390, r: 78 },
-      { x: H.x + H.w / 2, y: H.y + H.h / 2, r: 52 }, { x: 690, y: 255, r: 50 }];
+      { x: H.x + H.w / 2, y: H.y + H.h / 2, r: 52 }, { x: 690, y: 255, r: 50 }, { x: FARO.x, y: FARO.y - 28, r: 40 }];
     ZONAS.forEach(z => ocupados.push({ x: z.x, y: z.y, r: 55 }, { x: z.etiquetaX ?? z.x, y: z.etiquetaY, r: 40 }));
     this.add.image(165, 160, 'molino').setOrigin(0.5, 1).setDepth(160);
     const aspas = this.aspas = this.add.image(MOLINO.x, MOLINO.ejeY, 'aspas').setDepth(161).setScale(0.85);
     this.giroAspas = this.tweens.add({ targets: aspas, angle: 360, duration: 7000, repeat: -1 });
+    // Faro de las simplificaciones: dos haces que giran y una linterna que parpadea
+    this.add.image(FARO.x, FARO.y, 'faro').setOrigin(0.5, 1).setDepth(FARO.y);
+    this.haces = [0, Math.PI].map(a => this.add.image(FARO.x, FARO.luzY, 'haz').setOrigin(0, 0.5).setRotation(a).setDepth(1900).setAlpha(0.5).setScale(0.9).setBlendMode(Phaser.BlendModes.ADD));
+    if (!CALMA) this.tweens.add({ targets: this.haces, angle: '+=360', duration: 9000, repeat: -1 });
+    const destello = this.add.image(FARO.x, FARO.luzY, 'destello').setDepth(1901).setBlendMode(Phaser.BlendModes.ADD);
+    this.tweens.add({ targets: destello, scale: 1.5, alpha: 0.55, yoyo: true, repeat: -1, duration: 1100, ease: 'Sine.inOut' });
     this.add.image(est.x, est.y + 4, 'puente').setOrigin(0.5, 0.6).setDepth(est.y);
     this.add.image(505, 440, 'mercado').setOrigin(0.5, 1).setDepth(440).setScale(0.9);
     this.add.image(588, 440, 'caja').setOrigin(0.5, 1).setDepth(440);
@@ -1540,6 +1663,15 @@ class Isla extends Phaser.Scene {
       g.vel = 0.035 + i * 0.01; g.base = g.y; return g;
     });
     this.nubes = [0, 1, 2].map(i => { const n = this.add.image(rnd(0, 800), 90 + i * 150, 'nube').setDepth(3000); n.vel = 0.008 + i * 0.003; return n; });
+
+    // Mariposas sobre el prado y peces que saltan en el mar
+    this.mariposas = [0xF29BB5, 0xF7D84A, 0xC59BF2, 0xFFFFFF, 0x9AD4F5].map((color, i) => {
+      const [cx, cy] = enCesped();
+      const m = this.add.image(cx, cy, 'mariposa').setTint(color).setDepth(1800);
+      this.tweens.add({ targets: m, scaleX: 0.25, yoyo: true, repeat: -1, duration: 130 + i * 15 });
+      return Object.assign(m, { cx, cy, fase: rnd(0, 6), vel: rnd(0.0006, 0.0011) });
+    });
+    if (!CALMA) this.time.addEvent({ delay: 3600, loop: true, callback: () => this.saltoPez() });
 
     // --- Explorador ---
     this.sombra = this.add.image(PLAZA.x, PLAZA.y, 'sombra').setDepth(-1).setScale(ESC_JUGADOR);
@@ -1604,7 +1736,7 @@ class Isla extends Phaser.Scene {
     this.chispas(z.x, z.y - 50, 30);
     this.brincar(2);
     if (Object.values(state.tipos).every(t => t.superado)) {          // isla completa: fuegos por todo el mapa
-      avisoMundo('🎉 ¡Has conseguido las cinco estrellas de la isla!', 6000);
+      avisoMundo('🎉 ¡Has conseguido las seis estrellas de la isla!', 6000);
       for (let i = 0; i < 9; i++) this.time.delayedCall(500 + i * 280, () => this.chispas(120 + Math.random() * 560, 70 + Math.random() * 300, 26));
     } else avisoMundo('⭐ ¡Zona superada! Camina hasta otra zona.');
   }
@@ -1614,6 +1746,20 @@ class Isla extends Phaser.Scene {
   }
   brincar(veces = 1) {
     this.tweens.add({ targets: this, salto: 16, duration: 170, ease: 'Quad.out', yoyo: true, repeat: veces - 1 });
+  }
+
+  // Un pez salta en un punto del mar al azar (Math.random: no consume el azar de los ejercicios)
+  saltoPez() {
+    let x, y, n = 0;
+    do { x = 20 + Math.random() * 760; y = 25 + Math.random() * 455; }
+    while ((radioIsla(x, y) < 1.13 || Math.hypot(x - ISLOTE.x, y - ISLOTE.y) < 60 || Math.hypot(x - 70, y - 465) < 45) && ++n < 60);
+    if (n >= 60) return;
+    const dir = Math.random() < 0.5 ? 1 : -1, pez = this.add.image(x - dir * 16, y, 'pez').setDepth(-9).setFlipX(dir < 0).setScale(0.9);
+    const v = { p: 0 };
+    this.gotas.explode(5, pez.x, y);
+    this.tweens.add({ targets: v, p: 1, duration: 720, ease: 'Sine.inOut',
+      onUpdate: () => { pez.setPosition(x - dir * 16 + dir * 32 * v.p, y - 24 * Math.sin(Math.PI * v.p)).setRotation(dir * (-0.9 + 1.8 * v.p)); },
+      onComplete: () => { this.gotas.explode(6, pez.x, y); pez.destroy(); } });
   }
 
   // Entrada en una zona: la cámara se acerca y se abre la pantalla del reto
@@ -1697,6 +1843,7 @@ class Isla extends Phaser.Scene {
     const k = this.teclas, j = this.jugador, pos = this.pos;
     this.gaviotas.forEach(g => { g.x += g.vel * dt; if (g.x > 830) g.x = -30; g.y = g.base + Math.sin(g.x / 40) * 6; });
     this.nubes.forEach(n => { n.x += n.vel * dt; if (n.x > 900) n.x = -100; });
+    this.mariposas.forEach(m => { const a = m.fase + t * m.vel; m.setPosition(m.cx + Math.sin(a * 1.3) * 34 + Math.sin(a * 3.1) * 8, m.cy + Math.sin(a * 2.1) * 16 - 6); });
 
     if (this.viaje) {                                           // montado en las aspas
       const v = this.viaje, a = this.aspas.rotation, R = 14;
