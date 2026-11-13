@@ -7,12 +7,12 @@
 <!-- © 2026 Marta López de Letona Sánchez · Martamates Interactivo · https://martamates11.github.io/fichas-matamates/
      Todos los derechos reservados. Uso en el aula permitido enlazando a la dirección original.
      Prohibido copiar, alojar en otros sitios, modificar o vender sin permiso escrito de la autora. Términos: https://martamates11.github.io/fichas-matamates/aviso-legal.html -->
-<meta name="description" content="Anualidades de capitalización en una hoja de cálculo integrada: tabla trimestral, capital final, cuota necesaria y cuotas mensuales. Corrección automática.">
+<meta name="description" content="Anualidades de capitalización en una hoja de cálculo integrada: tabla trimestral o semestral, capital final, cuota necesaria y cuotas mensuales. Corrección automática.">
 <meta name="author" content="Marta López de Letona Sánchez">
 <meta name="copyright" content="© 2026 Marta López de Letona Sánchez · Todos los derechos reservados">
 <link rel="canonical" href="https://martamates11.github.io/fichas-matamates/financiera/anualidades-capitalizacion.html">
 <link rel="license" href="https://martamates11.github.io/fichas-matamates/aviso-legal.html">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "LearningResource", "name": "Anualidades de capitalización con hoja de cálculo", "description": "Tabla trimestral de una anualidad de capitalización, capital final con la fórmula, cuota necesaria y cuotas mensuales mediante fórmulas en una hoja de cálculo.", "url": "https://martamates11.github.io/fichas-matamates/financiera/anualidades-capitalizacion.html", "inLanguage": "es", "learningResourceType": ["Ejercicio interactivo"], "interactivityType": "active", "isAccessibleForFree": true, "educationalLevel": "1.º Bachillerato", "teaches": "Anualidades de capitalización", "author": {"@type": "Person", "name": "Marta López de Letona Sánchez"}, "copyrightHolder": {"@type": "Person", "name": "Marta López de Letona Sánchez"}, "license": "https://martamates11.github.io/fichas-matamates/aviso-legal.html", "isPartOf": {"@type": "WebSite", "name": "Martamates Interactivo", "url": "https://martamates11.github.io/fichas-matamates/"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "LearningResource", "name": "Anualidades de capitalización con hoja de cálculo", "description": "Tabla trimestral o semestral de una anualidad de capitalización, capital final con la fórmula, cuota necesaria y cuotas mensuales mediante fórmulas en una hoja de cálculo.", "url": "https://martamates11.github.io/fichas-matamates/financiera/anualidades-capitalizacion.html", "inLanguage": "es", "learningResourceType": ["Ejercicio interactivo"], "interactivityType": "active", "isAccessibleForFree": true, "educationalLevel": "1.º Bachillerato", "teaches": "Anualidades de capitalización", "author": {"@type": "Person", "name": "Marta López de Letona Sánchez"}, "copyrightHolder": {"@type": "Person", "name": "Marta López de Letona Sánchez"}, "license": "https://martamates11.github.io/fichas-matamates/aviso-legal.html", "isPartOf": {"@type": "WebSite", "name": "Martamates Interactivo", "url": "https://martamates11.github.io/fichas-matamates/"}}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -327,6 +327,7 @@ function fmtNum(v, fmt){
   if(typeof v!=='number'||!isFinite(v)) return String(v);
   if(fmt==='pct') return (v*100).toLocaleString('es-ES',{maximumFractionDigits:2})+' %';
   if(fmt==='eur') return v.toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
+  if(fmt==='sencillo') return v.toLocaleString('es-ES',{maximumFractionDigits:2});
   if(Math.abs(v)>=1e10) return v.toExponential(4).replace('.',',');
   if(Math.abs(v)>=1) return v.toLocaleString('es-ES',Number.isInteger(v)?{maximumFractionDigits:0}:{minimumFractionDigits:2,maximumFractionDigits:2});
   return v.toLocaleString('es-ES',{maximumFractionDigits:4});
@@ -854,7 +855,7 @@ function revisar(H, ex, a, esperado, extra){
   if(an.err) return {ok:false,cat:'sintaxis',msg:`La fórmula <code>${esc(an.raw)}</code> da error (${an.err}): ${esc(an.errMsg)}`};
   if(!an.refs.size) return {ok:false,cat:'sinFormula',msg:`La fórmula <code>${esc(an.raw)}</code> no usa ninguna celda: es una cuenta hecha con números. Sustituye cada dato por la referencia de su celda.`};
   const esDato=x=>ex.datos.find(d=>igual(d.v,x)||igual(d.v*100,x));
-  const malos=an.lits.filter(x=>!PERMITIDOS.some(p=>Math.abs(p-x)<1e-12)||esDato(x));
+  const malos=an.lits.filter(x=>!PERMITIDOS.some(p=>Math.abs(p-x)<1e-12)||(x!==0&&x!==1&&esDato(x)));
   if(malos.length){
     const x=malos[0], d=esDato(x);
     return {ok:false,cat:'numeroEscrito',msg: d
@@ -881,41 +882,43 @@ const CUOTA_MSG='Los ingresos se hacen <b>al principio</b> de cada periodo, así
 function cfPre(a,i,n){ return a*(1+i)*(Math.pow(1+i,n)-1)/i; }
 function cfPost(a,i,n){ return a*(Math.pow(1+i,n)-1)/i; }
 
-/* ── Tipo 1: tabla trimestral ── */
+/* ── Tipo 1: tabla trimestral o semestral ── */
 function genTabla(){
-  const a=ri(5,40)*25, r=ri(4,12)/200, k=4, t=ri(2,3), i=r/k, n=k*t;
+  const P=pick([{k:4,adj:'trimestral',sust:'trimestre',pl:'trimestres',T:'Trimestre',ts:[1,1.5]},{k:2,adj:'semestral',sust:'semestre',pl:'semestres',T:'Semestre',ts:[2,3]}]);
+  const a=ri(5,40)*25, r=ri(4,12)/200, k=P.k, t=pick(P.ts), i=r/k, n=k*t;
+  const tTxt= t===1?'1 año':t===1.5?'año y medio':`${t} años`;
   const Cf=cfPre(a,i,n);
   const R0=7, fin=R0+n, fTot=fin+2, fCf=fin+3, fAp=fin+4;
   const enun=pick([
-    `Al principio de cada trimestre ingresamos <b>${eur(a)}</b> en una cuenta que ofrece un <b>${pct(r)}</b> nominal anual con capitalización trimestral. ¿Cuánto dinero habrá al cabo de <b>${t} años</b>?`,
-    `Lucía ahorra <b>${eur(a)}</b> cada trimestre, ingresándolos al comienzo del trimestre en un plan que paga un <b>${pct(r)}</b> anual con capitalización trimestral. ¿Qué capital tendrá al cabo de <b>${t} años</b>? ¿Cuánto habrá ganado en intereses?`,
-    `Una asociación deposita <b>${eur(a)}</b> al inicio de cada trimestre en un fondo al <b>${pct(r)}</b> nominal anual, capitalizable por trimestres, durante <b>${t} años</b>. Calcula el capital acumulado.`
+    `Al principio de cada ${P.sust} ingresamos <b>${eur(a)}</b> en una cuenta que ofrece un <b>${pct(r)}</b> nominal anual con capitalización ${P.adj}. ¿Cuánto dinero habrá al cabo de <b>${tTxt}</b>?`,
+    `Lucía ahorra <b>${eur(a)}</b> cada ${P.sust}, ingresándolos al comienzo del ${P.sust} en un plan que paga un <b>${pct(r)}</b> anual con capitalización ${P.adj}. ¿Qué capital tendrá al cabo de <b>${tTxt}</b>? ¿Cuánto habrá ganado en intereses?`,
+    `Una asociación deposita <b>${eur(a)}</b> al inicio de cada ${P.sust} en un fondo al <b>${pct(r)}</b> nominal anual, capitalizable por ${P.pl}, durante <b>${tTxt}</b>. Calcula el capital acumulado.`
   ]);
   const cel=[
-    {a:'A1',raw:'Cuota trimestral (a)',tipo:'etq'},{a:'B1',raw:rawNum(a),fmt:'eur',tipo:'dato',v:a},
+    {a:'A1',raw:`Cuota ${P.adj} (a)`,tipo:'etq'},{a:'B1',raw:rawNum(a),fmt:'eur',tipo:'dato',v:a},
     {a:'A2',raw:'TIN anual (r)',tipo:'etq'},{a:'B2',raw:rawNum(r*100)+'%',fmt:'pct',tipo:'dato',v:r},
     {a:'A3',raw:'Periodos por año (k)',tipo:'etq'},{a:'B3',raw:String(k),tipo:'dato',v:k},
-    {a:'A4',raw:'Tiempo (años)',tipo:'etq'},{a:'B4',raw:String(t),tipo:'dato',v:t},
-    {a:'A5',raw:'Tipo trimestral (i = r/k)',tipo:'etq'},
-    {a:'A7',raw:'Trimestre',tipo:'cab'},{a:'B7',raw:'Capital inicial',tipo:'cab'},{a:'C7',raw:'Intereses',tipo:'cab'},{a:'D7',raw:'Capital final',tipo:'cab'},
+    {a:'A4',raw:'Tiempo (años)',tipo:'etq'},{a:'B4',raw:rawNum(t),fmt:'sencillo',tipo:'dato',v:t},
+    {a:'A5',raw:`Tipo ${P.adj} (i = r/k)`,tipo:'etq'},
+    {a:'A7',raw:`${P.T}`,tipo:'cab'},{a:'B7',raw:'Capital inicial',tipo:'cab'},{a:'C7',raw:'Intereses',tipo:'cab'},{a:'D7',raw:'Capital final',tipo:'cab'},
     {a:'A'+fTot,raw:'Intereses totales (con SUMA)',tipo:'etq'},
     {a:'A'+fCf,raw:'Cf con la fórmula',tipo:'etq'},
     {a:'A'+fAp,raw:'Total aportado (a·n)',tipo:'etq'}
   ];
-  const obj=[{a:'B5',sol:'=B2/B3',esp:i,et:'tipo trimestral',col:'I',fmtSol:'pct'}];
+  const obj=[{a:'B5',sol:'=B2/B3',esp:i,et:`tipo ${P.adj}`,col:'I',fmtSol:'pct'}];
   let acum=0;
   for(let q=1;q<=n;q++){
     const f=R0+q, ini=acum+a; acum=ini*(1+i); cel.push({a:'A'+f,raw:String(q),tipo:'anio'});
-    obj.push({a:'B'+f,sol:q===1?'=$B$1':`=D${f-1}+$B$1`,esp:ini,et:`capital inicial del trimestre ${q}`,fila:f,col:'B',q,fmtSol:'eur'});
-    obj.push({a:'C'+f,sol:`=B${f}*$B$5`,esp:ini*i,et:`intereses del trimestre ${q}`,fila:f,col:'C',q,fmtSol:'eur'});
-    obj.push({a:'D'+f,sol:`=B${f}+C${f}`,esp:acum,et:`capital final del trimestre ${q}`,fila:f,col:'D',q,fmtSol:'eur'});
+    obj.push({a:'B'+f,sol:q===1?'=$B$1':`=D${f-1}+$B$1`,esp:ini,et:`capital inicial del ${P.sust} ${q}`,fila:f,col:'B',q,fmtSol:'eur'});
+    obj.push({a:'C'+f,sol:`=B${f}*$B$5`,esp:ini*i,et:`intereses del ${P.sust} ${q}`,fila:f,col:'C',q,fmtSol:'eur'});
+    obj.push({a:'D'+f,sol:`=B${f}+C${f}`,esp:acum,et:`capital final del ${P.sust} ${q}`,fila:f,col:'D',q,fmtSol:'eur'});
   }
   obj.push({a:'B'+fTot,sol:`=SUMA(C${R0+1}:C${fin})`,esp:Cf-a*n,et:'intereses totales',col:'T',fmtSol:'eur'});
   obj.push({a:'B'+fCf,sol:'=B1*(1+B5)*((1+B5)^(B3*B4)-1)/B5',esp:Cf,et:'capital final con la fórmula',col:'F',fmtSol:'eur'});
   obj.push({a:'B'+fAp,sol:'=B1*B3*B4',esp:a*n,et:'total aportado',col:'P',fmtSol:'eur'});
   obj.forEach(o=>cel.push({a:o.a,tipo:'obj',raw:''}));
   const ex={tipo:'tabla',a,r,k,t,i,n,Cf,enun,cel,obj,filas:fAp+1,
-    inst:`Calcula primero el tipo trimestral en B5. Después completa la tabla: al <b>principio</b> de cada trimestre se ingresa una cuota, así que el capital inicial es el capital final del trimestre anterior <b>más la cuota</b>; los intereses se calculan sobre ese capital. Al final, los intereses totales con <b>SUMA</b>, el capital final con la fórmula <i>a</i>·(1 + <i>i</i>)·((1 + <i>i</i>)<sup><i>n</i></sup> − 1)/<i>i</i> (debe coincidir con la tabla) y el total aportado. <b>Pista:</b> escribe la segunda fila y cópiala hacia abajo; fija con <code>$</code> la cuota y el tipo.`};
+    inst:`Calcula primero el tipo ${P.adj} en B5. Después completa la tabla: al <b>principio</b> de cada ${P.sust} se ingresa una cuota, así que el capital inicial es el capital final del ${P.sust} anterior <b>más la cuota</b>; los intereses se calculan sobre ese capital. Al final, los intereses totales con <b>SUMA</b>, el capital final con la fórmula <i>a</i>·(1 + <i>i</i>)·((1 + <i>i</i>)<sup><i>n</i></sup> − 1)/<i>i</i> (debe coincidir con la tabla) y el total aportado. <b>Pista:</b> escribe la segunda fila y cópiala hacia abajo; fija con <code>$</code> la cuota y el tipo.`};
   ex.datos=ctxDatos(cel);
   ex.revisar=H=>{
     const fI=H.cell('B5').fmt, sI=val(H,'B5');
@@ -923,22 +926,22 @@ function genTabla(){
       const D={}; let esp=o.esp;
       if(o.col==='I'){ esp=fI==='pct'?[i]:[i,i*100];
         D.diag=v=>{
-          if(conPct(v,r)) return {cat:'fraccion',msg:'Ese es el tipo anual. Con capitalización trimestral, el tipo de cada trimestre es r/k: <code>=B2/B3</code>.'};
+          if(conPct(v,r)) return {cat:'fraccion',msg:`Ese es el tipo anual. Con capitalización ${P.adj}, el tipo de cada ${P.sust} es r/k: <code>=B2/B3</code>.`};
           if(conPct(v,r*k)) return {cat:'fraccion',msg:'Hay que dividir el tipo anual entre k, no multiplicar: <code>=B2/B3</code>.'};
-          if(conPct(v,r/12)) return {cat:'fraccion',msg:'Has dividido entre 12, pero la capitalización es trimestral: 4 periodos al año (celda B3).'};
+          if(conPct(v,r/12)) return {cat:'fraccion',msg:`Has dividido entre 12, pero la capitalización es ${P.adj}: ${k} periodos al año (celda B3).`};
           return null; };
       }
       if(o.col==='B'&&o.q>1) D.diag=v=>{
         const prevD=val(H,'D'+(o.fila-1));
-        if(typeof prevD==='number'&&igual(v,prevD)) return {cat:'cuota',msg:`Falta la cuota: al principio de cada trimestre se ingresan otros ${eur(a)}. El capital inicial es el final del trimestre anterior más la cuota: <code>=D${o.fila-1}+$B$1</code>.`};
-        if(igual(v,a)) return {cat:'tabla',msg:`Solo has puesto la cuota. Hay que sumarle lo que ya había acumulado al final del trimestre anterior: <code>=D${o.fila-1}+$B$1</code>.`};
+        if(typeof prevD==='number'&&igual(v,prevD)) return {cat:'cuota',msg:`Falta la cuota: al principio de cada ${P.sust} se ingresan otros ${eur(a)}. El capital inicial es el final del ${P.sust} anterior más la cuota: <code>=D${o.fila-1}+$B$1</code>.`};
+        if(igual(v,a)) return {cat:'tabla',msg:`Solo has puesto la cuota. Hay que sumarle lo que ya había acumulado al final del ${P.sust} anterior: <code>=D${o.fila-1}+$B$1</code>.`};
         if(typeof prevD==='number'&&igual(v,prevD+a)) return {cat:null,msg:`La fórmula está bien planteada, pero arrastra el error de D${o.fila-1}.`};
         return null; };
-      if(o.col==='B'&&o.q===1) D.diag=v=>igual(v,0)?{cat:'cuota',msg:'El primer trimestre ya empieza con la primera cuota ingresada: <code>=$B$1</code>.'}:null;
+      if(o.col==='B'&&o.q===1) D.diag=v=>igual(v,0)?{cat:'cuota',msg:`El primer ${P.sust} ya empieza con la primera cuota ingresada: <code>=$B$1</code>.`}:null;
       if(o.col==='C') D.diag=(v,an)=>{
         const sB=val(H,'B'+o.fila);
-        if(typeof sB==='number'&&igual(v,sB*r)) return {cat:'fraccion',msg:`Has usado el tipo anual. Cada trimestre se aplica el tipo trimestral de B5: <code>=B${o.fila}*$B$5</code>.`};
-        if(o.q>1&&igual(v,a*i)) return {cat:'cuota',msg:'Has calculado los intereses solo sobre la cuota. Se calculan sobre todo el capital que hay ese trimestre (columna B).'};
+        if(typeof sB==='number'&&igual(v,sB*r)) return {cat:'fraccion',msg:`Has usado el tipo anual. Cada ${P.sust} se aplica el tipo ${P.adj} de B5: <code>=B${o.fila}*$B$5</code>.`};
+        if(o.q>1&&igual(v,a*i)) return {cat:'cuota',msg:`Has calculado los intereses solo sobre la cuota. Se calculan sobre todo el capital que hay ese ${P.sust} (columna B).`};
         if(typeof sB==='number'&&typeof sI==='number'&&igual(v,sB*(igual(sI,i*100)?sI/100:sI))&&!igual(v,o.esp)) return {cat:null,msg:`La fórmula está bien planteada, pero arrastra el error de B${o.fila} o de B5.`};
         if(typeof sI==='number'&&igual(sI,i*100)&&typeof sB==='number'&&igual(v,sB*sI)) return {cat:'porcentaje',msg:'Tu B5 está multiplicado por 100. Para operar, deja el tipo en tanto por uno (usa el botón % si quieres verlo en porcentaje).'};
         const raras=[...an.refs].filter(x=>!['B5','B'+o.fila,'B2','B3'].includes(x));
@@ -947,35 +950,35 @@ function genTabla(){
       if(o.col==='D') D.diag=v=>{
         const sB=val(H,'B'+o.fila), sC=val(H,'C'+o.fila);
         if(typeof sB==='number'&&typeof sC==='number'&&igual(v,sB+sC)) return {cat:null,msg:`La suma B${o.fila}+C${o.fila} está bien planteada, pero arrastra un error de esas celdas.`};
-        if(typeof sB==='number'&&typeof sC==='number'&&igual(v,sB+sC+a)) return {cat:'cuota',msg:'Has sumado la cuota también aquí. La cuota se ingresa al principio del trimestre (columna B); el capital final es solo capital inicial + intereses.'};
-        return {cat:'otros',msg:`El capital final del trimestre es el inicial más los intereses: <code>=B${o.fila}+C${o.fila}</code>.`}; };
+        if(typeof sB==='number'&&typeof sC==='number'&&igual(v,sB+sC+a)) return {cat:'cuota',msg:`Has sumado la cuota también aquí. La cuota se ingresa al principio del ${P.sust} (columna B); el capital final es solo capital inicial + intereses.`};
+        return {cat:'otros',msg:`El capital final del ${P.sust} es el inicial más los intereses: <code>=B${o.fila}+C${o.fila}</code>.`}; };
       if(o.col==='T'){
         D.requisito=an=>an.funcs.some(f=>f==='SUMA'||f==='SUM')?null:{cat:'funcion',msg:`El valor es correcto, pero se pide calcularlo con la función SUMA: <code>${o.sol}</code>.`};
         D.diag=(v,an)=>{
           let s=0, okS=true; for(let f=R0+1;f<=fin;f++){ const x=val(H,'C'+f); if(typeof x!=='number') okS=false; else s+=x; }
           if(okS&&igual(v,s)) return {cat:null,msg:'La suma está bien planteada, pero la columna de intereses tiene errores.'};
-          if(an.funcs.includes('SUMA')) return {cat:'otros',msg:`Revisa el rango: deben sumarse los intereses de todos los trimestres, <code>${o.sol}</code>.`};
+          if(an.funcs.includes('SUMA')) return {cat:'otros',msg:`Revisa el rango: deben sumarse los intereses de todos los ${P.pl}, <code>${o.sol}</code>.`};
           return null; };
       }
       if(o.col==='F'){
-        D.requisito=an=>['B1','B5'].every(x=>an.refs.has(x))?null:{cat:'formulaCf',msg:'El valor coincide, pero aquí se pide aplicar la fórmula con la cuota (B1) y el tipo trimestral (B5): <code>=B1*(1+B5)*((1+B5)^(B3*B4)-1)/B5</code>. Sirve para comprobar la tabla.'};
+        D.requisito=an=>['B1','B5'].every(x=>an.refs.has(x))?null:{cat:'formulaCf',msg:`El valor coincide, pero aquí se pide aplicar la fórmula con la cuota (B1) y el tipo ${P.adj} (B5): <code>=B1*(1+B5)*((1+B5)^(B3*B4)-1)/B5</code>. Sirve para comprobar la tabla.`};
         D.diag=v=>{
           if(igual(v,cfPost(a,i,n))) return {cat:'prepagable',msg:CUOTA_MSG+' <code>=B1*(1+B5)*((1+B5)^(B3*B4)-1)/B5</code>.'};
-          if(igual(v,cfPre(a,i,t))) return {cat:'fraccion',msg:'El exponente es el número de trimestres, n = k·t (<code>B3*B4</code>), no los años.'};
-          if(igual(v,cfPre(a,r,n))||igual(v,cfPre(a,r,t))) return {cat:'fraccion',msg:'Usa el tipo trimestral (B5), no el anual.'};
+          if(igual(v,cfPre(a,i,t))) return {cat:'fraccion',msg:`El exponente es el número de ${P.pl}, n = k·t (<code>B3*B4</code>), no los años.`};
+          if(igual(v,cfPre(a,r,n))||igual(v,cfPre(a,r,t))) return {cat:'fraccion',msg:`Usa el tipo ${P.adj} (B5), no el anual.`};
           if(igual(v,a*(1+i)*Math.pow(1+i,n)-1/i)||igual(v,a*(1+i)*(Math.pow(1+i,n)-1)*i)) return {cat:'parentesis',msg:'Revisa los paréntesis: hay que restar 1 a la potencia y después dividir entre i, <code>((1+B5)^(B3*B4)-1)/B5</code>.'};
           if(igual(v,a*n)) return {cat:'otros',msg:'Eso es solo lo aportado, sin intereses.'};
           return null; };
       }
       if(o.col==='P') D.diag=v=>{
-        if(igual(v,a*t)) return {cat:'fraccion',msg:'Se ingresa una cuota cada trimestre: hay k·t cuotas, <code>=B1*B3*B4</code>.'};
+        if(igual(v,a*t)) return {cat:'fraccion',msg:`Se ingresa una cuota cada ${P.sust}: hay k·t cuotas, <code>=B1*B3*B4</code>.`};
         if(igual(v,a*k)) return {cat:'fraccion',msg:'Eso es lo aportado en un año. Multiplica también por los años: <code>=B1*B3*B4</code>.'};
         return null; };
       return {...o, ...revisar(H,ex,o.a,esp,D)};
     });
   };
-  ex.explic=()=>`El tipo trimestral es <i>i</i> = ${pct(r)} / 4 = ${fmtNum(i,'pct')} y hay <i>n</i> = 4 · ${t} = ${n} cuotas. Cada trimestre empieza con lo acumulado más la nueva cuota (<code>=D8+$B$1</code>) y los intereses se calculan sobre ese capital con el tipo fijo (<code>=B9*$B$5</code>). La fórmula, que es la suma de una progresión geométrica, da lo mismo: <i>C</i><sub>f</sub> = <i>a</i>·(1 + <i>i</i>)·((1 + <i>i</i>)<sup><i>n</i></sup> − 1)/<i>i</i> = <b>${eur(Cf)}</b>. Se han aportado ${eur(a*n)}, así que los intereses son <b>${eur(Cf-a*n)}</b>.`;
-  ex.tipOk=H=>{ const x=H.analizar('B5'); return (x.fmt!=='pct') ? 'Puedes pulsar el botón <b>%</b> con B5 seleccionada para ver el tipo trimestral en porcentaje sin cambiar su valor.' : ''; };
+  ex.explic=()=>`El tipo ${P.adj} es <i>i</i> = ${pct(r)} / ${k} = ${fmtNum(i,'pct')} y hay <i>n</i> = ${k} · ${num(t)} = ${n} cuotas. Cada ${P.sust} empieza con lo acumulado más la nueva cuota (<code>=D8+$B$1</code>) y los intereses se calculan sobre ese capital con el tipo fijo (<code>=B9*$B$5</code>). La fórmula, que es la suma de una progresión geométrica, da lo mismo: <i>C</i><sub>f</sub> = <i>a</i>·(1 + <i>i</i>)·((1 + <i>i</i>)<sup><i>n</i></sup> − 1)/<i>i</i> = <b>${eur(Cf)}</b>. Se han aportado ${eur(a*n)}, así que los intereses son <b>${eur(Cf-a*n)}</b>.`;
+  ex.tipOk=H=>{ const x=H.analizar('B5'); return (x.fmt!=='pct') ? `Puedes pulsar el botón <b>%</b> con B5 seleccionada para ver el tipo ${P.adj} en porcentaje sin cambiar su valor.` : ''; };
   return ex;
 }
 
@@ -1118,7 +1121,7 @@ function genMensual(){
 }
 
 const TIPOS=[
-  {id:'tabla',nombre:'Tabla trimestral',gen:genTabla},
+  {id:'tabla',nombre:'Tabla trimestral o semestral',gen:genTabla},
   {id:'capital',nombre:'Capital final con la fórmula',gen:genCapital},
   {id:'cuota',nombre:'Cuota necesaria',gen:genCuota},
   {id:'mensual',nombre:'Cuotas mensuales',gen:genMensual}
