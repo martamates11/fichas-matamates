@@ -233,9 +233,11 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
 /* ---------- Impresión ---------- */
 /* Márgenes de página: cabecera repetida (arriba) y numeración (abajo) en cada folio */
 @page{size:A4;margin:14mm 16mm;
-  @top-left{content:"Nombre: ________________________________";font:400 8pt 'Inter',sans-serif;color:#555}
+  @top-left{content:"Nombre: ________________________________";font:400 8pt 'Inter',sans-serif;color:#555;vertical-align:bottom;padding-bottom:3mm}
   @bottom-center{content:"Página " counter(page) " de " counter(pages);font:400 7.5pt 'Inter',sans-serif;color:#888}
 }
+/* Primer folio: el encabezado del examen ya trae nombre, curso y modelo */
+@page :first{@top-left{content:none}@top-right{content:none}}
 @media print{
   body{background:#fff}
   .barra,.panel,.vista-cab,.toast,dialog,.otro,.marca-cara{display:none!important}
@@ -526,7 +528,7 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
     if (modo === 'soluciones') { st.textContent = '@page{@top-left{content:none}@top-right{content:none}}'; return; }
     const sitio = [estado.curso, estado.modelo && 'Modelo ' + estado.modelo].filter(Boolean).join(' · ');
     const cad = sitio.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, ' ');
-    st.textContent = `@page{@top-right{content:"${cad}";font:400 8pt 'Inter',sans-serif;color:#555}}`;
+    st.textContent = `@page{@top-right{content:"${cad}";font:400 8pt 'Inter',sans-serif;color:#555;vertical-align:bottom;padding-bottom:3mm}}@page :first{@top-left{content:none}@top-right{content:none}}`;
   }
 
   function renderExamen() {
