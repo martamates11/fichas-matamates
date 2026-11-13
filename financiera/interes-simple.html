@@ -246,13 +246,13 @@ input.ed{position:absolute;display:none;z-index:5;border:2px solid var(--color-a
   </div>
 
   <details class="instrucciones" open>
-    <summary>Cómo funciona <span class="resumen-cerrado">· 2,5 por tipo superado (2 aciertos de los 3 últimos intentos), −0,5 por fallo</span></summary>
+    <summary>Cómo funciona <span class="resumen-cerrado">· 2,5 por tipo superado (2 aciertos de los 3 últimos), −0,5 por comprobación con errores, una corrección por ejercicio</span></summary>
     <ul>
       <li>Hay <b>4 tipos</b> de ejercicio. Cada tipo superado suma <b>2,5 puntos</b>. Un tipo se supera al acertar <b>2 de tus 3 últimos intentos</b>; entonces se cierra y no admite más intentos.</li>
-      <li>Cada fallo resta <b>0,5 puntos</b>.</li>
+      <li>Cada comprobación con errores resta <b>0,5 puntos</b>. Tras el primer fallo puedes <b>corregir una vez las celdas en rojo</b>: si la corrección es buena, el ejercicio cuenta como acierto (el fallo sigue restando); si no, resta otros 0,5 y el ejercicio termina.</li>
       <li>Trabajas en una <b>hoja de cálculo</b>. Las celdas doradas son los datos del problema. Las celdas con una <b>esquina terracota</b> son las que tienes que completar.</li>
       <li>Un ejercicio es correcto si <b>todas</b> sus celdas están bien y se han calculado con <b>fórmulas</b> (empiezan por <code>=</code> y usan referencias a celdas como <code>B1</code>). No vale escribir el resultado a mano ni teclear los datos dentro de la fórmula: si cambiaran los datos, la hoja no se recalcularía.</li>
-      <li>Si dejas alguna celda por completar, el ejercicio no se corrige y no cuenta como intento.</li>
+      <li>Si dejas alguna celda por completar, no se corrige y no cuenta.</li>
       <li>Las celdas blancas sin marca son libres: úsalas como borrador si quieres.</li>
       <li>Si pulsas <b>«Mostrar soluciones»</b>, verás el ejercicio en curso resuelto, pero <b>ese ejercicio no contará para la nota</b>.</li>
     </ul>
@@ -411,7 +411,7 @@ class Hoja{
   }
   cell(a){ return this.cells[a]||(this.cells[a]={raw:'',fmt:null,tipo:'libre',est:null}); }
   def(a,props){ Object.assign(this.cell(a),props); }
-  protegida(a){ const t=this.cell(a).tipo; return t!=='libre'&&t!=='obj'; }
+  protegida(a){ const c=this.cell(a); return !!c.bloq||(c.tipo!=='libre'&&c.tipo!=='obj'); }
   td(r,c){ return this.tds[r][c]; }
   rng(){ const s=this.sel; return {r1:Math.min(s.ar,s.er),r2:Math.max(s.ar,s.er),c1:Math.min(s.ac,s.ec),c2:Math.max(s.ac,s.ec)}; }
 
@@ -489,6 +489,7 @@ class Hoja{
 
   aviso(msg){ this.elAviso.textContent=msg; clearTimeout(this._tAv); this._tAv=setTimeout(()=>{this.elAviso.textContent='';},4200); }
   msgProtegida(a){ const t=this.cell(a).tipo;
+    if(this.cell(a).bloq) return 'Esa celda ya está bien: corrige solo las celdas en rojo.';
     return t==='dato'||t==='anio' ? 'Esa celda es un dato del problema y no se puede modificar.' : 'Esa celda es un rótulo del problema y no se puede modificar.'; }
 
   /* ── selección ── */
@@ -862,9 +863,9 @@ function revisar(H, ex, a, esperado, extra){
     if(extra&&extra.requisito){ const r=extra.requisito(an); if(r) return {ok:false,cat:r.cat,msg:r.msg}; }
     return {ok:true,an};
   }
-  if(extra&&extra.diag){ const d=extra.diag(v,an); if(d) return {ok:false,cat:d.cat,msg:d.msg}; }
+  if(extra&&extra.diag){ const d=extra.diag(v,an); if(d) return {ok:false,cat:d.cat,msg:d.msg,msgFinal:d.msgFinal}; }
   const e0=Array.isArray(esperado)?esperado[0]:esperado;
-  return {ok:false,cat:'otros',msg:`Da ${num(v)} y debería dar ${num(e0)}.`};
+  return {ok:false,cat:'otros',msg:`Da ${num(v)}, que no es correcto. Revisa qué celdas intervienen y en qué orden se operan.`,msgFinal:`Da ${num(v)} y debería dar ${num(e0)}.`};
 }
 const val=(H,a)=>{ const x=H.valor(a); return x.v; };
 const ctxDatos=cel=>cel.filter(c=>c.tipo==='dato').map(c=>({a:c.a,v:c.v}));
@@ -1109,7 +1110,7 @@ const TIPOS=[
 
 /* ═════════════ Estado y puntuación ═════════════ */
 const state={fallosTotales:0,tipos:{},activo:'tabla',ex:null,errores:{},inicio:Date.now()};
-TIPOS.forEach(T=>state.tipos[T.id]={intentos:[],superado:false,cerrado:false,fallos:0,aciertos:0,total:0,solucionesVistas:0,num:0});
+TIPOS.forEach(T=>state.tipos[T.id]={intentos:[],superado:false,cerrado:false,fallos:0,aciertos:0,total:0,corregidos:0,solucionesVistas:0,num:0});
 const PUNTO_POR_TIPO=10/TIPOS.length, PENALIZACION_FALLO=0.5;
 function calcularNota(){
   const sup=Object.values(state.tipos).filter(t=>t.superado).length;
@@ -1117,6 +1118,8 @@ function calcularNota(){
   return Math.round(Math.min(10,Math.max(0,bruta))*100)/100;
 }
 const fmtNota=n=>String(Math.round(n*100)/100).replace('.',',');
+// Fallo de la primera comprobación: resta, pero el ejercicio sigue abierto para corregir
+function penalizarFallo(id){ const t=state.tipos[id]; if(t.cerrado) return; t.fallos++; state.fallosTotales++; }
 function registrarIntento(id,ok){
   const t=state.tipos[id]; if(t.cerrado) return;
   t.intentos.push(ok); if(t.intentos.length>3) t.intentos.shift();
@@ -1131,7 +1134,7 @@ let H=null;
 function nuevoEjercicio(id){
   const T=TIPOS.find(x=>x.id===id); state.activo=id;
   const t=state.tipos[id]; t.num++;
-  const ex=T.gen(); ex.num=t.num; ex.terminado=false; ex.revelado=false; ex.dirty=false; ex.fb=''; state.ex=ex;
+  const ex=T.gen(); ex.num=t.num; ex.fase='inicial'; ex.rawKO={}; ex.terminado=false; ex.revelado=false; ex.dirty=false; ex.fb=''; state.ex=ex;
   renderTodo(true);
 }
 function dots(id){
@@ -1169,7 +1172,7 @@ function renderEjercicio(){
     <div class="aviso-input" id="aviso-input" aria-live="assertive"></div>
     <div id="feedback" aria-live="polite"></div>
     <div id="acc-post"></div>`;
-  H=new Hoja($('hoja-host'),{filas:ex.filas,cols:5,anchos:[206,124,124,124,92],onCambio:()=>{ ex.dirty=true; $('aviso-input').textContent=''; }});
+  H=new Hoja($('hoja-host'),{filas:ex.filas,cols:5,anchos:[206,124,124,124,92],onCambio:()=>{ ex.dirty=true; $('aviso-input').textContent=''; if(ex.fase==='correccion'){ let c=false; ex.obj.forEach(o=>{ const x=H.cell(o.a); if(x.est==='ko'&&x.raw!==ex.rawKO[o.a]){ x.est=null; c=true; } }); if(c) H.recalc(); } }});
   ex.cel.forEach(c=>H.def(c.a,{raw:c.raw||'',fmt:c.fmt||null,tipo:c.tipo}));
   const primera=ex.obj[0].a; H.sel={ar:+primera.slice(1)-1,ac:primera.charCodeAt(0)-65,er:+primera.slice(1)-1,ec:primera.charCodeAt(0)-65};
   H.recalc(); H.pintarSel();
@@ -1209,30 +1212,47 @@ function ventanaHTML(id){
   const t=state.tipos[id];
   return `<div class="ventana"><span class="v-tit">Tus últimos intentos en este tipo:</span>${dots(id)}<span>${t.superado?'<b style="color:var(--color-correcto)">Tipo superado (+2,5)</b>':'Necesitas 2 aciertos en los 3 últimos intentos.'}</span></div>`;
 }
+function listaErrores(res,final){
+  const grupos=new Map();
+  res.filter(x=>!x.ok).forEach(x=>{ const m=(final&&x.msgFinal)||x.msg; if(!grupos.has(m)) grupos.set(m,[]); grupos.get(m).push(x); });
+  return [...grupos.entries()].map(([m,g])=>`<li><span class="cel">${g.map(x=>x.a).join(', ')}</span>${g.length===1?` (${g[0].et})`:''}: ${m}</li>`).join('');
+}
 function comprobar(){
   const ex=state.ex, id=ex.tipo, t=state.tipos[id];
   if(ex.terminado||t.cerrado) return;
   H.terminarEdicion();
   if(!nombreValido()) return;
   const vacias=ex.obj.filter(o=>!H.cell(o.a).raw.trim()).map(o=>o.a);
-  if(vacias.length){ $('aviso-input').textContent=`Faltan celdas por completar: ${vacias.join(', ')}. Este intento todavía no cuenta.`; return; }
+  if(vacias.length){ $('aviso-input').textContent=`Faltan celdas por completar: ${vacias.join(', ')}. ${ex.fase==='correccion'?'Esta corrección':'Este intento'} todavía no cuenta.`; return; }
   const res=ex.revisar(H);
   const ok=res.every(x=>x.ok);
-  res.forEach(x=>{ H.cell(x.a).est=x.ok?'ok':'ko'; });
+  const enCorreccion=ex.fase==='correccion';
+  res.forEach(x=>{ const c=H.cell(x.a); c.est=x.ok?'ok':'ko'; c.bloq=x.ok; });
+  if(!ok){ const cats=new Set(res.filter(x=>!x.ok&&x.cat).map(x=>x.cat)); cats.forEach(c=>state.errores[c]=(state.errores[c]||0)+1); }
+  const nOk=res.filter(x=>x.ok).length;
+  let fb;
+  if(!ok&&!enCorreccion){
+    // Primer fallo: penaliza y abre la corrección de las celdas en rojo
+    penalizarFallo(id);
+    ex.fase='correccion'; ex.rawKO={}; res.filter(x=>!x.ok).forEach(x=>ex.rawKO[x.a]=H.cell(x.a).raw);
+    H.recalc(); H.pintarSel();
+    const primera=res.find(x=>!x.ok).a; H.sel={ar:+primera.slice(1)-1,ac:primera.charCodeAt(0)-65,er:+primera.slice(1)-1,ec:primera.charCodeAt(0)-65}; H.pintarSel();
+    fb=`<div class="feedback-incorrecto"><div class="fb-tit">✗ Hay errores · −0,5 puntos</div><p>Tienes bien ${nOk} de ${res.length} celdas. <b>Puedes corregir una vez las celdas en rojo</b> (las verdes quedan bloqueadas). Si la corrección es buena, el ejercicio contará como acierto; si vuelve a haber errores, restará otros 0,5 puntos.</p><ul class="fb-lista">${listaErrores(res,false)}</ul></div>`;
+    ex.fb=fb; renderTodo(false);
+    $('btn-comprobar').textContent='Comprobar la corrección';
+    return;
+  }
   H.bloquear();
   registrarIntento(id,ok);
-  if(!ok){ const cats=new Set(res.filter(x=>!x.ok&&x.cat).map(x=>x.cat)); cats.forEach(c=>state.errores[c]=(state.errores[c]||0)+1); }
-  let fb;
+  if(ok&&enCorreccion) t.corregidos++;
   if(ok){
     const tip=ex.tipOk?ex.tipOk(H):'';
-    const tipDolar = ex.tipo==='tabla' && !res.filter(x=>x.col==='C').every(x=>H.cell(x.a).raw.includes('$')) ? 'Lo has resuelto bien. Truco: si escribes la primera fórmula de intereses con referencias fijas, <code>=$B$1*$B$2</code>, puedes copiarla hacia abajo de una sola vez.' : '';
-    fb=`<div class="feedback-correcto"><div class="fb-tit">✓ Correcto: todas las celdas están bien y calculadas con fórmulas</div>${tip||tipDolar?`<p class="fb-tip">${tip||tipDolar}</p>`:''}${modeloHTML(ex)}${ventanaHTML(id)}</div>`;
+    const tipDolar = ex.tipo==='tabla' && !res.filter(x=>x.col==='C').every(x=>H.cell(x.a).raw.includes('$')) ? 'Truco: si escribes la primera fórmula de intereses con referencias fijas, <code>=$B$1*$B$2</code>, puedes copiarla hacia abajo de una sola vez.' : '';
+    const tit=enCorreccion?'✓ Corrección correcta: ahora todas las celdas están bien':'✓ Correcto: todas las celdas están bien y calculadas con fórmulas';
+    const nota=enCorreccion?'<p>El ejercicio cuenta como acierto; el fallo de la primera comprobación sigue restando 0,5 puntos.</p>':'';
+    fb=`<div class="feedback-correcto"><div class="fb-tit">${tit}</div>${nota}${tip||tipDolar?`<p class="fb-tip">${tip||tipDolar}</p>`:''}${modeloHTML(ex)}${ventanaHTML(id)}</div>`;
   } else {
-    const grupos=new Map();
-    res.filter(x=>!x.ok).forEach(x=>{ const k=x.msg; if(!grupos.has(k)) grupos.set(k,[]); grupos.get(k).push(x); });
-    const items=[...grupos.values()].map(g=>`<li><span class="cel">${g.map(x=>x.a).join(', ')}</span>${g.length===1?` (${g[0].et})`:''}: ${g[0].msg}</li>`).join('');
-    const nOk=res.filter(x=>x.ok).length;
-    fb=`<div class="feedback-incorrecto"><div class="fb-tit">✗ Incorrecto · −0,5 puntos</div><p>Tienes bien ${nOk} de ${res.length} celdas. Las celdas en rojo tienen estos problemas:</p><ul class="fb-lista">${items}</ul>${modeloHTML(ex)}${ventanaHTML(id)}</div>`;
+    fb=`<div class="feedback-incorrecto"><div class="fb-tit">✗ La corrección sigue teniendo errores · −0,5 puntos</div><p>Tienes bien ${nOk} de ${res.length} celdas. Esto es lo que falla:</p><ul class="fb-lista">${listaErrores(res,true)}</ul>${modeloHTML(ex)}${ventanaHTML(id)}</div>`;
   }
   ex.terminado=true; ex.fb=fb;
   renderTodo(false);
@@ -1245,10 +1265,11 @@ function revelarSoluciones(){
   $('overlay-sol').classList.remove('visible');
   const ex=state.ex; if(!ex||ex.terminado||state.tipos[ex.tipo].cerrado) return;
   H.terminarEdicion();
-  ex.obj.forEach(o=>{ const c=H.cell(o.a); c.raw=o.sol; c.fmt=o.fmtSol||null; });
+  const pend=ex.obj.filter(o=>H.cell(o.a).est!=='ok');
+  pend.forEach(o=>{ const c=H.cell(o.a); c.raw=o.sol; c.fmt=o.fmtSol||null; });
   H.recalc();
   const res=ex.revisar(H);
-  ex.obj.forEach(o=>{ H.cell(o.a).est='sol'; });
+  pend.forEach(o=>{ H.cell(o.a).est='sol'; });
   H.bloquear();
   const fallo=res.filter(x=>!x.ok);
   if(fallo.length) console.error('Validador rechaza su propia solución:',fallo);
@@ -1275,16 +1296,16 @@ function abrirInforme(){
   const mins=Math.ceil((Date.now()-state.inicio)/60000);
   const tiempo=`${dos(Math.floor(mins/60))}:${dos(mins%60)}`;
   const titulo=document.querySelector('.titulo-ficha').textContent, sub=document.querySelector('.subtitulo').textContent;
-  const filas=TIPOS.map((T,i)=>{const t=state.tipos[T.id];return `<tr><td>${i+1}. ${T.nombre}</td><td class="${t.superado?'est-ok':'est-no'}">${t.superado?'Superado':'No superado'}</td><td>${t.total}</td><td>${t.aciertos}</td><td>${t.fallos}</td><td>${t.solucionesVistas}</td></tr>`;}).join('');
+  const filas=TIPOS.map((T,i)=>{const t=state.tipos[T.id];return `<tr><td>${i+1}. ${T.nombre}</td><td class="${t.superado?'est-ok':'est-no'}">${t.superado?'Superado':'No superado'}</td><td>${t.total}</td><td>${t.aciertos}</td><td>${t.corregidos}</td><td>${t.fallos}</td><td>${t.solucionesVistas}</td></tr>`;}).join('');
   const sup=Object.values(state.tipos).filter(t=>t.superado).length;
-  const errs=Object.entries(state.errores).sort((a,b)=>b[1]-a[1]).map(([k,n])=>`<li>${CAT[k]}: <b>${n}</b> ${n>1?'ejercicios':'ejercicio'}</li>`).join('');
+  const errs=Object.entries(state.errores).sort((a,b)=>b[1]-a[1]).map(([k,n])=>`<li>${CAT[k]}: <b>${n}</b> ${n>1?'veces':'vez'}</li>`).join('');
   const m=$('modal'); m.style.background=bg; m.style.color=fg;
   m.innerHTML=`<p class="m-titulo">${esc(titulo)}</p><p class="m-sub">${esc(sub)}</p><hr>
     <div class="m-inf">Informe de la actividad</div>
     <div class="m-nombre">${esc($('nombre').value.trim())}</div>
     <div class="m-nota">${fmtNota(nota)}<span style="font-size:1.2rem"> / 10</span></div>
     <div class="m-datos"><span>Fecha: <b>${dos(now.getDate())}/${dos(now.getMonth()+1)}/${now.getFullYear()}</b></span><span>Hora: <b>${dos(now.getHours())}:${dos(now.getMinutes())}:${dos(now.getSeconds())}</b></span><span>Tiempo empleado: <b>${tiempo}</b></span></div>
-    <table class="desglose"><thead><tr><th>Tipo de ejercicio</th><th>Estado</th><th>Intentos</th><th>Aciertos</th><th>Fallos</th><th>Soluciones vistas</th></tr></thead><tbody>${filas}</tbody></table>
+    <table class="desglose"><thead><tr><th>Tipo de ejercicio</th><th>Estado</th><th>Intentos</th><th>Aciertos</th><th>Corregidos tras fallo</th><th>Fallos</th><th>Soluciones vistas</th></tr></thead><tbody>${filas}</tbody></table>
     <div class="m-errores"><div class="me-tit">ERRORES DETECTADOS</div>${errs?`<ul>${errs}</ul>`:'<span>Ningún error registrado.</span>'}</div>
     <p class="m-resumen">Tipos superados: <b>${sup} / 4</b> (+${fmtNota(sup*PUNTO_POR_TIPO)}) · Fallos totales: <b>${state.fallosTotales}</b> (−${fmtNota(state.fallosTotales*PENALIZACION_FALLO)})</p>
     <button class="m-cerrar" id="btn-cerrar">Cerrar y seguir practicando</button>`;
