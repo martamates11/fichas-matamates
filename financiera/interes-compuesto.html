@@ -329,7 +329,8 @@ function fmtNum(v, fmt){
   if(fmt==='pct') return (v*100).toLocaleString('es-ES',{maximumFractionDigits:2})+' %';
   if(fmt==='eur') return v.toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
   if(Math.abs(v)>=1e10) return v.toExponential(4).replace('.',',');
-  return v.toLocaleString('es-ES',{maximumFractionDigits:Math.abs(v)>=1?2:4});
+  if(Math.abs(v)>=1) return v.toLocaleString('es-ES',Number.isInteger(v)?{maximumFractionDigits:0}:{minimumFractionDigits:2,maximumFractionDigits:2});
+  return v.toLocaleString('es-ES',{maximumFractionDigits:4});
 }
 const eur = v => fmtNum(v,'eur');
 const pct = v => fmtNum(v,'pct');
