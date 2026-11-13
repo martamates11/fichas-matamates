@@ -48,10 +48,37 @@ body.ficha-perfecta { background: var(--color-fondo-perfecta); }
 .instrucciones[open] summary::before { transform: rotate(90deg); }
 #mundo { border: 2px solid var(--color-dorado); border-radius: 8px; overflow: hidden; background: #2f78a8; aspect-ratio: 8 / 5; }
 #mundo canvas { display: block; }
+.mundo-marco { position: relative; }
+.aviso-mundo { position: absolute; left: 50%; top: 12px; transform: translate(-50%, -8px); width: max-content; max-width: calc(100% - 24px);
+  background: rgba(46,42,36,.92); color: #FFF8E7; border: 1px solid var(--color-dorado); border-radius: 999px; padding: 7px 18px;
+  font-size: .92rem; font-weight: 700; text-align: center; opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; }
+.aviso-mundo.visible { opacity: 1; transform: translate(-50%, 0); }
+.estado-fila { display: flex; align-items: center; justify-content: space-between; gap: 10px 16px; flex-wrap: wrap; }
+/* Pantalla de la actividad: se abre sobre el mapa al entrar en una zona */
+.modal.modal-actividad { padding: 0; max-width: 680px; display: flex; flex-direction: column; overflow: hidden; border: 2px solid var(--color-dorado);
+  animation: act-entra .38s cubic-bezier(.2, .9, .3, 1.15); }
+.act-cabecera { display: flex; align-items: center; gap: 14px; padding: 14px 18px; background: var(--color-cabecera); color: var(--color-cabecera-texto);
+  border-bottom: 5px solid var(--zona, var(--color-acento)); }
+.act-icono { flex: none; border: 2px solid var(--zona, var(--color-dorado)); border-radius: 999px; padding: 5px 14px; font-weight: 700; font-size: 1.05rem; white-space: nowrap; background: rgba(255,255,255,.08); }
+.act-sobre { font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--color-dorado); }
+.act-titulo { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; line-height: 1.15; margin: 0; }
+.act-cerrar { margin-left: auto; flex: none; width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(239,230,212,.6); background: transparent;
+  color: var(--color-cabecera-texto); font-size: 1.05rem; cursor: pointer; transition: background .2s; }
+.act-cerrar:hover { background: rgba(255,255,255,.14); }
+.act-cuerpo { padding: 16px 20px 8px; overflow: auto; min-height: 120px; }
+.act-pie { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; padding: 12px 20px 14px;
+  border-top: 1px solid var(--color-borde); background: var(--color-barra); }
+.modal-actividad.celebra { animation: act-celebra .8s ease-out; }
+.modal-actividad.tiembla { animation: act-tiembla .45s ease-in-out; }
+@keyframes act-entra { from { transform: scale(.86) translateY(20px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes act-celebra { 0% { box-shadow: 0 0 0 0 rgba(46,125,79,.6), 0 10px 40px rgba(0,0,0,.3); } 100% { box-shadow: 0 0 0 26px rgba(46,125,79,0), 0 10px 40px rgba(0,0,0,.3); } }
+@keyframes act-tiembla { 20% { transform: translateX(-8px); } 40% { transform: translateX(7px); } 60% { transform: translateX(-5px); } 80% { transform: translateX(3px); } }
+@media (prefers-reduced-motion: reduce) { .modal-actividad, .modal-actividad.celebra, .modal-actividad.tiembla { animation: none; } .aviso-mundo { transition: none; } }
+@media (max-width: 520px) { .act-icono { display: none; } .act-titulo { font-size: 1.15rem; } }
 .panel-reto { background: var(--color-papel); border: 1px solid var(--color-borde); border-left: 5px solid var(--color-acento);
   border-radius: 8px; padding: 14px 18px; margin-top: 14px; min-height: 90px; }
 .panel-reto h2 { font-family: 'Playfair Display', serif; margin: 0 0 4px; font-size: 1.3rem; }
-.panel-reto .progreso { font-size: .85rem; color: var(--color-texto-suave); margin-bottom: 10px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.progreso { font-size: .85rem; color: var(--color-texto-suave); margin-bottom: 10px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .bolitas { display: inline-flex; gap: 6px; }
 .bolita { width: 18px; height: 18px; border-radius: 50%; background: #fff; border: 2px solid var(--color-borde); transition: background .3s, border-color .3s; }
 .bolita.ok { background: var(--color-ok); border-color: var(--color-ok); }
@@ -188,12 +215,13 @@ table.desglose td:first-child { text-align: left; }
 
   <details class="instrucciones" open>
     <summary>Cómo se juega</summary>
-    Mueve al explorador con las flechas (o WASD) o pulsando sobre el mapa. Si estás escribiendo una respuesta, pulsa Esc o toca el mapa para volver a moverte. Cada zona de la isla tiene un tipo de reto:
+    Mueve al explorador con las flechas (o WASD) o pulsando sobre el mapa. Al entrar en una zona se abre la pantalla de su reto; para seguir explorando, pulsa «Volver al mapa» o la tecla Esc. Cada zona de la isla tiene un tipo de reto:
     <ul>
       <li>Superas una zona con <b>4 aciertos en tus últimos 5 intentos</b>. Entonces se cierra y gana su estrella.</li>
       <li>Hay 5 zonas y cada una vale 2 puntos. Cada fallo resta 0,5 (aunque la zona ya esté superada).</li>
       <li>Recuerda: <b>se multiplica en línea</b> y <b>se divide en caramelo</b>.</li>
       <li>Si usas «Mostrar soluciones», ese reto no cuenta para la nota (ni suma ni resta más).</li>
+      <li>La isla guarda alguna sorpresa: el explorador no sabe nadar… y las aspas del molino giran con fuerza. Nada de eso cambia tu nota.</li>
     </ul>
   </details>
 
@@ -203,12 +231,12 @@ table.desglose td:first-child { text-align: left; }
   </div>
 
   <div id="vista-isla">
-    <div id="mundo"></div>
-
-    <div class="panel-reto" id="panel">
-      <h2>Bienvenido/a a la isla</h2>
-      <div>Camina hasta una de las cinco zonas para empezar un reto.</div>
+    <div class="mundo-marco">
+      <div id="mundo"></div>
+      <div class="aviso-mundo" id="aviso-mundo" role="status" aria-live="polite"></div>
     </div>
+
+    <div class="panel-reto" id="estado-isla"></div>
   </div>
 
   <div id="vista-reto" class="oculto">
@@ -260,7 +288,25 @@ table.desglose td:first-child { text-align: left; }
   <div class="pie">
     <button class="btn btn-sec oculto" id="btnCambiar">Abandonar el reto</button>
     <button class="btn" id="btn-finalizar">Finalizar y Calificar</button>
-    <button class="btn-soluciones" id="btn-soluciones" disabled>Mostrar soluciones</button>
+  </div>
+</div>
+
+<!-- Pantalla de la actividad de una zona -->
+<div class="modal-fondo" id="modal-actividad">
+  <div class="modal modal-actividad" role="dialog" aria-modal="true" aria-labelledby="act-titulo">
+    <div class="act-cabecera">
+      <span class="act-icono" id="act-icono" aria-hidden="true"></span>
+      <div>
+        <div class="act-sobre">Reto de la zona</div>
+        <h2 class="act-titulo" id="act-titulo"></h2>
+      </div>
+      <button type="button" class="act-cerrar" id="act-cerrar" aria-label="Volver al mapa" title="Volver al mapa">✕</button>
+    </div>
+    <div class="act-cuerpo" id="panel"></div>
+    <div class="act-pie">
+      <button type="button" class="btn-soluciones" id="btn-soluciones" disabled>Mostrar soluciones</button>
+      <button type="button" class="btn btn-sec" id="act-volver">🗺️ Volver al mapa</button>
+    </div>
   </div>
 </div>
 
@@ -578,18 +624,72 @@ function exigirNombre() {
   return ok;
 }
 inpNombre.addEventListener('input', () => { if (inpNombre.value.trim()) exigirNombre(); });
+// Enter en el nombre: si el explorador espera dentro de una zona, se abre su reto
+inpNombre.addEventListener('keydown', e => { if (e.key === 'Enter' && inpNombre.value.trim()) { inpNombre.blur(); document.getElementById('btn-abrir-reto')?.click(); } });
 
 /* ===================== Panel de reto ===================== */
 const panel = document.getElementById('panel');
 
+const modalAct = document.getElementById('modal-actividad');
+const estadoIsla = document.getElementById('estado-isla');
+const CALMA = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let exPintado = null;                       // ejercicio que hay dibujado en la pantalla de la actividad
+
+// Mensaje breve sobre el mapa (chapuzones, molino, avisos)
+let avisoTemporizador;
+function avisoMundo(texto, ms = 3400) {
+  const el = document.getElementById('aviso-mundo');
+  el.textContent = texto; el.classList.add('visible');
+  clearTimeout(avisoTemporizador); avisoTemporizador = setTimeout(() => el.classList.remove('visible'), ms);
+}
+const ESTADO_INICIAL = '<h2>Bienvenido/a a la isla</h2><div>Camina hasta una de las cinco zonas: su reto se abrirá en pantalla.</div>';
+function pintarEstado(html) { estadoIsla.innerHTML = html; }
+function salirZona() { pintarEstado('<h2>Explorando la isla</h2><div>Camina hasta una zona sin estrella para abrir su reto.</div>'); }
+pintarEstado(ESTADO_INICIAL);
+
+const actividadAbierta = () => modalAct.classList.contains('abierto');
+function cerrarActividad() {
+  if (!actividadAbierta()) return;
+  modalAct.classList.remove('abierto');
+  document.activeElement?.blur();            // el teclado vuelve al explorador
+  window.mundoVolver && window.mundoVolver();
+}
+document.getElementById('act-cerrar').onclick = cerrarActividad;
+document.getElementById('act-volver').onclick = cerrarActividad;
+modalAct.addEventListener('click', e => { if (e.target === modalAct) cerrarActividad(); });
+function animarActividad(clase) {
+  const caja = modalAct.querySelector('.modal-actividad');
+  caja.classList.remove('celebra', 'tiembla'); void caja.offsetWidth; caja.classList.add(clase);
+}
+
+// Devuelve true si se ha abierto la pantalla del reto
 function entrarZona(tipo) {
   state.tipoActivo = tipo;
-  const t = state.tipos[tipo];
+  const t = state.tipos[tipo], nombre = TIPOS[tipo].nombre;
   if (t.cerrado) {
-    panel.innerHTML = `<h2>${TIPOS[tipo].nombre} ⭐</h2><div>Zona superada. Busca otra zona de la isla sin estrella.</div>`;
-    actualizarMarcador(); return;
+    pintarEstado(`<h2>${nombre} ⭐</h2><div>Zona superada. Busca otra zona de la isla sin estrella.</div>`);
+    avisoMundo('⭐ Zona superada. Busca otra sin estrella.');
+    actualizarMarcador(); return false;
   }
-  if (!state.ex[tipo] || state.ex[tipo].terminado) nuevoEjercicio(tipo); else pintarEjercicio();
+  pintarEstado(`<h2>${nombre}</h2><div class="estado-fila"><span>Estás en esta zona. Su reto se abre en pantalla.</span><button type="button" class="btn" id="btn-abrir-reto">Abrir el reto</button></div>`);
+  document.getElementById('btn-abrir-reto').onclick = () => entrarZona(tipo);
+  if (!exigirNombre()) { avisoMundo('✏️ Escribe tu nombre arriba para abrir el reto.'); actualizarMarcador(); return false; }
+  const z = ZONAS.find(z => z.tipo === tipo);
+  modalAct.style.setProperty('--zona', '#' + z.color.toString(16).padStart(6, '0'));
+  document.getElementById('act-icono').textContent = z.icono;
+  document.getElementById('act-titulo').textContent = nombre;
+  modalAct.querySelector('.modal-actividad').classList.remove('celebra', 'tiembla');
+  modalAct.classList.add('abierto');
+  const ex = state.ex[tipo];
+  if (!ex || ex.terminado) nuevoEjercicio(tipo);
+  else if (exPintado !== ex) pintarEjercicio();      // si solo se había cerrado la pantalla, se conserva lo escrito
+  else { actualizarMarcador(); enfocarActividad(); }
+  return true;
+}
+function enfocarActividad() {
+  const primero = panel.querySelector('input:not(:disabled)');
+  if (primero && punteroFino()) primero.focus({ preventScroll: true });
+  else document.getElementById('act-cerrar').focus({ preventScroll: true });
 }
 
 function nuevoEjercicio(tipo) {
@@ -608,15 +708,16 @@ function textoProgreso(t) {
 
 function pintarEjercicio() {
   const tipo = state.tipoActivo, ex = state.ex[tipo], T = TIPOS[tipo];
-  panel.innerHTML = `<h2>${T.nombre}</h2><div class="progreso">${textoProgreso(state.tipos[tipo])}</div>
+  exPintado = ex;
+  panel.innerHTML = `<div class="progreso">${textoProgreso(state.tipos[tipo])}</div>
     <div class="enunciado">${T.pintar(ex.datos)}</div>
     <div class="acciones"><button class="btn" id="btn-corregir">Comprobar</button></div>
     <div id="fb" aria-live="polite"></div><div class="acciones" id="tras"></div>`;
   const etiquetas = { x: 'Respuesta', n: 'Numerador del resultado', d: 'Denominador del resultado' };
   panel.querySelectorAll('[data-campo]').forEach(i => i.setAttribute('aria-label', etiquetas[i.dataset.campo]));
-  panel.querySelectorAll('input').forEach(i => i.addEventListener('keydown', ev => { if (ev.key === 'Enter') corregir(); }));
+  panel.querySelectorAll('input').forEach(i => i.addEventListener('keydown', ev => { if (ev.key === 'Enter') { ev.preventDefault(); corregir(); } }));   // sin preventDefault, el Intro pulsaría también el botón que recibe el foco
   document.getElementById('btn-corregir').onclick = corregir;
-  const primero = panel.querySelector('input'); if (primero) primero.focus({ preventScroll: true });
+  enfocarActividad();
   actualizarMarcador();
 }
 
@@ -641,6 +742,7 @@ function corregir() {
   ex.terminado = true;
   registrarIntento(tipo, res.ok);
   fb.innerHTML = `<div class="feedback ${res.ok ? 'feedback-ok' : 'feedback-error'}">${res.html}</div>`;
+  animarActividad(res.ok ? 'celebra' : 'tiembla');
   cerrarEjercicio();
 }
 
@@ -651,10 +753,14 @@ function cerrarEjercicio(revelado) {
   const tras = document.getElementById('tras');
   const neutro = revelado ? '<div style="flex-basis:100%;color:var(--color-texto-suave)">Soluciones mostradas · ejercicio sin calificar</div>' : '';
   if (t.cerrado) {
-    tras.innerHTML = neutro + '<div style="flex-basis:100%"><b>⭐ ¡Zona superada!</b> Camina hasta otra zona de la isla.</div>';
+    tras.innerHTML = neutro + '<div style="flex-basis:100%"><b>⭐ ¡Zona superada!</b> Vuelve al mapa para ver su estrella y camina hasta otra zona.</div><button class="btn" id="btn-mapa">Volver al mapa</button>';
+    document.getElementById('btn-mapa').onclick = cerrarActividad;
+    if (punteroFino()) document.getElementById('btn-mapa').focus({ preventScroll: true });
+    pintarEstado(`<h2>${TIPOS[tipo].nombre} ⭐</h2><div>Zona superada. Busca otra zona de la isla sin estrella.</div>`);
   } else {
     tras.innerHTML = neutro + '<button class="btn" id="btn-otro">Otro reto aquí</button>';
     document.getElementById('btn-otro').onclick = () => nuevoEjercicio(tipo);
+    if (punteroFino()) document.getElementById('btn-otro').focus({ preventScroll: true });
   }
   actualizarMarcador();
 }
@@ -763,9 +869,10 @@ document.getElementById('btn-finalizar').onclick = abrirInforme;
 modalInf.addEventListener('click', e => { if (e.target === modalInf) modalInf.classList.remove('abierto'); });
 document.addEventListener('keydown', e => {
   if (e.key !== 'Escape') return;
-  const habiaModal = document.querySelector('.modal-fondo.abierto');
-  modalSol.classList.remove('abierto'); modalInf.classList.remove('abierto'); document.getElementById('modal-abandono').classList.remove('abierto');
-  if (!habiaModal) document.activeElement?.blur();   // Esc devuelve el teclado al explorador
+  const encima = [modalSol, modalInf, document.getElementById('modal-abandono')].filter(m => m.classList.contains('abierto'));
+  if (encima.length) encima.forEach(m => m.classList.remove('abierto'));
+  else if (actividadAbierta()) cerrarActividad();   // Esc cierra la pantalla del reto y vuelve al mapa
+  else document.activeElement?.blur();               // Esc devuelve el teclado al explorador
 });
 
 /* ===================== Reto entre alumnos (skill duelo-galactico) ===================== */
@@ -1068,16 +1175,27 @@ const ZONAS = [
   { tipo: 'cantidad',       x: 400, y: 400, color: 0x3E7CA6, icono: '¾ de 20', etiqueta: 'Cantidades',    etiquetaY: 446, etiquetaX: 365 }
 ];
 const ISLA = { cx: 400, cy: 252, rx: 375, ry: 228 };
-const PASEO = { rx: 318, ry: 192 };          // elipse por la que puede caminar el explorador
+const ESTANQUE = { x: 625, y: 140, rx: 78, ry: 24 };     // lámina de agua del estanque (algo menor que el dibujo)
+const PUENTE = { x0: 555, x1: 695, y0: 128, y1: 153 };  // tablero del puente que cruza el estanque
+const MOLINO = { x: 165, y: 160, ejeY: 68 };
+const ESC_JUGADOR = 1.25, PIES = 43.7;                  // escala del explorador y altura de sus pies en la textura
 const PLAZA = { x: 400, y: 258 };
 const HUERTO = { x: 88, y: 228, w: 76, h: 44 };
 const CONTROL_CAMINO = { equivalentes: [300, 250], suma: [500, 250], multiplicacion: [290, 300], division: [510, 300], cantidad: [385, 330] };
 
+const ondulacion = a => 1 + 0.04 * Math.sin(3 * a + 1) + 0.025 * Math.sin(5 * a + 2) + 0.015 * Math.sin(7 * a);
+// Distancia relativa al centro de la isla: 1 = orilla, menos de 1 = tierra, más de 1 = mar
+function radioIsla(x, y) {
+  const ex = (x - ISLA.cx) / ISLA.rx, ey = (y - ISLA.cy) / ISLA.ry;
+  return Math.hypot(ex, ey) / ondulacion(Math.atan2(ey, ex));
+}
+const enEstanque = (x, y, k = 1) => ((x - ESTANQUE.x) / (ESTANQUE.rx * k)) ** 2 + ((y - ESTANQUE.y) / (ESTANQUE.ry * k)) ** 2 < 1;
+const enPuente = (x, y) => x >= PUENTE.x0 - 8 && x <= PUENTE.x1 + 8 && y >= PUENTE.y0 && y <= PUENTE.y1;
 function contornoIsla(escala, n = 96) {
   const pts = [];
   for (let i = 0; i < n; i++) {
     const a = i / n * Math.PI * 2;
-    const r = escala * (1 + 0.04 * Math.sin(3 * a + 1) + 0.025 * Math.sin(5 * a + 2) + 0.015 * Math.sin(7 * a));
+    const r = escala * ondulacion(a);
     pts.push({ x: ISLA.cx + ISLA.rx * r * Math.cos(a), y: ISLA.cy + ISLA.ry * r * Math.sin(a) });
   }
   return pts;
@@ -1089,10 +1207,6 @@ function textura(escena, clave, w, h, dibujar) {
 function poligono(g, pts, ang = 0, cx = 0, cy = 0) {
   const c = Math.cos(ang), s = Math.sin(ang);
   g.fillPoints(pts.map(([x, y]) => ({ x: cx + x * c - y * s, y: cy + x * s + y * c })), true);
-}
-function dentroPaseo(x, y) {
-  const ex = (x - ISLA.cx) / PASEO.rx, ey = (y - ISLA.cy) / PASEO.ry, d = Math.hypot(ex, ey);
-  return d <= 1 ? { x, y } : { x: ISLA.cx + ex / d * PASEO.rx, y: ISLA.cy + ey / d * PASEO.ry };
 }
 
 function crearTexturas(e) {
@@ -1112,6 +1226,14 @@ function crearTexturas(e) {
     g.fillStyle(0xD9B26F).fillRoundedRect(10, 0, 14, 8, { tl: 5, tr: 5, bl: 0, br: 0 });
     g.fillStyle(0xB5543C).fillRect(10, 5, 14, 2);
   });
+  textura(e, 'gorro', 34, 12, g => {                                                                         // lo único que flota
+    g.fillStyle(0xC99B55).fillEllipse(17, 7.5, 27, 7);
+    g.fillStyle(0xD9B26F).fillRoundedRect(10, 0, 14, 8, { tl: 5, tr: 5, bl: 0, br: 0 });
+    g.fillStyle(0xB5543C).fillRect(10, 5, 14, 2);
+  });
+  textura(e, 'gota', 8, 8, g => { g.fillStyle(0xBFE6F5).fillCircle(4, 4, 3.5); g.fillStyle(0xFFFFFF, 0.9).fillCircle(3, 3, 1.3); });
+  textura(e, 'burbuja', 12, 12, g => { g.lineStyle(1.5, 0xFFFFFF, 0.95).strokeCircle(6, 6, 4.5); g.fillStyle(0xFFFFFF, 0.6).fillCircle(4.5, 4.5, 1.2); });
+  textura(e, 'polvo', 12, 12, g => g.fillStyle(0xE4D2A4, 0.9).fillCircle(6, 6, 5));
   textura(e, 'sombra', 30, 10, g => g.fillStyle(0x000000, 0.28).fillEllipse(15, 5, 28, 8));
 
   textura(e, 'arbol', 56, 66, g => {
@@ -1354,8 +1476,8 @@ class Isla extends Phaser.Scene {
       { x: H.x + H.w / 2, y: H.y + H.h / 2, r: 52 }, { x: 690, y: 255, r: 50 }];
     ZONAS.forEach(z => ocupados.push({ x: z.x, y: z.y, r: 55 }, { x: z.etiquetaX ?? z.x, y: z.etiquetaY, r: 40 }));
     this.add.image(165, 160, 'molino').setOrigin(0.5, 1).setDepth(160);
-    const aspas = this.add.image(165, 68, 'aspas').setDepth(161).setScale(0.85);
-    this.tweens.add({ targets: aspas, angle: 360, duration: 7000, repeat: -1 });
+    const aspas = this.aspas = this.add.image(MOLINO.x, MOLINO.ejeY, 'aspas').setDepth(161).setScale(0.85);
+    this.giroAspas = this.tweens.add({ targets: aspas, angle: 360, duration: 7000, repeat: -1 });
     this.add.image(est.x, est.y + 4, 'puente').setOrigin(0.5, 0.6).setDepth(est.y);
     this.add.image(505, 440, 'mercado').setOrigin(0.5, 1).setDepth(440).setScale(0.9);
     this.add.image(588, 440, 'caja').setOrigin(0.5, 1).setDepth(440);
@@ -1420,13 +1542,41 @@ class Isla extends Phaser.Scene {
     this.nubes = [0, 1, 2].map(i => { const n = this.add.image(rnd(0, 800), 90 + i * 150, 'nube').setDepth(3000); n.vel = 0.008 + i * 0.003; return n; });
 
     // --- Explorador ---
-    this.sombra = this.add.image(PLAZA.x, PLAZA.y, 'sombra').setDepth(-1).setScale(1.25);
-    this.jugador = this.add.image(PLAZA.x, PLAZA.y, 'explorador').setOrigin(0.5, 0.95).setDepth(PLAZA.y).setScale(1.25);
+    this.sombra = this.add.image(PLAZA.x, PLAZA.y, 'sombra').setDepth(-1).setScale(ESC_JUGADOR);
+    this.jugador = this.add.image(PLAZA.x, PLAZA.y, 'explorador').setOrigin(0.5, 0.95).setDepth(PLAZA.y).setScale(ESC_JUGADOR);
+    this.pos = new Phaser.Math.Vector2(PLAZA.x, PLAZA.y);      // dónde pisa (el dibujo puede ir hundido, saltando o sobre el puente)
+    this.seguro = this.pos.clone();                            // último punto de tierra firme: ahí vuelve tras un chapuzón
     this.destino = null; this.zonaActual = null; this.paso = 0;
+    this.hundido = 0; this.salto = 0; this.ocupado = false; this.viaje = null; this.mareo = 0; this.pendientes = [];
+    this.onda = this.add.ellipse(0, 0, 40, 13).setStrokeStyle(2, 0xFFFFFF, 0.85).setDepth(-2).setVisible(false);
+    this.tweens.add({ targets: this.onda, scaleX: 1.35, scaleY: 1.35, alpha: 0.25, yoyo: true, repeat: -1, duration: 620, ease: 'Sine.inOut' });
+    this.gorro = this.add.image(0, 0, 'gorro').setScale(ESC_JUGADOR).setVisible(false);
+    this.gotas = this.add.particles(0, 0, 'gota', { speed: { min: 70, max: 190 }, angle: { min: -155, max: -25 }, gravityY: 420,
+      lifespan: 700, scale: { start: 1, end: 0.3 }, emitting: false }).setDepth(2400);
+    this.burbujas = this.add.particles(0, 0, 'burbuja', { speedY: { min: -46, max: -22 }, speedX: { min: -14, max: 14 }, lifespan: 800,
+      frequency: 95, scale: { start: 0.5, end: 1.2 }, alpha: { start: 1, end: 0 }, emitting: false }).setDepth(2400);
+    this.polvo = this.add.particles(0, 0, 'polvo', { speed: { min: 20, max: 80 }, angle: { min: -175, max: -5 }, lifespan: 500,
+      scale: { start: 1, end: 0.2 }, alpha: { start: 0.9, end: 0 }, emitting: false }).setDepth(2400);
+    this.estrellitas = [0, 1, 2].map(() => this.add.image(0, 0, 'estrella').setScale(0.3).setDepth(2401).setVisible(false));
+    this.cameras.main.setBounds(0, 0, 800, 500);
 
     this.teclas = this.input.keyboard.addKeys('UP,DOWN,LEFT,RIGHT,W,A,S,D', false);
     // Phaser cancela el mousedown y el campo enfocado no pierde el foco: se suelta a mano
-    this.input.on('pointerdown', ptr => { document.activeElement?.blur(); const d = dentroPaseo(ptr.worldX, ptr.worldY); this.destino = new Phaser.Math.Vector2(d.x, d.y); });
+    this.input.on('pointerdown', ptr => {
+      document.activeElement?.blur();
+      if (this.ocupado) return;
+      const x = ptr.worldX, y = ptr.worldY, za = this.zonaActual;
+      // Pulsar la zona en la que ya se está vuelve a abrir su reto
+      if (za && !state.tipos[za.tipo].cerrado && Phaser.Math.Distance.Between(x, y, za.x, za.y) < 55) { this.llegarZona(za); return; }
+      const enMolino = Math.abs(x - MOLINO.x) < 30 && y > 20 && y < MOLINO.y;      // pulsar el molino lleva a su puerta
+      this.destino = enMolino ? new Phaser.Math.Vector2(MOLINO.x, MOLINO.y - 10)
+        : new Phaser.Math.Vector2(Phaser.Math.Clamp(x, 8, 792), Phaser.Math.Clamp(y, 12, 494));
+    });
+    window.mundoVolver = () => {            // al cerrar la pantalla del reto: se aleja la cámara y se celebran las zonas recién superadas
+      this.alejar();
+      const tipos = this.pendientes.splice(0);
+      if (tipos.length) this.time.delayedCall(CALMA ? 0 : 420, () => tipos.forEach(t => this.celebrarZona(t)));
+    };
     // Cinco bolitas bajo cada cartel con los últimos intentos de la zona
     window.mundoBolitas = tipo => {
       const z = this.zonas.find(z => z.tipo === tipo), g = z.bolitas, intentos = state.tipos[tipo].intentos;
@@ -1442,43 +1592,179 @@ class Isla extends Phaser.Scene {
       }
     };
     this.zonas.forEach(z => window.mundoBolitas(z.tipo));
-    window.mundoZonaSuperada = tipo => {
-      const z = this.zonas.find(z => z.tipo === tipo);
-      z.marca.setVisible(false); z.aro.setFillStyle(0xF2C230, 0.25).setStrokeStyle(3, 0xF2C230, 1);
-      z.estrella.setVisible(true);
-      this.tweens.add({ targets: z.estrella, scale: { from: 0, to: 1 }, angle: { from: -180, to: 0 }, duration: 700, ease: 'Back.out',
-        onComplete: () => this.tweens.add({ targets: z.estrella, y: z.y - 56, yoyo: true, repeat: -1, duration: 1000, ease: 'Sine.inOut' }) });
-      this.add.particles(z.x, z.y - 50, 'chispa', { speed: { min: 60, max: 180 }, lifespan: 800, scale: { start: 1, end: 0 }, emitting: false }).setDepth(2003).explode(30);
-    };
+    window.mundoZonaSuperada = tipo => { if (actividadAbierta()) this.pendientes.push(tipo); else this.celebrarZona(tipo); };
   }
-  update(_, dt) {
-    const v = 0.2 * dt, k = this.teclas, j = this.jugador, x0 = j.x, y0 = j.y;
-    const escribiendo = ['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName);
-    let dx = 0, dy = 0;
-    if (!escribiendo) {
-      dx = (k.RIGHT.isDown || k.D.isDown) - (k.LEFT.isDown || k.A.isDown);
-      dy = (k.DOWN.isDown || k.S.isDown) - (k.UP.isDown || k.W.isDown);
-    }
-    if (dx || dy) { this.destino = null; const l = Math.hypot(dx, dy); j.x += dx / l * v; j.y += dy / l * v; }
-    else if (this.destino) {
-      const d = Phaser.Math.Distance.Between(j.x, j.y, this.destino.x, this.destino.y);
-      if (d < v) { j.setPosition(this.destino.x, this.destino.y); this.destino = null; }
-      else { const a = Phaser.Math.Angle.Between(j.x, j.y, this.destino.x, this.destino.y); j.x += Math.cos(a) * v; j.y += Math.sin(a) * v; }
-    }
-    const p = dentroPaseo(j.x, j.y); j.setPosition(p.x, p.y);
-    if (Math.hypot(j.x - x0, j.y - y0) > 0.05) {               // balanceo al andar y giro según la dirección
-      this.paso += dt;
-      if (Math.abs(j.x - x0) > 0.05) j.setFlipX(j.x < x0);
-      j.setAngle(Math.sin(this.paso / 70) * 7);
-    } else j.setAngle(0);
-    j.setDepth(j.y); this.sombra.setPosition(j.x, j.y);
 
+  celebrarZona(tipo) {
+    const z = this.zonas.find(z => z.tipo === tipo);
+    z.marca.setVisible(false); z.aro.setFillStyle(0xF2C230, 0.25).setStrokeStyle(3, 0xF2C230, 1);
+    z.estrella.setVisible(true);
+    this.tweens.add({ targets: z.estrella, scale: { from: 0, to: 1 }, angle: { from: -180, to: 0 }, duration: 700, ease: 'Back.out',
+      onComplete: () => this.tweens.add({ targets: z.estrella, y: z.y - 56, yoyo: true, repeat: -1, duration: 1000, ease: 'Sine.inOut' }) });
+    this.chispas(z.x, z.y - 50, 30);
+    this.brincar(2);
+    if (Object.values(state.tipos).every(t => t.superado)) {          // isla completa: fuegos por todo el mapa
+      avisoMundo('🎉 ¡Has conseguido las cinco estrellas de la isla!', 6000);
+      for (let i = 0; i < 9; i++) this.time.delayedCall(500 + i * 280, () => this.chispas(120 + Math.random() * 560, 70 + Math.random() * 300, 26));
+    } else avisoMundo('⭐ ¡Zona superada! Camina hasta otra zona.');
+  }
+  chispas(x, y, n) {
+    const p = this.add.particles(x, y, 'chispa', { speed: { min: 60, max: 180 }, lifespan: 800, scale: { start: 1, end: 0 }, emitting: false }).setDepth(2403);
+    p.explode(n); this.time.delayedCall(1000, () => p.destroy());
+  }
+  brincar(veces = 1) {
+    this.tweens.add({ targets: this, salto: 16, duration: 170, ease: 'Quad.out', yoyo: true, repeat: veces - 1 });
+  }
+
+  // Entrada en una zona: la cámara se acerca y se abre la pantalla del reto
+  llegarZona(z) {
+    this.destino = null;
+    if (state.tipos[z.tipo].cerrado) { entrarZona(z.tipo); return; }
+    const abrir = () => { this.ocupado = false; if (!entrarZona(z.tipo)) this.alejar(); };
+    if (CALMA) { abrir(); return; }
+    this.ocupado = true; this.brincar();
+    const anillo = this.add.ellipse(z.x, z.y, 96, 42).setStrokeStyle(4, 0xFFFFFF, 0.95).setDepth(-4);
+    this.tweens.add({ targets: anillo, scaleX: 2.2, scaleY: 2.2, alpha: 0, duration: 480, ease: 'Quad.out', onComplete: () => anillo.destroy() });
+    const cam = this.cameras.main;
+    cam.pan(z.x, z.y - 12, 430, 'Sine.easeInOut', true); cam.zoomTo(1.6, 430, 'Sine.easeInOut', true);
+    this.time.delayedCall(470, abrir);
+  }
+  alejar() {
+    const cam = this.cameras.main;
+    if (CALMA) { cam.setZoom(1).centerOn(400, 250); return; }
+    cam.pan(400, 250, 380, 'Sine.easeInOut', true); cam.zoomTo(1, 380, 'Sine.easeInOut', true);
+  }
+
+  // Chapuzón: chapotea, se hunde, solo flota el sombrero y reaparece empapado en tierra firme. No afecta a la nota.
+  ahogar() {
+    this.ocupado = true; this.destino = null; this.vadeando = false;
+    const { x, y } = this.pos, j = this.jugador;
+    avisoMundo('🌊 ¡Glub, glub! El explorador no sabe nadar…', 4200);
+    this.gotas.explode(26, x, y - 4);
+    const glub = this.add.text(Phaser.Math.Clamp(x, 70, 730), Math.max(y - 78, 24), '¡Glub, glub!',
+      { fontFamily: 'Playfair Display', fontSize: '18px', fontStyle: 'bold', color: '#ffffff', stroke: '#1F5A80', strokeThickness: 4 }).setOrigin(0.5).setDepth(2500);
+    this.tweens.add({ targets: glub, y: glub.y - 20, alpha: 0, delay: 1300, duration: 900, onComplete: () => glub.destroy() });
+    this.tweens.add({ targets: j, angle: { from: -16, to: 16 }, duration: 115, yoyo: true, repeat: 7 });
+    this.burbujas.setPosition(x, y - 4); this.burbujas.start();
+    const fin = () => {
+      this.gotas.explode(10, x, y - 4);
+      this.tweens.add({ targets: this.gorro, alpha: 0, delay: 800, duration: 450, onComplete: () => this.rescatar() });
+    };
+    if (CALMA) { this.hundido = 46; fin(); return; }
+    this.tweens.chain({ targets: this, onComplete: fin, tweens: [
+      { hundido: 24, duration: 340, ease: 'Quad.out' }, { hundido: 13, duration: 260, ease: 'Sine.inOut' },
+      { hundido: 27, duration: 300, ease: 'Sine.inOut' }, { hundido: 16, duration: 260, ease: 'Sine.inOut' },
+      { hundido: 46, duration: 650, ease: 'Quad.in' }] });
+  }
+  rescatar() {
+    const j = this.jugador;
+    this.burbujas.stop(); this.hundido = 0; this.gorro.setAlpha(1);
+    this.pos.copy(this.seguro); j.setAngle(0).setAlpha(0);
+    avisoMundo('💦 ¡Uf! De vuelta a tierra firme. Mejor por los caminos.');
+    this.tweens.add({ targets: j, alpha: 1, duration: 280 });
+    this.brincar();
+    this.time.delayedCall(340, () => this.gotas.explode(16, this.pos.x, this.pos.y - 34));
+    this.tweens.add({ targets: j, angle: { from: -11, to: 11 }, duration: 70, yoyo: true, repeat: 5, delay: 340,   // se sacude el agua
+      onComplete: () => { j.setAngle(0); this.ocupado = false; } });
+  }
+
+  // Molino: las aspas enganchan al explorador, le dan unas vueltas y lo sueltan mareado junto al huerto
+  subirAlMolino() {
+    this.ocupado = true; this.destino = null; this.hundido = 0;
+    const j = this.jugador; j.setCrop(); this.sombra.setVisible(false); this.onda.setVisible(false);
+    avisoMundo('🌀 ¡Las aspas del molino se llevan al explorador!', 4200);
+    const v = this.viaje = { fase: 'sube', p: 0, x0: j.x, y0: j.y };
+    this.tweens.add({ targets: v, p: 1, duration: 460, ease: 'Sine.out', onComplete: () => { v.fase = 'gira'; } });
+    this.tweens.add({ targets: this.giroAspas, timeScale: CALMA ? 2 : 5, duration: 700 });
+    this.time.delayedCall(CALMA ? 4000 : 3900, () => {
+      Object.assign(v, { fase: 'vuela', p: 0, x0: j.x, y0: j.y, giro: j.angle, dest: { x: 128, y: 198 } });
+      this.tweens.add({ targets: this.giroAspas, timeScale: 1, duration: 1200 });
+      this.tweens.add({ targets: v, p: 1, duration: 780, onComplete: () => this.aterrizar() });
+    });
+  }
+  aterrizar() {
+    const j = this.jugador, d = this.viaje.dest;
+    this.viaje = null; this.pos.set(d.x, d.y); this.seguro.copy(this.pos);
+    j.setAngle(0).setFlipX(false); this.sombra.setVisible(true);
+    this.polvo.explode(14, d.x, d.y);
+    avisoMundo('💫 ¡Menudo viaje! El explorador está un poco mareado.');
+    this.mareo = 1700;
+    this.tweens.add({ targets: j, angle: { from: -9, to: 9 }, duration: 210, yoyo: true, repeat: 3, ease: 'Sine.inOut',
+      onComplete: () => { j.setAngle(0); this.ocupado = false; } });
+  }
+
+  update(t, dt) {
+    const k = this.teclas, j = this.jugador, pos = this.pos;
     this.gaviotas.forEach(g => { g.x += g.vel * dt; if (g.x > 830) g.x = -30; g.y = g.base + Math.sin(g.x / 40) * 6; });
     this.nubes.forEach(n => { n.x += n.vel * dt; if (n.x > 900) n.x = -100; });
 
-    const z = this.zonas.find(z => Phaser.Math.Distance.Between(j.x, j.y, z.x, z.y) < 50);
-    if (z && z !== this.zonaActual) entrarZona(z.tipo);
-    this.zonaActual = z || null;
+    if (this.viaje) {                                           // montado en las aspas
+      const v = this.viaje, a = this.aspas.rotation, R = 14;
+      const px = MOLINO.x + Math.cos(a) * R, py = MOLINO.ejeY + Math.sin(a) * R;
+      if (v.fase === 'sube') {
+        j.setPosition(Phaser.Math.Linear(v.x0, px, v.p), Phaser.Math.Linear(v.y0, py, v.p) - 26 * Math.sin(Math.PI * v.p));
+        j.setRotation(Phaser.Math.Angle.Wrap(a + Math.PI / 2) * v.p);
+      } else if (v.fase === 'gira') { j.setPosition(px, py).setRotation(a + Math.PI / 2); }   // la cabeza apunta hacia fuera
+      else {
+        j.setPosition(Phaser.Math.Linear(v.x0, v.dest.x, v.p), Phaser.Math.Linear(v.y0, v.dest.y, v.p) - 70 * Math.sin(Math.PI * v.p));
+        j.setAngle(v.giro + 720 * v.p);
+      }
+      j.setDepth(170);
+      return;
+    }
+
+    const libre = !this.ocupado && !document.querySelector('.modal-fondo.abierto');
+    if (libre) {
+      const v = 0.2 * dt * (this.hundido > 4 ? 0.55 : 1), x0 = pos.x, y0 = pos.y;      // con el agua por las rodillas se anda más despacio
+      const escribiendo = ['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName);
+      let dx = 0, dy = 0;
+      if (!escribiendo) {
+        dx = (k.RIGHT.isDown || k.D.isDown) - (k.LEFT.isDown || k.A.isDown);
+        dy = (k.DOWN.isDown || k.S.isDown) - (k.UP.isDown || k.W.isDown);
+      }
+      if (dx || dy) { this.destino = null; const l = Math.hypot(dx, dy); pos.x += dx / l * v; pos.y += dy / l * v; }
+      else if (this.destino) {
+        const d = Phaser.Math.Distance.Between(pos.x, pos.y, this.destino.x, this.destino.y);
+        if (d < v) { pos.copy(this.destino); this.destino = null; }
+        else { const a = Phaser.Math.Angle.Between(pos.x, pos.y, this.destino.x, this.destino.y); pos.x += Math.cos(a) * v; pos.y += Math.sin(a) * v; }
+      }
+      pos.x = Phaser.Math.Clamp(pos.x, 8, 792); pos.y = Phaser.Math.Clamp(pos.y, 12, 494);
+      if (Math.hypot(pos.x - x0, pos.y - y0) > 0.05) {          // balanceo al andar y giro según la dirección
+        this.paso += dt;
+        if (Math.abs(pos.x - x0) > 0.05) j.setFlipX(pos.x < x0);
+        j.setAngle(Math.sin(this.paso / 70) * 7);
+      } else j.setAngle(0);
+
+      // Terreno que pisa: tierra, orilla (vadea), mar o estanque (chapuzón), puente y puerta del molino
+      const r = radioIsla(pos.x, pos.y), puente = enPuente(pos.x, pos.y);
+      const borde = pos.x <= 8 || pos.x >= 792 || pos.y <= 12 || pos.y >= 494;
+      this.vadeando = r > 1;
+      if (r > 1.04 || (borde && r > 1) || (enEstanque(pos.x, pos.y) && !puente)) this.ahogar();
+      else if (Math.abs(pos.x - MOLINO.x) < 13 && pos.y > MOLINO.y - 30 && pos.y < MOLINO.y - 2) this.subirAlMolino();
+      else {
+        if (r < 0.95 && !puente && !enEstanque(pos.x, pos.y, 1.3)) this.seguro.copy(pos);
+        const z = this.zonas.find(z => Phaser.Math.Distance.Between(pos.x, pos.y, z.x, z.y) < 50) || null;
+        if (z !== this.zonaActual) { this.zonaActual = z; if (z) this.llegarZona(z); else salirZona(); }
+      }
+      if (this.viaje) return;
+    }
+
+    if (!this.ocupado) this.hundido += ((this.vadeando ? 11 : 0) - this.hundido) * Math.min(1, dt / 110);
+    // Sobre el puente el dibujo sube siguiendo el arco del tablero
+    const tp = Phaser.Math.Clamp((pos.x - PUENTE.x0) / (PUENTE.x1 - PUENTE.x0), 0, 1);
+    const arco = enPuente(pos.x, pos.y) && !this.ocupado ? 13 * Math.sin(Math.PI * tp) : 0;
+    const h = this.hundido, mojado = h > 0.3;
+    j.setPosition(pos.x, pos.y - arco - this.salto + h * ESC_JUGADOR);
+    if (mojado) j.setCrop(0, 0, 34, Math.max(0, PIES - h)); else j.setCrop();     // el agua tapa las piernas (o todo el cuerpo)
+    j.setDepth(pos.y);
+    this.sombra.setPosition(pos.x, pos.y - arco).setVisible(!mojado);
+    this.onda.setPosition(pos.x, pos.y).setVisible(mojado);
+    this.gorro.setPosition(pos.x + Math.sin(t / 260) * 3, pos.y - 5 + Math.sin(t / 190) * 1.5).setAngle(Math.sin(t / 300) * 9).setDepth(pos.y + 1).setVisible(h > 34);
+    if (this.mareo > 0) this.mareo -= dt;
+    this.estrellitas.forEach((e, i) => {
+      const a = t / 170 + i * 2.094;
+      e.setVisible(this.mareo > 0).setPosition(pos.x + Math.cos(a) * 17, pos.y - 62 + Math.sin(a) * 5).setAngle(t / 4);
+    });
   }
 }
 
