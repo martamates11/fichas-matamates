@@ -11,7 +11,7 @@ biblioteca con todas mis fichas interactivas y videos de matemátias
 
 La carpeta `examenes/` contiene una herramienta interna (no enlazada desde el índice ni indexada por buscadores) para montar exámenes con el encabezado del IES Castelar a partir de los ejercicios de las fichas, con su hoja de soluciones paso a paso.
 
-Cada ficha disponible tiene su generador en `examenes/generadores/` (ecuaciones, sistemas, matrices, ecuaciones matriciales, programación lineal, radicales, racionalización y logaritmos). Para incorporar una ficha nueva se añade un `registrarFicha({...})` con sus tipos de ejercicio y se enlaza el archivo en `examenes/index.html`.
+Cada ficha disponible tiene su generador en `examenes/generadores/` (ecuaciones, sistemas, matrices, ecuaciones matriciales, programación lineal, radicales, racionalización, logaritmos y funciones: dominio, estudio de funciones racionales, interpretación de gráficas y tipos de funciones). Para incorporar una ficha nueva se añade un `registrarFicha({...})` con sus tipos de ejercicio y se enlaza el archivo en `examenes/index.html`.
 
 ## Licencia
 
