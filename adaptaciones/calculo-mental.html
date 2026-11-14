@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cálculo mental · Juego interactivo de matemáticas | Martamates</title>
+<!-- © 2026 Marta López de Letona Sánchez · Martamates Interactivo · https://martamates11.github.io/fichas-matamates/
+     Todos los derechos reservados. Uso en el aula permitido enlazando a la dirección original.
+     Prohibido copiar, alojar en otros sitios, modificar o vender sin permiso escrito de la autora. Términos: https://martamates11.github.io/fichas-matamates/aviso-legal.html -->
+<meta name="description" content="Juego de cálculo mental: amigos del 10, del 20, del 100 y del 1000, dobles, tríos, productos y múltiplos. Corrección automática y explicación de cada error.">
+<meta name="author" content="Marta López de Letona Sánchez">
+<meta name="copyright" content="© 2026 Marta López de Letona Sánchez · Todos los derechos reservados">
+<link rel="canonical" href="https://martamates11.github.io/fichas-matamates/adaptaciones/calculo-mental.html">
+<link rel="license" href="https://martamates11.github.io/fichas-matamates/aviso-legal.html">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "LearningResource", "name": "Cálculo mental", "description": "Amigos del 10, del 20, del 100 y del 1000, dobles y mitades, tríos, número y producto objetivo y caza de múltiplos, en dos niveles", "url": "https://martamates11.github.io/fichas-matamates/adaptaciones/calculo-mental.html", "inLanguage": "es", "learningResourceType": ["Juego educativo", "Ejercicio interactivo"], "interactivityType": "active", "isAccessibleForFree": true, "about": "Juegos y retos", "teaches": "cálculo mental", "author": {"@type": "Person", "name": "Marta López de Letona Sánchez"}, "copyrightHolder": {"@type": "Person", "name": "Marta López de Letona Sánchez"}, "license": "https://martamates11.github.io/fichas-matamates/aviso-legal.html", "isPartOf": {"@type": "WebSite", "name": "Martamates Interactivo", "url": "https://martamates11.github.io/fichas-matamates/"}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Lora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --papel:#1D5A45; --papel-claro:#FBF3DF; --crema:#F6EBD0; --tinta:#2A1C11; --tinta-suave:#6A5642; --linea:#C9B48A;
+  --limon:#E9C46A; --mandarina:#C8553D; --menta:#F8EFD8; --chicle:#F3E5C3;
+  --hoja:#2E7D4F; --hoja-fondo:#DDEBD2; --fresa:#B3261E; --fresa-fondo:#F6D9D2;
+  --apagado:#A3927A; --apagado-fondo:#E9DDC2; --mision-suave:#D9C9A8; --sombra:#123C2E;
+  --display:'Abril Fatface',Georgia,serif; --texto:'Lora',Georgia,serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--texto); color:var(--tinta); background-color:var(--papel);
+  background-image:radial-gradient(rgba(31,26,23,.09) 1.4px, transparent 1.6px);
+  background-size:22px 22px; min-height:100vh; line-height:1.45;
+  transition:background-color .5s;
+}
+body.perfecta{background-color:#CDEBD2}
+button,select,input{font-family:inherit;color:inherit}
+
+/* Franja de autoría */
+.franja{background:var(--tinta);color:var(--papel-claro);text-align:center;
+  font-size:.82rem;letter-spacing:.03em;padding:8px 16px}
+
+.contenedor{max-width:760px;margin:0 auto;padding:22px 16px 48px}
+
+.titulo-ficha{font-family:var(--display);font-weight:400;text-align:center;
+  font-size:clamp(2.3rem,8vw,3.6rem);line-height:1.02;letter-spacing:.01em;
+  text-shadow:3px 3px 0 var(--mandarina);text-wrap:balance}
+.subtitulo{text-align:center;color:var(--tinta-suave);font-weight:500;
+  font-size:.98rem;margin:8px 0 16px}
+
+/* Barra del alumno */
+.barra-alumno{position:sticky;top:0;z-index:20;background:var(--crema);
+  border:3px solid var(--tinta);border-radius:16px;box-shadow:var(--sx,0) 5px 0 var(--sombra,var(--tinta));
+  padding:10px 14px;margin-bottom:20px}
+.barra-fila{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px}
+.barra-fila label{font-weight:700;font-size:.9rem}
+#nombre{flex:1 1 170px;min-width:0;border:2.5px solid var(--tinta);border-radius:10px;
+  background:var(--papel-claro);padding:7px 10px;font-size:.95rem;font-weight:500}
+#nombre:focus-visible{outline:3px solid var(--mandarina);outline-offset:1px}
+#nombre.falta{border-color:var(--fresa);background:var(--fresa-fondo)}
+.marcador{display:flex;gap:14px;font-size:.84rem;color:var(--tinta-suave);font-weight:500}
+.marcador b{display:block;font-size:1.15rem;color:var(--tinta);font-weight:800;
+  font-variant-numeric:tabular-nums;line-height:1.1}
+.aviso-nombre{display:none;margin-top:7px;color:var(--fresa);font-weight:600;font-size:.86rem}
+.aviso-nombre.visible{display:block}
+
+/* Cómo funciona */
+.instrucciones{background:var(--papel-claro);border:2.5px solid var(--tinta);
+  border-radius:14px;margin-bottom:20px;font-size:.92rem;color:var(--tinta-suave)}
+.instrucciones summary{list-style:none;cursor:pointer;display:flex;align-items:center;
+  gap:8px;padding:11px 16px;font-weight:800;color:var(--tinta);user-select:none;border-radius:12px}
+.instrucciones summary::-webkit-details-marker{display:none}
+.instrucciones summary::after{content:'';margin-left:auto;width:9px;height:9px;flex:none;
+  border-right:3px solid var(--tinta);border-bottom:3px solid var(--tinta);
+  transform:rotate(45deg);transition:transform .25s;margin-top:-5px}
+.instrucciones[open] summary::after{transform:rotate(-135deg);margin-top:5px}
+.instrucciones summary:focus-visible{outline:3px solid var(--mandarina);outline-offset:2px}
+.resumen-cerrado{font-weight:400;font-size:.84rem;color:var(--tinta-suave)}
+.instrucciones[open] .resumen-cerrado{display:none}
+.instrucciones ul{margin:0 18px 14px 36px}
+.instrucciones li{margin:5px 0}
+.instrucciones b{color:var(--tinta)}
+
+/* Selectores */
+.selectores{display:grid;grid-template-columns:1fr 1.7fr;gap:14px;margin-bottom:16px}
+.campo label{display:block;font-size:.76rem;font-weight:800;letter-spacing:.09em;
+  text-transform:uppercase;margin:0 0 5px 4px}
+.campo select{width:100%;appearance:none;-webkit-appearance:none;cursor:pointer;
+  border:3px solid var(--tinta);border-radius:14px;box-shadow:var(--sx,0) 5px 0 var(--sombra,var(--tinta));
+  padding:11px 40px 11px 14px;font-size:1.02rem;font-weight:700;
+  background:var(--limon) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='10'%3E%3Cpath d='M2 2l6 6 6-6' fill='none' stroke='%231F1A17' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 14px center}
+#selTipo{background-color:var(--chicle)}
+.campo select:focus-visible{outline:3px solid var(--tinta);outline-offset:3px}
+
+/* Misión */
+.mision{display:flex;align-items:center;gap:14px;background:var(--tinta);color:var(--papel-claro);
+  border-radius:18px;padding:14px 16px;margin-bottom:12px}
+.mision-texto{flex:1;min-width:0}
+.mision-nombre{font-family:var(--display);font-size:1.5rem;line-height:1.1;letter-spacing:.01em}
+.mision-orden{font-size:.95rem;color:var(--mision-suave);margin-top:3px}
+.insignia{flex:none;min-width:84px;text-align:center;background:var(--limon);color:var(--tinta);
+  border-radius:14px;padding:6px 12px 8px;transform:rotate(3deg)}
+.insignia small{display:block;font-size:.66rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+.insignia span{display:block;font-family:var(--display);font-size:1.9rem;line-height:1}
+.insignia.cambio{animation:salto .45s}
+@keyframes salto{0%{transform:rotate(3deg) scale(1)}45%{transform:rotate(-4deg) scale(1.22)}100%{transform:rotate(3deg) scale(1)}}
+
+/* HUD */
+.hud{display:flex;flex-wrap:wrap;align-items:stretch;gap:10px;margin-bottom:12px}
+.ficha-hud{background:var(--crema);border:2.5px solid var(--tinta);border-radius:12px;
+  padding:6px 12px;font-size:.74rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--tinta-suave)}
+.ficha-hud b{display:block;font-size:1.1rem;color:var(--tinta);letter-spacing:0;
+  font-variant-numeric:tabular-nums;font-weight:800;text-transform:none}
+.ficha-hud.progreso{flex:1 1 150px}
+.barra-progreso{height:9px;border:2px solid var(--tinta);border-radius:6px;background:var(--papel);
+  overflow:hidden;margin-top:3px}
+.barra-progreso i{display:block;height:100%;width:0;background:var(--hoja);transition:width .35s}
+.btn{cursor:pointer;border:3px solid var(--tinta);border-radius:14px;box-shadow:var(--sx,0) 5px 0 var(--sombra,var(--tinta));
+  background:var(--crema);font-weight:800;font-size:1rem;padding:10px 18px;
+  transition:transform .08s, box-shadow .08s}
+.btn:active:not(:disabled){transform:translateY(4px);box-shadow:var(--sx,0) 1px 0 var(--sombra,var(--tinta))}
+.btn:focus-visible{outline:3px solid var(--mandarina);outline-offset:3px}
+.btn:disabled{opacity:.45;cursor:default}
+.btn-primario{background:var(--mandarina)}
+.btn-pista{display:flex;align-items:center;gap:8px;background:var(--limon);padding:6px 14px}
+.btn-pista svg{width:20px;height:20px;flex:none}
+.puntos-pista{display:flex;gap:4px}
+.puntos-pista i{width:10px;height:10px;border-radius:50%;border:2px solid var(--tinta);background:var(--tinta)}
+.puntos-pista i.gastada{background:transparent}
+
+/* Mensajes */
+.mensaje{min-height:58px;display:flex;align-items:center;border:2.5px solid var(--tinta);
+  border-radius:14px;padding:9px 14px;font-size:.96rem;background:var(--papel-claro);margin-bottom:14px}
+.mensaje.ok{background:var(--hoja-fondo);border-color:var(--hoja)}
+.mensaje.ko{background:var(--fresa-fondo);border-color:var(--fresa)}
+.mensaje.solucion{background:var(--apagado-fondo);border:2.5px dashed var(--apagado)}
+.mensaje b{font-weight:800}
+
+/* Tablero */
+.tablero-zona{position:relative;margin:0 auto;max-width:560px}
+.tablero-zona.dificil{max-width:640px}
+.tablero{container-type:inline-size;background:var(--crema);border:3px solid var(--tinta);
+  border-radius:22px;box-shadow:var(--sx,0) 8px 0 var(--sombra,var(--tinta));padding:12px}
+.rejilla{display:grid;grid-template-columns:repeat(var(--cols),1fr);gap:calc(100cqw / var(--cols) * .11)}
+.celda{grid-row:var(--f);grid-column:var(--c);aspect-ratio:1;min-width:0;cursor:pointer;
+  border:3px solid var(--tinta);border-radius:22%;box-shadow:var(--sx,0) 5px 0 var(--sombra,var(--tinta));
+  font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.02em;
+  font-size:calc(100cqw / var(--cols) * var(--fs));
+  display:flex;align-items:center;justify-content:center;padding:0;
+  transition:transform .08s, box-shadow .08s, background-color .15s;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.dificil .celda{border-width:2.5px;box-shadow:var(--sx,0) 4px 0 var(--sombra,var(--tinta))}
+.celda.t0{background:var(--limon)} .celda.t1{background:var(--mandarina)}
+.celda.t2{background:var(--menta)} .celda.t3{background:var(--chicle)}
+.celda:focus-visible{outline:3px solid var(--tinta);outline-offset:3px}
+.celda:active:not(:disabled){transform:translateY(3px);box-shadow:var(--sx,0) 1px 0 var(--sombra,var(--tinta))}
+.celda.sel{background:var(--tinta);color:var(--papel-claro);transform:translateY(3px);box-shadow:var(--sx,0) 2px 0 var(--sombra,var(--tinta))}
+.celda.pista{animation:latido 1s ease-in-out infinite}
+@keyframes latido{0%,100%{outline:4px solid var(--tinta);outline-offset:2px}50%{outline:4px solid var(--fresa);outline-offset:6px}}
+.celda.error{animation:temblor .4s}
+@keyframes temblor{20%{transform:translateX(-6px) rotate(-4deg)}40%{transform:translateX(6px) rotate(4deg)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.celda.fuera{animation:estallar .38s forwards;pointer-events:none}
+@keyframes estallar{40%{transform:scale(1.18) rotate(6deg)}100%{transform:scale(0) rotate(-12deg);opacity:0;visibility:hidden}}
+.celda.tachada{background:var(--apagado-fondo);color:var(--apagado);box-shadow:none;transform:translateY(4px);
+  border-style:dashed;border-color:var(--apagado);text-decoration:line-through;cursor:default}
+.celda.hecha{background:var(--hoja);color:#fff;box-shadow:none;transform:translateY(4px);cursor:default}
+.celda.revelada{background:var(--apagado-fondo);color:var(--tinta);box-shadow:none;transform:translateY(4px);
+  border-style:dashed;cursor:default}
+.celda:disabled{cursor:default}
+.capsula{grid-row:var(--f1) / var(--f2);grid-column:var(--c1) / var(--c2);pointer-events:none;z-index:2;
+  border:4px solid var(--tinta);border-radius:calc(100cqw / var(--cols) * .28);margin:-5px;transform:translateY(4px);
+  animation:aparecer .3s}
+.capsula.revelada{border-style:dashed;border-color:var(--tinta-suave)}
+@keyframes aparecer{from{opacity:0;transform:translateY(4px) scale(1.15)}}
+.chispa{position:absolute;width:10px;height:10px;border-radius:3px;border:2px solid var(--tinta);
+  pointer-events:none;z-index:5;animation:volar .6s ease-out forwards}
+@keyframes volar{to{transform:translate(var(--dx),var(--dy)) rotate(220deg) scale(.3);opacity:0}}
+
+/* Fin de partida */
+.fin{position:absolute;inset:0;z-index:6;display:none;align-items:center;justify-content:center;
+  background:rgba(253,247,234,.9);border-radius:22px;padding:14px}
+.fin.visible{display:flex}
+.fin-carta{background:var(--crema);border:3px solid var(--tinta);border-radius:20px;box-shadow:var(--sx,0) 7px 0 var(--sombra,var(--tinta));
+  padding:20px 20px 22px;text-align:center;max-width:380px;width:100%;animation:entrar .35s}
+@keyframes entrar{from{transform:scale(.8) rotate(-3deg);opacity:0}}
+.fin-carta h2{font-family:var(--display);font-weight:400;font-size:1.9rem;line-height:1.1;margin-bottom:6px}
+.fin-datos{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:12px 0 16px}
+.fin-datos div{background:var(--papel-claro);border:2px solid var(--tinta);border-radius:10px;padding:6px 2px;
+  font-size:.66rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--tinta-suave)}
+.fin-datos b{display:block;font-size:1.15rem;color:var(--tinta);text-transform:none;letter-spacing:0;font-weight:800}
+.fin-botones{display:flex;flex-direction:column;gap:12px}
+
+/* Pie */
+.pie{display:flex;flex-direction:column;align-items:center;gap:16px;margin-top:34px}
+.btn-finalizar{background:var(--menta);font-size:1.08rem;padding:13px 26px}
+.btn-soluciones{background:transparent;color:var(--apagado);border:1px solid var(--linea);border-radius:8px;
+  padding:5px 14px;font-size:.8rem;font-weight:400;cursor:pointer;transition:color .2s,border-color .2s}
+.btn-soluciones:hover:not(:disabled){color:var(--tinta-suave);border-color:var(--apagado)}
+.btn-soluciones:disabled{opacity:.4;cursor:default}
+
+/* Modales */
+.velo{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;
+  background:rgba(31,26,23,.6);padding:16px;overflow:auto}
+.velo.visible{display:flex}
+.dialogo{background:var(--crema);border:3px solid var(--tinta);border-radius:20px;box-shadow:var(--sx,0) 8px 0 var(--sombra,var(--tinta));
+  padding:22px;max-width:440px;width:100%;margin:auto}
+.dialogo h2{font-family:var(--display);font-weight:400;font-size:1.6rem;line-height:1.15;margin-bottom:10px}
+.dialogo p{margin-bottom:10px;color:var(--tinta-suave)}
+.dialogo-botones{display:flex;flex-direction:column;gap:12px;margin-top:16px}
+.btn-secundario{background:transparent;box-shadow:none;border-width:2px;font-weight:600;font-size:.9rem;padding:8px 14px}
+.informe{max-width:680px;color:var(--inf-texto,#fff);background:var(--inf-fondo,#c0392b)}
+.informe h2{margin-bottom:2px}
+.informe .inf-sub{font-weight:500;opacity:.92;padding-bottom:10px;margin-bottom:10px;border-bottom:2px solid currentColor}
+.informe h3{font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;font-weight:800;margin-bottom:8px}
+.inf-datos{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:14px}
+.inf-datos div{font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;opacity:.95}
+.inf-datos b{display:block;font-size:1.1rem;letter-spacing:0;text-transform:none;font-weight:800;overflow-wrap:anywhere}
+.inf-datos .inf-nota b{font-family:var(--display);font-weight:400;font-size:2.4rem;line-height:1}
+.inf-hoja{background:var(--crema);color:var(--tinta);border:2.5px solid var(--tinta);border-radius:14px;padding:10px;overflow-x:auto}
+.inf-hoja table{border-collapse:collapse;width:100%;font-size:.84rem;font-variant-numeric:tabular-nums}
+.inf-hoja th{font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;text-align:left;color:var(--tinta-suave);
+  padding:4px 6px;border-bottom:2px solid var(--tinta);white-space:nowrap}
+.inf-hoja td{padding:6px;border-bottom:1px solid var(--linea);vertical-align:top}
+.inf-hoja tr.fallos td{font-size:.78rem;color:var(--tinta-suave);padding-top:0}
+.inf-hoja .num{text-align:right;white-space:nowrap}
+.inf-vacio{padding:10px;text-align:center;color:var(--tinta-suave)}
+.informe .dialogo-botones .btn{color:var(--tinta)}
+
+/* Duelo galáctico */
+.oculto{display:none !important}
+.duelo-entrada{margin-bottom:16px}
+.btn-duelo{width:100%;display:flex;align-items:center;gap:12px;text-align:left;background:var(--tinta);color:var(--papel-claro);
+  padding:11px 16px;box-shadow:var(--sx,0) 5px 0 var(--mandarina)}
+.btn-duelo:active:not(:disabled){box-shadow:var(--sx,0) 1px 0 var(--mandarina)}
+.btn-duelo svg{width:36px;height:36px;flex:none}
+.btn-duelo b{display:block;font-family:var(--display);font-weight:400;font-size:1.3rem;line-height:1.1;letter-spacing:.01em}
+.btn-duelo small{display:block;font-weight:500;font-size:.86rem;color:var(--mision-suave)}
+.carta{background:var(--crema);border:3px solid var(--tinta);border-radius:20px;box-shadow:var(--sx,0) 7px 0 var(--sombra,var(--tinta));padding:20px}
+.carta h2{font-family:var(--display);font-weight:400;font-size:1.8rem;line-height:1.1;margin-bottom:8px}
+.carta p{color:var(--tinta-suave);margin-bottom:10px}
+.carta .etq{font-size:.76rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--tinta);margin-bottom:4px}
+.pestanas{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}
+.pestanas button{cursor:pointer;border:2.5px solid var(--tinta);border-radius:12px;background:var(--papel-claro);font-weight:800;font-size:.95rem;padding:9px 6px}
+.pestanas button[aria-selected="true"]{background:var(--tinta);color:var(--papel-claro)}
+.pestanas button:focus-visible{outline:3px solid var(--mandarina);outline-offset:2px}
+.familias{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 16px}
+.familias label{display:flex;align-items:center;gap:6px;cursor:pointer;border:2.5px solid var(--tinta);border-radius:999px;
+  padding:5px 12px;font-weight:600;font-size:.92rem;background:var(--papel-claro)}
+.familias input{accent-color:var(--tinta);width:17px;height:17px}
+.familias label:has(input:checked){background:var(--limon)}
+.codigo-grande{font-family:var(--display);font-size:clamp(2.2rem,9vw,3.4rem);letter-spacing:.12em;text-align:center;line-height:1.2;
+  background:var(--limon);border:3px dashed var(--tinta);border-radius:16px;padding:8px;margin:18px 0 8px}
+.campo-codigo{display:block;font-size:.76rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;margin-bottom:5px}
+#codigoUnir{width:100%;border:3px solid var(--tinta);border-radius:14px;padding:10px;font-size:1.6rem;font-weight:800;
+  letter-spacing:.14em;text-align:center;text-transform:uppercase;background:var(--papel-claro)}
+#codigoUnir:focus-visible{outline:3px solid var(--mandarina);outline-offset:2px}
+#avisoCodigo{min-height:1.5em;margin-top:8px;font-weight:600}
+.carta-botones{display:flex;flex-direction:column;gap:12px;margin-top:16px}
+.tablero-zona.mini{max-width:330px;margin-bottom:14px}
+.duelo-acciones{display:flex;flex-direction:column;align-items:center;gap:14px;margin-top:4px}
+.duelo-acciones .btn-primario{min-width:220px}
+.rd-cifra{font-family:var(--display);font-size:3.6rem;line-height:1;text-align:center}
+.rd-cifra small{font-size:1.4rem;color:var(--tinta-suave)}
+.rd-pie{text-align:center}
+.clasif{border-top:2.5px solid var(--tinta);margin-top:14px;padding-top:12px}
+.clasif-cab{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.clasif ol{list-style:none;margin:10px 0;display:grid;gap:6px}
+.clasif li{display:flex;align-items:center;gap:10px;border:2px solid var(--tinta);border-radius:12px;padding:6px 10px;background:var(--papel-claro)}
+.clasif li.yo{background:var(--limon)}
+.clasif li b{overflow-wrap:anywhere}
+.med{width:26px;height:26px;border-radius:50%;border:2px solid var(--tinta);display:grid;place-items:center;font-weight:800;font-size:.85rem;flex:none}
+.m1{background:#FFC83A}.m2{background:#D8D2C6}.m3{background:#E79A5F}
+.clasif .dat{margin-left:auto;font-size:.84rem;color:var(--tinta-suave);font-variant-numeric:tabular-nums;white-space:nowrap}
+.btn-mini{cursor:pointer;border:2px solid var(--tinta);border-radius:10px;background:var(--crema);font-weight:700;font-size:.82rem;padding:4px 10px}
+.informe h3.inf-seccion{margin-top:14px}
+
+/* Tapete de juego de mesa: fieltro, fichas de marfil y latón */
+body{background-image:radial-gradient(rgba(0,0,0,.10) 1px,transparent 1.4px),radial-gradient(ellipse at 50% 20%,transparent 30%,rgba(0,0,0,.32) 100%);background-size:5px 5px,auto}
+.titulo-ficha{color:#F6EBD0;text-shadow:0 4px 0 #123C2E;letter-spacing:.01em}
+.subtitulo{color:#CFE3D6}
+.campo label{color:#F6EBD0}
+.btn-soluciones{color:#BFD6C8;border-color:#5E8F7B}
+.btn-duelo{color:#F6EBD0}
+.tablero{background:#17493A;border-color:#E9C46A;box-shadow:inset 0 0 0 3px #123C2E,0 8px 0 #123C2E}
+.celda{font-family:var(--display);font-weight:400;border-width:2px;border-color:#C9B48A;border-radius:16%;
+  box-shadow:0 5px 0 #B08D57,0 9px 8px rgba(0,0,0,.3)}
+.celda:not(.sel,.hecha,.tachada,.revelada):is(.t0,.t2){background:#F8EFD8}
+.celda:not(.sel,.hecha,.tachada,.revelada):is(.t1,.t3){background:#F3E5C3;color:#B3261E}
+.celda.sel{box-shadow:0 2px 0 #B08D57}
+:is(.celda.hecha,.celda.tachada,.celda.revelada){box-shadow:none}
+.fin{background:rgba(18,60,46,.85)}
+
+body.perfecta{background-color:#2F8F5B}
+.btn-primario{color:#FBF3DF}
+.duelo-acciones .btn-soluciones{color:#BFD6C8}
+
+@media (max-width:520px){
+  .contenedor{padding:18px 10px 40px}
+  .selectores{grid-template-columns:1fr}
+  .mision-nombre{font-size:1.25rem}
+  .insignia{min-width:70px}
+  .insignia span{font-size:1.5rem}
+  .tablero{padding:6px;border-radius:16px}
+  .dificil .rejilla{gap:calc(100cqw / var(--cols) * .07)}
+  .dificil .celda{letter-spacing:-.03em;font-family:var(--texto);font-weight:700}
+  .celda{border-width:2.5px;box-shadow:var(--sx,0) 4px 0 var(--sombra,var(--tinta))}
+  .dificil .celda{border-width:2px;box-shadow:var(--sx,0) 3px 0 var(--sombra,var(--tinta))}
+  .fin-datos{grid-template-columns:repeat(2,1fr)}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms !important;transition-duration:.01ms !important}
+}
+</style>
+</head>
+<body>
+<div class="franja">Material elaborado por Marta López de Letona Sánchez</div>
+
+<main class="contenedor">
+  <h1 class="titulo-ficha">Cálculo mental</h1>
+  <p class="subtitulo">Adaptaciones · Amigos numéricos, dobles, productos y múltiplos</p>
+
+  <div class="barra-alumno">
+    <div class="barra-fila">
+      <label for="nombre">Nombre</label>
+      <input id="nombre" type="text" autocomplete="off" maxlength="60" placeholder="Escribe tu nombre y apellidos">
+      <div class="marcador" aria-live="off">
+        <div>Nota <b id="mNota">0</b></div>
+        <div>Tableros <b id="mTableros">0</b></div>
+        <div>Errores <b id="mErrores">0</b></div>
+      </div>
+    </div>
+    <div class="aviso-nombre" id="avisoNombre" role="alert">Escribe tu nombre antes de empezar a jugar.</div>
+  </div>
+
+  <details class="instrucciones" open>
+    <summary>Cómo funciona <span class="resumen-cerrado">· 10 puntos por tablero completo, −0,25 por error, −0,1 por pista</span></summary>
+    <ul>
+      <li>Elige el <b>nivel</b> y el <b>tipo de juego</b>. Puedes cambiarlos cuando quieras.</li>
+      <li><b>Nivel fácil:</b> tablero de 6 × 6. Pincha los números que cumplen la misión, estén donde estén. Los aciertos desaparecen hasta vaciar el tablero.</li>
+      <li><b>Nivel difícil:</b> tablero de 8 × 8, como una sopa de letras. Las parejas o los tríos escondidos están <b>juntos</b>, en horizontal o en vertical. El resto de números está para despistar.</li>
+      <li><b>Nota de cada partida:</b> 10 puntos repartidos entre todo lo que hay que encontrar, <b>−0,25 por cada error</b> y <b>−0,1 por cada pista</b>. La nota final es la media de las partidas terminadas; las que dejes a medias aparecen en el informe, pero no cuentan.</li>
+      <li>Tienes <b>2 pistas</b> por partida. Cada una resta 0,1 y aparece en el informe.</li>
+      <li>Si pulsas «Mostrar soluciones», la partida se cierra con la nota que tuviera en ese momento y ya no suma más.</li>
+      <li>Al terminar un tablero puedes pasar al juego siguiente en el mismo nivel.</li>
+      <li><b>Duelo galáctico:</b> un reto de 12 preguntas rápidas contra tus compañeros, con un código compartido. No cambia tu nota.</li>
+    </ul>
+  </details>
+
+  <div class="selectores">
+    <div class="campo">
+      <label for="selNivel">Nivel</label>
+      <select id="selNivel">
+        <option value="facil">Fácil</option>
+        <option value="dificil">Difícil</option>
+      </select>
+    </div>
+    <div class="campo">
+      <label for="selTipo">Tipo de juego</label>
+      <select id="selTipo"></select>
+    </div>
+  </div>
+
+  <div class="duelo-entrada" id="dueloEntrada">
+    <button class="btn btn-duelo" id="btnDuelo" type="button">
+      <svg viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="27" r="11" fill="#E9C46A" stroke="currentColor" stroke-width="2.5"/><ellipse cx="26" cy="27" rx="21" ry="6" fill="none" stroke="currentColor" stroke-width="3" transform="rotate(-20 26 27)"/><circle cx="8" cy="9" r="2" fill="currentColor"/><circle cx="45" cy="44" r="1.7" fill="currentColor"/><circle cx="46" cy="10" r="1.4" fill="currentColor"/></svg>
+      <span><b>Duelo galáctico</b><small>Reta a tus compañeros con un código</small></span>
+    </button>
+  </div>
+
+  <div id="vistaJuego">
+  <section class="mision" aria-live="polite">
+    <div class="mision-texto">
+      <div class="mision-nombre" id="misionNombre"></div>
+      <div class="mision-orden" id="misionOrden"></div>
+    </div>
+    <div class="insignia" id="insignia"><small id="insigniaRotulo"></small><span id="insigniaValor"></span></div>
+  </section>
+
+  <div class="hud">
+    <div class="ficha-hud progreso"><span id="hudRotulo">Encontradas</span> <b id="hudProgreso">0 / 0</b>
+      <div class="barra-progreso"><i id="hudBarra"></i></div></div>
+    <div class="ficha-hud">Errores <b id="hudErrores">0</b></div>
+    <div class="ficha-hud">Tiempo <b id="hudTiempo">00:00</b></div>
+    <button class="btn btn-pista" id="btnPista" type="button" aria-label="Pedir una pista">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/></svg>
+      Pista <span class="puntos-pista" id="puntosPista"><i></i><i></i></span>
+    </button>
+  </div>
+
+  <div class="mensaje" id="mensaje" role="status" aria-live="polite"></div>
+
+  <div class="tablero-zona" id="zona">
+    <div class="tablero"><div class="rejilla" id="rejilla"></div></div>
+    <div class="fin" id="fin">
+      <div class="fin-carta">
+        <h2 id="finTitulo"></h2>
+        <p id="finTexto"></p>
+        <div class="fin-datos">
+          <div>Nota <b id="finNota"></b></div>
+          <div>Errores <b id="finErrores"></b></div>
+          <div>Pistas <b id="finPistas"></b></div>
+          <div>Tiempo <b id="finTiempo"></b></div>
+        </div>
+        <div class="fin-botones">
+          <button class="btn btn-primario" id="btnSiguiente" type="button"></button>
+          <button class="btn" id="btnRepetir" type="button">Otra partida de este juego</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  </div>
+
+  <section id="vistaDuelo" class="oculto" aria-label="Duelo galáctico">
+    <div class="carta" id="dueloLobby">
+      <h2>Duelo galáctico</h2>
+      <p>Quienes escriban el mismo código reciben las mismas 12 preguntas, en el mismo orden. Gana quien más acierte y, si hay empate, quien tarde menos. Solo cuenta tu primer intento con cada código. El duelo no cambia tu nota.</p>
+      <div class="pestanas" role="tablist">
+        <button type="button" role="tab" id="tabCrear" aria-selected="true">Crear un duelo</button>
+        <button type="button" role="tab" id="tabUnir" aria-selected="false">Unirme con un código</button>
+      </div>
+      <div id="panelCrear">
+        <div class="etq">Juegos que entran en el duelo</div>
+        <div class="familias" id="familias"></div>
+        <button class="btn btn-primario" id="btnCrearCodigo" type="button" style="width:100%">Generar el código del duelo</button>
+        <div id="codigoCreado" class="oculto">
+          <div class="codigo-grande" id="codigoTexto"></div>
+          <p id="codigoAyuda"></p>
+        </div>
+      </div>
+      <div id="panelUnir" class="oculto">
+        <label class="campo-codigo" for="codigoUnir">Código del duelo</label>
+        <input id="codigoUnir" type="text" maxlength="9" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABC-DEFG">
+        <p id="avisoCodigo" aria-live="polite"></p>
+      </div>
+      <div class="carta-botones">
+        <button class="btn btn-primario" id="btnEmpezar" type="button" disabled>Empezar el duelo</button>
+        <button class="btn" id="btnVolver" type="button">Volver al juego</button>
+      </div>
+    </div>
+
+    <div id="dueloJuego" class="oculto">
+      <div class="hud">
+        <div class="ficha-hud">Código <b id="dueloChip"></b></div>
+        <div class="ficha-hud progreso">Pregunta <b id="dueloNum"></b>
+          <div class="barra-progreso"><i id="dueloBarra"></i></div></div>
+        <div class="ficha-hud">Tiempo <b id="dueloReloj">00:00</b></div>
+      </div>
+      <section class="mision" aria-live="polite">
+        <div class="mision-texto">
+          <div class="mision-nombre" id="dueloNombre"></div>
+          <div class="mision-orden" id="dueloOrden"></div>
+        </div>
+        <div class="insignia"><small id="dueloRotulo"></small><span id="dueloValor"></span></div>
+      </section>
+      <div class="tablero-zona mini"><div class="tablero"><div class="rejilla" id="dueloRejilla"></div></div></div>
+      <div class="mensaje" id="dueloMensaje" role="status" aria-live="polite"></div>
+      <div class="duelo-acciones">
+        <button class="btn btn-primario oculto" id="dueloSiguiente" type="button">Siguiente</button>
+        <button class="btn-soluciones" id="btnAbandonar" type="button">Abandonar el duelo</button>
+      </div>
+    </div>
+
+    <div class="carta oculto" id="dueloFinal"></div>
+  </section>
+
+  <div class="pie">
+    <button class="btn btn-finalizar" id="btnFinalizar" type="button">Finalizar y Calificar</button>
+    <button class="btn-soluciones" id="btnSoluciones" type="button">Mostrar soluciones</button>
+  </div>
+</main>
+
+<div class="velo" id="velo"><div class="dialogo" id="dialogo" role="dialog" aria-modal="true" aria-labelledby="dialogoTitulo"></div></div>
+
+<script>
+'use strict';
+/* ---------- Azar (semilla fija solo con ?seed=N, para pruebas) ---------- */
+const PARAMS = new URLSearchParams(location.search);
+const MODO_PRUEBA = PARAMS.has('seed');
+let semilla = MODO_PRUEBA ? (parseInt(PARAMS.get('seed'), 10) >>> 0)
+  : (crypto.getRandomValues(new Uint32Array(1))[0] ^ Date.now()) >>> 0;
+let fuenteAzar = null;   // el duelo sustituye temporalmente el azar por su generador fijado por el código
+function rnd() {
+  if (fuenteAzar) return fuenteAzar();
+  semilla = (semilla + 0x6D2B79F5) >>> 0;
+  let t = semilla;
+  t = Math.imul(t ^ (t >>> 15), t | 1);
+  t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+}
+const ri = (a, b) => a + Math.floor(rnd() * (b - a + 1));
+const elegir = a => a[Math.floor(rnd() * a.length)];
+function barajar(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+const suma = a => a.reduce((s, x) => s + x, 0);
+
+/* ---------- Constantes del modelo ---------- */
+const PENALIZACION_ERROR = 0.25;   // sobre 10, por cada error
+const PENALIZACION_PISTA = 0.1;    // sobre 10, por cada pista usada
+const PISTAS_POR_PARTIDA = 2;
+const LADO = { facil: 6, dificil: 8 };
+const NOMBRE_NIVEL = { facil: 'Fácil', dificil: 'Difícil' };
+const PRODUCTOS = { 12: [[2, 6], [3, 4]], 16: [[2, 8], [4, 4]], 18: [[2, 9], [3, 6]], 20: [[2, 10], [4, 5]],
+  24: [[2, 12], [3, 8], [4, 6]], 30: [[3, 10], [5, 6]], 36: [[3, 12], [4, 9], [6, 6]], 40: [[4, 10], [5, 8]],
+  48: [[4, 12], [6, 8]], 60: [[5, 12], [6, 10]], 72: [[6, 12], [8, 9]] };
+
+const dec = v => v % 10 === 0 ? '0,' + v / 10 : '0,' + String(v).padStart(2, '0');   // centésimas → «0,25»
+const ent = v => String(v);
+
+/* ---------- Tipos de juego ----------
+   k: cuántos números forman un grupo. clase: regla de validación.
+   Los decimales se guardan en centésimas (enteros) para no arrastrar errores de coma flotante. */
+const TIPOS = [
+  { id: 'amigos10', nombre: 'Amigos del 10', k: 2, clase: 'suma', T: 10, fmt: ent, valor: () => ri(1, 9) },
+  { id: 'amigos20', nombre: 'Amigos del 20', k: 2, clase: 'suma', T: 20, fmt: ent, valor: () => ri(1, 19) },
+  { id: 'amigos100d', nombre: 'Amigos del 100 (decenas)', k: 2, clase: 'suma', T: 100, fmt: ent, valor: () => 10 * ri(1, 9) },
+  { id: 'amigos100', nombre: 'Amigos del 100 (cualquier número)', k: 2, clase: 'suma', T: 100, fmt: ent, llevada: 10,
+    valor: () => { let v; do { v = ri(1, 99); } while (v % 10 === 0); return v; } },
+  { id: 'amigos1000', nombre: 'Amigos del 1000', k: 2, clase: 'suma', T: 1000, fmt: ent, llevada: 100, valor: () => 50 * ri(1, 19) },
+  { id: 'amigos1', nombre: 'Amigos del 1 (decimales)', k: 2, clase: 'suma', T: 100, fmt: dec, llevada: 10,
+    valor: nivel => nivel === 'facil' ? 10 * ri(1, 9) : 5 * ri(1, 19) },
+  { id: 'trios10', nombre: 'Tríos del 10', k: 3, clase: 'suma', T: 10, fmt: ent, valor: () => ri(1, 9) },
+  { id: 'dobles', nombre: 'Dobles y mitades', k: 2, clase: 'doble', fmt: ent },
+  { id: 'objetivo', nombre: 'Número objetivo', k: 2, clase: 'suma', rondas: true, fmt: ent },
+  { id: 'producto', nombre: 'Producto objetivo', k: 2, clase: 'producto', rondas: true, fmt: ent },
+  { id: 'multiplos', nombre: 'Caza múltiplos', k: 1, clase: 'multiplo', fmt: ent }
+];
+const tipoDe = id => TIPOS.find(t => t.id === id);
+
+/* Un grupo válido (valores sin formato) para el tipo; T solo se usa en los juegos por rondas. */
+function grupoValido(tipo, nivel, T) {
+  if (tipo.id === 'trios10') { const a = ri(1, 8), b = ri(1, 9 - a); return [a, b, 10 - a - b]; }
+  if (tipo.id === 'dobles') { const s = nivel === 'facil' ? ri(2, 30) : ri(3, 45); return [s, 2 * s]; }
+  if (tipo.id === 'objetivo') { const a = ri(Math.max(1, T - 19), Math.min(19, T - 1)); return [a, T - a]; }
+  if (tipo.id === 'producto') return elegir(PRODUCTOS[T]).slice();
+  const a = tipo.valor(nivel); return [a, tipo.T - a];
+}
+/* Número de relleno (despiste) en el nivel difícil. */
+function relleno(tipo, nivel) {
+  if (tipo.id === 'dobles') return ri(3, 90);
+  if (tipo.id === 'objetivo') return ri(1, 19);
+  if (tipo.id === 'producto') return ri(2, 12);
+  return tipo.valor(nivel);
+}
+/* ¿Cumple el grupo la misión actual de la partida? */
+function esValido(p, vals) {
+  const t = p.tipoObj;
+  if (t.clase === 'multiplo') return vals[0] % p.n === 0;
+  if (t.clase === 'doble') { const a = Math.min(...vals), b = Math.max(...vals); return b === 2 * a; }
+  if (t.clase === 'producto') return vals[0] * vals[1] === p.T;
+  return suma(vals) === p.T;
+}
+/* ¿Cumpliría el grupo ALGUNA misión posible de la partida? (para garantizar que el relleno no crea grupos de más) */
+function validoParaAlguna(p, vals) {
+  const t = p.tipoObj;
+  if (!t.rondas) return esValido(p, vals);
+  const r = t.clase === 'producto' ? vals[0] * vals[1] : suma(vals);
+  return p.objetivos.includes(r);
+}
+
+/* ---------- Generación de tableros ---------- */
+function valoresFaciles(tipo, nivel, nCeldas, p) {
+  if (tipo.id === 'multiplos') return valoresMultiplos(p, nivel, nCeldas);
+  if (tipo.id === 'objetivo') return Array.from({ length: nCeldas }, () => ri(1, 12));
+  if (tipo.id === 'producto') return Array.from({ length: nCeldas }, () => ri(2, 10));
+  const nGrupos = nCeldas / tipo.k, vals = [];
+  if (tipo.id === 'dobles') {
+    // Sin cadenas (3–6–12): cada número solo puede emparejarse con su doble o su mitad prevista.
+    const S = [];
+    while (S.length < nGrupos) {
+      const s = ri(2, 30);
+      if (S.every(x => x === s || (x !== 2 * s && s !== 2 * x && x !== 4 * s && s !== 4 * x))) S.push(s);
+    }
+    S.forEach(s => vals.push(s, 2 * s));
+  } else for (let i = 0; i < nGrupos; i++) vals.push(...grupoValido(tipo, nivel));
+  return barajar(vals);
+}
+function valoresMultiplos(p, nivel, nCeldas) {
+  const n = p.n, nMult = nivel === 'facil' ? ri(13, 16) : ri(22, 27), vals = [];
+  for (let i = 0; i < nMult; i++) vals.push(n * (nivel === 'facil' ? ri(1, 10) : ri(2, 12)));
+  while (vals.length < nCeldas) {
+    let v;
+    if (nivel === 'facil') v = ri(1, 10 * n);
+    else v = n * ri(2, 12) + elegir([-2, -1, 1, 2]);   // casi múltiplos: obligan a calcular
+    if (v > 0 && v % n !== 0) vals.push(v);
+  }
+  return barajar(vals);
+}
+/* Nivel difícil: K grupos escondidos en línea y relleno que no forma ningún grupo válido de más. */
+function segmentos(lado, k) {
+  const res = [];
+  for (let f = 0; f < lado; f++) for (let c = 0; c < lado; c++) {
+    if (c + k <= lado) res.push(Array.from({ length: k }, (_, j) => f * lado + c + j));
+    if (f + k <= lado) res.push(Array.from({ length: k }, (_, j) => (f + j) * lado + c));
+  }
+  return res;
+}
+function generarDificil(p) {
+  const tipo = p.tipoObj, lado = p.lado, k = tipo.k, K = k === 3 ? 8 : 12, N = lado * lado;
+  const todos = segmentos(lado, k);
+  for (let intento = 0; intento < 200; intento++) {
+    const dueno = new Array(N).fill(-1), grupos = [];
+    for (const seg of barajar(todos.slice())) {
+      if (grupos.length === K) break;
+      if (seg.every(i => dueno[i] === -1)) { seg.forEach(i => dueno[i] = grupos.length); grupos.push({ celdas: seg, hecho: false }); }
+    }
+    if (grupos.length < K) continue;
+    const vals = new Array(N);
+    const asignar = g => { const v = barajar(grupoValido(tipo, p.nivel, g.T)); g.celdas.forEach((i, j) => vals[i] = v[j]); };
+    grupos.forEach((g, gi) => { if (tipo.rondas) g.T = p.objetivos[gi % p.objetivos.length]; asignar(g); });
+    for (let i = 0; i < N; i++) if (dueno[i] === -1) vals[i] = relleno(tipo, p.nivel);
+    const clave = new Set(grupos.map(g => g.celdas.join(',')));
+    for (let pasada = 0; pasada < 400; pasada++) {
+      const malos = todos.filter(s => !clave.has(s.join(',')) && validoParaAlguna(p, s.map(i => vals[i])));
+      if (!malos.length) return { vals, grupos };
+      for (const s of malos) {
+        const libres = s.filter(i => dueno[i] === -1);
+        if (libres.length) vals[elegir(libres)] = relleno(tipo, p.nivel);
+        else asignar(grupos[dueno[elegir(s)]]);
+      }
+    }
+  }
+  throw new Error('No se pudo generar el tablero');
+}
+
+/* ---------- Estado ---------- */
+const state = { inicio: Date.now(), partidas: [], actual: null, duelos: [] };
+const $ = id => document.getElementById(id);
+const fmtNota = n => String(Math.round(n * 100) / 100).replace('.', ',');
+const mmss = ms => { const s = Math.max(0, Math.round(ms / 1000)); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); };
+
+/* Única fuente de la nota de una partida: se calcula desde cero y el suelo de 0 va al final. */
+function notaPartida(p) {
+  const bruta = 10 * p.encontrados / p.total - p.errores * PENALIZACION_ERROR - p.pistas * PENALIZACION_PISTA;
+  return Math.round(Math.min(10, Math.max(0, bruta)) * 100) / 100;
+}
+const partidasJugadas = () => state.partidas.filter(p => p.activa);
+/* En la media solo entran las partidas cerradas: completadas o con las soluciones mostradas. */
+const cuentaEnNota = p => p.estado === 'completada' || p.estado === 'soluciones';
+function calcularNota() {
+  const j = state.partidas.filter(cuentaEnNota);
+  if (!j.length) return 0;
+  return Math.round(suma(j.map(notaPartida)) / j.length * 100) / 100;
+}
+function tiempoPartida(p) { return p.t0 ? (p.tFin || p.pausaDesde || Date.now()) - p.t0 - p.pausa : 0; }
+
+/* ---------- Partida ---------- */
+function nuevaPartida(nivel, tipoId) {
+  const ant = state.actual;
+  if (ant && ant.estado === 'en curso') { ant.estado = 'sin terminar'; ant.tFin = Date.now(); }
+  const tipo = tipoDe(tipoId), lado = LADO[nivel];
+  const p = { nivel, tipo: tipoId, tipoObj: tipo, lado, estado: 'en curso', activa: false, revelado: false,
+    encontrados: 0, errores: 0, pistas: 0, fallos: [], t0: null, tFin: null, pausa: 0, pausaDesde: null, sel: [], celdas: [], grupos: null,
+    T: tipo.T, n: null, objetivos: null };
+  if (tipo.id === 'multiplos') p.n = nivel === 'facil' ? elegir([2, 3, 4, 5, 10]) : elegir([6, 7, 8, 9]);
+  let vals;
+  if (nivel === 'dificil' && tipo.k > 1) {
+    if (tipo.id === 'objetivo') p.objetivos = barajar([11, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25]).slice(0, 3);
+    if (tipo.id === 'producto') p.objetivos = barajar(Object.keys(PRODUCTOS).map(Number)).slice(0, 3);
+    const g = generarDificil(p); vals = g.vals; p.grupos = g.grupos; p.total = p.grupos.length;
+  } else {
+    vals = valoresFaciles(tipo, nivel, lado * lado, p);
+    p.total = tipo.k === 1 ? vals.filter(v => v % p.n === 0).length : vals.length / tipo.k;
+  }
+  p.celdas = vals.map(v => ({ v, estado: 'libre', el: null }));
+  state.partidas.push(p); state.actual = p;
+  $('selNivel').value = nivel; $('selTipo').value = tipoId;
+  if (tipo.rondas) nuevaRonda(p);
+  pintarTablero(p); pintarMision(p, false); actualizarHUD();
+  $('fin').classList.remove('visible');
+  mensaje('', textoInicio(p));
+}
+function libres(p) { return p.celdas.map((c, i) => c.estado === 'libre' ? i : -1).filter(i => i >= 0); }
+function nuevaRonda(p) {
+  const op = p.tipoObj.clase === 'producto' ? (a, b) => a * b : (a, b) => a + b;
+  if (p.grupos) { const g = elegir(p.grupos.filter(g => !g.hecho)); p.T = g.T; }
+  else { const l = barajar(libres(p)); p.T = op(p.celdas[l[0]].v, p.celdas[l[1]].v); }
+}
+/* Todos los grupos válidos que quedan para la misión actual. */
+function gruposDisponibles(p) {
+  const k = p.tipoObj.k, v = i => p.celdas[i].v;
+  if (p.grupos) return p.grupos.filter(g => !g.hecho && (!p.tipoObj.rondas || g.T === p.T)).map(g => g.celdas);
+  const l = libres(p), res = [];
+  if (k === 1) return l.filter(i => esValido(p, [v(i)])).map(i => [i]);
+  for (let a = 0; a < l.length; a++) for (let b = a + 1; b < l.length; b++) {
+    if (k === 2) { if (esValido(p, [v(l[a]), v(l[b])])) res.push([l[a], l[b]]); }
+    else for (let c = b + 1; c < l.length; c++) if (esValido(p, [v(l[a]), v(l[b]), v(l[c])])) res.push([l[a], l[b], l[c]]);
+  }
+  return res;
+}
+
+/* ---------- Textos ---------- */
+const nombreGrupo = p => p.tipoObj.k === 3 ? 'tríos' : p.tipoObj.k === 2 ? 'parejas' : 'múltiplos';
+function ordenMision(p) {
+  const t = p.tipoObj, f = t.fmt, dif = p.nivel === 'dificil' && t.k > 1;
+  const donde = dif ? (t.k === 3 ? ' Están seguidos, en horizontal o en vertical.' : ' Están juntos, en horizontal o en vertical.') : '';
+  if (t.clase === 'multiplo') return `Pincha todos los múltiplos de ${p.n}.`;
+  if (t.clase === 'doble') return 'Pincha un número y su doble.' + donde;
+  if (t.clase === 'producto') return `Pincha dos números que multiplicados den ${p.T}.` + donde;
+  const T = t.id === 'amigos1' ? '1' : f(p.T);
+  return `Pincha ${t.k === 3 ? 'tres' : 'dos'} números que sumen ${T}.` + donde;
+}
+function textoInicio(p) {
+  const t = p.tipoObj;
+  if (p.nivel === 'dificil' && t.k > 1) return `Hay <b>${p.total} ${nombreGrupo(p)}</b> escondidos entre números que despistan. Pincha los números de uno en uno.`;
+  if (t.k === 1) return `Hay <b>${p.total} múltiplos de ${p.n}</b> en el tablero. Un múltiplo de ${p.n} es un resultado de la tabla del ${p.n}.`;
+  return `Vacía el tablero: son <b>${p.total} ${nombreGrupo(p)}</b>. Pincha los números de uno en uno.`;
+}
+const falta = (d, f) => (f(d) === '1' ? 'Te falta ' : 'Te faltan ') + f(d);
+function textoAcierto(p, vals) {
+  const t = p.tipoObj, f = t.fmt;
+  if (t.clase === 'multiplo') return `<b>¡Bien!</b>&nbsp;${vals[0]} = ${p.n} × ${vals[0] / p.n}, así que está en la tabla del ${p.n}.`;
+  if (t.clase === 'doble') { const a = Math.min(...vals); return `<b>¡Bien!</b>&nbsp;${a} + ${a} = ${2 * a}: el ${2 * a} es el doble de ${a}.`; }
+  if (t.clase === 'producto') return `<b>¡Bien!</b>&nbsp;${vals[0]} × ${vals[1]} = ${p.T}.`;
+  const T = t.id === 'amigos1' ? '1' : f(p.T);
+  return `<b>¡Bien!</b>&nbsp;${vals.map(f).join(' + ')} = ${T}.`;
+}
+function textoError(p, vals) {
+  const t = p.tipoObj, f = t.fmt;
+  if (t.clase === 'multiplo') {
+    const v = vals[0], q = Math.floor(v / p.n);
+    return `<span><b>${v} no es múltiplo de ${p.n}.</b> En la tabla del ${p.n} están ${p.n} × ${q} = ${p.n * q} y ${p.n} × ${q + 1} = ${p.n * (q + 1)}: el ${v} se queda entre los dos.</span>`;
+  }
+  if (t.clase === 'doble') {
+    const a = Math.min(...vals), b = Math.max(...vals);
+    return `<span><b>${b} no es el doble de ${a}.</b> El doble se calcula sumando el número consigo mismo: ${a} + ${a} = ${2 * a}.</span>`;
+  }
+  if (t.clase === 'producto') {
+    const [a, b] = vals, malo = [a, b].find(x => p.T % x !== 0);
+    const guia = malo ? `El ${p.T} no está en la tabla del ${malo}: ese número no puede formar pareja.`
+      : `Repasa la tabla del ${a} hasta encontrar el ${p.T}.`;
+    return `<span><b>${a} × ${b} = ${a * b}, no ${p.T}.</b> ${guia}</span>`;
+  }
+  const s = suma(vals), T = p.T, Ttxt = t.id === 'amigos1' ? '1' : f(T), stxt = t.id === 'amigos1' && s >= 100 ? decLargo(s) : f(s);
+  const expr = `${vals.map(f).join(' + ')} = ${stxt}`;
+  if (t.llevada && s - T === t.llevada && vals.every(v => v % t.llevada !== 0)) {
+    const que = t.id === 'amigos100' ? ['unidades', 'una decena', 'decenas'] : t.id === 'amigos1000' ? ['decenas', 'una centena', 'centenas'] : ['centésimas', 'una décima', 'décimas'];
+    return `<span><b>${expr}: te pasas en ${t.id === 'amigos1' ? dec(s - T) : f(s - T)}.</b> Las ${que[0]} ya forman ${que[1]} más, así que las ${que[2]} de los dos números deben sumar 9, no 10.</span>`;
+  }
+  const d = Math.abs(s - T), dtxt = x => t.id === 'amigos1' ? decLargo(x) : f(x);
+  return s < T
+    ? `<span><b>${expr}.</b> ${falta(d, dtxt)} para llegar a ${Ttxt}: hace falta un número mayor.</span>`
+    : `<span><b>${expr}.</b> Te pasas de ${Ttxt} en ${dtxt(d)}: hace falta un número menor.</span>`;
+}
+function decLargo(v) { const e = Math.floor(v / 100), r = v % 100; return r === 0 ? String(e) : e + ',' + (r % 10 === 0 ? r / 10 : String(r).padStart(2, '0')); }
+function textoPista(p, v) {
+  const t = p.tipoObj, f = t.fmt;
+  if (t.clase === 'multiplo') return `<b>Pista:</b>&nbsp;el número marcado está en la tabla del ${p.n}. Compruébalo.`;
+  if (t.clase === 'doble') return `<b>Pista:</b>&nbsp;el ${v} tiene pareja. Busca su doble (${v} + ${v}) o su mitad.`;
+  if (t.clase === 'producto') return `<b>Pista:</b>&nbsp;el ${v} forma pareja. ¿Por cuánto hay que multiplicarlo para obtener ${p.T}?`;
+  const T = t.id === 'amigos1' ? '1' : f(p.T);
+  return t.k === 3 ? `<b>Pista:</b>&nbsp;el ${f(v)} forma parte de un trío. ¿Cuánto falta desde ${f(v)} hasta ${T}? Repártelo entre dos números.`
+    : `<b>Pista:</b>&nbsp;el ${f(v)} tiene pareja. ¿Cuánto falta desde ${f(v)} hasta ${T}?`;
+}
+function exprFallo(p, vals) {
+  const t = p.tipoObj, f = t.fmt;
+  if (t.clase === 'multiplo') return `${vals[0]} (múlt. de ${p.n})`;
+  if (t.clase === 'doble') return `${Math.min(...vals)} y ${Math.max(...vals)}`;
+  if (t.clase === 'producto') return `${vals[0]} × ${vals[1]} (obj. ${p.T})`;
+  return vals.map(f).join(' + ') + (t.rondas ? ` (obj. ${p.T})` : '');
+}
+
+/* ---------- Interfaz ---------- */
+function mensaje(clase, html, id) { const m = $(id || 'mensaje'); m.className = 'mensaje' + (clase ? ' ' + clase : ''); m.innerHTML = '<span>' + html + '</span>'; }
+function datosMision(p) {
+  const t = p.tipoObj;
+  let rot, val;
+  if (t.clase === 'multiplo') { rot = 'Múltiplos de'; val = p.n; }
+  else if (t.clase === 'doble') { rot = 'Doble'; val = '× 2'; }
+  else if (t.clase === 'producto') { rot = 'Producto'; val = p.T; }
+  else { rot = t.rondas ? 'Objetivo' : 'Suma'; val = t.id === 'amigos1' ? '1' : t.fmt(p.T); }
+  return { nombre: t.nombre, orden: ordenMision(p), rot, val };
+}
+function pintarMision(p, animar) {
+  const m = datosMision(p);
+  $('misionNombre').textContent = m.nombre; $('misionOrden').textContent = m.orden;
+  $('insigniaRotulo').textContent = m.rot; $('insigniaValor').textContent = m.val;
+  if (animar) { const i = $('insignia'); i.classList.remove('cambio'); void i.offsetWidth; i.classList.add('cambio'); }
+}
+function pintarTablero(p) {
+  const r = $('rejilla'), t = p.tipoObj; r.innerHTML = '';
+  $('zona').classList.toggle('dificil', p.nivel === 'dificil');
+  r.style.setProperty('--cols', p.lado);
+  const largo = Math.max(...p.celdas.map(c => t.fmt(c.v).length));
+  r.style.setProperty('--fs', largo <= 2 ? .4 : largo === 3 ? .32 : .28);
+  p.celdas.forEach((c, i) => {
+    const f = Math.floor(i / p.lado), col = i % p.lado, b = document.createElement('button');
+    b.type = 'button'; b.className = 'celda t' + ((f + col) % 4); b.textContent = t.fmt(c.v);
+    b.style.setProperty('--f', f + 1); b.style.setProperty('--c', col + 1);
+    b.addEventListener('click', () => pulsar(i));
+    c.el = b; r.appendChild(b);
+  });
+}
+function actualizarHUD() {
+  const p = state.actual;
+  $('hudRotulo').textContent = p.tipoObj.k === 3 ? 'Tríos' : p.tipoObj.k === 2 ? 'Parejas' : 'Múltiplos';
+  $('hudProgreso').textContent = `${p.encontrados} / ${p.total}`;
+  $('hudBarra').style.width = (100 * p.encontrados / p.total) + '%';
+  $('hudErrores').textContent = p.errores;
+  $('hudTiempo').textContent = mmss(tiempoPartida(p));
+  [...$('puntosPista').children].forEach((d, i) => d.classList.toggle('gastada', i >= PISTAS_POR_PARTIDA - p.pistas));
+  const enCurso = p.estado === 'en curso';
+  $('btnPista').disabled = !enCurso || p.pistas >= PISTAS_POR_PARTIDA;
+  $('btnPista').setAttribute('aria-label', `Pedir una pista. Quedan ${PISTAS_POR_PARTIDA - p.pistas}.`);
+  $('btnSoluciones').disabled = !enCurso;
+  $('mNota').textContent = fmtNota(calcularNota());
+  $('mTableros').textContent = state.partidas.filter(x => x.estado === 'completada').length;
+  $('mErrores').textContent = suma(state.partidas.map(x => x.errores));
+}
+setInterval(() => { const p = state.actual; if (p && p.estado === 'en curso' && p.t0) $('hudTiempo').textContent = mmss(tiempoPartida(p)); }, 500);
+
+function nombreOk() {
+  const inp = $('nombre');
+  if (inp.value.trim()) { inp.classList.remove('falta'); $('avisoNombre').classList.remove('visible'); return true; }
+  inp.classList.add('falta'); $('avisoNombre').classList.add('visible'); inp.focus();
+  return false;
+}
+$('nombre').addEventListener('input', () => { if ($('nombre').value.trim()) { $('nombre').classList.remove('falta'); $('avisoNombre').classList.remove('visible'); } });
+
+function activar(p) { p.activa = true; if (!p.t0) p.t0 = Date.now(); }
+function quitarSeleccion(p) { p.sel.forEach(i => p.celdas[i].el.classList.remove('sel')); p.sel = []; }
+function enLinea(p, idx) {
+  const fs = idx.map(i => Math.floor(i / p.lado)), cs = idx.map(i => i % p.lado), k = p.tipoObj.k;
+  const igual = a => a.every(x => x === a[0]), tramo = a => Math.max(...a) - Math.min(...a);
+  return (igual(fs) && tramo(cs) <= k - 1) || (igual(cs) && tramo(fs) <= k - 1);
+}
+function animarError(idx, p) {
+  idx.forEach(i => { const el = p.celdas[i].el; el.classList.remove('error'); void el.offsetWidth; el.classList.add('error'); });
+}
+function chispas(el) {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const zona = $('zona'), zr = zona.getBoundingClientRect(), r = el.getBoundingClientRect();
+  const colores = ['var(--limon)', 'var(--mandarina)', 'var(--menta)', 'var(--chicle)'];
+  for (let i = 0; i < 7; i++) {
+    const s = document.createElement('i'), ang = Math.random() * Math.PI * 2, d = 34 + Math.random() * 40;
+    s.className = 'chispa'; s.style.background = colores[i % 4];
+    s.style.left = (r.left - zr.left + r.width / 2 - 5) + 'px'; s.style.top = (r.top - zr.top + r.height / 2 - 5) + 'px';
+    s.style.setProperty('--dx', Math.cos(ang) * d + 'px'); s.style.setProperty('--dy', Math.sin(ang) * d + 'px');
+    s.addEventListener('animationend', () => s.remove()); zona.appendChild(s);
+  }
+}
+
+function pulsar(i) {
+  const p = state.actual, c = p.celdas[i];
+  if (p.estado !== 'en curso' || c.estado !== 'libre') return;
+  if (!nombreOk()) return;
+  const k = p.tipoObj.k;
+  if (k === 1) { activar(p); evaluar(p, [i]); return; }
+  if (p.sel.includes(i)) { c.el.classList.remove('sel'); p.sel = p.sel.filter(x => x !== i); return; }
+  if (p.grupos && p.sel.length && !enLinea(p, [...p.sel, i])) {
+    // No es un error de cálculo: solo se avisa y se empieza una selección nueva.
+    quitarSeleccion(p);
+    mensaje('', k === 3 ? 'En este nivel los tres números tienen que estar <b>&nbsp;seguidos en la misma fila o columna</b>.'
+      : 'En este nivel los dos números tienen que estar <b>&nbsp;juntos</b>, uno al lado o debajo del otro.');
+  }
+  p.sel.push(i); c.el.classList.add('sel');
+  if (p.sel.length === k) { activar(p); const idx = p.sel.slice(); quitarSeleccion(p); evaluar(p, idx); }
+}
+function evaluar(p, idx) {
+  const vals = idx.map(i => p.celdas[i].v);
+  let grupo = null;
+  if (p.grupos) grupo = p.grupos.find(g => !g.hecho && g.celdas.slice().sort((a, b) => a - b).join() === idx.slice().sort((a, b) => a - b).join());
+  const ok = esValido(p, vals) && (!p.grupos || !!grupo);
+  if (!ok) {
+    p.errores++; p.fallos.push(exprFallo(p, vals));
+    animarError(idx, p);
+    if (p.tipoObj.k === 1) { const c = p.celdas[idx[0]]; c.estado = 'tachada'; c.el.classList.add('tachada'); c.el.disabled = true; }
+    mensaje('ko', textoError(p, vals)); actualizarHUD(); return;
+  }
+  p.encontrados++;
+  marcarHecho(p, idx, grupo, false);
+  idx.forEach(i => chispas(p.celdas[i].el));
+  mensaje('ok', textoAcierto(p, vals));
+  if (p.encontrados === p.total) { terminar(p); return; }
+  if (p.tipoObj.rondas) { const antes = p.T; nuevaRonda(p); pintarMision(p, p.T !== antes); }
+  else if (!p.grupos && p.tipoObj.k > 1 && !gruposDisponibles(p).length) recargar(p);
+  actualizarHUD();
+}
+function marcarHecho(p, idx, grupo, revelado) {
+  idx.forEach(i => {
+    const c = p.celdas[i]; c.estado = 'hecha'; c.el.classList.remove('pista', 'sel'); c.el.disabled = true;
+    if (p.grupos || revelado) c.el.classList.add(revelado ? 'revelada' : 'hecha'); else c.el.classList.add('fuera');
+  });
+  if (grupo) {
+    grupo.hecho = true;
+    const fs = idx.map(i => Math.floor(i / p.lado)), cs = idx.map(i => i % p.lado), cap = document.createElement('div');
+    cap.className = 'capsula' + (revelado ? ' revelada' : '');
+    cap.style.setProperty('--f1', Math.min(...fs) + 1); cap.style.setProperty('--f2', Math.max(...fs) + 2);
+    cap.style.setProperty('--c1', Math.min(...cs) + 1); cap.style.setProperty('--c2', Math.max(...cs) + 2);
+    $('rejilla').appendChild(cap);
+  }
+}
+/* Nivel fácil: si con los números que quedan ya no se puede formar ningún grupo, se cambian por otros. */
+function recargar(p) {
+  const l = libres(p), nuevos = valoresFaciles(p.tipoObj, p.nivel, l.length, p);
+  l.forEach((i, j) => { const c = p.celdas[i]; c.v = nuevos[j]; c.el.textContent = p.tipoObj.fmt(c.v); c.el.classList.remove('pista'); });
+  mensaje('', '<span><b>¡Números nuevos!</b> Con los que quedaban ya no se podía formar ningún grupo.</span>');
+}
+function pedirPista() {
+  const p = state.actual;
+  if (p.estado !== 'en curso' || p.pistas >= PISTAS_POR_PARTIDA) return;
+  if (!nombreOk()) return;
+  const disp = gruposDisponibles(p); if (!disp.length) return;
+  activar(p); quitarSeleccion(p);
+  p.celdas.forEach(c => c.el.classList.remove('pista'));
+  const i = elegir(elegir(disp)); p.pistas++;
+  p.celdas[i].el.classList.add('pista');
+  mensaje('', textoPista(p, p.celdas[i].v)); actualizarHUD();
+}
+function terminar(p) {
+  p.estado = 'completada'; p.tFin = Date.now(); actualizarHUD();
+  setTimeout(() => { if (state.actual === p) mostrarFin(p); }, p.grupos ? 500 : 420);
+}
+function siguienteTipo(p) { return TIPOS[(TIPOS.findIndex(t => t.id === p.tipo) + 1) % TIPOS.length]; }
+function mostrarFin(p) {
+  const rev = p.estado === 'soluciones';
+  $('finTitulo').textContent = rev ? 'Soluciones mostradas' : (p.errores === 0 ? '¡Tablero perfecto!' : '¡Tablero completado!');
+  $('finTexto').textContent = rev ? 'Esta partida queda cerrada con la nota que tenía. Prueba con un tablero nuevo.'
+    : `${p.tipoObj.nombre} · nivel ${NOMBRE_NIVEL[p.nivel].toLowerCase()}`;
+  $('finNota').textContent = fmtNota(notaPartida(p)); $('finErrores').textContent = p.errores;
+  $('finPistas').textContent = `${p.pistas} / ${PISTAS_POR_PARTIDA}`; $('finTiempo').textContent = mmss(tiempoPartida(p));
+  $('btnSiguiente').textContent = 'Siguiente juego: ' + siguienteTipo(p).nombre;
+  $('fin').classList.add('visible'); $('btnSiguiente').focus({ preventScroll: true });
+}
+$('btnSiguiente').addEventListener('click', () => { const p = state.actual, t = siguienteTipo(p); $('selTipo').value = t.id; nuevaPartida(p.nivel, t.id); });
+$('btnRepetir').addEventListener('click', () => { const p = state.actual; nuevaPartida(p.nivel, p.tipo); });
+$('btnPista').addEventListener('click', pedirPista);
+
+/* ---------- Selectores ---------- */
+TIPOS.forEach(t => { const o = document.createElement('option'); o.value = t.id; o.textContent = t.nombre; $('selTipo').appendChild(o); });
+function cambioSelector() {
+  const p = state.actual, nivel = $('selNivel').value, tipo = $('selTipo').value;
+  if (p.estado === 'en curso' && p.activa) {
+    confirmar({ titulo: '¿Cambiar de juego?',
+      texto: ['La partida que tienes empezada quedará en el informe como «sin terminar» y no contará para la nota.'],
+      primario: 'Seguir con esta partida', secundario: 'Sí, cambiar de juego',
+      alCancelar: () => { $('selNivel').value = p.nivel; $('selTipo').value = p.tipo; },
+      alAceptar: () => nuevaPartida(nivel, tipo) });
+  } else nuevaPartida(nivel, tipo);
+}
+$('selNivel').addEventListener('change', cambioSelector);
+$('selTipo').addEventListener('change', cambioSelector);
+
+/* ---------- Modales propios ---------- */
+let alCerrarModal = null, focoPrevio = null;
+function abrirModal(clase, alCerrar) {
+  const d = $('dialogo'); d.className = 'dialogo' + (clase ? ' ' + clase : ''); d.innerHTML = '';
+  d.removeAttribute('style'); alCerrarModal = alCerrar || null; focoPrevio = document.activeElement;
+  $('velo').classList.add('visible'); return d;
+}
+function cerrarModal(ejecutar) {
+  if (!$('velo').classList.contains('visible')) return;
+  $('velo').classList.remove('visible');
+  const f = alCerrarModal; alCerrarModal = null;
+  if (ejecutar !== false && f) f();
+  if (focoPrevio && focoPrevio.focus) focoPrevio.focus({ preventScroll: true });
+}
+$('velo').addEventListener('click', e => { if (e.target === $('velo')) cerrarModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrarModal(); });
+function crear(tag, clase, texto) { const e = document.createElement(tag); if (clase) e.className = clase; if (texto !== undefined) e.textContent = texto; return e; }
+function confirmar({ titulo, texto, primario, secundario, alCancelar, alAceptar }) {
+  const d = abrirModal('', alCancelar);
+  const h = crear('h2', '', titulo); h.id = 'dialogoTitulo'; d.appendChild(h);
+  texto.forEach(t => d.appendChild(crear('p', '', t)));
+  const bs = crear('div', 'dialogo-botones'), b1 = crear('button', 'btn btn-primario', primario), b2 = crear('button', 'btn btn-secundario', secundario);
+  b1.type = b2.type = 'button';
+  b1.addEventListener('click', () => cerrarModal());
+  b2.addEventListener('click', () => { cerrarModal(false); alAceptar(); });
+  bs.append(b1, b2); d.appendChild(bs); b1.focus();
+}
+
+/* ---------- Mostrar soluciones ---------- */
+$('btnSoluciones').addEventListener('click', () => {
+  if (state.actual.estado !== 'en curso' || !$('vistaDuelo').classList.contains('oculto')) return;
+  confirmar({ titulo: '¿Mostrar las soluciones?',
+    texto: ['Verás resuelto lo que queda de este tablero.',
+      'Esta partida dejará de sumar: se queda con la nota que tiene ahora, y los errores que ya hayas cometido siguen restando.',
+      'Después podrás seguir con un tablero nuevo.'],
+    primario: 'Volver al juego', secundario: 'Sí, mostrar soluciones', alAceptar: revelarSoluciones });
+});
+function revelarSoluciones() {
+  const p = state.actual; if (p.estado !== 'en curso') return;
+  const t = p.tipoObj, f = t.fmt; quitarSeleccion(p); activar(p);
+  p.celdas.forEach(c => c.el.classList.remove('pista'));
+  const lista = [];
+  if (p.grupos) {
+    p.grupos.filter(g => !g.hecho).forEach(g => { lista.push(g.celdas.map(i => p.celdas[i].v)); marcarHecho(p, g.celdas, g, true); });
+  } else if (t.rondas) {
+    // Con objetivo cambiante solo tiene sentido resolver la ronda en curso.
+    const g = gruposDisponibles(p)[0]; lista.push(g.map(i => p.celdas[i].v)); marcarHecho(p, g, null, true);
+  } else {
+    let g; while ((g = gruposDisponibles(p)[0])) { lista.push(g.map(i => p.celdas[i].v)); marcarHecho(p, g, null, true); }
+  }
+  lista.forEach(v => { if (!esValido(p, v) && !validoParaAlguna(p, v)) console.error('Solución no válida', v); });
+  p.estado = 'soluciones'; p.revelado = true; p.tFin = Date.now();
+  p.celdas.forEach(c => c.el.disabled = true);
+  let txt;
+  if (t.clase === 'multiplo') txt = `Los múltiplos de ${p.n} que quedaban son ${lista.map(v => v[0]).sort((a, b) => a - b).join(', ')}: todos están en la tabla del ${p.n}.`;
+  else if (t.clase === 'doble') txt = 'Parejas que quedaban: ' + lista.map(v => `${Math.min(...v)} y ${Math.max(...v)}`).join(' · ') + '.';
+  else if (t.clase === 'producto') txt = (p.grupos ? 'Parejas que quedaban: ' : `Para el producto ${p.T}: `) + lista.map(v => `${v[0]} × ${v[1]} = ${v[0] * v[1]}`).join(' · ') + '.';
+  else txt = (t.rondas && !p.grupos ? `Para el objetivo ${p.T}: ` : 'Quedaban: ') + lista.map(v => v.map(f).join(' + ') + (t.rondas ? ' = ' + suma(v) : '')).join(' · ') + '.';
+  mensaje('solucion', `<span><b>Solución.</b> ${txt}</span>`);
+  actualizarHUD(); setTimeout(() => { if (state.actual === p) mostrarFin(p); }, 2600);
+}
+
+/* ---------- Informe ---------- */
+const COLORES_NOTA = [[10, '#1a7a1a', '#fff'], [9, '#6dbf6d', '#fff'], [8, '#1a4f8a', '#fff'], [7, '#5b9bd5', '#fff'], [6, '#c05c00', '#fff'], [5, '#f5a623', '#000']];
+const ESTADOS = { 'completada': 'Completada', 'en curso': 'Sin terminar', 'sin terminar': 'Sin terminar', 'soluciones': 'Soluciones vistas' };
+$('btnFinalizar').addEventListener('click', () => {
+  if (!nombreOk()) { $('nombre').scrollIntoView({ block: 'center' }); return; }
+  const nota = calcularNota(), ahora = new Date(), jug = partidasJugadas(), p2 = n => String(n).padStart(2, '0');
+  const col = COLORES_NOTA.find(c => nota >= c[0]) || [0, '#c0392b', '#fff'];
+  document.body.classList.toggle('perfecta', nota === 10);
+  const d = abrirModal('informe'); d.style.setProperty('--inf-fondo', col[1]); d.style.setProperty('--inf-texto', col[2]);
+  const h = crear('h2', '', document.querySelector('.titulo-ficha').textContent); h.id = 'dialogoTitulo'; d.appendChild(h);
+  d.appendChild(crear('div', 'inf-sub', document.querySelector('.subtitulo').textContent));
+  d.appendChild(crear('h3', '', 'Informe de la actividad'));
+  const datos = crear('div', 'inf-datos');
+  const total = Math.ceil((Date.now() - state.inicio) / 60000);
+  [['Alumno', $('nombre').value.trim()], ['Nota', fmtNota(nota), 'inf-nota'],
+   ['Fecha', `${p2(ahora.getDate())}/${p2(ahora.getMonth() + 1)}/${ahora.getFullYear()}`],
+   ['Hora', `${p2(ahora.getHours())}:${p2(ahora.getMinutes())}:${p2(ahora.getSeconds())}`],
+   ['Tiempo total', `${p2(Math.floor(total / 60))}:${p2(total % 60)}`],
+   ['Pistas usadas', String(suma(jug.map(p => p.pistas)))]]
+    .forEach(([r, v, cl]) => { const x = crear('div', cl || '', r + ' '); x.appendChild(crear('b', '', v)); datos.appendChild(x); });
+  d.appendChild(datos);
+  const hoja = crear('div', 'inf-hoja');
+  if (!jug.length) hoja.appendChild(crear('div', 'inf-vacio', 'Todavía no se ha jugado ninguna partida.'));
+  else {
+    const tabla = crear('table'), cab = crear('tr');
+    ['N.º', 'Nivel', 'Tipo de juego', 'Resultado', 'Encontrados', 'Errores', 'Pistas', 'Tiempo', 'Nota']
+      .forEach((t, i) => { const th = crear('th', i > 3 ? 'num' : '', t); cab.appendChild(th); });
+    tabla.appendChild(cab);
+    jug.forEach((p, i) => {
+      const tr = crear('tr');
+      [i + 1, NOMBRE_NIVEL[p.nivel], p.tipoObj.nombre + (p.n ? ` (de ${p.n})` : ''), ESTADOS[p.estado],
+       `${p.encontrados} / ${p.total}`, p.errores, `${p.pistas} / ${PISTAS_POR_PARTIDA}`, mmss(tiempoPartida(p)), cuentaEnNota(p) ? fmtNota(notaPartida(p)) : 'No cuenta']
+        .forEach((v, j) => tr.appendChild(crear('td', j > 3 ? 'num' : '', String(v))));
+      tabla.appendChild(tr);
+      if (p.fallos.length) {
+        const tf = crear('tr', 'fallos'), td = crear('td'); td.colSpan = 9;
+        const max = 10, resto = p.fallos.length - max;
+        td.textContent = 'Fallos: ' + p.fallos.slice(0, max).join(' · ') + (resto > 0 ? ` · y ${resto} más` : '');
+        tf.appendChild(td); tabla.appendChild(tf);
+      }
+    });
+    hoja.appendChild(tabla);
+  }
+  d.appendChild(hoja);
+  if (state.duelos.length) {
+    d.appendChild(crear('h3', 'inf-seccion', 'Duelo galáctico (no cambia la nota)'));
+    const hd = crear('div', 'inf-hoja'), td = crear('table'), cd = crear('tr');
+    ['Código', 'Intento', 'Juegos', 'Aciertos', 'Tiempo', 'Estado', 'Puesto (última consulta)'].forEach(t => cd.appendChild(crear('th', '', t)));
+    td.appendChild(cd);
+    state.duelos.forEach(x => {
+      const tr = crear('tr');
+      [verCodigo(x.codigo), x.intento, textoFamilias(x.familias), `${x.aciertos} / ${DUELO_N}`, fmtPreciso(x.ms),
+       x.estado === 'terminado' ? 'Terminado' : `Abandonado (${x.respondidas} respondidas)`, x.puesto || '—']
+        .forEach(v => tr.appendChild(crear('td', '', String(v))));
+      td.appendChild(tr);
+      if (x.fallos.length) { const tf = crear('tr', 'fallos'), c = crear('td', '', 'Fallos: ' + x.fallos.join(' · ')); c.colSpan = 7; tf.appendChild(c); td.appendChild(tf); }
+    });
+    hd.appendChild(td); d.appendChild(hd);
+  }
+  const bs = crear('div', 'dialogo-botones'), b = crear('button', 'btn', 'Cerrar y seguir jugando'); b.type = 'button';
+  b.addEventListener('click', () => cerrarModal()); bs.appendChild(b); d.appendChild(bs); b.focus();
+});
+
+/* ---------- Duelo galáctico: código ↔ generación fija ---------- */
+// Pega aquí la URL de la aplicación web de Apps Script (termina en /exec).
+// Si se deja vacía, el duelo funciona igual, pero sin panel ni clasificación.
+const URL_DUELOS = '';
+const ALFA = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';   // 32 símbolos: sin 0/O ni 1/I para evitar confusiones al dictarlo
+const DUELO_N = 12;
+/* Los 9 bits de opciones del código: qué familias de juegos entran (mismo orden que CONFIG.OPCIONES del servidor). */
+const FAMILIAS = [
+  { n: 'Amigos del 10', tipos: ['amigos10'] }, { n: 'Amigos del 20', tipos: ['amigos20'] },
+  { n: 'Amigos del 100', tipos: ['amigos100d', 'amigos100'] }, { n: 'Amigos del 1000', tipos: ['amigos1000'] },
+  { n: 'Decimales', tipos: ['amigos1'] }, { n: 'Tríos', tipos: ['trios10'] }, { n: 'Dobles', tipos: ['dobles'] },
+  { n: 'Objetivos', tipos: ['objetivo', 'producto'] }, { n: 'Múltiplos', tipos: ['multiplos'] }
+];
+const digitoControl = s => ALFA[[...s].reduce((acc, c, i) => acc + ALFA.indexOf(c) * (2 * i + 1), 0) % 32];   // pesos impares: cualquier carácter mal copiado se detecta
+function crearCodigo(mascara) {
+  const sem = Math.floor(rnd() * 2 ** 21);   // 21 bits: fija el orden y los números
+  let v = mascara * 2 ** 21 + sem, s = '';
+  for (let i = 0; i < 6; i++) { s = ALFA[v % 32] + s; v = Math.floor(v / 32); }
+  return s + digitoControl(s);
+}
+function leerCodigo(txt) {
+  const s = String(txt || '').toUpperCase().replace(/[^0-9A-Z]/g, '');
+  if (s.length !== 7 || [...s].some(c => !ALFA.includes(c)) || digitoControl(s.slice(0, 6)) !== s[6]) return null;
+  let v = 0; for (const c of s.slice(0, 6)) v = v * 32 + ALFA.indexOf(c);
+  const mascara = Math.floor(v / 2 ** 21), sem = v % 2 ** 21;
+  const familias = FAMILIAS.map((_, i) => i).filter(i => mascara & (1 << i));
+  return familias.length ? { codigo: s, familias, semilla: sem, mascara } : null;
+}
+const verCodigo = s => s.slice(0, 3) + '-' + s.slice(3);
+function generadorDe(n) {   // mulberry32 propio del duelo: no comparte estado con el resto de la ficha
+  let s = n >>> 0;
+  return () => { s += 0x6D2B79F5; let t = s; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+}
+const listaY = a => a.length > 1 ? a.slice(0, -1).join(', ') + ' y ' + a[a.length - 1] : String(a[0] || '');
+const textoFamilias = f => f.length === FAMILIAS.length ? 'Todos los juegos' : listaY(f.map(i => FAMILIAS[i].n));
+const escapar = t => String(t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+/* Cada pregunta es un minitablero con UN solo grupo válido. ¡Cambiar esta generación invalida los códigos ya repartidos! */
+const validoDuelo = (q, vals) => q.tipoObj.clase === 'multiplo' ? vals.every(v => v % q.n === 0) : esValido(q, vals);
+function combinaciones(n, k) {
+  const res = [];
+  for (let a = 0; a < n; a++) for (let b = a + 1; b < n; b++) { if (k === 2) res.push([a, b]); else for (let c = b + 1; c < n; c++) res.push([a, b, c]); }
+  return res;
+}
+function preguntaDuelo(tipo) {
+  const k = tipo.k === 3 ? 3 : 2, nCeldas = k === 3 ? 6 : 9, q = { tipo: tipo.id, tipoObj: tipo, k, T: tipo.T, n: null, nivel: 'facil' };
+  if (tipo.id === 'multiplos') q.n = elegir([3, 4, 6, 7, 8, 9]);
+  if (tipo.id === 'objetivo') q.T = ri(11, 25);
+  if (tipo.id === 'producto') q.T = elegir(Object.keys(PRODUCTOS).map(Number));
+  const despiste = () => tipo.id === 'multiplos' ? q.n * ri(2, 10) + elegir([-2, -1, 1, 2]) : relleno(tipo, 'dificil');
+  const todas = combinaciones(nCeldas, k);
+  for (let intento = 0; intento < 300; intento++) {
+    let grupo;
+    if (tipo.id === 'multiplos') { const a = q.n * ri(2, 10); let b; do { b = q.n * ri(2, 10); } while (b === a); grupo = [a, b]; }
+    else grupo = grupoValido(tipo, 'dificil', q.T);
+    const vals = grupo.slice(); while (vals.length < nCeldas) vals.push(despiste());
+    for (let pasada = 0; pasada < 80; pasada++) {
+      const malos = todas.filter(c => !c.every(i => i < k) && validoDuelo(q, c.map(i => vals[i])));
+      if (!malos.length) {
+        const orden = barajar(vals.map((_, i) => i));
+        q.vals = orden.map(i => vals[i]); q.sol = orden.map((o, pos) => o < k ? pos : -1).filter(x => x >= 0);
+        return q;
+      }
+      for (const c of malos) vals[elegir(c.filter(i => i >= k))] = despiste();
+    }
+  }
+  throw new Error('No se pudo generar la pregunta del duelo');
+}
+function preguntasDuelo(d) {
+  fuenteAzar = generadorDe(d.semilla + d.mascara * 2 ** 21);
+  try {
+    const qs = []; let bolsa = [];
+    for (let i = 0; i < DUELO_N; i++) {
+      if (!bolsa.length) bolsa = barajar(d.familias.slice());   // las familias salen repartidas de forma equilibrada
+      qs.push(preguntaDuelo(tipoDe(elegir(FAMILIAS[bolsa.pop()].tipos))));
+    }
+    return qs;
+  } finally { fuenteAzar = null; }
+}
+
+/* ---- Vista del duelo: entrada, pestañas y código ---- */
+let D = null, dueloTab = 'crear', dueloListo = null;
+FAMILIAS.forEach((f, i) => {
+  const l = crear('label'), c = crear('input'); c.type = 'checkbox'; c.checked = true; c.value = i;
+  c.addEventListener('change', () => { dueloListo = null; pintarLobby(); });
+  l.append(c, document.createTextNode(f.n)); $('familias').appendChild(l);
+});
+const mascaraElegida = () => [...$('familias').querySelectorAll('input:checked')].reduce((m, c) => m | (1 << +c.value), 0);
+function pintarLobby() {
+  $('tabCrear').setAttribute('aria-selected', dueloTab === 'crear'); $('tabUnir').setAttribute('aria-selected', dueloTab === 'unir');
+  $('panelCrear').classList.toggle('oculto', dueloTab !== 'crear'); $('panelUnir').classList.toggle('oculto', dueloTab !== 'unir');
+  $('codigoCreado').classList.toggle('oculto', !(dueloTab === 'crear' && dueloListo));
+  $('btnCrearCodigo').disabled = !mascaraElegida();
+  $('btnEmpezar').disabled = !dueloListo;
+}
+function verVista(cual) {   // 'juego' | 'duelo'
+  const enDuelo = cual === 'duelo', p = state.actual;
+  $('vistaJuego').classList.toggle('oculto', enDuelo); $('vistaDuelo').classList.toggle('oculto', !enDuelo);
+  $('dueloEntrada').classList.toggle('oculto', enDuelo); document.querySelector('.selectores').classList.toggle('oculto', enDuelo);
+  if (p.t0 && p.estado === 'en curso') {   // el tiempo de la partida no corre mientras se está en el duelo
+    if (enDuelo && !p.pausaDesde) p.pausaDesde = Date.now();
+    if (!enDuelo && p.pausaDesde) { p.pausa += Date.now() - p.pausaDesde; p.pausaDesde = null; }
+  }
+  actualizarHUD(); if (enDuelo) $('btnSoluciones').disabled = true;
+}
+function abrirLobby() {
+  D = null;
+  $('dueloLobby').classList.remove('oculto'); $('dueloJuego').classList.add('oculto'); $('dueloFinal').classList.add('oculto');
+  pintarLobby();
+}
+$('btnDuelo').addEventListener('click', () => { verVista('duelo'); abrirLobby(); });
+$('btnVolver').addEventListener('click', () => verVista('juego'));
+$('tabCrear').addEventListener('click', () => { dueloTab = 'crear'; dueloListo = null; pintarLobby(); });
+$('tabUnir').addEventListener('click', () => { dueloTab = 'unir'; dueloListo = leerCodigo($('codigoUnir').value); pintarLobby(); $('codigoUnir').focus(); });
+$('codigoUnir').addEventListener('input', () => {
+  const txt = $('codigoUnir').value, limpio = txt.toUpperCase().replace(/[^0-9A-Z]/g, '');
+  dueloListo = leerCodigo(txt);
+  $('avisoCodigo').textContent = dueloListo ? `Duelo de ${DUELO_N} preguntas · ${textoFamilias(dueloListo.familias)}`
+    : limpio.length >= 7 ? 'Ese código no es válido. Revisa que lo hayas copiado bien.' : '';
+  pintarLobby();
+});
+$('codigoUnir').addEventListener('keydown', e => { if (e.key === 'Enter' && dueloListo) $('btnEmpezar').click(); });
+$('btnCrearCodigo').addEventListener('click', () => {
+  const m = mascaraElegida(); if (!m) return;
+  dueloListo = leerCodigo(crearCodigo(m));
+  $('codigoTexto').textContent = verCodigo(dueloListo.codigo);
+  $('codigoAyuda').textContent = `Díctalo a tus rivales: lo escriben en «Unirme con un código». Cuando estéis todos, pulsad «Empezar el duelo». ${textoFamilias(dueloListo.familias)} · ${DUELO_N} preguntas.`;
+  pintarLobby();
+  $('codigoCreado').scrollIntoView({ behavior: 'smooth', block: 'center' });
+});
+$('btnEmpezar').addEventListener('click', () => { if (dueloListo) empezarDuelo(dueloListo); });
+
+/* ---- Conexión con el panel de duelos (Apps Script) ---- */
+const idPartida = () => (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 12);
+async function enviarPanel(datos, reintentos = 0) {
+  if (!URL_DUELOS) return null;
+  for (let k = 0; k <= reintentos; k++) {
+    try {
+      // text/plain evita la petición previa CORS, que Apps Script no responde
+      const r = await fetch(URL_DUELOS, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(datos) });
+      return await r.json();
+    } catch (e) { if (k < reintentos) await new Promise(ok => setTimeout(ok, 1500 * (k + 1))); }
+  }
+  return null;
+}
+async function pedirRanking(codigo, id) {
+  if (!URL_DUELOS) return null;
+  try { const r = await fetch(`${URL_DUELOS}?accion=ranking&codigo=${encodeURIComponent(codigo)}&id=${encodeURIComponent(id)}`); return await r.json(); }
+  catch (e) { return null; }
+}
+
+/* ---- Partida del duelo ---- */
+const fmtPreciso = ms => { const d = Math.round(ms / 100), s = Math.floor(d / 10); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')},${d % 10}`; };
+function empezarDuelo(d) {
+  if (!nombreOk()) return;
+  const previos = state.duelos.filter(x => x.codigo === d.codigo).length;
+  D = { ...d, qs: preguntasDuelo(d), i: 0, aciertos: 0, acum: 0, tramo: null, respondida: false, fallos: [], intento: previos + 1, sel: [], celdas: [],
+    timer: null, terminado: false, id: idPartida(), nombre: $('nombre').value.trim(), finEnviado: false };
+  $('dueloLobby').classList.add('oculto'); $('dueloFinal').classList.add('oculto'); $('dueloJuego').classList.remove('oculto');
+  $('dueloChip').textContent = verCodigo(d.codigo);
+  D.timer = setInterval(pintarRelojDuelo, 200);
+  const partida = D;
+  enviarPanel({ evento: 'inicio', id: D.id, codigo: D.codigo, nombre: D.nombre }, 1).then(r => { if (r && r.ok && r.intento) partida.intentoPanel = r.intento; });
+  pintarPreguntaDuelo();
+  $('vistaDuelo').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+// El reloj del duelo solo corre mientras hay una pregunta sin responder: leer la corrección no cuenta.
+const msDuelo = () => D.acum + (D.tramo ? Date.now() - D.tramo : 0);
+function pintarRelojDuelo() { if (D) $('dueloReloj').textContent = mmss(msDuelo()); }
+function ordenDuelo(q) { return q.tipoObj.clase === 'multiplo' ? `Pincha los dos múltiplos de ${q.n}.` : ordenMision(q); }
+function pintarPreguntaDuelo() {
+  const q = D.qs[D.i], m = datosMision(q), r = $('dueloRejilla'), f = q.tipoObj.fmt;
+  $('dueloNum').textContent = `${D.i + 1} de ${DUELO_N}`; $('dueloBarra').style.width = (100 * D.i / DUELO_N) + '%';
+  $('dueloNombre').textContent = m.nombre; $('dueloOrden').textContent = ordenDuelo(q);
+  $('dueloRotulo').textContent = m.rot; $('dueloValor').textContent = m.val;
+  r.innerHTML = ''; r.style.setProperty('--cols', 3);
+  const largo = Math.max(...q.vals.map(v => f(v).length));
+  r.style.setProperty('--fs', largo <= 2 ? .4 : largo === 3 ? .34 : .28);
+  D.sel = []; D.celdas = q.vals.map((v, i) => {
+    const b = crear('button', 'celda t' + ((Math.floor(i / 3) + i % 3) % 4), f(v)); b.type = 'button';
+    b.style.setProperty('--f', Math.floor(i / 3) + 1); b.style.setProperty('--c', i % 3 + 1);
+    b.addEventListener('click', () => pulsarDuelo(i)); r.appendChild(b); return b;
+  });
+  mensaje('', 'Solo tienes un intento en cada pregunta: piensa antes de pinchar.', 'dueloMensaje');
+  $('dueloSiguiente').classList.add('oculto');
+  D.respondida = false; D.tramo = Date.now();
+}
+function pulsarDuelo(i) {
+  if (!D || D.respondida || D.terminado) return;
+  if (D.sel.includes(i)) { D.celdas[i].classList.remove('sel'); D.sel = D.sel.filter(x => x !== i); return; }
+  D.sel.push(i); D.celdas[i].classList.add('sel');
+  if (D.sel.length === D.qs[D.i].k) comprobarDuelo();
+}
+function solucionDuelo(q) {
+  const v = q.sol.map(i => q.vals[i]), t = q.tipoObj, f = t.fmt;
+  if (t.clase === 'multiplo') return `${v.join(' y ')}, que están en la tabla del ${q.n}`;
+  if (t.clase === 'doble') return `${Math.min(...v)} y ${Math.max(...v)}, porque ${Math.min(...v)} + ${Math.min(...v)} = ${Math.max(...v)}`;
+  if (t.clase === 'producto') return `${v[0]} × ${v[1]} = ${q.T}`;
+  return `${v.map(f).join(' + ')} = ${t.id === 'amigos1' ? '1' : f(q.T)}`;
+}
+function comprobarDuelo() {
+  const q = D.qs[D.i], idx = D.sel.slice(), vals = idx.map(i => q.vals[i]), correcto = validoDuelo(q, vals), mult = q.tipoObj.clase === 'multiplo';
+  D.acum += Date.now() - D.tramo; D.tramo = null; D.respondida = true; D.sel = [];
+  D.celdas.forEach((b, i) => { b.disabled = true; b.classList.remove('sel'); if (q.sol.includes(i)) b.classList.add('hecha'); else if (idx.includes(i)) b.classList.add('tachada'); });
+  let html;
+  if (correcto) { D.aciertos++; html = mult ? `<b>¡Bien!</b>&nbsp;${vals.join(' y ')} están en la tabla del ${q.n}.` : textoAcierto(q, vals); }
+  else {
+    D.fallos.push(mult ? `${vals.join(' y ')} (múlt. de ${q.n})` : exprFallo(q, vals));
+    const motivo = mult ? textoError(q, [vals.find(v => v % q.n !== 0)]) : textoError(q, vals);
+    html = `${motivo} <span>&nbsp;La respuesta era ${solucionDuelo(q)}.</span>`;
+  }
+  mensaje(correcto ? 'ok' : 'ko', html, 'dueloMensaje');
+  $('dueloSiguiente').textContent = D.i === DUELO_N - 1 ? 'Ver mi resultado' : 'Siguiente';
+  $('dueloSiguiente').classList.remove('oculto'); $('dueloSiguiente').focus({ preventScroll: true });
+  pintarRelojDuelo();
+  if (D.i < DUELO_N - 1) enviarPanel({ evento: 'progreso', id: D.id, codigo: D.codigo, nombre: D.nombre, respondidas: D.i + 1, aciertos: D.aciertos });
+}
+$('dueloSiguiente').addEventListener('click', () => {
+  if (!D || !D.respondida) return;
+  D.i++; D.i >= DUELO_N ? terminarDuelo(false) : pintarPreguntaDuelo();
+});
+$('btnAbandonar').addEventListener('click', () => {
+  if (!D || D.terminado) return;
+  confirmar({ titulo: '¿Abandonar el duelo?',
+    texto: ['Si lo dejas ahora, habrás gastado tu intento con este código: solo cuenta el primero.', 'El duelo quedará en tu informe como abandonado.'],
+    primario: 'Seguir en el duelo', secundario: 'Sí, abandonar', alAceptar: () => { terminarDuelo(true); verVista('juego'); } });
+});
+function terminarDuelo(abandonado) {
+  clearInterval(D.timer);
+  if (D.tramo) { D.acum += Date.now() - D.tramo; D.tramo = null; }
+  const respondidas = abandonado ? D.i + (D.respondida ? 1 : 0) : DUELO_N;
+  const registro = { id: D.id, codigo: D.codigo, familias: D.familias, aciertos: D.aciertos, respondidas, ms: D.acum, fallos: D.fallos.slice(),
+    intento: D.intento, estado: abandonado ? 'abandonado' : 'terminado', puesto: '' };
+  state.duelos.push(registro); D.terminado = true; D.registro = registro;
+  const partida = D, envio = { evento: abandonado ? 'abandono' : 'fin', id: D.id, codigo: D.codigo, nombre: D.nombre, respondidas, aciertos: D.aciertos, ms: Math.round(D.acum) };
+  partida.envioFin = envio;
+  const promesa = enviarPanel(envio, 2).then(r => { partida.respFin = r; if (r && r.ok) partida.finEnviado = true; return r; });
+  if (abandonado) { D = null; return; }
+  $('dueloJuego').classList.add('oculto'); $('dueloFinal').classList.remove('oculto');
+  const a = D.aciertos;
+  const valoracion = a === DUELO_N ? '¡Pleno! Ningún fallo.' : a >= DUELO_N - 2 ? 'Muy buen duelo.' : a >= DUELO_N / 2 ? 'Buen intento: repasa las preguntas falladas.' : 'Te conviene practicar estos juegos en el nivel fácil.';
+  $('dueloFinal').innerHTML = `
+    <div class="etq" style="text-align:center">Duelo terminado · ${verCodigo(D.codigo)}</div>
+    <div class="rd-cifra">${a}<small> / ${DUELO_N}</small></div>
+    <p class="rd-pie">aciertos en <b>${fmtPreciso(D.acum)}</b></p>
+    <p class="rd-pie">${valoracion}</p>
+    ${D.fallos.length ? `<p class="rd-pie">Para repasar: ${escapar(D.fallos.join(' · '))}</p>` : ''}
+    ${URL_DUELOS ? '<div class="clasif" id="dueloClasif" aria-live="polite"><p>Enviando tu resultado al panel…</p></div>'
+      : '<p class="rd-pie">Comparad vuestras pantallas: gana quien tenga más aciertos y, si empatáis, quien haya tardado menos. El resultado queda guardado en tu informe.</p>'}
+    <div class="carta-botones"><button class="btn btn-primario" id="dueloOtro" type="button">Otro duelo</button><button class="btn" id="dueloSalir" type="button">Volver al juego</button></div>`;
+  $('dueloOtro').addEventListener('click', () => { dueloListo = null; abrirLobby(); });
+  $('dueloSalir').addEventListener('click', () => { D = null; verVista('juego'); });
+  if (URL_DUELOS) promesa.then(() => cargarClasificacion(partida));
+  $('dueloFinal').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+const ordinal = n => `${n}.º`;
+async function cargarClasificacion(partida) {
+  const caja = () => (D === partida ? $('dueloClasif') : null);   // si el alumno ya ha salido, no se pinta nada
+  if (!caja()) return;
+  if (!partida.finEnviado) {   // el envío falló o fue rechazado: se reintenta antes de pedir la clasificación
+    const r = await enviarPanel(partida.envioFin, 1);
+    partida.respFin = r || partida.respFin;
+    if (r && r.ok) partida.finEnviado = true;
+  }
+  if (!caja()) return;
+  const cab = boton => `<div class="clasif-cab"><b>Clasificación del duelo</b><button type="button" class="btn-mini" id="clasifAct">${boton}</button></div>`;
+  const enganchar = () => $('clasifAct').addEventListener('click', () => cargarClasificacion(partida));
+  if (!partida.finEnviado) {
+    const motivo = partida.respFin && partida.respFin.error ? ` El panel ha respondido: «${escapar(String(partida.respFin.error))}».` : ' Puede que no haya conexión.';
+    caja().innerHTML = cab('Reintentar') + `<p>No se ha podido enviar tu resultado al panel.${motivo} Tu resultado sí está guardado en tu informe.</p>`;
+    enganchar(); return;
+  }
+  const r = await pedirRanking(partida.codigo, partida.id);
+  if (!caja()) return;
+  if (!r || !r.ok) {
+    caja().innerHTML = cab('Actualizar') + '<p>Tu resultado se ha enviado, pero no se ha podido leer la clasificación. Prueba a actualizar.</p>';
+    enganchar(); return;
+  }
+  const lista = r.podio.map((p, k) => `<li class="${p.yo ? 'yo' : ''}"><span class="med m${k + 1}">${k + 1}</span><b>${escapar(p.nombre)}</b><span class="dat">${p.aciertos} ✓ · ${p.fallos} ✗ · ${fmtPreciso(p.ms)}</span></li>`).join('');
+  let tu;
+  if (r.tu && r.tu.cuenta && r.tu.posicion) tu = `Tu puesto: ${ordinal(r.tu.posicion)} de ${r.terminados} que han terminado.`;
+  else if (r.tu && !r.tu.cuenta) tu = `Este es tu intento n.º ${r.tu.intento} con este código: solo cuenta el primero, así que no entra en la clasificación.`;
+  else tu = 'Tu resultado se está registrando.';
+  partida.registro.puesto = r.tu && r.tu.cuenta && r.tu.posicion ? `${ordinal(r.tu.posicion)} de ${r.terminados}` : r.tu && !r.tu.cuenta ? `No cuenta (intento ${r.tu.intento})` : '';
+  caja().innerHTML = cab('Actualizar') + `${lista ? `<ol>${lista}</ol>` : '<p>Todavía no ha terminado nadie.</p>'}
+    <p><b>${tu}</b></p>
+    <p>${r.enJuego ? `Todavía ${r.enJuego === 1 ? 'juega 1 compañero' : `juegan ${r.enJuego} compañeros`}: actualiza en un rato. ` : ''}Gana quien más acierte; si hay empate, quien tarde menos.</p>`;
+  enganchar();
+}
+
+/* ---------- Arranque ---------- */
+nuevaPartida('facil', 'amigos10');
+if (MODO_PRUEBA) window.__cm = { preguntasDuelo, leerCodigo, crearCodigo, validoDuelo, combinaciones, duelo: () => D, state, TIPOS, esValido, validoParaAlguna, gruposDisponibles, segmentos, nuevaPartida, notaPartida, calcularNota };
+</script>
+<script>/*mm*/!function(){var e=atob("aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J3dnd5Qy1QMmI3SVdaS3BtVFhWdWpGYTZwOXhkQlFJN2lxZS1LOE9oVFBNTzctcEJuVW03X0x3WkpqelJKWlhDN3AvZXhlYw=="),t="martamates11.github.io",o="https://martamates11.github.io/fichas-matamates/",a=location.hostname;if("file:"!==location.protocol&&a&&"localhost"!==a&&!/^(127\.|10\.|192\.168\.|\[)/.test(a)&&!/^martamates11-github-io\.translate\.goog$/.test(a)){var n,i;try{n=window.top!==window}catch(e){n=!0}if(a===t){if(!n)return;if(-1!==(location.ancestorOrigins&&location.ancestorOrigins[0]||document.referrer||"").indexOf(t))return;i="incrustada"}else i="copia";try{var r="mm-g-"+location.pathname+"-"+(new Date).toISOString().slice(0,10),c=!1;try{c="1"===localStorage.getItem(r)}catch(e){}if(!c&&0===e.indexOf("https://")){try{localStorage.setItem(r,"1")}catch(e){}var d="k="+i+"&h="+encodeURIComponent(a)+"&u="+encodeURIComponent(location.href.slice(0,400))+"&t="+encodeURIComponent(document.title.slice(0,200))+"&r="+encodeURIComponent((document.referrer||"").slice(0,400));(new Image).src=e+"?"+d}}catch(e){}if("copia"===i){var s=document.querySelector('link[rel="canonical"]'),l=s&&0===s.href.indexOf(o)?s.href:o;document.body?p():document.addEventListener("DOMContentLoaded",p)}}function m(){if(!document.getElementById("mm-autoria")){var e=document.createElement("div");e.id="mm-autoria",e.style.cssText="all:initial;position:fixed;left:0;right:0;bottom:0;z-index:2147483647;",(e.attachShadow?e.attachShadow({mode:"closed"}):e).innerHTML='<style>.f{box-sizing:border-box;width:100%;background:#1a2744;border-top:2px solid #b8922a;color:#f7f4ee;font:15px/1.5 Georgia,"Times New Roman",serif;padding:12px 16px;text-align:center;box-shadow:var(--sx,0) -4px 18px rgba(0,0,0,.18)}.e{display:block;font:600 11px/1.4 Georgia,serif;letter-spacing:.12em;text-transform:uppercase;color:#d4aa4a;margin-bottom:2px}a{color:#d4aa4a;font-weight:700;text-decoration:none;border-bottom:1px solid rgba(212,170,74,.5)}a:hover{border-bottom-color:#d4aa4a}@media(max-width:520px){.f{font-size:13.5px;padding:10px 14px}}</style><div class="f" role="note"><span class="e">Copia no autorizada</span>Esta ficha es obra de <b>Marta López de Letona</b>. Úsala gratis en su web original: <a href="'+l+'" target="_blank" rel="noopener">martamates11.github.io/fichas-matamates</a></div>',document.body.appendChild(e);var t=e.getBoundingClientRect().height||80;document.body.style.paddingBottom=Math.ceil(t+8)+"px"}}function p(){m(),setInterval(m,4e3)}}();</script>
+</body>
+</html>
