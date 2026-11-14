@@ -75,7 +75,7 @@
 
   /* ---------- Rombo (ficha: D 8–24, d 4–14) ---------- */
   /* Semidiagonales que forman terna pitagórica con el lado */
-  const SEMIDIAG = [[4, 3], [8, 6], [12, 9], [16, 12], [12, 5], [15, 8], [20, 15], [24, 10]];
+  const SEMIDIAG = [[4, 3], [8, 6], [12, 9], [16, 12], [12, 5], [15, 8], [20, 15]];
   function rombo(R) {
     const [m, k] = R.pick(SEMIDIAG);
     const D = 2 * m, d = 2 * k, lado = Math.hypot(m, k), s = K / D;

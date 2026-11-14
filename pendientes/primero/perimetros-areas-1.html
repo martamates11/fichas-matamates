@@ -204,7 +204,9 @@ function tipeset(id){
 // Perim = a + b + hip,  Area = b*a/2
 // ====================================================
 var d1={};
-function generarD1(){var b=rnd(4,20),a=rnd(3,18);d1={b:b,a:a,hip:rd(Math.sqrt(a*a+b*b))};}
+// Ternas pitagóricas: la hipotenusa sale exacta y se puede calcular sin calculadora
+var TERNAS_TRI=[[3,4,5],[6,8,10],[9,12,15],[12,16,20],[5,12,13],[8,15,17],[15,20,25],[12,9,15],[4,3,5],[8,6,10],[16,12,20],[12,5,13],[15,8,17]];
+function generarD1(){var t=TERNAS_TRI[rnd(0,TERNAS_TRI.length-1)];d1={b:t[0],a:t[1],hip:t[2]};}
 
 function svgTri(b,a){
   var esc=Math.min(14,180/b,150/a);
@@ -250,7 +252,7 @@ function comprobarEj1(){
   if(ok(vP,pC)&&ok(vA,aC)){superados.ej1=true;actualizarUI();document.getElementById('fb-ej1').innerHTML='<span class="feedback-correcto">¡Correcto!</span>';document.getElementById('card-ej1').classList.add('superado');}
   else{registrarFallo('ej1',vP,vA);actualizarUI();
     var h='';
-    if(!ok(vP,pC))h+='Calcula primero la hipotenusa con Pit&aacute;goras: \\( c = \\sqrt{a^2+b^2} = \\sqrt{'+a+'^2+'+b+'^2} = \\sqrt{'+(a*a+b*b)+'} \\approx '+hip+'\\text{ cm} \\). Luego el per&iacute;metro: \\( P = a+b+c = '+a+'+'+b+'+'+hip+' = \\mathbf{'+pC+'\\text{ cm}} \\).';
+    if(!ok(vP,pC))h+='Calcula primero la hipotenusa con Pit&aacute;goras: \\( c = \\sqrt{a^2+b^2} = \\sqrt{'+a+'^2+'+b+'^2} = \\sqrt{'+(a*a)+'+'+(b*b)+'} = \\sqrt{'+(a*a+b*b)+'} = '+hip+'\\text{ cm} \\). Luego el per&iacute;metro: \\( P = a+b+c = '+a+'+'+b+'+'+hip+' = \\mathbf{'+pC+'\\text{ cm}} \\).';
     if(!ok(vA,aC))h+=(h?' ':'')+'El &aacute;rea del tri&aacute;ngulo rect&aacute;ngulo es \\( A = \\dfrac{\\text{base} \\times \\text{altura}}{2} = \\dfrac{'+b+' \\times '+a+'}{2} = \\mathbf{'+aC+'\\text{ cm}^2} \\).';
     trasFallo(1,h);
   }
@@ -377,7 +379,9 @@ function comprobarEj3(){
 // EJ4: ROMBO
 // ====================================================
 var d4={};
-function generarD4(){d4={D:rnd(8,24),d:rnd(4,14)};}
+// Semidiagonales que forman terna pitagórica con el lado: el lado sale exacto
+var SEMIDIAG=[[4,3],[8,6],[12,9],[16,12],[12,5],[15,8],[20,15]];
+function generarD4(){var s=SEMIDIAG[rnd(0,SEMIDIAG.length-1)];d4={D:2*s[0],d:2*s[1]};}
 
 function svgRombo(D,d){
   var esc=Math.min(12,170/D,140/d);
@@ -429,8 +433,10 @@ function comprobarEj4(){
 // ====================================================
 var d5={};
 function generarD5(){
-  var B=rnd(14,26),b=rnd(4,B-6),h=rnd(5,14);
-  var diff=B-b,offL=rnd(1,diff-1),offR=diff-offL;
+  // Desplazamientos horizontales que, con la altura h, dan lados oblicuos enteros
+  var DESPL={4:[3],6:[8],8:[6,15],9:[12],12:[5,9,16]},HS=[4,6,8,8,9,12,12];
+  var B,b,h,offL,offR;
+  do{h=HS[rnd(0,HS.length-1)];offL=DESPL[h][rnd(0,DESPL[h].length-1)];offR=DESPL[h][rnd(0,DESPL[h].length-1)];b=rnd(4,12);B=b+offL+offR;}while(B>30);
   d5={B:B,b:b,h:h,offL:offL,offR:offR,lL:rd(Math.sqrt(h*h+offL*offL)),lR:rd(Math.sqrt(h*h+offR*offR))};
 }
 
@@ -557,6 +563,7 @@ function comprobarEj6(){
 // ====================================================
 var d7={};
 function generarD7(){d7={r:rnd(3,18)};}
+var PI_APROX=3.14;   // se trabaja con π ≈ 3,14 (se indica en el enunciado)
 
 function svgCirc(r){
   var esc=Math.min(12,90/r);
@@ -578,7 +585,7 @@ function renderEj7HTML(){
     +'<div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">7</span><span class="ejercicio-titulo">Circunferencia y C&iacute;rculo</span></div><button class="btn-nuevo" onclick="nuevoEj(7)">&#128260; Nuevo</button></div>'
     +'<div class="figura-layout"><div class="figura-svg">'+svgCirc(r)+'</div>'
     +'<div class="campos-wrapper">'
-    +'<p style="font-size:.82rem;color:var(--cts);margin-bottom:.4rem;">Usa &pi; &asymp; 3.14159 &middot; Se acepta resultado redondeado a 2 decimales.</p>'
+    +'<p style="font-size:.82rem;color:var(--cts);margin-bottom:.4rem;">Usa <b>&pi; &asymp; 3,14</b> &middot; Se acepta el resultado redondeado a 2 decimales.</p>'
     +'<div class="campo-row"><label class="campo-label" for="ej7_p">Longitud =</label><input type="number" id="ej7_p" class="number-input" placeholder="cm" step="0.01" onkeydown="if(event.key===\'Enter\')comprobarEj7()"><span class="unidad">cm</span></div>'
     +'<div class="campo-row"><label class="campo-label" for="ej7_a">&Aacute;rea =</label><input type="number" id="ej7_a" class="number-input" placeholder="cm&sup2;" step="0.01" onkeydown="if(event.key===\'Enter\')comprobarEj7()"><span class="unidad">cm&sup2;</span></div>'
     +'<div class="btns-comprobar"><button class="btn-primary" onclick="comprobarEj7()">Comprobar</button></div>'
@@ -589,14 +596,14 @@ function comprobarEj7(){
   if(finalizado)return;
   if(superados.ej7){document.getElementById('fb-ej7').innerHTML='<span class="feedback-correcto">¡Ya superado!</span>';return;}
   var r=d7.r;
-  var pC=rd(2*Math.PI*r),aC=rd(Math.PI*r*r);
+  var pC=rd(2*PI_APROX*r),aC=rd(PI_APROX*r*r);
   var vP=parseFloat(document.getElementById('ej7_p').value),vA=parseFloat(document.getElementById('ej7_a').value);
   if(isNaN(vP)||isNaN(vA)){mostrarAviso('Completa los dos campos.');return;}
   if(ok(vP,pC)&&ok(vA,aC)){superados.ej7=true;actualizarUI();document.getElementById('fb-ej7').innerHTML='<span class="feedback-correcto">¡Correcto!</span>';document.getElementById('card-ej7').classList.add('superado');}
   else{registrarFallo('ej7',vP,vA);actualizarUI();
     var hh='';
-    if(!ok(vP,pC))hh+='La longitud de la circunferencia es \\( L = 2\\pi r = 2 \\times \\pi \\times '+r+' \\approx \\mathbf{'+pC+'\\text{ cm}} \\).';
-    if(!ok(vA,aC))hh+=(hh?' ':'')+'El &aacute;rea del c&iacute;rculo es \\( A = \\pi r^2 = \\pi \\times '+r+'^2 = \\pi \\times '+(r*r)+' \\approx \\mathbf{'+aC+'\\text{ cm}^2} \\).';
+    if(!ok(vP,pC))hh+='La longitud de la circunferencia es \\( L = 2\\pi r \\approx 2 \\times 3{,}14 \\times '+r+' = \\mathbf{'+pC+'\\text{ cm}} \\).';
+    if(!ok(vA,aC))hh+=(hh?' ':'')+'El &aacute;rea del c&iacute;rculo es \\( A = \\pi r^2 \\approx 3{,}14 \\times '+r+'^2 = 3{,}14 \\times '+(r*r)+' = \\mathbf{'+aC+'\\text{ cm}^2} \\).';
     trasFallo(7,hh);
   }
 }
@@ -612,7 +619,7 @@ function soluciones(n){
   if(n===4){var lado=rd(Math.sqrt(Math.pow(d4.D/2,2)+Math.pow(d4.d/2,2)));return[rd(4*lado),rd(d4.D*d4.d/2)];}
   if(n===5)return[rd(d5.B+d5.b+d5.lL+d5.lR),rd((d5.B+d5.b)*d5.h/2)];
   if(n===6)return[5*d6.l,rd(5*d6.l*d6.a/2)];
-  return[rd(2*Math.PI*d7.r),rd(Math.PI*d7.r*d7.r)];
+  return[rd(2*PI_APROX*d7.r),rd(PI_APROX*d7.r*d7.r)];
 }
 
 // Tras un fallo que enseña la solución, otra figura con otras medidas:

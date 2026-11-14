@@ -798,9 +798,11 @@ class Ejercicio3 extends EjercicioBase {
     }
     
     generarPregunta() {
-        let a = Math.floor(Math.random() * 9) - 4;
-        let b = Math.floor(Math.random() * 9) - 4;
-        let c = Math.floor(Math.random() * 9) - 4;
+        // Enteros entre −4 y 4, sin el 0 (no aporta nada al ejercicio)
+        const noCero = () => { let v; do { v = Math.floor(Math.random() * 9) - 4; } while (v === 0); return v; };
+        let a = noCero();
+        let b = noCero();
+        let c = noCero();
         
         let tipo = Math.floor(Math.random() * 4);
         let expresion = "";
@@ -1067,24 +1069,34 @@ class Ejercicio4 extends EjercicioBase {
 
 class Ejercicio5 extends EjercicioBase {
     generarNuevo() { 
-        this.mult = Math.floor(Math.random() * 3) + 2;       // 2..4
-        this.suma = Math.floor(Math.random() * 8) + 5;        // 5..12
-        this.divisor = Math.floor(Math.random() * 4) + 1;     // 1..4
-        this.cociente = Math.floor(Math.random() * 5) + 2;    // 2..6
-        this.dividendo = this.divisor * this.cociente;         // división exacta garantizada
-        this.f = Math.floor(Math.random() * 8) + 2;           // 2..9
-        this.g = Math.floor(Math.random() * 8) + 2;           // 2..9
+        // m·[s + D : (d)] − (f)·(g); d, f y g pueden ser negativos para practicar la regla de los signos
+        const sg = () => (Math.random() < 0.5 ? -1 : 1);
+        const par = v => (v < 0 ? `(${v})` : `${v}`);
+        this.mult = Math.floor(Math.random() * 3) + 2;                  // 2..4
+        this.suma = Math.floor(Math.random() * 8) + 5;                  // 5..12
+        this.divisor = (Math.floor(Math.random() * 3) + 2) * sg();      // ±2..±4
+        const q = Math.floor(Math.random() * 5) + 2;                    // 2..6
+        this.dividendo = Math.abs(this.divisor) * q;                    // positivo, división exacta
+        this.cociente = this.dividendo / this.divisor;
+        this.f = (Math.floor(Math.random() * 8) + 2) * sg();            // ±2..±9
+        this.g = (Math.floor(Math.random() * 8) + 2) * sg();            // ±2..±9
 
-        this.expresion = `${this.mult} · [${this.suma} + ${this.dividendo} : (${this.divisor})] - (${this.f})·(${this.g})`;
+        this.expresion = `${this.mult} · [${this.suma} + ${this.dividendo} : ${par(this.divisor)}] - ${par(this.f)} · ${par(this.g)}`;
         const corchete = this.suma + this.cociente;
         const parteIzq = this.mult * corchete;
         const parteDer = this.f * this.g;
         this.resultado = parteIzq - parteDer;
-        this.explicacion = `📖 <strong>Paso 1:</strong> Resolvemos la división dentro del corchete: ${this.dividendo} : ${this.divisor} = ${this.cociente}<br>
-                           📖 <strong>Paso 2:</strong> Resolvemos el corchete: ${this.suma} + ${this.cociente} = ${corchete}<br>
-                           📖 <strong>Paso 3:</strong> Multiplicamos ${this.mult} · ${corchete} = ${parteIzq}<br>
-                           📖 <strong>Paso 4:</strong> Calculamos (${this.f})·(${this.g}) = ${parteDer}<br>
-                           📖 <strong>Paso 5:</strong> Restamos: ${parteIzq} - ${parteDer} = ${this.resultado}`;
+        const pasoCorchete = this.cociente < 0
+            ? `${this.suma} + (${this.cociente}) = ${this.suma} - ${Math.abs(this.cociente)} = ${corchete}`
+            : `${this.suma} + ${this.cociente} = ${corchete}`;
+        const pasoResta = parteDer < 0
+            ? `${parteIzq} - (${parteDer}) = ${parteIzq} + ${Math.abs(parteDer)} = ${this.resultado}`
+            : `${parteIzq} - ${parteDer} = ${this.resultado}`;
+        this.explicacion = `📖 <strong>Paso 1:</strong> Resolvemos la división dentro del corchete (regla de los signos): ${this.dividendo} : ${par(this.divisor)} = ${this.cociente}<br>
+                           📖 <strong>Paso 2:</strong> Resolvemos el corchete: ${pasoCorchete}<br>
+                           📖 <strong>Paso 3:</strong> Multiplicamos ${this.mult} · ${par(corchete)} = ${parteIzq}<br>
+                           📖 <strong>Paso 4:</strong> Calculamos ${par(this.f)} · ${par(this.g)} = ${parteDer} (regla de los signos)<br>
+                           📖 <strong>Paso 5:</strong> Restamos: ${pasoResta}`;
         this.yaComprobado = false;
     }
     
@@ -1165,7 +1177,11 @@ class Ejercicio6 extends EjercicioBase {
         this.pagoCompleto = this.gasto >= this.deuda;
         this.restante = this.pagoCompleto ? 0 : (this.deuda - this.gasto);
         this.sobrante = this.pagoCompleto ? (this.gasto - this.deuda) : 0;
-        this.texto = `Una persona debe ${this.deuda} € y quiere saldar su deuda invitando a alguien que cuesta ${this.gasto} €. ¿Ha pagado lo que debía?`;
+        const NOMBRES = ['Lucía', 'Hugo', 'Martina', 'Daniel', 'Sara', 'Pablo', 'Carmen', 'Álvaro', 'Noa', 'Mario'];
+        const PLANES = [['a merendar', 'la merienda'], ['al cine', 'el cine'], ['a comer', 'la comida'], ['a un helado', 'el helado'], ['a una pizza', 'la pizza']];
+        const quien = NOMBRES[Math.floor(Math.random() * NOMBRES.length)];
+        const plan = PLANES[Math.floor(Math.random() * PLANES.length)];
+        this.texto = `${quien} debe ${this.deuda} € a un amigo. Para saldar la deuda, lo invita ${plan[0]} y ${plan[1]} cuesta ${this.gasto} €. ¿Ha saldado su deuda?`;
         if(this.pagoCompleto) {
             this.explicacion = this.sobrante > 0
                 ? `📖 Debe ${this.deuda} € (es decir, tiene -${this.deuda} €). Paga ${this.gasto} €. Operación: -${this.deuda} + ${this.gasto} = ${this.sobrante}. Ha pagado su deuda y le sobran ${this.sobrante} €. La respuesta es SÍ.`
