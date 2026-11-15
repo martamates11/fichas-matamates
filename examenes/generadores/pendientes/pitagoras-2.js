@@ -73,17 +73,17 @@
     [18, 24, 30], [20, 21, 29], [16, 30, 34], [12, 35, 37]];
   function isosceles(R) {
     const [m, h, l] = R.pick(ISOS), base = 2 * m;
-    const s = K / Math.max(base, h), X = m * s, H = h * s, L = Lienzo();
+    const s = 1.25 * K / Math.max(base, h), X = m * s, H = h * s, L = Lienzo();
     L.poligono([[-X, H], [X, H], [0, 0]])
       .linea(0, 0, 0, H, { discontinua: true, grosor: 1 }).anguloRecto([0, H], [1, 0], [0, -1], 7)
       .cota([-X, H], [X, H], `b = ${medida(base)}`, { lado: -1 });
     /* marcas de lados iguales */
     [[-X, H], [X, H]].forEach(([vx, vy]) => {
-      const mx = vx / 2, my = (vy) / 2, lx = vx, ly = vy, n = Math.hypot(lx, ly), tx = -ly / n * 4, ty = lx / n * 4;
+      const mx = vx * 0.8, my = vy * 0.8, lx = vx, ly = vy, n = Math.hypot(lx, ly), tx = -ly / n * 4, ty = lx / n * 4;
       L.linea(mx - tx, my - ty, mx + tx, my + ty, { grosor: 1.2 });
     });
     rotuloFuera(L, [-X, H], [0, 0], [0, H / 2], `l = ${medida(l)}`);
-    L.rotulo(0, H * 0.55, 1, 0, 'h = ?', 12, 4);
+    L.rotulo(0, H * 0.5, 1, 0, 'h = ?', 11, 3);
     return {
       html: true, enun: figura(L.cerrar('pend-fig', 'Triángulo isósceles')),
       pasos: [
@@ -106,7 +106,7 @@
       .cota([0, H], [B, H], `b = ${medida(b)}`, { lado: -1 }).cota([0, 0], [0, H], `h = ${medida(h)}`, { lado: -1 });
     /* «d = ?» encima de la diagonal, en el triángulo superior izquierdo */
     const n = Math.hypot(B, H);
-    L.rotulo(B / 2, H / 2, -H / n, -B / n, 'd = ?', 12, 6);
+    L.rotulo(B / 2, H / 2, -H / n, -B / n, 'd = ?', 12, 10);
     return {
       html: true, enun: figura(L.cerrar('pend-fig', 'Rectángulo')),
       pasos: [
@@ -124,7 +124,6 @@
     const V = [0, 1, 2, 3, 4, 5].map(i => { const t = Math.PI * i / 3; return [Rr * Math.cos(t), Rr * Math.sin(t)]; });
     const M = [(V[1][0] + V[2][0]) / 2, (V[1][1] + V[2][1]) / 2];   // punto medio del lado inferior
     L.poligono(V).punto(0, 0, 2.2)
-      .linea(0, 0, V[1][0], V[1][1], { grosor: 0.8 }).linea(0, 0, V[2][0], V[2][1], { grosor: 0.8 })
       .linea(0, 0, M[0], M[1], { discontinua: true, grosor: 1.1 })
       .anguloRecto(M, [1, 0], [0, -1], 6)
       .rotulo(M[0], M[1] * 0.45, 1, 0, 'a = ?', 12, 4)

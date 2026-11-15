@@ -16,9 +16,9 @@
 
   /* Tabla en blanco y negro para el examen (estilos en línea: index.html no tiene estilos de tabla) */
   const CELDA = 'border:0.25mm solid #333;padding:0.8mm 2.5mm;text-align:center;min-width:9mm;height:5.5mm';
-  function tabla(cab, filas) {
+  function tabla(cab, filas, ancho = '9mm') {
     const th = cab.map(c => `<th style="${CELDA};font-weight:600;font-style:italic">${c}</th>`).join('');
-    const tr = filas.map(f => `<tr>${f.map((c, j) => `<td style="${CELDA}${j === 0 && typeof c === 'string' && isNaN(c) ? ';text-align:left' : ''}">${c}</td>`).join('')}</tr>`).join('');
+    const tr = filas.map(f => `<tr>${f.map((c, j) => `<td style="${CELDA};min-width:${j === 0 ? '9mm' : ancho}${j === 0 && typeof c === 'string' && isNaN(c) ? ';text-align:left' : ''}">${c}</td>`).join('')}</tr>`).join('');
     return `<table style="border-collapse:collapse;margin:1mm 0;font-size:0.95em"><tr>${th}</tr>${tr}</table>`;
   }
 
@@ -70,10 +70,10 @@
     const f = repartir(R, N, 4, 2, 9);
     const F = [], h = [], H = [];
     f.forEach((v, i) => { F.push((F[i - 1] || 0) + v); h.push(v / N); H.push(F[i] / N); });
-    const datos = lista(cats.map((c, i) => `${minus(c)}, ${f[i]}`));
+    const datos = lista(cats.map((c, i) => `${minus(c)} (${f[i]})`));
     return {
       html: true,
-      enun: `<div class="pend-col"><span class="pend-texto">${ctx} Los resultados han sido: ${datos}. Completa la tabla de frecuencias.</span>${tabla(['x', 'f', 'F', 'h', 'H'], cats.map(c => [c, '', '', '', '']))}</div>`,
+      enun: `<div class="pend-col"><span class="pend-texto">${ctx} Los resultados han sido: ${datos}. Completa la tabla de frecuencias.</span>${tabla(['x', 'f', 'F', 'h', 'H'], cats.map(c => [c, '', '', '', '']), '13mm')}</div>`,
       pasos: [
         { t: `La frecuencia absoluta \\(f\\) es el dato de cada categoría; el total es \\(N = ${f.join(' + ')} = ${N}\\).` },
         { t: `La frecuencia acumulada \\(F\\) se obtiene sumando las \\(f\\) hasta esa fila; la relativa es \\(h = \\frac{f}{N}\\) (aquí, entre ${N}), y \\(H = \\frac{F}{N}\\) es la relativa acumulada. La última \\(F\\) es ${N} y la última \\(H\\) es 1.`,
@@ -113,17 +113,17 @@
   function genSectores(R) {
     const [ctx, cats] = R.pick(CONTEXTOS_SECTORES);
     const N = R.pick([9, 10, 12, 15, 18, 20]);
-    const f = repartir(R, N, 3, 1, N);
+    const f = repartir(R, N, 3, 2, N);   // ficha: al menos 1; aquí y en la ficha, al menos 2 (sin sectores diminutos)
     const k = 360 / N, g = f.map(v => v * k);
     return {
       html: true,
       enun: `<div class="pend-col"><span class="pend-texto">${ctx} Calcula el total de datos y los grados que corresponden a cada sector, y dibuja el diagrama de sectores.</span>${tabla(['x', 'f'], cats.map((c, i) => [c, f[i]]))}</div>`,
       pasos: [
         { t: 'El total de datos es la suma de las frecuencias:', m: `N = ${f.join(' + ')} = ${N}` },
-        { t: `Los ${N} datos ocupan los 360° del círculo, así que a cada dato le corresponden \\(360° : ${N} = ${k}°\\). Cada sector mide \\(f \\cdot ${k}°\\):`, m: cats.map((c, i) => `\\text{${c}: } ${f[i]} \\cdot ${k}° = ${g[i]}°`).join(' \\qquad ') },
-        { t: `Comprobación: \\(${g.join('° + ')}° = 360°\\). Con el transportador se dibuja cada ángulo:`, html: sectores(cats, g) }
+        { t: `Los ${N} datos ocupan los 360° del círculo, así que a cada dato le corresponden \\(360^{\\circ} : ${N} = ${k}^{\\circ}\\). Cada sector mide \\(f \\cdot ${k}^{\\circ}\\):`, m: cats.map((c, i) => `\\text{${c}: } ${f[i]} \\cdot ${k}^{\\circ} = ${g[i]}^{\\circ}`).join(' \\qquad ') },
+        { t: `Comprobación: \\(${g.join('^{\\circ} + ')}^{\\circ} = 360^{\\circ}\\). Con el transportador se dibuja cada ángulo:`, html: sectores(cats, g) }
       ],
-      res: `N = ${N};\\quad ` + cats.map((c, i) => `\\text{${c}: } ${g[i]}°`).join(',\\; ')
+      res: `N = ${N};\\quad ` + cats.map((c, i) => `\\text{${c}: } ${g[i]}^{\\circ}`).join(',\\; ')
     };
   }
 
@@ -214,7 +214,7 @@
   function genMediaGrafico(R) {
     const [ctx, ejeY, ejeX, x] = R.pick(CONTEXTOS_MEDIA_GRAFICO);
     const f = datosMedia(R, x, 8);
-    const graf = barras(x.map(String), f, 8, { u: 10, sep: 30, ancho: 16, eje: ejeY, tam: 11 });
+    const graf = barras(x.map(String), f, 8, { u: 12, sep: 32, ancho: 17, eje: ejeY, tam: 11 });
     const s = pasosMedia(x, f, [{ t: `Leemos en el gráfico la frecuencia de cada valor (${ejeX.toLowerCase()}: ${x.join(', ')}).` }]);
     return {
       html: true,

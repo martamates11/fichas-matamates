@@ -3,7 +3,7 @@
    Mismos tipos y rangos que la ficha pendientes/tercero/geometria-3.html, con datos
    pensados para hacer el examen sin calculadora (y aplicados también en la ficha):
    · Sombras: la altura y la sombra del objeto son un múltiplo entero de las de la persona.
-   · Diagonal: ortoedro cuyas dos diagonales (de la base y del cuerpo) son enteras.
+   · Diagonal: ortoedro cuyas dos diagonales (de una cara y del cuerpo) son enteras.
    · Pirámide, cono y esfera: el volumen lleva un 1/3 que se simplifica (datos múltiplos de 3).
    · Con π se usa π ≈ 3,14 y el resultado se da también en función de π. */
 (function () {
@@ -74,7 +74,7 @@
     L.cota([0, 0], [0, -Ho], etH, { lado: 1, d: 18 });
     L.texto(so / 2, 16, etS, { tam: 12 });
     L.texto(xp + sp / 2 + 2, 16, `${decTxt(d.s)} m`, { tam: 12 });
-    L.texto(xp + 9, -Hp / 2 - 2, `${decTxt(d.h)} m`, { tam: 12, ancla: 'start' });
+    L.texto(xp, -Hp - 6, `${decTxt(d.h)} m`, { tam: 12 });
     return L.cerrar('pend-fig', 'Objeto y persona con sus sombras');
   }
 
@@ -120,22 +120,24 @@
     let [a, b, c, d, D] = R.pick(CADENAS);
     if (R.rand() < 0.5) [a, b] = [b, a];
     const u = R.pick(['cm', 'cm', 'dm', 'm']);
-    const L = Lienzo(), { F, T } = ortoedro(L, a, b, c, escalaCaja(a, b, c));
-    L.linea(F[0][0], F[0][1], T[1][0], T[1][1], { discontinua: true, grosor: 1.3 })
-      .linea(F[0][0], F[0][1], T[2][0], T[2][1], { grosor: 1.4 })
-      .anguloRecto(T[1], [F[0][0] - T[1][0], F[0][1] - T[1][1]], [0, -1], 6)
+    /* La cara delantera (a × b) tiene la diagonal d; la profundidad es c */
+    const L = Lienzo(), { F, T } = ortoedro(L, a, c, b, 1.3 * escalaCaja(a, c, b));
+    L.linea(F[0][0], F[0][1], F[2][0], F[2][1], { grosor: 1.3 })
+      .linea(F[0][0], F[0][1], T[2][0], T[2][1], { discontinua: true, grosor: 1.3 })
+      .anguloRecto(F[2], [F[0][0] - F[2][0], F[0][1] - F[2][1]], [T[2][0] - F[2][0], T[2][1] - F[2][1]], 6)
       .punto(F[0][0], F[0][1], 2).punto(T[2][0], T[2][1], 2);
     L.cota(F[0], F[1], medida(a, u), { lado: -1, d: 12 });
-    L.rotulo((F[1][0] + T[1][0]) / 2, (F[1][1] + T[1][1]) / 2, 0.6, 0.8, medida(b, u), 12, 6);
-    L.rotulo(T[1][0], (T[1][1] + T[2][1]) / 2, 1, 0, medida(c, u), 12, 6);
-    const md = [(F[0][0] + T[1][0]) / 2, (F[0][1] + T[1][1]) / 2], mD = [(F[0][0] + T[2][0]) * 0.42, F[0][1] + (T[2][1] - F[0][1]) * 0.42];
-    L.texto(md[0] + 4, md[1] - 4, 'd', { tam: 12, cursiva: true });
-    L.texto(mD[0] - 5, mD[1] - 3, 'D', { tam: 12, cursiva: true, ancla: 'end' });
+    L.cota(F[3], F[0], medida(b, u), { lado: -1, d: 12 });
+    L.rotulo((F[1][0] + T[1][0]) / 2, (F[1][1] + T[1][1]) / 2, 0.6, 0.8, medida(c, u), 12, 6);
+    const md = [(F[0][0] + F[2][0]) * 0.45, F[0][1] + (F[2][1] - F[0][1]) * 0.45];
+    const mD = [F[0][0] + (T[2][0] - F[0][0]) * 0.7, F[0][1] + (T[2][1] - F[0][1]) * 0.7];
+    L.texto(md[0] - 4, md[1] - 3, 'd', { tam: 12, cursiva: true, ancla: 'end' });
+    L.texto(mD[0] + 2, mD[1] + 13, 'D', { tam: 12, cursiva: true });
     return {
       html: true, enun: figura(L.cerrar('pend-fig', 'Ortoedro con la diagonal de la base y la del cuerpo')),
       pasos: [
-        { t: 'La diagonal de la base es la hipotenusa de un triángulo rectángulo cuyos catetos son las aristas de la base:', m: `d = \\sqrt{${a}^2 + ${b}^2} = \\sqrt{${a * a} + ${b * b}} = \\sqrt{${d * d}} = ${u1(d, u)}` },
-        { t: 'La diagonal del ortoedro es la hipotenusa del triángulo rectángulo que forman \\(d\\) y la altura \\(c\\):', m: `D = \\sqrt{d^2 + c^2} = \\sqrt{${d}^2 + ${c}^2} = \\sqrt{${d * d} + ${c * c}} = \\sqrt{${D * D}} = ${u1(D, u)}` }
+        { t: 'La diagonal \\(d\\) de la cara delantera es la hipotenusa de un triángulo rectángulo cuyos catetos son las aristas de esa cara:', m: `d = \\sqrt{${a}^2 + ${b}^2} = \\sqrt{${a * a} + ${b * b}} = \\sqrt{${d * d}} = ${u1(d, u)}` },
+        { t: 'La diagonal \\(D\\) del ortoedro es la hipotenusa del triángulo rectángulo que forman \\(d\\) y la arista \\(c\\), perpendicular a esa cara:', m: `D = \\sqrt{d^2 + c^2} = \\sqrt{${d}^2 + ${c}^2} = \\sqrt{${d * d} + ${c * c}} = \\sqrt{${D * D}} = ${u1(D, u)}` }
       ],
       res: `d = ${u1(d, u)},\\quad D = ${u1(D, u)}`
     };
@@ -147,7 +149,7 @@
     const L = Lienzo(), { F, T } = ortoedro(L, a, b, h, escalaCaja(a, b, h));
     L.cota(F[0], F[1], `a = ${medida(a)}`, { lado: -1, d: 12 });
     L.rotulo((F[1][0] + T[1][0]) / 2, (F[1][1] + T[1][1]) / 2, 0.6, 0.8, `b = ${medida(b)}`, 12, 6);
-    L.cota(F[3], F[0], `h = ${medida(h)}`, { lado: 1, d: 12 });
+    L.cota(F[3], F[0], `h = ${medida(h)}`, { lado: -1, d: 12 });
     const V = a * b * h, Ab = a * b, Al = 2 * (a + b) * h, At = 2 * Ab + Al;
     return {
       html: true, enun: figura(L.cerrar('pend-fig', 'Prisma de base rectangular')),
@@ -172,9 +174,10 @@
     L.linea(0, -Hh, 0, 0, { discontinua: true, grosor: 1.2 }).anguloRecto([0, 0], [1, 0], [0, -1], 5);
     const M = [(izq[0] + fr[0]) / 2, (izq[1] + fr[1]) / 2];
     L.linea(V[0], V[1], M[0], M[1], { grosor: 1.3 });
-    L.rotulo(2, -Hh * 0.62, 1, 0, `h = ${medida(h)}`, 12, 4);
-    L.texto((V[0] + M[0]) / 2 - 7, (V[1] + M[1]) / 2, `${hl} = ${medida(apL)}</tspan>`, { tam: 12, ancla: 'end' });
-    L.cota(fr, der, `l = ${medida(l)}`, { lado: -1, d: 10 });
+    L.cota([X + 8, 0], [X + 8, -Hh], `h = ${medida(h)}`, { lado: -1, d: 6 });
+    const ym = (V[1] + M[1]) / 2, xBorde = -X * (ym + Hh) / Hh;
+    L.texto(xBorde - 6, ym + 4, `${hl} = ${medida(apL)}</tspan>`, { tam: 12, ancla: 'end' });
+    L.cota(fr, der, `l = ${medida(l)}`, { lado: -1, d: 12 });
     const vol = l * l * h / 3, Ab = l * l, Al = rd(2 * l * apL, 2), At = rd(Ab + Al, 2);
     return {
       html: true, enun: figura(L.cerrar('pend-fig', 'Pirámide de base cuadrada')),
@@ -196,7 +199,7 @@
     arcoElipse(L, 0, 0, Rx, Ry, 0, Math.PI);
     arcoElipse(L, 0, 0, Rx, Ry, Math.PI, 2 * Math.PI, { discontinua: true, grosor: 1 });
     L.poligono(ptsElipse(0, -Hh, Rx, Ry), { relleno: '#f5f5f5' });
-    L.punto(0, -Hh, 2).linea(0, -Hh, Rx, -Hh, { grosor: 1.2 }).texto(Rx / 2, -Hh - 5, `r = ${medida(r)}`, { tam: 12 });
+    L.punto(0, -Hh, 2).linea(0, -Hh, Rx, -Hh, { grosor: 1.2 }).texto(Rx / 2, -Hh - Ry - 5, `r = ${medida(r)}`, { tam: 12 });
     L.cota([Rx, 0], [Rx, -Hh], `h = ${medida(h)}`, { lado: -1, d: 12 });
     const kV = r * r * h, kB = r * r, kL = 2 * r * h, kT = 2 * kB + kL;
     return {
@@ -220,10 +223,10 @@
     arcoElipse(L, 0, 0, Rx, Ry, 0, Math.PI);
     arcoElipse(L, 0, 0, Rx, Ry, Math.PI, 2 * Math.PI, { discontinua: true, grosor: 1 });
     L.linea(0, -Hh, 0, 0, { discontinua: true, grosor: 1.1 }).anguloRecto([0, 0], [1, 0], [0, -1], 5).punto(0, 0, 2).linea(0, 0, Rx, 0, { grosor: 1.2 });
-    L.texto(Rx / 2, 14 + Ry * 0.2, `r = ${medida(r)}`, { tam: 12 });
-    L.rotulo(-2, -Hh * 0.55, -1, 0, `h = ${medida(h)}`, 12, 4);
+    L.texto(Rx / 2, Ry + 14, `r = ${medida(r)}`, { tam: 12 });
+    L.cota([-Rx - 8, 0], [-Rx - 8, -Hh], `h = ${medida(h)}`, { lado: 1, d: 6 });
     const lx = -Rx, ly = Hh, l = Math.hypot(lx, ly);
-    L.rotulo(Rx / 2, -Hh / 2, ly / l, lx / l * -1, `g = ${medida(g)}`, 12, 6);
+    L.rotulo(Rx / 2, -Hh / 2, ly / l, lx / l, `g = ${medida(g)}`, 12, 6);
     const kV = r * r * h / 3, kB = r * r, kL = rd(r * g, 1), kT = rd(kB + kL, 1);
     return {
       html: true, enun: figura(L.cerrar('pend-fig', 'Cono'), '', NOTA_PI),
@@ -243,8 +246,8 @@
     L.circulo(0, 0, Rr, { relleno: '#f0f0f0' });
     arcoElipse(L, 0, 0, Rr, Rr * 0.28, 0, Math.PI, { grosor: 1 });
     arcoElipse(L, 0, 0, Rr, Rr * 0.28, Math.PI, 2 * Math.PI, { discontinua: true, grosor: 0.9 });
-    if (conDiam) L.punto(0, 0, 2).linea(-Rr, 0, Rr, 0, { grosor: 1.3 }).texto(0, -6, `d = ${medida(2 * r, u)}`, { tam: 12 });
-    else L.punto(0, 0, 2).linea(0, 0, Rr, 0, { grosor: 1.3 }).texto(Rr / 2, -6, `r = ${medida(r, u)}`, { tam: 12 });
+    if (conDiam) L.punto(0, 0, 2).linea(-Rr, 0, Rr, 0, { grosor: 1.3 }).texto(0, -Rr * 0.28 - 7, `d = ${medida(2 * r, u)}`, { tam: 12 });
+    else L.punto(0, 0, 2).linea(0, 0, Rr, 0, { grosor: 1.3 }).texto(Rr / 2, -Rr * 0.28 - 7, `r = ${medida(r, u)}`, { tam: 12 });
     const kV = 4 * r * r * r / 3, kA = 4 * r * r;
     const pasos = [];
     if (conDiam) pasos.push({ t: 'El radio es la mitad del diámetro:', m: `r = \\frac{${2 * r}}{2} = ${u1(r, u)}` });
@@ -268,7 +271,7 @@
     enlace: '../pendientes/tercero/geometria-3.html',
     ejercicios: [
       tipo('sombras', 'Semejanza: el problema de las sombras', sombras, 1, ['Resuelve el siguiente problema:', 'Resuelve los siguientes problemas:']),
-      tipo('diagonal', 'Diagonal del ortoedro (Pitágoras en el espacio)', diagonal, 1, ['Calcula la diagonal de la base, d, y la diagonal del ortoedro, D:', 'Calcula, en cada ortoedro, la diagonal de la base, d, y la diagonal del ortoedro, D:']),
+      tipo('diagonal', 'Diagonal del ortoedro (Pitágoras en el espacio)', diagonal, 1, ['Calcula la diagonal d de la cara delantera y la diagonal D del ortoedro:', 'Calcula, en cada ortoedro, la diagonal d de la cara delantera y la diagonal D del ortoedro:']),
       tipo('prisma', 'Prisma: volumen y área total', prisma),
       tipo('piramide', 'Pirámide: volumen y área total', piramide, 1.25),
       tipo('cilindro', 'Cilindro: volumen y área total', cilindro),

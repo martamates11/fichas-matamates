@@ -51,7 +51,7 @@
     return {
       html: true,
       enun: `<span class="pend-texto">${frase.charAt(0).toUpperCase() + frase.slice(1)}</span>`,
-      pasos: [{ t: `Llamamos \\(x\\) al número. ${expl}`, m: res }],
+      pasos: [{ t: `Llamamos \\(x\\) al número. ${expl}` }],
       res
     };
   }

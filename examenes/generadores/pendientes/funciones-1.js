@@ -214,7 +214,7 @@
     const xs = [-1, 0, 1], ys = xs.map(x => m * x + b);
     const expr = tex.poli([[m, 'x'], [b, '']]);
     const sust = x => {
-      const mx = m === 1 ? `${x < 0 ? `(${x})` : x}` : m === -1 ? `-${x < 0 ? `(${x})` : x}` : `${n(m)} \\cdot ${x < 0 ? `(${x})` : x}`;
+      const mx = x === 0 ? `${n(m)} \\cdot 0` : m === 1 ? `${x < 0 ? `(${x})` : x}` : m === -1 ? `-${x < 0 ? `(${x})` : x}` : `${n(m)} \\cdot ${x < 0 ? `(${x})` : x}`;
       return b === 0 ? mx : `${mx} ${b > 0 ? '+' : '-'} ${abs(b)}`;
     };
     return {

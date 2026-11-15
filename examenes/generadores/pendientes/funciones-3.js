@@ -252,7 +252,8 @@
     g.puntos.forEach(q => {
       L.punto(X(q.x), Y(q.y), 2.6);
       const esMax = q.tipo.startsWith('max');
-      L.texto(X(q.x), Y(q.y) + (esMax ? -5 : 12), q.letra, { tam: 10, peso: 700 });
+      if (q.x === 0) L.texto(X(q.x) + 5, Y(q.y) + (esMax ? -4 : 11), q.letra, { tam: 10, peso: 700, ancla: 'start' });   // no tapar el eje Y
+      else L.texto(X(q.x), Y(q.y) + (esMax ? -5 : 12), q.letra, { tam: 10, peso: 700 });
     });
     const pMax = g.puntos.find(q => q.tipo === 'maxAbs'), pMin = g.puntos.find(q => q.tipo === 'minAbs');
     const lineas = g.puntos.map(q => {
@@ -319,7 +320,7 @@
         { t: `b) En \\(f(x) = ax^2 + bx + c\\), la parábola es cóncava si \\(a > 0\\) y convexa si \\(a < 0\\). Miramos el coeficiente de \\(x^2\\) de cada opción, esté donde esté escrito:`, m: ops.map((o, i) => `\\text{${LETRAS[i]})}\\; a = ${n(o.a)}`).join(' \\qquad ') },
         { t: `Solo la opción ${LETRAS[iOk]}) tiene el coeficiente de \\(x^2\\) ${conc ? 'positivo' : 'negativo'}.` }
       ],
-      res: `\\text{a) ${conc ? 'Cóncava' : 'Convexa'}; \\; b) ${LETRAS[iOk]})}\\; f(x) = ${ops[iOk].tex}`
+      res: `\\text{a) ${conc ? 'Cóncava' : 'Convexa'};}\\quad \\text{b) ${LETRAS[iOk]})}\\; f(x) = ${ops[iOk].tex}`
     };
   }
 
@@ -338,8 +339,9 @@
       const signo = k < 0 ? (primero ? '-' : ' - ') : (primero ? '' : ' + ');
       return signo + (abs(k) === 1 ? '' : `${abs(k)} \\cdot `) + s;
     };
-    let t = coef(a, `(${n(x)})^2`, true);
-    if (b) t += coef(b, `(${n(x)})`, false);
+    const xs = x < 0 ? `(${n(x)})` : n(x);           // el negativo, entre paréntesis
+    let t = coef(a, `${a === -1 ? `(${n(x)})` : xs}^2`, true);   // con a = −1, «−(1)²» y no «−1²»
+    if (b) t += coef(b, xs, false);
     if (c) t += (c < 0 ? ' - ' : ' + ') + abs(c);
     const nums = poli([[a * x * x, ''], [b * x, ''], [c, '']]);
     const v = a * x * x + b * x + c;

@@ -730,6 +730,7 @@ function puedeCorregir(n){
 }
 function ponerEnunciado(n, texto){
   document.getElementById('enunciado'+n).textContent = EJ[n].superado ? '✅ Superado' : texto;
+  actualizarBotonSol(n);
 }
 function prepararControles(n, campos){
   const ex = EJ[n];
@@ -1490,7 +1491,11 @@ function mostrarResultado(){
     const intentos = ex.aciertos + ex.fallos;
     const estado = ex.superado ? `✅ Superado (${valorEjercicio(ex).toFixed(2)}/${PUNTO_POR_TIPO.toFixed(2)})` : `🔘 No superado (0/${PUNTO_POR_TIPO.toFixed(2)})`;
     return `<div><strong>${i+1}. ${NOMBRES[i]}</strong> — ${estado} · ${intentos} intento${intentos===1?'':'s'}: ${ex.aciertos} acierto${ex.aciertos===1?'':'s'}, ${ex.fallos} fallo${ex.fallos===1?'':'s'}</div>`;
-  }).join('');
+  }).join('') + (()=>{
+    const total = solucionesVistas.reduce((a,b)=>a+b,0);
+    const det = solucionesVistas.map((v,i)=> v ? `ej. ${i}: ${v}` : '').filter(Boolean).join(', ');
+    return `<div style="margin-top:6px;">👁️ <strong>Soluciones vistas:</strong> ${total}${det ? ` (${det})` : ''}</div>`;
+  })();
   const modal = document.getElementById('modalResultado');
   modal.style.backgroundColor = color.bg; modal.style.color = color.txt;
   document.body.classList.toggle('nota-perfecta', r.nota===10);
@@ -1502,6 +1507,7 @@ document.getElementById('btnCerrarResultado').onclick = ()=> document.getElement
 /* ---------- Reinicio global ("Nueva ficha") ---------- */
 function reiniciarTodo(){
   EJ.slice(1).forEach(e=>{ clearTimeout(e.temporizador); e.temporizador=null; e.superado=false; e.fallos=0; e.aciertos=0; e.racha=0; });
+  solucionesVistas.fill(0);
   startTime = Date.now();
   finalizado = false;
   resultadoFinal = null;
@@ -1520,13 +1526,125 @@ document.getElementById('btnConfirmarReinicio').onclick = ()=>{
   reiniciarTodo();
 };
 
+/* ============ MOSTRAR SOLUCIÓN (por ejercicio) ============
+   La ficha muestra todos los ejercicios a la vez, así que cada tarjeta tiene su propio botón,
+   apagado, al pie. Ver la solución no suma, no resta y no cuenta para la racha: el ejercicio
+   visto se sustituye por otro del mismo tipo con otros números. Los fallos previos siguen restando. */
+const solucionesVistas = [0, 0, 0, 0, 0, 0, 0, 0];   // índice = número de ejercicio (1-7)
+
+// Imagen de la gráfica resuelta: el ejercicio cambia, así que la solución lleva su propia gráfica
+function fotoGrafica(n, extra){
+  const c = document.getElementById('c'+n);
+  if(!c) return '';
+  if(extra) extra(c.getContext('2d'));
+  try { return `<img class="sol-graf" src="${c.toDataURL('image/png')}" alt="Gráfica del ejercicio resuelto">`; } catch(e){ return ''; }
+}
+function solucionDe(n){
+  switch(n){
+    case 1: {
+      const e = ex1, sol = e.cortesX.slice().sort((a,b)=>a-b);
+      const img = fotoGrafica(1, ctx=>{ dibujarPunto(ctx,300,0,e.c,'#1E6F5C',5); sol.forEach(x=> dibujarPunto(ctx,300,x,0,'#1E6F5C',5)); });
+      const ecuacion = e.tipo==='lineal'
+        ? `${polyCuad(0,e.b,e.c)} = 0 → ${num(e.b)}x = ${num(-e.c)} → x = ${num(sol[0])}`
+        : `${polyCuad(e.a,e.b,e.c)} = 0 → x = ${num(sol[0])} y x = ${num(sol[1])} (ecuación de 2.º grado)`;
+      return `Función ${e.expr}.${img}<ul><li>Corte con el eje Y: x = 0 → f(0) = ${num(e.c)} → <b>(0, ${num(e.c)})</b>.</li>`
+        + `<li>Corte con el eje X: ${ecuacion} → ${sol.map(x=>`<b>(${num(x)}, 0)</b>`).join(' y ')}.</li></ul>`;
+    }
+    case 2: {
+      const C = intervalosDe(ex2.xs, ex2.tipos, 'crece'), D = intervalosDe(ex2.xs, ex2.tipos, 'decrece');
+      return `${fotoGrafica(2)}Crece en <b>${fmtIntervalos(C)}</b> y decrece en <b>${fmtIntervalos(D)}</b>. Los extremos de cada intervalo son las x donde la gráfica cambia de subir a bajar o al revés; los intervalos se escriben abiertos, con valores de x.`;
+    }
+    case 3: {
+      const Cc = intervalosDe(ex3.xs, ex3.tipos, 'concava'), Cx = intervalosDe(ex3.xs, ex3.tipos, 'convexa');
+      const inflTxt = ex3.inflex.length===1 ? `el punto de inflexión x = ${num(ex3.inflex[0].x)}` : `los puntos de inflexión x = ${num(ex3.inflex[0].x)} y x = ${num(ex3.inflex[1].x)}`;
+      return `${fotoGrafica(3)}Cóncava (∪) en <b>${fmtIntervalos(Cc)}</b> y convexa (∩) en <b>${fmtIntervalos(Cx)}</b>. Los intervalos se separan en ${inflTxt}: fíjate en la forma de la curva, no en si sube o baja.`;
+    }
+    case 4: {
+      const pMax = ex4.puntos.find(p=>p.tipo==='maxAbs'), pMin = ex4.puntos.find(p=>p.tipo==='minAbs');
+      return `${fotoGrafica(4)}<ul>${ex4.puntos.map(p=>`<li>Punto ${p.letra} (${num(p.x)}, ${num(p.y)}): ${NOMBRE_EXT[p.tipo].toLowerCase()}.</li>`).join('')}</ul>`
+        + `Máximo absoluto en <b>(${num(pMax.x)}, ${num(pMax.y)})</b> (el punto más alto de toda la gráfica) y mínimo absoluto en <b>(${num(pMin.x)}, ${num(pMin.y)})</b> (el más bajo).`;
+    }
+    case 5:
+      return `${ex5.expr}.${fotoGrafica(5)}Pendiente <b>m = ${num(ex5.m)}</b> (el número que multiplica a x), ordenada en el origen <b>n = ${num(ex5.b)}</b> (el valor de y cuando x = 0) y la recta es <b>${ex5.m>0?'creciente':'decreciente'}</b>, porque su pendiente es ${ex5.m>0?'positiva':'negativa'}.`;
+    case 6: {
+      const op = ex6.opciones.find(o=>o.correcta);
+      return `${fotoGrafica(6)}a) La parábola se abre hacia ${ex6.a>0 ? 'arriba (∪): es <b>cóncava</b>' : 'abajo (∩): es <b>convexa</b>'}.<br>b) La función es <b>f(x) = ${fmtPoly(op.terminos)}</b>: es la única de las tres cuyo coeficiente de x² es ${ex6.a>0?'positivo':'negativo'} (${num(ex6.a)}). El coeficiente principal es el que multiplica a x², esté donde esté escrito.`;
+    }
+    case 7: {
+      const {a,b,c:cc} = ex7;
+      const img = fotoGrafica(7, ctx=>{ dibujarCuadricula(ctx,300); dibujarFuncion(ctx,300, x=> a*x*x + b*x + cc, '#A0522D', 2); XS7.forEach((x,i)=> dibujarPunto(ctx,300,x,ex7.ys[i],'#1E6F5C',5)); });
+      const filas = XS7.map((x,i)=> `<li>f(${num(x)}) = ${num(a)}·(${num(x)})² ${b>=0?'+':MENOS} ${Math.abs(b)}·(${num(x)}) ${cc>=0?'+':MENOS} ${Math.abs(cc)} = <b>${num(ex7.ys[i])}</b></li>`).join('');
+      return `${ex7.expr}.<ul>${filas}</ul>${img}Cada fila (x, y) de la tabla es un punto; los cinco dibujan una parábola ${a>0 ? 'cóncava ∪ (a > 0)' : 'convexa ∩ (a < 0)'}.`;
+    }
+  }
+  return '';
+}
+
+function actualizarBotonSol(n){
+  const card = document.getElementById('card'+n);
+  if(!card) return;
+  card.querySelectorAll('.sol-zona').forEach(z=> z.remove());
+  const ex = EJ[n];
+  if(ex.superado) return;
+  // ocupado: acierto pendiente de que salga el siguiente, o ejercicio ya corregido (tras un fallo ya se ve la corrección)
+  const pendiente = !!ex.temporizador, corregido = document.getElementById('btnCorregir'+n).disabled;
+  const zona = document.createElement('div');
+  zona.className = 'sol-zona';
+  const titulo = finalizado ? 'La ficha ya está finalizada' : pendiente ? 'Espera al siguiente ejercicio' : corregido ? 'Pulsa antes el botón de nuevo ejercicio' : '';
+  zona.innerHTML = `<button type="button" class="btn-soluciones" ${pendiente || corregido || finalizado ? `disabled title="${titulo}"` : ''}>Mostrar solución</button>`;
+  zona.firstElementChild.addEventListener('click', ()=> pedirSolucion(n));
+  card.appendChild(zona);
+}
+
+function avisoSoluciones(){
+  return new Promise(resolve=>{
+    const fondo = document.createElement('div');
+    fondo.setAttribute('role','dialog');
+    fondo.setAttribute('aria-modal','true');
+    fondo.setAttribute('aria-labelledby','tituloAvisoSol');
+    fondo.style.cssText = 'position:fixed;inset:0;background:rgba(44,31,14,0.55);display:flex;align-items:center;justify-content:center;z-index:3000;padding:16px;';
+    fondo.innerHTML =
+      '<div style="background:#FFFDF7;border:2px solid #C9A96E;border-radius:14px;max-width:400px;width:100%;padding:22px 22px 18px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.25);font-family:\'Lato\',sans-serif;color:#2C1F0E;">' +
+      '<h3 id="tituloAvisoSol" style="margin:0 0 10px;font-size:1.1rem;color:#A0522D;font-family:\'Libre Baskerville\',serif;">¿Mostrar las soluciones?</h3>' +
+      '<p style="margin:0 0 18px;font-size:0.92rem;line-height:1.45;">Verás resuelto este ejercicio con su explicación. <b>Este ejercicio no contará para la nota</b> y los fallos que ya hayas cometido siguen restando. Después podrás seguir con otro ejercicio del mismo tipo.</p>' +
+      '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">' +
+      '<button type="button" data-r="si" style="background:transparent;color:#8A7A69;border:1px solid #DDD0B6;border-radius:30px;padding:9px 18px;cursor:pointer;font-family:inherit;font-size:.85rem;">Sí, mostrar soluciones</button>' +
+      '<button type="button" data-r="no" style="background:#A0522D;color:#FFFFFF;border:none;border-radius:30px;padding:10px 22px;font-weight:700;cursor:pointer;font-family:inherit;">Volver al ejercicio</button>' +
+      '</div></div>';
+    const cerrar = r=>{ fondo.remove(); document.removeEventListener('keydown', tecla); resolve(r); };
+    const tecla = ev=>{ if(ev.key==='Escape') cerrar(false); };
+    fondo.querySelector('[data-r="no"]').addEventListener('click', ()=> cerrar(false));
+    fondo.querySelector('[data-r="si"]').addEventListener('click', ()=> cerrar(true));
+    fondo.addEventListener('click', ev=>{ if(ev.target===fondo) cerrar(false); });
+    document.addEventListener('keydown', tecla);
+    document.body.appendChild(fondo);
+    fondo.querySelector('[data-r="no"]').focus();
+  });
+}
+
+async function pedirSolucion(n){
+  const ex = EJ[n];
+  if(ex.superado || finalizado || ex.temporizador || document.getElementById('btnCorregir'+n).disabled) return;
+  if(!(await avisoSoluciones())) return;
+  if(ex.superado || finalizado || ex.temporizador) return;
+  const html = solucionDe(n);
+  solucionesVistas[n]++;
+  // Otro ejercicio del mismo tipo con otros números; racha, aciertos y fallos intactos
+  const antes = document.getElementById('enunciado'+n).textContent + '|' + document.getElementById('c'+n).toDataURL();
+  for(let k=0;k<30;k++){
+    NUEVOS[n]();
+    if(document.getElementById('enunciado'+n).textContent + '|' + document.getElementById('c'+n).toDataURL() !== antes) break;
+  }
+  document.getElementById('feedback'+n).innerHTML = `<div class="feedback-solucion"><b>Solución.</b> ${html}<br>Solución mostrada · ejercicio sin calificar. 👉 Sigue con este nuevo.</div>`;
+}
+
 /* ---------- Arranque ---------- */
 for(let n=1;n<=NUM_TIPOS;n++) NUEVOS[n]();
 actualizarCabeceras(); pintarMarcador();
 
 // Gancho solo para pruebas automáticas (únicamente con ?seed=N en la URL)
 if(seedParam !== null){
-  window.__qa = { EJ, fmtPoly, polyCuad, generarCortes, generarTramos, generarCurvatura, generarExtremos, generarEleccion, generarCuadratica, calcularNota };
+  window.__qa = { EJ, NUEVOS, solucionesVistas, pedirSolucion, fmtPoly, polyCuad, generarCortes, generarTramos, generarCurvatura, generarExtremos, generarEleccion, generarCuadratica, calcularNota };
 }
 
 })();

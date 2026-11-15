@@ -462,6 +462,13 @@ hr { margin: 0.5rem 0; border: none; border-top: 1px solid var(--color-borde-sua
     white-space: nowrap;
     border: 0;
 }
+/* «Mostrar solución»: botón apagado, que no invite a pulsarlo, y feedback neutro */
+:root { --color-apagado: #A8998A; --color-apagado-fondo: #F3EFE6; }
+.sol-zona { display: flex; justify-content: flex-end; margin-top: 10px; }
+.btn-soluciones { background: transparent; color: var(--color-apagado); border: 1px solid #DDD0B6; border-radius: 4px; padding: 5px 14px; font-family: inherit; font-size: .78rem; font-weight: 400; cursor: pointer; transition: color .2s, border-color .2s; }
+.btn-soluciones:hover:not(:disabled) { color: var(--color-texto-suave); border-color: var(--color-borde); }
+.btn-soluciones:disabled { opacity: .4; cursor: default; }
+.feedback-solucion { display: block; background: var(--color-apagado-fondo); border: 1.5px dashed var(--color-apagado); border-radius: 8px; padding: 10px 14px; color: var(--color-texto); line-height: 1.5; }
 </style>
 </head>
 <body>
@@ -472,14 +479,15 @@ hr { margin: 0.5rem 0; border: none; border-top: 1px solid var(--color-borde-sua
         <p>Ejercicios interactivos · 1º ESO</p>
         <div class="header-badges">
             <span class="header-badge">🎯 2 aciertos consecutivos → superado</span>
-            <span class="header-badge">💡 Cada fallo resta 0.25 puntos</span>
+            <span class="header-badge">💡 Cada fallo resta 0,25 puntos</span>
             <span class="header-badge">🛡️ No se puede repetir la misma respuesta</span>
+            <span class="header-badge">👁️ Ver la solución de un ejercicio no da puntos</span>
         </div>
     </div>
     <div class="info-bar">
         <div class="info-item"><span class="info-icon">📊</span><span>Progreso: <span id="progresoCount" class="info-value">0</span>/8</span></div>
         <div class="info-item"><span class="info-icon">❌</span><span>Fallos: <span id="fallosCount" class="info-value">0</span></span></div>
-        <div class="info-item"><span class="info-icon">⭐</span><span>Nota: <span id="notaActual" class="info-value">0.0</span>/10</span></div>
+        <div class="info-item"><span class="info-icon">⭐</span><span>Nota: <span id="notaActual" class="info-value">0,0</span>/10</span></div>
     </div>
     <div class="name-section">
         <label for="nombreAlumno" class="name-label">👤 ALUMNO/A</label>
@@ -495,7 +503,7 @@ hr { margin: 0.5rem 0; border: none; border-top: 1px solid var(--color-borde-sua
     <div class="modal-card" id="modalCard">
         <button class="modal-close" id="closeModal">✕</button>
         <div class="modal-title">Divisibilidad 1º ESO · Ficha interactiva</div>
-        <div class="modal-grade" id="modalNotaValor">0.0 / 10</div>
+        <div class="modal-grade" id="modalNotaValor">0,0 / 10</div>
         <div class="modal-info" id="modalInfo"></div>
         <div class="modal-warning">📸 Haz una captura de pantalla y entrégala en Google Classroom.</div>
         <div class="modal-footer">Material elaborado por Marta López de Letona Sánchez</div>
@@ -563,6 +571,23 @@ function confirmar(mensaje, { si = 'Sí, reiniciar', no = 'Cancelar', titulo = '
 }
 function avisar(mensaje) {
     return confirmar(mensaje, { si: 'Entendido', no: null, titulo: 'Atención' });
+}
+
+// ============ UTILIDADES DE DIVISIBILIDAD ============
+function esPrimo(n) { if (n < 2) return false; for (let i = 2; i * i <= n; i++) if (n % i === 0) return false; return true; }
+function mcdDe(a, b) { return b ? mcdDe(b, a % b) : a; }
+function divisoresDe(n) { const r = []; for (let i = 1; i <= n; i++) if (n % i === 0) r.push(i); return r; }
+function factoresDe(n) { const f = {}; for (let p = 2; n > 1; p++) while (n % p === 0) { f[p] = (f[p] || 0) + 1; n /= p; } return f; }
+function textoFactores(f) { return Object.keys(f).map(Number).sort((x, y) => x - y).map(p => f[p] > 1 ? `${p}<sup>${f[p]}</sup>` : `${p}`).join(' · '); }
+// Pareja a = g·p, b = g·q con p ≠ q primos entre sí (así ninguno es múltiplo del otro)
+function parejaDivisibilidad(gMin, gMax, pMax, tope, cond) {
+    let a, b, g, p, q;
+    do {
+        g = gMin + Math.floor(Math.random() * (gMax - gMin + 1));
+        p = 2 + Math.floor(Math.random() * (pMax - 1)); q = 2 + Math.floor(Math.random() * (pMax - 1));
+        a = g * p; b = g * q;
+    } while (p === q || mcdDe(p, q) !== 1 || a > tope || b > tope || !cond(g * p * q));
+    return Math.random() < 0.5 ? [a, b] : [b, a];
 }
 
 // EJERCICIO 1: múltiplo/divisor
@@ -657,7 +682,8 @@ class Ejercicio2 {
         this.generarNuevo();
     }
     generarNuevo() {
-        this.numero = Math.floor(Math.random() * 9) + 2;
+        // Número entre 2 y 25 (antes 2–10), como en el generador de exámenes
+        this.numero = Math.floor(Math.random() * 24) + 2;
         this.correcto = `${this.numero * 1}, ${this.numero * 2}, ${this.numero * 3}`;
         this.ultimoAciertoRegistrado = false;
     }
@@ -716,10 +742,11 @@ class Ejercicio3 {
         this.generarNuevo();
     }
     generarNuevo() {
-        const opts = [{ num: 8, div: "1,2,4,8" }, { num: 12, div: "1,2,3,4,6,12" }, { num: 10, div: "1,2,5,10" }, { num: 15, div: "1,3,5,15" }, { num: 20, div: "1,2,4,5,10,20" }, { num: 18, div: "1,2,3,6,9,18" }];
-        let i = Math.floor(Math.random() * opts.length);
-        this.numero = opts[i].num;
-        this.correcto = opts[i].div;
+        // Cualquier número compuesto entre 8 y 50 (antes, solo seis números fijos)
+        let n;
+        do { n = Math.floor(Math.random() * 43) + 8; } while (esPrimo(n));
+        this.numero = n;
+        this.correcto = divisoresDe(n).join(',');
         this.ultimoAciertoRegistrado = false;
     }
     verificar(respuesta) {
@@ -777,11 +804,10 @@ class Ejercicio4 {
         this.generarNuevo();
     }
     generarNuevo() {
-        const p = [{ a: 6, b: 8, m: 24 }, { a: 4, b: 6, m: 12 }, { a: 3, b: 5, m: 15 }, { a: 10, b: 15, m: 30 }, { a: 12, b: 18, m: 36 }, { a: 8, b: 12, m: 24 }];
-        let i = Math.floor(Math.random() * p.length);
-        this.a = p[i].a;
-        this.b = p[i].b;
-        this.correcto = p[i].m;
+        // a = g·p, b = g·q con p y q primos entre sí (antes, seis parejas fijas):
+        // g de 1 a 6, p y q de 2 a 7, números hasta 30 y mcm hasta 72
+        [this.a, this.b] = parejaDivisibilidad(1, 6, 7, 30, m => m <= 72);
+        this.correcto = this.a * this.b / mcdDe(this.a, this.b);
         this.ultimoAciertoRegistrado = false;
     }
     verificar(respuesta) {
@@ -839,11 +865,10 @@ class Ejercicio5 {
         this.generarNuevo();
     }
     generarNuevo() {
-        const p = [{ a: 15, b: 9, m: 3 }, { a: 12, b: 18, m: 6 }, { a: 8, b: 12, m: 4 }, { a: 20, b: 25, m: 5 }, { a: 14, b: 21, m: 7 }, { a: 16, b: 24, m: 8 }];
-        let i = Math.floor(Math.random() * p.length);
-        this.a = p[i].a;
-        this.b = p[i].b;
-        this.correcto = p[i].m;
+        // a = g·p, b = g·q con p y q primos entre sí (antes, seis parejas fijas):
+        // g de 2 a 8, p y q de 2 a 5, números hasta 40
+        [this.a, this.b] = parejaDivisibilidad(2, 8, 5, 40, () => true);
+        this.correcto = mcdDe(this.a, this.b);
         this.ultimoAciertoRegistrado = false;
     }
     verificar(respuesta) {
@@ -1035,16 +1060,11 @@ class Ejercicio7 {
         const primos = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47];
         const compuestos = [4, 6, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 22, 24, 25, 26, 27, 28, 30];
         
-        for (let i = 0; i < 4; i++) {
+        while (this.numeros.length < 4) {
             let esPrimoNum = Math.random() < 0.5;
-            let num;
-            if (esPrimoNum) {
-                num = primos[Math.floor(Math.random() * primos.length)];
-                this.respuestasCorrectas.push(true);
-            } else {
-                num = compuestos[Math.floor(Math.random() * compuestos.length)];
-                this.respuestasCorrectas.push(false);
-            }
+            let num = esPrimoNum ? primos[Math.floor(Math.random() * primos.length)] : compuestos[Math.floor(Math.random() * compuestos.length)];
+            if (this.numeros.includes(num)) continue;   // sin números repetidos en la misma serie
+            this.respuestasCorrectas.push(esPrimoNum);
             this.numeros.push(num);
         }
         this.respuestasUsuario = [null, null, null, null];
@@ -1150,19 +1170,15 @@ class Ejercicio8 {
         this.generarNuevo();
     }
     generarNuevo() {
-        const opciones = [
-            { num: 12, factores: { 2: 2, 3: 1 } },
-            { num: 18, factores: { 2: 1, 3: 2 } },
-            { num: 20, factores: { 2: 2, 5: 1 } },
-            { num: 24, factores: { 2: 3, 3: 1 } },
-            { num: 28, factores: { 2: 2, 7: 1 } },
-            { num: 30, factores: { 2: 1, 3: 1, 5: 1 } },
-            { num: 36, factores: { 2: 2, 3: 2 } },
-            { num: 40, factores: { 2: 3, 5: 1 } }
-        ];
-        let idx = Math.floor(Math.random() * opciones.length);
-        this.numero = opciones[idx].num;
-        this.factoresCorrectos = opciones[idx].factores;
+        // Números entre 12 y 150 con factores 2, 3, 5 o 7 (exponentes hasta 5) y al menos
+        // dos primos distintos (antes, ocho números fijos entre 12 y 40)
+        const opciones = [];
+        for (let k = 12; k <= 150; k++) {
+            const f = factoresDe(k), bases = Object.keys(f).map(Number);
+            if (bases.length >= 2 && bases.every(b => b <= 7 && f[b] <= 5)) opciones.push(k);
+        }
+        this.numero = opciones[Math.floor(Math.random() * opciones.length)];
+        this.factoresCorrectos = factoresDe(this.numero);
         this.factoresUsuario = {};
     }
     actualizarExponente(base, valor) {
@@ -1251,7 +1267,7 @@ function actualizarUI() {
     if (notaFinal > 10) notaFinal = 10;
     document.getElementById('progresoCount').innerText = superados;
     document.getElementById('fallosCount').innerText = fallosGlobales;
-    document.getElementById('notaActual').innerText = notaFinal.toFixed(1);
+    document.getElementById('notaActual').innerText = notaFinal.toFixed(1).replace('.', ',');
     
     // Si nota = 10, poner fondo verde
     if (notaFinal >= 10 && superados === 8) document.body.classList.add('all-green');
@@ -1419,16 +1435,17 @@ function finalizarFicha(nombre) {
     modalCard.className = `modal-card ${modalClass}`;
     
     // Actualizar contenido del modal
-    document.getElementById('modalNotaValor').innerHTML = `${notaFinal.toFixed(1)} / 10`;
+    document.getElementById('modalNotaValor').innerHTML = `${notaFinal.toFixed(1).replace('.', ',')} / 10`;
     document.getElementById('modalInfo').innerHTML = `
         <p><strong>👤 Alumno/a:</strong> ${nombre.toUpperCase()}</p>
         <p><strong>📘 Ficha:</strong> Divisibilidad 1º ESO · Ficha interactiva</p>
-        <p><strong>⭐ Nota:</strong> ${notaFinal.toFixed(1)}/10</p>
+        <p><strong>⭐ Nota:</strong> ${notaFinal.toFixed(1).replace('.', ',')}/10</p>
         <p><strong>📅 Fecha:</strong> ${fecha}</p>
         <p><strong>⏰ Hora:</strong> ${hora}</p>
         <p><strong>⌛ Tiempo transcurrido:</strong> ${tiempo}</p>
         <p><strong>📊 Ejercicios superados:</strong> ${superados}/8</p>
         <p><strong>❌ Fallos totales:</strong> ${fallosGlobales}</p>
+        <p><strong>👁️ Soluciones vistas:</strong> ${textoSolucionesVistas()}</p>
     `;
     
     // Mostrar modal
@@ -1451,6 +1468,115 @@ document.getElementById('closeModal').addEventListener('click', cerrarModalFinal
 document.getElementById('modalFinal').addEventListener('click', (e) => { 
     if (e.target === document.getElementById('modalFinal')) cerrarModalFinal(); 
 });
+
+// ============ MOSTRAR SOLUCIÓN (por ejercicio) ============
+// La ficha muestra todos los ejercicios a la vez, así que cada tarjeta tiene su propio botón,
+// apagado, al pie. Ver la solución no suma, no resta y no cuenta para la racha: el ejercicio
+// visto se sustituye por otro del mismo tipo con otros números. Los fallos previos siguen restando.
+const solucionesVistas = [0, 0, 0, 0, 0, 0, 0, 0];
+const CLAVE_SOLUCION = [null, 'correcto', 'correcto', 'correcto', 'correcto', 'matrizCorrecta', 'respuestasCorrectas', 'factoresCorrectos'];
+function textoSolucionesVistas() {
+    const total = solucionesVistas.reduce((a, b) => a + b, 0);
+    return total + (total ? ' (' + solucionesVistas.map((v, i) => v ? `ej. ${i + 1}: ${v}` : '').filter(Boolean).join(', ') + ')' : '');
+}
+const descomposicionTxt = (n, f) => esPrimo(n) ? `${n} es primo` : `${n} = ${textoFactores(f)}`;
+function solucionDe(idx) {
+    const e = ejerciciosData[idx];
+    switch (idx) {
+        case 0: {
+            const prod = Math.max(e.numRef, e.numContexto), menor = Math.min(e.numRef, e.numContexto);
+            return e.correctaRelacion === 'divisor'
+                ? `${e.numRef} es <b>divisor</b> de ${e.numContexto}, porque la división ${prod} : ${menor} = ${prod / menor} es exacta.`
+                : `${e.numRef} es <b>múltiplo</b> de ${e.numContexto}, porque ${prod} = ${menor} · ${prod / menor}.`;
+        }
+        case 1:
+            return `Multiplicamos ${e.numero} por 1, 2 y 3: los tres primeros múltiplos de ${e.numero} son <b>${e.correcto}</b>.`;
+        case 2: {
+            const d = divisoresDe(e.numero), parejas = d.filter(x => x * x <= e.numero).map(x => `${x} · ${e.numero / x}`);
+            return `Parejas cuyo producto es ${e.numero}: ${parejas.join(', ')}.<br>Los divisores de ${e.numero} son <b>${d.join(', ')}</b>.`;
+        }
+        case 3: {
+            const fa = factoresDe(e.a), fb = factoresDe(e.b), f = {};
+            new Set([...Object.keys(fa), ...Object.keys(fb)]).forEach(p => { f[p] = Math.max(fa[p] || 0, fb[p] || 0); });
+            return `${descomposicionTxt(e.a, fa)}; ${descomposicionTxt(e.b, fb)}.<br>El mcm es el producto de los factores comunes y no comunes con el mayor exponente: mcm(${e.a}, ${e.b}) = ${textoFactores(f)} = <b>${e.correcto}</b>.`;
+        }
+        case 4: {
+            const fa = factoresDe(e.a), fb = factoresDe(e.b), f = {};
+            Object.keys(fa).filter(p => fb[p]).forEach(p => { f[p] = Math.min(fa[p], fb[p]); });
+            return `${descomposicionTxt(e.a, fa)}; ${descomposicionTxt(e.b, fb)}.<br>El MCD es el producto de los factores comunes con el menor exponente: MCD(${e.a}, ${e.b}) = ${textoFactores(f)} = <b>${e.correcto}</b>.`;
+        }
+        case 5:
+            return e.numeros.map((n, i) => {
+                const [d2, d3, d5] = e.matrizCorrecta[i], cifras = String(n).split('');
+                const suma = cifras.length > 1 ? `${cifras.join(' + ')} = ${cifras.reduce((s, c) => s + +c, 0)}` : `${n}`;
+                return `<b>${n}</b>: de 2, <b>${d2 ? 'Sí' : 'No'}</b> (acaba en ${n % 10}); de 3, <b>${d3 ? 'Sí' : 'No'}</b> (sus cifras suman ${suma}); de 5, <b>${d5 ? 'Sí' : 'No'}</b>.`;
+            }).join('<br>') + '<br>Recuerda: múltiplo de 2 si acaba en cifra par; de 3 si la suma de sus cifras es múltiplo de 3; de 5 si acaba en 0 o en 5.';
+        case 6:
+            return e.numeros.map(n => {
+                if (!esPrimo(n)) { const s = Number(Object.keys(factoresDe(n))[0]); return `<b>${n}</b>: compuesto, porque ${n} = ${s} · ${n / s}.`; }
+                return `<b>${n}</b>: primo, solo es divisible entre 1 y ${n}.`;
+            }).join('<br>');
+        case 7:
+            return `${e.numero} = <b>${textoFactores(e.factoresCorrectos)}</b>. Exponentes: ${[2, 3, 5, 7].map(b => `${b} → ${e.factoresCorrectos[b] || 0}`).join(', ')}.`;
+    }
+    return '';
+}
+function ponerBotonesSolucion() {
+    document.querySelectorAll('#ejerciciosContainer .ejercicio-card').forEach((card, idx) => {
+        card.querySelectorAll('.sol-zona').forEach(z => z.remove());
+        const e = ejerciciosData[idx];
+        if (!e || e.superado || finalizado) return;
+        const ocupado = !!e.aciertoPendiente;   // en esta ficha el acierto se registra al momento; se deja por coherencia
+        const zona = document.createElement('div');
+        zona.className = 'sol-zona';
+        zona.innerHTML = `<button type="button" class="btn-soluciones" ${ocupado ? 'disabled title="Pulsa antes «Siguiente» para continuar"' : ''}>Mostrar solución</button>`;
+        zona.firstElementChild.addEventListener('click', () => pedirSolucion(idx));
+        card.appendChild(zona);
+    });
+}
+function avisoSoluciones() {
+    return new Promise(resolve => {
+        const fondo = document.createElement('div');
+        fondo.setAttribute('role', 'dialog');
+        fondo.setAttribute('aria-modal', 'true');
+        fondo.setAttribute('aria-labelledby', 'tituloAvisoSol');
+        fondo.style.cssText = 'position:fixed;inset:0;background:rgba(44,31,14,0.55);display:flex;align-items:center;justify-content:center;z-index:3000;padding:16px;';
+        fondo.innerHTML =
+            '<div style="background:#FFFDF7;border:2px solid #C9A96E;border-radius:14px;max-width:400px;width:100%;padding:22px 22px 18px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.25);font-family:inherit;color:#2C1F0E;">' +
+            '<h3 id="tituloAvisoSol" style="margin:0 0 10px;font-size:1.1rem;color:#A0522D;">¿Mostrar las soluciones?</h3>' +
+            '<p style="margin:0 0 18px;font-size:0.92rem;line-height:1.45;">Verás resuelto este ejercicio con su explicación. <b>Este ejercicio no contará para la nota</b> y los fallos que ya hayas cometido siguen restando. Después podrás seguir con otro ejercicio del mismo tipo.</p>' +
+            '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">' +
+            '<button type="button" data-r="si" style="background:transparent;color:#8A7A69;border:1px solid #DDD0B6;border-radius:30px;padding:9px 18px;cursor:pointer;font-family:inherit;font-size:.85rem;">Sí, mostrar soluciones</button>' +
+            '<button type="button" data-r="no" style="background:#A0522D;color:#FFFFFF;border:none;border-radius:30px;padding:10px 22px;font-weight:700;cursor:pointer;font-family:inherit;">Volver al ejercicio</button>' +
+            '</div></div>';
+        const cerrar = r => { fondo.remove(); document.removeEventListener('keydown', tecla); resolve(r); };
+        const tecla = ev => { if (ev.key === 'Escape') cerrar(false); };
+        fondo.querySelector('[data-r="no"]').addEventListener('click', () => cerrar(false));
+        fondo.querySelector('[data-r="si"]').addEventListener('click', () => cerrar(true));
+        fondo.addEventListener('click', ev => { if (ev.target === fondo) cerrar(false); });
+        document.addEventListener('keydown', tecla);
+        document.body.appendChild(fondo);
+        fondo.querySelector('[data-r="no"]').focus();
+    });
+}
+async function pedirSolucion(idx) {
+    const e = ejerciciosData[idx];
+    if (!e || e.superado || finalizado || e.aciertoPendiente) return;
+    if (!(await avisoSoluciones())) return;
+    const html = solucionDe(idx);
+    solucionesVistas[idx]++;
+    cambiarDistinto(e, CLAVE_SOLUCION[idx]);      // otro ejercicio del mismo tipo; racha y fallos intactos
+    if (e.verificado !== undefined) e.verificado = false;
+    renderizarTarjeta(idx);
+    const fb = document.getElementById(`fb_e${idx + 1}`);
+    if (fb) fb.innerHTML = `<span class="feedback-solucion"><b>Solución.</b> ${html}<br><br>Soluciones mostradas · ejercicio sin calificar. 👉 Sigue con este nuevo.</span>`;
+}
+// Los botones se recolocan cada vez que se repinta o se actualiza el marcador
+{
+    const _actualizarUI = actualizarUI, _renderizarTarjeta = renderizarTarjeta;
+    actualizarUI = function () { _actualizarUI(); ponerBotonesSolucion(); };
+    renderizarTarjeta = function (i) { _renderizarTarjeta(i); ponerBotonesSolucion(); };
+}
 
 renderizarTodo();
 </script>

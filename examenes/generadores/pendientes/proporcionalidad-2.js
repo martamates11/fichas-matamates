@@ -10,7 +10,8 @@
   const { dec, decTxt } = pend;
 
   const pc = x => `${n(x)}\\,\\%`;                 // 15 % (con espacio fino, como pide la RAE)
-  const eur = x => `${dec(x)}\\text{ €}`;
+  const din = x => (Number.isInteger(x) ? n(x) : x.toFixed(2).replace('.', '{,}'));   // dinero: 45,50
+  const eur = x => `${din(x)}\\text{ €}`;
   const txt = s => `<span class="pend-texto">${s}</span>`;
 
   /* ================= 1. Fracciones equivalentes ================= */
@@ -54,11 +55,11 @@
     { texto: 'El número de entradas de cine y el dinero pagado por ellas (mismo precio por entrada).', directa: true, porque: 'el doble de entradas cuesta el doble' }
   ];
   function genMagnitudes(R) {
-    const elegidas = R.shuffle(MAGNITUDES).slice(0, 4), L = 'abcd';
+    const elegidas = R.shuffle(MAGNITUDES).slice(0, 4), L = '1234';
     const tipo = m => (m.directa ? 'directa' : 'inversa');
     return {
       html: true,
-      enun: `<ol class="pend-texto" type="a" style="margin:0;padding-left:6mm">${elegidas.map(m => `<li>${m.texto}</li>`).join('')}</ol>`,
+      enun: `<ol class="pend-texto" style="margin:0;padding-left:6mm">${elegidas.map(m => `<li>${m.texto}</li>`).join('')}</ol>`,
       pasos: [
         { t: 'Pensamos qué pasa si una magnitud se duplica: si la otra también se duplica, es directa (cociente constante); si se reduce a la mitad, es inversa (producto constante).' },
         ...elegidas.map((m, i) => ({ t: `${L[i]}) <b>${tipo(m)}</b>: ${m.porque}.` }))
@@ -77,7 +78,7 @@
       enun: `\\frac{${a}}{${b}} = \\frac{${c}}{n}`,
       pasos: [
         { t: 'Multiplicamos en cruz:', m: `${a} \\cdot n = ${b} \\cdot ${c} = ${b * c}` },
-        { t: 'Despejamos n:', m: `n = \\frac{${b * c}}{${a}} = ${sol}` }
+        { t: 'Despejamos \\(n\\):', m: `n = \\frac{${b * c}}{${a}} = ${sol}` }
       ],
       res: `n = ${sol}`
     };
@@ -198,7 +199,7 @@
       html: true,
       enun: txt(`${ARTICULO[prod]} ${prod} ${plural(prod) ? 'cuestan' : 'cuesta'} ${P} € y ${plural(prod) ? 'tienen' : 'tiene'} un descuento del ${d} %. ¿Cuánto pagarás finalmente?`),
       pasos: [
-        { t: 'Calculamos el descuento y lo restamos del precio:', m: `\\frac{${d}}{100} \\cdot ${P} = ${eur(rebaja)} \\qquad ${P} - ${dec(rebaja)} = ${eur(fin)}` },
+        { t: 'Calculamos el descuento y lo restamos del precio:', m: `\\frac{${d}}{100} \\cdot ${P} = ${eur(rebaja)} \\qquad ${P} - ${din(rebaja)} = ${eur(fin)}` },
         { t: `También se puede multiplicar por el factor de descuento, \\(1 - ${dec(d / 100)} = ${dec(f)}\\):`, m: `${P} \\cdot ${dec(f)} = ${eur(fin)}` }
       ],
       res: eur(fin)
@@ -213,7 +214,7 @@
       html: true,
       enun: txt(`${ARTICULO[prod]} ${prod} ${plural(prod) ? 'cuestan' : 'cuesta'} ${P} €. Por ${motivo}, ${plural(prod) ? 'sufren' : 'sufre'} un incremento del ${a} %. ¿Cuál es su nuevo precio?`),
       pasos: [
-        { t: 'Calculamos el aumento y lo sumamos al precio:', m: `\\frac{${a}}{100} \\cdot ${P} = ${eur(sube)} \\qquad ${P} + ${dec(sube)} = ${eur(fin)}` },
+        { t: 'Calculamos el aumento y lo sumamos al precio:', m: `\\frac{${a}}{100} \\cdot ${P} = ${eur(sube)} \\qquad ${P} + ${din(sube)} = ${eur(fin)}` },
         { t: `También se puede multiplicar por el factor de aumento, \\(1 + ${dec(a / 100)} = ${dec(f)}\\):`, m: `${P} \\cdot ${dec(f)} = ${eur(fin)}` }
       ],
       res: eur(fin)
@@ -232,7 +233,7 @@
       { id: 'magnitudes', nombre: 'Magnitudes: ¿directa o inversa?', peso: 0.75, columnas: 1,
         enunciado: ['Indica si cada par de magnitudes es directa o inversamente proporcional:', 'Indica si cada par de magnitudes es directa o inversamente proporcional:'], generar: genMagnitudes },
       { id: 'regla-tres', nombre: 'Regla de tres (valor de n)', peso: 0.5, columnas: 3,
-        enunciado: ['Calcula el valor de n:', 'Calcula el valor de n:'], generar: genReglaTres },
+        enunciado: ['Calcula el valor de \\(n\\):', 'Calcula el valor de \\(n\\):'], generar: genReglaTres },
       { id: 'problema', nombre: 'Problema: identifica el tipo y resuelve (directa e inversa alternadas)', peso: 1.25, columnas: 1,
         enunciado: ['Indica si el problema es de proporcionalidad directa o inversa y resuélvelo:', 'Indica si cada problema es de proporcionalidad directa o inversa y resuélvelo:'], generar: genProblema },
       { id: 'porcentaje', nombre: 'Porcentajes (calcular el tanto por ciento y hallar el porcentaje, alternados)', peso: 0.5, columnas: 2,

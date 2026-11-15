@@ -469,6 +469,14 @@ hr { margin: 0.5rem 0; border: none; border-top: 1px solid var(--color-borde-sua
 .modal-grade { font-size: 52px; font-weight: 900; margin: 12px 0; }
 .modal-stats { border: 1.5px solid var(--color-borde); border-radius: 10px; padding: 12px; margin-bottom: 14px; font-family: monospace; font-size: 12px; text-align: left; background: rgba(0,0,0,0.02); }
 .recordatorio { font-size: 12px; margin-top: 8px; background: var(--color-neutro); border-radius: 20px; padding: 6px; color: var(--color-texto-suave); }
+
+/* «Mostrar solución»: botón apagado, que no invite a pulsarlo, y feedback neutro */
+:root { --color-apagado: #A8998A; --color-apagado-fondo: #F3EFE6; }
+.sol-zona { display: flex; justify-content: flex-end; margin-top: 10px; }
+.btn-soluciones { background: transparent; color: var(--color-apagado); border: 1px solid #DDD0B6; border-radius: 4px; padding: 5px 14px; font-family: inherit; font-size: .78rem; font-weight: 400; cursor: pointer; transition: color .2s, border-color .2s; }
+.btn-soluciones:hover:not(:disabled) { color: var(--color-texto-suave); border-color: var(--color-borde); }
+.btn-soluciones:disabled { opacity: .4; cursor: default; }
+.feedback-solucion { display: block; background: var(--color-apagado-fondo); border: 1.5px dashed var(--color-apagado); border-radius: 8px; padding: 10px 14px; color: var(--color-texto); line-height: 1.5; }
 </style>
 </head>
 <body>
@@ -477,12 +485,12 @@ hr { margin: 0.5rem 0; border: none; border-top: 1px solid var(--color-borde-sua
     <div class="header">
         <h1>🔢 Números Reales</h1>
         <p>Clasificación, recta real, fracciones, decimales y redondeo · 3º ESO</p>
-        <div class="header-badges"><span class="header-badge">🎯 2 aciertos consecutivos por tipo → superado</span><span class="header-badge">💡 Cada fallo resta 0.25 puntos</span></div>
+        <div class="header-badges"><span class="header-badge">🎯 2 aciertos consecutivos por tipo → superado</span><span class="header-badge">💡 Cada fallo resta 0,25 puntos</span><span class="header-badge">👁️ Ver la solución de un ejercicio no da puntos</span></div>
     </div>
     <div class="info-bar">
         <div class="info-item"><span class="info-icon">📊</span><span>Progreso: <span id="progresoCount" class="info-value">0</span>/8</span></div>
         <div class="info-item"><span class="info-icon">❌</span><span>Fallos: <span id="fallosCount" class="info-value">0</span></span></div>
-        <div class="info-item"><span class="info-icon">⭐</span><span>Nota: <span id="notaActual" class="info-value">0.0</span>/10</span></div>
+        <div class="info-item"><span class="info-icon">⭐</span><span>Nota: <span id="notaActual" class="info-value">0,0</span>/10</span></div>
     </div>
     <div class="name-section"><label class="name-label" for="nombreAlumno">👤 ALUMNO/A</label><input type="text" id="nombreAlumno" class="name-input" placeholder="Escribe tu nombre..."></div>
     <div id="ejerciciosContainer"></div>
@@ -571,6 +579,29 @@ function regenerarDistinto(ej, solucion){
     }
 }
 const valorFr = f => String(f[0]/f[1]);
+const mcm = (a,b) => a/gcd(a,b)*b;
+/* Decimales periódicos en forma canónica: el periodo (1 o 2 cifras) no acaba en 0, no es
+   todo nueves (0,9̅ = 1) y no se puede acortar (33 → 3); la última cifra del anteperiodo
+   no coincide con la del periodo (0,3 3̅ sería 0,3̅). */
+function periodoCanonico(){
+    let P;
+    do {
+        P = '';
+        const len = Math.floor(Math.random()*2)+1;
+        for(let i=0;i<len;i++) P += Math.floor(Math.random()*10);
+        if(P.endsWith('0')) P = P.slice(0,-1) + (Math.floor(Math.random()*9)+1);
+    } while(/^9+$/.test(P) || (P.length===2 && P[0]===P[1]));
+    return P;
+}
+function anteperiodoCanonico(P){
+    let N;
+    do {
+        N = '';
+        const len = Math.floor(Math.random()*2)+1;
+        for(let i=0;i<len;i++) N += Math.floor(Math.random()*10);
+    } while(N[N.length-1] === P[P.length-1]);
+    return N;
+}
 
 class EjercicioBase {
     constructor(requiereDosAciertos = true) {
@@ -621,10 +652,7 @@ class Ejercicio1 extends EjercicioBase {
             }
             case 'periodicoPuro': {
                 const parteEntera = Math.floor(Math.random()*10);
-                const periodoLen = Math.floor(Math.random()*2)+1;
-                let periodo = '';
-                for(let i=0;i<periodoLen;i++) periodo += Math.floor(Math.random()*10);
-                if(periodo.endsWith('0')) periodo = periodo.slice(0,-1) + (Math.floor(Math.random()*9)+1);
+                const periodo = periodoCanonico();
                 this.display = TDperiodicoPuro(parteEntera, periodo);
                 this.correctas = ['Q'];
                 this.explicacion = `📖 Es un decimal periódico puro (el periodo empieza justo tras la coma). Todo decimal periódico es racional: siempre se puede escribir como fracción.`;
@@ -632,11 +660,9 @@ class Ejercicio1 extends EjercicioBase {
             }
             case 'periodicoMixto': {
                 const parteEntera = Math.floor(Math.random()*10);
-                const noPeriodica = `${Math.floor(Math.random()*9)+1}`;
-                const periodoLen = Math.floor(Math.random()*2)+1;
-                let periodo = '';
-                for(let i=0;i<periodoLen;i++) periodo += Math.floor(Math.random()*10);
-                if(periodo.endsWith('0')) periodo = periodo.slice(0,-1) + (Math.floor(Math.random()*9)+1);
+                const periodo = periodoCanonico();
+                let noPeriodica;
+                do { noPeriodica = `${Math.floor(Math.random()*9)+1}`; } while(noPeriodica === periodo[periodo.length-1]);
                 this.display = TDperiodicoMixto(parteEntera, noPeriodica, periodo);
                 this.correctas = ['Q'];
                 this.explicacion = `📖 Es un decimal periódico mixto (hay cifras entre la coma y el periodo). Sigue siendo racional: todo decimal periódico se puede escribir como fracción.`;
@@ -644,11 +670,12 @@ class Ejercicio1 extends EjercicioBase {
             }
             case 'fraccion': {
                 let num = Math.floor(Math.random()*20)-10;
-                while(num===0) num = Math.floor(Math.random()*20)-10;
-                const den = Math.floor(Math.random()*9)+2;
+                let den = Math.floor(Math.random()*9)+2;
+                // que no sea un entero disfrazado (p. ej. 6/3 = 2 es natural, no solo racional)
+                while(num===0 || num % den === 0){ num = Math.floor(Math.random()*20)-10; den = Math.floor(Math.random()*9)+2; }
                 this.display = TFraw(num,den);
                 this.correctas = ['Q'];
-                this.explicacion = `📖 Una fracción con numerador y denominador enteros (denominador ≠ 0) es, por definición, un número racional.`;
+                this.explicacion = `📖 Es una fracción de enteros que no da un número entero (${Math.abs(num)} no es múltiplo de ${den}): es racional, pero no entera.`;
                 break;
             }
             case 'irracional': {
@@ -811,9 +838,9 @@ class Ejercicio3 extends EjercicioBase {
         const num2 = signo*(Math.floor(Math.random()*7)+1);
         const val1 = num1/den1, val2 = num2/den2;
         const correcto = val1 === val2 ? '=' : (val1 > val2 ? '>' : '<');
-        const comun = den1*den2;
-        const num1Com = num1*den2, num2Com = num2*den1;
-        const explicacion = `📖 Reducimos a común denominador (${comun}): ${TFraw(num1,den1)} = ${TFraw(num1Com,comun)} y ${TFraw(num2,den2)} = ${TFraw(num2Com,comun)}. Comparando numeradores: ${num1Com} ${correcto} ${num2Com}.`;
+        const comun = mcm(den1,den2);
+        const num1Com = num1*(comun/den1), num2Com = num2*(comun/den2);
+        const explicacion = `📖 Reducimos a común denominador, m.c.m.(${den1}, ${den2}) = ${comun}: ${TFraw(num1,den1)} = ${TFraw(num1Com,comun)} y ${TFraw(num2,den2)} = ${TFraw(num2Com,comun)}. Comparando numeradores: ${num1Com} ${correcto} ${num2Com}.`;
         return {num1,den1,num2,den2,correcto,explicacion};
     }
     verificar(r1,r2){
@@ -878,16 +905,20 @@ class Ejercicio3 extends EjercicioBase {
 class Ejercicio4 extends EjercicioBase {
     generarNuevo(){
         const randDen = () => [2,3,4,5,6,8,9,10][Math.floor(Math.random()*8)];
-        this.d1 = randDen();
-        let d2 = randDen(); while(d2===this.d1) d2 = randDen();
-        let d3 = randDen(); while(d3===this.d1 || d3===d2) d3 = randDen();
+        // Común denominador = m.c.m., como mucho 120, para poder operar sin calculadora
+        let d2, d3;
+        do {
+            this.d1 = randDen();
+            d2 = randDen(); while(d2===this.d1) d2 = randDen();
+            d3 = randDen(); while(d3===this.d1 || d3===d2) d3 = randDen();
+        } while(mcm(mcm(this.d1,d2),d3) > 120);
         this.d2 = d2; this.d3 = d3;
         this.n1 = Math.floor(Math.random()*9)+1;
         this.n2 = Math.floor(Math.random()*9)+1;
         this.n3 = Math.floor(Math.random()*9)+1;
         this.op1 = Math.random()<0.5?'+':'-';
         this.op2 = Math.random()<0.5?'+':'-';
-        const comun = this.d1*this.d2*this.d3;
+        const comun = mcm(mcm(this.d1,this.d2),this.d3);
         const t1 = this.n1*(comun/this.d1);
         const t2 = this.n2*(comun/this.d2);
         const t3 = this.n3*(comun/this.d3);
@@ -895,7 +926,7 @@ class Ejercicio4 extends EjercicioBase {
         const [ns,ds] = simplificar(numerador, comun);
         this.resultado = [ns,ds];
         this.expresion = `${TFraw(this.n1,this.d1)} ${this.op1} ${TFraw(this.n2,this.d2)} ${this.op2} ${TFraw(this.n3,this.d3)}`;
-        this.explicacion = `📖 Común denominador: ${comun}.<br>🔢 ${t1} ${this.op1} ${t2} ${this.op2} ${t3} = ${numerador} → ${TFraw(numerador,comun)} = ${TF(ns,ds)}`;
+        this.explicacion = `📖 Común denominador: m.c.m.(${this.d1}, ${this.d2}, ${this.d3}) = ${comun}.<br>🔢 ${t1} ${this.op1} ${t2} ${this.op2} ${t3} = ${numerador} → ${TFraw(numerador,comun)} = ${TF(ns,ds)}`;
         this.yaComprobado = false;
     }
     verificar(r){
@@ -1054,23 +1085,15 @@ class Ejercicio6 extends EjercicioBase {
         }
         if(tipo==='puro'){
             const E = Math.floor(Math.random()*9);
-            const pLen = Math.floor(Math.random()*2)+1;
-            let P = '';
-            for(let i=0;i<pLen;i++) P += Math.floor(Math.random()*10);
-            if(P.endsWith('0')) P = P.slice(0,-1) + (Math.floor(Math.random()*9)+1);
+            const P = periodoCanonico(), pLen = P.length;
             const num = parseInt(`${E}${P}`,10) - E;
             const den = Math.pow(10,pLen)-1;
             const [ns,ds] = simplificar(num,den);
-            return {tipo, display:TDperiodicoPuro(E,P), resultado:[ns,ds], explicacion:`📖 Periódico puro: numerador = parte entera+periodo menos parte entera (${E}${P} − ${E} = ${num}); denominador = tantos 9 como cifras del periodo (${den}) → ${TFraw(num,den)} = ${TF(ns,ds)}`};
+            return {tipo, display:TDperiodicoPuro(E,P), resultado:[ns,ds], explicacion:`📖 Periódico puro: numerador = parte entera+periodo menos parte entera (${parseInt(`${E}${P}`,10)} − ${E} = ${num}); denominador = tantos 9 como cifras del periodo (${den}) → ${TFraw(num,den)} = ${TF(ns,ds)}`};
         }
         const E = Math.floor(Math.random()*9);
-        const nLen = Math.floor(Math.random()*2)+1;
-        let N = '';
-        for(let i=0;i<nLen;i++) N += Math.floor(Math.random()*10);
-        const pLen = Math.floor(Math.random()*2)+1;
-        let P = '';
-        for(let i=0;i<pLen;i++) P += Math.floor(Math.random()*10);
-        if(P.endsWith('0')) P = P.slice(0,-1) + (Math.floor(Math.random()*9)+1);
+        const P = periodoCanonico(), pLen = P.length;
+        const N = anteperiodoCanonico(P), nLen = N.length;
         const EN = parseInt(`${E}${N}`,10);
         const ENP = parseInt(`${E}${N}${P}`,10);
         const num = ENP - EN;
@@ -1146,7 +1169,8 @@ class Ejercicio7 extends EjercicioBase {
     generarNuevo(){
         const parteEntera = Math.floor(Math.random()*90)+1;
         let decimales = '';
-        for(let i=0;i<4;i++) decimales += Math.floor(Math.random()*10);
+        for(let i=0;i<3;i++) decimales += Math.floor(Math.random()*10);
+        decimales += Math.floor(Math.random()*9)+1;   // la última cifra no es 0
         this.parteEntera = parteEntera;
         this.decimalesStr = decimales;
         this.numero = parseFloat(`${parteEntera}.${decimales}`);
@@ -1154,10 +1178,13 @@ class Ejercicio7 extends EjercicioBase {
         this.lugar = lugares[Math.floor(Math.random()*lugares.length)];
         const posiciones = {'décimas':1, 'centésimas':2, 'milésimas':3};
         this.pos = posiciones[this.lugar];
-        const factor = Math.pow(10,this.pos);
-        this.resultado = Math.round(this.numero*factor)/factor;
+        // Aritmética exacta con enteros (Math.round(12.345*100) da 1234 por la coma flotante)
         const cifraSiguiente = decimales[this.pos];
-        this.explicacion = `📖 Para redondear a las ${this.lugar} miramos la cifra siguiente (${cifraSiguiente}). ${parseInt(cifraSiguiente)>=5 ? 'Como es 5 o más, la cifra anterior sube una unidad.' : 'Como es menor que 5, la cifra anterior se mantiene igual.'}`;
+        const q = parseInt(`${parteEntera}${decimales.slice(0,this.pos)}`,10) + (parseInt(cifraSiguiente)>=5 ? 1 : 0);
+        const qs = String(q).padStart(this.pos+1,'0');
+        this.resultadoTxt = `${qs.slice(0,-this.pos)},${qs.slice(-this.pos)}`;   // con las cifras decimales que pide el redondeo
+        this.resultado = q/Math.pow(10,this.pos);
+        this.explicacion = `📖 Para redondear a las ${this.lugar} miramos la cifra siguiente (${cifraSiguiente}). ${parseInt(cifraSiguiente)>=5 ? 'Como es 5 o más, la cifra anterior sube una unidad' : 'Como es menor que 5, la cifra anterior se mantiene igual'}: ${parteEntera},${decimales} ≈ ${this.resultadoTxt}.`;
         this.yaComprobado = false;
     }
     verificar(r){
@@ -1170,7 +1197,7 @@ class Ejercicio7 extends EjercicioBase {
             return {correcto:true, superado:false, msg:"✓ ¡Correcto! Ahora pulsa '➡️ Siguiente número'."};
         } else if(!ok){
             this.yaComprobado = false; this.racha=0; rachaGlobal=0; fallosGlobales++;
-            const msg = `❌ Solución del ejercicio anterior: el resultado correcto es ${String(this.resultado).replace('.',',')}<br>${this.explicacion}`;
+            const msg = `❌ Solución del ejercicio anterior: el resultado correcto es ${this.resultadoTxt}<br>${this.explicacion}`;
             regenerarDistinto(this, () => String(this.resultado));
             return {correcto:false, superado:false, msg: msg + PASA_A_OTRO, nuevoEnunciado:true};
         } else {
@@ -1220,14 +1247,15 @@ class Ejercicio8 extends EjercicioBase {
             this.n1 = Math.floor(Math.random()*(this.d1-1))+1;
             this.d2 = denominadoresPosibles[Math.floor(Math.random()*denominadoresPosibles.length)];
             this.n2 = Math.floor(Math.random()*(this.d2-1))+1;
-            if((this.n1/this.d1)+(this.n2/this.d2) < 1) ok = true;
+            // fracciones irreducibles (no «las 2/4 partes») y que sobre algo de pizza
+            if(gcd(this.n1,this.d1)===1 && gcd(this.n2,this.d2)===1 && this.n1*this.d2 + this.n2*this.d1 < this.d1*this.d2) ok = true;
         }
-        const comun = this.d1*this.d2;
+        const comun = mcm(this.d1,this.d2);
         const t1 = this.n1*(comun/this.d1), t2 = this.n2*(comun/this.d2);
         const numRestante = comun - t1 - t2;
         const [ns,ds] = simplificar(numRestante, comun);
         this.resultado = [ns,ds];
-        this.explicacion = `📖 María se come ${TFraw(this.n1,this.d1)} y Andrés ${TFraw(this.n2,this.d2)}. Con común denominador ${comun}: ${TFraw(this.n1,this.d1)} = ${TFraw(t1,comun)}, ${TFraw(this.n2,this.d2)} = ${TFraw(t2,comun)}. Entre los dos se comen ${TFraw(t1+t2,comun)}. Sobra: ${TFraw(comun,comun)} − ${TFraw(t1+t2,comun)} = ${TFraw(numRestante,comun)} = ${TF(ns,ds)}.`;
+        this.explicacion = `📖 María se come ${TFraw(this.n1,this.d1)} y Andrés ${TFraw(this.n2,this.d2)}. Con común denominador m.c.m.(${this.d1}, ${this.d2}) = ${comun}: ${TFraw(this.n1,this.d1)} = ${TFraw(t1,comun)}, ${TFraw(this.n2,this.d2)} = ${TFraw(t2,comun)}. Entre los dos se comen ${TFraw(t1+t2,comun)}. Sobra: ${TFraw(comun,comun)} − ${TFraw(t1+t2,comun)} = ${TFraw(numRestante,comun)} = ${TF(ns,ds)}.`;
     }
     verificar(r){
         if(this.superado) return {correcto:false, superado:true};
@@ -1271,7 +1299,7 @@ function actualizarUI() {
     if(notaFinal > 10) notaFinal = 10;
     document.getElementById('progresoCount').innerText = superados;
     document.getElementById('fallosCount').innerText = fallosGlobales;
-    document.getElementById('notaActual').innerText = notaFinal.toFixed(1);
+    document.getElementById('notaActual').innerText = notaFinal.toFixed(1).replace('.', ',');
 }
 
 function configurarEnterKey() {
@@ -1418,9 +1446,9 @@ function mostrarResultados(nombre){
     let horaCompleta = new Date().toLocaleTimeString('es-ES');
     let tiempo = getTiempo();
     document.getElementById('modalNombreMostrar').innerHTML = nombre.toUpperCase();
-    document.getElementById('modalNota').innerHTML = notaFinal.toFixed(1) + " / 10";
+    document.getElementById('modalNota').innerHTML = notaFinal.toFixed(1).replace('.', ',') + " / 10";
     document.getElementById('modalMensaje').innerHTML = notaFinal >= 7 ? "👍 ¡Muy bien!" : (notaFinal >= 5 ? "📘 ¡Aprobado!" : "📚 ¡Ánimo! Repasa los contenidos");
-    document.getElementById('modalStats').innerHTML = `<p>📅 ${fecha}  🕐 ${horaCompleta}</p><p>⏱️ Tiempo: ${tiempo}</p><p>✅ Ejercicios superados: ${superados}/${ejercicios.length}</p><p>❌ Fallos totales: ${fallosGlobales}</p><p>⭐ Nota: ${notaFinal.toFixed(1)}/10</p>`;
+    document.getElementById('modalStats').innerHTML = `<p>📅 ${fecha}  🕐 ${horaCompleta}</p><p>⏱️ Tiempo: ${tiempo}</p><p>✅ Ejercicios superados: ${superados}/${ejercicios.length}</p><p>❌ Fallos totales: ${fallosGlobales}</p><p>👁️ Soluciones vistas: ${solucionesVistas.reduce((a, b) => a + b, 0)}${solucionesVistas.some(Boolean) ? ' (' + solucionesVistas.map((v, i) => v ? `ej. ${i + 1}: ${v}` : '').filter(Boolean).join(', ') + ')' : ''}</p><p>⭐ Nota: ${notaFinal.toFixed(1).replace('.', ',')}/10</p>`;
     const modalCard = document.getElementById('modalCard');
     let color = notaFinal >= 10 ? '#1a7a1a' : notaFinal >= 9 ? '#6dbf6d' : notaFinal >= 8 ? '#1a4f8a' : notaFinal >= 7 ? '#5b9bd5' : notaFinal >= 6 ? '#c05c00' : notaFinal >= 5 ? '#f5a623' : '#c0392b';
     modalCard.style.backgroundColor = color;
@@ -1467,6 +1495,100 @@ document.getElementById('closeModal').addEventListener('click', cerrarModales);
 document.getElementById('btnConfirmarNombre').addEventListener('click', confirmarNombre);
 document.getElementById('btnConfirmarReset').addEventListener('click', function(){ location.reload(); });
 document.getElementById('btnCancelarReset').addEventListener('click', function(){ document.getElementById('modalReset').classList.remove('show'); });
+
+// ============ MOSTRAR SOLUCIÓN (por ejercicio) ============
+// La ficha muestra todos los ejercicios a la vez, así que cada tarjeta tiene su propio botón,
+// apagado, al pie. Ver la solución no suma, no resta y no cuenta para la racha: el ejercicio
+// visto se sustituye por otro del mismo tipo con otros números. Los fallos previos siguen restando.
+const solucionesVistas = [0, 0, 0, 0, 0, 0, 0, 0];
+const sinLibro = t => String(t).replace('📖 ', '');
+const trFr = f => TF(f[0], f[1]);
+
+function solucionDe(idx) {
+    const e = ejercicios[idx];
+    switch (idx) {
+        case 0:
+            return `${e.display} pertenece a: <b>${e.correctas.join(', ')}</b>.<br>${sinLibro(e.explicacion)}`;
+        case 1:
+            return `${TF(e.num, e.den)}: dividimos cada unidad en ${e.den} partes iguales y contamos ${Math.abs(e.num)} de esas partes hacia la ${e.num < 0 ? 'izquierda' : 'derecha'} del 0. Está entre ${e.num < 0 ? '−1 y 0' : '0 y 1'}.`;
+        case 2:
+            return [e.p1, e.p2].map(q => `${TFraw(q.num1, q.den1)} <b>${q.correcto.replace('<', '&lt;').replace('>', '&gt;')}</b> ${TFraw(q.num2, q.den2)}<br>${sinLibro(q.explicacion)}`).join('<br><br>');
+        case 3:
+            return `${e.expresion} = <b>${trFr(e.resultado)}</b><br>${sinLibro(e.explicacion)}`;
+        case 4:
+            return `${TFraw(e.mult.n1, e.mult.d1)} · ${TFraw(e.mult.n2, e.mult.d2)} = <b>${trFr(e.mult.resultado)}</b><br>${sinLibro(e.mult.explicacion)}<br><br>`
+                + `${TFraw(e.div.n1, e.div.d1)} : ${TFraw(e.div.n2, e.div.d2)} = <b>${trFr(e.div.resultado)}</b><br>${sinLibro(e.div.explicacion)}`;
+        case 5:
+            return [e.p1, e.p2].map(q => `${q.display} = <b>${trFr(q.resultado)}</b><br>${sinLibro(q.explicacion)}`).join('<br><br>');
+        case 6:
+            return `${e.parteEntera},${e.decimalesStr} redondeado a las ${e.lugar}: <b>${e.resultadoTxt}</b><br>${sinLibro(e.explicacion)}`;
+        case 7:
+            return `Sobra <b>${trFr(e.resultado)}</b> de pizza.<br>${sinLibro(e.explicacion)}`;
+    }
+    return '';
+}
+
+function ponerBotonesSolucion() {
+    document.querySelectorAll('#ejerciciosContainer > .ejercicio-card').forEach((card, idx) => {
+        card.querySelectorAll('.sol-zona').forEach(z => z.remove());
+        const e = ejercicios[idx];
+        if (!e || e.superado) return;
+        const ocupado = e.yaComprobado;   // acierto pendiente de «Siguiente»: no se puede perder
+        const zona = document.createElement('div');
+        zona.className = 'sol-zona';
+        zona.innerHTML = `<button type="button" class="btn-soluciones" ${ocupado ? 'disabled title="Pulsa antes «Siguiente» para continuar"' : ''}>Mostrar solución</button>`;
+        zona.firstElementChild.addEventListener('click', () => pedirSolucion(idx));
+        card.appendChild(zona);
+    });
+}
+
+function avisoSoluciones() {
+    return new Promise(resolve => {
+        const fondo = document.createElement('div');
+        fondo.setAttribute('role', 'dialog');
+        fondo.setAttribute('aria-modal', 'true');
+        fondo.setAttribute('aria-labelledby', 'tituloAvisoSol');
+        fondo.style.cssText = 'position:fixed;inset:0;background:rgba(44,31,14,0.55);display:flex;align-items:center;justify-content:center;z-index:3000;padding:16px;';
+        fondo.innerHTML =
+            '<div style="background:#FFFDF7;border:2px solid #C9A96E;border-radius:14px;max-width:400px;width:100%;padding:22px 22px 18px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.25);font-family:inherit;color:#2C1F0E;">' +
+            '<h3 id="tituloAvisoSol" style="margin:0 0 10px;font-size:1.1rem;color:#A0522D;">¿Mostrar las soluciones?</h3>' +
+            '<p style="margin:0 0 18px;font-size:0.92rem;line-height:1.45;">Verás resuelto este ejercicio con su explicación. <b>Este ejercicio no contará para la nota</b> y los fallos que ya hayas cometido siguen restando. Después podrás seguir con otro ejercicio del mismo tipo.</p>' +
+            '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">' +
+            '<button type="button" data-r="si" style="background:transparent;color:#8A7A69;border:1px solid #DDD0B6;border-radius:30px;padding:9px 18px;cursor:pointer;font-family:inherit;font-size:.85rem;">Sí, mostrar soluciones</button>' +
+            '<button type="button" data-r="no" style="background:#A0522D;color:#FFFFFF;border:none;border-radius:30px;padding:10px 22px;font-weight:700;cursor:pointer;font-family:inherit;">Volver al ejercicio</button>' +
+            '</div></div>';
+        const cerrar = r => { fondo.remove(); document.removeEventListener('keydown', tecla); resolve(r); };
+        const tecla = ev => { if (ev.key === 'Escape') cerrar(false); };
+        fondo.querySelector('[data-r="no"]').addEventListener('click', () => cerrar(false));
+        fondo.querySelector('[data-r="si"]').addEventListener('click', () => cerrar(true));
+        fondo.addEventListener('click', ev => { if (ev.target === fondo) cerrar(false); });
+        document.addEventListener('keydown', tecla);
+        document.body.appendChild(fondo);
+        fondo.querySelector('[data-r="no"]').focus();
+    });
+}
+
+async function pedirSolucion(idx) {
+    const e = ejercicios[idx];
+    if (!e || e.superado || e.yaComprobado) return;
+    if (!(await avisoSoluciones())) return;
+    const html = solucionDe(idx);
+    solucionesVistas[idx]++;
+    regenerarDistinto(e);                        // otro ejercicio del mismo tipo; racha y fallos intactos
+    e.yaComprobado = false;
+    renderizarTarjeta(idx);
+    const fb = document.getElementById(`fb_e${idx + 1}`);
+    if (fb) fb.innerHTML = `<span class="feedback-solucion"><b>Solución.</b> ${html}<br><br>Soluciones mostradas · ejercicio sin calificar. 👉 Sigue con este nuevo.</span>`;
+    tipearMath();
+}
+
+// Los botones se recolocan cada vez que se repinta o se actualiza el marcador
+{
+    const _actualizarUI = actualizarUI, _renderizarTarjeta = renderizarTarjeta;
+    actualizarUI = function () { _actualizarUI(); ponerBotonesSolucion(); };
+    renderizarTarjeta = function (i) { _renderizarTarjeta(i); ponerBotonesSolucion(); };
+}
+ponerBotonesSolucion();
 </script>
 <script>/*mm*/!function(){var e=atob("aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J3dnd5Qy1QMmI3SVdaS3BtVFhWdWpGYTZwOXhkQlFJN2lxZS1LOE9oVFBNTzctcEJuVW03X0x3WkpqelJKWlhDN3AvZXhlYw=="),t="martamates11.github.io",o="https://martamates11.github.io/fichas-matamates/",a=location.hostname;if("file:"!==location.protocol&&a&&"localhost"!==a&&!/^(127\.|10\.|192\.168\.|\[)/.test(a)&&!/^martamates11-github-io\.translate\.goog$/.test(a)){var n,i;try{n=window.top!==window}catch(e){n=!0}if(a===t){if(!n)return;if(-1!==(location.ancestorOrigins&&location.ancestorOrigins[0]||document.referrer||"").indexOf(t))return;i="incrustada"}else i="copia";try{var r="mm-g-"+location.pathname+"-"+(new Date).toISOString().slice(0,10),c=!1;try{c="1"===localStorage.getItem(r)}catch(e){}if(!c&&0===e.indexOf("https://")){try{localStorage.setItem(r,"1")}catch(e){}var d="k="+i+"&h="+encodeURIComponent(a)+"&u="+encodeURIComponent(location.href.slice(0,400))+"&t="+encodeURIComponent(document.title.slice(0,200))+"&r="+encodeURIComponent((document.referrer||"").slice(0,400));(new Image).src=e+"?"+d}}catch(e){}if("copia"===i){var s=document.querySelector('link[rel="canonical"]'),l=s&&0===s.href.indexOf(o)?s.href:o;document.body?p():document.addEventListener("DOMContentLoaded",p)}}function m(){if(!document.getElementById("mm-autoria")){var e=document.createElement("div");e.id="mm-autoria",e.style.cssText="all:initial;position:fixed;left:0;right:0;bottom:0;z-index:2147483647;",(e.attachShadow?e.attachShadow({mode:"closed"}):e).innerHTML='<style>.f{box-sizing:border-box;width:100%;background:#1a2744;border-top:2px solid #b8922a;color:#f7f4ee;font:15px/1.5 Georgia,"Times New Roman",serif;padding:12px 16px;text-align:center;box-shadow:0 -4px 18px rgba(0,0,0,.18)}.e{display:block;font:600 11px/1.4 Georgia,serif;letter-spacing:.12em;text-transform:uppercase;color:#d4aa4a;margin-bottom:2px}a{color:#d4aa4a;font-weight:700;text-decoration:none;border-bottom:1px solid rgba(212,170,74,.5)}a:hover{border-bottom-color:#d4aa4a}@media(max-width:520px){.f{font-size:13.5px;padding:10px 14px}}</style><div class="f" role="note"><span class="e">Copia no autorizada</span>Esta ficha es obra de <b>Marta López de Letona</b>. Úsala gratis en su web original: <a href="'+l+'" target="_blank" rel="noopener">martamates11.github.io/fichas-matamates</a></div>',document.body.appendChild(e);var t=e.getBoundingClientRect().height||80;document.body.style.paddingBottom=Math.ceil(t+8)+"px"}}function p(){m(),setInterval(m,4e3)}}();</script>
 </body>
