@@ -736,11 +736,11 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
 
   /* ================= Avisos ================= */
   let tAviso;
-  function aviso(txt) {
+  function aviso(txt, ms = 2600) {
     let t = document.querySelector('.toast');
     if (!t) { t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); document.body.appendChild(t); }
     t.textContent = txt; t.hidden = false;
-    clearTimeout(tAviso); tAviso = setTimeout(() => { t.hidden = true; }, 2600);
+    clearTimeout(tAviso); tAviso = setTimeout(() => { t.hidden = true; }, ms);
   }
 
   /* ================= Imprimir ================= */
@@ -861,11 +861,23 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
     if (!estado.items.length) { aviso('Añade al menos un ejercicio antes de imprimir.'); return; }
     if (tipografiaPendiente) { aviso('Un momento: se están terminando de escribir las fórmulas. Vuelve a pulsar.'); return; }
     prepararImpresion(cual);
-    window.print();
+    dialogoAbierto = false;
+    try { window.print(); } catch (e) { console.error('window.print', e); }
+    /* Si el navegador no abre el cuadro (no llega «beforeprint»), se explica qué hacer en vez de no hacer nada */
+    setTimeout(() => {
+      if (dialogoAbierto) return;
+      const app = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone;
+      const mac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
+      aviso(app
+        ? 'Abierto desde el icono de inicio, el navegador no deja imprimir. Abre el generador en Safari o Chrome normal y pulsa Imprimir.'
+        : `El navegador no ha abierto el cuadro de impresión. Pulsa ${mac ? 'Cmd' : 'Ctrl'} + P para imprimir.`, 9000);
+    }, 1500);
   }
   /* Ctrl + P sin pulsar el botón: se imprime la hoja que se está viendo */
-  window.addEventListener('beforeprint', () => { if (!maquetado && estado.items.length) prepararImpresion(vista); });
-  window.addEventListener('afterprint', () => { maquetado = false; $('impresion').innerHTML = ''; });
+  let dialogoAbierto = false;
+  window.addEventListener('beforeprint', () => { dialogoAbierto = true; if (!maquetado && estado.items.length) prepararImpresion(vista); });
+  /* No se vacía #impresion al terminar: Safari puede lanzar «afterprint» antes de pintar la impresión */
+  window.addEventListener('afterprint', () => { maquetado = false; });
   $('btn-imp-examen').onclick = () => imprimir('examen');
   $('btn-imp-sol').onclick = () => imprimir('soluciones');
   window.__maquetar = maquetar;   // para las pruebas automáticas
