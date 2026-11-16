@@ -218,7 +218,6 @@ button,input,select{font:inherit;color:inherit}
 .hoja.t-105 .a-caja{grid-template-columns:23mm 1fr}.hoja.t-105 .a-logo{padding:1.8mm}.hoja.t-105 .a-logo .cab-logo{width:17mm}
 .hoja.t-105 .a-txt{padding:2.5mm 4mm 2mm;gap:1mm}.hoja.t-105 .a-ies{font-size:12pt}.hoja.t-105 .a-dpto{font-size:10pt}.hoja.t-105 .a-nom{font-size:10.5pt;margin-top:1.2mm}
 .hoja.t-105 .a-titulo{font-size:12.5pt;margin-top:4mm}.hoja.t-105 .a-datos{font-size:9.5pt}
-.pie{position:absolute;left:16mm;right:16mm;bottom:8mm;display:flex;justify-content:space-between;font:400 7.5pt var(--f-ui);color:#888}
 
 /* ---------- Catálogo (diálogo) ---------- */
 dialog{border:0;border-radius:14px;padding:0;width:min(640px,calc(100vw - 32px));max-height:min(80vh,760px);background:var(--panel);color:var(--tinta);box-shadow:0 20px 60px rgba(0,0,0,.3)}
@@ -245,23 +244,24 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--marino);color:var(--panel);padding:9px 16px;border-radius:9px;font-weight:500;box-shadow:var(--sombra);z-index:50;max-width:calc(100vw - 32px)}
 
 /* ---------- Impresión ---------- */
-/* Márgenes de página: cabecera repetida (arriba) y numeración (abajo) en cada folio */
-@page{size:A4;margin:14mm 16mm;
-  @top-left{content:"Nombre: ________________________________";font:400 8pt 'Inter',sans-serif;color:#555;vertical-align:bottom;padding-bottom:3mm}
-  @bottom-center{content:"Página " counter(page) " de " counter(pages);font:400 7.5pt 'Inter',sans-serif;color:#888}
-}
-/* Primer folio: el encabezado del examen ya trae nombre, curso y modelo */
-@page :first{@top-left{content:none}@top-right{content:none}}
+/* Las hojas se maquetan con JavaScript antes de imprimir (#impresion): cada folio lleva su
+   cabecera, su pie y sus saltos calculados. Así no dependemos de las reglas @page de márgenes,
+   que Firefox y Safari no aplican, ni de cómo cada navegador parte las rejillas. */
+@page{size:A4;margin:0}
+#impresion{position:absolute;left:-400mm;top:0;width:210mm;pointer-events:none}
+.pp{width:210mm;height:296mm;position:relative;overflow:hidden;background:#fff;color:var(--papel-tinta)}
+.pp-cuerpo.hoja{position:absolute;left:16mm;right:16mm;top:14mm;width:auto;height:269mm;min-height:0;padding:0;box-shadow:none}
+.pp-cab,.pp-pie{position:absolute;left:16mm;right:16mm;display:flex;justify-content:space-between;align-items:baseline;gap:6mm;font:400 8pt var(--f-ui);color:#555}
+.pp-cab{top:7mm}
+.pp-pie{bottom:6.5mm;justify-content:flex-end;color:#777}
+.pp-nombre{display:flex;align-items:baseline;gap:2mm;width:95mm}
+.pp-nombre span{flex:1;border-bottom:.25mm solid #777}
 @media print{
-  body{background:#fff}
-  .barra,.panel,.vista-cab,.toast,dialog,.otro,.marca-cara{display:none!important}
-  .app{display:block}
-  .vista{padding:0}
-  .lienzo{overflow:visible;height:auto!important}
-  .escala{transform:none!important;width:auto}
-  .hoja{width:auto;min-height:0;padding:0;box-shadow:none;display:none}
-  body.imprimir-examen #hoja-examen,body.imprimir-soluciones #hoja-soluciones{display:block!important}
-  .pie{display:none}
+  html,body{background:#fff!important}
+  body>*:not(#impresion){display:none!important}
+  #impresion{position:static;left:auto;width:auto}
+  .pp{break-after:page;page-break-after:always}
+  .pp:last-child{break-after:auto;page-break-after:auto}
 }
 </style>
 </head>
@@ -347,6 +347,8 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
     <div class="dlg-pie" id="dlg-pie"></div>
   </div>
 </dialog>
+
+<div id="impresion" aria-hidden="true"></div>
 
 <script src="generadores/comun.js"></script>
 <script src="generadores/ecuaciones.js"></script>
@@ -538,18 +540,7 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
     return h;
   }
 
-  /* Curso y modelo para el margen superior derecho de cada folio impreso (regla @page dinámica) */
-  function actualizarCabeceraImpresa(modo = 'examen') {
-    let st = $('pag-dinamica');
-    if (!st) { st = document.createElement('style'); st.id = 'pag-dinamica'; document.head.appendChild(st); }
-    if (modo === 'soluciones') { st.textContent = '@page{@top-left{content:none}@top-right{content:none}}'; return; }
-    const sitio = [estado.curso, estado.modelo && 'Modelo ' + estado.modelo].filter(Boolean).join(' · ');
-    const cad = sitio.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, ' ');
-    st.textContent = `@page{@top-right{content:"${cad}";font:400 8pt 'Inter',sans-serif;color:#555;vertical-align:bottom;padding-bottom:3mm}}@page :first{@top-left{content:none}@top-right{content:none}}`;
-  }
-
   function renderExamen() {
-    actualizarCabeceraImpresa();
     let h = cabecera('examen');
     if (!estado.items.length) {
       h += '<p style="margin-top:12mm;color:#888;text-align:center;font-style:italic">Los ejercicios aparecerán aquí.</p>';
@@ -751,20 +742,120 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
   }
 
   /* ================= Imprimir ================= */
+  /* Maquetación de folios: se reparte el contenido de la hoja en páginas A4 de 269 mm útiles.
+     Un ejercicio (o un apartado de las soluciones) no se parte si cabe entero en una página;
+     si no cabe, se corta por filas de apartados o por pasos. Los títulos no se quedan solos al pie. */
+  const DIVISIBLE = '.ejercicios,.ej,.aps,.ap,.ap-txt,.fn-preg,.pl-texto,.sol-ej,.sol-ap,.sol-pasos';
+  const ENTERO = '.ej,.sol-ap';                     // se intenta llevar entero a la página siguiente
+  const CON_SIGUIENTE = '.ej-cab,.sol-enun,.sol-ej>h3,.sol-modelo,.ap-letra';   // nunca al final de una página
+
+  function unidades(el) {
+    if (!el.matches(DIVISIBLE)) return null;
+    const hijos = [...el.childNodes].filter(n => !(n.nodeType === 3 && !n.textContent.trim()) && n.nodeType !== 8);
+    if (hijos.length < 2 || hijos.some(n => n.nodeType !== 1)) return null;
+    if (el.matches('.aps')) {                         // por filas: tantos apartados como columnas
+      const m = el.className.match(/\bc(\d)\b/), c = m ? Number(m[1]) : 1, filas = [];
+      for (let i = 0; i < hijos.length; i += c) filas.push(hijos.slice(i, i + c));
+      return filas.length > 1 ? filas : null;
+    }
+    return hijos.map(h => [h]);
+  }
+
+  function maquetar(cual) {
+    const fuente = $(cual === 'examen' ? 'hoja-examen' : 'hoja-soluciones').cloneNode(true);
+    fuente.querySelectorAll('.otro,.marca-cara').forEach(n => n.remove());
+    const caja = $('impresion');
+    caja.innerHTML = '';
+    const clases = 'pp-cuerpo hoja' + (estado.plantilla !== 'C' ? ' estilo-a' : '') + (estado.tamano === '10.5' ? ' t-105' : '');
+    let cuerpo, cur, conContenido;
+
+    function paginaNueva() {
+      const p = document.createElement('div'); p.className = 'pp';
+      cuerpo = document.createElement('div'); cuerpo.className = clases;
+      p.appendChild(cuerpo); caja.appendChild(p);
+      conContenido = false;
+    }
+    function reconstruir(cadena) {               // vuelve a abrir los contenedores en la página actual
+      cur = [cuerpo]; let d = cuerpo;
+      cadena.forEach(src => { const c = src.cloneNode(false); d.appendChild(c); d = c; cur.push(c); });
+    }
+    const cabe = () => { const u = cuerpo.lastElementChild; return !u || u.getBoundingClientRect().bottom <= cuerpo.getBoundingClientRect().bottom + 0.5; };
+    const altoUtil = () => cuerpo.getBoundingClientRect().height;
+
+    function saltar(cadena) {
+      const L = cadena.length, llevar = cur.map(() => []);
+      for (let i = L; i >= 0; i--) {             // los títulos que quedarían solos pasan a la página nueva
+        const d = cur[i];
+        while (d.lastElementChild && d.lastElementChild.matches(CON_SIGUIENTE)) { llevar[i].unshift(d.lastElementChild); d.lastElementChild.remove(); }
+        if (i > 0 && !d.firstElementChild) d.remove(); else break;
+      }
+      if (cuerpo.firstElementChild) paginaNueva(); else cuerpo.innerHTML = '';
+      reconstruir(cadena);
+      llevar.forEach((nodos, i) => nodos.forEach(n => cur[i].insertBefore(n, cur[i + 1] || null)));
+    }
+
+    function poner(nodos, cadena) {
+      const L = cadena.length;
+      const copias = nodos.map(n => cur[L].appendChild(n.cloneNode(true)));
+      if (cabe()) { conContenido = true; return; }
+      const alto = copias.reduce((t, c) => t + c.getBoundingClientRect().height, 0);
+      copias.forEach(c => c.remove());
+      const partes = nodos.length === 1 ? unidades(nodos[0]) : null;
+      const intentarEntero = !partes || (nodos[0].matches(ENTERO) && alto <= altoUtil());
+      if (intentarEntero && conContenido) {
+        saltar(cadena);
+        nodos.forEach(n => cur[L].appendChild(n.cloneNode(true)));
+        if (cabe() || !partes) { conContenido = true; return; }
+        [...cur[L].children].slice(-nodos.length).forEach(c => c.remove());
+      } else if (!partes) {                        // página vacía y no cabe: se coloca igualmente
+        nodos.forEach(n => cur[L].appendChild(n.cloneNode(true))); conContenido = true; return;
+      }
+      const envoltura = nodos[0].cloneNode(false);
+      cur[L].appendChild(envoltura); cur.push(envoltura);
+      partes.forEach(u => poner(u, cadena.concat([nodos[0]])));
+      cur.pop();
+    }
+
+    paginaNueva(); reconstruir([]);
+    [...fuente.children].forEach(n => poner([n], []));
+    [...caja.querySelectorAll('.pp-cuerpo *')].forEach(n => {   // limpia contenedores que quedaron vacíos
+      if (n.matches(DIVISIBLE) && !n.firstElementChild && !n.textContent.trim()) n.remove();
+    });
+
+    const paginas = [...caja.children], N = paginas.length;
+    const sitio = [estado.curso, estado.modelo && 'Modelo ' + estado.modelo].filter(Boolean).map(esc).join(' · ');
+    paginas.forEach((p, k) => {
+      if (k > 0) {
+        const cab = document.createElement('div'); cab.className = 'pp-cab';
+        cab.innerHTML = cual === 'examen'
+          ? `<div class="pp-nombre">Nombre:<span></span></div><div>${sitio}</div>`
+          : `<div></div><div>Soluciones${estado.modelo ? ' · Modelo ' + esc(estado.modelo) : ''}</div>`;
+        p.appendChild(cab);
+      }
+      if (N > 1 || cual === 'soluciones') {
+        const pie = document.createElement('div'); pie.className = 'pp-pie';
+        pie.textContent = `Página ${k + 1} de ${N}`;
+        p.appendChild(pie);
+      }
+    });
+    return N;
+  }
+
+  let maquetado = false;
   function imprimir(cual) {
     if (!estado.items.length) { aviso('Añade al menos un ejercicio antes de imprimir.'); return; }
-    tipografiando.then(() => {
-      document.body.classList.add('imprimir-' + cual);
-      actualizarCabeceraImpresa(cual);
+    const fuentes = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+    Promise.all([tipografiando, fuentes]).then(() => {
+      maquetar(cual); maquetado = true;
       window.print();
     });
   }
-  window.addEventListener('afterprint', () => {
-    document.body.classList.remove('imprimir-examen', 'imprimir-soluciones');
-    actualizarCabeceraImpresa('examen');
-  });
+  /* Ctrl + P sin pulsar el botón: se imprime la hoja que se está viendo */
+  window.addEventListener('beforeprint', () => { if (!maquetado && estado.items.length) maquetar(vista); });
+  window.addEventListener('afterprint', () => { maquetado = false; $('impresion').innerHTML = ''; });
   $('btn-imp-examen').onclick = () => imprimir('examen');
   $('btn-imp-sol').onclick = () => imprimir('soluciones');
+  window.__maquetar = maquetar;   // para las pruebas automáticas
 
   /* ================= Guardar, modelos y enlace ================= */
   const copia = o => JSON.parse(JSON.stringify(o));
