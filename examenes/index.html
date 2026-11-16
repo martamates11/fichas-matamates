@@ -87,9 +87,6 @@ button,input,select{font:inherit;color:inherit}
 .acciones{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .acciones .ancho{grid-column:1/-1}
 .nota-print{font-size:12px;color:var(--suave);margin:0}
-.aviso-app{margin:0;font-size:12.5px;line-height:1.45;padding:10px 12px;border-radius:8px;background:var(--aviso-fondo);color:var(--aviso);border:1px solid color-mix(in srgb,var(--aviso) 35%,transparent)}
-.aviso-app b{display:block;margin-bottom:2px}
-.aviso-app[hidden]{display:none}
 
 /* ---------- Lista de ejercicios del examen ---------- */
 .items{display:grid;gap:10px}
@@ -263,6 +260,7 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
   html,body{background:#fff!important}
   body>*:not(#impresion){display:none!important}
   #impresion{position:static;left:auto;width:auto}
+  body.imprimir-soluciones #imp-examen,body:not(.imprimir-soluciones) #imp-soluciones{display:none}
   .pp{break-after:page;page-break-after:always}
   .pp:last-child{break-after:auto;page-break-after:auto}
 }
@@ -308,7 +306,6 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
         <button class="btn primario" id="btn-imp-sol" type="button">Imprimir soluciones</button>
       </div>
       <p class="nota-print">En el cuadro de impresión elige «Guardar como PDF» si lo quieres en archivo y desmarca «Encabezados y pies de página».</p>
-      <p class="aviso-app" id="aviso-app" hidden><b>No se puede imprimir desde el icono de inicio.</b> En iPad y iPhone, el generador abierto como aplicación no puede abrir el cuadro de impresión. Ábrelo en Safari (martamates11.github.io/fichas-matamates/examenes/) o borra este icono y vuelve a añadirlo desde Safari con «Compartir → Añadir a pantalla de inicio»: el icono nuevo se abre ya en Safari. Para llevarte a Safari el examen que tienes abierto aquí, usa «Copiar enlace» y pégalo en Safari.</p>
     </section>
 
     <section class="seccion">
@@ -352,7 +349,7 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
   </div>
 </dialog>
 
-<div id="impresion" aria-hidden="true"></div>
+<div id="impresion" aria-hidden="true"><div id="imp-examen"></div><div id="imp-soluciones"></div></div>
 
 <script src="generadores/comun.js"></script>
 <script src="generadores/ecuaciones.js"></script>
@@ -587,14 +584,12 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
   }
 
   let tipografiando = Promise.resolve();
-  let tipografiaPendiente = false;
   function tipografiar(els) {
     if (!(window.MathJax && MathJax.typesetPromise)) return Promise.resolve();
-    tipografiaPendiente = true;
-    const esta = tipografiando = tipografiando.then(() => {
+    tipografiando = tipografiando.then(() => {
       MathJax.typesetClear(els);
       return MathJax.typesetPromise(els);
-    }).catch(() => {}).then(() => { if (tipografiando === esta) tipografiaPendiente = false; });
+    }).catch(() => {});
     return tipografiando;
   }
 
@@ -607,6 +602,7 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
     he.innerHTML = renderExamen();
     hs.innerHTML = renderSoluciones();
     tipografiar([he, hs]).then(() => { comprobarCara(); marcarCortes(); escalar(); });
+    if (typeof premaquetarLuego === 'function') premaquetarLuego();
     comprobarCara(); marcarCortes(); escalar();
   }
 
@@ -694,6 +690,7 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
   /* ================= Pestañas ================= */
   function mostrar(v) {
     vista = v;
+    document.body.classList.toggle('imprimir-soluciones', v === 'soluciones');
     $('tab-examen').setAttribute('aria-selected', String(v === 'examen'));
     $('tab-sol').setAttribute('aria-selected', String(v === 'soluciones'));
     $('hoja-examen').hidden = v !== 'examen';
@@ -767,10 +764,9 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
     return hijos.map(h => [h]);
   }
 
-  function maquetar(cual) {
+  function maquetar(cual, caja) {
     const fuente = $(cual === 'examen' ? 'hoja-examen' : 'hoja-soluciones').cloneNode(true);
     fuente.querySelectorAll('.otro,.marca-cara').forEach(n => n.remove());
-    const caja = $('impresion');
     caja.innerHTML = '';
     const clases = 'pp-cuerpo hoja' + (estado.plantilla !== 'C' ? ' estilo-a' : '') + (estado.tamano === '10.5' ? ' t-105' : '');
     let cuerpo, cur, conContenido;
@@ -847,48 +843,41 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
     return N;
   }
 
-  let maquetado = false;
-  /* Monta los folios; si algo falla, imprime la hoja tal cual para no dejar al usuario sin imprimir */
-  function prepararImpresion(cual) {
-    try { maquetar(cual); }
-    catch (e) {
+  /* Los folios de examen y soluciones se montan por adelantado, poco después de cada cambio.
+     Así el botón Imprimir solo llama a window.print(), igual que antes: en iPad (también desde
+     el icono de inicio) el cuadro de impresión se abre sin trabajo pesado dentro del clic. */
+  let impresionAlDia = false, tPre;
+  function montarUna(cual) {
+    const caja = $(cual === 'examen' ? 'imp-examen' : 'imp-soluciones');
+    try { maquetar(cual, caja); }
+    catch (e) {        // si la maquetación falla, se imprime la hoja tal cual
       console.error('Maquetación de impresión', e);
       const h = $(cual === 'examen' ? 'hoja-examen' : 'hoja-soluciones').cloneNode(true);
       h.removeAttribute('id'); h.hidden = false; h.style.cssText = 'width:auto;min-height:0;box-shadow:none';
       h.querySelectorAll('.otro,.marca-cara').forEach(n => n.remove());
-      $('impresion').innerHTML = ''; $('impresion').appendChild(h);
+      caja.innerHTML = ''; caja.appendChild(h);
     }
-    maquetado = true;
   }
-  /* Todo ocurre dentro del clic: Safari y algunos navegadores ignoran window.print() si llega más tarde */
-  /* Abierto como aplicación (icono de inicio): en iPad/iPhone window.print() no abre nada */
-  const modoApp = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
-  if (modoApp) $('aviso-app').hidden = false;
+  function premaquetar() {
+    clearTimeout(tPre);
+    if (!estado.items.length) { $('imp-examen').innerHTML = $('imp-soluciones').innerHTML = ''; impresionAlDia = true; return; }
+    montarUna('examen'); montarUna('soluciones');
+    impresionAlDia = true;
+  }
+  function premaquetarLuego() { impresionAlDia = false; clearTimeout(tPre); tPre = setTimeout(() => tipografiando.then(premaquetar), 350); }
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(premaquetarLuego);
+
   function imprimir(cual) {
     if (!estado.items.length) { aviso('Añade al menos un ejercicio antes de imprimir.'); return; }
-    if (modoApp) {
-      aviso('Abierto desde el icono de inicio no se puede imprimir. Abre el generador en Safari (más detalles bajo los botones de imprimir).', 9000);
-      $('aviso-app').scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-    if (tipografiaPendiente) { aviso('Un momento: se están terminando de escribir las fórmulas. Vuelve a pulsar.'); return; }
-    prepararImpresion(cual);
-    dialogoAbierto = false;
-    try { window.print(); } catch (e) { console.error('window.print', e); }
-    /* Si el navegador no abre el cuadro (no llega «beforeprint»), se explica qué hacer en vez de no hacer nada */
-    setTimeout(() => {
-      if (dialogoAbierto || modoApp) return;
-      const ios = /iPhone|iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-      const mac = /Mac/.test(navigator.platform || '');
-      aviso(ios
-        ? 'Safari no ha abierto el cuadro de impresión. Prueba con el botón Compartir → Imprimir.'
-        : `El navegador no ha abierto el cuadro de impresión. Pulsa ${mac ? 'Cmd' : 'Ctrl'} + P para imprimir.`, 9000);
-    }, 1500);
+    tipografiando.then(() => {
+      if (!impresionAlDia) premaquetar();
+      document.body.classList.toggle('imprimir-soluciones', cual === 'soluciones');
+      window.print();
+    });
   }
-  /* Ctrl + P sin pulsar el botón: se imprime la hoja que se está viendo */
-  let dialogoAbierto = false;
-  window.addEventListener('beforeprint', () => { dialogoAbierto = true; if (!maquetado && estado.items.length) prepararImpresion(vista); });
-  /* No se vacía #impresion al terminar: Safari puede lanzar «afterprint» antes de pintar la impresión */
-  window.addEventListener('afterprint', () => { maquetado = false; });
+  /* Ctrl + P o Compartir → Imprimir: se imprime la hoja que se está viendo */
+  window.addEventListener('beforeprint', () => { if (!impresionAlDia) premaquetar(); });
+  window.addEventListener('afterprint', () => { document.body.classList.toggle('imprimir-soluciones', vista === 'soluciones'); });
   $('btn-imp-examen').onclick = () => imprimir('examen');
   $('btn-imp-sol').onclick = () => imprimir('soluciones');
   window.__maquetar = maquetar;   // para las pruebas automáticas
