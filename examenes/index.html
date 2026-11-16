@@ -583,12 +583,14 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
   }
 
   let tipografiando = Promise.resolve();
+  let tipografiaPendiente = false;
   function tipografiar(els) {
     if (!(window.MathJax && MathJax.typesetPromise)) return Promise.resolve();
-    tipografiando = tipografiando.then(() => {
+    tipografiaPendiente = true;
+    const esta = tipografiando = tipografiando.then(() => {
       MathJax.typesetClear(els);
       return MathJax.typesetPromise(els);
-    }).catch(() => {});
+    }).catch(() => {}).then(() => { if (tipografiando === esta) tipografiaPendiente = false; });
     return tipografiando;
   }
 
@@ -842,16 +844,27 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
   }
 
   let maquetado = false;
+  /* Monta los folios; si algo falla, imprime la hoja tal cual para no dejar al usuario sin imprimir */
+  function prepararImpresion(cual) {
+    try { maquetar(cual); }
+    catch (e) {
+      console.error('Maquetación de impresión', e);
+      const h = $(cual === 'examen' ? 'hoja-examen' : 'hoja-soluciones').cloneNode(true);
+      h.removeAttribute('id'); h.hidden = false; h.style.cssText = 'width:auto;min-height:0;box-shadow:none';
+      h.querySelectorAll('.otro,.marca-cara').forEach(n => n.remove());
+      $('impresion').innerHTML = ''; $('impresion').appendChild(h);
+    }
+    maquetado = true;
+  }
+  /* Todo ocurre dentro del clic: Safari y algunos navegadores ignoran window.print() si llega más tarde */
   function imprimir(cual) {
     if (!estado.items.length) { aviso('Añade al menos un ejercicio antes de imprimir.'); return; }
-    const fuentes = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
-    Promise.all([tipografiando, fuentes]).then(() => {
-      maquetar(cual); maquetado = true;
-      window.print();
-    });
+    if (tipografiaPendiente) { aviso('Un momento: se están terminando de escribir las fórmulas. Vuelve a pulsar.'); return; }
+    prepararImpresion(cual);
+    window.print();
   }
   /* Ctrl + P sin pulsar el botón: se imprime la hoja que se está viendo */
-  window.addEventListener('beforeprint', () => { if (!maquetado && estado.items.length) maquetar(vista); });
+  window.addEventListener('beforeprint', () => { if (!maquetado && estado.items.length) prepararImpresion(vista); });
   window.addEventListener('afterprint', () => { maquetado = false; $('impresion').innerHTML = ''; });
   $('btn-imp-examen').onclick = () => imprimir('examen');
   $('btn-imp-sol').onclick = () => imprimir('soluciones');
