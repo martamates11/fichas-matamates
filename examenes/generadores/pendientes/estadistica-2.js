@@ -1,10 +1,15 @@
 /* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Estadística (pendientes de 2.º ESO).
-   Bancos, contextos y rangos de la ficha pendientes/segundo/estadistica-2.html, con dos
-   ajustes pensados para hacer el examen sin calculadora (aplicados también en la ficha):
-   en la tabla de frecuencias el total N es 10, 20 o 25, así que las frecuencias relativas
-   son decimales exactos, y en los ejercicios de media los datos dan una media exacta con
-   dos decimales como mucho. */
+   Bancos, contextos y tipos de la ficha pendientes/segundo/estadistica-2.html, con estos
+   ajustes (la ficha NO los tiene) pensados para hacer el examen sin calculadora y en papel:
+   · Tabla de frecuencias: el total N es 10, 20 o 25 (frecuencias de 2 a 9), así las
+     frecuencias relativas son decimales exactos; la ficha admite cualquier total.
+   · Media (tabla y gráfico): las frecuencias se eligen para que la media sea exacta con dos
+     decimales como mucho; la ficha las genera al azar (1 a 9 y 1 a 8).
+   · Diagrama de sectores: cada categoría tiene al menos 2 datos (la ficha, al menos 1), para
+     que no salgan sectores diminutos.
+   · Gráfico de barras: valores de 2 a 9 (la ficha, de 1 a 9), para evitar «1 familias».
+   El resto de contextos, bancos y rangos coinciden con la ficha. */
 (function () {
   'use strict';
   const { registrarFicha, pend } = window.EX;
@@ -43,7 +48,7 @@
   const TIPO = ['cualitativa', 'cuantitativa'];
   function genVariables(R) {
     let it;
-    do { it = R.shuffle(BANCO).slice(0, 4); } while (it.every(v => v[1] === it[0][1]));
+    do { it = R.shuffle(BANCO).slice(0, 5); } while (it.every(v => v[1] === it[0][1]));
     return {
       html: true,
       enun: `<span class="pend-texto">${it.map((v, k) => `${k + 1}. ${v[0]}`).join('<br>')}</span>`,
