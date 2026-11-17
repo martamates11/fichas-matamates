@@ -1,10 +1,10 @@
 /* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Ecuaciones (pendientes de 3.º ESO).
    Los datos se generan con los mismos criterios que la ficha interactiva
-   pendientes/tercero/ecuaciones-3.html. Cambios aplicados también en la ficha:
-   los problemas de primer grado dejan de ser un banco fijo de seis enunciados y pasan a
-   ser las mismas seis plantillas con números aleatorios, y en la ecuación con paréntesis
-   y denominadores se descarta el caso r = 0 (que mostraba un «0 +» sin sentido). */
+   pendientes/tercero/ecuaciones-3.html. Diferencias con la ficha (que no se ha modificado):
+   los problemas de primer grado, que en la ficha son un banco fijo de seis enunciados, aquí
+   son las mismas seis situaciones con números aleatorios; y en la ecuación con paréntesis
+   y denominadores se descarta el caso r = 0 (el segundo miembro sería «0 + x/e»). */
 (function () {
   'use strict';
   const { mcm, tex, resolverCuadratica, despejeLineal, registrarFicha } = window.EX;
@@ -40,7 +40,7 @@
   }
 
   /* ================= 3. Problemas de primer grado ================= */
-  /* Las seis situaciones de la ficha, con números aleatorios (mismas plantillas en la ficha) */
+  /* Las seis situaciones de la ficha, con números aleatorios */
   const PAREJAS = [['Pedro', 'Juan'], ['Mario', 'Hugo'], ['Daniel', 'Álvaro'], ['Pablo', 'Iván']];
   const PROBLEMAS = [
     R => { // k1·x − A = k2·x + B
@@ -135,7 +135,7 @@
         { t: `Multiplicamos los dos miembros por \\(\\text{m.c.m.}(${c}, ${e}) = ${L}\\):`, m: `${p0 * L} + ${fac} = ${n(r * L)} + ${Le === 1 ? '' : Le}x` },
         { t: 'Quitamos el paréntesis:', m: `${p0 * L} + ${lin(Lc, Lc * q)} = ${n(r * L)} + ${Le === 1 ? '' : Le}x` },
         { t: 'Pasamos los términos con \\(x\\) a la izquierda y los números a la derecha:', m: `${poli([[Lc, 'x'], [-Le, 'x']])} = ${poli([[r * L, ''], [-p0 * L, ''], [-Lc * q, '']])} \\;\\Rightarrow\\; ${lin(k, 0)} = ${n(dcha)}` },
-        { t: 'Despejamos \\(x\\):', m: despejeLineal(k, dcha, 'x').m }
+        ...(k === 1 ? [] : [{ t: 'Despejamos \\(x\\):', m: despejeLineal(k, dcha, 'x').m }])
       ],
       res: `x = ${n(x)}`
     };

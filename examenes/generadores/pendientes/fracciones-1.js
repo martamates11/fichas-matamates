@@ -82,7 +82,8 @@
   }
 
   /* ================= 5. Suma y resta con distinto denominador (ficha: denominadores 2–6, fracciones propias) ================= */
-  /* Ficha y examen excluyen el resultado 0 (p. ej. 1/2 − 2/4), que no practica nada. */
+  /* La ficha solo descarta resultados negativos; aquí también el 0 (p. ej. 1/2 − 2/4), que no
+     practica nada y en el papel resulta confuso. */
   function genDistintoDen(R) {
     let d1, d2, a, b, resta, num;
     do {
@@ -126,7 +127,7 @@
   }
 
   /* ================= 8. Simplificación (ficha: numerador par 4–18, denominador par 4–14) ================= */
-  /* Ficha y examen excluyen numerador = denominador (resultado 1, trivial). */
+  /* La ficha admite numerador = denominador (resultado 1); aquí se excluye por trivial. */
   function genSimplificar(R) {
     let n, d;
     do { n = 2 * R.int(2, 9); d = 2 * R.int(2, 7); } while (n === d);
@@ -144,7 +145,7 @@
   /* ================= 9. Operaciones combinadas (ficha: numeradores 1–3, denominadores 2–4) ================= */
   /* Tres modelos: a/b · (c/d + e/f), a/b + c/d · e/f y (a/b + c/d) · e/f.
      El segundo sustituye al de la ficha a/b + (c/d + e/f), cuyo paréntesis no cambia nada;
-     así se practica la prioridad de la multiplicación (cambio aplicado también en la ficha). */
+     así se practica la prioridad de la multiplicación (criterio distinto del de la ficha). */
   function suma(n1, d1, n2, d2) {           // pasos de una suma de fracciones; devuelve { m, f }
     const m = mcm(d1, d2), a = n1 * m / d1, b = n2 * m / d2, f = fr(a + b, m);
     const tex = d1 === d2 ? `${F(n1, d1)} + ${F(n2, d2)} = ${F(n1 + n2, d1)}` : `${F(n1, d1)} + ${F(n2, d2)} = ${F(a, m)} + ${F(b, m)} = ${F(a + b, m)}`;

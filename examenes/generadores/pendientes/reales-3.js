@@ -1,12 +1,17 @@
 /* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Números reales (pendientes de 3.º ESO).
    Los números se generan con los mismos criterios que la ficha interactiva
-   pendientes/tercero/reales-3.html. Cambios pensados para hacer el examen sin
-   calculadora (aplicados también en la ficha): el común denominador es el m.c.m.
-   (no el producto de los denominadores) y la suma de tres fracciones se limita a
-   m.c.m. ≤ 120; los decimales periódicos se escriben en su forma canónica (sin
-   periodo 9 ni periodos que se puedan acortar); las fracciones que hay que
-   clasificar no son enteras; el redondeo se hace con aritmética exacta. */
+   pendientes/tercero/reales-3.html, con estos cambios (solo en el examen, la ficha no los
+   tiene) pensados para hacerlo sin calculadora:
+   - Suma de tres fracciones: el común denominador es el m.c.m. (la ficha usa el producto de
+     los denominadores) y se limita a m.c.m. <= 120.
+   - Decimales periódicos en forma canónica: periodo de 1 o 2 cifras sin acabar en 0, sin todo
+     nueves y sin poderse acortar (no «33»); en los mixtos, anteperiodo de 1 o 2 cifras cuya
+     última cifra no coincide con la del periodo (la ficha usa 1 cifra de 1 a 9).
+   - Las fracciones que hay que clasificar no son enteras (la ficha podría dar 4/2).
+   - Problema de la pizza: las fracciones que se comen son irreducibles.
+   - Redondeo: la última cifra decimal no es 0 y el resultado se calcula con aritmética
+     exacta (la ficha usa coma flotante). */
 (function () {
   'use strict';
   const { tex, registrarFicha, pend, fr, mcd, mcm } = window.EX;
@@ -23,7 +28,7 @@
   const digitos = (R, k) => { let s = ''; for (let i = 0; i < k; i++) s += R.int(0, 9); return s; };
   const listaY = arr => arr.join(', ').replace(/, ([^,]*)$/, ' y $1');
 
-  /* ---------- Decimales periódicos canónicos (también en la ficha) ---------- */
+  /* ---------- Decimales periódicos canónicos ---------- */
   /* Periodo de 1 o 2 cifras, que no acaba en 0, no es todo nueves y no se puede acortar (no «33») */
   function periodo(R) {
     let P;
@@ -234,7 +239,7 @@
   const conComa = (q, p) => { const s = String(q).padStart(p + 1, '0'); return `${s.slice(0, -p)}{,}${s.slice(-p)}`; };
   function genRedondeo(R, i) {
     const E = R.int(1, 90);
-    const dec = digitos(R, 3) + R.int(1, 9);            // la última cifra no es 0 (también en la ficha)
+    const dec = digitos(R, 3) + R.int(1, 9);            // la última cifra no es 0
     const [lugar, p] = LUGARES[(i + R.int(0, 2)) % 3];
     const total = E * 10000 + parseInt(dec, 10);
     const div = Math.pow(10, 4 - p);

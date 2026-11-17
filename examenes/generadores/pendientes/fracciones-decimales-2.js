@@ -1,12 +1,14 @@
 /* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Fracciones y decimales (pendientes de 2.º ESO).
-   Mismos criterios que la ficha pendientes/segundo/fracciones-decimales-2.html, con los
-   ajustes pensados para hacer el examen sin calculadora (aplicados también en la ficha):
-   en las sumas de fracciones y al ordenar, el m.c.m. de los denominadores no pasa de 60;
-   no se usan fracciones que valen un número entero como dato ni sumas con los tres
-   denominadores iguales; la división de decimales
-   es exacta (cociente con dos decimales como mucho), y en el problema de la leche todos
-   los datos se usan y el resultado es exacto. */
+   Mismos criterios que la ficha pendientes/segundo/fracciones-decimales-2.html, con estos
+   ajustes (solo en el examen, la ficha no los tiene) pensados para hacerlo sin calculadora:
+   - Suma de fracciones y ordenar: el m.c.m. de los denominadores no pasa de 60; no se usan
+     fracciones que valen un número entero como dato ni sumas con los tres denominadores iguales.
+   - División de decimales: la ficha pide el cociente redondeado a las centésimas (divisor de
+     1 a 9 con una cifra decimal); aquí la división es exacta (cociente con dos decimales como
+     mucho) y el divisor es un decimal de 1,1 a 8,9.
+   - Problema de la leche: la ficha no usa el número de personas (dato sobrante); aquí cada
+     persona toma esa fracción de litro al día y el resultado es exacto. */
 (function () {
   'use strict';
   const { tex, registrarFicha, fr, mcd, mcm, pend } = window.EX;
@@ -115,7 +117,7 @@
   }
 
   /* ================= 5. Ordenar cuatro fracciones ================= */
-  /* Ficha: numeradores 1–12, denominadores 2–12, valores distintos; aquí (y en la ficha)
+  /* Ficha: numeradores 1–12, denominadores 2–12, valores distintos; aquí
      con m.c.m. de los denominadores ≤ 60 para poder reducir a común denominador a mano. */
   function genOrdenar(R) {
     let it, M;
@@ -180,8 +182,7 @@
   }
 
   /* 8. División de decimales: dividendo 10–990 con uno o dos decimales, divisor 1,1–8,9 con
-     una cifra decimal. En la ficha el cociente se redondeaba a las centésimas; aquí (y ahora
-     también en la ficha) la división es exacta, con dos decimales como mucho. */
+     una cifra decimal. En la ficha el cociente se redondeaba a las centésimas; aquí la división es exacta, con dos decimales como mucho. */
   function genDivDec(R) {
     let k, m;
     do {

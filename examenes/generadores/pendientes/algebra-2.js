@@ -1,8 +1,10 @@
 /* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Expresiones algebraicas (pendientes de 2.º ESO).
-   Mismos criterios que la ficha pendientes/segundo/algebra-2.html. El banco de frases
-   del lenguaje algebraico se ha ampliado de 10 a 24 (también en la ficha) y se han
-   aclarado dos redacciones ambiguas. */
+   Mismos criterios que la ficha pendientes/segundo/algebra-2.html, con una diferencia:
+   el banco de frases del lenguaje algebraico es de 24 en lugar de las 10 de la ficha
+   (las 10 primeras son las de la ficha), para que los exámenes no se repitan, y en la
+   2.ª se ha aclarado la redacción («disminuida en 8» en vez de «disminuido en 8»). La
+   ficha no se ha modificado. */
 (function () {
   'use strict';
   const { tex, registrarFicha, mcd } = window.EX;
@@ -97,7 +99,7 @@
       enun: `${M}(${poli([[1, 'x'], [c, '']])})`,
       pasos: [
         { t: 'Multiplicamos el monomio por cada término del paréntesis (propiedad distributiva):', m: `${Mp} \\cdot x + ${Mp} \\cdot ${p(c)}` },
-        { t: `Multiplicamos coeficientes y sumamos los exponentes de \\(x\\) (\\(x^{${pw}} \\cdot x = x^{${pw + 1}}\\)):`, m: res }
+        { t: `Multiplicamos coeficientes y sumamos los exponentes de \\(x\\) (\\(${pw === 1 ? 'x' : 'x^2'} \\cdot x = x^{${pw + 1}}\\)):`, m: res }
       ],
       res
     };
@@ -160,11 +162,13 @@
     const coefs = Object.values(orig).map(abs);
     const fc = mono(k, q), ext = poliMap(dentro);
     const res = `${fc}(${ext})`;
+    const neg = dentro[grados[0]] < 0;
     return {
       enun: poliMap(orig),
       pasos: [
         { t: `Máximo común divisor de los coeficientes: \\(\\text{m.c.d.}(${coefs.join(', ')}) = ${coefs.reduce(mcd)}\\). ${q === 0 ? 'No todos los términos llevan \\(x\\), así que no sale ninguna potencia de \\(x\\).' : `Menor potencia de \\(x\\) común a todos los términos: \\(${xv(q)}\\).`}` },
-        { t: `Sacamos \\(${fc}\\) factor común y dividimos cada término entre \\(${fc}\\):`, m: `${poliMap(orig)} = ${res}` }
+        { t: `Sacamos \\(${fc}\\) factor común y dividimos cada término entre \\(${fc}\\):`, m: `${poliMap(orig)} = ${res}` },
+        ...(neg ? [{ t: `También es correcto sacar \\(${mono(-k, q)}\\): \\(${mono(-k, q)}(${poliMap(Object.fromEntries(Object.entries(dentro).map(([g, c]) => [g, -c])))})\\).` }] : [])
       ],
       res
     };

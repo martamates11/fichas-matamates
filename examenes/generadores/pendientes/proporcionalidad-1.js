@@ -1,9 +1,11 @@
 /* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Proporcionalidad (pendientes de 1.º ESO).
-   Mismos criterios que la ficha interactiva pendientes/primero/proporcionalidad-1.html.
-   Cambios (aplicados también en la ficha): las fracciones equivalentes y la regla de
-   tres se generan con datos aleatorios en lugar de un banco fijo de 12 casos, y el
-   banco de magnitudes se amplía (y se corrige una afirmación mal clasificada). */
+   Mismos tipos y rangos que la ficha interactiva pendientes/primero/proporcionalidad-1.html.
+   Diferencias respecto a la ficha (no están aplicadas en ella): las fracciones equivalentes y
+   la regla de tres se generan con datos aleatorios en lugar de un banco fijo de 12 casos;
+   el banco de magnitudes se amplía (12 → 23 frases) y se sustituye la frase «El precio de
+   una chaqueta y el número de chaquetas que puedo comprar», que la ficha da como directa y
+   es ambigua (con un presupuesto fijo sería inversa), por «número de entradas y dinero pagado». */
 (function () {
   'use strict';
   const { registrarFicha, pend, mcd } = window.EX;
@@ -59,7 +61,7 @@
     ['El número de bizcochos iguales que se hacen y la harina que se necesita.', true, 'Para el doble de bizcochos hace falta el doble de harina.'],
     ['El número de alumnos que van de excursión y lo que paga cada uno por un autobús de precio fijo.', false, 'Es una proporcionalidad inversa: si van el doble de alumnos, cada uno paga la mitad.'],
     ['Los minutos que dura una llamada y su coste (mismo precio por minuto y sin coste de establecimiento).', true, 'El doble de minutos cuesta el doble; el precio por minuto es la constante.'],
-    ['El número de pie de una persona y su edad.', false, 'No hay una relación fija entre ellas: a doble edad no le corresponde doble número de pie.'],
+    ['La edad de una persona y la talla de su calzado.', false, 'No hay una relación fija entre ellas: a doble edad no le corresponde doble talla.'],
     ['Los litros de pintura y los metros cuadrados de pared que se pintan (con una sola capa).', true, 'Con el doble de pintura se pinta el doble de pared.']
   ];
   function genMagnitudes(R) {

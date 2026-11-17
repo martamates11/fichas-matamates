@@ -1,7 +1,7 @@
 /* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Sistemas de ecuaciones (pendientes de 2.º ESO).
    Mismos criterios que la ficha pendientes/segundo/sistemas-2.html: soluciones enteras
-   entre −6 y 6 (sin la solución trivial x = 0, y = 0, también excluida ahora en la ficha)
+   entre −6 y 6 (aquí se excluye la solución trivial x = 0, y = 0, que la ficha sí permite)
    y coeficientes preparados para cada método:
    - sustitución: una incógnita con coeficiente ±1;
    - igualación: la misma incógnita con coeficiente ±1 en las dos ecuaciones;

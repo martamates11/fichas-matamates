@@ -1,10 +1,10 @@
 /* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Potencias y raíces (pendientes de 1.º ESO).
    Los números se generan con los mismos criterios que la ficha interactiva
-   pendientes/primero/potencias-1.html. Para que haya variedad suficiente, en
-   «potencia como producto» la base va de 2 a 9 y en «valor de una potencia» se
-   añaden la base 10 y algunas potencias de exponente 4, 5 o 6 (cambio aplicado
-   también en la ficha). */
+   pendientes/primero/potencias-1.html, salvo dos ampliaciones para que haya variedad
+   suficiente (no están en la ficha): en «potencia como producto» la base va de 2 a 9
+   (la ficha, de 2 a 6) y en «valor de una potencia» se añaden la base 10 y algunas
+   potencias de exponente 4, 5 o 6 que se calculan bien a mano. */
 (function () {
   'use strict';
   const { registrarFicha } = window.EX;
@@ -33,7 +33,7 @@
   }
 
   /* ================= 2. Potencia como producto ================= */
-  /* Ficha: exponente 3–5; base 2–9 (antes 2–6, se amplía también en la ficha) */
+  /* Ficha: exponente 3–5; base 2–6. Aquí la base va de 2 a 9 (ampliación solo del examen) */
   function genProducto(R) {
     const b = R.int(2, 9), e = R.int(3, 5);
     const prod = Array(e).fill(b).join(' \\cdot ');
@@ -127,8 +127,8 @@
   }
 
   /* ================= 9. Valor de una potencia ================= */
-  /* Ficha: base 2–10 con exponente 2 o 3, y algunas potencias de exponente mayor
-     que se calculan bien a mano (se amplía también en la ficha). */
+  /* Ficha: base 2–9 con exponente 2 o 3 (y base 2–6 con exponente 3). Aquí se añaden la
+     base 10 y 2^4, 3^4, 2^5, 2^6, 10^4 (ampliación solo del examen). */
   const VALORES = [];
   for (let b = 2; b <= 10; b++) VALORES.push([b, 2], [b, 3]);
   VALORES.push([2, 4], [3, 4], [2, 5], [2, 6], [10, 4]);
@@ -147,7 +147,7 @@
 
   /* ================= 10. Raíz cuadrada exacta o entera ================= */
   /* Ficha: raíz exacta de 4 a 12; raíz entera de 3 a 10 con resto de 1 a 2·raíz.
-     En los apartados impares (a, c, …) sale una raíz entera; en los pares, una exacta. */
+     El primer apartado (a), el tercero… lleva raíz entera con resto; el segundo (b), el cuarto…, raíz exacta. */
   function genRaiz(R, i) {
     if (i % 2) {
       const r = R.int(4, 12), N = r * r;

@@ -3,7 +3,10 @@
    Mismos criterios que la ficha pendientes/primero/funciones-1.html: coordenadas
    enteras entre −6 y 6, recorridos distancia-tiempo de 20 en 20 minutos y de 100 en
    100 metros, y funciones lineales f(x) = mx + b con coeficientes enteros.
-   En la tabla de valores, |m| + |b| ≤ 6 para que los puntos quepan en los ejes. */
+   Diferencias respecto a la ficha: en la tabla de valores, |m| + |b| ≤ 6 (la ficha admite m y b
+   de −4 a 4) para que los tres puntos quepan en los ejes de −6 a 6; y en el recorrido
+   distancia-tiempo nunca se vuelve a casa (0 m) a mitad de camino y siempre hay al menos una
+   parada (en la ficha puede no haber ninguna y la distancia puede llegar a 0 antes del final). */
 (function () {
   'use strict';
   const { tex, registrarFicha, pend } = window.EX;
@@ -103,7 +106,7 @@
   }
 
   /* ================= 3. Gráfica distancia-tiempo ================= */
-  /* Mismo recorrido que la ficha: tramos de 20 o 40 minutos, subidas y bajadas de 100 o 200 m,
+  /* Recorrido como el de la ficha (con las diferencias de la cabecera): tramos de 20 o 40 minutos, subidas y bajadas de 100 o 200 m,
      paradas de 20 o 40 minutos (al menos una). A mitad del recorrido nunca se vuelve a casa (0 m). */
   const ESCENARIOS = [
     { nombre: 'Marta', actividad: 'una excursión en bicicleta', lugar: 'por el carril bici del río', a: 'a' },
@@ -185,20 +188,27 @@
   }
 
   /* ================= 4. Función lineal: pendiente, ordenada y monotonía ================= */
+  /* Como en la ficha, se da la gráfica de la recta (m de −6 a 6 sin el 0, b de −6 a 6) y hay que
+     leer en ella la pendiente y la ordenada. Siempre hay dos puntos de la recta con coordenadas
+     enteras dentro de los ejes: (0, b) y (1, m + b) o (−1, b − m). */
   const fx = (m, b) => `f(x) = ${tex.poli([[m, 'x'], [b, '']])}`;
   function genLineal(R) {
     const m = R.nz(-D, D), b = R.int(-D, D);
     const crece = m > 0;
+    const xq = abs(b + m) <= D ? 1 : -1, yq = m * xq + b;             // segundo punto de lectura
+    const [x0, y0, x1, y1] = xq === 1 ? [0, b, 1, yq] : [-1, yq, 0, b];     // de izquierda a derecha
+    const mov = `pasamos de \\(${coord(x0, y0)}\\) a \\(${coord(x1, y1)}\\), es decir, avanzamos 1 unidad a la derecha y la recta ${m > 0 ? 'sube' : 'baja'} ${abs(m)} ${abs(m) === 1 ? 'unidad' : 'unidades'}`;
     return {
-      enun: fx(m, b),
+      html: true,
+      enun: `<div class="pend-col">${plano({ recta: { m, b }, etiqueta: 'Recta dibujada en unos ejes de coordenadas' })}</div>`,
       pasos: [
-        { t: 'En \\(f(x) = mx + b\\), la pendiente \\(m\\) es el número que multiplica a \\(x\\):', m: `m = ${n(m)}` },
-        { t: b === 0
-          ? 'No hay término independiente, así que la ordenada en el origen es 0: la recta pasa por el origen.'
-          : `La ordenada en el origen \\(b\\) es el término independiente: la recta corta al eje Y en \\((0,\\, ${n(b)})\\).`, m: `b = ${n(b)}` },
-        { t: `Como la pendiente es ${crece ? 'positiva' : 'negativa'}, la función es <b>${crece ? 'creciente' : 'decreciente'}</b>.` }
+        { t: 'La ordenada en el origen \\(b\\) es la altura a la que la recta corta al eje Y (cuando \\(x = 0\\)):', m: `b = ${n(b)}` },
+        { t: `La pendiente \\(m\\) es lo que sube (o baja) la recta al avanzar una unidad hacia la derecha: ${mov}.`, m: `m = ${n(m)}`,
+          html: plano({ recta: { m, b }, puntos: [{ x: 0, y: b }, { x: xq, y: yq }], etiqueta: 'Puntos usados para leer la pendiente' }) },
+        { t: `Como la recta ${crece ? 'sube' : 'baja'} de izquierda a derecha (pendiente ${crece ? 'positiva' : 'negativa'}), la función es <b>${crece ? 'creciente' : 'decreciente'}</b>.` }
       ],
-      res: `m = ${n(m)},\\quad b = ${n(b)},\\quad \\text{${crece ? 'creciente' : 'decreciente'}}`
+      res: `m = ${n(m)},\\quad b = ${n(b)},\\quad \\text{${crece ? 'creciente' : 'decreciente'}}`,
+      resHtml: `\\(${fx(m, b)}\\): pendiente \\(m = ${n(m)}\\), ordenada \\(b = ${n(b)}\\), ${crece ? 'creciente' : 'decreciente'}.`
     };
   }
 

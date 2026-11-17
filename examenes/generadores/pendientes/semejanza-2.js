@@ -1,12 +1,13 @@
 /* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Semejanza (pendientes de 2.º ESO).
-   Mismos criterios que la ficha interactiva pendientes/segundo/semejanza-2.html, con los
-   ajustes que también se han hecho en la ficha para trabajar sin calculadora:
+   Mismos tipos y rangos que la ficha interactiva pendientes/segundo/semejanza-2.html, con
+   estos ajustes (la ficha NO los tiene) para trabajar sin calculadora:
    - Segmentos proporcionales: la segunda posibilidad tiene como mucho una cifra decimal.
    - Triángulos (lados): con razón 2/3 los lados del primer triángulo son múltiplos de 3,
      para que el triángulo «semejante» lo sea de verdad (antes se redondeaba).
    - Escala: escalas de mapa reales (1:25 000 a 1:250 000) en lugar de 1:500, que daba
-     recorridos de pocos metros y planos de varios metros de largo. */
+     recorridos de pocos metros y planos de varios metros de largo (la ficha usa 1:500).
+   - Cuarto proporcional y ángulos: mismos rangos que la ficha. */
 (function () {
   'use strict';
   const { tex, registrarFicha, mcd, pend } = window.EX;
@@ -56,7 +57,7 @@
       sol = [nombres[c].izq, nombres[c].der]; alt = [nombres[x].izq, nombres[x].der];
       expl = `La razón entre un segmento de la recta izquierda y su correspondiente de la derecha (entre las mismas paralelas) es la misma para cualquier par de paralelas.`;
     }
-    const fr = (a, b) => `\\frac{${seg(a)}}{${seg(b)}}`;
+    const fr = (a, b) => `\\dfrac{${seg(a)}}{${seg(b)}}`;
     return {
       html: true,
       enun: `<div class="pend-col">${FIG_THALES}<span>\\(${fr(num, den)} = \\dfrac{\\phantom{AB}}{\\phantom{AB}}\\)</span></div>`,
@@ -172,13 +173,13 @@
     const { E, plano, realKm, solKm, solCm } = datosEscala(R), f = E / 100000;
     return {
       html: true,
-      enun: txt(`En un mapa de escala 1 : ${miles(E)}:<br>a) ¿Cuántos kilómetros reales son ${plano} cm del mapa?<br>b) ¿Qué longitud tendrá en el mapa una distancia real de ${realKm} km?`),
+      enun: txt(`En un mapa de escala 1 : ${miles(E)}:<br>(1) ¿Cuántos kilómetros reales son ${plano} cm del mapa?<br>(2) ¿Qué longitud tendrá en el mapa una distancia real de ${realKm} km?`),
       pasos: [
         { t: `Cada centímetro del mapa son ${miles(E)} cm reales. Como 1 km = 100 000 cm:`, m: `1\\text{ cm del mapa} \\;\\rightarrow\\; ${milesTeX(E)}\\text{ cm} = ${dec(f)}\\text{ km}` },
-        { t: 'a) Multiplicamos:', m: `${plano} \\cdot ${dec(f)} = ${dec(solKm)}\\text{ km}` },
-        { t: 'b) Dividimos:', m: `${realKm} : ${dec(f)} = ${cm(solCm)}` }
+        { t: '(1) Multiplicamos:', m: `${plano} \\cdot ${dec(f)} = ${dec(solKm)}\\text{ km}` },
+        { t: '(2) Dividimos:', m: `${realKm} : ${dec(f)} = ${cm(solCm)}` }
       ],
-      res: `\\text{a) } ${dec(solKm)}\\text{ km} \\qquad \\text{b) } ${cm(solCm)}`
+      res: `\\text{(1) } ${dec(solKm)}\\text{ km} \\qquad \\text{(2) } ${cm(solCm)}`
     };
   }
 
@@ -201,7 +202,7 @@
   }
 
   /* Datos expuestos para las comprobaciones independientes (no los usa el examen) */
-  EXPORTAR: window.EX.pend._semejanza2 = { datosSegmentos, datosLados, datosAngulos, datosEscala, datosCuarto, proporcionales, mcd };
+  window.EX.pend._semejanza2 = { datosSegmentos, datosLados, datosAngulos, datosEscala, datosCuarto, proporcionales, mcd };
 
   registrarFicha({
     id: 'pend2-semejanza',

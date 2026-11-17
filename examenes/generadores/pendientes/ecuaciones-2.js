@@ -1,8 +1,9 @@
 /* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Ecuaciones (pendientes de 2.º ESO).
-   Mismos criterios que la ficha pendientes/segundo/ecuaciones-2.html. Los problemas,
-   que en la ficha eran un banco fijo de seis, se generan ahora con plantillas de datos
-   variables (el mismo cambio se ha hecho en la ficha). */
+   Mismos criterios que la ficha pendientes/segundo/ecuaciones-2.html, con una diferencia:
+   los problemas, que en la ficha son un banco fijo de seis enunciados, aquí se generan con
+   siete plantillas de datos variables (las seis de la ficha y los números consecutivos),
+   para que los exámenes no se repitan. La ficha no se ha modificado. */
 (function () {
   'use strict';
   const { tex, registrarFicha, despejeLineal, mcm } = window.EX;
@@ -42,9 +43,8 @@
   }
 
   /* ================= 3. Problemas de primer grado ================= */
-  /* Plantillas con datos variables. La misma función está en la ficha (generarProblema),
-     que comprueba la ecuación planteada comparando coeficientes, así que se escribe
-     siempre en forma desarrollada (sin paréntesis). */
+  /* Plantillas con datos variables. En los problemas de edades y de consecutivos se pide
+     la ecuación en forma desarrollada (sin paréntesis), como en la ficha. */
   const MULT = { 2: 'doble', 3: 'triple', 4: 'cuádruple', 5: 'quíntuple' };
   const NOMBRES = [['Pedro', 'Juan'], ['Lucía', 'Marta'], ['Hugo', 'Daniel'], ['Sara', 'Noa'], ['Pablo', 'Álvaro'], ['Carmen', 'Irene']];
   function generarProblema(R) {

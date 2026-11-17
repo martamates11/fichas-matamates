@@ -2,7 +2,11 @@
    Generadores de examen: Proporcionalidad directa e inversa (pendientes de 2.º ESO).
    Mismos criterios que la ficha interactiva pendientes/segundo/proporcionalidad-2.html.
    Las fracciones equivalentes, la regla de tres y los problemas se generan con plantillas
-   (la ficha usa las mismas), así que todos los resultados son exactos y se calculan a mano. */
+   (la ficha usa las mismas), así que todos los resultados son exactos y se calculan a mano.
+   Diferencias: las fracciones equivalentes se generan con parámetros (la ficha tiene 12 casos fijos, con
+   la misma estructura a/b y k·a/k·b o alterado en una unidad); en las magnitudes se añade «con el mismo
+   rendimiento» a «personas…» para que el enunciado no sea ambiguo; los problemas de la ficha son 8+8 casos
+   fijos y aquí las mismas plantillas con datos al azar de resultado entero. */
 (function () {
   'use strict';
   const { tex, registrarFicha, mcd, mcm, pend } = window.EX;
@@ -197,7 +201,7 @@
     const rebaja = P * d / 100, fin = P - rebaja, f = (100 - d) / 100;
     return {
       html: true,
-      enun: txt(`${ARTICULO[prod]} ${prod} ${plural(prod) ? 'cuestan' : 'cuesta'} ${P} € y ${plural(prod) ? 'tienen' : 'tiene'} un descuento del ${d} %. ¿Cuánto pagarás finalmente?`),
+      enun: txt(`${ARTICULO[prod]} ${prod} ${plural(prod) ? 'cuestan' : 'cuesta'} ${P} € y ${plural(prod) ? 'tienen' : 'tiene'} un descuento del ${d} %. ¿Cuánto pagarás finalmente?`),
       pasos: [
         { t: 'Calculamos el descuento y lo restamos del precio:', m: `\\frac{${d}}{100} \\cdot ${P} = ${eur(rebaja)} \\qquad ${P} - ${din(rebaja)} = ${eur(fin)}` },
         { t: `También se puede multiplicar por el factor de descuento, \\(1 - ${dec(d / 100)} = ${dec(f)}\\):`, m: `${P} \\cdot ${dec(f)} = ${eur(fin)}` }
@@ -212,7 +216,7 @@
     const sube = P * a / 100, fin = P + sube, f = (100 + a) / 100;
     return {
       html: true,
-      enun: txt(`${ARTICULO[prod]} ${prod} ${plural(prod) ? 'cuestan' : 'cuesta'} ${P} €. Por ${motivo}, ${plural(prod) ? 'sufren' : 'sufre'} un incremento del ${a} %. ¿Cuál es su nuevo precio?`),
+      enun: txt(`${ARTICULO[prod]} ${prod} ${plural(prod) ? 'cuestan' : 'cuesta'} ${P} €. Por ${motivo}, ${plural(prod) ? 'sufren' : 'sufre'} un incremento del ${a} %. ¿Cuál es su nuevo precio?`),
       pasos: [
         { t: 'Calculamos el aumento y lo sumamos al precio:', m: `\\frac{${a}}{100} \\cdot ${P} = ${eur(sube)} \\qquad ${P} + ${din(sube)} = ${eur(fin)}` },
         { t: `También se puede multiplicar por el factor de aumento, \\(1 + ${dec(a / 100)} = ${dec(f)}\\):`, m: `${P} \\cdot ${dec(f)} = ${eur(fin)}` }

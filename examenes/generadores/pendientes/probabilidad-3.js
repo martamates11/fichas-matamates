@@ -92,7 +92,7 @@
   }
 
   /* ================= 4. Baraja española ================= */
-  /* Ficha: rey, sota, caballo y as; se añaden el siete y el cinco (también en la ficha) para dar más variedad */
+  /* Ficha: rey, sota, caballo y as. Aquí se añaden el siete y el cinco (no están en la ficha) para dar más variedad al examen */
   const PALOS = ['oros', 'copas', 'espadas', 'bastos'];
   const CARTAS = [
     { un: 'un rey', el: 'el rey', nombre: 'rey', plural: 'reyes' },

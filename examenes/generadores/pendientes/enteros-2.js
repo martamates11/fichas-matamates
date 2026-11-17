@@ -88,9 +88,9 @@
   }
 
   /* ================= 4. Operaciones combinadas ================= */
-  /* Estructura de la ficha: m·[s + D : (d)] − (f)·(g). Como en 1.º ESO, d, f y g pueden
-     ser negativos para que se practique la regla de los signos (cambio aplicado también
-     en la ficha). */
+  /* Estructura de la ficha: m·[s + D : (d)] − (f)·(g). La ficha de 2.º usa d (1–4), f y g
+     siempre positivos; aquí, como en la ficha de 1.º ESO, d (±2 a ±4), f y g (±2 a ±9) pueden
+     ser negativos para que se practique la regla de los signos (cambio solo del examen). */
   function genCombinadas(R) {
     const m = R.int(2, 4), s = R.int(5, 12);
     const dv = R.int(2, 4) * R.signo(), q = R.int(2, 6);

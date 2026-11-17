@@ -3,15 +3,19 @@
    Los números se generan con los mismos criterios que la ficha interactiva
    pendientes/tercero/potencias-3.html. Los ejercicios de la ficha que se resuelven
    eligiendo en desplegables (signo, resultado y motivo) se adaptan a papel pidiendo
-   el cálculo o el razonamiento. Cambios respecto a la ficha:
-   · Exponentes negativos: a ≠ b (también en la ficha), para que (a/b)² no sea 1.
+   el cálculo o el razonamiento. Cambios respecto a la ficha (solo en el examen):
+   · Exponentes negativos: a ≠ b, para que (a/b)² no sea 1 (la ficha admite a = b).
    · Misma base: ningún exponente fraccionario es en realidad entero (nada de 2/2
-     ni 0/3), y un exponente negativo se escribe −5/3 (también en la ficha).
-   · Notación científica: los decimales no acaban en cero (también en la ficha).
+     ni 0/3) y un exponente negativo se escribe −5/3 (la ficha puede dar 2/2).
+   · Notación científica: los decimales no acaban en cero (la ficha puede dar 1,20).
    · Para tener variedad suficiente en papel: en «Calcular potencias» las bases van
      de 2 a 6 (en la ficha, de 2 a 4); en «Base 10» cada apartado pide una potencia
-     de exponente positivo y otra de exponente negativo; en «Raíces de números
-     negativos» los radicandos llegan a −100 (índice 2) y −1000 (índice 3). */
+     de exponente positivo (1 a 6) y otra de exponente negativo (−1 a −5) en lugar de
+     los cuatro casos de la ficha (2–5, −2 a −4, 10¹ y 10⁻¹); en «Raíces de números
+     negativos» los radicandos llegan a −100 (índice 2), −625 (índice 4) y −1000
+     (índice 3).
+   · En general, cada apartado del examen es un solo caso (la ficha agrupa cuatro por
+     pregunta); los casos se reparten entre los apartados según su número de orden. */
 (function () {
   'use strict';
   const { tex, registrarFicha } = window.EX;

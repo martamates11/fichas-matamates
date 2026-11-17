@@ -1,10 +1,14 @@
 /* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Geometría (pendientes de 3.º ESO).
-   Mismos tipos y rangos que la ficha pendientes/tercero/geometria-3.html, con datos
-   pensados para hacer el examen sin calculadora (y aplicados también en la ficha):
-   · Sombras: la altura y la sombra del objeto son un múltiplo entero de las de la persona.
-   · Diagonal: ortoedro cuyas dos diagonales (de una cara y del cuerpo) son enteras.
-   · Pirámide, cono y esfera: el volumen lleva un 1/3 que se simplifica (datos múltiplos de 3).
+   Mismos tipos y rangos que la ficha pendientes/tercero/geometria-3.html, salvo estos
+   cambios (la ficha NO los tiene), pensados para hacer el examen sin calculadora:
+   · Sombras: la altura y la sombra del objeto son un múltiplo entero de las de la persona
+     (la ficha redondea el dato mostrado a 1 decimal).
+   · Diagonal: la ficha usa un cubo (d = a√2, D = a√3, irracionales); aquí se usa un ortoedro
+     cuyas diagonales de una cara y del cuerpo son enteras (ternas pitagóricas encadenadas).
+   · Pirámide (l·h múltiplo de 3), cono (r·h múltiplo de 3) y esfera (radio múltiplo de 3,
+     rango 3–15 como la ficha): el volumen lleva un 1/3 que se simplifica. La esfera, además,
+     a veces da el diámetro en lugar del radio y a veces usa dm o m.
    · Con π se usa π ≈ 3,14 y el resultado se da también en función de π. */
 (function () {
   'use strict';
@@ -121,7 +125,8 @@
     if (R.rand() < 0.5) [a, b] = [b, a];
     const u = R.pick(['cm', 'cm', 'dm', 'm']);
     /* La cara delantera (a × b) tiene la diagonal d; la profundidad es c */
-    const L = Lienzo(), { F, T } = ortoedro(L, a, c, b, 1.3 * escalaCaja(a, c, b));
+    const cv = Math.min(c, 0.85 * Math.max(a, b));            // profundidad dibujada (no a escala) para que d y D se distingan
+    const L = Lienzo(), { F, T } = ortoedro(L, a, cv, b, 1.3 * escalaCaja(a, cv, b));
     L.linea(F[0][0], F[0][1], F[2][0], F[2][1], { grosor: 1.3 })
       .linea(F[0][0], F[0][1], T[2][0], T[2][1], { discontinua: true, grosor: 1.3 })
       .anguloRecto(F[2], [F[0][0] - F[2][0], F[0][1] - F[2][1]], [T[2][0] - F[2][0], T[2][1] - F[2][1]], 6)
@@ -134,7 +139,7 @@
     L.texto(md[0] - 4, md[1] - 3, 'd', { tam: 12, cursiva: true, ancla: 'end' });
     L.texto(mD[0] + 2, mD[1] + 13, 'D', { tam: 12, cursiva: true });
     return {
-      html: true, enun: figura(L.cerrar('pend-fig', 'Ortoedro con la diagonal de la base y la del cuerpo')),
+      html: true, enun: figura(L.cerrar('pend-fig', 'Ortoedro con la diagonal de la base y la del cuerpo'), '', 'Figura no a escala'),
       pasos: [
         { t: 'La diagonal \\(d\\) de la cara delantera es la hipotenusa de un triángulo rectángulo cuyos catetos son las aristas de esa cara:', m: `d = \\sqrt{${a}^2 + ${b}^2} = \\sqrt{${a * a} + ${b * b}} = \\sqrt{${d * d}} = ${u1(d, u)}` },
         { t: 'La diagonal \\(D\\) del ortoedro es la hipotenusa del triángulo rectángulo que forman \\(d\\) y la arista \\(c\\), perpendicular a esa cara:', m: `D = \\sqrt{d^2 + c^2} = \\sqrt{${d}^2 + ${c}^2} = \\sqrt{${d * d} + ${c * c}} = \\sqrt{${D * D}} = ${u1(D, u)}` }
@@ -166,7 +171,7 @@
   function piramide(R) {
     let l, h; do { l = R.int(4, 12); h = R.int(4, 15); } while ((l * h) % 3 !== 0);    // volumen entero
     const apL = rd(Math.sqrt(h * h + l * l / 4), 1);
-    const s = K / Math.max(l * 1.1, h + l * 0.2), X = l * s * 0.55, Y = l * s * 0.17, Hh = h * s, L = Lienzo();
+    const s = K / Math.max(l * 1.5, h + l * 0.25), X = l * s * 0.75, Y = l * s * 0.22, Hh = h * s, L = Lienzo();
     const izq = [-X, 0], fr = [0, Y], der = [X, 0], fon = [0, -Y], V = [0, -Hh];
     L.poligono([izq, fr, der, fon], { relleno: '#dcdcdc', grosor: 1.2 })
       .poligono([V, izq, fr], { relleno: '#f2f2f2' }).poligono([V, fr, der], { relleno: '#e2e2e2' });
@@ -177,7 +182,9 @@
     L.cota([X + 8, 0], [X + 8, -Hh], `h = ${medida(h)}`, { lado: -1, d: 6 });
     const ym = (V[1] + M[1]) / 2, xBorde = -X * (ym + Hh) / Hh;
     L.texto(xBorde - 6, ym + 4, `${hl} = ${medida(apL)}</tspan>`, { tam: 12, ancla: 'end' });
-    L.cota(fr, der, `l = ${medida(l)}`, { lado: -1, d: 12 });
+    L.cota(fr, der, '', { lado: -1, d: 12 });                   // el rótulo va debajo de las líneas de referencia
+    const ln = Math.hypot(der[0] - fr[0], der[1] - fr[1]), nyl = (der[0] - fr[0]) / ln;
+    L.texto((fr[0] + der[0]) / 2 + 4, fr[1] + nyl * 16 + 13, `l = ${medida(l)}`, { tam: 12 });
     const vol = l * l * h / 3, Ab = l * l, Al = rd(2 * l * apL, 2), At = rd(Ab + Al, 2);
     return {
       html: true, enun: figura(L.cerrar('pend-fig', 'Pirámide de base cuadrada')),
@@ -246,8 +253,8 @@
     L.circulo(0, 0, Rr, { relleno: '#f0f0f0' });
     arcoElipse(L, 0, 0, Rr, Rr * 0.28, 0, Math.PI, { grosor: 1 });
     arcoElipse(L, 0, 0, Rr, Rr * 0.28, Math.PI, 2 * Math.PI, { discontinua: true, grosor: 0.9 });
-    if (conDiam) L.punto(0, 0, 2).linea(-Rr, 0, Rr, 0, { grosor: 1.3 }).texto(0, -Rr * 0.28 - 7, `d = ${medida(2 * r, u)}`, { tam: 12 });
-    else L.punto(0, 0, 2).linea(0, 0, Rr, 0, { grosor: 1.3 }).texto(Rr / 2, -Rr * 0.28 - 7, `r = ${medida(r, u)}`, { tam: 12 });
+    if (conDiam) L.punto(0, 0, 2).linea(-Rr, 0, Rr, 0, { grosor: 1.3 }).texto(0, -4, `d = ${medida(2 * r, u)}`, { tam: 11 });
+    else L.punto(0, 0, 2).linea(0, 0, Rr, 0, { grosor: 1.3 }).texto(Rr / 2 - 2, -4, `r = ${medida(r, u)}`, { tam: 11 });
     const kV = 4 * r * r * r / 3, kA = 4 * r * r;
     const pasos = [];
     if (conDiam) pasos.push({ t: 'El radio es la mitad del diámetro:', m: `r = \\frac{${2 * r}}{2} = ${u1(r, u)}` });

@@ -3,9 +3,10 @@
    Los datos se generan con los mismos criterios que la ficha interactiva
    pendientes/tercero/polinomios-3.html. En la ficha cada tanda trae dos frases o dos
    expresiones; aquí cada apartado es una sola, y el examen ya pone varios apartados.
-   Cambios aplicados también en la ficha: el banco de frases del lenguaje algebraico pasa
-   de 10 a 20 (y se deshace la ambigüedad de «la tercera parte de un número disminuido
-   en 8»), y en las identidades notables b va de 1 a 9, como en la factorización. */
+   Diferencias con la ficha (que no se ha modificado): el banco de frases del lenguaje
+   algebraico es de 20 en lugar de 10 (las 10 primeras son las de la ficha, con «disminuida
+   en 8» en vez de «disminuido en 8» para evitar la ambigüedad), y en las identidades
+   notables b va de 1 a 9 (en la ficha, de 1 a 4) para dar más variedad. */
 (function () {
   'use strict';
   const { mcd, tex, registrarFicha } = window.EX;
@@ -22,7 +23,7 @@
   const sumar = (...ms) => { const r = {}; ms.forEach(m => Object.keys(m).forEach(d => { r[d] = (r[d] || 0) + m[d]; })); return r; };
 
   /* ================= 1. Lenguaje algebraico ================= */
-  /* Mismo banco que la ficha (ampliado a 20 frases en los dos sitios) */
+  /* Las 10 primeras son las de la ficha; las otras 10 son nuevas */
   const FRASES = [
     ['El doble de un número más tres unidades', '2x + 3', '«El doble» de \\(x\\) es \\(2x\\); «más tres unidades» suma 3.'],
     ['La tercera parte de un número, disminuida en 8', '\\frac{x}{3} - 8', 'La tercera parte es \\(\\frac{x}{3}\\); «disminuida en 8» le resta 8.'],

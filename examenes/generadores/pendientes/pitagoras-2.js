@@ -3,12 +3,14 @@
    Mismos tipos de ejercicio que la ficha pendientes/segundo/pitagoras-2.html.
    Pensado para hacer el examen sin calculadora: la hipotenusa, el cateto, la altura
    del triángulo isósceles, la diagonal del rectángulo y la altura del trapecio isósceles
-   salen de ternas pitagóricas (resultados exactos; la ficha usa los mismos datos).
-   La apotema del hexágono nunca es exacta: se pide dejar la raíz indicada. */
+   salen de ternas pitagóricas (resultados exactos). Difiere de la ficha, que en esos tres
+   ejercicios genera lados al azar y da raíces no exactas.
+   La apotema del hexágono nunca es exacta (a = (l/2)·√3): se pide la raíz simplificada y el
+   valor aproximado con una cifra decimal usando √3 ≈ 1,73. Lado de 4 a 24 cm (la ficha, 6–16). */
 (function () {
   'use strict';
   const { registrarFicha, pend } = window.EX;
-  const { dec, medida, Lienzo } = pend;
+  const { dec, medida, Lienzo, rd } = pend;
 
   const K = 120;                         // px de modelo para la dimensión mayor de la figura
   const cm = x => `${dec(x)}\\text{ cm}`;
@@ -128,17 +130,17 @@
       .anguloRecto(M, [1, 0], [0, -1], 6)
       .rotulo(M[0], M[1] * 0.45, 1, 0, 'a = ?', 12, 4)
       .cota(V[2], V[1], `l = ${medida(l)}`, { lado: -1 });
-    const exacta = Number.isInteger(Math.sqrt(rad));
-    const raiz = `\\sqrt{${dec(rad)}}`;
-    const aprox = Math.sqrt(rad);
+    const raizM = m === Math.floor(m) ? `${m}` : dec(m);
+    const aprox = rd(m * 1.73, 1);               // lo que obtiene el alumno con √3 ≈ 1,73
     return {
-      html: true, enun: figura(L.cerrar('pend-fig', 'Hexágono regular'), 'Si la raíz no es exacta, déjala indicada.'),
+      html: true, enun: figura(L.cerrar('pend-fig', 'Hexágono regular'), 'Deja el resultado con raíz y da también el valor aproximado con una cifra decimal (√3 ≈ 1,73).'),
       pasos: [
         { t: 'En el hexágono regular, el radio mide lo mismo que el lado (el triángulo central es equilátero). La apotema divide ese triángulo en dos triángulos rectángulos de hipotenusa el radio y cateto la mitad del lado:', m: `r = l = ${cm(l)},\\qquad \\frac{l}{2} = ${cm(m)}` },
-        { t: 'Aplicamos el teorema de Pitágoras:', m: `a = \\sqrt{r^2 - \\left(\\frac{l}{2}\\right)^2} = \\sqrt{${l}^2 - ${dec(m)}^2} = \\sqrt{${l * l} - ${cuad(m)}} = ${raiz}\\text{ cm}` },
-        ...(exacta ? [] : [{ t: 'La raíz no es exacta; si se quiere aproximar:', m: `a = ${raiz} \\approx ${cm(aprox)}` }])
+        { t: 'Aplicamos el teorema de Pitágoras y sacamos factor común:', m: `a = \\sqrt{r^2 - \\left(\\frac{l}{2}\\right)^2} = \\sqrt{${l}^2 - ${dec(m)}^2} = \\sqrt{${l * l} - ${cuad(m)}} = \\sqrt{${dec(rad)}}` },
+        { t: `Como \\(${l}^2 - ${dec(m)}^2 = 3 \\cdot ${dec(m)}^2\\), la raíz se simplifica:`, m: `a = \\sqrt{3 \\cdot ${dec(m)}^2} = ${raizM}\\sqrt{3}\\text{ cm}` },
+        { t: 'Con \\(\\sqrt{3} \\approx 1{,}73\\):', m: `a \\approx ${raizM} \\cdot 1{,}73 \\approx ${cm(aprox)}` }
       ],
-      res: `a = ${raiz}\\text{ cm}${exacta ? '' : ` \\approx ${cm(aprox)}`}`
+      res: `a = ${raizM}\\sqrt{3}\\text{ cm} \\approx ${cm(aprox)}`
     };
   }
 

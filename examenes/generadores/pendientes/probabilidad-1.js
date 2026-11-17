@@ -1,8 +1,12 @@
 /* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Probabilidad (pendientes de 1.º ESO).
-   Mismos bancos y criterios que la ficha interactiva pendientes/primero/probabilidad-1.html:
+   Mismos tipos y criterios que la ficha interactiva pendientes/primero/probabilidad-1.html:
    conceptos, verdadero o falso, tabla de casos (regla de Laplace) y urna de tres colores.
-   Las probabilidades se dan como fracción irreducible. */
+   Diferencias respecto a la ficha: los bancos de «conceptos» (6 → 10) y «verdadero o falso»
+   (6 → 13 afirmaciones) están ampliados para que haya variedad; las probabilidades se piden
+   como fracción irreducible (la ficha acepta decimales con ≈ 0,01 de margen), pensando en un
+   examen sin calculadora; y la tabla de la ficha (5 filas) se reparte aquí en un suceso por
+   apartado. */
 (function () {
   'use strict';
   const { tex, registrarFicha, fr, pend } = window.EX;
@@ -18,7 +22,8 @@
   const lista = arr => arr.length > 1 ? arr.slice(0, -1).join(', ') + ' y ' + arr[arr.length - 1] : arr[0];
 
   /* ================= 1. Conceptos ================= */
-  /* El mismo banco que la ficha (que elige 6 de los 10 en cada tanda); aquí, 4 */
+  /* Banco de 10. La ficha usa 6: espacio muestral, suceso, suceso elemental, suceso contrario,
+     suceso seguro y suceso imposible; los otros cuatro se añaden aquí. En cada apartado salen 4. */
   const CONCEPTOS = [
     ['Experimento aleatorio', 'Experimento cuyo resultado no se puede predecir, aunque se repita en las mismas condiciones.'],
     ['Espacio muestral', 'Conjunto de todos los resultados posibles de un experimento aleatorio.'],
@@ -49,7 +54,7 @@
   }
 
   /* ================= 2. Verdadero o falso ================= */
-  /* Mismo banco que la ficha; en el examen, tres afirmaciones por apartado */
+  /* Las 6 primeras de la ficha (reformuladas) más 7 añadidas aquí; tres afirmaciones por apartado */
   const FRASES = [
     ['La probabilidad de un suceso siempre es menor o igual que 1.', true, 'La probabilidad siempre está entre 0 y 1, ambos incluidos.'],
     ['Si P(A) > P(B), entonces es más fácil que ocurra B.', false, 'Si P(A) > P(B), es A el que tiene más probabilidad: es más fácil que ocurra A.'],
@@ -165,7 +170,8 @@
       pasos: [
         { t: `Casos posibles: todas las bolas, \\(${rojas} + ${verdes} + ${azules} = ${total}\\).` },
         { t: 'Casos favorables: las bolas de cada color. Regla de Laplace:', m: preguntas.slice(0, 3).map(q => `P(\\text{${q[2]}}) = ${laplace(q[1], total)}`).join(' \\qquad ') },
-        { t: `Las bolas que no son rojas son las verdes y las azules: \\(${verdes} + ${azules} = ${verdes + azules}\\). También se puede restar de 1 la probabilidad de roja:`, m: `P(\\text{no roja}) = ${laplace(verdes + azules, total)}` }
+        { t: `Las bolas que no son rojas son las verdes y las azules: \\(${verdes} + ${azules} = ${verdes + azules}\\).`, m: `P(\\text{no roja}) = ${laplace(verdes + azules, total)}` },
+        { t: 'Otra forma: la probabilidad de «no roja» es lo que le falta a la de «roja» para llegar a 1:', m: `P(\\text{no roja}) = 1 - ${frac(fr(rojas, total))} = ${frac(fr(verdes + azules, total))}` }
       ],
       res: preguntas.map(q => `P(\\text{${q[2]}}) = ${frac(fr(q[1], total))}`).join(',\\quad ')
     };

@@ -38,7 +38,7 @@
   }
 
   /* ================= 2. Exponentes negativos ================= */
-  /* Ficha: a y b entre 2 y 6; aquí (y ya en la ficha) distintos y primos entre sí,
+  /* Ficha: a y b entre 2 y 6; aquí (solo en el examen) distintos y primos entre sí,
      para que los resultados no se repitan y salgan simplificados. */
   function genExpNeg(R) {
     let a, b; do { a = R.int(2, 6); b = R.int(2, 6); } while (a === b || mcd(a, b) !== 1);
@@ -82,7 +82,7 @@
   }
 
   /* ================= 6. Potencia de una potencia ================= */
-  /* Ficha: base ±2..±5 (sin −5), exponentes ±1..3 y ±1..2; aquí (y en la ficha) se evita
+  /* Ficha: base ±2..±5 (sin −5), exponentes ±1..3 y ±1..2; aquí (solo en el examen) se evita
      que el exponente final sea 1 o −1, que deja el ejercicio sin contenido. */
   function genPotPot(R) {
     let b, a, c;
@@ -113,7 +113,7 @@
   /* ================= 8. Notación científica ================= */
   /* Mismos números que la ficha; en el cuarto se evita una cifra final 0 (0,040 → 0,04…) */
   function genCientifica(R) {
-    const mant = s => (/^0+$/.test(s.slice(1)) ? s[0] : `${s[0]}{,}${s.slice(1).replace(/0+$/, '')}`);
+    const mant = s => (/^0*$/.test(s.slice(1)) ? s[0] : `${s[0]}{,}${s.slice(1).replace(/0+$/, '')}`);
     const n1 = R.int(1, 9), c1 = R.int(3, 7);
     const n2 = R.int(1, 9), c2 = R.int(2, 5);
     const n3 = R.int(10, 108), c3 = R.int(2, 4);

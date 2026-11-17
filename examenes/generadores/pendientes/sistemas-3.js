@@ -10,6 +10,7 @@
   const { n, p, poli } = tex;
 
   const ec = (a, b, e) => `${poli([[a, 'x'], [b, 'y']])} = ${n(e)}`;
+  const izq = q => poli([[q.x, 'x'], [q.y, 'y']]);
   const sistema = (q1, q2) => `\\begin{cases} ${ec(q1.x, q1.y, q1.e)} \\\\ ${ec(q2.x, q2.y, q2.e)} \\end{cases}`;
 
   /* ---------- Generadores (mismos rangos que la ficha) ---------- */
@@ -116,13 +117,13 @@
     }
     const m1 = { x: q1.x * f1, y: q1.y * f1, e: q1.e * f1 }, m2 = { x: q2.x * f2, y: q2.y * f2, e: q2.e * f2 };
     if (f1 === 1 && f2 === -1) {
-      pasos.push({ t: `Los coeficientes de \\(${u}\\) son iguales: restamos las ecuaciones (1.ª − 2.ª):`, m: `${poli([[q1[v], v], [-q2[v], v]])} = ${n(q1.e)} - ${p(q2.e)}` });
+      pasos.push({ t: `Los coeficientes de \\(${u}\\) son iguales: restamos las ecuaciones (1.ª − 2.ª):`, m: `(${izq(q1)}) - (${izq(q2)}) = ${n(q1.e)} - ${p(q2.e)}` });
     } else if (f1 === 1 && f2 === 1) {
-      pasos.push({ t: `Los coeficientes de \\(${u}\\) son opuestos: sumamos las ecuaciones:`, m: `${poli([[q1[v], v], [q2[v], v]])} = ${n(q1.e)} + ${p(q2.e)}` });
+      pasos.push({ t: `Los coeficientes de \\(${u}\\) son opuestos: sumamos las ecuaciones:`, m: `(${izq(q1)}) + (${izq(q2)}) = ${n(q1.e)} + ${p(q2.e)}` });
     } else {
       const txt = [f1 !== 1 ? `la 1.ª por \\(${n(f1)}\\)` : '', f2 !== 1 ? `la 2.ª por \\(${n(f2)}\\)` : ''].filter(Boolean).join(' y ');
       pasos.push({ t: `Para eliminar \\(${u}\\), multiplicamos ${txt}:`, m: sistema(m1, m2) });
-      pasos.push({ t: 'Sumamos las dos ecuaciones:', m: `${poli([[m1[v], v], [m2[v], v]])} = ${n(m1.e)} + ${p(m2.e)}` });
+      pasos.push({ t: 'Sumamos las dos ecuaciones:', m: `(${izq(m1)}) + (${izq(m2)}) = ${n(m1.e)} + ${p(m2.e)}` });
     }
     const v0 = v === 'x' ? S.x0 : S.y0;
     pasos.push({ t: 'Despejamos:', m: despejeLineal(m1[v] + m2[v], m1.e + m2.e, v).m });

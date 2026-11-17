@@ -1,8 +1,11 @@
 /* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Divisibilidad (pendientes de 1.º ESO).
-   Los números se generan con los mismos criterios que la ficha interactiva
-   pendientes/primero/divisibilidad-1.html. Los ejercicios de elegir o marcar
-   (múltiplo/divisor, tabla, primos) se adaptan a papel. */
+   Tipos y rangos de la ficha interactiva pendientes/primero/divisibilidad-1.html, salvo
+   lo indicado: la ficha usa listas fijas de 6-8 casos en «Divisores», «mcm», «MCD» y
+   «Descomposición», y números de 2 a 10 en «Múltiplos». En el examen se amplían los datos
+   (rangos indicados en cada ejercicio, siempre con cuentas hechas a mano) para que cada
+   modelo sea distinto. Los ejercicios de elegir o marcar (múltiplo/divisor, tabla, primos)
+   se adaptan a papel. */
 (function () {
   'use strict';
   const { registrarFicha, pend } = window.EX;
@@ -39,7 +42,7 @@
     };
   }
 
-  /* ================= 2. Tres primeros múltiplos (ficha: número entre 2 y 25) ================= */
+  /* ================= 2. Tres primeros múltiplos (ficha: número entre 2 y 10; aquí hasta 25) ================= */
   function genMultiplos(R) {
     const n = R.int(2, 25);
     return {
@@ -51,7 +54,7 @@
     };
   }
 
-  /* ================= 3. Divisores (ficha: compuestos entre 8 y 50) ================= */
+  /* ================= 3. Divisores (ficha: 8, 10, 12, 15, 18 y 20; aquí compuestos entre 8 y 50) ================= */
   const COMPUESTOS_DIV = [];
   for (let k = 8; k <= 50; k++) if (!esPrimo(k)) COMPUESTOS_DIV.push(k);
   function genDivisores(R) {
@@ -68,7 +71,9 @@
   }
 
   /* ================= 4 y 5. mcm y MCD ================= */
-  /* Ficha: parejas con un factor común g y cocientes p, q primos entre sí.
+  /* Ficha: 6 parejas fijas (mcm: 6-8, 4-6, 3-5, 10-15, 12-18, 8-12; MCD: 15-9, 12-18, 8-12,
+     20-25, 14-21, 16-24). Aquí se generan parejas del mismo tipo: factor común g y cocientes
+     p, q primos entre sí.
      mcm: g de 1 a 6, p y q de 2 a 7, números hasta 30 y mcm hasta 72.
      MCD: g de 2 a 8, p y q de 2 a 5, números hasta 40. */
   function pareja(R, gMin, gMax, pMax, tope, cond) {
@@ -177,8 +182,8 @@
   }
 
   /* ================= 8. Descomposición factorial ================= */
-  /* Ficha: números entre 12 y 150 cuyos factores primos son 2, 3, 5 o 7 (exponentes hasta 5),
-     con al menos dos primos distintos. */
+  /* Ficha: 12, 18, 20, 24, 28, 30, 36 y 40. Aquí: números entre 12 y 150 cuyos factores primos
+     son 2, 3, 5 o 7 (exponentes hasta 5), con al menos dos primos distintos. */
   const DESCOMPONIBLES = [];
   for (let k = 12; k <= 150; k++) {
     const f = factorizar(k);
