@@ -424,10 +424,21 @@ function trianguloAleatorio(min, max) {
 class EjTrianguloLados extends Ejercicio {
   exigeOtraSolucion() { return false; }
   generarNuevo() {
-    this.t1 = trianguloAleatorio(4, 12);
     this.esSemejante = Math.random() < 0.5;
     const factores = [0.5, 2, 1.5, 3, 2 / 3];
     const k = factores[Math.floor(Math.random() * factores.length)];
+    this.k = k;
+    // con razón 2/3 los lados del primero son múltiplos de 3 para que los del segundo salgan exactos
+    if (k === 2 / 3) {
+      const mult = [6, 9, 12];
+      let a, b, c;
+      do {
+        a = mult[Math.floor(Math.random() * 3)]; b = mult[Math.floor(Math.random() * 3)]; c = mult[Math.floor(Math.random() * 3)];
+      } while (!(a + b > c && a + c > b && b + c > a));
+      this.t1 = [a, b, c];
+    } else {
+      this.t1 = trianguloAleatorio(4, 12);
+    }
     let t2 = this.t1.map((x) => +(x * k).toFixed(1));
 
     if (!this.esSemejante) {
@@ -467,7 +478,13 @@ class EjTrianguloLados extends Ejercicio {
       return { correcto: true, superado: false, msg: `✅ ¡Correcto! (${rachaPrevia}/2). Aquí tienes otro ejercicio.` };
     }
     this.racha = 0;
-    const r = this.t2.map((x, i) => (x / this.t1[i]).toFixed(2));
+    // si la razón es 2/3 se escribe exacta (2/3), no como 0.67
+    const razonExacta = (x, y) => {
+      const v = x / y;
+      if (Math.abs(+v.toFixed(2) - v) < 1e-9) return v.toFixed(2);
+      return "2/3";
+    };
+    const r = this.t2.map((x, i) => (this.esSemejante && this.k === 2 / 3 ? razonExacta(x, this.t1[i]) : (x / this.t1[i]).toFixed(2)));
     const explicacion = this.esSemejante
       ? `sí son semejantes: los tres lados guardan la misma razón (${this.t2[0]}/${this.t1[0]} = ${r[0]}, ${this.t2[1]}/${this.t1[1]} = ${r[1]}, ${this.t2[2]}/${this.t1[2]} = ${r[2]})`
       : `no son semejantes: los lados no guardan la misma razón (${this.t2[0]}/${this.t1[0]} = ${r[0]}, ${this.t2[1]}/${this.t1[1]} = ${r[1]}, ${this.t2[2]}/${this.t1[2]} = ${r[2]}, no coinciden)`;

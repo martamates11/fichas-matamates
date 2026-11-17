@@ -13,6 +13,10 @@ La carpeta `examenes/` contiene una herramienta interna (no enlazada desde el í
 
 Cada ficha disponible tiene su generador en `examenes/generadores/` (ecuaciones, sistemas, matrices, ecuaciones matriciales, programación lineal, radicales, racionalización, logaritmos, las cuatro fichas de límites y las cuatro de funciones: dominio, estudio de funciones racionales, interpretación de gráficas y tipos de funciones; las cuatro de derivadas, las tres de integrales y las cuatro de matemática financiera: interés simple, interés compuesto, anualidades de capitalización y anualidades de amortización). Para incorporar una ficha nueva se añade un `registrarFicha({...})` con sus tipos de ejercicio y se enlaza el archivo en `examenes/index.html`.
 
+Las fichas de recuperación de pendientes (`pendientes/primero`, `segundo` y `tercero`) tienen sus generadores en `examenes/generadores/pendientes/`, uno por ficha, con el nombre del archivo de la ficha. Todos usan `pendientes/figuras.js` (decimales con coma y figuras SVG en blanco y negro con cotas) y se agrupan en el catálogo como «Recuperación de 1.º ESO», «Recuperación de 2.º ESO» y «Recuperación de 3.º ESO». Están enlazados los 34 generadores (11 de 1.º, 13 de 2.º y 10 de 3.º, 238 tipos de ejercicio). Cada archivo explica en su comentario de cabecera en qué se diferencia de su ficha (datos ajustados para resolver el examen sin calculadora, más variedad, etc.).
+
+Para probar un generador: `node tools/probar-generador.js pendientes/<archivo>.js` (estrés con miles de semillas y capturas del examen y las soluciones).
+
 ## Licencia
 
 © Marta López de Letona Sánchez. Todos los derechos reservados. Las fichas pueden usarse libremente en el aula **enlazando a la web original** (https://martamates11.github.io/fichas-matamates/). No está permitido copiarlas, alojarlas en otros sitios, modificarlas, venderlas ni usarlas para entrenar modelos de IA sin permiso escrito de la autora. Términos completos en [aviso-legal.html](aviso-legal.html).
