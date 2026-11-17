@@ -96,13 +96,6 @@ hr { margin: 0.5rem 0; border: none; border-top: 1px solid var(--color-borde-sua
 .modal-grade { font-size: 52px; font-weight: 900; margin: 12px 0; }
 .modal-stats { border: 1.5px solid var(--color-borde); border-radius: 10px; padding: 12px; margin-bottom: 14px; font-family: monospace; font-size: 12px; text-align: left; background: rgba(255,255,255,0.5); }
 .recordatorio { font-size: 12px; margin-top: 8px; background: var(--color-neutro); border-radius: 20px; padding: 6px; color: var(--color-texto-suave); }
-/* «Mostrar solución»: botón apagado, que no invite a pulsarlo, y feedback neutro */
-:root { --color-apagado: #A8998A; --color-apagado-fondo: #F3EFE6; }
-.sol-zona { display: flex; justify-content: flex-end; margin-top: 10px; }
-.btn-soluciones { background: transparent; color: var(--color-apagado); border: 1px solid #DDD0B6; border-radius: 4px; padding: 5px 14px; font-family: inherit; font-size: .78rem; font-weight: 400; cursor: pointer; transition: color .2s, border-color .2s; }
-.btn-soluciones:hover:not(:disabled) { color: var(--color-texto-suave); border-color: var(--color-borde); }
-.btn-soluciones:disabled { opacity: .4; cursor: default; }
-.feedback-solucion { display: block; margin-top: 10px; background: var(--color-apagado-fondo); border: 1.5px dashed var(--color-apagado); border-radius: 8px; padding: 10px 14px; color: var(--color-texto); font-size: 0.85rem; line-height: 1.5; }
 .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 </style>
 </head>
@@ -122,12 +115,6 @@ function parseNumero(valor) {
 }
 
 const AVISO = " No cuenta como fallo.";
-
-// Números con coma decimal para los mensajes; el dinero, con dos decimales si no es entero
-const coma = (x) => String(x).replace(".", ",");
-const euros = (x) => (Number.isInteger(x) ? String(x) : x.toFixed(2).replace(".", ","));
-function mcd(a, b) { while (b) [a, b] = [b, a % b]; return a; }
-const azar = (min, max) => min + Math.floor(Math.random() * (max - min + 1));
 
 // Artículo y verbo que concuerdan con cada producto («Unos zapatos cuestan»)
 const ARTICULO = {
@@ -237,18 +224,23 @@ class Ejercicio {
 class EjFraccionesEquivalentes extends Ejercicio {
   exigeOtraSolucion() { return false; }
   generarNuevo() {
-    // Datos aleatorios (antes, un banco fijo de 12 casos), igual que en el generador de
-    // exámenes: a/b irreducible con b de 2 a 9 y c/d = k·a / k·b con k de 2 a 4; en los
-    // casos no equivalentes se altera en una unidad el numerador o el denominador.
-    let a, b;
-    do { b = azar(2, 9); a = azar(1, b - 1); } while (mcd(a, b) !== 1);
-    const k = azar(2, 4);
-    let c = k * a, d = k * b;
-    if (Math.random() >= 0.6) { if (Math.random() < 0.5) c += Math.random() < 0.5 ? -1 : 1; else d += Math.random() < 0.5 ? -1 : 1; if (c < 1) c = 2; }
-    const equiv = a * d === b * c;
-    const expl = equiv ? `son equivalentes porque ${a}·${d} = ${a * d} y ${b}·${c} = ${b * c}`
-                       : `no son equivalentes porque ${a}·${d} = ${a * d} es distinto de ${b}·${c} = ${b * c}`;
-    this.actual = { a, b, c, d, equiv, expl };
+    const casos = [
+      { a: 1, b: 2, c: 2, d: 5, equiv: false, expl: "no son equivalentes porque 1·5 = 5 es distinto de 2·2 = 4" },
+      { a: 1, b: 3, c: 2, d: 6, equiv: true, expl: "son equivalentes porque 1·6 = 6 y 3·2 = 6" },
+      { a: 2, b: 3, c: 4, d: 6, equiv: true, expl: "son equivalentes porque 2·6 = 12 y 3·4 = 12" },
+      { a: 3, b: 4, c: 9, d: 12, equiv: true, expl: "son equivalentes porque 3·12 = 36 y 4·9 = 36" },
+      { a: 2, b: 5, c: 3, d: 10, equiv: false, expl: "no son equivalentes porque 2·10 = 20 es distinto de 5·3 = 15" },
+      { a: 4, b: 5, c: 8, d: 10, equiv: true, expl: "son equivalentes porque 4·10 = 40 y 5·8 = 40" },
+      { a: 3, b: 7, c: 6, d: 14, equiv: true, expl: "son equivalentes porque 3·14 = 42 y 7·6 = 42" },
+      { a: 5, b: 8, c: 10, d: 16, equiv: true, expl: "son equivalentes porque 5·16 = 80 y 8·10 = 80" },
+      { a: 1, b: 4, c: 3, d: 8, equiv: false, expl: "no son equivalentes porque 1·8 = 8 es distinto de 4·3 = 12" },
+      { a: 2, b: 7, c: 4, d: 14, equiv: true, expl: "son equivalentes porque 2·14 = 28 y 7·4 = 28" },
+      { a: 3, b: 5, c: 9, d: 15, equiv: true, expl: "son equivalentes porque 3·15 = 45 y 5·9 = 45" },
+      { a: 4, b: 9, c: 8, d: 18, equiv: true, expl: "son equivalentes porque 4·18 = 72 y 9·8 = 72" },
+    ];
+    const indice = elegirIndiceSinRepetir(casos.length, this.ultimoIndice);
+    this.ultimoIndice = indice;
+    this.actual = casos[indice];
     this.solucion = this.actual.equiv;
     this.explicacion = this.actual.expl;
     this.selectedValue = "";
@@ -307,33 +299,19 @@ class EjFraccionesEquivalentes extends Ejercicio {
 class EjMagnitudesProporcionales extends Ejercicio {
   exigeOtraSolucion() { return false; }
   generarNuevo() {
-    // Banco ampliado (igual que en el generador de exámenes). Se corrige «El precio de
-    // una chaqueta y el número de chaquetas que puedo comprar», que estaba marcada como
-    // directa y es inversa (con un dinero fijo, a doble precio, la mitad de chaquetas).
     const todas = [
-      { texto: "La edad de una persona y su altura.", correcta: false, por: "La altura no crece al mismo ritmo que la edad: a doble edad no le corresponde doble altura." },
-      { texto: "Los grados de temperatura ambiente y la humedad ambiental.", correcta: false, por: "No hay una relación fija entre ellas: si la temperatura se duplica, la humedad no se duplica." },
-      { texto: "El peso de la fruta y el precio pagado por ella (mismo precio por kg).", correcta: true, por: "Si compras el doble de kilos, pagas el doble; el precio por kilo es la constante." },
-      { texto: "El número de entradas de cine que compras y el dinero que pagas (mismo precio por entrada).", correcta: true, por: "El doble de entradas cuesta el doble; el precio de una entrada es la constante." },
-      { texto: "El número de obreros que hacen un trabajo y el tiempo que tardan en terminarlo (a más obreros, menos tiempo).", correcta: false, por: "Es una proporcionalidad inversa: el doble de obreros tarda la mitad de tiempo." },
-      { texto: "Los litros de gasolina que pones en el depósito y lo que pagas por ellos.", correcta: true, por: "El doble de litros cuesta el doble; el precio por litro es la constante." },
-      { texto: "La velocidad de un coche y el tiempo que tarda en recorrer una distancia fija.", correcta: false, por: "Es una proporcionalidad inversa: a doble velocidad, la mitad de tiempo." },
-      { texto: "El número de cuadernos iguales que compras y el dinero que pagas por ellos.", correcta: true, por: "El doble de cuadernos cuesta el doble; el precio de un cuaderno es la constante." },
-      { texto: "El número de personas que reparten un premio fijo y la cantidad que recibe cada una.", correcta: false, por: "Es una proporcionalidad inversa: si son el doble de personas, cada una recibe la mitad." },
-      { texto: "Los kilómetros recorridos por un coche y la gasolina consumida (a velocidad constante).", correcta: true, por: "El doble de kilómetros gasta el doble de gasolina." },
-      { texto: "El lado de un cuadrado y su perímetro.", correcta: true, por: "El perímetro es 4 veces el lado: si el lado se duplica, el perímetro también." },
-      { texto: "El número de grifos abiertos y el tiempo que tardan en llenar un depósito (a más grifos, menos tiempo).", correcta: false, por: "Es una proporcionalidad inversa: el doble de grifos tarda la mitad de tiempo." },
-      { texto: "El lado de un cuadrado y su área.", correcta: false, por: "Si el lado se duplica, el área se multiplica por 4, no por 2." },
-      { texto: "Las horas trabajadas y el sueldo cobrado (mismo precio por hora).", correcta: true, por: "El doble de horas se cobra el doble; el precio por hora es la constante." },
-      { texto: "El número de vueltas que da una rueda y la distancia que recorre.", correcta: true, por: "En cada vuelta recorre siempre la misma distancia: el doble de vueltas, el doble de distancia." },
-      { texto: "El tiempo que está abierto un grifo (con el mismo caudal) y los litros de agua que salen.", correcta: true, por: "El doble de tiempo, el doble de litros; los litros por minuto son la constante." },
-      { texto: "La edad de un niño y su peso.", correcta: false, por: "El peso no crece al mismo ritmo que la edad: a doble edad no le corresponde doble peso." },
-      { texto: "El número de páginas de un libro y su precio.", correcta: false, por: "No hay una relación fija: un libro con el doble de páginas no cuesta necesariamente el doble." },
-      { texto: "El número de bizcochos iguales que se hacen y la harina que se necesita.", correcta: true, por: "Para el doble de bizcochos hace falta el doble de harina." },
-      { texto: "El número de alumnos que van de excursión y lo que paga cada uno por un autobús de precio fijo.", correcta: false, por: "Es una proporcionalidad inversa: si van el doble de alumnos, cada uno paga la mitad." },
-      { texto: "Los minutos que dura una llamada y su coste (mismo precio por minuto y sin coste de establecimiento).", correcta: true, por: "El doble de minutos cuesta el doble; el precio por minuto es la constante." },
-      { texto: "El número de pie de una persona y su edad.", correcta: false, por: "No hay una relación fija entre ellas: a doble edad no le corresponde doble número de pie." },
-      { texto: "Los litros de pintura y los metros cuadrados de pared que se pintan (con una sola capa).", correcta: true, por: "Con el doble de pintura se pinta el doble de pared." },
+      { texto: "La edad de una persona y su altura.", correcta: false },
+      { texto: "Los grados de temperatura ambiente y la humedad ambiental.", correcta: false },
+      { texto: "El peso de la fruta y el precio pagado por ella (mismo precio por kg).", correcta: true },
+      { texto: "El precio de una chaqueta y el número de chaquetas que puedo comprar (mismo precio unitario).", correcta: true },
+      { texto: "El número de obreros que hacen un trabajo y el tiempo que tardan en terminarlo (a más obreros, menos tiempo).", correcta: false },
+      { texto: "Los litros de gasolina que pones en el depósito y lo que pagas por ellos.", correcta: true },
+      { texto: "La velocidad de un coche y el tiempo que tarda en recorrer una distancia fija.", correcta: false },
+      { texto: "El número de cuadernos iguales que compras y el dinero que pagas por ellos.", correcta: true },
+      { texto: "El número de personas que reparten un premio fijo y la cantidad que recibe cada una.", correcta: false },
+      { texto: "Los kilómetros recorridos por un coche y la gasolina consumida (a velocidad constante).", correcta: true },
+      { texto: "El lado de un cuadrado y su perímetro.", correcta: true },
+      { texto: "El número de grifos abiertos y el tiempo que tardan en llenar un depósito (a más grifos, menos tiempo).", correcta: false },
     ];
     const barajadas = [...todas];
     for (let i = barajadas.length - 1; i > 0; i--) {
@@ -341,7 +319,7 @@ class EjMagnitudesProporcionales extends Ejercicio {
       [barajadas[i], barajadas[j]] = [barajadas[j], barajadas[i]];
     }
     const letras = ["a", "b", "c", "d"];
-    this.opciones = barajadas.slice(0, 4).map((item, i) => ({ texto: `${letras[i]}) ${item.texto}`, correcta: item.correcta, por: item.por, selected: null }));
+    this.opciones = barajadas.slice(0, 4).map((item, i) => ({ texto: `${letras[i]}) ${item.texto}`, correcta: item.correcta, selected: null }));
     this.feedback = null;
   }
   verificar(respuestas) {
@@ -398,11 +376,15 @@ class EjMagnitudesProporcionales extends Ejercicio {
 // ---------------------------------------------------------------------------
 class EjReglaDeTres extends Ejercicio {
   generarNuevo() {
-    // Datos aleatorios (antes, un banco fijo de 12 casos), igual que en el generador de
-    // exámenes: a/b = c/n con n = b·c/a entero y como mucho 60.
-    let a, b, c, n;
-    do { a = azar(2, 9); b = azar(2, 12); c = azar(2, 20); n = b * c / a; } while (c === a || b === a || !Number.isInteger(n) || n > 60 || n === c);
-    this.actual = { a, b, c, sol: n };
+    const casos = [
+      { a: 2, b: 3, c: 4, sol: 6 }, { a: 3, b: 4, c: 9, sol: 12 }, { a: 1, b: 5, c: 3, sol: 15 },
+      { a: 4, b: 7, c: 8, sol: 14 }, { a: 5, b: 9, c: 10, sol: 18 }, { a: 2, b: 5, c: 6, sol: 15 },
+      { a: 3, b: 8, c: 6, sol: 16 }, { a: 4, b: 9, c: 12, sol: 27 }, { a: 5, b: 6, c: 15, sol: 18 },
+      { a: 7, b: 8, c: 21, sol: 24 }, { a: 2, b: 9, c: 8, sol: 36 }, { a: 3, b: 10, c: 9, sol: 30 },
+    ];
+    const indice = elegirIndiceSinRepetir(casos.length, this.ultimoIndice);
+    this.ultimoIndice = indice;
+    this.actual = casos[indice];
     this.solucion = this.actual.sol;
     this.a = this.actual.a;
     this.b = this.actual.b;
@@ -570,7 +552,7 @@ class EjPorcentaje extends Ejercicio {
     return {
       correcto: false,
       superado: false,
-      msg: `❌ Incorrecto. Para calcular el ${this.porc}% de ${this.total}, divide el porcentaje entre 100 y multiplica por el total: (${this.porc} ÷ 100) × ${this.total} = ${coma(this.solucion)}.`,
+      msg: `❌ Incorrecto. Para calcular el ${this.porc}% de ${this.total}, divide el porcentaje entre 100 y multiplica por el total: (${this.porc} ÷ 100) × ${this.total} = ${this.solucion}.`,
     };
   }
   render(indice) {
@@ -614,7 +596,7 @@ class EjDescuento extends Ejercicio {
     this.precioInicial = precio;
     this.descuento = descuento;
     this.solucion = +(precio * (1 - descuento / 100)).toFixed(2);
-    this.factor = coma(+(1 - descuento / 100).toFixed(2));
+    this.factor = (1 - descuento / 100).toFixed(2);
     this.producto = productos[Math.floor(Math.random() * productos.length)];
     this.inputValue = "";
     this.feedback = null;
@@ -637,7 +619,7 @@ class EjDescuento extends Ejercicio {
     return {
       correcto: false,
       superado: false,
-      msg: `❌ Incorrecto. El factor de descuento es 1 − ${this.descuento}/100 = ${this.factor}. ${conArticulo(this.producto)} de ${this.precioInicial} € con un ${this.descuento}% de descuento ${cuesta(this.producto)}: ${this.precioInicial} × ${this.factor} = ${euros(this.solucion)} €.`,
+      msg: `❌ Incorrecto. El factor de descuento es 1 − ${this.descuento}/100 = ${this.factor}. ${conArticulo(this.producto)} de ${this.precioInicial}€ con un ${this.descuento}% de descuento ${cuesta(this.producto)}: ${this.precioInicial} × ${this.factor} = ${this.solucion}€.`,
     };
   }
   render(indice) {
@@ -682,7 +664,7 @@ class EjAumento extends Ejercicio {
     this.precioInicial = precio;
     this.incremento = incremento;
     this.solucion = +(precio * (1 + incremento / 100)).toFixed(2);
-    this.factor = coma(+(1 + incremento / 100).toFixed(2));
+    this.factor = (1 + incremento / 100).toFixed(2);
     this.producto = productos[Math.floor(Math.random() * productos.length)];
     this.motivo = motivos[Math.floor(Math.random() * motivos.length)];
     this.inputValue = "";
@@ -706,7 +688,7 @@ class EjAumento extends Ejercicio {
     return {
       correcto: false,
       superado: false,
-      msg: `❌ Incorrecto. El factor de incremento es 1 + ${this.incremento}/100 = ${this.factor}. ${conArticulo(this.producto)} de ${this.precioInicial} € con un incremento del ${this.incremento}% (por ${this.motivo}) ${cuesta(this.producto)}: ${this.precioInicial} × ${this.factor} = ${euros(this.solucion)} €.`,
+      msg: `❌ Incorrecto. El factor de incremento es 1 + ${this.incremento}/100 = ${this.factor}. ${conArticulo(this.producto)} de ${this.precioInicial}€ con un incremento del ${this.incremento}% (por ${this.motivo}) ${cuesta(this.producto)}: ${this.precioInicial} × ${this.factor} = ${this.solucion}€.`,
     };
   }
   render(indice) {
@@ -735,7 +717,6 @@ class EjAumento extends Ejercicio {
 function renderFeedback(ej) {
   if (!ej.feedback) return "";
   let clase = "";
-  if (ej.feedback.solucion) return `<div class="feedback-solucion" role="status" aria-live="polite">${ej.feedback.msg}</div>`;
   if (ej.feedback.correcto) clase = "feedback-correcto";
   else clase = "feedback-error";
   return `<div class="${clase}" role="status" aria-live="polite">${ej.feedback.msg}</div>`;
@@ -815,7 +796,6 @@ function render() {
         <div class="header-badges">
           <span class="header-badge">🎯 2 aciertos consecutivos → superado</span>
           <span class="header-badge">💡 Cada fallo resta 0,29 puntos</span>
-          <span class="header-badge">👁️ Ver la solución de un ejercicio no da puntos</span>
         </div>
       </div>
 
@@ -823,7 +803,7 @@ function render() {
         <div class="info-item"><span class="info-icon">📊</span><span>Progreso: <span class="info-value">${totalSuperados}</span>/7</span></div>
         <div class="info-item"><span class="info-icon">🔥</span><span>Racha: <span class="info-value">${estado.racha}</span></span></div>
         <div class="info-item"><span class="info-icon">❌</span><span>Fallos: <span class="info-value">${estado.fallos}</span></span></div>
-        <div class="info-item"><span class="info-icon">⭐</span><span>Nota: <span class="info-value">${coma(notaActual.toFixed(1))}</span>/10</span></div>
+        <div class="info-item"><span class="info-icon">⭐</span><span>Nota: <span class="info-value">${notaActual.toFixed(1)}</span>/10</span></div>
       </div>
 
       <div class="name-section">
@@ -859,15 +839,14 @@ function render() {
         <button class="modal-close" id="btn-cerrar-modal" style="color:${banda.texto}" aria-label="Cerrar">✕</button>
         <div style="font-weight:600">${escaparHTML(estado.nombre.toUpperCase())}</div>
         <div style="font-size:0.85rem">📐 Proporcionalidad · 1º ESO</div>
-        <div class="modal-grade">${coma(notaActual.toFixed(1))} / 10</div>
+        <div class="modal-grade">${notaActual.toFixed(1)} / 10</div>
         <div class="modal-message">${notaActual >= 7 ? "👍 Muy bien" : notaActual >= 5 ? "📘 Aprobado" : "📚 Repasa"}</div>
         <div class="modal-stats" style="color:var(--color-texto)">
           <p>📅 ${new Date().toLocaleDateString("es-ES")}&nbsp;&nbsp;🕐 ${new Date().toLocaleTimeString("es-ES")}</p>
           <p>⏱️ Tiempo: ${formatearTiempo(estado.inicio)}</p>
           <p>✅ Ejercicios superados: ${totalSuperados}/7</p>
           <p>❌ Fallos: ${estado.fallos}</p>
-          <p>👁️ Soluciones vistas: ${solucionesVistas.reduce((a, b) => a + b, 0)}${solucionesVistas.some(Boolean) ? " (" + solucionesVistas.map((v, i) => (v ? `ej. ${i + 1}: ${v}` : "")).filter(Boolean).join(", ") + ")" : ""}</p>
-          <p>⭐ Nota: ${coma(notaActual.toFixed(1))}/10</p>
+          <p>⭐ Nota: ${notaActual.toFixed(1)}/10</p>
         </div>
         <div class="recordatorio" style="color:var(--color-texto)">📸 Haz una captura de pantalla y entrégala en Google Classroom.</div>
         <div class="modal-footer">Material elaborado por Marta López de Letona Sánchez</div>
@@ -1030,99 +1009,6 @@ function confirmarNombre() {
 
 function reiniciarFicha() {
   confirmar("¿Reiniciar toda la ficha? Se perderá todo el progreso.").then((ok) => { if (ok) window.location.reload(); });
-}
-
-// ---------------------------------------------------------------------------
-// MOSTRAR SOLUCIÓN (por ejercicio)
-// La ficha muestra todos los ejercicios a la vez, así que cada tarjeta tiene su propio botón,
-// apagado, al pie. Ver la solución no suma, no resta y no cuenta para la racha: el ejercicio
-// visto se sustituye por otro del mismo tipo con otros datos. Los fallos previos siguen restando.
-// ---------------------------------------------------------------------------
-const solucionesVistas = [0, 0, 0, 0, 0, 0, 0];
-
-function solucionDe(idx) {
-  const e = estado.ejercicios[idx];
-  switch (idx) {
-    case 0: {
-      const t = e.actual;
-      return `${fraccionHTML(t.a, t.b)} y ${fraccionHTML(t.c, t.d)}: <b>${t.equiv ? "Sí" : "No"}</b>, ${t.expl}. Dos fracciones son equivalentes si sus productos cruzados son iguales.`;
-    }
-    case 1:
-      return e.opciones.map((o) => `${escaparHTML(o.texto)} → <b>${o.correcta ? "Directa" : "No directa"}</b>. ${o.por}`).join("<br>");
-    case 2:
-      return `En ${fraccionHTML(e.a, e.b)} = ${fraccionHTML(e.c, "n")} los productos cruzados son iguales: ${e.a} · n = ${e.b} · ${e.c} = ${e.b * e.c}, así que n = ${e.b * e.c} ÷ ${e.a} = <b>${e.solucion}</b>.`;
-    case 3:
-      return `k = ${e.valorRelleno} ÷ ${e.filaA[e.columnaRellena]} = ${e.constante}. Cada valor de B es el de A por ${e.constante}: ` +
-        e.filaA.map((a, i) => `${a} · ${e.constante} = <b>${e.filaB[i]}</b>`).join(", ") + ".";
-    case 4:
-      return `El ${e.porc}% de ${e.total} es (${e.porc} ÷ 100) × ${e.total} = <b>${coma(e.solucion)}</b>.`;
-    case 5:
-      return `Descuento: ${e.descuento}% de ${e.precioInicial} € = ${euros(+(e.precioInicial * e.descuento / 100).toFixed(2))} €. Precio final: ${e.precioInicial} − ${euros(+(e.precioInicial * e.descuento / 100).toFixed(2))} = <b>${euros(e.solucion)}</b> €. ` +
-        `(En un solo paso: ${e.precioInicial} × ${e.factor} = ${euros(e.solucion)} €.)`;
-    case 6:
-      return `Aumento: ${e.incremento}% de ${e.precioInicial} € = ${euros(+(e.precioInicial * e.incremento / 100).toFixed(2))} €. Nuevo precio: ${e.precioInicial} + ${euros(+(e.precioInicial * e.incremento / 100).toFixed(2))} = <b>${euros(e.solucion)}</b> €. ` +
-        `(En un solo paso: ${e.precioInicial} × ${e.factor} = ${euros(e.solucion)} €.)`;
-  }
-  return "";
-}
-
-function ponerBotonesSolucion() {
-  document.querySelectorAll("#ejerciciosContainer .ejercicio-card").forEach((card) => {
-    const idx = Number(card.dataset.indice);
-    card.querySelectorAll(".sol-zona").forEach((z) => z.remove());
-    const e = estado.ejercicios[idx];
-    if (!e || e.superado) return;
-    const zona = document.createElement("div");
-    zona.className = "sol-zona";
-    zona.innerHTML = '<button type="button" class="btn-soluciones">Mostrar solución</button>';
-    zona.firstElementChild.addEventListener("click", () => pedirSolucion(idx));
-    card.appendChild(zona);
-  });
-}
-
-function avisoSoluciones() {
-  return new Promise((resolve) => {
-    const fondo = document.createElement("div");
-    fondo.setAttribute("role", "dialog");
-    fondo.setAttribute("aria-modal", "true");
-    fondo.setAttribute("aria-labelledby", "tituloAvisoSol");
-    fondo.style.cssText = "position:fixed;inset:0;background:rgba(44,31,14,0.55);display:flex;align-items:center;justify-content:center;z-index:3000;padding:16px;";
-    fondo.innerHTML =
-      '<div style="background:#FFFDF7;border:2px solid #C9A96E;border-radius:14px;max-width:400px;width:100%;padding:22px 22px 18px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.25);font-family:inherit;color:#2C1F0E;">' +
-      '<h3 id="tituloAvisoSol" style="margin:0 0 10px;font-size:1.1rem;color:#A0522D;">¿Mostrar las soluciones?</h3>' +
-      '<p style="margin:0 0 18px;font-size:0.92rem;line-height:1.45;">Verás resuelto este ejercicio con su explicación. <b>Este ejercicio no contará para la nota</b> y los fallos que ya hayas cometido siguen restando. Después podrás seguir con otro ejercicio del mismo tipo.</p>' +
-      '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">' +
-      '<button type="button" data-r="si" style="background:transparent;color:#8A7A69;border:1px solid #DDD0B6;border-radius:30px;padding:9px 18px;cursor:pointer;font-family:inherit;font-size:.85rem;">Sí, mostrar soluciones</button>' +
-      '<button type="button" data-r="no" style="background:#A0522D;color:#FFFFFF;border:none;border-radius:30px;padding:10px 22px;font-weight:700;cursor:pointer;font-family:inherit;">Volver al ejercicio</button>' +
-      "</div></div>";
-    const cerrar = (r) => { fondo.remove(); document.removeEventListener("keydown", tecla); resolve(r); };
-    const tecla = (ev) => { if (ev.key === "Escape") cerrar(false); };
-    fondo.querySelector('[data-r="no"]').addEventListener("click", () => cerrar(false));
-    fondo.querySelector('[data-r="si"]').addEventListener("click", () => cerrar(true));
-    fondo.addEventListener("click", (ev) => { if (ev.target === fondo) cerrar(false); });
-    document.addEventListener("keydown", tecla);
-    document.body.appendChild(fondo);
-    fondo.querySelector('[data-r="no"]').focus();
-  });
-}
-
-async function pedirSolucion(idx) {
-  const e = estado.ejercicios[idx];
-  if (!e || e.superado) return;
-  if (!(await avisoSoluciones())) return;
-  const html = solucionDe(idx);
-  solucionesVistas[idx]++;
-  const racha = e.racha;
-  e.regenerarDistinto();                       // otro ejercicio del mismo tipo; racha y fallos intactos
-  e.racha = racha;
-  e.feedback = { solucion: true, correcto: false, msg: `<b>Solución.</b> ${html}<br><br>Soluciones mostradas · ejercicio sin calificar. 👉 Sigue con este nuevo.` };
-  render();
-}
-
-// Los botones se recolocan cada vez que se repinta la ficha
-{
-  const _render = render;
-  render = function () { _render(); ponerBotonesSolucion(); };
 }
 
 render();

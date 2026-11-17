@@ -410,14 +410,6 @@ input:disabled {
 .feedback-pedagogico { color: var(--color-acento); background: rgba(160,82,45,0.1); padding: 6px 14px; border-radius: 30px; display: block; margin-top: 5px; font-size: 0.8rem; }
 .feedback-necesita-nuevo { color: var(--color-aviso); background: rgba(212,162,89,0.15); padding: 6px 14px; border-radius: 30px; display: inline-block; font-weight: 600; }
 
-/* «Mostrar solución»: botón apagado, que no invite a pulsarlo, y feedback neutro */
-:root { --color-apagado: #A8998A; --color-apagado-fondo: #F3EFE6; }
-.sol-zona { display: flex; justify-content: flex-end; margin-top: 10px; }
-.btn-soluciones { background: transparent; color: var(--color-apagado); border: 1px solid #DDD0B6; border-radius: 4px; padding: 5px 14px; font-family: inherit; font-size: .78rem; font-weight: 400; cursor: pointer; transition: color .2s, border-color .2s; }
-.btn-soluciones:hover:not(:disabled) { color: var(--color-texto-suave); border-color: var(--color-borde); }
-.btn-soluciones:disabled { opacity: .4; cursor: default; }
-.feedback-solucion { display: block; background: var(--color-apagado-fondo); border: 1.5px dashed var(--color-apagado); border-radius: 8px; padding: 10px 14px; color: var(--color-texto); line-height: 1.5; text-align: left; font-weight: 400; }
-
 .action-buttons {
     display: flex;
     gap: 1rem;
@@ -526,17 +518,16 @@ input:disabled {
         <p>Ejercicios interactivos · 1º ESO</p>
         <div class="header-badges">
             <span class="header-badge">🎯 Acertar las 2 preguntas → superado</span>
-            <span class="header-badge">💡 Cada fallo resta 0,2 puntos</span>
+            <span class="header-badge">💡 Cada fallo resta 0.2 puntos</span>
             <span class="header-badge">📚 Feedback pedagógico en cada error</span>
             <span class="header-badge">🔄 Si fallas, verás la solución y unas preguntas nuevas para volver a intentarlo</span>
-            <span class="header-badge">👁️ Ver la solución de un ejercicio no da puntos</span>
         </div>
     </div>
 
     <div class="info-bar">
         <div class="info-item"><span class="info-icon" aria-hidden="true">📊</span><span>Progreso: <span id="progresoCount" class="info-value">0</span>/<span id="totalEjerciciosTxt">10</span></span></div>
         <div class="info-item"><span class="info-icon" aria-hidden="true">❌</span><span>Fallos: <span id="fallosCount" class="info-value">0</span></span></div>
-        <div class="info-item"><span class="info-icon" aria-hidden="true">⭐</span><span>Nota: <span id="notaActual" class="info-value">0,0</span>/10</span></div>
+        <div class="info-item"><span class="info-icon" aria-hidden="true">⭐</span><span>Nota: <span id="notaActual" class="info-value">0.0</span>/10</span></div>
         <div class="info-item"><span class="info-icon" aria-hidden="true">⏱️</span><span>Tiempo: <span id="tiempoTranscurrido" class="info-value">00:00</span></span></div>
     </div>
 
@@ -617,13 +608,6 @@ function fmtRaiz(n) {
 }
 function fmtPotPot(base, expA, expB) {
     return `(${fmtPot(base, expA)})<sup>${expB}</sup>`;
-}
-
-// Lee un número escrito por el alumno: admite coma o punto decimal y espacios
-// alrededor; rechaza textos como «3abc» (que parseInt daría por buenos).
-function leerNum(v) {
-    const t = String(v ?? '').trim().replace(/\s+/g, '').replace(',', '.').replace(/^[−–]/, '-');
-    return /^[+-]?\d+(\.\d+)?$/.test(t) ? Number(t) : NaN;
 }
 
 // ============ TIMER CON REDONDEO HACIA ARRIBA AL MINUTO ============
@@ -751,20 +735,19 @@ class Ejercicio1 extends EjercicioDosPreguntas {
         this.texto1 = `${nums[this.base1]} elevado a ${nums[this.exp1]}`;
         this.texto2 = `${nums[this.base2]} elevado a ${nums[this.exp2]}`;
     }
-    comprobarPregunta1(r) { return (leerNum(r.base) === this.base1 && leerNum(r.exp) === this.exp1) ? { correcto: true } : { correcto: false, explicacion: `La base es ${this.base1} y el exponente es ${this.exp1}.` }; }
-    comprobarPregunta2(r) { return (leerNum(r.base) === this.base2 && leerNum(r.exp) === this.exp2) ? { correcto: true } : { correcto: false, explicacion: `La base es ${this.base2} y el exponente es ${this.exp2}.` }; }
+    comprobarPregunta1(r) { return (parseInt(r.base) === this.base1 && parseInt(r.exp) === this.exp1) ? { correcto: true } : { correcto: false, explicacion: `La base es ${this.base1} y el exponente es ${this.exp1}.` }; }
+    comprobarPregunta2(r) { return (parseInt(r.base) === this.base2 && parseInt(r.exp) === this.exp2) ? { correcto: true } : { correcto: false, explicacion: `La base es ${this.base2} y el exponente es ${this.exp2}.` }; }
     getHTML() {
         const dis = (this.superado || this.bloqueado) ? 'disabled' : '';
-        return `<div class="ejercicio-card ${this.superado ? 'superado' : (this.bloqueado ? 'bloqueado' : '')}" id="ej-card-1"><div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">1</span><span class="ejercicio-titulo">Identificar Base y Exponente</span></div><button class="btn-nuevo-ejercicio" onclick="reiniciarEjercicio(0)">🔄 Nuevo</button></div><div class="pregunta-item"><div class="enunciado">📖 ${this.texto1}</div><div class="input-area"><div class="base-exp-alto"><label for="e1_b1" class="sr-only">Base de la primera potencia</label><input type="text" inputmode="decimal" autocomplete="off" id="e1_b1" class="base-input-alto" placeholder="Base" ${dis}><label for="e1_e1" class="sr-only">Exponente de la primera potencia</label><input type="text" inputmode="decimal" autocomplete="off" id="e1_e1" class="exp-input-alto" placeholder="Exp" ${dis}></div></div></div><div class="pregunta-item"><div class="enunciado">📖 ${this.texto2}</div><div class="input-area"><div class="base-exp-alto"><label for="e1_b2" class="sr-only">Base de la segunda potencia</label><input type="text" inputmode="decimal" autocomplete="off" id="e1_b2" class="base-input-alto" placeholder="Base" ${dis}><label for="e1_e2" class="sr-only">Exponente de la segunda potencia</label><input type="text" inputmode="decimal" autocomplete="off" id="e1_e2" class="exp-input-alto" placeholder="Exp" ${dis}></div></div></div><div class="input-area" style="justify-content: center; margin-top: 10px;"><button class="btn-primary" ${dis} onclick='procesarEjercicioCompleto(0, {base1: document.getElementById("e1_b1").value, exp1: document.getElementById("e1_e1").value, base2: document.getElementById("e1_b2").value, exp2: document.getElementById("e1_e2").value}, "fb_1")'>✅ Comprobar ejercicio</button></div><div id="fb_1" class="${this.feedbackClass}" aria-live="polite" style="text-align: center;">${this.feedbackHTML}</div></div>`;
+        return `<div class="ejercicio-card ${this.superado ? 'superado' : (this.bloqueado ? 'bloqueado' : '')}" id="ej-card-1"><div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">1</span><span class="ejercicio-titulo">Identificar Base y Exponente</span></div><button class="btn-nuevo-ejercicio" onclick="reiniciarEjercicio(0)">🔄 Nuevo</button></div><div class="pregunta-item"><div class="enunciado">📖 ${this.texto1}</div><div class="input-area"><div class="base-exp-alto"><label for="e1_b1" class="sr-only">Base de la primera potencia</label><input type="number" id="e1_b1" class="base-input-alto" placeholder="Base" ${dis}><label for="e1_e1" class="sr-only">Exponente de la primera potencia</label><input type="number" id="e1_e1" class="exp-input-alto" placeholder="Exp" ${dis}></div></div></div><div class="pregunta-item"><div class="enunciado">📖 ${this.texto2}</div><div class="input-area"><div class="base-exp-alto"><label for="e1_b2" class="sr-only">Base de la segunda potencia</label><input type="number" id="e1_b2" class="base-input-alto" placeholder="Base" ${dis}><label for="e1_e2" class="sr-only">Exponente de la segunda potencia</label><input type="number" id="e1_e2" class="exp-input-alto" placeholder="Exp" ${dis}></div></div></div><div class="input-area" style="justify-content: center; margin-top: 10px;"><button class="btn-primary" ${dis} onclick='procesarEjercicioCompleto(0, {base1: document.getElementById("e1_b1").value, exp1: document.getElementById("e1_e1").value, base2: document.getElementById("e1_b2").value, exp2: document.getElementById("e1_e2").value}, "fb_1")'>✅ Comprobar ejercicio</button></div><div id="fb_1" class="${this.feedbackClass}" aria-live="polite" style="text-align: center;">${this.feedbackHTML}</div></div>`;
     }
 }
 
 // EJERCICIO 2
 class Ejercicio2 extends EjercicioDosPreguntas {
     generarPreguntas() {
-        // Base de 2 a 9 (antes 2-6), igual que en el generador de exámenes
-        this.base1 = Math.floor(Math.random() * 8) + 2; this.exp1 = Math.floor(Math.random() * 3) + 3;
-        this.base2 = Math.floor(Math.random() * 8) + 2; this.exp2 = Math.floor(Math.random() * 3) + 3;
+        this.base1 = Math.floor(Math.random() * 5) + 2; this.exp1 = Math.floor(Math.random() * 3) + 3;
+        this.base2 = Math.floor(Math.random() * 5) + 2; this.exp2 = Math.floor(Math.random() * 3) + 3;
     }
     comprobarPregunta1(r) { return r.replace(/\s/g, '') === Array(this.exp1).fill(this.base1).join('*') ? { correcto: true } : { correcto: false, explicacion: `Escribe ${this.base1} repetido ${this.exp1} veces separado por *` }; }
     comprobarPregunta2(r) { return r.replace(/\s/g, '') === Array(this.exp2).fill(this.base2).join('*') ? { correcto: true } : { correcto: false, explicacion: `Escribe ${this.base2} repetido ${this.exp2} veces separado por *` }; }
@@ -780,11 +763,11 @@ class Ejercicio3 extends EjercicioDosPreguntas {
         this.base = Math.floor(Math.random() * 7) + 2; this.expA = Math.floor(Math.random() * 4) + 1; this.expB = Math.floor(Math.random() * 4) + 1;
         this.base2 = Math.floor(Math.random() * 7) + 2; this.exp2A = Math.floor(Math.random() * 4) + 1; this.exp2B = Math.floor(Math.random() * 4) + 1;
     }
-    comprobarPregunta1(r) { return (leerNum(r.base) === this.base && leerNum(r.exp) === (this.expA + this.expB)) ? { correcto: true } : { correcto: false, explicacion: `Base = ${this.base}, exponente = ${this.expA} + ${this.expB} = ${this.expA + this.expB}` }; }
-    comprobarPregunta2(r) { return (leerNum(r.base) === this.base2 && leerNum(r.exp) === (this.exp2A + this.exp2B)) ? { correcto: true } : { correcto: false, explicacion: `Base = ${this.base2}, exponente = ${this.exp2A} + ${this.exp2B} = ${this.exp2A + this.exp2B}` }; }
+    comprobarPregunta1(r) { return (parseInt(r.base) === this.base && parseInt(r.exp) === (this.expA + this.expB)) ? { correcto: true } : { correcto: false, explicacion: `Base = ${this.base}, exponente = ${this.expA} + ${this.expB} = ${this.expA + this.expB}` }; }
+    comprobarPregunta2(r) { return (parseInt(r.base) === this.base2 && parseInt(r.exp) === (this.exp2A + this.exp2B)) ? { correcto: true } : { correcto: false, explicacion: `Base = ${this.base2}, exponente = ${this.exp2A} + ${this.exp2B} = ${this.exp2A + this.exp2B}` }; }
     getHTML() {
         const dis = (this.superado || this.bloqueado) ? 'disabled' : '';
-        return `<div class="ejercicio-card ${this.superado ? 'superado' : (this.bloqueado ? 'bloqueado' : '')}" id="ej-card-3"><div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">3</span><span class="ejercicio-titulo">Producto de Potencias (Misma Base)</span></div><button class="btn-nuevo-ejercicio" onclick="reiniciarEjercicio(2)">🔄 Nuevo</button></div><div class="pregunta-item"><div class="enunciado-formula">${fmtPot(this.base, this.expA)} · ${fmtPot(this.base, this.expB)}</div><div class="input-area"><div class="base-exp-alto"><label for="e3_b1" class="sr-only">Base del resultado</label><input type="text" inputmode="decimal" autocomplete="off" id="e3_b1" class="base-input-alto" placeholder="Base" ${dis}><label for="e3_e1" class="sr-only">Exponente del resultado</label><input type="text" inputmode="decimal" autocomplete="off" id="e3_e1" class="exp-input-alto" placeholder="Exp" ${dis}></div></div></div><div class="pregunta-item"><div class="enunciado-formula">${fmtPot(this.base2, this.exp2A)} · ${fmtPot(this.base2, this.exp2B)}</div><div class="input-area"><div class="base-exp-alto"><label for="e3_b2" class="sr-only">Base del resultado (segunda pregunta)</label><input type="text" inputmode="decimal" autocomplete="off" id="e3_b2" class="base-input-alto" placeholder="Base" ${dis}><label for="e3_e2" class="sr-only">Exponente del resultado (segunda pregunta)</label><input type="text" inputmode="decimal" autocomplete="off" id="e3_e2" class="exp-input-alto" placeholder="Exp" ${dis}></div></div></div><div class="input-area" style="justify-content: center; margin-top: 10px;"><button class="btn-primary" ${dis} onclick='procesarEjercicioCompleto(2, {base1: document.getElementById("e3_b1").value, exp1: document.getElementById("e3_e1").value, base2: document.getElementById("e3_b2").value, exp2: document.getElementById("e3_e2").value}, "fb_3")'>✅ Comprobar ejercicio</button></div><div id="fb_3" class="${this.feedbackClass}" aria-live="polite" style="text-align: center;">${this.feedbackHTML}</div></div>`;
+        return `<div class="ejercicio-card ${this.superado ? 'superado' : (this.bloqueado ? 'bloqueado' : '')}" id="ej-card-3"><div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">3</span><span class="ejercicio-titulo">Producto de Potencias (Misma Base)</span></div><button class="btn-nuevo-ejercicio" onclick="reiniciarEjercicio(2)">🔄 Nuevo</button></div><div class="pregunta-item"><div class="enunciado-formula">${fmtPot(this.base, this.expA)} · ${fmtPot(this.base, this.expB)}</div><div class="input-area"><div class="base-exp-alto"><label for="e3_b1" class="sr-only">Base del resultado</label><input type="number" id="e3_b1" class="base-input-alto" placeholder="Base" ${dis}><label for="e3_e1" class="sr-only">Exponente del resultado</label><input type="number" id="e3_e1" class="exp-input-alto" placeholder="Exp" ${dis}></div></div></div><div class="pregunta-item"><div class="enunciado-formula">${fmtPot(this.base2, this.exp2A)} · ${fmtPot(this.base2, this.exp2B)}</div><div class="input-area"><div class="base-exp-alto"><label for="e3_b2" class="sr-only">Base del resultado (segunda pregunta)</label><input type="number" id="e3_b2" class="base-input-alto" placeholder="Base" ${dis}><label for="e3_e2" class="sr-only">Exponente del resultado (segunda pregunta)</label><input type="number" id="e3_e2" class="exp-input-alto" placeholder="Exp" ${dis}></div></div></div><div class="input-area" style="justify-content: center; margin-top: 10px;"><button class="btn-primary" ${dis} onclick='procesarEjercicioCompleto(2, {base1: document.getElementById("e3_b1").value, exp1: document.getElementById("e3_e1").value, base2: document.getElementById("e3_b2").value, exp2: document.getElementById("e3_e2").value}, "fb_3")'>✅ Comprobar ejercicio</button></div><div id="fb_3" class="${this.feedbackClass}" aria-live="polite" style="text-align: center;">${this.feedbackHTML}</div></div>`;
     }
 }
 
@@ -797,11 +780,11 @@ class Ejercicio4 extends EjercicioDosPreguntas {
         this.base = Math.floor(Math.random() * 6) + 2; this.expA = Math.floor(Math.random() * 4) + 5; this.expB = Math.floor(Math.random() * 3) + 1;
         this.base2 = Math.floor(Math.random() * 6) + 2; this.exp2A = Math.floor(Math.random() * 4) + 5; this.exp2B = Math.floor(Math.random() * 3) + 1;
     }
-    comprobarPregunta1(r) { return (leerNum(r.base) === this.base && leerNum(r.exp) === (this.expA - this.expB)) ? { correcto: true } : { correcto: false, explicacion: `Base = ${this.base}, exponente = ${this.expA} - ${this.expB} = ${this.expA - this.expB}` }; }
-    comprobarPregunta2(r) { return (leerNum(r.base) === this.base2 && leerNum(r.exp) === (this.exp2A - this.exp2B)) ? { correcto: true } : { correcto: false, explicacion: `Base = ${this.base2}, exponente = ${this.exp2A} - ${this.exp2B} = ${this.exp2A - this.exp2B}` }; }
+    comprobarPregunta1(r) { return (parseInt(r.base) === this.base && parseInt(r.exp) === (this.expA - this.expB)) ? { correcto: true } : { correcto: false, explicacion: `Base = ${this.base}, exponente = ${this.expA} - ${this.expB} = ${this.expA - this.expB}` }; }
+    comprobarPregunta2(r) { return (parseInt(r.base) === this.base2 && parseInt(r.exp) === (this.exp2A - this.exp2B)) ? { correcto: true } : { correcto: false, explicacion: `Base = ${this.base2}, exponente = ${this.exp2A} - ${this.exp2B} = ${this.exp2A - this.exp2B}` }; }
     getHTML() {
         const dis = (this.superado || this.bloqueado) ? 'disabled' : '';
-        return `<div class="ejercicio-card ${this.superado ? 'superado' : (this.bloqueado ? 'bloqueado' : '')}" id="ej-card-4"><div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">4</span><span class="ejercicio-titulo">Cociente de Potencias (Misma Base)</span></div><button class="btn-nuevo-ejercicio" onclick="reiniciarEjercicio(3)">🔄 Nuevo</button></div><div class="pregunta-item"><div class="enunciado-formula">${fmtFrac(fmtPot(this.base, this.expA), fmtPot(this.base, this.expB))}</div><div class="input-area"><div class="base-exp-alto"><label for="e4_b1" class="sr-only">Base del resultado</label><input type="text" inputmode="decimal" autocomplete="off" id="e4_b1" class="base-input-alto" placeholder="Base" ${dis}><label for="e4_e1" class="sr-only">Exponente del resultado</label><input type="text" inputmode="decimal" autocomplete="off" id="e4_e1" class="exp-input-alto" placeholder="Exp" ${dis}></div></div></div><div class="pregunta-item"><div class="enunciado-formula">${fmtFrac(fmtPot(this.base2, this.exp2A), fmtPot(this.base2, this.exp2B))}</div><div class="input-area"><div class="base-exp-alto"><label for="e4_b2" class="sr-only">Base del resultado (segunda pregunta)</label><input type="text" inputmode="decimal" autocomplete="off" id="e4_b2" class="base-input-alto" placeholder="Base" ${dis}><label for="e4_e2" class="sr-only">Exponente del resultado (segunda pregunta)</label><input type="text" inputmode="decimal" autocomplete="off" id="e4_e2" class="exp-input-alto" placeholder="Exp" ${dis}></div></div></div><div class="input-area" style="justify-content: center; margin-top: 10px;"><button class="btn-primary" ${dis} onclick='procesarEjercicioCompleto(3, {base1: document.getElementById("e4_b1").value, exp1: document.getElementById("e4_e1").value, base2: document.getElementById("e4_b2").value, exp2: document.getElementById("e4_e2").value}, "fb_4")'>✅ Comprobar ejercicio</button></div><div id="fb_4" class="${this.feedbackClass}" aria-live="polite" style="text-align: center;">${this.feedbackHTML}</div></div>`;
+        return `<div class="ejercicio-card ${this.superado ? 'superado' : (this.bloqueado ? 'bloqueado' : '')}" id="ej-card-4"><div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">4</span><span class="ejercicio-titulo">Cociente de Potencias (Misma Base)</span></div><button class="btn-nuevo-ejercicio" onclick="reiniciarEjercicio(3)">🔄 Nuevo</button></div><div class="pregunta-item"><div class="enunciado-formula">${fmtFrac(fmtPot(this.base, this.expA), fmtPot(this.base, this.expB))}</div><div class="input-area"><div class="base-exp-alto"><label for="e4_b1" class="sr-only">Base del resultado</label><input type="number" id="e4_b1" class="base-input-alto" placeholder="Base" ${dis}><label for="e4_e1" class="sr-only">Exponente del resultado</label><input type="number" id="e4_e1" class="exp-input-alto" placeholder="Exp" ${dis}></div></div></div><div class="pregunta-item"><div class="enunciado-formula">${fmtFrac(fmtPot(this.base2, this.exp2A), fmtPot(this.base2, this.exp2B))}</div><div class="input-area"><div class="base-exp-alto"><label for="e4_b2" class="sr-only">Base del resultado (segunda pregunta)</label><input type="number" id="e4_b2" class="base-input-alto" placeholder="Base" ${dis}><label for="e4_e2" class="sr-only">Exponente del resultado (segunda pregunta)</label><input type="number" id="e4_e2" class="exp-input-alto" placeholder="Exp" ${dis}></div></div></div><div class="input-area" style="justify-content: center; margin-top: 10px;"><button class="btn-primary" ${dis} onclick='procesarEjercicioCompleto(3, {base1: document.getElementById("e4_b1").value, exp1: document.getElementById("e4_e1").value, base2: document.getElementById("e4_b2").value, exp2: document.getElementById("e4_e2").value}, "fb_4")'>✅ Comprobar ejercicio</button></div><div id="fb_4" class="${this.feedbackClass}" aria-live="polite" style="text-align: center;">${this.feedbackHTML}</div></div>`;
     }
 }
 
@@ -811,11 +794,11 @@ class Ejercicio5 extends EjercicioDosPreguntas {
         this.base = Math.floor(Math.random() * 5) + 2; this.expA = Math.floor(Math.random() * 3) + 2; this.expB = Math.floor(Math.random() * 3) + 2;
         this.base2 = Math.floor(Math.random() * 5) + 2; this.exp2A = Math.floor(Math.random() * 3) + 2; this.exp2B = Math.floor(Math.random() * 3) + 2;
     }
-    comprobarPregunta1(r) { return (leerNum(r.base) === this.base && leerNum(r.exp) === (this.expA * this.expB)) ? { correcto: true } : { correcto: false, explicacion: `Base = ${this.base}, exponente = ${this.expA} × ${this.expB} = ${this.expA * this.expB}` }; }
-    comprobarPregunta2(r) { return (leerNum(r.base) === this.base2 && leerNum(r.exp) === (this.exp2A * this.exp2B)) ? { correcto: true } : { correcto: false, explicacion: `Base = ${this.base2}, exponente = ${this.exp2A} × ${this.exp2B} = ${this.exp2A * this.exp2B}` }; }
+    comprobarPregunta1(r) { return (parseInt(r.base) === this.base && parseInt(r.exp) === (this.expA * this.expB)) ? { correcto: true } : { correcto: false, explicacion: `Base = ${this.base}, exponente = ${this.expA} × ${this.expB} = ${this.expA * this.expB}` }; }
+    comprobarPregunta2(r) { return (parseInt(r.base) === this.base2 && parseInt(r.exp) === (this.exp2A * this.exp2B)) ? { correcto: true } : { correcto: false, explicacion: `Base = ${this.base2}, exponente = ${this.exp2A} × ${this.exp2B} = ${this.exp2A * this.exp2B}` }; }
     getHTML() {
         const dis = (this.superado || this.bloqueado) ? 'disabled' : '';
-        return `<div class="ejercicio-card ${this.superado ? 'superado' : (this.bloqueado ? 'bloqueado' : '')}" id="ej-card-5"><div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">5</span><span class="ejercicio-titulo">Potencia de una Potencia</span></div><button class="btn-nuevo-ejercicio" onclick="reiniciarEjercicio(4)">🔄 Nuevo</button></div><div class="pregunta-item"><div class="enunciado-formula">${fmtPotPot(this.base, this.expA, this.expB)}</div><div class="input-area"><div class="base-exp-alto"><label for="e5_b1" class="sr-only">Base del resultado</label><input type="text" inputmode="decimal" autocomplete="off" id="e5_b1" class="base-input-alto" placeholder="Base" ${dis}><label for="e5_e1" class="sr-only">Exponente del resultado</label><input type="text" inputmode="decimal" autocomplete="off" id="e5_e1" class="exp-input-alto" placeholder="Exp" ${dis}></div></div></div><div class="pregunta-item"><div class="enunciado-formula">${fmtPotPot(this.base2, this.exp2A, this.exp2B)}</div><div class="input-area"><div class="base-exp-alto"><label for="e5_b2" class="sr-only">Base del resultado (segunda pregunta)</label><input type="text" inputmode="decimal" autocomplete="off" id="e5_b2" class="base-input-alto" placeholder="Base" ${dis}><label for="e5_e2" class="sr-only">Exponente del resultado (segunda pregunta)</label><input type="text" inputmode="decimal" autocomplete="off" id="e5_e2" class="exp-input-alto" placeholder="Exp" ${dis}></div></div></div><div class="input-area" style="justify-content: center; margin-top: 10px;"><button class="btn-primary" ${dis} onclick='procesarEjercicioCompleto(4, {base1: document.getElementById("e5_b1").value, exp1: document.getElementById("e5_e1").value, base2: document.getElementById("e5_b2").value, exp2: document.getElementById("e5_e2").value}, "fb_5")'>✅ Comprobar ejercicio</button></div><div id="fb_5" class="${this.feedbackClass}" aria-live="polite" style="text-align: center;">${this.feedbackHTML}</div></div>`;
+        return `<div class="ejercicio-card ${this.superado ? 'superado' : (this.bloqueado ? 'bloqueado' : '')}" id="ej-card-5"><div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">5</span><span class="ejercicio-titulo">Potencia de una Potencia</span></div><button class="btn-nuevo-ejercicio" onclick="reiniciarEjercicio(4)">🔄 Nuevo</button></div><div class="pregunta-item"><div class="enunciado-formula">${fmtPotPot(this.base, this.expA, this.expB)}</div><div class="input-area"><div class="base-exp-alto"><label for="e5_b1" class="sr-only">Base del resultado</label><input type="number" id="e5_b1" class="base-input-alto" placeholder="Base" ${dis}><label for="e5_e1" class="sr-only">Exponente del resultado</label><input type="number" id="e5_e1" class="exp-input-alto" placeholder="Exp" ${dis}></div></div></div><div class="pregunta-item"><div class="enunciado-formula">${fmtPotPot(this.base2, this.exp2A, this.exp2B)}</div><div class="input-area"><div class="base-exp-alto"><label for="e5_b2" class="sr-only">Base del resultado (segunda pregunta)</label><input type="number" id="e5_b2" class="base-input-alto" placeholder="Base" ${dis}><label for="e5_e2" class="sr-only">Exponente del resultado (segunda pregunta)</label><input type="number" id="e5_e2" class="exp-input-alto" placeholder="Exp" ${dis}></div></div></div><div class="input-area" style="justify-content: center; margin-top: 10px;"><button class="btn-primary" ${dis} onclick='procesarEjercicioCompleto(4, {base1: document.getElementById("e5_b1").value, exp1: document.getElementById("e5_e1").value, base2: document.getElementById("e5_b2").value, exp2: document.getElementById("e5_e2").value}, "fb_5")'>✅ Comprobar ejercicio</button></div><div id="fb_5" class="${this.feedbackClass}" aria-live="polite" style="text-align: center;">${this.feedbackHTML}</div></div>`;
     }
 }
 
@@ -825,11 +808,11 @@ class Ejercicio6 extends EjercicioDosPreguntas {
         this.fA = Math.floor(Math.random() * 8) + 2; this.fB = Math.floor(Math.random() * 8) + 2; this.exp = Math.floor(Math.random() * 5) + 2;
         this.f2A = Math.floor(Math.random() * 8) + 2; this.f2B = Math.floor(Math.random() * 8) + 2; this.exp2 = Math.floor(Math.random() * 5) + 2;
     }
-    comprobarPregunta1(r) { return (leerNum(r.base) === (this.fA * this.fB) && leerNum(r.exp) === this.exp) ? { correcto: true } : { correcto: false, explicacion: `Multiplica las bases: ${this.fA} × ${this.fB} = ${this.fA * this.fB}, exponente = ${this.exp}` }; }
-    comprobarPregunta2(r) { return (leerNum(r.base) === (this.f2A * this.f2B) && leerNum(r.exp) === this.exp2) ? { correcto: true } : { correcto: false, explicacion: `Multiplica las bases: ${this.f2A} × ${this.f2B} = ${this.f2A * this.f2B}, exponente = ${this.exp2}` }; }
+    comprobarPregunta1(r) { return (parseInt(r.base) === (this.fA * this.fB) && parseInt(r.exp) === this.exp) ? { correcto: true } : { correcto: false, explicacion: `Multiplica las bases: ${this.fA} × ${this.fB} = ${this.fA * this.fB}, exponente = ${this.exp}` }; }
+    comprobarPregunta2(r) { return (parseInt(r.base) === (this.f2A * this.f2B) && parseInt(r.exp) === this.exp2) ? { correcto: true } : { correcto: false, explicacion: `Multiplica las bases: ${this.f2A} × ${this.f2B} = ${this.f2A * this.f2B}, exponente = ${this.exp2}` }; }
     getHTML() {
         const dis = (this.superado || this.bloqueado) ? 'disabled' : '';
-        return `<div class="ejercicio-card ${this.superado ? 'superado' : (this.bloqueado ? 'bloqueado' : '')}" id="ej-card-6"><div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">6</span><span class="ejercicio-titulo">Producto de Potencias (Mismo Exponente)</span></div><button class="btn-nuevo-ejercicio" onclick="reiniciarEjercicio(5)">🔄 Nuevo</button></div><div class="pregunta-item"><div class="enunciado-formula">${fmtPot(this.fA, this.exp)} · ${fmtPot(this.fB, this.exp)}</div><div class="input-area"><div class="base-exp-alto"><label for="e6_b1" class="sr-only">Base del resultado</label><input type="text" inputmode="decimal" autocomplete="off" id="e6_b1" class="base-input-alto" placeholder="Base" ${dis}><label for="e6_e1" class="sr-only">Exponente del resultado</label><input type="text" inputmode="decimal" autocomplete="off" id="e6_e1" class="exp-input-alto" placeholder="Exp" ${dis}></div></div></div><div class="pregunta-item"><div class="enunciado-formula">${fmtPot(this.f2A, this.exp2)} · ${fmtPot(this.f2B, this.exp2)}</div><div class="input-area"><div class="base-exp-alto"><label for="e6_b2" class="sr-only">Base del resultado (segunda pregunta)</label><input type="text" inputmode="decimal" autocomplete="off" id="e6_b2" class="base-input-alto" placeholder="Base" ${dis}><label for="e6_e2" class="sr-only">Exponente del resultado (segunda pregunta)</label><input type="text" inputmode="decimal" autocomplete="off" id="e6_e2" class="exp-input-alto" placeholder="Exp" ${dis}></div></div></div><div class="input-area" style="justify-content: center; margin-top: 10px;"><button class="btn-primary" ${dis} onclick='procesarEjercicioCompleto(5, {base1: document.getElementById("e6_b1").value, exp1: document.getElementById("e6_e1").value, base2: document.getElementById("e6_b2").value, exp2: document.getElementById("e6_e2").value}, "fb_6")'>✅ Comprobar ejercicio</button></div><div id="fb_6" class="${this.feedbackClass}" aria-live="polite" style="text-align: center;">${this.feedbackHTML}</div></div>`;
+        return `<div class="ejercicio-card ${this.superado ? 'superado' : (this.bloqueado ? 'bloqueado' : '')}" id="ej-card-6"><div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">6</span><span class="ejercicio-titulo">Producto de Potencias (Mismo Exponente)</span></div><button class="btn-nuevo-ejercicio" onclick="reiniciarEjercicio(5)">🔄 Nuevo</button></div><div class="pregunta-item"><div class="enunciado-formula">${fmtPot(this.fA, this.exp)} · ${fmtPot(this.fB, this.exp)}</div><div class="input-area"><div class="base-exp-alto"><label for="e6_b1" class="sr-only">Base del resultado</label><input type="number" id="e6_b1" class="base-input-alto" placeholder="Base" ${dis}><label for="e6_e1" class="sr-only">Exponente del resultado</label><input type="number" id="e6_e1" class="exp-input-alto" placeholder="Exp" ${dis}></div></div></div><div class="pregunta-item"><div class="enunciado-formula">${fmtPot(this.f2A, this.exp2)} · ${fmtPot(this.f2B, this.exp2)}</div><div class="input-area"><div class="base-exp-alto"><label for="e6_b2" class="sr-only">Base del resultado (segunda pregunta)</label><input type="number" id="e6_b2" class="base-input-alto" placeholder="Base" ${dis}><label for="e6_e2" class="sr-only">Exponente del resultado (segunda pregunta)</label><input type="number" id="e6_e2" class="exp-input-alto" placeholder="Exp" ${dis}></div></div></div><div class="input-area" style="justify-content: center; margin-top: 10px;"><button class="btn-primary" ${dis} onclick='procesarEjercicioCompleto(5, {base1: document.getElementById("e6_b1").value, exp1: document.getElementById("e6_e1").value, base2: document.getElementById("e6_b2").value, exp2: document.getElementById("e6_e2").value}, "fb_6")'>✅ Comprobar ejercicio</button></div><div id="fb_6" class="${this.feedbackClass}" aria-live="polite" style="text-align: center;">${this.feedbackHTML}</div></div>`;
     }
 }
 
@@ -839,11 +822,11 @@ class Ejercicio7 extends EjercicioDosPreguntas {
         this.fB = Math.floor(Math.random() * 4) + 2; this.fA = this.fB * (Math.floor(Math.random() * 4) + 2); this.exp = Math.floor(Math.random() * 5) + 2;
         this.f2B = Math.floor(Math.random() * 4) + 2; this.f2A = this.f2B * (Math.floor(Math.random() * 4) + 2); this.exp2 = Math.floor(Math.random() * 5) + 2;
     }
-    comprobarPregunta1(r) { return (leerNum(r.base) === (this.fA / this.fB) && leerNum(r.exp) === this.exp) ? { correcto: true } : { correcto: false, explicacion: `Divide las bases: ${this.fA} ÷ ${this.fB} = ${this.fA / this.fB}, exponente = ${this.exp}` }; }
-    comprobarPregunta2(r) { return (leerNum(r.base) === (this.f2A / this.f2B) && leerNum(r.exp) === this.exp2) ? { correcto: true } : { correcto: false, explicacion: `Divide las bases: ${this.f2A} ÷ ${this.f2B} = ${this.f2A / this.f2B}, exponente = ${this.exp2}` }; }
+    comprobarPregunta1(r) { return (parseInt(r.base) === (this.fA / this.fB) && parseInt(r.exp) === this.exp) ? { correcto: true } : { correcto: false, explicacion: `Divide las bases: ${this.fA} ÷ ${this.fB} = ${this.fA / this.fB}, exponente = ${this.exp}` }; }
+    comprobarPregunta2(r) { return (parseInt(r.base) === (this.f2A / this.f2B) && parseInt(r.exp) === this.exp2) ? { correcto: true } : { correcto: false, explicacion: `Divide las bases: ${this.f2A} ÷ ${this.f2B} = ${this.f2A / this.f2B}, exponente = ${this.exp2}` }; }
     getHTML() {
         const dis = (this.superado || this.bloqueado) ? 'disabled' : '';
-        return `<div class="ejercicio-card ${this.superado ? 'superado' : (this.bloqueado ? 'bloqueado' : '')}" id="ej-card-7"><div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">7</span><span class="ejercicio-titulo">Cociente de Potencias (Mismo Exponente)</span></div><button class="btn-nuevo-ejercicio" onclick="reiniciarEjercicio(6)">🔄 Nuevo</button></div><div class="pregunta-item"><div class="enunciado-formula">${fmtFrac(fmtPot(this.fA, this.exp), fmtPot(this.fB, this.exp))}</div><div class="input-area"><div class="base-exp-alto"><label for="e7_b1" class="sr-only">Base del resultado</label><input type="text" inputmode="decimal" autocomplete="off" id="e7_b1" class="base-input-alto" placeholder="Base" ${dis}><label for="e7_e1" class="sr-only">Exponente del resultado</label><input type="text" inputmode="decimal" autocomplete="off" id="e7_e1" class="exp-input-alto" placeholder="Exp" ${dis}></div></div></div><div class="pregunta-item"><div class="enunciado-formula">${fmtFrac(fmtPot(this.f2A, this.exp2), fmtPot(this.f2B, this.exp2))}</div><div class="input-area"><div class="base-exp-alto"><label for="e7_b2" class="sr-only">Base del resultado (segunda pregunta)</label><input type="text" inputmode="decimal" autocomplete="off" id="e7_b2" class="base-input-alto" placeholder="Base" ${dis}><label for="e7_e2" class="sr-only">Exponente del resultado (segunda pregunta)</label><input type="text" inputmode="decimal" autocomplete="off" id="e7_e2" class="exp-input-alto" placeholder="Exp" ${dis}></div></div></div><div class="input-area" style="justify-content: center; margin-top: 10px;"><button class="btn-primary" ${dis} onclick='procesarEjercicioCompleto(6, {base1: document.getElementById("e7_b1").value, exp1: document.getElementById("e7_e1").value, base2: document.getElementById("e7_b2").value, exp2: document.getElementById("e7_e2").value}, "fb_7")'>✅ Comprobar ejercicio</button></div><div id="fb_7" class="${this.feedbackClass}" aria-live="polite" style="text-align: center;">${this.feedbackHTML}</div></div>`;
+        return `<div class="ejercicio-card ${this.superado ? 'superado' : (this.bloqueado ? 'bloqueado' : '')}" id="ej-card-7"><div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">7</span><span class="ejercicio-titulo">Cociente de Potencias (Mismo Exponente)</span></div><button class="btn-nuevo-ejercicio" onclick="reiniciarEjercicio(6)">🔄 Nuevo</button></div><div class="pregunta-item"><div class="enunciado-formula">${fmtFrac(fmtPot(this.fA, this.exp), fmtPot(this.fB, this.exp))}</div><div class="input-area"><div class="base-exp-alto"><label for="e7_b1" class="sr-only">Base del resultado</label><input type="number" id="e7_b1" class="base-input-alto" placeholder="Base" ${dis}><label for="e7_e1" class="sr-only">Exponente del resultado</label><input type="number" id="e7_e1" class="exp-input-alto" placeholder="Exp" ${dis}></div></div></div><div class="pregunta-item"><div class="enunciado-formula">${fmtFrac(fmtPot(this.f2A, this.exp2), fmtPot(this.f2B, this.exp2))}</div><div class="input-area"><div class="base-exp-alto"><label for="e7_b2" class="sr-only">Base del resultado (segunda pregunta)</label><input type="number" id="e7_b2" class="base-input-alto" placeholder="Base" ${dis}><label for="e7_e2" class="sr-only">Exponente del resultado (segunda pregunta)</label><input type="number" id="e7_e2" class="exp-input-alto" placeholder="Exp" ${dis}></div></div></div><div class="input-area" style="justify-content: center; margin-top: 10px;"><button class="btn-primary" ${dis} onclick='procesarEjercicioCompleto(6, {base1: document.getElementById("e7_b1").value, exp1: document.getElementById("e7_e1").value, base2: document.getElementById("e7_b2").value, exp2: document.getElementById("e7_e2").value}, "fb_7")'>✅ Comprobar ejercicio</button></div><div id="fb_7" class="${this.feedbackClass}" aria-live="polite" style="text-align: center;">${this.feedbackHTML}</div></div>`;
     }
 }
 
@@ -853,32 +836,25 @@ class Ejercicio8 extends EjercicioDosPreguntas {
         this.base = Math.floor(Math.random() * 90) + 11;
         this.base2 = Math.floor(Math.random() * 500) + 100;
     }
-    comprobarPregunta1(r) { return leerNum(r) === 1 ? { correcto: true } : { correcto: false, explicacion: "Cualquier número elevado a 0 es igual a 1." }; }
-    comprobarPregunta2(r) { return leerNum(r) === 1 ? { correcto: true } : { correcto: false, explicacion: "Cualquier número elevado a 0 es igual a 1." }; }
+    comprobarPregunta1(r) { return parseInt(r) === 1 ? { correcto: true } : { correcto: false, explicacion: "Cualquier número elevado a 0 es igual a 1." }; }
+    comprobarPregunta2(r) { return parseInt(r) === 1 ? { correcto: true } : { correcto: false, explicacion: "Cualquier número elevado a 0 es igual a 1." }; }
     getHTML() {
         const dis = (this.superado || this.bloqueado) ? 'disabled' : '';
-        return `<div class="ejercicio-card ${this.superado ? 'superado' : (this.bloqueado ? 'bloqueado' : '')}" id="ej-card-8"><div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">8</span><span class="ejercicio-titulo">Exponente Especial Cero (0)</span></div><button class="btn-nuevo-ejercicio" onclick="reiniciarEjercicio(7)">🔄 Nuevo</button></div><div class="pregunta-item"><div class="enunciado-formula">Calcular: ${fmtPot(this.base, 0)} =</div><div class="input-area"><label for="e8_r1" class="sr-only">Resultado de la primera potencia elevada a cero</label><input type="text" inputmode="decimal" autocomplete="off" id="e8_r1" class="number-input" ${dis}></div></div><div class="pregunta-item"><div class="enunciado-formula">Calcular: ${fmtPot(this.base2, 0)} =</div><div class="input-area"><label for="e8_r2" class="sr-only">Resultado de la segunda potencia elevada a cero</label><input type="text" inputmode="decimal" autocomplete="off" id="e8_r2" class="number-input" ${dis}></div></div><div class="input-area" style="justify-content: center; margin-top: 10px;"><button class="btn-primary" ${dis} onclick='procesarEjercicioCompleto(7, {r1: document.getElementById("e8_r1").value, r2: document.getElementById("e8_r2").value}, "fb_8")'>✅ Comprobar ejercicio</button></div><div id="fb_8" class="${this.feedbackClass}" aria-live="polite" style="text-align: center;">${this.feedbackHTML}</div></div>`;
+        return `<div class="ejercicio-card ${this.superado ? 'superado' : (this.bloqueado ? 'bloqueado' : '')}" id="ej-card-8"><div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">8</span><span class="ejercicio-titulo">Exponente Especial Cero (0)</span></div><button class="btn-nuevo-ejercicio" onclick="reiniciarEjercicio(7)">🔄 Nuevo</button></div><div class="pregunta-item"><div class="enunciado-formula">Calcular: ${fmtPot(this.base, 0)} =</div><div class="input-area"><label for="e8_r1" class="sr-only">Resultado de la primera potencia elevada a cero</label><input type="number" id="e8_r1" class="number-input" ${dis}></div></div><div class="pregunta-item"><div class="enunciado-formula">Calcular: ${fmtPot(this.base2, 0)} =</div><div class="input-area"><label for="e8_r2" class="sr-only">Resultado de la segunda potencia elevada a cero</label><input type="number" id="e8_r2" class="number-input" ${dis}></div></div><div class="input-area" style="justify-content: center; margin-top: 10px;"><button class="btn-primary" ${dis} onclick='procesarEjercicioCompleto(7, {r1: document.getElementById("e8_r1").value, r2: document.getElementById("e8_r2").value}, "fb_8")'>✅ Comprobar ejercicio</button></div><div id="fb_8" class="${this.feedbackClass}" aria-live="polite" style="text-align: center;">${this.feedbackHTML}</div></div>`;
     }
 }
 
 // EJERCICIO 9
 class Ejercicio9 extends EjercicioDosPreguntas {
     generarPreguntas() {
-        // Mismo repertorio que el generador de exámenes: base 2-10 con exponente 2 o 3
-        // y algunas potencias de exponente mayor que se calculan bien a mano.
-        const VALORES = [];
-        for (let b = 2; b <= 10; b++) VALORES.push([b, 2], [b, 3]);
-        VALORES.push([2, 4], [3, 4], [2, 5], [2, 6], [10, 4]);
-        const i = Math.floor(Math.random() * VALORES.length);
-        let j; do { j = Math.floor(Math.random() * VALORES.length); } while (j === i);
-        [this.base, this.exp] = VALORES[i];
-        [this.base2, this.exp2] = VALORES[j];
+        this.base = Math.floor(Math.random() * 8) + 2; this.exp = Math.floor(Math.random() * 2) + 2;
+        this.base2 = Math.floor(Math.random() * 5) + 2; this.exp2 = 3;
     }
-    comprobarPregunta1(r) { const val = Math.pow(this.base, this.exp); return leerNum(r) === val ? { correcto: true } : { correcto: false, explicacion: `${fmtPot(this.base, this.exp)} = ${val}` }; }
-    comprobarPregunta2(r) { const val = Math.pow(this.base2, this.exp2); return leerNum(r) === val ? { correcto: true } : { correcto: false, explicacion: `${fmtPot(this.base2, this.exp2)} = ${val}` }; }
+    comprobarPregunta1(r) { const val = Math.pow(this.base, this.exp); return parseInt(r) === val ? { correcto: true } : { correcto: false, explicacion: `${this.base}^${this.exp} = ${val}` }; }
+    comprobarPregunta2(r) { const val = Math.pow(this.base2, this.exp2); return parseInt(r) === val ? { correcto: true } : { correcto: false, explicacion: `${this.base2}^${this.exp2} = ${val}` }; }
     getHTML() {
         const dis = (this.superado || this.bloqueado) ? 'disabled' : '';
-        return `<div class="ejercicio-card ${this.superado ? 'superado' : (this.bloqueado ? 'bloqueado' : '')}" id="ej-card-9"><div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">9</span><span class="ejercicio-titulo">Cálculo del Valor de Potencias</span></div><button class="btn-nuevo-ejercicio" onclick="reiniciarEjercicio(8)">🔄 Nuevo</button></div><div class="pregunta-item"><div class="enunciado-formula">Calcula: ${fmtPot(this.base, this.exp)}</div><div class="input-area"><label for="e9_r1" class="sr-only">Resultado de la primera potencia</label><input type="text" inputmode="decimal" autocomplete="off" id="e9_r1" class="number-input" ${dis}></div></div><div class="pregunta-item"><div class="enunciado-formula">Calcula: ${fmtPot(this.base2, this.exp2)}</div><div class="input-area"><label for="e9_r2" class="sr-only">Resultado de la segunda potencia</label><input type="text" inputmode="decimal" autocomplete="off" id="e9_r2" class="number-input" ${dis}></div></div><div class="input-area" style="justify-content: center; margin-top: 10px;"><button class="btn-primary" ${dis} onclick='procesarEjercicioCompleto(8, {r1: document.getElementById("e9_r1").value, r2: document.getElementById("e9_r2").value}, "fb_9")'>✅ Comprobar ejercicio</button></div><div id="fb_9" class="${this.feedbackClass}" aria-live="polite" style="text-align: center;">${this.feedbackHTML}</div></div>`;
+        return `<div class="ejercicio-card ${this.superado ? 'superado' : (this.bloqueado ? 'bloqueado' : '')}" id="ej-card-9"><div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">9</span><span class="ejercicio-titulo">Cálculo del Valor de Potencias</span></div><button class="btn-nuevo-ejercicio" onclick="reiniciarEjercicio(8)">🔄 Nuevo</button></div><div class="pregunta-item"><div class="enunciado-formula">Calcula: ${fmtPot(this.base, this.exp)}</div><div class="input-area"><label for="e9_r1" class="sr-only">Resultado de la primera potencia</label><input type="number" id="e9_r1" class="number-input" ${dis}></div></div><div class="pregunta-item"><div class="enunciado-formula">Calcula: ${fmtPot(this.base2, this.exp2)}</div><div class="input-area"><label for="e9_r2" class="sr-only">Resultado de la segunda potencia</label><input type="number" id="e9_r2" class="number-input" ${dis}></div></div><div class="input-area" style="justify-content: center; margin-top: 10px;"><button class="btn-primary" ${dis} onclick='procesarEjercicioCompleto(8, {r1: document.getElementById("e9_r1").value, r2: document.getElementById("e9_r2").value}, "fb_9")'>✅ Comprobar ejercicio</button></div><div id="fb_9" class="${this.feedbackClass}" aria-live="polite" style="text-align: center;">${this.feedbackHTML}</div></div>`;
     }
 }
 
@@ -892,16 +868,16 @@ class Ejercicio10 extends EjercicioDosPreguntas {
         this.restoSol = Math.floor(Math.random() * maxResto) + 1;
         this.radicando2 = (this.raizEnteraSol * this.raizEnteraSol) + this.restoSol;
     }
-    comprobarPregunta1(r) { return leerNum(r) === this.raizExactaSol ? { correcto: true } : { correcto: false, explicacion: `√${this.radicando1} = ${this.raizExactaSol}` }; }
+    comprobarPregunta1(r) { return parseInt(r) === this.raizExactaSol ? { correcto: true } : { correcto: false, explicacion: `√${this.radicando1} = ${this.raizExactaSol}` }; }
     comprobarPregunta2(r) { 
-        const okRaiz = leerNum(r.raiz) === this.raizEnteraSol;
-        const okResto = leerNum(r.resto) === this.restoSol;
+        const okRaiz = parseInt(r.raiz) === this.raizEnteraSol;
+        const okResto = parseInt(r.resto) === this.restoSol;
         if(okRaiz && okResto) return { correcto: true };
         return { correcto: false, explicacion: `Raíz = ${this.raizEnteraSol}, Resto = ${this.restoSol}` };
     }
     getHTML() {
         const dis = (this.superado || this.bloqueado) ? 'disabled' : '';
-        return `<div class="ejercicio-card ${this.superado ? 'superado' : (this.bloqueado ? 'bloqueado' : '')}" id="ej-card-10"><div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">10</span><span class="ejercicio-titulo">Raíz Cuadrada Exacta y Entera</span></div><button class="btn-nuevo-ejercicio" onclick="reiniciarEjercicio(9)">🔄 Nuevo</button></div><div class="pregunta-item"><div class="enunciado-formula">Raíz exacta: ${fmtRaiz(this.radicando1)} =</div><div class="input-area"><label for="e10_r1" class="sr-only">Resultado de la raíz exacta</label><input type="text" inputmode="decimal" autocomplete="off" id="e10_r1" class="number-input" ${dis}></div></div><div class="pregunta-item"><div class="enunciado-formula">Raíz entera y resto: ${fmtRaiz(this.radicando2)}</div><div class="input-area"><label for="e10_r2_raiz" class="sr-only">Raíz entera</label><input type="text" inputmode="decimal" autocomplete="off" id="e10_r2_raiz" class="number-input" placeholder="Raíz entera" ${dis}><label for="e10_r2_resto" class="sr-only">Resto de la raíz entera</label><input type="text" inputmode="decimal" autocomplete="off" id="e10_r2_resto" class="number-input" placeholder="Resto" ${dis}></div></div><div class="input-area" style="justify-content: center; margin-top: 10px;"><button class="btn-primary" ${dis} onclick='procesarEjercicioCompleto(9, {r1: document.getElementById("e10_r1").value, raiz: document.getElementById("e10_r2_raiz").value, resto: document.getElementById("e10_r2_resto").value}, "fb_10")'>✅ Comprobar ejercicio</button></div><div id="fb_10" class="${this.feedbackClass}" aria-live="polite" style="text-align: center;">${this.feedbackHTML}</div></div>`;
+        return `<div class="ejercicio-card ${this.superado ? 'superado' : (this.bloqueado ? 'bloqueado' : '')}" id="ej-card-10"><div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">10</span><span class="ejercicio-titulo">Raíz Cuadrada Exacta y Entera</span></div><button class="btn-nuevo-ejercicio" onclick="reiniciarEjercicio(9)">🔄 Nuevo</button></div><div class="pregunta-item"><div class="enunciado-formula">Raíz exacta: ${fmtRaiz(this.radicando1)} =</div><div class="input-area"><label for="e10_r1" class="sr-only">Resultado de la raíz exacta</label><input type="number" id="e10_r1" class="number-input" ${dis}></div></div><div class="pregunta-item"><div class="enunciado-formula">Raíz entera y resto: ${fmtRaiz(this.radicando2)}</div><div class="input-area"><label for="e10_r2_raiz" class="sr-only">Raíz entera</label><input type="number" id="e10_r2_raiz" class="number-input" placeholder="Raíz entera" ${dis}><label for="e10_r2_resto" class="sr-only">Resto de la raíz entera</label><input type="number" id="e10_r2_resto" class="number-input" placeholder="Resto" ${dis}></div></div><div class="input-area" style="justify-content: center; margin-top: 10px;"><button class="btn-primary" ${dis} onclick='procesarEjercicioCompleto(9, {r1: document.getElementById("e10_r1").value, raiz: document.getElementById("e10_r2_raiz").value, resto: document.getElementById("e10_r2_resto").value}, "fb_10")'>✅ Comprobar ejercicio</button></div><div id="fb_10" class="${this.feedbackClass}" aria-live="polite" style="text-align: center;">${this.feedbackHTML}</div></div>`;
     }
 }
 
@@ -995,7 +971,7 @@ function actualizarUI() {
     document.getElementById('fallosCount').innerText = fallosGlobales;
     
     let { nota } = calcularNota();
-    document.getElementById('notaActual').innerText = nota.toFixed(1).replace('.', ',');
+    document.getElementById('notaActual').innerText = nota.toFixed(1);
 }
 
 function mostrarModalAdvertencia(msg) {
@@ -1070,7 +1046,7 @@ function confirmarFinalizar() {
     modalCard.className = `modal-result-card ${info.clase}`;
     
     document.getElementById('modalNombreMostrar').innerHTML = `👤 ${nombre}`;
-    document.getElementById('modalNota').innerHTML = `${nota.toFixed(1).replace('.', ',')} / 10`;
+    document.getElementById('modalNota').innerHTML = `${nota.toFixed(1)} / 10`;
     
     let mensaje = "";
     if (nota >= 10) mensaje = "🏆 ¡PERFECTO! Dominas todas las propiedades.";
@@ -1082,7 +1058,6 @@ function confirmarFinalizar() {
     document.getElementById('modalStats').innerHTML = `
         <p>📊 Ejercicios superados: <strong>${superados} de ${TOTAL_EJERCICIOS}</strong></p>
         <p>❌ Fallos totales: <strong>${fallosGlobales}</strong></p>
-        <p>👁️ Soluciones vistas: <strong>${solucionesVistas.reduce((a, b) => a + b, 0)}</strong>${solucionesVistas.some(Boolean) ? ' (' + solucionesVistas.map((v, i) => v ? `ej. ${i + 1}: ${v}` : '').filter(Boolean).join(', ') + ')' : ''}</p>
         <p>📅 Fecha: <strong>${fecha}</strong></p>
         <p>⏰ Hora: <strong>${hora}</strong></p>
         <p>⏱️ Tiempo empleado: <strong>${tiempo}</strong></p>
@@ -1145,120 +1120,6 @@ document.getElementById('ejerciciosContainer').addEventListener('keydown', funct
         }
     }
 });
-
-// ============ MOSTRAR SOLUCIÓN (por ejercicio) ============
-// La ficha muestra todos los ejercicios a la vez, así que cada tarjeta tiene su propio botón,
-// apagado, al pie. Ver la solución no suma ni resta: el ejercicio visto se sustituye por otro
-// del mismo tipo con otros números. Los fallos previos siguen restando.
-const solucionesVistas = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-const productoRepetido = (b, n) => Array(n).fill(b).join(' · ');
-
-function solucionDe(idx) {
-    const e = ejercicios[idx];
-    const dos = (a, b) => `${a}<br>${b}`;
-    switch (idx) {
-        case 0:
-            return dos(`«${e.texto1}» = ${fmtPot(e.base1, e.exp1)}: base <b>${e.base1}</b>, exponente <b>${e.exp1}</b>.`,
-                       `«${e.texto2}» = ${fmtPot(e.base2, e.exp2)}: base <b>${e.base2}</b>, exponente <b>${e.exp2}</b>.`)
-                + '<br>La base es el número que se multiplica y el exponente, las veces que se multiplica.';
-        case 1:
-            return dos(`${fmtPot(e.base1, e.exp1)} = <b>${productoRepetido(e.base1, e.exp1)}</b> (se escribe ${Array(e.exp1).fill(e.base1).join('*')})`,
-                       `${fmtPot(e.base2, e.exp2)} = <b>${productoRepetido(e.base2, e.exp2)}</b> (se escribe ${Array(e.exp2).fill(e.base2).join('*')})`)
-                + '<br>El exponente indica cuántas veces se multiplica la base por sí misma.';
-        case 2:
-            return dos(`${fmtPot(e.base, e.expA)} · ${fmtPot(e.base, e.expB)} = ${e.base}<sup>${e.expA} + ${e.expB}</sup> = <b>${fmtPot(e.base, e.expA + e.expB)}</b>`,
-                       `${fmtPot(e.base2, e.exp2A)} · ${fmtPot(e.base2, e.exp2B)} = ${e.base2}<sup>${e.exp2A} + ${e.exp2B}</sup> = <b>${fmtPot(e.base2, e.exp2A + e.exp2B)}</b>`)
-                + '<br>Producto de potencias de la misma base: se deja la base y se suman los exponentes.';
-        case 3:
-            return dos(`${fmtPot(e.base, e.expA)} : ${fmtPot(e.base, e.expB)} = ${e.base}<sup>${e.expA} − ${e.expB}</sup> = <b>${fmtPot(e.base, e.expA - e.expB)}</b>`,
-                       `${fmtPot(e.base2, e.exp2A)} : ${fmtPot(e.base2, e.exp2B)} = ${e.base2}<sup>${e.exp2A} − ${e.exp2B}</sup> = <b>${fmtPot(e.base2, e.exp2A - e.exp2B)}</b>`)
-                + '<br>Cociente de potencias de la misma base: se deja la base y se restan los exponentes.';
-        case 4:
-            return dos(`${fmtPotPot(e.base, e.expA, e.expB)} = ${e.base}<sup>${e.expA} · ${e.expB}</sup> = <b>${fmtPot(e.base, e.expA * e.expB)}</b>`,
-                       `${fmtPotPot(e.base2, e.exp2A, e.exp2B)} = ${e.base2}<sup>${e.exp2A} · ${e.exp2B}</sup> = <b>${fmtPot(e.base2, e.exp2A * e.exp2B)}</b>`)
-                + '<br>Potencia de una potencia: se deja la base y se multiplican los exponentes.';
-        case 5:
-            return dos(`${fmtPot(e.fA, e.exp)} · ${fmtPot(e.fB, e.exp)} = (${e.fA} · ${e.fB})<sup>${e.exp}</sup> = <b>${fmtPot(e.fA * e.fB, e.exp)}</b>`,
-                       `${fmtPot(e.f2A, e.exp2)} · ${fmtPot(e.f2B, e.exp2)} = (${e.f2A} · ${e.f2B})<sup>${e.exp2}</sup> = <b>${fmtPot(e.f2A * e.f2B, e.exp2)}</b>`)
-                + '<br>Producto de potencias con el mismo exponente: se multiplican las bases y se deja el exponente.';
-        case 6:
-            return dos(`${fmtPot(e.fA, e.exp)} : ${fmtPot(e.fB, e.exp)} = (${e.fA} : ${e.fB})<sup>${e.exp}</sup> = <b>${fmtPot(e.fA / e.fB, e.exp)}</b>`,
-                       `${fmtPot(e.f2A, e.exp2)} : ${fmtPot(e.f2B, e.exp2)} = (${e.f2A} : ${e.f2B})<sup>${e.exp2}</sup> = <b>${fmtPot(e.f2A / e.f2B, e.exp2)}</b>`)
-                + '<br>Cociente de potencias con el mismo exponente: se dividen las bases y se deja el exponente.';
-        case 7:
-            return dos(`${fmtPot(e.base, 0)} = <b>1</b>`, `${fmtPot(e.base2, 0)} = <b>1</b>`)
-                + '<br>Cualquier número distinto de 0 elevado a 0 vale 1.';
-        case 8:
-            return dos(`${fmtPot(e.base, e.exp)} = ${productoRepetido(e.base, e.exp)} = <b>${Math.pow(e.base, e.exp)}</b>`,
-                       `${fmtPot(e.base2, e.exp2)} = ${productoRepetido(e.base2, e.exp2)} = <b>${Math.pow(e.base2, e.exp2)}</b>`);
-        case 9: {
-            const r = e.raizEnteraSol;
-            return dos(`${fmtRaiz(e.radicando1)} = <b>${e.raizExactaSol}</b>, porque ${fmtPot(e.raizExactaSol, 2)} = ${e.radicando1} (raíz exacta).`,
-                       `${fmtRaiz(e.radicando2)}: ${fmtPot(r, 2)} = ${r * r} &lt; ${e.radicando2} &lt; ${(r + 1) * (r + 1)} = ${fmtPot(r + 1, 2)}, así que la raíz entera es <b>${r}</b> y el resto es ${e.radicando2} − ${r * r} = <b>${e.restoSol}</b>.`);
-        }
-    }
-    return '';
-}
-
-function ponerBotonesSolucion() {
-    document.querySelectorAll('#ejerciciosContainer .ejercicio-card').forEach((card, idx) => {
-        card.querySelectorAll('.sol-zona').forEach(z => z.remove());
-        const e = ejercicios[idx];
-        if (!e || e.superado || finalizado) return;
-        const zona = document.createElement('div');
-        zona.className = 'sol-zona';
-        zona.innerHTML = `<button type="button" class="btn-soluciones" ${e.bloqueado ? 'disabled title="Pulsa antes «Nuevo» para continuar"' : ''}>Mostrar solución</button>`;
-        zona.firstElementChild.addEventListener('click', () => pedirSolucion(idx));
-        card.appendChild(zona);
-    });
-}
-
-function avisoSoluciones() {
-    return new Promise(resolve => {
-        const fondo = document.createElement('div');
-        fondo.setAttribute('role', 'dialog');
-        fondo.setAttribute('aria-modal', 'true');
-        fondo.setAttribute('aria-labelledby', 'tituloAvisoSol');
-        fondo.style.cssText = 'position:fixed;inset:0;background:rgba(44,31,14,0.55);display:flex;align-items:center;justify-content:center;z-index:3000;padding:16px;';
-        fondo.innerHTML =
-            '<div style="background:#FFFDF7;border:2px solid #C9A96E;border-radius:14px;max-width:400px;width:100%;padding:22px 22px 18px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.25);font-family:inherit;color:#2C1F0E;">' +
-            '<h3 id="tituloAvisoSol" style="margin:0 0 10px;font-size:1.1rem;color:#A0522D;">¿Mostrar las soluciones?</h3>' +
-            '<p style="margin:0 0 18px;font-size:0.92rem;line-height:1.45;">Verás resuelto este ejercicio con su explicación. <b>Este ejercicio no contará para la nota</b> y los fallos que ya hayas cometido siguen restando. Después podrás seguir con otro ejercicio del mismo tipo.</p>' +
-            '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">' +
-            '<button type="button" data-r="si" style="background:transparent;color:#8A7A69;border:1px solid #DDD0B6;border-radius:30px;padding:9px 18px;cursor:pointer;font-family:inherit;font-size:.85rem;">Sí, mostrar soluciones</button>' +
-            '<button type="button" data-r="no" style="background:#A0522D;color:#FFFFFF;border:none;border-radius:30px;padding:10px 22px;font-weight:700;cursor:pointer;font-family:inherit;">Volver al ejercicio</button>' +
-            '</div></div>';
-        const cerrar = r => { fondo.remove(); document.removeEventListener('keydown', tecla); resolve(r); };
-        const tecla = ev => { if (ev.key === 'Escape') cerrar(false); };
-        fondo.querySelector('[data-r="no"]').addEventListener('click', () => cerrar(false));
-        fondo.querySelector('[data-r="si"]').addEventListener('click', () => cerrar(true));
-        fondo.addEventListener('click', ev => { if (ev.target === fondo) cerrar(false); });
-        document.addEventListener('keydown', tecla);
-        document.body.appendChild(fondo);
-        fondo.querySelector('[data-r="no"]').focus();
-    });
-}
-
-async function pedirSolucion(idx) {
-    const e = ejercicios[idx];
-    if (!e || e.superado || e.bloqueado || finalizado) return;
-    if (!(await avisoSoluciones())) return;
-    const html = solucionDe(idx);
-    solucionesVistas[idx]++;
-    e.regenerarDistintas();                      // otro ejercicio del mismo tipo; fallos y nota intactos
-    e.feedbackClass = 'feedback';
-    e.feedbackHTML = `<span class="feedback-solucion"><b>Solución.</b> ${html}<br><br>Soluciones mostradas · ejercicio sin calificar. 👉 Sigue con este nuevo.</span>`;
-    renderizarUnEjercicio(idx);
-}
-
-// Los botones se recolocan cada vez que se repinta o se actualiza el marcador
-{
-    const _actualizarUI = actualizarUI, _renderizarEjercicios = renderizarEjercicios, _renderizarUnEjercicio = renderizarUnEjercicio, _inicializarFicha = inicializarFicha;
-    actualizarUI = function () { _actualizarUI(); ponerBotonesSolucion(); };
-    renderizarEjercicios = function () { _renderizarEjercicios(); ponerBotonesSolucion(); };
-    renderizarUnEjercicio = function (i) { _renderizarUnEjercicio(i); ponerBotonesSolucion(); };
-    inicializarFicha = function () { solucionesVistas.fill(0); _inicializarFicha(); };
-}
 
 window.onload = () => {
     inicializarFicha();

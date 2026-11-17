@@ -86,12 +86,6 @@ hr{margin:0.5rem 0;border:none;border-top:1px solid #E0CEAA}
 .tabla-input{border:2px solid #C9A96E;border-radius:8px;padding:6px 4px;font-size:0.9rem;width:80px;text-align:center;background:white}
 .tabla-input::placeholder{color:#C9B896;opacity:0.7}
 .tabla-input.input-error{border-color:#A33A2E;background:rgba(163,58,46,0.08)}
-/* «Mostrar solución»: botón apagado, que no invite a pulsarlo, y feedback neutro */
-.sol-zona{display:flex;justify-content:flex-end;margin-top:10px}
-.btn-soluciones{background:transparent;color:#A8998A;border:1px solid #DDD0B6;border-radius:4px;padding:5px 14px;font-family:inherit;font-size:.78rem;font-weight:400;cursor:pointer;transition:color .2s,border-color .2s}
-.btn-soluciones:hover:not(:disabled){color:#6B4F35;border-color:#C9A96E}
-.btn-soluciones:disabled{opacity:.4;cursor:default}
-.feedback-solucion{display:block;background:#F3EFE6;border:1.5px dashed #A8998A;border-radius:8px;padding:10px 14px;color:#2C1F0E;line-height:1.6}
 @media (max-width:520px){
 .ficha-wrapper{padding:1rem 0.6rem}
 .header{padding:1.2rem 1rem}
@@ -110,20 +104,19 @@ hr{margin:0.5rem 0;border:none;border-top:1px solid #E0CEAA}
 <div class="autoria">Material elaborado por Marta López de Letona Sánchez</div>
 <div class="ficha-wrapper">
 <div class="header">
-<h1>🧮 Polinomios · 3.º ESO</h1>
+<h1>🧮 Polinomios · 3º ESO</h1>
 <p>Grado y término independiente, operaciones, identidades notables y factorización</p>
 <div class="header-badges">
 <span class="header-badge" id="badgeObjetivo">🎯 2 aciertos consecutivos → superado (los ejercicios 2 y 4 se superan con un único intento correcto)</span>
 <span class="header-badge" id="badgeDeduccion">💡 Cada fallo resta 0,2 puntos del ejercicio, hasta agotarlo (pulsar «Nuevo» no borra los fallos)</span>
 <span class="header-badge" id="badgePuntos">⭐ Cada ejercicio vale hasta 1,43 puntos</span>
-<span class="header-badge">👁️ Ver la solución de un ejercicio no da puntos</span>
 </div>
 </div>
 <div class="info-bar">
 <div class="info-item"><span class="info-icon">📊</span><span>Progreso: <span id="progresoCount" class="info-value">0</span>/7</span></div>
 <div class="info-item"><span class="info-icon">🔥</span><span>Racha: <span id="rachaActual" class="info-value">0</span></span></div>
 <div class="info-item"><span class="info-icon">❌</span><span>Fallos: <span id="fallosCount" class="info-value">0</span></span></div>
-<div class="info-item"><span class="info-icon">⭐</span><span>Nota: <span id="notaActual" class="info-value">0,0</span>/10</span></div>
+<div class="info-item"><span class="info-icon">⭐</span><span>Nota: <span id="notaActual" class="info-value">0.0</span>/10</span></div>
 </div>
 <div class="name-section">
 <span class="name-label">👤 ALUMNO/A</span>
@@ -151,7 +144,7 @@ hr{margin:0.5rem 0;border:none;border-top:1px solid #E0CEAA}
 <div class="modal-card" id="modalCard">
 <button class="modal-close" id="closeModal">✕</button>
 <div id="modalNombreMostrar" style="font-size:1rem;font-weight:600;"></div>
-<div style="font-size:0.85rem;opacity:0.8;">🧮 Polinomios · 3.º ESO</div>
+<div style="font-size:0.85rem;opacity:0.8;">🧮 Polinomios · 3º ESO</div>
 <div class="modal-grade" id="modalNota"></div>
 <div class="modal-message" id="modalMensaje"></div>
 <div class="modal-stats" id="modalStats"></div>
@@ -219,31 +212,7 @@ function insertarRaiz(idInput) {
 
 /* ---------- Ejercicio 1: lenguaje algebraico ---------- */
 
-/* Banco de frases: [frase, respuesta, respuesta en TeX, explicación]. Ampliado a 20 frases,
-   las mismas que usa el generador de exámenes. */
-const frases1Info = [
-    ["el doble de un número más tres unidades", "2x+3", "2x+3", "«El doble» de \\(x\\) es \\(2x\\); «más tres unidades» suma 3."],
-    ["la tercera parte de un número, disminuida en 8", "x/3-8", "\\frac{x}{3}-8", "La tercera parte es \\(\\frac{x}{3}\\); «disminuida en 8» le resta 8."],
-    ["el cuadrado de la suma de un número y uno", "(x+1)^2", "(x+1)^2", "Primero la suma, \\(x+1\\); después se eleva al cuadrado toda la suma, que va entre paréntesis."],
-    ["un número más su mitad", "x+x/2", "x+\\frac{x}{2}", "La mitad de \\(x\\) es \\(\\frac{x}{2}\\), y se suma al número."],
-    ["el triple de un número menos cinco", "3x-5", "3x-5", "«El triple» es \\(3x\\); «menos cinco» resta 5."],
-    ["la suma de dos números consecutivos", "x+(x+1)", "x+(x+1)", "Si un número es \\(x\\), el siguiente (su consecutivo) es \\(x+1\\)."],
-    ["el producto de un número por sí mismo más cuatro", "x^2+4", "x^2+4", "Un número por sí mismo es \\(x\\cdot x=x^2\\); después se suma 4."],
-    ["la diferencia entre el doble de un número y siete", "2x-7", "2x-7", "«La diferencia entre A y B» es \\(A-B\\): el doble, \\(2x\\), menos 7."],
-    ["el cuadrado de un número más el triple del mismo", "x^2+3x", "x^2+3x", "El cuadrado es \\(x^2\\) y el triple, \\(3x\\); se suman."],
-    ["la raíz cuadrada de la suma de un número y nueve", "sqrt(x+9)", "\\sqrt{x+9}", "Primero la suma, \\(x+9\\); la raíz cuadrada abarca toda la suma."],
-    ["el doble de la suma de un número y cinco", "2(x+5)", "2(x+5)", "Primero la suma, \\(x+5\\), entre paréntesis; después se multiplica por 2."],
-    ["la mitad de un número más su cuarta parte", "x/2+x/4", "\\frac{x}{2}+\\frac{x}{4}", "La mitad es \\(\\frac{x}{2}\\) y la cuarta parte, \\(\\frac{x}{4}\\); se suman."],
-    ["el cuadrado de un número menos su doble", "x^2-2x", "x^2-2x", "El cuadrado es \\(x^2\\) y el doble, \\(2x\\); se restan."],
-    ["el triple del cuadrado de un número", "3x^2", "3x^2", "Primero el cuadrado, \\(x^2\\); después se multiplica por 3."],
-    ["la diferencia entre un número y su tercera parte", "x-x/3", "x-\\frac{x}{3}", "Al número \\(x\\) se le resta su tercera parte, \\(\\frac{x}{3}\\)."],
-    ["el producto de dos números consecutivos", "x(x+1)", "x(x+1)", "Los números son \\(x\\) y \\(x+1\\); se multiplican."],
-    ["la suma de tres números consecutivos", "x+(x+1)+(x+2)", "x+(x+1)+(x+2)", "Los tres números son \\(x\\), \\(x+1\\) y \\(x+2\\); se suman."],
-    ["la mitad del cuadrado de un número", "x^2/2", "\\frac{x^2}{2}", "Primero el cuadrado, \\(x^2\\); después se divide entre 2."],
-    ["el cuadrado de la diferencia entre un número y tres", "(x-3)^2", "(x-3)^2", "Primero la diferencia, \\(x-3\\); después se eleva al cuadrado, con paréntesis."],
-    ["el doble de un número menos su mitad", "2x-x/2", "2x-\\frac{x}{2}", "El doble es \\(2x\\) y la mitad, \\(\\frac{x}{2}\\); se restan."]
-];
-const frases1 = frases1Info.flatMap(f => [f[0], f[1]]);
+const frases1 = ["el doble de un número más tres unidades","2x+3","la tercera parte de un número disminuido en 8","x/3-8","el cuadrado de la suma de un número más uno","(x+1)^2","un número más su mitad","x+x/2","el triple de un número menos cinco","3x-5","la suma de dos números consecutivos","x+(x+1)","el producto de un número por sí mismo más cuatro","x^2+4","la diferencia entre el doble de un número y siete","2x-7","el cuadrado de un número más el triple del mismo","x^2+3x","la raíz cuadrada de la suma de un número y nueve","sqrt(x+9)"];
 
 function normalizarExpresion(exp) {
     if (!exp) return "";
@@ -510,12 +479,11 @@ let fallosTotalesDisplay = 0;
 
 class Ejercicio1 extends EjercicioBase {
     generarNuevo() {
-        const nFrases = frases1.length / 2;
-        let i = Math.floor(Math.random() * nFrases) * 2;
+        let i = Math.floor(Math.random() * 10) * 2;
         this.fraseEsp = frases1[i];
         this.respCorrecta = frases1[i+1];
-        let j = Math.floor(Math.random() * nFrases) * 2;
-        while (j === i) j = Math.floor(Math.random() * nFrases) * 2;
+        let j = Math.floor(Math.random() * 10) * 2;
+        while (j === i) j = Math.floor(Math.random() * 10) * 2;
         this.fraseEsp2 = frases1[j];
         this.respCorrecta2 = frases1[j+1];
     }
@@ -762,7 +730,7 @@ class Ejercicio4 extends EjercicioBase {
         let btns = !e.superado ? '<button class="btn-potencia" data-accion="potencia" data-destino="e4_resp">🔣 ^</button>' : '';
         return buildCardHTML(i, e, disabledAttr,
             '<div class="ejercicio-titulo">Operaciones con polinomios</div><span class="ejercicio-nota">(se supera con un solo acierto)</span>',
-            '<div class="enunciado-latex">\\( P(x)=' + latexify(buildPolyStr(e.P)) + ' \\)</div><div class="enunciado-latex">\\( Q(x)=' + latexify(buildPolyStr(e.Q)) + ' \\)</div><div class="enunciado-latex">\\( R(x)=' + latexify(buildPolyStr(e.R)) + ' \\)</div><div class="enunciado-texto">Calcula: <strong>' + e.operacionStr.replace(/-/g, '−') + '</strong></div><label for="e4_resp" class="sr-only">Resultado de la operación con polinomios</label><div class="input-con-potencia"><input type="text" id="e4_resp" class="text-input" style="width:320px;" placeholder="Ej: 3x^2+5x-7" ' + disabledAttr + '>' + btns + '</div>',
+            '<div class="enunciado-latex">\\( P(x)=' + latexify(buildPolyStr(e.P)) + ' \\)</div><div class="enunciado-latex">\\( Q(x)=' + latexify(buildPolyStr(e.Q)) + ' \\)</div><div class="enunciado-latex">\\( R(x)=' + latexify(buildPolyStr(e.R)) + ' \\)</div><div class="enunciado-texto">Calcula: <strong>' + e.operacionStr + '</strong></div><label for="e4_resp" class="sr-only">Resultado de la operación con polinomios</label><div class="input-con-potencia"><input type="text" id="e4_resp" class="text-input" style="width:320px;" placeholder="Ej: 3x^2+5x-7" ' + disabledAttr + '>' + btns + '</div>',
             3);
     }
 }
@@ -770,10 +738,9 @@ class Ejercicio4 extends EjercicioBase {
 class Ejercicio5 extends EjercicioBase {
     generarNuevo() {
         let b1;
-        /* b de 1 a 9 (con signo en el cuadrado), como en la factorización del ejercicio 6 */
-        do { b1 = Math.floor(Math.random() * 19) - 9; } while (b1 === 0);
+        do { b1 = Math.floor(Math.random() * 9) - 4; } while (b1 === 0);
         let b2;
-        do { b2 = Math.floor(Math.random() * 19) - 9; } while (b2 === 0);
+        do { b2 = Math.floor(Math.random() * 9) - 4; } while (b2 === 0);
         this.tipo = Math.random() < 0.5 ? 'suma' : 'resta';
         if (this.tipo === 'suma') {
             this.expr1 = "(x" + (b1 >= 0 ? "+" + b1 : b1) + ")^2";
@@ -982,8 +949,7 @@ function buildCardHTML(i, e, disabledAttr, headerHTML, bodyHTML, verificarIdx) {
         let clase = e.ultimoFeedback.correcto ? (e.ultimoFeedback.agotado ? 'feedback-agotado' : 'feedback-correcto') : (e.ultimoFeedback.agotado ? 'feedback-agotado' : 'feedback-error');
         fbHtml = '<span class="' + clase + '">' + e.ultimoFeedback.msg + '</span>';
     }
-    let solZona = !e.superado ? '<div class="sol-zona"><button type="button" class="btn-soluciones" data-accion="solucion" data-ej="' + verificarIdx + '">Mostrar solución</button></div>' : '';
-    return '<div class="ejercicio-card ' + claseExtra + '"><div class="ejercicio-header"><span class="ejercicio-num">' + (verificarIdx + 1) + '</span>' + headerHTML + badge + puntosInfo + '</div>' + bodyHTML + '<div class="input-area"><button class="btn-primary" data-accion="comprobar" data-ej="' + verificarIdx + '" ' + disabledAttr + '>Comprobar</button>' + botonNuevo + '</div><div class="feedback" id="fb_e' + (verificarIdx + 1) + '" aria-live="polite">' + fbHtml + '</div>' + solZona + '</div>';
+    return '<div class="ejercicio-card ' + claseExtra + '"><div class="ejercicio-header"><span class="ejercicio-num">' + (verificarIdx + 1) + '</span>' + headerHTML + badge + puntosInfo + '</div>' + bodyHTML + '<div class="input-area"><button class="btn-primary" data-accion="comprobar" data-ej="' + verificarIdx + '" ' + disabledAttr + '>Comprobar</button>' + botonNuevo + '</div><div class="feedback" id="fb_e' + (verificarIdx + 1) + '" aria-live="polite">' + fbHtml + '</div></div>';
 }
 
 function calcularNotaFinal() {
@@ -998,7 +964,7 @@ function actualizarUI() {
     document.getElementById('progresoCount').innerText = superados;
     document.getElementById('rachaActual').innerText = rachaGlobal;
     document.getElementById('fallosCount').innerText = fallosTotalesDisplay;
-    document.getElementById('notaActual').innerText = notaFinal.toFixed(1).replace('.', ',');
+    document.getElementById('notaActual').innerText = notaFinal.toFixed(1);
 }
 
 function tipografiar(nodo) {
@@ -1091,10 +1057,10 @@ function mostrarResultados(n) {
     let hora = new Date().toLocaleTimeString('es-ES');
     let tiempo = getTiempo();
     document.getElementById('modalNombreMostrar').innerText = n.toUpperCase();
-    document.getElementById('modalNota').innerHTML = notaFinal.toFixed(1).replace('.', ',') + '/10';
+    document.getElementById('modalNota').innerHTML = notaFinal.toFixed(1) + '/10';
     let msg = notaFinal >= 9 ? "🌟 Excelente" : (notaFinal >= 7 ? "👍 Muy bien" : (notaFinal >= 5 ? "📘 Aprobado" : "📚 Repasa"));
     document.getElementById('modalMensaje').innerHTML = msg;
-    document.getElementById('modalStats').innerHTML = '<p>📅 ' + fecha + ' 🕐 ' + hora + '</p><p>⏱️ Tiempo: ' + tiempo + '</p><p>🎯 Superados: ' + superados + '/' + ejercicios.length + '</p><p>❌ Fallos: ' + fallosTotalesDisplay + '</p><p>👁️ Soluciones vistas: ' + textoSolucionesVistas() + '</p><p>⭐ Nota: ' + notaFinal.toFixed(1).replace('.', ',') + '</p>';
+    document.getElementById('modalStats').innerHTML = '<p>📅 ' + fecha + ' 🕐 ' + hora + '</p><p>⏱️ Tiempo: ' + tiempo + '</p><p>🎯 Superados: ' + superados + '/' + ejercicios.length + '</p><p>❌ Fallos: ' + fallosTotalesDisplay + '</p><p>⭐ Nota: ' + notaFinal.toFixed(1) + '</p>';
     let mc = document.getElementById('modalCard');
     let bgColor, textColor;
     if (notaFinal >= 10) { bgColor = '#1a7a1a'; textColor = 'white'; }
@@ -1126,7 +1092,7 @@ function abrirAvisoIncompleto() {
         }
     });
     let { notaFinal } = calcularNotaFinal();
-    document.getElementById('notaProyectada').innerText = notaFinal.toFixed(1).replace('.', ',');
+    document.getElementById('notaProyectada').innerText = notaFinal.toFixed(1);
     document.getElementById('modalAvisoIncompleto').classList.add('show');
 }
 
@@ -1153,7 +1119,7 @@ function resetear() {
         return;
     }
     let { notaFinal } = calcularNotaFinal();
-    document.getElementById('textoAvisoReset').innerText = 'Se perderá toda la nota actual (' + notaFinal.toFixed(1).replace('.', ',') + '/10) y el progreso de todos los ejercicios.';
+    document.getElementById('textoAvisoReset').innerText = 'Se perderá toda la nota actual (' + notaFinal.toFixed(1) + '/10) y el progreso de todos los ejercicios.';
     document.getElementById('modalConfirmarReset').classList.add('show');
 }
 
@@ -1175,106 +1141,6 @@ function confirmarNombre() {
             mostrarResultados(n);
         }
     }
-}
-
-
-/* ============ MOSTRAR SOLUCIÓN (por ejercicio) ============
-   La ficha muestra todos los ejercicios a la vez: cada tarjeta lleva su botón, apagado, al pie.
-   Ver la solución no suma, no resta y no cuenta para la racha: el ejercicio visto se sustituye
-   por otro del mismo tipo con otros números. Los fallos ya cometidos siguen restando. */
-const solucionesVistas = [0, 0, 0, 0, 0, 0, 0];
-function textoSolucionesVistas() {
-    const total = solucionesVistas.reduce((a, b) => a + b, 0);
-    const det = solucionesVistas.map((v, i) => v ? 'ej. ' + (i + 1) + ': ' + v : '').filter(Boolean).join(', ');
-    return total + (det ? ' (' + det + ')' : '');
-}
-const L = s => latexify(s);
-function monoTeX(c, d) {
-    const v = d === 0 ? '' : (d === 1 ? 'x' : 'x^{' + d + '}');
-    if (d === 0) return String(c);
-    return (c === 1 ? '' : (c === -1 ? '-' : String(c))) + v;
-}
-function solucionDe(idx) {
-    const e = ejercicios[idx];
-    switch (idx) {
-        case 0: {
-            const una = (frase) => { const f = frases1Info.find(x => x[0] === frase); return '«' + f[0] + '» → \\(' + f[2] + '\\). ' + f[3]; };
-            return 'Llamamos \\(x\\) al número.<br>1) ' + una(e.fraseEsp) + '<br>2) ' + una(e.fraseEsp2);
-        }
-        case 1:
-            return 'El grado es el mayor exponente de \\(x\\); el término independiente, el que no lleva \\(x\\) (0 si no aparece).<br>' +
-                e.polinomios.map(p => '\\(' + L(p.str) + '\\): grado <b>' + p.grado + '</b> (término \\(' + monoTeX(p.map[p.grado], p.grado) + '\\)), término independiente <b>' + p.tind + '</b>').join('<br>');
-        case 2: {
-            const M = L(e.monomioStr), MP = e.m < 0 ? '(' + M + ')' : M;
-            return 'Multiplicamos el monomio por cada término del paréntesis y sumamos los exponentes:<br>\\(' + L(e.enunciado) + ' = ' + MP + '\\cdot x + ' + MP + '\\cdot ' + (e.n < 0 ? '(' + e.n + ')' : e.n) + ' = ' + L(buildPolyStr(e.expectedMap)) + '\\)';
-        }
-        case 3: {
-            const lineas = e.ops.map(op => {
-                const k = op.mult, izq = (k === 1 ? '' : (k === -1 ? '-' : k)) + op.nombre + '(x)';
-                return '\\(' + izq + ' = ' + (k === 1 ? '' : (k === -1 ? '-' : k) + '(' + L(buildPolyStr(op.map)) + ') = ') + L(buildPolyStr(scalePoly(op.map, k))) + '\\)';
-            });
-            return 'Multiplicamos cada polinomio por su coeficiente (si es negativo, cambian todos los signos):<br>' + lineas.join('<br>') +
-                '<br>Sumamos los términos del mismo grado: \\(' + e.operacionStr + ' = ' + L(buildPolyStr(e.expectedMap)) + '\\)';
-        }
-        case 4: {
-            const b = Math.abs(e.sol1Map[1]) / 2, sg = e.sol1Map[1] < 0 ? '-' : '+', c = Math.sqrt(-e.sol2Map[0]);
-            return '\\((a' + sg + 'b)^2 = a^2' + sg + '2ab+b^2\\): \\(' + L(e.expr1) + ' = x^2' + sg + '2\\cdot x\\cdot ' + b + '+' + b + '^2 = ' + L(buildPolyStr(e.sol1Map)) + '\\)<br>' +
-                '\\((a+b)(a-b) = a^2-b^2\\): \\(' + L(e.expr2) + ' = x^2-' + c + '^2 = ' + L(buildPolyStr(e.sol2Map)) + '\\)';
-        }
-        case 5: {
-            const b = e.bCuadrado, sg = e.signoCuadrado, n2 = e.nDiferencia;
-            return '\\(' + L(e.expr1) + '\\): \\(x^2\\) y \\(' + (b * b) + ' = ' + b + '^2\\) son cuadrados y \\(' + (2 * b) + 'x = 2\\cdot x\\cdot ' + b + '\\) es su doble producto, así que \\(' + L(e.expr1) + ' = (x' + sg + b + ')^2\\).<br>' +
-                '\\(' + L(e.expr2) + '\\) es una diferencia de cuadrados, \\(x^2-' + n2 + '^2\\), así que \\(' + L(e.expr2) + ' = (x+' + n2 + ')(x-' + n2 + ')\\).';
-        }
-        case 6: {
-            const pot = e.factorPower;
-            return 'El máximo común divisor de los coeficientes es ' + e.factorCoef + (pot === 0 ? ' y no todos los términos llevan \\(x\\)' : ' y la menor potencia de \\(x\\) es \\(' + monoTeX(1, pot) + '\\)') +
-                '; el factor común es \\(' + L(e.factorStr) + '\\). Dividimos cada término entre él:<br>\\(' + L(e.enunciado) + ' = ' + L(e.factorStr) + '(' + L(e.innerStr) + ')\\)';
-        }
-    }
-    return '';
-}
-
-function avisoSoluciones() {
-    return new Promise(resolve => {
-        const fondo = document.createElement('div');
-        fondo.setAttribute('role', 'dialog');
-        fondo.setAttribute('aria-modal', 'true');
-        fondo.setAttribute('aria-labelledby', 'tituloAvisoSol');
-        fondo.style.cssText = 'position:fixed;inset:0;background:rgba(44,31,14,0.55);display:flex;align-items:center;justify-content:center;z-index:3000;padding:16px;';
-        fondo.innerHTML =
-            '<div style="background:#FFFDF7;border:2px solid #C9A96E;border-radius:14px;max-width:400px;width:100%;padding:22px 22px 18px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.25);font-family:inherit;color:#2C1F0E;">' +
-            '<h3 id="tituloAvisoSol" style="margin:0 0 10px;font-size:1.1rem;color:#A0522D;">¿Mostrar las soluciones?</h3>' +
-            '<p style="margin:0 0 18px;font-size:0.92rem;line-height:1.45;">Verás resuelto este ejercicio con su explicación. <b>Este ejercicio no contará para la nota</b> y los fallos que ya hayas cometido siguen restando. Después podrás seguir con otro ejercicio del mismo tipo.</p>' +
-            '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">' +
-            '<button type="button" data-r="si" style="background:transparent;color:#8A7A69;border:1px solid #DDD0B6;border-radius:30px;padding:9px 18px;cursor:pointer;font-family:inherit;font-size:.85rem;">Sí, mostrar soluciones</button>' +
-            '<button type="button" data-r="no" style="background:#A0522D;color:#FFFFFF;border:none;border-radius:30px;padding:10px 22px;font-weight:700;cursor:pointer;font-family:inherit;">Volver al ejercicio</button>' +
-            '</div></div>';
-        const cerrar = r => { fondo.remove(); document.removeEventListener('keydown', tecla); resolve(r); };
-        const tecla = ev => { if (ev.key === 'Escape') cerrar(false); };
-        fondo.querySelector('[data-r="no"]').addEventListener('click', () => cerrar(false));
-        fondo.querySelector('[data-r="si"]').addEventListener('click', () => cerrar(true));
-        fondo.addEventListener('click', ev => { if (ev.target === fondo) cerrar(false); });
-        document.addEventListener('keydown', tecla);
-        document.body.appendChild(fondo);
-        fondo.querySelector('[data-r="no"]').focus();
-    });
-}
-
-async function pedirSolucion(idx) {
-    const e = ejercicios[idx];
-    if (!e || e.superado) return;
-    if (!(await avisoSoluciones())) return;
-    const html = solucionDe(idx);
-    solucionesVistas[idx]++;
-    e.avanzarTanda();                 // otro ejercicio del mismo tipo; racha y fallos intactos
-    e.ultimoFeedback = null;
-    const w = document.getElementById('wrap_e' + idx);
-    w.innerHTML = e.getHTML(idx);
-    const fb = document.getElementById('fb_e' + (idx + 1));
-    if (fb) fb.innerHTML = '<span class="feedback-solucion"><b>Solución.</b> ' + html + '<br><br>Soluciones mostradas · ejercicio sin calificar. 👉 Sigue con este nuevo.</span>';
-    actualizarUI();
-    tipografiar(w);
 }
 
 const clases = [Ejercicio1, Ejercicio2, Ejercicio3, Ejercicio4, Ejercicio5, Ejercicio6, Ejercicio7];
@@ -1308,7 +1174,6 @@ document.getElementById('ejerciciosContainer').addEventListener('click', functio
     else if (accion === 'nuevo') nuevoEjercicio(Number(btn.dataset.ej));
     else if (accion === 'potencia') insertarPotencia(btn.dataset.destino);
     else if (accion === 'raiz') insertarRaiz(btn.dataset.destino);
-    else if (accion === 'solucion') pedirSolucion(Number(btn.dataset.ej));
 });
 
 document.getElementById('ejerciciosContainer').addEventListener('keydown', function(e) {

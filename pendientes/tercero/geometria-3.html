@@ -193,7 +193,7 @@ body{background:var(--cf);font-family:'Lato',sans-serif;color:var(--ct);min-heig
 // Modelo: proporcional por apartado (10/7 al superar cada uno), -0,5 por fallo,
 // un acierto cierra el apartado; tras un fallo se genera una instancia nueva.
 // ====================================================
-var NOMBRES_TIPO = {t1:'Semejanza: sombras',t2:'Diagonal del ortoedro',t3:'Prisma',t4:'Pir\u00e1mide',t5:'Cilindro',t6:'Cono',t7:'Esfera'};
+var NOMBRES_TIPO = {t1:'Semejanza: sombras',t2:'Diagonal del cubo',t3:'Prisma',t4:'Pir\u00e1mide',t5:'Cilindro',t6:'Cono',t7:'Esfera'};
 var TOTAL_TIPOS = 7;
 var PUNTO_TIPO = 10/TOTAL_TIPOS;
 var PENALIZACION = 0.5;
@@ -324,18 +324,18 @@ var REFERENCIAS=[{un:'un ni\u00f1o',el:'el ni\u00f1o'},{un:'una ni\u00f1a',el:'l
 var d1={};
 function generarD1(){
   var o=OBJETOS[rnd(0,OBJETOS.length-1)], ref=REFERENCIAS[rnd(0,1)];
-  // Datos limpios (igual que en el examen): la altura y la sombra del objeto son k veces las de la persona
-  var h=[1.2,1.4,1.5,1.6,1.8][rnd(0,4)];                       // persona: 1,20 a 1,80 m
-  var s; do{ s=[0.8,1,1.2,1.5,2,2.4,2.5][rnd(0,6)]; }while(Math.abs(s-h)<0.1); // su sombra: 0,80 a 2,50 m
-  var k=rnd(Math.ceil(o.min/h),Math.floor(o.max/h));
-  var H=rd(k*h,2), S=rd(k*s,2);
+  var h=rnd(22,36)*5/100;               // 1,10 a 1,80 m
+  var s; do{ s=rnd(16,50)*5/100; }while(Math.abs(s-h)<0.1); // 0,80 a 2,50 m, distinta de h
+  var H=rnd(o.min,o.max);
   var pide=Math.random()<0.5?'altura':'sombra';
-  var sol, inv;
+  var S, sol, inv;
   if(pide==='altura'){
-    sol=H;
+    S=rd(H*s/h,1);                       // dato mostrado
+    sol=rd(h*S/s,2);                     // H calculada con los datos mostrados
     inv=rd(s*S/h,2);                     // error t\u00edpico: proporci\u00f3n invertida
   } else {
-    sol=S;
+    S=null;
+    sol=rd(H*s/h,2);
     inv=rd(H*h/s,2);
   }
   d1={o:o,ref:ref,h:h,s:s,H:H,S:S,pide:pide,sol:sol,inv:inv};
@@ -432,17 +432,12 @@ function comprobarTipo1(){
   var diag;
   if(ok(v,d.inv,TOL_T1)) diag='Has invertido la proporci\u00f3n: has dividido entre la altura en vez de entre la sombra (o al rev\u00e9s). F\u00edjate en que cada fracci\u00f3n debe comparar lo mismo en los dos tri\u00e1ngulos.';
   else diag='El resultado no es correcto. Recuerda que en tri\u00e1ngulos semejantes los lados correspondientes son proporcionales.';
-  marcarFallo(1,diag,solT1());
-  generarDistinto(1);
-  refrescarT1();
-}
-function solT1(){
-  var d=d1;
-  var prop='\\( \\dfrac{\\text{altura del objeto}}{\\text{su sombra}} = \\dfrac{\\text{altura de la persona}}{\\text{su sombra}} \\)';
   var pista='Planteamos la proporci\u00f3n '+prop+':<br>';
   if(d.pide==='altura') pista+='\\( \\dfrac{H}{'+tN(d.S)+'} = \\dfrac{'+tN(d.h,2)+'}{'+tN(d.s,2)+'} \\Rightarrow H = \\dfrac{'+tN(d.h,2)+' \\cdot '+tN(d.S)+'}{'+tN(d.s,2)+'} \\approx \\mathbf{'+tN(d.sol)+'\\text{ m}} \\).';
   else pista+='\\( \\dfrac{'+tN(d.H)+'}{S} = \\dfrac{'+tN(d.h,2)+'}{'+tN(d.s,2)+'} \\Rightarrow S = \\dfrac{'+tN(d.H)+' \\cdot '+tN(d.s,2)+'}{'+tN(d.h,2)+'} \\approx \\mathbf{'+tN(d.sol)+'\\text{ m}} \\).';
-  return pista;
+  marcarFallo(1,diag,pista);
+  generarDistinto(1);
+  refrescarT1();
 }
 function refrescarT1(){
   document.getElementById('fig-t1').innerHTML=svgSombras(d1);
@@ -452,23 +447,18 @@ function refrescarT1(){
 }
 
 // ====================================================
-// TIPO 2: DIAGONAL DEL ORTOEDRO (PIT\u00c1GORAS EN EL ESPACIO)
-// Aristas elegidas para que las dos diagonales sean enteras (igual que en el examen):
-// a^2 + b^2 = d^2 y d^2 + c^2 = D^2.
+// TIPO 2: DIAGONAL DEL CUBO (PIT\u00c1GORAS EN EL ESPACIO)
 // ====================================================
-var CADENAS=[[3,4,12,5,13],[6,8,24,10,26],[9,12,8,15,17],[9,12,20,15,25],[12,16,15,20,25],[12,16,21,20,29],[18,24,16,30,34]];
 var d2={};
 function generarD2(){
-  var q=CADENAS[rnd(0,CADENAS.length-1)], a=q[0], b=q[1];
-  if(Math.random()<0.5){a=q[1];b=q[0];}
-  d2={a:a, b:b, c:q[2], d:q[3], D:q[4]};
+  var a=rnd(3,20);
+  d2={a:a, d:rd(a*Math.SQRT2,2), D:rd(a*Math.sqrt(3),2)};
 }
-function enunT2(){return 'Un ortoedro tiene aristas de <strong>'+d2.a+' cm</strong>, <strong>'+d2.b+' cm</strong> y <strong>'+d2.c+' cm</strong> (largo y ancho de la base, y altura). Calcula la diagonal de la base (<em>d</em>) y la diagonal del ortoedro (<em>D</em>).';}
-function svgCubo(q){
+function svgCubo(a){
   // Frente: A(60,170) B(160,170) C(160,70) Dd(60,70); fondo desplazado (+55,-42)
   var A=[60,170],B=[160,170],C=[160,70],Dd=[60,70],E=[115,128],F=[215,128],G=[215,28],H=[115,28];
   function p(P){return P[0]+','+P[1];}
-  return '<svg viewBox="0 -5 280 215" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ortoedro con la diagonal de la base y la diagonal del ortoedro">'+
+  return '<svg viewBox="0 -5 260 215" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cubo con la diagonal de una cara y la diagonal del cubo">'+
     '<polygon points="'+p(Dd)+' '+p(C)+' '+p(G)+' '+p(H)+'" fill="'+C1+'" stroke="'+LN+'" stroke-width="2"/>'+
     '<polygon points="'+p(B)+' '+p(F)+' '+p(G)+' '+p(C)+'" fill="'+C3+'" fill-opacity=".55" stroke="'+LN+'" stroke-width="2"/>'+
     '<polygon points="'+p(A)+' '+p(B)+' '+p(C)+' '+p(Dd)+'" fill="'+C2+'" fill-opacity=".45" stroke="'+LN+'" stroke-width="2"/>'+
@@ -484,53 +474,46 @@ function svgCubo(q){
     '<polyline points="205.5,130.7 205.5,120.7 215,118" fill="none" stroke="'+LN+'" stroke-width="1.2"/>'+
     '<line x1="'+A[0]+'" y1="'+A[1]+'" x2="'+B[0]+'" y2="'+B[1]+'" stroke="'+D1+'" stroke-width="4" stroke-linecap="round"/>'+
     '<circle cx="'+A[0]+'" cy="'+A[1]+'" r="3" fill="'+LN+'"/><circle cx="'+G[0]+'" cy="'+G[1]+'" r="3" fill="'+LN+'"/>'+
-    '<line x1="'+B[0]+'" y1="'+B[1]+'" x2="'+F[0]+'" y2="'+F[1]+'" stroke="'+D2+'" stroke-width="4" stroke-linecap="round"/>'+
-    txt(110,192,'a = '+q.a+' cm',D1)+
-    txt(194,160,'b = '+q.b+' cm',D2,'start')+
-    txt(222,82,'c = '+q.c+' cm',D1,'start')+
-    txt(150,140,'d = ?',D2,'end')+
+    txt(110,192,'a = '+a+' cm',D1)+
+    txt(226,82,'a',D1,'start')+
+    txt(190,163,'d = ?',D2,'start')+
     txt(112,95,'D = ?',D3,'end')+
     '</svg>';
 }
 function renderEjT2HTML(){
+  var a=d2.a;
   return '<div class="ejercicio-card'+(superados.t2?' superado':'')+'" id="card-t2">'+
-    cabeceraCard(2,'Diagonal del ortoedro')+
-    '<div class="enunciado" id="enun-t2">'+enunT2()+'</div>'+
-    '<p class="ejercicio-instr">Aplica el teorema de Pit\u00e1goras dos veces: primero en la base y despu\u00e9s en el tri\u00e1ngulo rect\u00e1ngulo sombreado.</p>'+
-    '<div class="figura-layout"><div class="figura-svg media" id="fig-t2">'+svgCubo(d2)+'</div>'+
-    '<div class="campos-wrapper">'+campo('t2_d','Diagonal base d =','cm')+campo('t2_D','Diagonal ortoedro D =','cm')+
+    cabeceraCard(2,'Diagonal del cubo')+
+    '<div class="enunciado" id="enun-t2">Un cubo tiene <strong>'+a+' cm</strong> de arista. Calcula la diagonal de una de sus caras (<em>d</em>) y la diagonal del cubo (<em>D</em>).</div>'+
+    '<p class="ejercicio-instr">Aplica el teorema de Pit\u00e1goras dos veces: primero en una cara y despu\u00e9s en el tri\u00e1ngulo rect\u00e1ngulo sombreado. Redondea a las cent\u00e9simas.</p>'+
+    '<div class="figura-layout"><div class="figura-svg media" id="fig-t2">'+svgCubo(a)+'</div>'+
+    '<div class="campos-wrapper">'+campo('t2_d','Diagonal cara d =','cm')+campo('t2_D','Diagonal cubo D =','cm')+
     '<div class="btns-comprobar"><button class="btn-primary" onclick="comprobarTipo2()">Comprobar</button></div>'+
     '<div id="fb-t2" class="feedback" aria-live="polite"></div></div></div></div>';
 }
-function solT2(){
-  var q=d2;
-  return 'Base: \\( d=\\sqrt{a^2+b^2}=\\sqrt{'+q.a+'^2+'+q.b+'^2}=\\sqrt{'+(q.a*q.a)+'+'+(q.b*q.b)+'}=\\sqrt{'+(q.d*q.d)+'}=\\mathbf{'+q.d+'\\text{ cm}} \\). '+
-    'Ortoedro: \\( D=\\sqrt{d^2+c^2}=\\sqrt{'+q.d+'^2+'+q.c+'^2}=\\sqrt{'+(q.d*q.d)+'+'+(q.c*q.c)+'}=\\sqrt{'+(q.D*q.D)+'}=\\mathbf{'+q.D+'\\text{ cm}} \\).';
-}
 function comprobarTipo2(){
   if(!previoComprobar(2)) return;
-  var q=d2, dC=q.d, DC=q.D;
+  var a=d2.a, dC=d2.d, DC=d2.D;
   var v=leerCampos(['t2_d','t2_D']), vd=v[0], vD=v[1];
   if(isNaN(vd)||isNaN(vD)){avisoCampos();return;}
   stats.t2.intentos++;
   if(ok(vd,dC)&&ok(vD,DC)){
-    marcarSuperado(2,'¡Correcto! La diagonal del ortoedro es la hipotenusa de un triángulo cuyos catetos son la diagonal de la base y la altura: \\( D=\\sqrt{d^2+c^2}=\\sqrt{a^2+b^2+c^2} \\). Apartado superado.');
+    marcarSuperado(2,'\u00a1Correcto! La diagonal del cubo es la hipotenusa de un tri\u00e1ngulo cuyos catetos son una arista y la diagonal de una cara: \\( D=\\sqrt{a^2+d^2}=a\\sqrt{3} \\). Apartado superado.');
     return;
   }
-  var diag='';
-  if(ok(vd,DC)&&ok(vD,dC)) diag='Has intercambiado los resultados: la diagonal de la base es la más corta; la del ortoedro atraviesa el cuerpo y es mayor.';
-  else if(ok(vd,dC)&&ok(vD,dC)) diag='Has escrito la diagonal de la base también como diagonal del ortoedro. Te falta el segundo Pitágoras: la diagonal del ortoedro sube además la altura c.';
-  else if(ok(vd,dC)) diag='La diagonal de la base está bien, pero la del ortoedro no. Revisa el segundo triángulo: sus catetos son d y c.';
-  else if(ok(vd,q.a+q.b)||ok(vD,dC+q.c)||ok(vD,q.a+q.b+q.c)) diag='No se pueden sumar las aristas: hay que aplicar Pitágoras (sumar los cuadrados y hacer la raíz).';
-  else if(ok(vd,dC*dC)||ok(vD,DC*DC)) diag='Has olvidado hacer la raíz cuadrada al final de Pitágoras.';
-  else diag='Revisa tus cálculos con el teorema de Pitágoras.';
-  marcarFallo(2,diag,solT2());
+  var diag='', pista='';
+  if(ok(vd,DC)&&ok(vD,dC)) diag='Has intercambiado los resultados: la diagonal de la cara es la m\u00e1s corta; la del cubo atraviesa el cuerpo y es mayor.';
+  else if(ok(vd,dC)&&ok(vD,dC)) diag='Has escrito la diagonal de la cara tambi\u00e9n como diagonal del cubo. Te falta el segundo Pit\u00e1goras: la diagonal del cubo sube adem\u00e1s una arista.';
+  else if(ok(vd,dC)) diag='La diagonal de la cara est\u00e1 bien, pero la del cubo no. Revisa el segundo tri\u00e1ngulo: sus catetos son a y d.';
+  else if(ok(vd,2*a)||ok(vD,3*a)) diag='No se pueden sumar las aristas: la diagonal no es a + a. Hay que aplicar Pit\u00e1goras (sumar los cuadrados y hacer la ra\u00edz).';
+  else if(ok(vd,2*a*a)||ok(vD,3*a*a)) diag='Has olvidado hacer la ra\u00edz cuadrada al final de Pit\u00e1goras.';
+  else diag='Revisa tus c\u00e1lculos con el teorema de Pit\u00e1goras.';
+  pista='Cara: \\( d=\\sqrt{a^2+a^2}=\\sqrt{'+a+'^2+'+a+'^2}=\\sqrt{'+(2*a*a)+'}\\approx\\mathbf{'+tN(dC)+'\\text{ cm}} \\). '+
+        'Cubo: \\( D=\\sqrt{a^2+d^2}=\\sqrt{'+(a*a)+'+'+(2*a*a)+'}=\\sqrt{'+(3*a*a)+'}\\approx\\mathbf{'+tN(DC)+'\\text{ cm}} \\) (es decir, \\( D=a\\sqrt{3} \\)).';
+  marcarFallo(2,diag,pista);
   generarDistinto(2);
-  refrescarT2();
-}
-function refrescarT2(){
-  document.getElementById('fig-t2').innerHTML=svgCubo(d2);
-  document.getElementById('enun-t2').innerHTML=enunT2();
+  document.getElementById('fig-t2').innerHTML=svgCubo(d2.a);
+  document.getElementById('enun-t2').innerHTML='Un cubo tiene <strong>'+d2.a+' cm</strong> de arista. Calcula la diagonal de una de sus caras (<em>d</em>) y la diagonal del cubo (<em>D</em>).';
   limpiarCampos(['t2_d','t2_D']);
 }
 
@@ -561,14 +544,6 @@ function renderEjT3HTML(){
     '<div class="btns-comprobar"><button class="btn-primary" onclick="comprobarTipo3()">Comprobar</button></div>'+
     '<div id="fb-t3" class="feedback" aria-live="polite"></div></div></div></div>';
 }
-function solT3(conV,conS){
-  var a=d3.a,b=d3.b,h=d3.h;
-  var vC=rd(a*b*h), abase=a*b, alat=2*(a+b)*h, sC=rd(2*abase+alat);
-  var hh='';
-  if(conV) hh+='El volumen del prisma es \\( V = a \\times b \\times h = '+a+' \\times '+b+' \\times '+h+' = \\mathbf{'+vC+'\\text{ cm}^3} \\). ';
-  if(conS) hh+='La superficie total es Abase + Alateral, pero el prisma tiene dos bases: \\( A_{base} = a \\times b = '+a+' \\times '+b+' = '+rd(abase)+'\\text{ cm}^2 \\), \\( A_{lateral} = 2(a+b) \\times h = '+rd(2*(a+b))+' \\times '+h+' = '+rd(alat)+'\\text{ cm}^2 \\). \\( A_{total} = 2A_{base} + A_{lateral} = 2 \\times '+rd(abase)+' + '+rd(alat)+' = \\mathbf{'+sC+'\\text{ cm}^2} \\).';
-  return hh;
-}
 function comprobarTipo3(){
   if(!previoComprobar(3)) return;
   var a=d3.a,b=d3.b,h=d3.h;
@@ -576,9 +551,11 @@ function comprobarTipo3(){
   var v=leerCampos(['t3_v','t3_s']), vV=v[0], vS=v[1];
   if(isNaN(vV)||isNaN(vS)){avisoCampos();return;}
   stats.t3.intentos++;
-  var okV=ok(vV,vC,0,0.01), okS=ok(vS,sC,0,0.01);
-  if(okV&&okS){marcarSuperado(3,'\u00a1Correcto! Apartado superado.');return;}
-  marcarFallo(3,'Revisa tus c\u00e1lculos.',solT3(!okV,!okS));
+  if(ok(vV,vC,0,0.01)&&ok(vS,sC,0,0.01)){marcarSuperado(3,'\u00a1Correcto! Apartado superado.');return;}
+  var hh='';
+  if(!ok(vV,vC,0,0.01)) hh+='El volumen del prisma es \\( V = a \\times b \\times h = '+a+' \\times '+b+' \\times '+h+' = \\mathbf{'+vC+'\\text{ cm}^3} \\). ';
+  if(!ok(vS,sC,0,0.01)) hh+='La superficie total es Abase + Alateral, pero el prisma tiene dos bases: \\( A_{base} = a \\times b = '+a+' \\times '+b+' = '+rd(abase)+'\\text{ cm}^2 \\), \\( A_{lateral} = 2(a+b) \\times h = '+rd(2*(a+b))+' \\times '+h+' = '+rd(alat)+'\\text{ cm}^2 \\). \\( A_{total} = 2A_{base} + A_{lateral} = 2 \\times '+rd(abase)+' + '+rd(alat)+' = \\mathbf{'+sC+'\\text{ cm}^2} \\).';
+  marcarFallo(3,'Revisa tus c\u00e1lculos.',hh);
   generarDistinto(3);
   document.getElementById('fig-t3').innerHTML=svgPrismaDatos(d3.a,d3.b,d3.h);
   limpiarCampos(['t3_v','t3_s']);
@@ -589,7 +566,7 @@ function comprobarTipo3(){
 // ====================================================
 var d4={};
 function generarD4(){
-  var l, h; do{ l=rnd(4,12); h=rnd(4,15); }while((l*h)%3!==0); // volumen entero (igual que en el examen)
+  var l=rnd(4,12), h=rnd(4,15);
   d4={l:l,h:h,apL:rd(Math.sqrt(h*h+(l/2)*(l/2)),1)};
 }
 function svgPiramideDatos(l,h,apL){
@@ -616,14 +593,6 @@ function renderEjT4HTML(){
     '<div class="btns-comprobar"><button class="btn-primary" onclick="comprobarTipo4()">Comprobar</button></div>'+
     '<div id="fb-t4" class="feedback" aria-live="polite"></div></div></div></div>';
 }
-function solT4(conV,conS){
-  var l=d4.l,h=d4.h,apL=d4.apL;
-  var vC=rd((1/3)*l*l*h), abase=l*l, alat=2*l*apL, sC=rd(abase+alat);
-  var hh='';
-  if(conV) hh+='El volumen de la pir\u00e1mide es \\( V = \\dfrac{1}{3} \\times A_{base} \\times h = \\dfrac{1}{3} \\times '+l+'^2 \\times '+h+' \\approx \\mathbf{'+tN(vC)+'\\text{ cm}^3} \\). ';
-  if(conS) hh+='La superficie total es Abase + Alateral (una sola base): \\( A_{base} = l^2 = '+l+'^2 = '+rd(abase)+'\\text{ cm}^2 \\), \\( A_{lateral} = 4 \\times \\dfrac{l \\times h_{\\ell}}{2} = 2 \\times '+l+' \\times '+tN(apL,1)+' = '+tN(rd(alat))+'\\text{ cm}^2 \\). \\( A_{total} = '+rd(abase)+' + '+tN(rd(alat))+' = \\mathbf{'+tN(sC)+'\\text{ cm}^2} \\).';
-  return hh;
-}
 function comprobarTipo4(){
   if(!previoComprobar(4)) return;
   var l=d4.l,h=d4.h,apL=d4.apL;
@@ -631,9 +600,11 @@ function comprobarTipo4(){
   var v=leerCampos(['t4_v','t4_s']), vV=v[0], vS=v[1];
   if(isNaN(vV)||isNaN(vS)){avisoCampos();return;}
   stats.t4.intentos++;
-  var okV=ok(vV,vC), okS=ok(vS,sC);
-  if(okV&&okS){marcarSuperado(4,'\u00a1Correcto! Apartado superado.');return;}
-  marcarFallo(4,'Revisa tus c\u00e1lculos.',solT4(!okV,!okS));
+  if(ok(vV,vC)&&ok(vS,sC)){marcarSuperado(4,'\u00a1Correcto! Apartado superado.');return;}
+  var hh='';
+  if(!ok(vV,vC)) hh+='El volumen de la pir\u00e1mide es \\( V = \\dfrac{1}{3} \\times A_{base} \\times h = \\dfrac{1}{3} \\times '+l+'^2 \\times '+h+' \\approx \\mathbf{'+tN(vC)+'\\text{ cm}^3} \\). ';
+  if(!ok(vS,sC)) hh+='La superficie total es Abase + Alateral (una sola base): \\( A_{base} = l^2 = '+l+'^2 = '+rd(abase)+'\\text{ cm}^2 \\), \\( A_{lateral} = 4 \\times \\dfrac{l \\times h_{\\ell}}{2} = 2 \\times '+l+' \\times '+tN(apL,1)+' = '+tN(rd(alat))+'\\text{ cm}^2 \\). \\( A_{total} = '+rd(abase)+' + '+tN(rd(alat))+' = \\mathbf{'+tN(sC)+'\\text{ cm}^2} \\).';
+  marcarFallo(4,'Revisa tus c\u00e1lculos.',hh);
   generarDistinto(4);
   document.getElementById('fig-t4').innerHTML=svgPiramideDatos(d4.l,d4.h,d4.apL);
   limpiarCampos(['t4_v','t4_s']);
@@ -667,14 +638,6 @@ function renderEjT5HTML(){
     '<div class="btns-comprobar"><button class="btn-primary" onclick="comprobarTipo5()">Comprobar</button></div>'+
     '<div id="fb-t5" class="feedback" aria-live="polite"></div></div></div></div>';
 }
-function solT5(conV,conS){
-  var r=d5.r,h=d5.h;
-  var vC=rd(Math.PI*r*r*h), abase=Math.PI*r*r, alat=2*Math.PI*r*h, sC=rd(2*abase+alat);
-  var hh='';
-  if(conV) hh+='El volumen del cilindro es \\( V = \\pi r^2 h = \\pi \\times '+r+'^2 \\times '+h+' \\approx \\mathbf{'+tN(vC)+'\\text{ cm}^3} \\) (usa \\(\\pi \\approx 3{,}14\\)). ';
-  if(conS) hh+='La superficie total es Abase + Alateral, con dos bases circulares: \\( A_{base} = \\pi r^2 = \\pi \\times '+r+'^2 \\approx '+tN(rd(abase))+'\\text{ cm}^2 \\), \\( A_{lateral} = 2\\pi r h = 2\\pi \\times '+r+' \\times '+h+' \\approx '+tN(rd(alat))+'\\text{ cm}^2 \\). \\( A_{total} = 2A_{base} + A_{lateral} \\approx \\mathbf{'+tN(sC)+'\\text{ cm}^2} \\).';
-  return hh;
-}
 function comprobarTipo5(){
   if(!previoComprobar(5)) return;
   var r=d5.r,h=d5.h;
@@ -682,9 +645,11 @@ function comprobarTipo5(){
   var v=leerCampos(['t5_v','t5_s']), vV=v[0], vS=v[1];
   if(isNaN(vV)||isNaN(vS)){avisoCampos();return;}
   stats.t5.intentos++;
-  var okV=ok(vV,vC,TOL_PI), okS=ok(vS,sC,TOL_PI);
-  if(okV&&okS){marcarSuperado(5,'\u00a1Correcto! Apartado superado.');return;}
-  marcarFallo(5,'Revisa tus c\u00e1lculos.',solT5(!okV,!okS));
+  if(ok(vV,vC,TOL_PI)&&ok(vS,sC,TOL_PI)){marcarSuperado(5,'\u00a1Correcto! Apartado superado.');return;}
+  var hh='';
+  if(!ok(vV,vC,TOL_PI)) hh+='El volumen del cilindro es \\( V = \\pi r^2 h = \\pi \\times '+r+'^2 \\times '+h+' \\approx \\mathbf{'+tN(vC)+'\\text{ cm}^3} \\) (usa \\(\\pi \\approx 3{,}14\\)). ';
+  if(!ok(vS,sC,TOL_PI)) hh+='La superficie total es Abase + Alateral, con dos bases circulares: \\( A_{base} = \\pi r^2 = \\pi \\times '+r+'^2 \\approx '+tN(rd(abase))+'\\text{ cm}^2 \\), \\( A_{lateral} = 2\\pi r h = 2\\pi \\times '+r+' \\times '+h+' \\approx '+tN(rd(alat))+'\\text{ cm}^2 \\). \\( A_{total} = 2A_{base} + A_{lateral} \\approx \\mathbf{'+tN(sC)+'\\text{ cm}^2} \\).';
+  marcarFallo(5,'Revisa tus c\u00e1lculos.',hh);
   generarDistinto(5);
   document.getElementById('fig-t5').innerHTML=svgCilindroDatos(d5.r,d5.h);
   limpiarCampos(['t5_v','t5_s']);
@@ -695,7 +660,7 @@ function comprobarTipo5(){
 // ====================================================
 var d6={};
 function generarD6(){
-  var r, h; do{ r=rnd(3,10); h=rnd(4,15); }while((r*h)%3!==0); // V = k\u00b7\u03c0 con k entero (igual que en el examen)
+  var r=rnd(3,10), h=rnd(4,15);
   d6={r:r,h:h,g:rd(Math.sqrt(r*r+h*h),1)};
 }
 function svgConoDatos(r,h,g){
@@ -720,14 +685,6 @@ function renderEjT6HTML(){
     '<div class="btns-comprobar"><button class="btn-primary" onclick="comprobarTipo6()">Comprobar</button></div>'+
     '<div id="fb-t6" class="feedback" aria-live="polite"></div></div></div></div>';
 }
-function solT6(conV,conS){
-  var r=d6.r,h=d6.h,g=d6.g;
-  var vC=rd((1/3)*Math.PI*r*r*h), abase=Math.PI*r*r, alat=Math.PI*r*g, sC=rd(abase+alat);
-  var hh='';
-  if(conV) hh+='El volumen del cono es \\( V = \\dfrac{1}{3}\\pi r^2 h = \\dfrac{1}{3}\\pi \\times '+r+'^2 \\times '+h+' \\approx \\mathbf{'+tN(vC)+'\\text{ cm}^3} \\). ';
-  if(conS) hh+='La superficie total es Abase + Alateral (una sola base): \\( A_{base} = \\pi r^2 = \\pi \\times '+r+'^2 \\approx '+tN(rd(abase))+'\\text{ cm}^2 \\), \\( A_{lateral} = \\pi r g = \\pi \\times '+r+' \\times '+tN(g,1)+' \\approx '+tN(rd(alat))+'\\text{ cm}^2 \\). \\( A_{total} = A_{base} + A_{lateral} \\approx \\mathbf{'+tN(sC)+'\\text{ cm}^2} \\).';
-  return hh;
-}
 function comprobarTipo6(){
   if(!previoComprobar(6)) return;
   var r=d6.r,h=d6.h,g=d6.g;
@@ -735,9 +692,11 @@ function comprobarTipo6(){
   var v=leerCampos(['t6_v','t6_s']), vV=v[0], vS=v[1];
   if(isNaN(vV)||isNaN(vS)){avisoCampos();return;}
   stats.t6.intentos++;
-  var okV=ok(vV,vC,TOL_PI), okS=ok(vS,sC,TOL_PI);
-  if(okV&&okS){marcarSuperado(6,'\u00a1Correcto! Apartado superado.');return;}
-  marcarFallo(6,'Revisa tus c\u00e1lculos.',solT6(!okV,!okS));
+  if(ok(vV,vC,TOL_PI)&&ok(vS,sC,TOL_PI)){marcarSuperado(6,'\u00a1Correcto! Apartado superado.');return;}
+  var hh='';
+  if(!ok(vV,vC,TOL_PI)) hh+='El volumen del cono es \\( V = \\dfrac{1}{3}\\pi r^2 h = \\dfrac{1}{3}\\pi \\times '+r+'^2 \\times '+h+' \\approx \\mathbf{'+tN(vC)+'\\text{ cm}^3} \\). ';
+  if(!ok(vS,sC,TOL_PI)) hh+='La superficie total es Abase + Alateral (una sola base): \\( A_{base} = \\pi r^2 = \\pi \\times '+r+'^2 \\approx '+tN(rd(abase))+'\\text{ cm}^2 \\), \\( A_{lateral} = \\pi r g = \\pi \\times '+r+' \\times '+tN(g,1)+' \\approx '+tN(rd(alat))+'\\text{ cm}^2 \\). \\( A_{total} = A_{base} + A_{lateral} \\approx \\mathbf{'+tN(sC)+'\\text{ cm}^2} \\).';
+  marcarFallo(6,'Revisa tus c\u00e1lculos.',hh);
   generarDistinto(6);
   document.getElementById('fig-t6').innerHTML=svgConoDatos(d6.r,d6.h,d6.g);
   limpiarCampos(['t6_v','t6_s']);
@@ -747,7 +706,7 @@ function comprobarTipo6(){
 // TIPO 7: ESFERA — heredado
 // ====================================================
 var d7={};
-function generarD7(){ d7={r:[3,6,9,12,15][rnd(0,4)]}; } // radio m\u00faltiplo de 3: el 4/3 se simplifica (igual que en el examen)
+function generarD7(){ d7={r:rnd(3,15)}; }
 function svgEsferaDatos(r){
   return '<svg viewBox="-20 -15 260 210" width="220" height="190">'+
     '<circle cx="110" cy="95" r="65" fill="'+C1+'" stroke="'+LN+'" stroke-width="2"/>'+
@@ -767,14 +726,6 @@ function renderEjT7HTML(){
     '<div class="btns-comprobar"><button class="btn-primary" onclick="comprobarTipo7()">Comprobar</button></div>'+
     '<div id="fb-t7" class="feedback" aria-live="polite"></div></div></div></div>';
 }
-function solT7(conV,conS){
-  var r=d7.r;
-  var vC=rd((4/3)*Math.PI*r*r*r), sC=rd(4*Math.PI*r*r);
-  var hh='';
-  if(conV) hh+='El volumen de la esfera es \\( V = \\dfrac{4}{3}\\pi r^3 = \\dfrac{4}{3}\\pi \\times '+r+'^3 \\approx \\mathbf{'+tN(vC)+'\\text{ cm}^3} \\). ';
-  if(conS) hh+='La esfera no tiene base ni cara lateral separadas: \\( A_{total} = 4\\pi r^2 = 4\\pi \\times '+r+'^2 \\approx \\mathbf{'+tN(sC)+'\\text{ cm}^2} \\).';
-  return hh;
-}
 function comprobarTipo7(){
   if(!previoComprobar(7)) return;
   var r=d7.r;
@@ -782,9 +733,11 @@ function comprobarTipo7(){
   var v=leerCampos(['t7_v','t7_s']), vV=v[0], vS=v[1];
   if(isNaN(vV)||isNaN(vS)){avisoCampos();return;}
   stats.t7.intentos++;
-  var okV=ok(vV,vC,TOL_PI), okS=ok(vS,sC,TOL_PI);
-  if(okV&&okS){marcarSuperado(7,'\u00a1Correcto! Apartado superado.');return;}
-  marcarFallo(7,'Revisa tus c\u00e1lculos.',solT7(!okV,!okS));
+  if(ok(vV,vC,TOL_PI)&&ok(vS,sC,TOL_PI)){marcarSuperado(7,'\u00a1Correcto! Apartado superado.');return;}
+  var hh='';
+  if(!ok(vV,vC,TOL_PI)) hh+='El volumen de la esfera es \\( V = \\dfrac{4}{3}\\pi r^3 = \\dfrac{4}{3}\\pi \\times '+r+'^3 \\approx \\mathbf{'+tN(vC)+'\\text{ cm}^3} \\). ';
+  if(!ok(vS,sC,TOL_PI)) hh+='La esfera no tiene base ni cara lateral separadas: \\( A_{total} = 4\\pi r^2 = 4\\pi \\times '+r+'^2 \\approx \\mathbf{'+tN(sC)+'\\text{ cm}^2} \\).';
+  marcarFallo(7,'Revisa tus c\u00e1lculos.',hh);
   generarDistinto(7);
   document.getElementById('fig-t7').innerHTML=svgEsferaDatos(d7.r);
   limpiarCampos(['t7_v','t7_s']);

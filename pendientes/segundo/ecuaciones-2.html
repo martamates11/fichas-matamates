@@ -79,13 +79,6 @@ hr{margin:0.5rem 0;border:none;border-top:1px solid #E0CEAA}
 .frac-manual-num,.frac-manual-den{padding:0 4px}
 .frac-manual-den{border-top:2px solid #2C1F0E}
 .frac-manual-op{font-weight:700;padding:0 2px}
-/* «Mostrar solución»: botón apagado, que no invite a pulsarlo, y feedback neutro */
-:root{--color-apagado:#A8998A;--color-apagado-fondo:#F3EFE6}
-.sol-zona{display:flex;justify-content:flex-end;margin-top:10px}
-.btn-soluciones{background:transparent;color:var(--color-apagado);border:1px solid #DDD0B6;border-radius:4px;padding:5px 14px;font-family:inherit;font-size:.78rem;font-weight:400;cursor:pointer;transition:color .2s,border-color .2s}
-.btn-soluciones:hover:not(:disabled){color:#6B4F35;border-color:#C9A96E}
-.btn-soluciones:disabled{opacity:.4;cursor:default}
-.feedback-solucion{display:block;background:var(--color-apagado-fondo);border:1.5px dashed var(--color-apagado);border-radius:8px;padding:10px 14px;color:#2C1F0E;line-height:1.5}
 </style>
 </head>
 <body>
@@ -97,13 +90,12 @@ hr{margin:0.5rem 0;border:none;border-top:1px solid #E0CEAA}
 <div class="header-badges">
 <span class="header-badge">🎯 2 aciertos de 3 (ventana móvil) → tipo superado</span>
 <span class="header-badge">💡 Cada fallo resta 0,5 puntos sobre 10</span>
-<span class="header-badge">👁️ Ver la solución de un ejercicio no da puntos</span>
 </div>
 </div>
 <div class="info-bar">
 <div class="info-item"><span class="info-icon">📊</span><span>Tipos superados: <span id="progresoCount" class="info-value">0</span>/5</span></div>
 <div class="info-item"><span class="info-icon">❌</span><span>Fallos totales: <span id="fallosCount" class="info-value">0</span></span></div>
-<div class="info-item"><span class="info-icon">⭐</span><span>Nota: <span id="notaActual" class="info-value">0,0</span>/10</span></div>
+<div class="info-item"><span class="info-icon">⭐</span><span>Nota: <span id="notaActual" class="info-value">0.0</span>/10</span></div>
 </div>
 <div class="name-section">
 <span class="name-label">👤 ALUMNO/A</span>
@@ -172,13 +164,7 @@ function normalizarExpresion(exp) {
 // y quita espacios sobrantes, antes de pasarla a parseInt/parseFloat.
 function normalizarNumero(str) {
     if (typeof str !== 'string') return str;
-    return str.trim().replace(/[\u2212\u2013]/g, '-').replace(',', '.');
-}
-// Lee un número completo («7», «−3», «2,5»); NaN si sobra algo. Sustituye a parseInt,
-// que daba por buena «2,5» cuando la solución era 2.
-function leerNumero(str) {
-    const t = normalizarNumero(String(str == null ? '' : str));
-    return /^[+-]?\d+(\.\d+)?$/.test(t) ? parseFloat(t) : NaN;
+    return str.trim().replace(',', '.');
 }
 
 function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { [a, b] = [b, a % b]; } return a; }
@@ -268,7 +254,7 @@ function formatEcuacionCuadratica(a, b, c) {
 }
 
 function compararParDeRaices(v1, v2, raices) {
-    let n1 = leerNumero((v1)), n2 = leerNumero((v2));
+    let n1 = parseInt(normalizarNumero(v1)), n2 = parseInt(normalizarNumero(v2));
     if (isNaN(n1) || isNaN(n2)) return false;
     let entrada = [n1, n2].sort((x, y) => x - y);
     let esperado = [...raices].sort((x, y) => x - y);
@@ -295,6 +281,7 @@ const state = {
 
 let instancias = [];
 let pasoProblema = {}; // solo para tipos multipaso (2): 1 = plantear ecuación, 2 = resolver x
+let lastBancoIndex = {};
 let nombrePendienteFinalizar = null; // retiene el nombre mientras se muestra el aviso de progreso incompleto
 
 // Disponibilidad de MathJax: null = aún no se sabe, true = cargó, false = se dio
@@ -338,97 +325,25 @@ function registrarResultado(i, correcto) {
     state.puntosGlobal = Math.min(10, Math.max(0, superados * PUNTO_POR_TIPO - fallos * PENALIZACION_FALLO));
 }
 
+function pickBancoIndex(banco, key) {
+    if (banco.length === 1) return 0;
+    let idx;
+    do {
+        idx = Math.floor(Math.random() * banco.length);
+    } while (idx === lastBancoIndex[key]);
+    lastBancoIndex[key] = idx;
+    return idx;
+}
 
-/* ============ PROBLEMAS DE PRIMER GRADO (plantillas con datos variables) ============ */
-// Antes era un banco fijo de seis problemas; ahora, las mismas plantillas que el
-// generador de exámenes (examenes/generadores/pendientes/ecuaciones-2.js).
-const RND = {
-    int: (lo, hi) => lo + Math.floor(Math.random() * (hi - lo + 1)),
-    pick: arr => arr[Math.floor(Math.random() * arr.length)],
-    rand: Math.random
-};
-  const MULT = { 2: 'doble', 3: 'triple', 4: 'cuádruple', 5: 'quíntuple' };
-  const NOMBRES = [['Pedro', 'Juan'], ['Lucía', 'Marta'], ['Hugo', 'Daniel'], ['Sara', 'Noa'], ['Pablo', 'Álvaro'], ['Carmen', 'Irene']];
-  function generarProblema(R) {
-    const t = R.int(0, 6);
-    let x, A, B, k, k2;
-    switch (t) {
-      case 0: {   // m1·x − A = m2·x + B (m1 > m2)
-        k2 = R.pick([2, 3]); k = k2 + R.pick([1, 1, 2]);
-        do { x = R.int(2, 15); A = R.int(1, 12); B = (k - k2) * x - A; } while (B < 1);
-        return {
-          texto: `El ${MULT[k]} de un número, menos ${A}, es igual al ${MULT[k2]} del mismo número más ${B}. Plantea la ecuación y halla el número.`,
-          ecuacion: `${k}x-${A}=${k2}x+${B}`, tex: `${k}x - ${A} = ${k2}x + ${B}`, L: [k, -A], D: [k2, B], x,
-          planteo: `Llamamos \\(x\\) al número: su ${MULT[k]} es \\(${k}x\\) y su ${MULT[k2]}, \\(${k2}x\\).`,
-          conclusion: `El número es ${menos(x)}.`
-        };
-      }
-      case 1: {   // x + k·x = S
-        k = R.pick([2, 3]); x = R.int(2, 15);
-        return {
-          texto: `La suma de un número y su ${MULT[k]} es igual a ${(k + 1) * x}. Plantea la ecuación y halla el número.`,
-          ecuacion: `x+${k}x=${(k + 1) * x}`, tex: `x + ${k}x = ${(k + 1) * x}`, simpl: `${k + 1}x = ${(k + 1) * x}`, L: [k + 1, 0], D: [0, (k + 1) * x], x,
-          planteo: `Llamamos \\(x\\) al número; su ${MULT[k]} es \\(${k}x\\).`,
-          conclusion: `El número es ${x}.`
-        };
-      }
-      case 2: {   // k·x ± A = B
-        k = R.pick([2, 3, 4]); const suma = R.rand() < 0.5;
-        do { x = R.int(1, 15); A = R.int(1, 12); B = suma ? k * x + A : k * x - A; } while (B < 1);
-        return {
-          texto: suma ? `Si al ${MULT[k]} de un número le sumamos ${A}, obtenemos ${B}. Plantea la ecuación y halla el número.`
-            : `Si al ${MULT[k]} de un número le restamos ${A}, obtenemos ${B}. Plantea la ecuación y halla el número.`,
-          ecuacion: `${k}x${suma ? '+' : '-'}${A}=${B}`, tex: `${k}x ${suma ? '+' : '-'} ${A} = ${B}`, L: [k, suma ? A : -A], D: [0, B], x,
-          planteo: `Llamamos \\(x\\) al número; su ${MULT[k]} es \\(${k}x\\).`,
-          conclusion: `El número es ${x}.`
-        };
-      }
-      case 3: {   // m1·x + A = m2·x − B (m1 < m2)
-        k = R.pick([2, 3]); k2 = k + R.pick([1, 1, 2]);
-        do { x = R.int(2, 15); A = R.int(1, 12); B = (k2 - k) * x - A; } while (B < 1);
-        return {
-          texto: `El ${MULT[k]} de un número, aumentado en ${A}, es igual al ${MULT[k2]} del mismo número disminuido en ${B}. Plantea la ecuación y halla el número.`,
-          ecuacion: `${k}x+${A}=${k2}x-${B}`, tex: `${k}x + ${A} = ${k2}x - ${B}`, L: [k, A], D: [k2, -B], x,
-          planteo: `Llamamos \\(x\\) al número: su ${MULT[k]} es \\(${k}x\\) y su ${MULT[k2]}, \\(${k2}x\\).`,
-          conclusion: `El número es ${x}.`
-        };
-      }
-      case 4: {   // x − A = k·x (solución negativa)
-        k = R.pick([2, 3]);
-        do { A = R.int(2, 12); } while (A % (k - 1) !== 0);
-        x = -A / (k - 1);
-        return {
-          texto: `Si a un número le restamos ${A}, el resultado es el ${MULT[k]} de ese número. Plantea la ecuación y halla el número.`,
-          ecuacion: `x-${A}=${k}x`, tex: `x - ${A} = ${k}x`, L: [1, -A], D: [k, 0], x,
-          planteo: `Llamamos \\(x\\) al número; su ${MULT[k]} es \\(${k}x\\).`,
-          conclusion: `El número es ${menos(x)}.`
-        };
-      }
-      case 5: {   // edades: x + (k·x ± A) = S
-        const [P, J] = R.pick(NOMBRES); k = R.pick([2, 3]); const mas = R.rand() < 0.4;
-        x = R.int(6, 15); A = R.int(1, 6);
-        const S = (k + 1) * x + (mas ? A : -A);
-        return {
-          texto: `${P} tiene ${A} ${A === 1 ? 'año' : 'años'} ${mas ? 'más' : 'menos'} que el ${MULT[k]} de la edad de ${J}. Si entre los dos suman ${S} años, llama x a la edad de ${J}, plantea la ecuación en su forma desarrollada (sin paréntesis) y halla la edad de ${J}.`,
-          ecuacion: `x+${k}x${mas ? '+' : '-'}${A}=${S}`, tex: `x + ${k}x ${mas ? '+' : '-'} ${A} = ${S}`, simpl: `${k + 1}x ${mas ? '+' : '-'} ${A} = ${S}`,
-          L: [k + 1, mas ? A : -A], D: [0, S], x,
-          planteo: `Edad de ${J}: \\(x\\). Edad de ${P}: \\(${k}x ${mas ? '+' : '-'} ${A}\\). Entre los dos suman ${S}.`,
-          conclusion: `${J} tiene ${x} años (y ${P}, ${k * x + (mas ? A : -A)}).`
-        };
-      }
-      default: {  // números consecutivos
-        const tres = R.rand() < 0.6; x = R.int(2, 30);
-        const S = tres ? 3 * x + 3 : 2 * x + 1;
-        return {
-          texto: `La suma de ${tres ? 'tres' : 'dos'} números consecutivos es ${S}. Llama x al menor, plantea la ecuación en su forma desarrollada (sin paréntesis) y halla los números.`,
-          ecuacion: tres ? `x+x+1+x+2=${S}` : `x+x+1=${S}`, tex: tres ? `x + x + 1 + x + 2 = ${S}` : `x + x + 1 = ${S}`,
-          simpl: tres ? `3x + 3 = ${S}` : `2x + 1 = ${S}`, L: tres ? [3, 3] : [2, 1], D: [0, S], x,
-          planteo: tres ? 'Si el menor es \\(x\\), los siguientes son \\(x + 1\\) y \\(x + 2\\).' : 'Si el menor es \\(x\\), el siguiente es \\(x + 1\\).',
-          conclusion: tres ? `Los números son ${x}, ${x + 1} y ${x + 2}.` : `Los números son ${x} y ${x + 1}.`
-        };
-      }
-    }
-  }
+/* ============ BANCOS DE PROBLEMAS ============ */
+const BANCO_PROBLEMAS_1ER_GRADO = [
+    { enunciado: "El triple de un número, menos 2, es igual al doble del mismo número más 5. Plantea la ecuación y halla el número.", ecuacion: "3x-2=2x+5", sol: 7 },
+    { enunciado: "La suma de un número y su doble es igual a 27. Plantea la ecuación y halla el número.", ecuacion: "x+2x=27", sol: 9 },
+    { enunciado: "Si al doble de un número le sumamos 6, obtenemos 16. Plantea la ecuación y halla el número.", ecuacion: "2x+6=16", sol: 5 },
+    { enunciado: "El doble de un número, aumentado en 8, es igual al triple del mismo número disminuido en 3. Plantea la ecuación y halla el número.", ecuacion: "2x+8=3x-3", sol: 11 },
+    { enunciado: "Si a un número le restamos 9, el resultado es el doble de ese número. Plantea la ecuación y halla el número.", ecuacion: "x-9=2x", sol: -9 },
+    { enunciado: "Pedro tiene 4 años menos que el triple de la edad de Juan. Si entre los dos suman 44 años, llama x a la edad de Juan, plantea la ecuación en su forma desarrollada (sin paréntesis) y halla la edad de Juan.", ecuacion: "x+3x-4=44", sol: 12 }
+];
 
 /* ============ GENERACIÓN DE INSTANCIAS POR TIPO ============ */
 function generarInstancia(i) {
@@ -443,16 +358,16 @@ function generarInstancia(i) {
         case 1: { // Ecuaciones con paréntesis: a(x+b)=c
             let xSol = Math.floor(Math.random() * 25) - 12; // -12..12
             let a = Math.floor(Math.random() * 8) + 2;      // 2..9
-            let b;
-            do { b = Math.floor(Math.random() * 21) - 10; } while (b === 0); // -10..10 sin el 0
+            let b = Math.floor(Math.random() * 21) - 10;    // -10..10
+            if (b === 0) b = 3;
             let c = a * (xSol + b);
             let signoB = b >= 0 ? ('+' + b) : ('' + b);
             return { ecuacion: a + '(x' + signoB + ')=' + c, sol: xSol, a, b, c };
         }
         case 2: { // Problema 1er grado (banco, 2 pasos)
             pasoProblema[2] = 1;
-            const P = generarProblema(RND);
-            return { ...P, enunciado: P.texto, sol: P.x };
+            let idx = pickBancoIndex(BANCO_PROBLEMAS_1ER_GRADO, 2);
+            return { ...BANCO_PROBLEMAS_1ER_GRADO[idx] };
         }
         case 3: { // Ecuaciones con fracciones sencillas: DEBEN aparecer dos fracciones (x/n1 op x/n2 = b)
             let denominadores = [2, 3, 4, 6];
@@ -460,8 +375,8 @@ function generarInstancia(i) {
             let n2;
             do { n2 = denominadores[Math.floor(Math.random() * denominadores.length)]; } while (n2 === n1);
             let L = lcm(n1, n2);
-            let k;
-            do { k = Math.floor(Math.random() * 7) - 3; } while (k === 0); // -3..3 sin el 0
+            let k = Math.floor(Math.random() * 7) - 3; // -3..3
+            if (k === 0) k = 1;
             let xSol = k * L;
             let op = Math.random() < 0.5 ? '+' : '-';
             let term1 = xSol / n1;
@@ -479,8 +394,8 @@ function generarInstancia(i) {
                 let c = a * r * r;
                 return { ecuacion: formatEcuacionCuadratica(a, 0, -c), raices: [r, -r], tipoSub, a, c };
             } else {
-                let raizNoNula;
-                do { raizNoNula = Math.floor(Math.random() * 17) - 8; } while (raizNoNula === 0);
+                let raizNoNula = Math.floor(Math.random() * 17) - 8;
+                if (raizNoNula === 0) raizNoNula = 3;
                 let a = Math.floor(Math.random() * 5) + 1; // 1..5
                 let b = -a * raizNoNula;
                 return { ecuacion: formatEcuacionCuadratica(a, b, 0), raices: [0, raizNoNula], tipoSub, a, b };
@@ -556,7 +471,7 @@ function actualizarUI() {
     let nf = Math.min(10, Math.max(0, state.puntosGlobal));
     document.getElementById('progresoCount').innerText = s;
     document.getElementById('fallosCount').innerText = fallosTotales;
-    document.getElementById('notaActual').innerText = nf.toFixed(1).replace('.', ',');
+    document.getElementById('notaActual').innerText = nf.toFixed(1);
 }
 
 function renderizarTodo() {
@@ -617,7 +532,7 @@ function finalizarIntento(i, correcto, msgCorrecto, msgError) {
 
 function comprobarTipo0() {
     let e = instancias[0];
-    let num = leerNumero((document.getElementById('t0_x').value));
+    let num = parseInt(normalizarNumero(document.getElementById('t0_x').value));
     if (isNaN(num)) { mostrarFeedback(0, false, AVISO_VACIO); return; }
     if (num === e.sol) {
         finalizarIntento(0, true, '✓ ¡Correcto! x = ' + e.sol + '.', '');
@@ -629,7 +544,7 @@ function comprobarTipo0() {
 
 function comprobarTipo1() {
     let e = instancias[1];
-    let num = leerNumero((document.getElementById('t1_x').value));
+    let num = parseInt(normalizarNumero(document.getElementById('t1_x').value));
     if (isNaN(num)) { mostrarFeedback(1, false, AVISO_VACIO); return; }
     if (num === e.sol) {
         finalizarIntento(1, true, '✓ ¡Correcto! x = ' + e.sol + '.', '');
@@ -658,7 +573,7 @@ function comprobarTipo2() {
             finalizarIntento(2, false, '', '❌ Ecuación incorrecta. La ecuación que corresponde al enunciado es: ' + e.ecuacion + ' → x = ' + e.sol + '.');
         }
     } else {
-        let num = leerNumero((document.getElementById('t2_x').value));
+        let num = parseInt(normalizarNumero(document.getElementById('t2_x').value));
         if (isNaN(num)) { mostrarFeedback(2, false, AVISO_VACIO); return; }
         if (num === e.sol) {
             finalizarIntento(2, true, '✓ ¡Correcto! Solución: x = ' + e.sol + '.', '');
@@ -670,7 +585,7 @@ function comprobarTipo2() {
 
 function comprobarTipo3() {
     let e = instancias[3];
-    let num = leerNumero((document.getElementById('t3_x').value));
+    let num = parseInt(normalizarNumero(document.getElementById('t3_x').value));
     if (isNaN(num)) { mostrarFeedback(3, false, AVISO_VACIO); return; }
     if (num === e.sol) {
         finalizarIntento(3, true, '✓ ¡Correcto! x = ' + e.sol + '.', '');
@@ -730,10 +645,10 @@ function mostrarResultados(nombre) {
     let superados = state.tipos.filter(t => t.superado).length;
 
     document.getElementById('modalNombreMostrar').innerHTML = nombre.toUpperCase();
-    document.getElementById('modalNota').innerHTML = notaFinal.toFixed(1).replace('.', ',') + '/10';
+    document.getElementById('modalNota').innerHTML = notaFinal.toFixed(1) + '/10';
     let msg = notaFinal >= 9 ? "🌟 Excelente" : (notaFinal >= 7 ? "👍 Muy bien" : (notaFinal >= 5 ? "📘 Aprobado" : "📚 Repasa"));
     document.getElementById('modalMensaje').innerHTML = msg;
-    document.getElementById('modalStats').innerHTML = '<p>📅 ' + fecha + ' 🕐 ' + hora + '</p><p>⏱️ Tiempo: ' + tiempo + '</p><p>🎯 Tipos superados: ' + superados + '/' + NUM_TIPOS + '</p><p>❌ Fallos totales: ' + fallosTotales + '</p><p>👁️ Soluciones vistas: ' + solucionesVistas.reduce((a, b) => a + b, 0) + (solucionesVistas.some(Boolean) ? ' (' + solucionesVistas.map((v, i) => v ? 'ej. ' + (i + 1) + ': ' + v : '').filter(Boolean).join(', ') + ')' : '') + '</p><p>⭐ Nota: ' + notaFinal.toFixed(1).replace('.', ',') + '/10</p>';
+    document.getElementById('modalStats').innerHTML = '<p>📅 ' + fecha + ' 🕐 ' + hora + '</p><p>⏱️ Tiempo: ' + tiempo + '</p><p>🎯 Tipos superados: ' + superados + '/' + NUM_TIPOS + '</p><p>❌ Fallos totales: ' + fallosTotales + '</p><p>⭐ Nota: ' + notaFinal.toFixed(1) + '</p>';
 
     let desgloseHTML = '';
     state.tipos.forEach((t, idx) => {
@@ -778,7 +693,7 @@ function intentarFinalizar(nombre) {
     let notaProyectada = Math.min(10, Math.max(0, state.puntosGlobal));
     nombrePendienteFinalizar = nombre;
     document.getElementById('avisoIncompletoTexto').innerHTML = 'Todavía no has superado: <strong>' + nombresPendientes.join(', ') + '</strong>.';
-    document.getElementById('avisoIncompletoNota').innerHTML = notaProyectada.toFixed(1).replace('.', ',') + '/10';
+    document.getElementById('avisoIncompletoNota').innerHTML = notaProyectada.toFixed(1) + '/10';
     document.getElementById('modalAvisoIncompleto').classList.add('show');
 }
 
@@ -844,129 +759,6 @@ document.getElementById('modalNombreInput').addEventListener('keydown', function
         confirmarNombre();
     }
 });
-
-/* ============ MOSTRAR SOLUCIÓN (por ejercicio) ============ */
-// La ficha muestra todos los ejercicios a la vez: cada tarjeta tiene su botón, apagado, al pie.
-// Ver la solución no suma, no resta y no cuenta para la ventana de aciertos: el ejercicio visto
-// se sustituye por otro del mismo tipo con otros números. Los fallos previos siguen restando.
-const solucionesVistas = [0, 0, 0, 0, 0];
-const menos = t => String(t).replace(/-/g, '−');
-const sinTeX = t => String(t).replace(/\\\(|\\\)/g, '');
-// Término «k·x» o número con su signo, para escribir ecuaciones en texto
-function polTxt(terminos) {
-    let out = '';
-    terminos.forEach(([k, v]) => {
-        if (k === 0) return;
-        const cuerpo = (Math.abs(k) === 1 && v ? '' : Math.abs(k)) + v;
-        out += out === '' ? (k < 0 ? '-' : '') + cuerpo : (k < 0 ? ' - ' : ' + ') + cuerpo;
-    });
-    return out === '' ? '0' : out;
-}
-function despejeTxt(k, r) {
-    if (k === 1) return 'x = ' + r;
-    if (k === -1) return '−x = ' + r + ' → x = ' + (-r);
-    return k + 'x = ' + r + ' → x = ' + r + ' : ' + (k < 0 ? '(' + k + ')' : k) + ' = ' + (r / k);
-}
-
-function solucionDe(i) {
-    const e = instancias[i];
-    switch (i) {
-        case 0:
-            return menos(e.ecuacion.replace(/([+=-])/g, ' $1 ').replace(/ {2,}/g, ' ').replace('= - ', '= -')) + '<br>El ' + e.a + ' está ' + (e.op === '+' ? 'sumando: pasa al otro miembro restando' : 'restando: pasa al otro miembro sumando') + '.<br>' + menos('x = ' + e.b + (e.op === '+' ? ' - ' : ' + ') + e.a) + ' = <b>' + menos(e.sol) + '</b>';
-        case 1: {
-            const ab = e.a * e.b, ax = e.c - ab;
-            return menos(e.a + '(' + polTxt([[1, 'x'], [e.b, '']]) + ') = ' + e.c) + '<br>Quitamos el paréntesis multiplicando el ' + e.a + ' por cada término: ' + menos(polTxt([[e.a, 'x'], [ab, '']]) + ' = ' + e.c) +
-                '<br>Pasamos el ' + Math.abs(ab) + ' al otro miembro ' + (ab > 0 ? 'restando' : 'sumando') + ': ' + menos(e.a + 'x = ' + e.c + (ab > 0 ? ' - ' : ' + ') + Math.abs(ab) + ' = ' + ax) +
-                '<br>El ' + e.a + ' multiplica: pasa dividiendo. ' + menos(despejeTxt(e.a, ax).replace(/.*→ /, '')).replace(/= (−?\d+)$/, '= <b>$1</b>');
-        }
-        case 2: {
-            const k = e.L[0] - e.D[0], d = e.D[1] - e.L[1];
-            let h = sinTeX(e.planteo) + '<br>Ecuación: <b>' + menos(e.tex) + '</b>';
-            if (e.simpl) h += '<br>Agrupamos términos semejantes: ' + menos(e.simpl);
-            if (e.D[0] !== 0 || e.L[1] !== 0) h += '<br>Pasamos las x a un miembro y los números al otro: ' + menos(polTxt([[e.L[0], 'x'], [-e.D[0], 'x']]) + ' = ' + polTxt([[e.D[1], ''], [-e.L[1], '']]));
-            h += '<br>' + menos(despejeTxt(k, d)).replace(/= (−?\d+)$/, '= <b>$1</b>');
-            return h + '<br>' + e.conclusion;
-        }
-        case 3: {
-            const c1 = e.L / e.n1, c2 = e.L / e.n2, k = e.op === '+' ? c1 + c2 : c1 - c2, bL = e.b * e.L;
-            const cx = c => (c === 1 ? 'x' : c + 'x');
-            return menos('x/' + e.n1 + ' ' + e.op + ' x/' + e.n2 + ' = ' + e.b) + '<br>Multiplicamos los dos miembros por el m.c.m.(' + e.n1 + ', ' + e.n2 + ') = ' + e.L + ' para quitar denominadores: ' +
-                menos(cx(c1) + ' ' + e.op + ' ' + cx(c2) + ' = ' + bL) + '<br>Agrupamos y despejamos: ' + menos(despejeTxt(k, bL)).replace(/= (−?\d+)$/, '= <b>$1</b>');
-        }
-        case 4: {
-            if (e.tipoSub === 'pura') {
-                const r = e.raices[0];
-                return menos(e.ecuacion) + '<br>No tiene término en x: despejamos x². ' + (e.a === 1 ? 'x² = ' + e.c : e.a + 'x² = ' + e.c + ' → x² = ' + e.c + ' : ' + e.a + ' = ' + r * r) +
-                    '<br>Al hacer la raíz cuadrada salen dos soluciones opuestas: <b>x = ' + r + '</b> y <b>x = −' + r + '</b>';
-            }
-            const r = e.raices[1], f = polTxt([[e.a, 'x'], [e.b, '']]);
-            return menos(e.ecuacion) + '<br>No tiene término independiente: sacamos x factor común. ' + menos('x(' + f + ') = 0') +
-                '<br>Un producto es 0 si lo es alguno de sus factores: <b>x = 0</b> o ' + menos(f + ' = 0 → ' + despejeTxt(e.a, -e.b).replace(/.*→ /, '')).replace(/= (−?\d+)$/, '= <b>$1</b>');
-        }
-    }
-    return '';
-}
-
-function ponerBotonesSolucion() {
-    document.querySelectorAll('#ejerciciosContainer .ejercicio-card').forEach((card, idx) => {
-        card.querySelectorAll('.sol-zona').forEach(z => z.remove());
-        if (state.tipos[idx].cerrado) return;           // superado: no aparece
-        const zona = document.createElement('div');
-        zona.className = 'sol-zona';
-        zona.innerHTML = '<button type="button" class="btn-soluciones">Mostrar solución</button>';
-        zona.firstElementChild.addEventListener('click', () => pedirSolucion(idx));
-        card.appendChild(zona);
-    });
-}
-
-function avisoSoluciones() {
-    return new Promise(resolve => {
-        const fondo = document.createElement('div');
-        fondo.setAttribute('role', 'dialog');
-        fondo.setAttribute('aria-modal', 'true');
-        fondo.setAttribute('aria-labelledby', 'tituloAvisoSol');
-        fondo.style.cssText = 'position:fixed;inset:0;background:rgba(44,31,14,0.55);display:flex;align-items:center;justify-content:center;z-index:3000;padding:16px;';
-        fondo.innerHTML =
-            '<div style="background:#FFFDF7;border:2px solid #C9A96E;border-radius:14px;max-width:400px;width:100%;padding:22px 22px 18px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.25);font-family:inherit;color:#2C1F0E;">' +
-            '<h3 id="tituloAvisoSol" style="margin:0 0 10px;font-size:1.1rem;color:#A0522D;">¿Mostrar las soluciones?</h3>' +
-            '<p style="margin:0 0 18px;font-size:0.92rem;line-height:1.45;">Verás resuelto este ejercicio con su explicación. <b>Este ejercicio no contará para la nota</b> y los fallos que ya hayas cometido siguen restando. Después podrás seguir con otro ejercicio del mismo tipo.</p>' +
-            '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">' +
-            '<button type="button" data-r="si" style="background:transparent;color:#8A7A69;border:1px solid #DDD0B6;border-radius:30px;padding:9px 18px;cursor:pointer;font-family:inherit;font-size:.85rem;">Sí, mostrar soluciones</button>' +
-            '<button type="button" data-r="no" style="background:#A0522D;color:#FFFFFF;border:none;border-radius:30px;padding:10px 22px;font-weight:700;cursor:pointer;font-family:inherit;">Volver al ejercicio</button>' +
-            '</div></div>';
-        const cerrar = r => { fondo.remove(); document.removeEventListener('keydown', tecla); resolve(r); };
-        const tecla = ev => { if (ev.key === 'Escape') cerrar(false); };
-        fondo.querySelector('[data-r="no"]').addEventListener('click', () => cerrar(false));
-        fondo.querySelector('[data-r="si"]').addEventListener('click', () => cerrar(true));
-        fondo.addEventListener('click', ev => { if (ev.target === fondo) cerrar(false); });
-        document.addEventListener('keydown', tecla);
-        document.body.appendChild(fondo);
-        fondo.querySelector('[data-r="no"]').focus();
-    });
-}
-
-async function pedirSolucion(i) {
-    if (state.tipos[i].cerrado) return;
-    if (!(await avisoSoluciones())) return;
-    const html = solucionDe(i);
-    solucionesVistas[i]++;
-    const antes = JSON.stringify(instancias[i]);
-    for (let n = 0; n < 50; n++) {                // otro ejercicio del mismo tipo, con otros números
-        instancias[i] = generarInstancia(i);
-        if (JSON.stringify(instancias[i]) !== antes) break;
-    }
-    renderizarTodo();
-    const fb = document.getElementById('fb_' + i);
-    if (fb) fb.innerHTML = '<span class="feedback-solucion"><b>Solución.</b> ' + html + '<br><br>Soluciones mostradas · ejercicio sin calificar. 👉 Sigue con este nuevo.</span>';
-}
-
-// Los botones se recolocan cada vez que se repintan las tarjetas
-{
-    const _renderizarTodo = renderizarTodo, _refrescarSoloTipo3 = refrescarSoloTipo3;
-    renderizarTodo = function () { _renderizarTodo(); ponerBotonesSolucion(); };
-    refrescarSoloTipo3 = function () { _refrescarSoloTipo3(); ponerBotonesSolucion(); };
-}
-ponerBotonesSolucion();
 </script>
 <script>/*mm*/!function(){var e=atob("aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J3dnd5Qy1QMmI3SVdaS3BtVFhWdWpGYTZwOXhkQlFJN2lxZS1LOE9oVFBNTzctcEJuVW03X0x3WkpqelJKWlhDN3AvZXhlYw=="),t="martamates11.github.io",o="https://martamates11.github.io/fichas-matamates/",a=location.hostname;if("file:"!==location.protocol&&a&&"localhost"!==a&&!/^(127\.|10\.|192\.168\.|\[)/.test(a)&&!/^martamates11-github-io\.translate\.goog$/.test(a)){var n,i;try{n=window.top!==window}catch(e){n=!0}if(a===t){if(!n)return;if(-1!==(location.ancestorOrigins&&location.ancestorOrigins[0]||document.referrer||"").indexOf(t))return;i="incrustada"}else i="copia";try{var r="mm-g-"+location.pathname+"-"+(new Date).toISOString().slice(0,10),c=!1;try{c="1"===localStorage.getItem(r)}catch(e){}if(!c&&0===e.indexOf("https://")){try{localStorage.setItem(r,"1")}catch(e){}var d="k="+i+"&h="+encodeURIComponent(a)+"&u="+encodeURIComponent(location.href.slice(0,400))+"&t="+encodeURIComponent(document.title.slice(0,200))+"&r="+encodeURIComponent((document.referrer||"").slice(0,400));(new Image).src=e+"?"+d}}catch(e){}if("copia"===i){var s=document.querySelector('link[rel="canonical"]'),l=s&&0===s.href.indexOf(o)?s.href:o;document.body?p():document.addEventListener("DOMContentLoaded",p)}}function m(){if(!document.getElementById("mm-autoria")){var e=document.createElement("div");e.id="mm-autoria",e.style.cssText="all:initial;position:fixed;left:0;right:0;bottom:0;z-index:2147483647;",(e.attachShadow?e.attachShadow({mode:"closed"}):e).innerHTML='<style>.f{box-sizing:border-box;width:100%;background:#1a2744;border-top:2px solid #b8922a;color:#f7f4ee;font:15px/1.5 Georgia,"Times New Roman",serif;padding:12px 16px;text-align:center;box-shadow:0 -4px 18px rgba(0,0,0,.18)}.e{display:block;font:600 11px/1.4 Georgia,serif;letter-spacing:.12em;text-transform:uppercase;color:#d4aa4a;margin-bottom:2px}a{color:#d4aa4a;font-weight:700;text-decoration:none;border-bottom:1px solid rgba(212,170,74,.5)}a:hover{border-bottom-color:#d4aa4a}@media(max-width:520px){.f{font-size:13.5px;padding:10px 14px}}</style><div class="f" role="note"><span class="e">Copia no autorizada</span>Esta ficha es obra de <b>Marta López de Letona</b>. Úsala gratis en su web original: <a href="'+l+'" target="_blank" rel="noopener">martamates11.github.io/fichas-matamates</a></div>',document.body.appendChild(e);var t=e.getBoundingClientRect().height||80;document.body.style.paddingBottom=Math.ceil(t+8)+"px"}}function p(){m(),setInterval(m,4e3)}}();</script>
 </body>

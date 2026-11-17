@@ -84,13 +84,6 @@ body{background:var(--cf);font-family:'Lato',sans-serif;color:var(--ct);min-heig
 .n10{background:#1a7a1a;color:white;} .n9{background:#6dbf6d;color:white;} .n8{background:#1a4f8a;color:white;}
 .n7{background:#5b9bd5;color:white;} .n6{background:#c05c00;color:white;} .n5{background:#f5a623;color:black;}
 .nbaja{background:#c0392b;color:white;}
-/* «Mostrar solución»: botón apagado, que no invite a pulsarlo, y feedback neutro */
-:root{--capag:#A8998A;--capag-fondo:#F3EFE6;}
-.sol-zona{display:flex;justify-content:flex-end;margin-top:10px;}
-.btn-soluciones{background:transparent;color:var(--capag);border:1px solid #DDD0B6;border-radius:4px;padding:5px 14px;font-family:inherit;font-size:.78rem;font-weight:400;cursor:pointer;transition:color .2s,border-color .2s;}
-.btn-soluciones:hover:not(:disabled){color:var(--cts);border-color:var(--cb);}
-.btn-soluciones:disabled{opacity:.4;cursor:default;}
-.feedback-solucion{display:block;background:var(--capag-fondo);border:1.5px dashed var(--capag);border-radius:8px;padding:10px 14px;color:var(--ct);line-height:1.6;font-weight:400;}
 @media(max-width:600px){.figura-layout{flex-direction:column;gap:1rem;}.header h1{font-size:1.5rem;}.figura-svg{flex-shrink:1;max-width:100%;}.figura-svg svg{max-width:100%;height:auto;}.campos-wrapper{max-width:100%;}.feedback-hint{overflow-x:auto;}}
 </style>
 <script>MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"]]},options:{skipHtmlTags:["script","noscript","style","textarea"]}}</script>
@@ -104,10 +97,9 @@ body{background:var(--cf);font-family:'Lato',sans-serif;color:var(--ct);min-heig
     <p>Ejercicios interactivos &middot; 2&ordm; ESO &middot; Geometr&iacute;a</p>
     <div class="header-badges">
       <span class="header-badge">&#127919; Supera cada ejercicio para obtener el 10</span>
-      <span class="header-badge">&#128161; Cada fallo resta 0,2 puntos</span>
+      <span class="header-badge">&#128161; Cada fallo resta 0.2 puntos</span>
       <span class="header-badge">&#128218; Pista con la f&oacute;rmula si te equivocas</span>
       <span class="header-badge">&#128260; Pulsa "Nuevo" para cambiar los datos</span>
-      <span class="header-badge">&#128065;&#65039; Ver la soluci&oacute;n de un ejercicio no da puntos</span>
     </div>
   </div>
   <div class="info-bar">
@@ -188,7 +180,7 @@ function fechaHora(){var d=new Date();return{fecha:pad(d.getDate())+'/'+pad(d.ge
 
 // ---- NOTA ----
 function calcularNota(){var n=Object.values(superados).filter(Boolean).length;return Math.max(0,Math.min(10,n*(10/TOTAL_EJ)-fallosGlobales*PENALIZACION));}
-function actualizarUI(){var n=Object.values(superados).filter(Boolean).length;document.getElementById('progresoCount').textContent=n;document.getElementById('fallosCount').textContent=fallosGlobales;document.getElementById('notaActual').textContent=txtDec(calcularNota().toFixed(1));}
+function actualizarUI(){var n=Object.values(superados).filter(Boolean).length;document.getElementById('progresoCount').textContent=n;document.getElementById('fallosCount').textContent=fallosGlobales;document.getElementById('notaActual').textContent=calcularNota().toFixed(1);}
 
 // ---- UTILS ----
 function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
@@ -197,9 +189,6 @@ function rd(x,d){d=d===undefined?2:d;return Math.round(x*Math.pow(10,d))/Math.po
 function ok(v,c){return Math.abs(v-c)<=Math.max(0.02*Math.abs(c),0.05);}
 // tolerancia estricta: para resultados que deben salir exactos (ternas pitagoricas)
 function okExacto(v,c){return Math.abs(v-c)<=0.01;}
-// Decimales con coma: en TeX «3{,}5» y en texto «3,5»
-function texDec(x){return String(x).replace('.','{,}');}
-function txtDec(x){return String(x).replace('.',',');}
 function parseEntrada(v){
   if(typeof v!=='string')return NaN;
   return parseFloat(v.trim().replace(',','.'));
@@ -240,13 +229,7 @@ function tickMid(x1,y1,x2,y2,col){
 // ====================================================
 // TERNAS PITAGORICAS (para Ej1 y Ej2): catetos y catetos->hipotenusa exactos
 // ====================================================
-var TRIPLES=[[3,4,5],[6,8,10],[9,12,15],[5,12,13],[8,15,17],[12,16,20],[7,24,25],[10,24,26],[15,20,25],[18,24,30],[20,21,29],[16,30,34],[12,35,37]];
-// [semibase, altura, lado igual] del isosceles: base par de 6 a 40 cm y altura exacta
-var ISOS=[[3,4,5],[4,3,5],[6,8,10],[8,6,10],[9,12,15],[12,9,15],[5,12,13],[12,5,13],[8,15,17],[15,8,17],[7,24,25],[10,24,26],[12,16,20],[16,12,20],[15,20,25],[20,15,25],[18,24,30],[20,21,29],[16,30,34],[12,35,37]];
-// [base, altura, diagonal] del rectangulo: lados de 5 a 24 cm y diagonal exacta
-var RECTS=[[6,8,10],[8,6,10],[9,12,15],[12,9,15],[12,16,20],[16,12,20],[15,20,25],[20,15,25],[24,18,30],[18,24,30],[5,12,13],[12,5,13],[24,10,26],[10,24,26],[8,15,17],[15,8,17],[24,7,25],[7,24,25],[21,20,29],[20,21,29]];
-// [semidiferencia de bases, altura, lado oblicuo] del trapecio isosceles: altura exacta
-var TRAPS=[[3,4,5],[4,3,5],[5,12,13],[6,8,10],[8,6,10]];
+var TRIPLES=[[3,4,5],[6,8,10],[9,12,15],[5,12,13],[8,15,17],[12,16,20],[7,24,25],[10,24,26]];
 
 // ====================================================
 // FIGURA COMUN: triangulo rectangulo con catetos b (horizontal) y a (vertical)
@@ -315,7 +298,8 @@ function comprobarEj1(){
     document.getElementById('card-ej1').classList.add('superado');
   }else{
     fallosGlobales++;actualizarUI();
-    trasFallo(1,pistaEj1());
+    var hh='En un tri&aacute;ngulo rect&aacute;ngulo, el cuadrado de la hipotenusa es igual a la suma de los cuadrados de los catetos: \\( c = \\sqrt{b^2+a^2} = \\sqrt{'+b+'^2+'+a+'^2} = \\sqrt{'+(b*b+a*a)+'} = \\mathbf{'+hip+'\\text{ cm}} \\).';
+    trasFallo(1,hh);
   }
 }
 
@@ -355,7 +339,9 @@ function comprobarEj2(){
     document.getElementById('card-ej2').classList.add('superado');
   }else{
     fallosGlobales++;actualizarUI();
-    trasFallo(2,pistaEj2());
+    var letraDesconocida = d2.falta==='catB' ? 'b' : 'a';
+    var hh='Cuando conoces la hipotenusa y un cateto, despejas el cateto que falta: \\( '+letraDesconocida+' = \\sqrt{c^2-'+(d2.falta==='catB'?'a':'b')+'^2} = \\sqrt{'+hip+'^2-'+conocido+'^2} = \\sqrt{'+(hip*hip-conocido*conocido)+'} = \\mathbf{'+correcto+'\\text{ cm}} \\).';
+    trasFallo(2,hh);
   }
 }
 
@@ -364,8 +350,10 @@ function comprobarEj2(){
 // ====================================================
 var d3={};
 function generarD3(){
-  var t=ISOS[rnd(0,ISOS.length-1)];
-  d3={base:2*t[0],lado:t[2]};
+  var base=2*rnd(3,11); // par, 6-22
+  var minLado=Math.ceil(base/2)+2;
+  var lado=rnd(minLado,minLado+13);
+  d3={base:base,lado:lado};
 }
 function svgIsosceles(base,lado){
   var hAprox=Math.sqrt(Math.max(0.01,lado*lado-(base/2)*(base/2)));
@@ -396,7 +384,7 @@ function renderEj3HTML(){
     +'<div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">3</span><span class="ejercicio-titulo">Tri&aacute;ngulo Is&oacute;sceles: la altura</span></div><button class="btn-nuevo" onclick="nuevoEj(3)">&#128260; Nuevo</button></div>'
     +'<div class="figura-layout"><div class="figura-svg">'+svgIsosceles(d3.base,d3.lado)+'</div>'
     +'<div class="campos-wrapper">'
-    +'<p style="font-size:.82rem;color:var(--cts);">Los dos lados marcados en violeta miden lo mismo. Calcula la altura.</p>'
+    +'<p style="font-size:.82rem;color:var(--cts);">Los dos lados marcados en violeta miden lo mismo. Calcula la altura (redondea a las cent&eacute;simas si no es exacta).</p>'
     +'<div class="campo-row"><label class="campo-label" for="ej3_h">Altura (h) =</label><input type="text" inputmode="decimal" id="ej3_h" class="number-input" placeholder="cm"><span class="unidad">cm</span></div>'
     +'<div class="btns-comprobar"><button class="btn-primary" onclick="comprobarEj3()">Comprobar</button></div>'
     +'<div id="fb-ej3" class="feedback" aria-live="polite"></div></div></div></div>';
@@ -414,7 +402,8 @@ function comprobarEj3(){
     document.getElementById('card-ej3').classList.add('superado');
   }else{
     fallosGlobales++;actualizarUI();
-    trasFallo(3,pistaEj3());
+    var hh='La altura de un tri&aacute;ngulo is&oacute;sceles cae justo en el punto medio de la base y forma un tri&aacute;ngulo rect&aacute;ngulo con el lado igual (hipotenusa) y la mitad de la base (cateto): \\( h = \\sqrt{l^2-\\left(\\dfrac{b}{2}\\right)^2} = \\sqrt{'+lado+'^2-'+(base/2)+'^2} = \\sqrt{'+rd(lado*lado-(base/2)*(base/2))+'} \\approx \\mathbf{'+hC+'\\text{ cm}} \\).';
+    trasFallo(3,hh);
   }
 }
 
@@ -422,7 +411,7 @@ function comprobarEj3(){
 // EJ4: rectangulo, dados los dos lados, calcular la diagonal
 // ====================================================
 var d4={};
-function generarD4(){var t=RECTS[rnd(0,RECTS.length-1)];d4={b:t[0],h:t[1]};}
+function generarD4(){d4={b:rnd(6,20),h:rnd(4,16)};}
 function svgRectDiag(b,h){
   var esc=Math.min(15,170/b,130/h);
   var bpx=Math.round(b*esc),hpx=Math.round(h*esc);
@@ -450,7 +439,7 @@ function renderEj4HTML(){
     +'<div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">4</span><span class="ejercicio-titulo">Rect&aacute;ngulo: la diagonal</span></div><button class="btn-nuevo" onclick="nuevoEj(4)">&#128260; Nuevo</button></div>'
     +'<div class="figura-layout"><div class="figura-svg">'+svgRectDiag(d4.b,d4.h)+'</div>'
     +'<div class="campos-wrapper">'
-    +'<p style="font-size:.82rem;color:var(--cts);">Calcula la diagonal.</p>'
+    +'<p style="font-size:.82rem;color:var(--cts);">Calcula la diagonal (redondea a las cent&eacute;simas si no es exacta).</p>'
     +'<div class="campo-row"><label class="campo-label" for="ej4_d">Diagonal (d) =</label><input type="text" inputmode="decimal" id="ej4_d" class="number-input" placeholder="cm"><span class="unidad">cm</span></div>'
     +'<div class="btns-comprobar"><button class="btn-primary" onclick="comprobarEj4()">Comprobar</button></div>'
     +'<div id="fb-ej4" class="feedback" aria-live="polite"></div></div></div></div>';
@@ -468,7 +457,8 @@ function comprobarEj4(){
     document.getElementById('card-ej4').classList.add('superado');
   }else{
     fallosGlobales++;actualizarUI();
-    trasFallo(4,pistaEj4());
+    var hh='La diagonal de un rect&aacute;ngulo es la hipotenusa del tri&aacute;ngulo rect&aacute;ngulo que forman sus dos lados: \\( d = \\sqrt{b^2+h^2} = \\sqrt{'+b+'^2+'+h+'^2} = \\sqrt{'+(b*b+h*h)+'} \\approx \\mathbf{'+dC+'\\text{ cm}} \\).';
+    trasFallo(4,hh);
   }
 }
 
@@ -515,7 +505,7 @@ function renderEj5HTML(){
     +'<div class="figura-layout"><div class="figura-svg">'+svgHexApotema(d5.l)+'</div>'
     +'<div class="campos-wrapper">'
     +'<p class="nota-explicativa">Solo en el hex&aacute;gono regular ocurre esto: el &aacute;ngulo central mide 360&deg; / 6 = 60&deg;, as&iacute; que el tri&aacute;ngulo violeta (centro + los dos extremos de un lado) es equil&aacute;tero. Por eso los dos radios miden lo mismo que el lado.</p>'
-    +'<p style="font-size:.82rem;color:var(--cts);">Calcula la apotema (redondea a las cent&eacute;simas; puedes escribir la coma o el punto).</p>'
+    +'<p style="font-size:.82rem;color:var(--cts);">Calcula la apotema (redondea a las cent&eacute;simas si no es exacta).</p>'
     +'<div class="campo-row"><label class="campo-label" for="ej5_a">Apotema (a) =</label><input type="text" inputmode="decimal" id="ej5_a" class="number-input" placeholder="cm"><span class="unidad">cm</span></div>'
     +'<div class="btns-comprobar"><button class="btn-primary" onclick="comprobarEj5()">Comprobar</button></div>'
     +'<div id="fb-ej5" class="feedback" aria-live="polite"></div></div></div></div>';
@@ -534,7 +524,8 @@ function comprobarEj5(){
   }else{
     fallosGlobales++;actualizarUI();
     var mitad=rd(l/2);
-    trasFallo(5,pistaEj5());
+    var hh='El tri&aacute;ngulo formado por el centro y un lado es equil&aacute;tero (lado = '+l+' cm). La apotema es su altura, que divide ese tri&aacute;ngulo en dos rect&aacute;ngulos: \\( a = \\sqrt{l^2-\\left(\\dfrac{l}{2}\\right)^2} = \\sqrt{'+l+'^2-'+mitad+'^2} \\approx \\mathbf{'+aC+'\\text{ cm}} \\). Tambi&eacute;n puedes usar directamente \\( a = \\dfrac{l\\sqrt{3}}{2} \\).';
+    trasFallo(5,hh);
   }
 }
 
@@ -543,9 +534,10 @@ function comprobarEj5(){
 // ====================================================
 var d6={};
 function generarD6(){
-  var t,B,b;
-  do{t=TRAPS[rnd(0,TRAPS.length-1)];B=2*rnd(7,13);b=B-2*t[0];}while(b<2); // B par, 14-26
-  var diffMitades=t[0],lado=t[2];
+  var B=2*rnd(7,13); // par, 14-26
+  var diffMitades=rnd(2,6);
+  var b=B-2*diffMitades; // par, siempre >=2
+  var lado=rnd(diffMitades+2,diffMitades+14);
   d6={B:B,b:b,lado:lado,offset:diffMitades};
 }
 function svgTrapecioIsos(B,b,lado,offset){
@@ -577,7 +569,7 @@ function renderEj6HTML(){
     +'<div class="ejercicio-header"><div class="ejercicio-titulo-wrapper"><span class="ejercicio-num">6</span><span class="ejercicio-titulo">Trapecio Is&oacute;sceles: la altura</span></div><button class="btn-nuevo" onclick="nuevoEj(6)">&#128260; Nuevo</button></div>'
     +'<div class="figura-layout"><div class="figura-svg">'+svgTrapecioIsos(d6.B,d6.b,d6.lado,d6.offset)+'</div>'
     +'<div class="campos-wrapper">'
-    +'<p style="font-size:.82rem;color:var(--cts);">Los dos lados violetas miden lo mismo. Calcula la altura.</p>'
+    +'<p style="font-size:.82rem;color:var(--cts);">Los dos lados violetas miden lo mismo. Calcula la altura (redondea a las cent&eacute;simas si no es exacta).</p>'
     +'<div class="campo-row"><label class="campo-label" for="ej6_h">Altura (h) =</label><input type="text" inputmode="decimal" id="ej6_h" class="number-input" placeholder="cm"><span class="unidad">cm</span></div>'
     +'<div class="btns-comprobar"><button class="btn-primary" onclick="comprobarEj6()">Comprobar</button></div>'
     +'<div id="fb-ej6" class="feedback" aria-live="polite"></div></div></div></div>';
@@ -595,17 +587,10 @@ function comprobarEj6(){
     document.getElementById('card-ej6').classList.add('superado');
   }else{
     fallosGlobales++;actualizarUI();
-    trasFallo(6,pistaEj6());
+    var hh='Al trazar la altura de un trapecio is&oacute;sceles se forma un tri&aacute;ngulo rect&aacute;ngulo cuya hipotenusa es el lado oblicuo y cuyo cateto horizontal es la semidiferencia de las bases, \\( \\dfrac{B-b}{2} = \\dfrac{'+d6.B+'-'+d6.b+'}{2} = '+offset+'\\text{ cm} \\): \\( h = \\sqrt{l^2-\\left(\\dfrac{B-b}{2}\\right)^2} = \\sqrt{'+lado+'^2-'+offset+'^2} \\approx \\mathbf{'+hC+'\\text{ cm}} \\).';
+    trasFallo(6,hh);
   }
 }
-
-// Explicación completa de cada ejercicio con sus datos actuales (pista tras un fallo y «Mostrar solución»)
-function pistaEj1(){var b=d1.b,a=d1.a,hip=d1.hip;return 'En un tri&aacute;ngulo rect&aacute;ngulo, el cuadrado de la hipotenusa es igual a la suma de los cuadrados de los catetos: \\( c = \\sqrt{b^2+a^2} = \\sqrt{'+b+'^2+'+a+'^2} = \\sqrt{'+(b*b+a*a)+'} = \\mathbf{'+hip+'\\text{ cm}} \\).';}
-function pistaEj2(){var b=d2.b,a=d2.a,hip=d2.hip;var correcto=d2.falta==='catB'?b:a;var conocido=d2.falta==='catB'?a:b;var letraDesconocida=d2.falta==='catB'?'b':'a';return 'Cuando conoces la hipotenusa y un cateto, despejas el cateto que falta: \\( '+letraDesconocida+' = \\sqrt{c^2-'+(d2.falta==='catB'?'a':'b')+'^2} = \\sqrt{'+hip+'^2-'+conocido+'^2} = \\sqrt{'+(hip*hip-conocido*conocido)+'} = \\mathbf{'+correcto+'\\text{ cm}} \\).';}
-function pistaEj3(){var base=d3.base,lado=d3.lado;var hC=rd(Math.sqrt(lado*lado-(base/2)*(base/2)));return 'La altura de un tri&aacute;ngulo is&oacute;sceles cae justo en el punto medio de la base y forma un tri&aacute;ngulo rect&aacute;ngulo con el lado igual (hipotenusa) y la mitad de la base (cateto): \\( h = \\sqrt{l^2-\\left(\\dfrac{b}{2}\\right)^2} = \\sqrt{'+lado+'^2-'+(base/2)+'^2} = \\sqrt{'+rd(lado*lado-(base/2)*(base/2))+'} = \\mathbf{'+hC+'\\text{ cm}} \\).';}
-function pistaEj4(){var b=d4.b,h=d4.h;var dC=rd(Math.sqrt(b*b+h*h));return 'La diagonal de un rect&aacute;ngulo es la hipotenusa del tri&aacute;ngulo rect&aacute;ngulo que forman sus dos lados: \\( d = \\sqrt{b^2+h^2} = \\sqrt{'+b+'^2+'+h+'^2} = \\sqrt{'+(b*b+h*h)+'} = \\mathbf{'+dC+'\\text{ cm}} \\).';}
-function pistaEj5(){var l=d5.l;var aC=rd(l*Math.sqrt(3)/2);var mitad=rd(l/2);return 'El tri&aacute;ngulo formado por el centro y un lado es equil&aacute;tero (lado = '+l+' cm). La apotema es su altura, que divide ese tri&aacute;ngulo en dos tri&aacute;ngulos rect&aacute;ngulos: \\( a = \\sqrt{l^2-\\left(\\dfrac{l}{2}\\right)^2} = \\sqrt{'+l+'^2-'+texDec(mitad)+'^2} = \\sqrt{'+texDec(rd(l*l-mitad*mitad))+'} \\approx \\mathbf{'+texDec(aC)+'\\text{ cm}} \\). Tambi&eacute;n puedes usar directamente \\( a = \\dfrac{l\\sqrt{3}}{2} \\).';}
-function pistaEj6(){var lado=d6.lado,offset=d6.offset;var hC=rd(Math.sqrt(lado*lado-offset*offset));return 'Al trazar la altura de un trapecio is&oacute;sceles se forma un tri&aacute;ngulo rect&aacute;ngulo cuya hipotenusa es el lado oblicuo y cuyo cateto horizontal es la semidiferencia de las bases, \\( \\dfrac{B-b}{2} = \\dfrac{'+d6.B+'-'+d6.b+'}{2} = '+offset+'\\text{ cm} \\): \\( h = \\sqrt{l^2-\\left(\\dfrac{B-b}{2}\\right)^2} = \\sqrt{'+lado+'^2-'+offset+'^2} = \\sqrt{'+(lado*lado-offset*offset)+'} = \\mathbf{'+hC+'\\text{ cm}} \\).';}
 
 // ====================================================
 // NUEVO EJERCICIO
@@ -622,9 +607,7 @@ function solucion(n){
 
 // Tras un fallo que enseña la solución, otra figura con otras medidas:
 // copiar la solución mostrada ya no supera el ejercicio.
-// Sustituye el ejercicio por otro del mismo tipo con otra solución (tras un fallo o al ver la solución)
-function cambiarEjercicio(k){
-  var n=+k.replace(/\D/g,'');
+function trasFallo(n,pista){
   var gens=[null,generarD1,generarD2,generarD3,generarD4,generarD5,generarD6];
   var renders=[null,renderEj1HTML,renderEj2HTML,renderEj3HTML,renderEj4HTML,renderEj5HTML,renderEj6HTML];
   var antes=solucion(n);
@@ -634,10 +617,6 @@ function cambiarEjercicio(k){
   }
   var card=document.getElementById('card-ej'+n);
   if(card){var tmp=document.createElement('div');tmp.innerHTML=renders[n]();card.replaceWith(tmp.firstElementChild);}
-  ponerBotonesSolucion();
-}
-function trasFallo(n,pista){
-  cambiarEjercicio('ej'+n);
   var el=document.getElementById('fb-ej'+n);
   if(el){
     el.innerHTML='<span class="feedback-error">Revisa tu c&aacute;lculo.</span><span class="feedback-hint">Soluci&oacute;n del ejercicio anterior: '+pista.charAt(0).toLowerCase()+pista.slice(1)+'<br>&#128073; Ahora int&eacute;ntalo con este nuevo.</span>';
@@ -652,7 +631,6 @@ function nuevoEj(n){
   gens[n]();
   var card=document.getElementById('card-ej'+n);
   if(card){var tmp=document.createElement('div');tmp.innerHTML=renders[n]();card.replaceWith(tmp.firstElementChild);}
-  ponerBotonesSolucion();
 }
 
 // ====================================================
@@ -681,7 +659,7 @@ function confirmarFinalizar(){
   var card=document.getElementById('modalResultCard');
   card.className='modal-result-card '+claseNota(nota);
   document.getElementById('modalNombreMostrar').textContent=nombre;
-  document.getElementById('modalNota').textContent=txtDec(nota.toFixed(1))+' / 10';
+  document.getElementById('modalNota').textContent=nota.toFixed(1)+' / 10';
   var msg=nota>=10?'&iexcl;PERFECTO! Dominas Pit&aacute;goras en todas sus aplicaciones.':nota>=9?'&iexcl;EXCELENTE! Casi perfecto.':nota>=7?'&iexcl;MUY BIEN! Sigue as&iacute;.':nota>=6?'&iexcl;APROBADO! Buen trabajo.':nota>=5?'Aprobado justo. Repasa lo que fallaste.':'Sigue practicando con el bot&oacute;n Nuevo.';
   var nombresEj={ej1:'1. Hipotenusa',ej2:'2. Cateto',ej3:'3. Altura tri&aacute;ngulo is&oacute;sceles',ej4:'4. Diagonal rect&aacute;ngulo',ej5:'5. Apotema hex&aacute;gono',ej6:'6. Altura trapecio'};
   var desglose='<p style="margin-top:6px;font-weight:700;">Desglose por ejercicio:</p>';
@@ -691,7 +669,6 @@ function confirmarFinalizar(){
   document.getElementById('modalStats').innerHTML=
     '<p>Ejercicios superados: <strong>'+sup+' de '+TOTAL_EJ+'</strong></p>'
     +'<p>Fallos totales: <strong>'+fallosGlobales+'</strong></p>'
-    +lineaSolucionesVistas()
     +'<p>Fecha: <strong>'+dh.fecha+'</strong></p>'
     +'<p>Hora: <strong>'+dh.hora+'</strong></p>'
     +'<p>Tiempo: <strong>'+tf+'</strong></p>'
@@ -706,14 +683,12 @@ function confirmarFinalizar(){
 function inicializarFicha(){
   detenerTimer();fallosGlobales=0;finalizado=false;
   Object.keys(superados).forEach(function(k){superados[k]=false;});
-  Object.keys(solucionesVistas).forEach(function(k){solucionesVistas[k]=0;});
   document.body.style.background='';
   actualizarUI();
   generarD1();generarD2();generarD3();generarD4();generarD5();generarD6();
   document.getElementById('ejerciciosContainer').innerHTML=
     renderEj1HTML()+renderEj2HTML()+renderEj3HTML()+renderEj4HTML()+renderEj5HTML()+renderEj6HTML();
   iniciarTimer();
-  ponerBotonesSolucion();
 }
 
 document.getElementById('ejerciciosContainer').addEventListener('keydown',function(e){
@@ -735,78 +710,6 @@ document.getElementById('btnResetear').addEventListener('click',function(){
   }
 });
 window.onload=function(){inicializarFicha();};
-
-// ============ MOSTRAR SOLUCIÓN (por ejercicio) ============
-// La ficha muestra todos los ejercicios a la vez: cada tarjeta tiene su propio botón, apagado,
-// al pie. Ver la solución no suma, no resta y no cuenta para superar el ejercicio: el ejercicio
-// visto se sustituye por otro del mismo tipo con otros datos. Los fallos previos siguen restando.
-var solucionesVistas={};
-Object.keys(superados).forEach(function(k){solucionesVistas[k]=0;});
-function totalSolucionesVistas(){var t=0;Object.keys(solucionesVistas).forEach(function(k){t+=solucionesVistas[k];});return t;}
-function lineaSolucionesVistas(){
-  var t=totalSolucionesVistas(),det=[];
-  Object.keys(solucionesVistas).forEach(function(k){if(solucionesVistas[k])det.push('ej. '+k.replace(/\D/g,'')+': '+solucionesVistas[k]);});
-  return '<p>Soluciones vistas: <strong>'+t+'</strong>'+(det.length?' ('+det.join(', ')+')':'')+'</p>';
-}
-function ponerBotonesSolucion(){
-  Object.keys(superados).forEach(function(k){
-    if(SIN_BOTON_SOLUCION.indexOf(k)>=0)return;
-    var card=document.getElementById('card-'+k);
-    if(!card)return;
-    card.querySelectorAll('.sol-zona').forEach(function(z){z.remove();});
-    if(superados[k]||finalizado)return;
-    var zona=document.createElement('div');
-    zona.className='sol-zona';
-    zona.innerHTML='<button type="button" class="btn-soluciones">Mostrar soluci&oacute;n</button>';
-    zona.firstElementChild.addEventListener('click',function(){pedirSolucion(k);});
-    card.appendChild(zona);
-  });
-}
-function avisoSoluciones(){
-  return new Promise(function(resolve){
-    var fondo=document.createElement('div');
-    fondo.setAttribute('role','dialog');
-    fondo.setAttribute('aria-modal','true');
-    fondo.setAttribute('aria-labelledby','tituloAvisoSol');
-    fondo.style.cssText='position:fixed;inset:0;background:rgba(44,31,14,0.55);display:flex;align-items:center;justify-content:center;z-index:3000;padding:16px;';
-    fondo.innerHTML=
-      '<div style="background:#FFFDF7;border:2px solid #C9A96E;border-radius:14px;max-width:400px;width:100%;padding:22px 22px 18px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.25);font-family:inherit;color:#2C1F0E;">'+
-      '<h3 id="tituloAvisoSol" style="margin:0 0 10px;font-size:1.1rem;color:#A0522D;">&iquest;Mostrar las soluciones?</h3>'+
-      '<p style="margin:0 0 18px;font-size:0.92rem;line-height:1.45;">Ver&aacute;s resuelto este ejercicio con su explicaci&oacute;n. <b>Este ejercicio no contar&aacute; para la nota</b> y los fallos que ya hayas cometido siguen restando. Despu&eacute;s podr&aacute;s seguir con otro ejercicio del mismo tipo.</p>'+
-      '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">'+
-      '<button type="button" data-r="si" style="background:transparent;color:#8A7A69;border:1px solid #DDD0B6;border-radius:30px;padding:9px 18px;cursor:pointer;font-family:inherit;font-size:.85rem;">S&iacute;, mostrar soluciones</button>'+
-      '<button type="button" data-r="no" style="background:#A0522D;color:#FFFFFF;border:none;border-radius:30px;padding:10px 22px;font-weight:700;cursor:pointer;font-family:inherit;">Volver al ejercicio</button>'+
-      '</div></div>';
-    function cerrar(r){fondo.remove();document.removeEventListener('keydown',tecla);resolve(r);}
-    function tecla(ev){if(ev.key==='Escape')cerrar(false);}
-    fondo.querySelector('[data-r="no"]').addEventListener('click',function(){cerrar(false);});
-    fondo.querySelector('[data-r="si"]').addEventListener('click',function(){cerrar(true);});
-    fondo.addEventListener('click',function(ev){if(ev.target===fondo)cerrar(false);});
-    document.addEventListener('keydown',tecla);
-    document.body.appendChild(fondo);
-    fondo.querySelector('[data-r="no"]').focus();
-  });
-}
-function pedirSolucion(k){
-  if(finalizado||superados[k])return;
-  avisoSoluciones().then(function(si){
-    if(!si||finalizado||superados[k])return;
-    var html=solucionDe(k);
-    solucionesVistas[k]++;
-    cambiarEjercicio(k);                       // otro del mismo tipo; nota y fallos intactos
-    var fb=document.getElementById(idFeedback(k));
-    if(fb){fb.innerHTML='<span class="feedback-solucion"><b>Soluci&oacute;n.</b> '+html+'<br><br>Soluci&oacute;n mostrada &middot; ejercicio sin calificar. &#128073; Sigue con este nuevo.</span>';tipeset(idFeedback(k));}
-    ponerBotonesSolucion();
-  });
-}
-// Los botones se recolocan cada vez que se repinta una tarjeta o se actualiza el marcador
-(function(){
-  var _act=actualizarUI;
-  actualizarUI=function(){_act();ponerBotonesSolucion();};
-})();
-var SIN_BOTON_SOLUCION=[];
-function solucionDe(k){return window['pistaEj'+k.replace(/\D/g,'')]();}
-function idFeedback(k){return 'fb-'+k;}
 </script>
 <script>/*mm*/!function(){var e=atob("aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J3dnd5Qy1QMmI3SVdaS3BtVFhWdWpGYTZwOXhkQlFJN2lxZS1LOE9oVFBNTzctcEJuVW03X0x3WkpqelJKWlhDN3AvZXhlYw=="),t="martamates11.github.io",o="https://martamates11.github.io/fichas-matamates/",a=location.hostname;if("file:"!==location.protocol&&a&&"localhost"!==a&&!/^(127\.|10\.|192\.168\.|\[)/.test(a)&&!/^martamates11-github-io\.translate\.goog$/.test(a)){var n,i;try{n=window.top!==window}catch(e){n=!0}if(a===t){if(!n)return;if(-1!==(location.ancestorOrigins&&location.ancestorOrigins[0]||document.referrer||"").indexOf(t))return;i="incrustada"}else i="copia";try{var r="mm-g-"+location.pathname+"-"+(new Date).toISOString().slice(0,10),c=!1;try{c="1"===localStorage.getItem(r)}catch(e){}if(!c&&0===e.indexOf("https://")){try{localStorage.setItem(r,"1")}catch(e){}var d="k="+i+"&h="+encodeURIComponent(a)+"&u="+encodeURIComponent(location.href.slice(0,400))+"&t="+encodeURIComponent(document.title.slice(0,200))+"&r="+encodeURIComponent((document.referrer||"").slice(0,400));(new Image).src=e+"?"+d}}catch(e){}if("copia"===i){var s=document.querySelector('link[rel="canonical"]'),l=s&&0===s.href.indexOf(o)?s.href:o;document.body?p():document.addEventListener("DOMContentLoaded",p)}}function m(){if(!document.getElementById("mm-autoria")){var e=document.createElement("div");e.id="mm-autoria",e.style.cssText="all:initial;position:fixed;left:0;right:0;bottom:0;z-index:2147483647;",(e.attachShadow?e.attachShadow({mode:"closed"}):e).innerHTML='<style>.f{box-sizing:border-box;width:100%;background:#1a2744;border-top:2px solid #b8922a;color:#f7f4ee;font:15px/1.5 Georgia,"Times New Roman",serif;padding:12px 16px;text-align:center;box-shadow:0 -4px 18px rgba(0,0,0,.18)}.e{display:block;font:600 11px/1.4 Georgia,serif;letter-spacing:.12em;text-transform:uppercase;color:#d4aa4a;margin-bottom:2px}a{color:#d4aa4a;font-weight:700;text-decoration:none;border-bottom:1px solid rgba(212,170,74,.5)}a:hover{border-bottom-color:#d4aa4a}@media(max-width:520px){.f{font-size:13.5px;padding:10px 14px}}</style><div class="f" role="note"><span class="e">Copia no autorizada</span>Esta ficha es obra de <b>Marta López de Letona</b>. Úsala gratis en su web original: <a href="'+l+'" target="_blank" rel="noopener">martamates11.github.io/fichas-matamates</a></div>',document.body.appendChild(e);var t=e.getBoundingClientRect().height||80;document.body.style.paddingBottom=Math.ceil(t+8)+"px"}}function p(){m(),setInterval(m,4e3)}}();</script>
 </body>
