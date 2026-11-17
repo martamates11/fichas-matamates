@@ -220,7 +220,7 @@
         ...(dif === 1 ? [] : [{ t: `El ${dif} está multiplicando a \\(x\\): pasa dividiendo.`, m: `x = \\frac{${rhs}}{${dif}} = ${x}` }]),
         { t: 'Comprobación:', m: `${a} \\cdot ${x} - ${b} = ${a * x - b} \\qquad ${c} \\cdot ${x} + ${d} = ${c * x + d}` }
       ],
-      res: `${a}x - ${b} = ${c}x + ${d} \;\\Rightarrow\; x = ${x}`,
+      res: `${a}x - ${b} = ${c}x + ${d} \\;\\Rightarrow\\; x = ${x}`,
       resHtml: `Ecuación: \\(${a}x - ${b} = ${c}x + ${d}\\). El número es \\(${x}\\).`
     };
   }

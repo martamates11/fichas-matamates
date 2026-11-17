@@ -155,7 +155,8 @@
     const lineas = letras.map(l => `<span class="pend-texto"><b>${l}</b>: ………………………………… · ………………………………</span>`).join('');
     const pasos = tres.map((id, i) => {
       const c = CUERPOS[id];
-      return { t: `<b>${letras[i]}.</b> Tiene ${c.det}: es ${/^[AEIOU]/.test(c.nombre) ? 'una' : c.nombre.startsWith('Cubo') || c.nombre.startsWith('Cilindro') || c.nombre.startsWith('Cono') || c.nombre.startsWith('Tetraedro') || c.nombre.startsWith('Prisma') ? 'un' : 'una'} ${c.nombre.toLowerCase()}, ${c.clase === 'poliedro regular' ? 'un' : c.clase === 'prisma' ? 'un' : c.clase === 'pirámide' ? 'una' : 'un'} ${c.clase}.` };
+      const art = /^Pir/.test(c.nombre) ? 'una' : 'un', artC = c.clase === 'pirámide' ? 'una' : 'un';
+      return { t: `<b>${letras[i]}.</b> Tiene ${c.det}: es ${art} ${c.nombre.toLowerCase()}, ${artC} ${c.clase}.` };
     });
     return {
       html: true,
@@ -205,7 +206,6 @@
     const [l, h, apL] = R.pick(PIRAMIDES), u = R.pick(UNIDADES);
     const vista = vistaCab(0.5, Math.PI / 5);
     const g = piramideGen([[-l / 2, -l / 2], [l / 2, -l / 2], [l / 2, l / 2], [-l / 2, l / 2]], [0, h, 0]);
-    g.V = g.V.map(([x, y, z]) => [x, y, z]);
     const b = cajaCuerpo(g.V, vista), s = 1.15 * K / Math.max(b.x1 - b.x0, b.y1 - b.y0);
     const L = Lienzo(), Q = dibujaPoliedro(L, g.V, g.caras, vista, s, 0, 0);
     const base = vista.proj([0, 0, 0]), C = [s * base[0], s * base[1]], Ap = Q[4];
@@ -213,8 +213,13 @@
     L.linea(Ap[0], Ap[1], C[0], C[1], { discontinua: true, grosor: 1.2 }).punto(C[0], C[1], 2);
     L.linea(Ap[0], Ap[1], M[0], M[1], { grosor: 1.3 });
     L.cota(Q[0], Q[1], `l = ${medida(l, u)}`, { lado: -1, d: 12 });
-    L.texto(C[0] + 4, (Ap[1] + C[1]) / 2 - 2, `h = ${medida(h, u)}`, { tam: 12, ancla: 'start' });
-    L.texto((Ap[0] + M[0]) / 2 - 5, (Ap[1] + M[1]) / 2 + 12, `${hl} = ${medida(apL, u)}</tspan>`, { tam: 12, ancla: 'end' });
+    /* Rótulos fuera de la figura, unidos con un trazo fino al segmento que miden */
+    const xMin = Math.min(...Q.map(q => q[0])), xMax = Math.max(...Q.map(q => q[0]));
+    const mh = [(Ap[0] + C[0]) / 2, (Ap[1] + C[1]) / 2], ml = [(Ap[0] + M[0]) / 2, (Ap[1] + M[1]) / 2];
+    L.linea(mh[0], mh[1], xMax + 10, mh[1], { trazo: '#555', grosor: 0.7 }).punto(mh[0], mh[1], 1.6)
+      .texto(xMax + 13, mh[1] + 4, `h = ${medida(h, u)}`, { tam: 12, ancla: 'start' });
+    L.linea(ml[0], ml[1], xMin - 10, ml[1], { trazo: '#555', grosor: 0.7 }).punto(ml[0], ml[1], 1.6)
+      .texto(xMin - 13, ml[1] + 4, `${hl} = ${medida(apL, u)}</tspan>`, { tam: 12, ancla: 'end' });
     const vol = l * l * h / 3, Ab = l * l, Al = 2 * l * apL, At = Ab + Al;
     return {
       html: true, enun: figura(L.cerrar('pend-fig', 'Pirámide de base cuadrada')),

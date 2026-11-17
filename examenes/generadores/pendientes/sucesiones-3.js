@@ -16,7 +16,7 @@
 
   const NA = 20, NG = 6;                       // términos que se piden: aritmética / geométrica
   const mas = v => (v < 0 ? `- ${-v}` : `+ ${v}`);
-  const seq = (t) => `\\(${t.map(n).join(',\\ ')},\\ \\dots\\)`;
+  const seq = (t) => `\\(${t.map(v => `{${n(v)}}`).join(',\\ ')},\\ \\dots\\)`;
   const enunSeq = (t) => ({ html: true, enun: `<span class="pend-texto">${seq(t)}</span>` });
 
   /* ---------- Aritmética ---------- */
@@ -35,7 +35,7 @@
         { t: `Sustituimos \\(n = ${NA}\\) en la fórmula del término general:`, m: `a_{${NA}} = ${n(a1)} + ${NA - 1} \\cdot ${p(d)} = ${n(a1)} ${mas(d * (NA - 1))} = ${n(an)}` },
         { t: `Suma de los ${NA} primeros términos: \\(S_n = \\dfrac{n\\,(a_1 + a_n)}{2}\\).`, m: `S_{${NA}} = \\frac{${NA} \\cdot (${n(a1)} ${mas(an)})}{2} = ${NA / 2} \\cdot ${p(a1 + an)} = ${n(S)}` }
       ],
-      res: `a_1 = ${n(a1)},\; d = ${n(d)},\; a_n = ${gen},\; a_{${NA}} = ${n(an)},\; S_{${NA}} = ${n(S)}`
+      res: `a_1 = ${n(a1)},\\; d = ${n(d)},\\; a_n = ${gen},\\; a_{${NA}} = ${n(an)},\\; S_{${NA}} = ${n(S)}`
     };
   }
 
@@ -57,7 +57,7 @@
         { t: `Sustituimos \\(n = ${NG}\\):`, m: `a_{${NG}} = ${porA1(a1, potTex(r, NG - 1))} = ${n(a1)} \\cdot ${p(pot)} = ${n(an)}` },
         { t: `Suma de los ${NG} primeros términos: \\(S_n = \\dfrac{a_1\\,(r^{\\,n}-1)}{r-1}\\).`, m: `S_{${NG}} = \\frac{${n(a1)} \\cdot (${potTex(r, NG)} - 1)}{${n(r)} - 1} = \\frac{${n(a1)} \\cdot (${n(rN)} - 1)}{${n(r - 1)}} = \\frac{${n(a1 * (rN - 1))}}{${n(r - 1)}} = ${n(S)}` }
       ],
-      res: `a_1 = ${n(a1)},\; r = ${n(r)},\; a_n = ${porA1(a1, potTex(r, 'n-1'))},\; a_{${NG}} = ${n(an)},\; S_{${NG}} = ${n(S)}`
+      res: `a_1 = ${n(a1)},\\; r = ${n(r)},\\; a_n = ${porA1(a1, potTex(r, 'n-1'))},\\; a_{${NG}} = ${n(an)},\\; S_{${NG}} = ${n(S)}`
     };
   }
 
@@ -72,7 +72,7 @@
       ? { t: 'Comprobamos qué se mantiene constante entre términos consecutivos. Las diferencias son iguales, así que es una progresión aritmética:', m: `${n(t[1])} - ${p(t[0])} = ${n(t[1] - t[0])},\\qquad ${n(t[2])} - ${p(t[1])} = ${n(t[2] - t[1])}` }
       : { t: 'Las diferencias no son iguales, pero los cocientes sí; es una progresión geométrica:', m: `${n(t[1] - t[0])} \\ne ${n(t[2] - t[1])},\\qquad \\frac{${n(t[1])}}{${n(t[0])}} = \\frac{${n(t[2])}}{${n(t[1])}} = ${n(d.r)}` };
     const r = arit ? pasosArit(d) : pasosGeo(d);
-    return { ...enunSeq(t), pasos: [cab, ...r.pasos], res: `\\text{${arit ? 'aritmética' : 'geométrica'}},\; ${r.res}`, resHtml: undefined };
+    return { ...enunSeq(t), pasos: [cab, ...r.pasos], res: `\\text{${arit ? 'aritmética' : 'geométrica'}},\\; ${r.res}` };
   }
 
   const ENUN_A = [`Para la siguiente progresión aritmética, calcula el primer término, la diferencia, el término general \\(a_n\\), el término \\(a_{${NA}}\\) y la suma \\(S_{${NA}}\\) de sus ${NA} primeros términos:`,
