@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<base target="_top">
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Lora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Tokens de Cálculo mental (tapete de juego de mesa: fieltro, marfil y latón) */
+  --noche:#1D5A45; --noche-2:#F6EBD0; --noche-3:#E9DDC2; --linea:#2A1C11;
+  --tinta:#2A1C11; --tinta-suave:#6A5642;
+  --turquesa:#2E7D4F; --coral:#B3261E; --mostaza:#E9C46A; --violeta:#C8553D; --cielo:#8A5A1E; --rosa:#C8553D; --ok:#2E7D4F;
+  --oro:#E9C46A; --plata:#D8D2C6; --bronce:#C8875A;
+  --display:'Lora',Georgia,serif; --texto:'Lora',Georgia,serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--noche);color:var(--tinta);font-family:var(--texto);font-size:17px;line-height:1.45}
+body{min-height:100vh;background-image:radial-gradient(rgba(0,0,0,.10) 1px,transparent 1.4px),radial-gradient(ellipse at 50% 30%,transparent 35%,rgba(0,0,0,.38) 100%);background-size:5px 5px,auto}
+.envoltura{position:relative;max-width:1440px;margin:0 auto;padding:1.4rem 1.6rem 2rem}
+
+/* Cabecera */
+.cab{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1rem}
+.marca{display:flex;align-items:center;gap:.9rem}
+.marca svg{width:58px;height:58px;flex:0 0 58px}
+.titulo{font-family:'Abril Fatface',Georgia,serif;font-weight:400;font-size:clamp(2rem,3.6vw,3.1rem);line-height:1;color:#F6EBD0;text-shadow:0 4px 0 #123C2E}
+.sub{font-family:var(--display);font-weight:500;color:var(--tinta-suave);letter-spacing:.06em;text-transform:uppercase;font-size:.85rem;margin-top:.25rem}
+.directo{display:flex;align-items:center;gap:.6rem}
+.pill{font:inherit;font-weight:700;font-size:.9rem;color:var(--tinta);background:var(--noche-2);border:1px solid var(--linea);border-radius:999px;padding:.4rem .9rem;cursor:pointer;display:inline-flex;align-items:center;gap:.5rem}
+.pill .punto{width:10px;height:10px;border-radius:50%;background:var(--tinta-suave)}
+.pill[aria-pressed="true"] .punto{background:var(--coral);box-shadow:0 0 0 0 rgba(255,107,91,.6);animation:latido 1.6s infinite}
+@keyframes latido{0%{box-shadow:0 0 0 0 rgba(255,107,91,.6)}70%{box-shadow:0 0 0 10px rgba(255,107,91,0)}100%{box-shadow:0 0 0 0 rgba(255,107,91,0)}}
+.hora{font-size:.85rem;color:var(--tinta-suave)}
+
+/* Filtro */
+.filtro{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;background:linear-gradient(180deg,var(--noche-2),var(--noche-2));border:1px solid var(--linea);border-radius:16px;padding:.6rem .8rem;margin-bottom:1rem}
+.seg{display:inline-flex;background:var(--noche);border:1px solid var(--linea);border-radius:999px;padding:3px}
+.seg button{font:inherit;font-weight:700;font-size:.9rem;color:var(--tinta-suave);background:none;border:0;border-radius:999px;padding:.4rem 1rem;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--tinta);color:var(--noche-2)}
+.rango{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;font-size:.9rem;color:var(--tinta-suave)}
+.rango input{font:inherit;color:var(--tinta);background:var(--noche);border:1px solid var(--linea);border-radius:10px;padding:.3rem .5rem;color-scheme:light}
+.btn{font:inherit;font-family:var(--display);font-weight:700;border:0;border-radius:10px;padding:.45rem 1rem;cursor:pointer;background:var(--mostaza);color:var(--tinta);border:2.5px solid var(--tinta)}
+.intervalo{margin-left:auto;font-size:.88rem;color:var(--tinta-suave)}
+
+/* Pestañas de duelos */
+.duelos{display:flex;gap:.7rem;overflow-x:auto;padding-bottom:.3rem;margin-bottom:1rem}
+.duelo-tab{flex:0 0 auto;text-align:left;font:inherit;color:var(--tinta);cursor:pointer;background:var(--noche-2);border:2px solid var(--linea);border-radius:16px;padding:.55rem .9rem;min-width:190px}
+.duelo-tab b{display:block;font-family:var(--display);font-weight:800;font-size:1.25rem;letter-spacing:.08em}
+.duelo-tab span{font-size:.82rem;color:var(--tinta-suave)}
+.duelo-tab[aria-selected="true"]{border-color:var(--cielo);background:color-mix(in srgb,var(--cielo) 14%,var(--noche-2));box-shadow:0 0 0 3px rgba(76,201,240,.25)}
+
+/* Escenario */
+.escenario{display:grid;grid-template-columns:minmax(0,2.1fr) minmax(280px,1fr);gap:1.2rem}
+@media (max-width:980px){.escenario{grid-template-columns:1fr}}
+.tarjeta{background:linear-gradient(180deg,var(--noche-2),var(--noche-2));border:1px solid var(--linea);border-radius:22px;padding:1.2rem 1.3rem;box-shadow:0 14px 40px rgba(0,0,0,.3)}
+.etq{font-family:var(--display);font-weight:700;font-size:.82rem;letter-spacing:.14em;text-transform:uppercase;color:var(--turquesa);margin-bottom:.4rem}
+.duelo-cab{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap}
+.unirse{text-align:right}
+.unirse small{display:block;font-size:.8rem;color:var(--tinta-suave);text-transform:uppercase;letter-spacing:.08em}
+.unirse b{font-family:var(--display);font-weight:800;font-size:clamp(1.8rem,3vw,2.6rem);letter-spacing:.14em;color:var(--cielo)}
+.tablas-duelo{font-family:var(--display);font-weight:700;font-size:1.35rem}
+.cifras{display:flex;gap:.7rem;flex-wrap:wrap;margin:.8rem 0 .4rem}
+.cifra{background:var(--noche);border:1px solid var(--linea);border-radius:14px;padding:.45rem .9rem;min-width:120px}
+.cifra b{display:block;font-family:var(--display);font-weight:800;font-size:1.9rem;line-height:1.05}
+.cifra span{font-size:.8rem;color:var(--tinta-suave);text-transform:uppercase;letter-spacing:.06em}
+.cifra.jugando b{color:var(--coral)} .cifra.terminado b{color:var(--ok)}
+
+/* Pódium */
+.podio{display:grid;grid-template-columns:repeat(3,1fr);align-items:end;gap:1rem;margin-top:1.2rem;min-height:430px}
+.puesto{display:flex;flex-direction:column;align-items:stretch;justify-content:flex-end;min-width:0}
+.ficha-p{background:var(--noche);border:2px solid var(--m);border-radius:18px 18px 0 0;border-bottom:0;padding:.9rem .8rem .8rem;text-align:center;position:relative}
+.ficha-p .nombre{font-family:var(--display);font-weight:800;font-size:clamp(1.25rem,2.2vw,2rem);line-height:1.1;overflow-wrap:anywhere}
+.ficha-p .datos{display:flex;justify-content:center;flex-wrap:wrap;gap:.35rem .9rem;margin-top:.55rem;font-weight:700;font-size:clamp(.95rem,1.4vw,1.2rem)}
+.ficha-p .ac{color:var(--ok)} .ficha-p .fa{color:var(--coral)} .ficha-p .ti{color:var(--cielo);font-variant-numeric:tabular-nums}
+.pedestal{border-radius:0 0 14px 14px;display:grid;place-items:center;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--m) 85%,#fff 0%),color-mix(in srgb,var(--m) 55%,var(--noche)));color:#1a1206}
+.pedestal b{font-family:var(--display);font-weight:800;font-size:clamp(2.6rem,5vw,4.2rem);line-height:1}
+.p1{--m:var(--oro)} .p2{--m:var(--plata)} .p3{--m:var(--bronce)}
+.p1 .pedestal{height:190px} .p2 .pedestal{height:135px} .p3 .pedestal{height:95px}
+.p1 .ficha-p::before{content:"";position:absolute;top:-30px;left:50%;transform:translateX(-50%);width:54px;height:30px;
+  background:linear-gradient(var(--oro),var(--oro));clip-path:polygon(0 100%,0 30%,25% 65%,50% 0,75% 65%,100% 30%,100% 100%)}
+.vacio .ficha-p{border-style:dashed;border-color:var(--linea);color:var(--tinta-suave)}
+.vacio .ficha-p .nombre{font-size:1.1rem;font-weight:600}
+.vacio .pedestal{background:var(--noche-3);color:var(--tinta-suave)}
+@keyframes sube{0%{opacity:0;transform:translateY(30px) scale(.96)}60%{opacity:1;transform:translateY(-6px) scale(1.02)}100%{transform:none}}
+@keyframes brilla{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--m) 70%,transparent)}100%{box-shadow:0 0 0 22px transparent}}
+.nuevo .ficha-p{animation:sube .8s cubic-bezier(.2,.8,.2,1) both,brilla 1.4s ease-out .4s 2}
+
+/* En juego */
+.lista-juego{display:grid;gap:.55rem;margin-top:.4rem}
+.jug{display:grid;grid-template-columns:1fr auto;gap:.25rem .6rem;align-items:center;background:var(--noche);border:1px solid var(--linea);border-radius:12px;padding:.5rem .7rem}
+.jug b{font-family:var(--display);font-weight:700;font-size:1.05rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.jug span{font-size:.85rem;color:var(--tinta-suave);font-variant-numeric:tabular-nums}
+.jug .barra{grid-column:1/-1;height:8px;border-radius:999px;background:var(--noche-3);overflow:hidden}
+.jug .barra i{display:block;height:100%;background:var(--ok);transition:width .6s ease}
+.nadie{color:var(--tinta-suave);font-size:.95rem}
+.reglas{margin-top:1rem;font-size:.92rem;color:var(--tinta-suave);text-align:center}
+.extra{font-size:.85rem;color:var(--tinta-suave);margin-top:.6rem}
+
+.estado{text-align:center;padding:3rem 1rem;color:var(--tinta-suave);font-size:1.1rem}
+.estado b{display:block;font-family:var(--display);font-size:1.6rem;color:var(--tinta);margin-bottom:.4rem}
+.error{color:var(--coral)}
+.tarjeta,.filtro,.duelo-tab,.cifra,.jug,.ficha-p,.seg,.pill,.rango input{border-color:var(--tinta);border-width:2.5px}
+.tarjeta{box-shadow:0 7px 0 #123C2E}
+.cifra,.jug,.ficha-p,.seg,.rango input{background:#FBF3DF}
+.sub,.hora{color:#CFE3D6}
+.estado{color:#CFE3D6} .estado b{color:#F6EBD0}
+.jug .barra{background:var(--noche-3)}
+.duelo-tab[aria-selected="true"]{border-color:var(--tinta);background:var(--mostaza);box-shadow:0 4px 0 #123C2E}
+.pedestal{border:2.5px solid var(--tinta);border-top:0;background:var(--m);color:var(--tinta)}
+.ficha-p{border-color:var(--tinta)}
+.unirse b{color:var(--tinta);background:var(--mostaza);padding:0 .5rem;border-radius:10px}
+.vacio .pedestal{border-style:dashed}
+.oculto{display:none!important}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="envoltura">
+  <header class="cab">
+    <div class="marca">
+      <svg viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="27" r="11" fill="#E9C46A" stroke="#F6EBD0" stroke-width="2.5"/><ellipse cx="26" cy="27" rx="21" ry="6" fill="none" stroke="#F6EBD0" stroke-width="3" transform="rotate(-20 26 27)"/><circle cx="8" cy="9" r="1.8" fill="#F6EBD0"/><circle cx="45" cy="44" r="1.5" fill="#F6EBD0"/><circle cx="46" cy="10" r="1.2" fill="#F6EBD0"/></svg>
+      <div><h1 class="titulo">Duelo galáctico</h1><div class="sub"><span id="nombreFicha">Cálculo mental</span> · Panel de la sesión</div></div>
+    </div>
+    <div class="directo">
+      <span class="hora" id="hora" aria-live="polite"></span>
+      <button type="button" class="pill" id="btnDirecto" aria-pressed="true" title="Actualiza el panel cada 5 segundos"><span class="punto"></span><span id="txtDirecto">En directo</span></button>
+    </div>
+  </header>
+
+  <div class="filtro">
+    <div class="seg" role="group" aria-label="Intervalo de tiempo">
+      <button type="button" data-p="clase" aria-pressed="true">Esta clase</button>
+      <button type="button" data-p="hoy" aria-pressed="false">Hoy</button>
+      <button type="button" data-p="elegir" aria-pressed="false">Elegir fecha y hora</button>
+    </div>
+    <div class="rango oculto" id="rango">
+      <label>Desde <input type="datetime-local" id="desde"></label>
+      <label>Hasta <input type="datetime-local" id="hasta"></label>
+      <button type="button" class="btn" id="aplicar">Aplicar</button>
+    </div>
+    <span class="intervalo" id="intervalo"></span>
+  </div>
+
+  <nav class="duelos" id="duelos" role="tablist" aria-label="Duelos del intervalo"></nav>
+  <main id="principal"><div class="estado">Cargando…</div></main>
+</div>
+
+<script>
+(() => {
+'use strict';
+const $ = id => document.getElementById(id);
+const dos = n => String(n).padStart(2, '0');
+let N = 15;   // lo actualiza el servidor (CONFIG.N_PREGUNTAS)
+const MINUTOS_CLASE = 60;
+const fmtPreciso = ms => { const d = Math.round(ms / 100), s = Math.floor(d / 10); return `${Math.floor(s / 60)}:${dos(s % 60)},${d % 10}`; };
+const fmtHora = ms => { const f = new Date(ms); return `${dos(f.getHours())}:${dos(f.getMinutes())}`; };
+const fmtFecha = ms => { const f = new Date(ms); return `${dos(f.getDate())}/${dos(f.getMonth() + 1)}/${f.getFullYear()}`; };
+const esc = t => String(t).replace(/[<>&"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]));
+const listaY = a => a.length > 1 ? a.slice(0, -1).join(', ') + ' y ' + a[a.length - 1] : String(a[0] || '');
+const verCodigo = s => s.slice(0, 3) + '-' + s.slice(3);
+const aLocal = ms => { const f = new Date(ms); return `${f.getFullYear()}-${dos(f.getMonth() + 1)}-${dos(f.getDate())}T${dos(f.getHours())}:${dos(f.getMinutes())}`; };
+
+let preset = 'clase', rangoFijo = null, seleccionado = null, directo = true, ocupado = false, datos = null;
+const vistosPodio = new Set();   // para animar solo a quien acaba de subir al pódium
+let primeraCarga = true;
+
+function intervalo() {
+  const ahora = Date.now();
+  if (preset === 'clase') return [ahora - MINUTOS_CLASE * 60000, ahora + 60000];
+  if (preset === 'hoy') { const f = new Date(); f.setHours(0, 0, 0, 0); return [f.getTime(), ahora + 60000]; }
+  return rangoFijo;
+}
+function textoIntervalo([d, h]) {
+  if (preset === 'clase') return `Últimos ${MINUTOS_CLASE} minutos (desde las ${fmtHora(d)})`;
+  if (preset === 'hoy') return `Hoy, ${fmtFecha(d)}`;
+  return fmtFecha(d) === fmtFecha(h) ? `${fmtFecha(d)}, de ${fmtHora(d)} a ${fmtHora(h)}` : `Del ${fmtFecha(d)} ${fmtHora(d)} al ${fmtFecha(h)} ${fmtHora(h)}`;
+}
+
+function cargar() {
+  const r = intervalo(); if (!r || ocupado) return;
+  ocupado = true;
+  $('intervalo').textContent = textoIntervalo(r);
+  google.script.run
+    .withSuccessHandler(res => { ocupado = false; datos = res; pintar(); })
+    .withFailureHandler(err => { ocupado = false; $('principal').innerHTML = `<div class="estado error"><b>No se han podido leer los datos</b>${esc(err && err.message || err)}</div>`; })
+    .obtenerPanel(r[0], r[1]);
+}
+
+function pintar() {
+  const f = new Date();
+  $('hora').textContent = `Actualizado a las ${dos(f.getHours())}:${dos(f.getMinutes())}:${dos(f.getSeconds())}`;
+  if (datos && datos.ficha) $('nombreFicha').textContent = datos.ficha;
+  if (datos && datos.n) N = datos.n;
+  const duelos = (datos && datos.duelos) || [];
+  if (!duelos.length) {
+    $('duelos').innerHTML = '';
+    $('principal').innerHTML = '<div class="estado"><b>No hay duelos en este intervalo</b>Cuando un alumno empiece un duelo, aparecerá aquí.</div>';
+    return;
+  }
+  if (!duelos.some(d => d.codigo === seleccionado)) seleccionado = duelos[0].codigo;   // por defecto, el más reciente
+  $('duelos').innerHTML = duelos.map(d => `<button type="button" class="duelo-tab" role="tab" data-c="${d.codigo}" aria-selected="${d.codigo === seleccionado}">
+      <b>${verCodigo(d.codigo)}</b><span>${esc(d.textoOpciones)} · ${d.participantes} ${d.participantes === 1 ? 'jugador' : 'jugadores'} · ${fmtHora(d.inicio)}</span></button>`).join('');
+  pintarDuelo(duelos.find(d => d.codigo === seleccionado));
+}
+
+function pintarDuelo(d) {
+  const orden = [1, 0, 2];   // 2.º, 1.º, 3.º
+  const podio = orden.map(k => {
+    const p = d.podio[k], cls = `puesto p${k + 1}`;
+    if (!p) return `<div class="${cls} vacio"><div class="ficha-p"><div class="nombre">${d.terminados > k ? '' : 'Esperando…'}</div></div><div class="pedestal"><b>${k + 1}</b></div></div>`;
+    const clave = `${d.codigo}|${p.nombre}|${p.ms}`;
+    const nuevo = !primeraCarga && !vistosPodio.has(clave);
+    vistosPodio.add(clave);
+    return `<div class="${cls}${nuevo ? ' nuevo' : ''}"><div class="ficha-p">
+        <div class="nombre">${esc(p.nombre)}</div>
+        <div class="datos"><span class="ac">✓ ${p.aciertos} ${p.aciertos === 1 ? 'acierto' : 'aciertos'}</span><span class="fa">✗ ${p.fallos} ${p.fallos === 1 ? 'fallo' : 'fallos'}</span><span class="ti">⏱ ${fmtPreciso(p.ms)}</span></div>
+      </div><div class="pedestal"><b>${k + 1}</b></div></div>`;
+  }).join('');
+  const jug = d.enJuego.length
+    ? `<div class="lista-juego">${d.enJuego.map(j => `<div class="jug"><b>${esc(j.nombre)}</b><span>${j.respondidas ? `Pregunta ${Math.min(N, j.respondidas + 1)} de ${N}` : 'Empezando'}</span><div class="barra"><i style="width:${(j.respondidas / N * 100).toFixed(0)}%"></i></div></div>`).join('')}</div>`
+    : `<p class="nadie">${d.terminados ? 'Ya han terminado todos.' : 'Nadie está jugando ahora mismo.'}</p>`;
+  const extra = [];
+  if (d.terminados > 3) extra.push(`${d.terminados - 3} ${d.terminados - 3 === 1 ? 'alumno más ha terminado' : 'alumnos más han terminado'} fuera del pódium.`);
+  if (d.abandonos) extra.push(`${d.abandonos} ${d.abandonos === 1 ? 'abandono' : 'abandonos'}.`);
+  if (d.rechazados) extra.push(`${d.rechazados} ${d.rechazados === 1 ? 'resultado rechazado' : 'resultados rechazados'} por tiempo imposible.`);
+  if (d.repetidos) extra.push(`${d.repetidos} ${d.repetidos === 1 ? 'intento repetido' : 'intentos repetidos'} (no cuentan).`);
+  $('principal').innerHTML = `
+    <div class="escenario">
+      <section class="tarjeta">
+        <div class="duelo-cab">
+          <div><div class="etq">Duelo en curso</div><div class="tablas-duelo">${esc(d.textoOpciones)}</div></div>
+          <div class="unirse"><small>Código para unirse</small><b>${verCodigo(d.codigo)}</b></div>
+        </div>
+        <div class="cifras">
+          <div class="cifra"><b>${d.participantes}</b><span>Participantes</span></div>
+          <div class="cifra terminado"><b>${d.terminados}</b><span>Han terminado</span></div>
+          <div class="cifra jugando"><b>${d.enJuego.length}</b><span>Jugando</span></div>
+        </div>
+        <div class="podio">${podio}</div>
+        ${extra.length ? `<p class="extra">${extra.join(' ')}</p>` : ''}
+        <p class="reglas">Gana quien más acierte; si hay empate, quien tarde menos. Solo cuenta el primer intento de cada alumno.</p>
+      </section>
+      <aside class="tarjeta">
+        <div class="etq" style="color:var(--coral)">Jugando ahora</div>
+        ${jug}
+      </aside>
+    </div>`;
+  primeraCarga = false;
+}
+
+/* Controles */
+document.querySelector('.seg').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  preset = b.dataset.p;
+  document.querySelectorAll('.seg button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+  $('rango').classList.toggle('oculto', preset !== 'elegir');
+  if (preset === 'elegir') {
+    if (!rangoFijo) { const h = Date.now(); rangoFijo = [h - 2 * 3600000, h]; }
+    $('desde').value = aLocal(rangoFijo[0]); $('hasta').value = aLocal(rangoFijo[1]);
+    $('intervalo').textContent = 'Elige el intervalo y pulsa «Aplicar».';
+    return;
+  }
+  seleccionado = null; cargar();
+});
+$('aplicar').addEventListener('click', () => {
+  const d = new Date($('desde').value).getTime(), h = new Date($('hasta').value).getTime();
+  if (!(d < h)) { $('intervalo').textContent = 'La hora de inicio debe ser anterior a la de fin.'; return; }
+  rangoFijo = [d, h]; seleccionado = null; cargar();
+});
+$('duelos').addEventListener('click', e => {
+  const b = e.target.closest('.duelo-tab'); if (!b) return;
+  seleccionado = b.dataset.c; pintar();
+});
+$('btnDirecto').addEventListener('click', () => {
+  directo = !directo;
+  $('btnDirecto').setAttribute('aria-pressed', String(directo));
+  $('txtDirecto').textContent = directo ? 'En directo' : 'En pausa';
+  if (directo) cargar();
+});
+setInterval(() => { if (directo && !document.hidden) cargar(); }, 5000);
+cargar();
+})();
+</script>
+</body>
+</html>
