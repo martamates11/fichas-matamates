@@ -193,7 +193,7 @@ body{background:var(--cf);font-family:'Lato',sans-serif;color:var(--ct);min-heig
 // Modelo: proporcional por apartado (10/7 al superar cada uno), -0,5 por fallo,
 // un acierto cierra el apartado; tras un fallo se genera una instancia nueva.
 // ====================================================
-var NOMBRES_TIPO = {t1:'Semejanza: sombras',t2:'Diagonal del cubo',t3:'Prisma',t4:'Pir\u00e1mide',t5:'Cilindro',t6:'Cono',t7:'Esfera'};
+var NOMBRES_TIPO = {t1:'Semejanza: sombras',t2:'Diagonal del ortoedro',t3:'Prisma',t4:'Pir\u00e1mide',t5:'Cilindro',t6:'Cono',t7:'Esfera'};
 var TOTAL_TIPOS = 7;
 var PUNTO_TIPO = 10/TOTAL_TIPOS;
 var PENALIZACION = 0.5;
@@ -447,18 +447,22 @@ function refrescarT1(){
 }
 
 // ====================================================
-// TIPO 2: DIAGONAL DEL CUBO (PIT\u00c1GORAS EN EL ESPACIO)
+// TIPO 2: DIAGONAL DEL ORTOEDRO (PITÁGORAS EN EL ESPACIO)
 // ====================================================
 var d2={};
+// Aristas a, b (base) y c (altura) con diagonal de la base d y diagonal del ortoedro D enteras
+var CADENAS_D2=[[3,4,12,5,13],[6,8,24,10,26],[9,12,8,15,17],[9,12,20,15,25],[12,16,15,20,25],[12,16,21,20,29],[18,24,16,30,34]];
 function generarD2(){
-  var a=rnd(3,20);
-  d2={a:a, d:rd(a*Math.SQRT2,2), D:rd(a*Math.sqrt(3),2)};
+  var c=CADENAS_D2[rnd(0,CADENAS_D2.length-1)];
+  var a=c[0], b=c[1];
+  if(Math.random()<0.5){a=c[1];b=c[0];}
+  d2={a:a, b:b, c:c[2], d:c[3], D:c[4]};
 }
-function svgCubo(a){
-  // Frente: A(60,170) B(160,170) C(160,70) Dd(60,70); fondo desplazado (+55,-42)
-  var A=[60,170],B=[160,170],C=[160,70],Dd=[60,70],E=[115,128],F=[215,128],G=[215,28],H=[115,28];
+function svgCubo(a,b,c){
+  // Frente: A(50,170) B(160,170) C(160,80) Dd(50,80); fondo desplazado (+55,-42)
+  var A=[50,170],B=[160,170],C=[160,80],Dd=[50,80],E=[105,128],F=[215,128],G=[215,38],H=[105,38];
   function p(P){return P[0]+','+P[1];}
-  return '<svg viewBox="0 -5 260 215" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cubo con la diagonal de una cara y la diagonal del cubo">'+
+  return '<svg viewBox="-30 -5 300 215" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ortoedro con la diagonal de la base y la diagonal del ortoedro">'+
     '<polygon points="'+p(Dd)+' '+p(C)+' '+p(G)+' '+p(H)+'" fill="'+C1+'" stroke="'+LN+'" stroke-width="2"/>'+
     '<polygon points="'+p(B)+' '+p(F)+' '+p(G)+' '+p(C)+'" fill="'+C3+'" fill-opacity=".55" stroke="'+LN+'" stroke-width="2"/>'+
     '<polygon points="'+p(A)+' '+p(B)+' '+p(C)+' '+p(Dd)+'" fill="'+C2+'" fill-opacity=".45" stroke="'+LN+'" stroke-width="2"/>'+
@@ -466,54 +470,58 @@ function svgCubo(a){
     '<line x1="'+E[0]+'" y1="'+E[1]+'" x2="'+A[0]+'" y2="'+A[1]+'" stroke="'+LN+'" stroke-width="1.2" stroke-dasharray="4,3"/>'+
     '<line x1="'+E[0]+'" y1="'+E[1]+'" x2="'+F[0]+'" y2="'+F[1]+'" stroke="'+LN+'" stroke-width="1.2" stroke-dasharray="4,3"/>'+
     '<line x1="'+E[0]+'" y1="'+E[1]+'" x2="'+H[0]+'" y2="'+H[1]+'" stroke="'+LN+'" stroke-width="1.2" stroke-dasharray="4,3"/>'+
-    // tri\u00e1ngulo rect\u00e1ngulo interior A-F-G
+    // triángulo rectángulo interior A-F-G
     '<polygon points="'+p(A)+' '+p(F)+' '+p(G)+'" fill="'+D3+'" opacity=".13"/>'+
     '<line x1="'+A[0]+'" y1="'+A[1]+'" x2="'+F[0]+'" y2="'+F[1]+'" stroke="'+D2+'" stroke-width="3.5" stroke-dasharray="7,4" stroke-linecap="round"/>'+
     '<line x1="'+A[0]+'" y1="'+A[1]+'" x2="'+G[0]+'" y2="'+G[1]+'" stroke="'+D3+'" stroke-width="3.5" stroke-dasharray="7,4" stroke-linecap="round"/>'+
     '<line x1="'+F[0]+'" y1="'+F[1]+'" x2="'+G[0]+'" y2="'+G[1]+'" stroke="'+D1+'" stroke-width="4" stroke-linecap="round"/>'+
     '<polyline points="205.5,130.7 205.5,120.7 215,118" fill="none" stroke="'+LN+'" stroke-width="1.2"/>'+
     '<line x1="'+A[0]+'" y1="'+A[1]+'" x2="'+B[0]+'" y2="'+B[1]+'" stroke="'+D1+'" stroke-width="4" stroke-linecap="round"/>'+
+    '<line x1="'+B[0]+'" y1="'+B[1]+'" x2="'+F[0]+'" y2="'+F[1]+'" stroke="'+D2+'" stroke-width="4" stroke-linecap="round"/>'+
     '<circle cx="'+A[0]+'" cy="'+A[1]+'" r="3" fill="'+LN+'"/><circle cx="'+G[0]+'" cy="'+G[1]+'" r="3" fill="'+LN+'"/>'+
-    txt(110,192,'a = '+a+' cm',D1)+
-    txt(226,82,'a',D1,'start')+
+    txt(105,192,'a = '+a+' cm',D1)+
+    txt(66,50,'b = '+b+' cm',D2,'end')+
+    txt(44,128,'c = '+c+' cm',D1,'end')+
     txt(190,163,'d = ?',D2,'start')+
-    txt(112,95,'D = ?',D3,'end')+
+    txt(112,98,'D = ?',D3,'end')+
     '</svg>';
 }
+function enunciadoT2(){
+  return 'Un ortoedro tiene una base de <strong>'+d2.a+' cm × '+d2.b+' cm</strong> y una altura de <strong>'+d2.c+' cm</strong>. Calcula la diagonal de la base (<em>d</em>) y la diagonal del ortoedro (<em>D</em>).';
+}
 function renderEjT2HTML(){
-  var a=d2.a;
   return '<div class="ejercicio-card'+(superados.t2?' superado':'')+'" id="card-t2">'+
-    cabeceraCard(2,'Diagonal del cubo')+
-    '<div class="enunciado" id="enun-t2">Un cubo tiene <strong>'+a+' cm</strong> de arista. Calcula la diagonal de una de sus caras (<em>d</em>) y la diagonal del cubo (<em>D</em>).</div>'+
-    '<p class="ejercicio-instr">Aplica el teorema de Pit\u00e1goras dos veces: primero en una cara y despu\u00e9s en el tri\u00e1ngulo rect\u00e1ngulo sombreado. Redondea a las cent\u00e9simas.</p>'+
-    '<div class="figura-layout"><div class="figura-svg media" id="fig-t2">'+svgCubo(a)+'</div>'+
-    '<div class="campos-wrapper">'+campo('t2_d','Diagonal cara d =','cm')+campo('t2_D','Diagonal cubo D =','cm')+
+    cabeceraCard(2,'Diagonal del ortoedro')+
+    '<div class="enunciado" id="enun-t2">'+enunciadoT2()+'</div>'+
+    '<p class="ejercicio-instr">Aplica el teorema de Pitágoras dos veces: primero en la base y después en el triángulo rectángulo sombreado. Los resultados son números enteros.</p>'+
+    '<div class="figura-layout"><div class="figura-svg media" id="fig-t2">'+svgCubo(d2.a,d2.b,d2.c)+'</div>'+
+    '<div class="campos-wrapper">'+campo('t2_d','Diagonal base d =','cm')+campo('t2_D','Diagonal ortoedro D =','cm')+
     '<div class="btns-comprobar"><button class="btn-primary" onclick="comprobarTipo2()">Comprobar</button></div>'+
     '<div id="fb-t2" class="feedback" aria-live="polite"></div></div></div></div>';
 }
 function comprobarTipo2(){
   if(!previoComprobar(2)) return;
-  var a=d2.a, dC=d2.d, DC=d2.D;
+  var a=d2.a, b=d2.b, c=d2.c, dC=d2.d, DC=d2.D;
   var v=leerCampos(['t2_d','t2_D']), vd=v[0], vD=v[1];
   if(isNaN(vd)||isNaN(vD)){avisoCampos();return;}
   stats.t2.intentos++;
   if(ok(vd,dC)&&ok(vD,DC)){
-    marcarSuperado(2,'\u00a1Correcto! La diagonal del cubo es la hipotenusa de un tri\u00e1ngulo cuyos catetos son una arista y la diagonal de una cara: \\( D=\\sqrt{a^2+d^2}=a\\sqrt{3} \\). Apartado superado.');
+    marcarSuperado(2,'¡Correcto! La diagonal de la base es \\( d=\\sqrt{'+a+'^2+'+b+'^2}='+dC+' \\) y la del ortoedro es la hipotenusa de un triángulo cuyos catetos son esa diagonal y la altura: \\( D=\\sqrt{d^2+c^2}=\\sqrt{'+dC+'^2+'+c+'^2}='+DC+' \\). Apartado superado.');
     return;
   }
   var diag='', pista='';
-  if(ok(vd,DC)&&ok(vD,dC)) diag='Has intercambiado los resultados: la diagonal de la cara es la m\u00e1s corta; la del cubo atraviesa el cuerpo y es mayor.';
-  else if(ok(vd,dC)&&ok(vD,dC)) diag='Has escrito la diagonal de la cara tambi\u00e9n como diagonal del cubo. Te falta el segundo Pit\u00e1goras: la diagonal del cubo sube adem\u00e1s una arista.';
-  else if(ok(vd,dC)) diag='La diagonal de la cara est\u00e1 bien, pero la del cubo no. Revisa el segundo tri\u00e1ngulo: sus catetos son a y d.';
-  else if(ok(vd,2*a)||ok(vD,3*a)) diag='No se pueden sumar las aristas: la diagonal no es a + a. Hay que aplicar Pit\u00e1goras (sumar los cuadrados y hacer la ra\u00edz).';
-  else if(ok(vd,2*a*a)||ok(vD,3*a*a)) diag='Has olvidado hacer la ra\u00edz cuadrada al final de Pit\u00e1goras.';
-  else diag='Revisa tus c\u00e1lculos con el teorema de Pit\u00e1goras.';
-  pista='Cara: \\( d=\\sqrt{a^2+a^2}=\\sqrt{'+a+'^2+'+a+'^2}=\\sqrt{'+(2*a*a)+'}\\approx\\mathbf{'+tN(dC)+'\\text{ cm}} \\). '+
-        'Cubo: \\( D=\\sqrt{a^2+d^2}=\\sqrt{'+(a*a)+'+'+(2*a*a)+'}=\\sqrt{'+(3*a*a)+'}\\approx\\mathbf{'+tN(DC)+'\\text{ cm}} \\) (es decir, \\( D=a\\sqrt{3} \\)).';
+  if(ok(vd,DC)&&ok(vD,dC)) diag='Has intercambiado los resultados: la diagonal de la base es la más corta; la del ortoedro atraviesa el cuerpo y es mayor.';
+  else if(ok(vd,dC)&&ok(vD,dC)) diag='Has escrito la diagonal de la base también como diagonal del ortoedro. Te falta el segundo Pitágoras: la diagonal del ortoedro sube además la altura.';
+  else if(ok(vd,dC)) diag='La diagonal de la base está bien, pero la del ortoedro no. Revisa el segundo triángulo: sus catetos son d y c.';
+  else if(ok(vd,a+b)||ok(vD,a+b+c)) diag='No se pueden sumar las aristas: la diagonal no es a + b (ni a + b + c). Hay que aplicar Pitágoras (sumar los cuadrados y hacer la raíz).';
+  else if(ok(vd,a*a+b*b)||ok(vD,dC*dC+c*c)) diag='Has olvidado hacer la raíz cuadrada al final de Pitágoras.';
+  else diag='Revisa tus cálculos con el teorema de Pitágoras.';
+  pista='Base: \\( d=\\sqrt{a^2+b^2}=\\sqrt{'+a+'^2+'+b+'^2}=\\sqrt{'+(a*a+b*b)+'}=\\mathbf{'+dC+'\\text{ cm}} \\). '+
+        'Ortoedro: \\( D=\\sqrt{d^2+c^2}=\\sqrt{'+dC+'^2+'+c+'^2}=\\sqrt{'+(dC*dC+c*c)+'}=\\mathbf{'+DC+'\\text{ cm}} \\).';
   marcarFallo(2,diag,pista);
   generarDistinto(2);
-  document.getElementById('fig-t2').innerHTML=svgCubo(d2.a);
-  document.getElementById('enun-t2').innerHTML='Un cubo tiene <strong>'+d2.a+' cm</strong> de arista. Calcula la diagonal de una de sus caras (<em>d</em>) y la diagonal del cubo (<em>D</em>).';
+  document.getElementById('fig-t2').innerHTML=svgCubo(d2.a,d2.b,d2.c);
+  document.getElementById('enun-t2').innerHTML=enunciadoT2();
   limpiarCampos(['t2_d','t2_D']);
 }
 
