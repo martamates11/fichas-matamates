@@ -308,7 +308,7 @@ function clipLine(Pt, d) {
     const regla = norm360(a) === 90 ? '(x, y) \\to (-y, x)' : norm360(a) === 270 ? '(x, y) \\to (y, -x)' : '(x, y) \\to (-x, -y)';
     const sol = base().pol(img, IMG).nom(img, nombres(4, true)).seg(O, A, { discontinua: true }).seg(O, img[0], { discontinua: true });
     const th = Math.atan2(d.y, d.x) * 180 / Math.PI;
-    sol.arco(O, th, a, 24);
+    sol.arco(O, th, a, Math.min(24, 0.5 * len(d) * CELL));
     return {
       html: true,
       enun: bloque(base().cerrar('Cuadrilátero ABCD y centro de giro O'), `Giro de centro <b>O</b> y ángulo <b>α = ${angTxt(a)}</b>.`),
@@ -335,7 +335,7 @@ function clipLine(Pt, d) {
     const n = f.length;
     const base = () => Escena().pol(f).nom(f, nombres(n)).pol(img, IMG).nom(img, nombres(n, true)).pto(O, 'O');
     const A = f[0], d = sub(A, O), th = Math.atan2(d.y, d.x) * 180 / Math.PI;
-    const sol = base().seg(O, A, { discontinua: true }).seg(O, img[0], { discontinua: true }).arco(O, th, a, 30);
+    const sol = base().seg(O, A, { discontinua: true }).seg(O, img[0], { discontinua: true }).arco(O, th, a, Math.min(30, 0.5 * len(d) * CELL));
     return {
       html: true,
       enun: bloque(base().cerrar('Figura, su imagen girada y el centro O'),
