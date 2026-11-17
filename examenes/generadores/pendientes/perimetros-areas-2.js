@@ -9,9 +9,9 @@
    · rombo de la figura compuesta: se exige D > d (en la ficha podía salir al revés);
    · pentágono: la apotema se da con un decimal (en la ficha, con dos);
    · π ≈ 3,14 (la ficha usa 3,14159) y se indica en el enunciado;
-   · compuesta «pentágono con semicírculos»: la ficha pone cinco semicírculos (diámetro = lado) y se
-     solapan entre vecinos (centros a 0,81·l < l), de modo que el área no es la suma; en el examen se
-     ponen dos, sobre los lados laterales (no consecutivos), sin solapes. l par (6 a 14) para r entero.
+   · compuesta «pentágono con semicírculos»: como en la ficha, cinco semicírculos hacia fuera con
+     diámetro igual al lado (no se solapan: junto a cada vértice ocupan 90° + 90° de los 252° exteriores).
+     l par (6 a 14) para que el radio sea entero.
    · trapecio: se exige B ≤ 2,9·h para que el rótulo de la altura no choque con los lados.
    En las compuestas, lo que no cabe rotulado dentro de la figura (radio del semicírculo, apotema)
    va como letra o trazo en la figura y su valor en la nota inferior. */
@@ -263,14 +263,13 @@
     };
   }
 
-  /* Pentágono regular con dos semicírculos sobre sus lados laterales (ficha: cinco semicírculos, l 6–14).
-     Con cinco semicírculos los vecinos se solapan (la distancia entre centros, 0,81·l, es menor que l),
-     así que el área ya no sería la suma; con dos lados no consecutivos no hay solapes. l par para r entero. */
+  /* Pentágono regular con un semicírculo hacia fuera sobre cada lado (ficha: l 6–14). Los semicírculos
+     no se solapan; l par para que el radio sea entero. */
   function compPentaSemis(R) {
     const l = R.pick([6, 8, 10, 12, 14]), ap = rd(l / (2 * Math.tan(Math.PI / 5)), 1);
     const Rc = l / (2 * Math.sin(Math.PI / 5)), apE = l / (2 * Math.tan(Math.PI / 5));
     const V0 = [0, 1, 2, 3, 4].map(i => { const t = -Math.PI / 2 + 2 * Math.PI * i / 5; return [Rc * Math.cos(t), Rc * Math.sin(t)]; });
-    const semis = (s) => [1, 3].map(i => {
+    const semis = (s) => [0, 1, 2, 3, 4].map(i => {
       const A = V0[i], B = V0[(i + 1) % 5], Mx = (A[0] + B[0]) / 2, My = (A[1] + B[1]) / 2, m = Math.hypot(Mx, My);
       return arco(Mx * s, My * s, l * s / 2, 0, Math.PI, (B[0] - A[0]) / l, (B[1] - A[1]) / l, Mx / m, My / m);
     });
@@ -281,15 +280,15 @@
     const V = V0.map(([x, y]) => [x * s, y * s]), Mb = [0, apE * s];
     L.poligono(V).punto(0, 0, 2).linea(0, 0, Mb[0], Mb[1], { discontinua: true, grosor: 1 }).anguloRecto(Mb, [1, 0], [0, -1], 6)
       .texto(5, Mb[1] * 0.5 + 4, 'a', { ancla: 'start', tam: 12, cursiva: true })
-      .cota(V[3], V[2], medida(l), { lado: -1 });
-    const k = l / 2, Ap = rd(5 * l * ap / 2, 2), As1 = rd(PI * k * k / 2, 2), As = rd(2 * As1, 2), A = rd(Ap + As, 2);
+      .rotulo(0, Mb[1] + l * s / 2, 0, 1, `l = ${medida(l)}`, 12, 6);
+    const k = l / 2, Ap = rd(5 * l * ap / 2, 2), As1 = rd(PI * k * k / 2, 2), As = rd(5 * As1, 2), A = rd(Ap + As, 2);
     return {
-      html: true, enun: figura(L.cerrar('pend-fig', 'Pentágono regular con dos semicírculos'), `Usa π ≈ 3,14. Apotema a = ${medida(ap)}. Los dos semicírculos tienen por diámetro los lados laterales del pentágono.`),
+      html: true, enun: figura(L.cerrar('pend-fig', 'Pentágono regular con un semicírculo sobre cada lado'), `Usa π ≈ 3,14. Apotema a = ${medida(ap)}. Cada semicírculo tiene por diámetro un lado del pentágono.`),
       pasos: [
-        { t: 'Hay que <b>sumar</b> el área del pentágono y la de los dos semicírculos.' },
+        { t: 'Hay que <b>sumar</b> el área del pentágono y la de los cinco semicírculos.' },
         { t: 'Pentágono: perímetro por apotema entre dos.', m: `P = 5 \\cdot ${l} = ${l * 5},\\qquad A_{\\text{pent}} = \\frac{P \\cdot a}{2} = \\frac{${l * 5} \\cdot ${dec(ap)}}{2} = ${cm2(Ap)}` },
         { t: `El diámetro de cada semicírculo es el lado, así que su radio es \\(r = ${l} : 2 = ${k}\\) cm:`, m: `A_{\\text{semi}} = \\frac{\\pi r^2}{2} \\approx \\frac{3{,}14 \\cdot ${k}^2}{2} = \\frac{3{,}14 \\cdot ${k * k}}{2} = ${cm2(As1)}` },
-        { t: 'Los dos semicírculos juntos forman un círculo:', m: `2 \\cdot ${dec(As1)} = ${cm2(As)}` },
+        { t: 'Los cinco semicírculos:', m: `5 \\cdot ${dec(As1)} = ${cm2(As)}` },
         { t: 'Área total:', m: `A = ${dec(Ap)} + ${dec(As)} = ${cm2(A)}` }
       ],
       res: resA(A)
@@ -331,7 +330,7 @@
       tipo('compCasa', 'Áreas compuestas: rectángulo + triángulo', unaCompuesta(compCasa), 1.25, ENUN_C),
       tipo('compCirculo', 'Áreas compuestas: círculo − triángulo', unaCompuesta(compCirculoTri), 1.5, ENUN_C),
       tipo('compRombo', 'Áreas compuestas: rombo − semicírculo', unaCompuesta(compRomboSemi), 1.5, ENUN_C),
-      tipo('compPenta', 'Áreas compuestas: pentágono + 2 semicírculos', unaCompuesta(compPentaSemis), 1.5, ENUN_C)
+      tipo('compPenta', 'Áreas compuestas: pentágono + 5 semicírculos', unaCompuesta(compPentaSemis), 1.5, ENUN_C)
     ]
   });
 })();

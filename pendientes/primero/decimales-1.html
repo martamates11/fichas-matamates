@@ -663,19 +663,22 @@
   function crearEjercicio9() {
     var ej = { tipo: 9, superado: false, racha: 0 };
     ej.generarNuevo = function () {
+      // «abajo»: cuántos envases se pueden llenar del todo (se redondea hacia abajo);
+      // en las demás, cuántos hacen falta como mínimo (se redondea hacia arriba).
       var plantillas = [
-        "¿Cuántos botes de {cap} mL de zumo de naranja se necesitan para obtener {total} L?",
-        "Una jarra tiene una capacidad de {cap} mL. ¿Cuántas jarras necesitamos para llenar un depósito de {total} L?",
-        "Cada vaso contiene {cap} mL de agua. ¿Cuántos vasos se pueden llenar con una botella de {total} L?",
-        "Un bote de refresco tiene {cap} mL. ¿Cuántos botes se necesitan para tener {total} L de refresco?"
+        { t: "¿Cuántos botes de {cap} mL de zumo de naranja se necesitan, como mínimo, para obtener {total} L?", abajo: false },
+        { t: "Una jarra tiene una capacidad de {cap} mL. ¿Cuántas jarras llenas hacen falta, como mínimo, para llenar un depósito de {total} L?", abajo: false },
+        { t: "Cada vaso contiene {cap} mL de agua. ¿Cuántos vasos se pueden llenar del todo con una botella de {total} L?", abajo: true },
+        { t: "Un bote de refresco tiene {cap} mL. ¿Cuántos botes hacen falta, como mínimo, para reunir {total} L de refresco?", abajo: false }
       ];
       var capacidades = [250, 330, 500, 750, 1000, 1500, 2000];
       var totales = [2, 3, 5, 8, 10, 12, 15];
       ej.plantilla = plantillas[Math.floor(Math.random() * plantillas.length)];
       ej.capacidadBote = capacidades[Math.floor(Math.random() * capacidades.length)];
       ej.totalLitros = totales[Math.floor(Math.random() * totales.length)];
-      ej.solucion = Math.ceil(ej.totalLitros * 1000 / ej.capacidadBote);
-      ej.textoProblema = ej.plantilla.replace("{cap}", ej.capacidadBote).replace("{total}", ej.totalLitros);
+      ej.abajo = ej.plantilla.abajo;
+      ej.solucion = (ej.abajo ? Math.floor : Math.ceil)(ej.totalLitros * 1000 / ej.capacidadBote);
+      ej.textoProblema = ej.plantilla.t.replace("{cap}", ej.capacidadBote).replace("{total}", ej.totalLitros);
     };
     ej.verificar = function (valor) {
       if (ej.superado) return { estado: 'superado', msg: '' };
@@ -685,10 +688,15 @@
       var v = parseInt(limpio, 10);
       if (v === ej.solucion) {
         ej.superado = true;
-        return { estado: 'superado', msg: '🎉 ¡Correcto! Se necesitan ' + ej.solucion + ' unidades.' };
+        return { estado: 'superado', msg: '🎉 ¡Correcto! ' + (ej.abajo ? 'Se pueden llenar ' : 'Hacen falta ') + ej.solucion + ' unidades.' };
       } else {
         return trasFallo(ej,
-          '❌ ' + ej.totalLitros + ' L = ' + (ej.totalLitros * 1000) + ' mL. ' + (ej.totalLitros * 1000) + ' ÷ ' + ej.capacidadBote + ' = ' + (ej.totalLitros * 1000 / ej.capacidadBote).toFixed(2) + ' → se redondea hacia arriba a ' + ej.solucion + ' unidades, porque no puedes tener un envase incompleto.');
+          '❌ ' + ej.totalLitros + ' L = ' + (ej.totalLitros * 1000) + ' mL. ' + (ej.totalLitros * 1000) + ' ÷ ' + ej.capacidadBote + ' = ' + (ej.totalLitros * 1000 / ej.capacidadBote).toFixed(2).replace('.', ',') +
+          ((ej.totalLitros * 1000) % ej.capacidadBote === 0
+            ? ' → la división es exacta: ' + ej.solucion + ' unidades.'
+            : (ej.abajo
+              ? ' → se redondea hacia abajo a ' + ej.solucion + ' unidades: con el agua que sobra no se llena otro vaso entero.'
+              : ' → se redondea hacia arriba a ' + ej.solucion + ' unidades: con una menos no llegaría, así que hace falta un envase más aunque no se llene del todo.')));
       }
     };
     ej.render = function (idx) {
