@@ -5,7 +5,7 @@
    · Sombras: la altura y la sombra del objeto son un múltiplo entero de las de la persona
      (la ficha redondea el dato mostrado a 1 decimal).
    · Diagonal: la ficha usa un cubo (d = a√2, D = a√3, irracionales); aquí se usa un ortoedro
-     cuyas diagonales de una cara y del cuerpo son enteras (ternas pitagóricas encadenadas).
+     cuyas diagonales de la base y del cuerpo son enteras (ternas pitagóricas encadenadas).
    · Pirámide (l·h múltiplo de 3), cono (r·h múltiplo de 3) y esfera (radio múltiplo de 3,
      rango 3–15 como la ficha): el volumen lleva un 1/3 que se simplifica. La esfera, además,
      a veces da el diámetro en lugar del radio y a veces usa dm o m.
@@ -124,25 +124,25 @@
     let [a, b, c, d, D] = R.pick(CADENAS);
     if (R.rand() < 0.5) [a, b] = [b, a];
     const u = R.pick(['cm', 'cm', 'dm', 'm']);
-    /* La cara delantera (a × b) tiene la diagonal d; la profundidad es c */
-    const cv = Math.min(c, 0.85 * Math.max(a, b));            // profundidad dibujada (no a escala) para que d y D se distingan
-    const L = Lienzo(), { F, T } = ortoedro(L, a, cv, b, 1.3 * escalaCaja(a, cv, b));
-    L.linea(F[0][0], F[0][1], F[2][0], F[2][1], { grosor: 1.3 })
-      .linea(F[0][0], F[0][1], T[2][0], T[2][1], { discontinua: true, grosor: 1.3 })
-      .anguloRecto(F[2], [F[0][0] - F[2][0], F[0][1] - F[2][1]], [T[2][0] - F[2][0], T[2][1] - F[2][1]], 6)
+    /* La base es a × b (b, la profundidad) con diagonal d; la altura es c */
+    const L = Lienzo(), { F, T } = ortoedro(L, a, b, c, 1.3 * escalaCaja(a, b, c));
+    const alg = (P, Q, t) => [P[0] + (Q[0] - P[0]) * t, P[1] + (Q[1] - P[1]) * t];
+    const nor = (P, Q) => { const l = Math.hypot(Q[0] - P[0], Q[1] - P[1]); return [(Q[1] - P[1]) / l, -(Q[0] - P[0]) / l]; };   // hacia arriba
+    L.linea(F[0][0], F[0][1], T[1][0], T[1][1], { discontinua: true, grosor: 1.4 })
+      .linea(F[0][0], F[0][1], T[2][0], T[2][1], { grosor: 1.4 })
+      .anguloRecto(T[1], [F[0][0] - T[1][0], F[0][1] - T[1][1]], [0, -1], 6)
       .punto(F[0][0], F[0][1], 2).punto(T[2][0], T[2][1], 2);
     L.cota(F[0], F[1], medida(a, u), { lado: -1, d: 12 });
-    L.cota(F[3], F[0], medida(b, u), { lado: -1, d: 12 });
-    L.rotulo((F[1][0] + T[1][0]) / 2, (F[1][1] + T[1][1]) / 2, 0.6, 0.8, medida(c, u), 12, 6);
-    const md = [(F[0][0] + F[2][0]) * 0.45, F[0][1] + (F[2][1] - F[0][1]) * 0.45];
-    const mD = [F[0][0] + (T[2][0] - F[0][0]) * 0.7, F[0][1] + (T[2][1] - F[0][1]) * 0.7];
-    L.texto(md[0] - 4, md[1] - 3, 'd', { tam: 12, cursiva: true, ancla: 'end' });
-    L.texto(mD[0] + 2, mD[1] + 13, 'D', { tam: 12, cursiva: true });
+    L.rotulo((F[1][0] + T[1][0]) / 2, (F[1][1] + T[1][1]) / 2, 0.6, 0.8, medida(b, u), 12, 6);
+    L.cota(F[3], F[0], medida(c, u), { lado: -1, d: 12 });
+    const md = alg(F[0], T[1], 0.5), nd = nor(F[0], T[1]), mD = alg(F[0], T[2], 0.55), nD = nor(F[0], T[2]);
+    L.texto(md[0] + nd[0] * 8, md[1] + nd[1] * 8, 'd', { tam: 12, cursiva: true });
+    L.texto(mD[0] + nD[0] * 7, mD[1] + nD[1] * 7 + 3, 'D', { tam: 12, cursiva: true, ancla: 'end' });
     return {
       html: true, enun: figura(L.cerrar('pend-fig', 'Ortoedro con la diagonal de la base y la del cuerpo'), '', 'Figura no a escala'),
       pasos: [
-        { t: 'La diagonal \\(d\\) de la cara delantera es la hipotenusa de un triángulo rectángulo cuyos catetos son las aristas de esa cara:', m: `d = \\sqrt{${a}^2 + ${b}^2} = \\sqrt{${a * a} + ${b * b}} = \\sqrt{${d * d}} = ${u1(d, u)}` },
-        { t: 'La diagonal \\(D\\) del ortoedro es la hipotenusa del triángulo rectángulo que forman \\(d\\) y la arista \\(c\\), perpendicular a esa cara:', m: `D = \\sqrt{d^2 + c^2} = \\sqrt{${d}^2 + ${c}^2} = \\sqrt{${d * d} + ${c * c}} = \\sqrt{${D * D}} = ${u1(D, u)}` }
+        { t: 'La diagonal \\(d\\) de la base es la hipotenusa de un triángulo rectángulo cuyos catetos son las aristas de esa base:', m: `d = \\sqrt{${a}^2 + ${b}^2} = \\sqrt{${a * a} + ${b * b}} = \\sqrt{${d * d}} = ${u1(d, u)}` },
+        { t: 'La diagonal \\(D\\) del ortoedro es la hipotenusa del triángulo rectángulo que forman \\(d\\) y la arista vertical \\(c = ' + dec(c) + '\\text{ ' + u + '}\\), perpendicular a la base:', m: `D = \\sqrt{d^2 + c^2} = \\sqrt{${d}^2 + ${c}^2} = \\sqrt{${d * d} + ${c * c}} = \\sqrt{${D * D}} = ${u1(D, u)}` }
       ],
       res: `d = ${u1(d, u)},\\quad D = ${u1(D, u)}`
     };
@@ -278,7 +278,7 @@
     enlace: '../pendientes/tercero/geometria-3.html',
     ejercicios: [
       tipo('sombras', 'Semejanza: el problema de las sombras', sombras, 1, ['Resuelve el siguiente problema:', 'Resuelve los siguientes problemas:']),
-      tipo('diagonal', 'Diagonal del ortoedro (Pitágoras en el espacio)', diagonal, 1, ['Calcula la diagonal d de la cara delantera y la diagonal D del ortoedro:', 'Calcula, en cada ortoedro, la diagonal d de la cara delantera y la diagonal D del ortoedro:']),
+      tipo('diagonal', 'Diagonal del ortoedro (Pitágoras en el espacio)', diagonal, 1, ['Calcula la diagonal d de la base y la diagonal D del ortoedro:', 'Calcula, en cada ortoedro, la diagonal d de la base y la diagonal D del ortoedro:']),
       tipo('prisma', 'Prisma: volumen y área total', prisma),
       tipo('piramide', 'Pirámide: volumen y área total', piramide, 1.25),
       tipo('cilindro', 'Cilindro: volumen y área total', cilindro),

@@ -113,7 +113,7 @@
       html: true,
       enun: `<div class="pend-col"><span>${def}</span><span>Calcula \\(${opTeX}\\).</span></div>`,
       pasos: [
-        { t: 'Multiplicamos cada polinomio por su coeficiente (si es negativo, cambian todos los signos):', m: [0, 1, 2].map(linea).join(' \\\\ '), multilinea: true },
+        { t: 'Multiplicamos cada polinomio por su coeficiente (si es negativo, cambian todos los signos):', m: `\\begin{aligned} ${[0, 1, 2].map(i => '& ' + linea(i)).join(' \\\\ ')} \\end{aligned}` },
         { t: 'Sumamos los términos semejantes (los del mismo grado):', m: `(${grupo(2)})x^2 + (${grupo(1)})x + (${grupo(0)}) = ${pol(total)}` }
       ],
       res: pol(total)
