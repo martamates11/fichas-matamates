@@ -29,7 +29,7 @@
     ['un número más su mitad', 'x + \\frac{x}{2}', 'La mitad del número es \\(\\frac{x}{2}\\).'],
     ['el triple de un número menos cinco', '3x - 5', 'El triple es \\(3x\\); después se restan 5.'],
     ['la suma de dos números consecutivos', 'x + (x + 1)', 'El consecutivo de \\(x\\) es \\(x + 1\\). También vale \\(2x + 1\\).'],
-    ['el producto de un número por sí mismo más cuatro', 'x^2 + 4', 'Un número por sí mismo es \\(x \\cdot x = x^2\\); después se suman 4.'],
+    ['el producto de un número por sí mismo, más cuatro', 'x^2 + 4', 'Un número por sí mismo es \\(x \\cdot x = x^2\\); después se suman 4.'],
     ['la diferencia entre el doble de un número y siete', '2x - 7', 'El doble es \\(2x\\) y se le restan 7.'],
     ['el cuadrado de un número más el triple del mismo', 'x^2 + 3x', 'El cuadrado es \\(x^2\\) y el triple, \\(3x\\).'],
     ['la raíz cuadrada de la suma de un número y nueve', '\\sqrt{x + 9}', 'La raíz abarca toda la suma \\(x + 9\\).'],
