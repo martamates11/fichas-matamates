@@ -627,7 +627,7 @@ function generarRecorrido(){
   for(let i=0;i<vueltas;i++){
     subir(randInt(1,2), randInt(1,2));
     if(Math.random()<0.7) parar(randInt(1,2));
-    if(i<vueltas-1 && Math.random()<0.5) bajar(randInt(1,2), randInt(1,2));
+    if(i<vueltas-1 && Math.random()<0.5 && d>100) bajar(randInt(1,2), Math.min(randInt(1,2), d/100-1)); // nunca vuelve a 0 m antes del final
   }
   while(d>0) bajar(1, Math.min(3, Math.ceil(d/100)));
   if(puntos[puntos.length-1].d!==0) puntos.push({t,d:0});
@@ -811,6 +811,8 @@ function ex5Nuevo(){
   const g = generarLineal(-4,4);
   // aseguramos pendiente también acotada a [-4,4]\{0} para tabla más manejable
   g.m = randNonZero(-4,4);
+  // los puntos de x = -1, 0, 1 deben caber en los ejes (-6 a 6): |m| + |b| ≤ 6
+  if(Math.abs(g.m)+Math.abs(g.b)>DOM_GRID){ ex5Nuevo(); return; }
   g.expr = g.b>=0 ? `f(x) = ${g.m}·x + ${g.b}` : `f(x) = ${g.m}·x - ${Math.abs(g.b)}`;
   if(g.expr===ex5.expr){ ex5Nuevo(); return; }
   ex5.m=g.m; ex5.b=g.b; ex5.expr=g.expr;
