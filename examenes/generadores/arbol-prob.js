@@ -192,7 +192,7 @@
     pasos.push({ ...p1, t: `1. ${p1.t}` }, { ...p2, t: `2. ${p2.t}` }, { ...p3, t: `3. ${p3.t}` }, { ...p4, t: `4. ${p4.t}` });
     return {
       html: true,
-      enun: `<div class="pend-col">${cabecera(sc, 'Completa el diagrama de árbol escribiendo en cada una de sus seis ramas la probabilidad correspondiente y calcula:')}${arbol(D, false)}${lista([Q.inter(sc, s1, t1), Q.cond(sc, s2, t2), Q.total(sc, t3), Q.bayes(sc, s4, t4)])}</div>`,
+      enun: `<div class="pend-col">${cabecera(sc, 'Dibuja el diagrama de árbol, con la probabilidad correspondiente en cada una de sus seis ramas, y calcula:')}${lista([Q.inter(sc, s1, t1), Q.cond(sc, s2, t2), Q.total(sc, t3), Q.bayes(sc, s4, t4)])}</div>`,
       pasos,
       res: resLista([ans(p1.r), ans(p2.r), ans(p3.r), ans(p4.r)])
     };
@@ -208,7 +208,7 @@
     pasos.push({ ...p3, t: `1. ${p3.t}` }, { ...p4, t: `2. ${p4.t}` });
     return {
       html: true,
-      enun: `<div class="pend-col">${cabecera(sc, 'Completa el diagrama de árbol escribiendo en cada una de sus seis ramas la probabilidad correspondiente y calcula:')}${arbol(D, false)}${lista([Q.total(sc, t3), Q.bayes(sc, s4, t4)])}</div>`,
+      enun: `<div class="pend-col">${cabecera(sc, 'Dibuja el diagrama de árbol, con la probabilidad correspondiente en cada una de sus seis ramas, y calcula:')}${lista([Q.total(sc, t3), Q.bayes(sc, s4, t4)])}</div>`,
       pasos,
       res: resLista([ans(p3.r), ans(p4.r)])
     };

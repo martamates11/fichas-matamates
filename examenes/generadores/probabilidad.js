@@ -176,7 +176,7 @@
     const f1 = n[i1][j1], f2 = n[i2][j2];
     return {
       html: true,
-      enun: `<div class="pend-col"><span class="pend-texto">${c.intro} ${mayus(datos)}</span><span class="pend-texto">Completa la tabla (incluido el total general) y calcula:</span>${tablaHtml(c, null, null)}${preguntas([q1, q2])}</div>`,
+      enun: `<div class="pend-col"><span class="pend-texto">${c.intro} ${mayus(datos)}</span><span class="pend-texto">Construye la tabla de contingencia (incluido el total general) y calcula:</span>${preguntas([q1, q2])}</div>`,
       pasos: [
         { t: 'Completamos la tabla a partir de los datos (en la tabla completa, las casillas sombreadas son las que se deducen):', html: `<div class="pend-texto">${deduc.join('<br>')}</div>` },
         { t: 'La tabla completa es:', html: tablaHtml(c, v, dado) },
