@@ -41,6 +41,9 @@ h1,h2,h3,.titulo-ficha{font-family:'Libre Baskerville',serif;color:var(--color-t
 .barra .dato b{color:var(--color-acento);font-family:'Libre Baskerville',serif}
 .barra .dato.ok b{color:var(--color-correcto)}
 .barra .dato.ko b{color:var(--color-incorrecto)}
+.barra input.falta{border-color:var(--color-incorrecto);box-shadow:0 0 0 3px rgba(139,26,26,.18)}
+.aviso-nombre{color:var(--color-incorrecto);font-size:.82rem;font-weight:700;display:none;width:100%;text-align:center}
+.aviso-nombre.visible{display:block}
 
 /* Recordatorio de fórmulas */
 .recordatorio{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:10px;margin-bottom:22px}
@@ -152,6 +155,7 @@ h1,h2,h3,.titulo-ficha{font-family:'Libre Baskerville',serif;color:var(--color-t
     <span class="dato">Ejercicios: <b id="tot">0</b></span>
     <span class="dato ok">Correctos: <b id="cor">0</b></span>
     <span class="dato ko">Errores: <b id="err">0</b></span>
+    <div class="aviso-nombre" id="aviso-nombre" role="alert">Escribe tu nombre antes de continuar.</div>
   </div>
 
   <div class="recordatorio">
@@ -438,8 +442,24 @@ function explicarCondicional(n,p,q,k1,k2,pAyB,pB,res){
 <div class="res-final">✅ P(A|B) = <b>${res_str}</b></div>`;
 }
 
+// Nombre obligatorio (al menos 2 caracteres) antes de comprobar o finalizar
+function nombreValido(){
+  const ok = nombreInput.value.trim().length >= 2;
+  nombreInput.classList.toggle('falta', !ok);
+  document.getElementById('aviso-nombre').classList.toggle('visible', !ok);
+  if(!ok) nombreInput.focus();
+  return ok;
+}
+nombreInput.addEventListener('input', ()=>{
+  if(nombreInput.value.trim().length >= 2){
+    nombreInput.classList.remove('falta');
+    document.getElementById('aviso-nombre').classList.remove('visible');
+  }
+});
+
 function comprobar(){
   if(respondido) return;
+  if(!nombreValido()) return;
   const rawVal=document.getElementById('resp').value.trim();
   if(rawVal===''){
     const fb=document.getElementById('fb');
@@ -559,6 +579,7 @@ function mostrarModalFinal(){
 }
 
 document.getElementById('finalizarBtn').addEventListener('click', () => {
+  if(!nombreValido()) return;
   document.getElementById('confirmPuntos').textContent = puntos;
   document.getElementById('confirmOverlay').classList.add('active');
 });
