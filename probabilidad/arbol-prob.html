@@ -254,7 +254,8 @@ const SCENARIOS = [
     mientras que para la variedad <strong>Ambrunés</strong> es del <strong>75%</strong>.`,
     A: "Picota", noA: "Ambrunés",
     B: "esté en estado óptimo", noB: "no esté en estado óptimo",
-    A_desc: "de la variedad Picota", noA_desc: "de la variedad Ambrunés",
+    B_pred: "está en estado óptimo", noB_pred: "no está en estado óptimo",
+    A_desc: "sea de la variedad Picota", noA_desc: "sea de la variedad Ambrunés",
     A_pred: "es de la variedad Picota", noA_pred: "es de la variedad Ambrunés",
     pA: 0.55, pB_given_A: 0.85, pB_given_noA: 0.75
   },
@@ -267,6 +268,7 @@ const SCENARIOS = [
     para los traumatólogos y del <strong>80%</strong> para los cardiólogos.`,
     A: "traumatólogo", noA: "cardiólogo",
     B: "acierte el diagnóstico", noB: "no acierte el diagnóstico",
+    B_pred: "acierta el diagnóstico", noB_pred: "no acierta el diagnóstico",
     A_desc: "sea traumatólogo", noA_desc: "sea cardiólogo",
     A_pred: "es traumatólogo", noA_pred: "es cardiólogo",
     pA: 0.40, pB_given_A: 0.90, pB_given_noA: 0.80
@@ -280,6 +282,7 @@ const SCENARIOS = [
     es del <strong>70%</strong> para los estudiantes de ADE y del <strong>85%</strong> para los de Ingeniería Informática.`,
     A: "ADE", noA: "Ingeniería Informática",
     B: "apruebe el proyecto", noB: "suspenda el proyecto",
+    B_pred: "aprueba el proyecto", noB_pred: "suspende el proyecto",
     A_desc: "estudie ADE", noA_desc: "estudie Ingeniería Informática",
     A_pred: "estudia ADE", noA_pred: "estudia Ingeniería Informática",
     pA: 0.65, pB_given_A: 0.70, pB_given_noA: 0.85
@@ -290,9 +293,10 @@ const SCENARIOS = [
     articulo: "un",
     texto: `En una cooperativa de la <strong>Denominación de Origen Torta del Casar</strong>, el <strong>64% de los quesos son de leche cruda</strong> 
     y el <strong>36% de leche pasteurizada</strong>. La probabilidad de obtener la <strong>calificación "Extra"</strong> 
-    es del <strong>87.5%</strong> para los de leche cruda y del <strong>33.3%</strong> para los de leche pasteurizada.`,
+    es del <strong>87,5%</strong> para los de leche cruda y de <strong>un tercio (1/3)</strong> para los de leche pasteurizada.`,
     A: "leche cruda", noA: "leche pasteurizada",
     B: "tenga calificación Extra", noB: "no tenga calificación Extra",
+    B_pred: "tiene calificación Extra", noB_pred: "no tiene calificación Extra",
     A_desc: "sea de leche cruda", noA_desc: "sea de leche pasteurizada",
     A_pred: "es de leche cruda", noA_pred: "es de leche pasteurizada",
     pA: 0.64, pB_given_A: 0.875, pB_given_noA: 1/3
@@ -306,7 +310,8 @@ const SCENARIOS = [
     es del <strong>60%</strong> para los de cebo y del <strong>95%</strong> para los de bellota.`,
     A: "cebo", noA: "bellota",
     B: "tenga calificación Premium", noB: "no tenga calificación Premium",
-    A_desc: "sea de jamón de cebo", noA_desc: "sea de jamón de bellota",
+    B_pred: "tiene calificación Premium", noB_pred: "no tiene calificación Premium",
+    A_desc: "sea de cebo", noA_desc: "sea de bellota",
     A_pred: "es de cebo", noA_pred: "es de bellota",
     pA: 0.70, pB_given_A: 0.60, pB_given_noA: 0.95
   }
@@ -328,6 +333,8 @@ function getQuestionText(scenario, qNum, variant) {
   const noA_pred = scenario.noA_pred;
   const B = scenario.B;
   const noB = scenario.noB;
+  const B_pred = scenario.B_pred;
+  const noB_pred = scenario.noB_pred;
 
   // Pregunta 1: Intersección (A∩B, A∩B', A'∩B, A'∩B')
   const interMap = [
@@ -354,10 +361,10 @@ function getQuestionText(scenario, qNum, variant) {
 
   // Pregunta 4: Teorema de Bayes P(A|B), P(A|B'), P(A'|B), P(A'|B')
   const bayesMap = [
-    `Si se comprueba que ${art} ${s} ${B.toLowerCase()}, ¿qué probabilidad hay de que sea de ${A}?`,
-    `Si se comprueba que ${art} ${s} ${noB.toLowerCase()}, ¿qué probabilidad hay de que sea de ${A}?`,
-    `Si se comprueba que ${art} ${s} ${B.toLowerCase()}, ¿qué probabilidad hay de que sea de ${noA}?`,
-    `Si se comprueba que ${art} ${s} ${noB.toLowerCase()}, ¿qué probabilidad hay de que sea de ${noA}?`
+    `Si se comprueba que ${art} ${s} ${B_pred}, ¿qué probabilidad hay de que ${A_desc}?`,
+    `Si se comprueba que ${art} ${s} ${noB_pred}, ¿qué probabilidad hay de que ${A_desc}?`,
+    `Si se comprueba que ${art} ${s} ${B_pred}, ¿qué probabilidad hay de que ${noA_desc}?`,
+    `Si se comprueba que ${art} ${s} ${noB_pred}, ¿qué probabilidad hay de que ${noA_desc}?`
   ];
 
   if (qNum === 1) return interMap[variant % 4];
