@@ -263,7 +263,7 @@
     const ctx = R.pick(CONTEXTOS), D = datos(R), T = tabla(D), td = textoDatos(R, ctx, D);
     return {
       html: true,
-      enun: `<div class="pend-col"><span class="pend-texto">${td.txt} Completa la siguiente tabla de contingencia, con los totales de filas y columnas:</span>${tablaHTML(ctx, T, true)}</div>`,
+      enun: `<div class="pend-col"><span class="pend-texto">${td.txt} Construye la tabla de contingencia correspondiente, con los totales de filas y columnas.</span></div>`,
       pasos: pasosTabla(ctx, T, D, td),
       resHtml: tablaHTML(ctx, T, false)
     };
@@ -285,7 +285,7 @@
     const ctx = R.pick(CONTEXTOS), D = datos(R), T = tabla(D), td = textoDatos(R, ctx, D), qs = preguntas(R, ctx, T);
     return {
       html: true,
-      enun: `<div class="pend-col"><span class="pend-texto">${td.txt} Completa la tabla de contingencia, con los totales de filas y columnas, y, con ella, resuelve las cuestiones siguientes.</span>${tablaHTML(ctx, T, true)}${enunPreguntas(ctx, qs)}</div>`,
+      enun: `<div class="pend-col"><span class="pend-texto">${td.txt} Construye la tabla de contingencia correspondiente, con los totales de filas y columnas, y, con ella, resuelve las cuestiones siguientes.</span>${enunPreguntas(ctx, qs)}</div>`,
       pasos: [{ t: '<b>Tabla de contingencia.</b>' }, ...pasosTabla(ctx, T, D, td), { t: '<b>Cuestiones.</b>' }, ...pasosPreguntas(ctx, qs)],
       resHtml: `${tablaHTML(ctx, T, false)}<span>\\(${resumen(qs)}\\)</span>`
     };
