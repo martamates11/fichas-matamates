@@ -263,9 +263,9 @@ body{
 
   <div class="resp-row">
     <label class="resp-label" for="resp">Resultado =</label>
-    <input class="resp-input" id="resp" type="text" inputmode="decimal" placeholder="0.0000" autocomplete="off">
+    <input class="resp-input" id="resp" type="text" inputmode="decimal" placeholder="0,0000" autocomplete="off">
   </div>
-  <div class="resp-hint">Introduce el valor redondeado a 4 decimales</div>
+  <div class="resp-hint">Introduce el valor redondeado a 4 decimales (con coma o con punto)</div>
 
   <div class="feedback" id="fb" aria-live="polite"></div>
   <div class="resolucion" id="res"></div>
@@ -328,7 +328,14 @@ function binomCDF(n,k,p){
   let s=0; for(let i=0;i<=k;i++) s+=binomPMF(n,i,p); return s;
 }
 function r4(x){ return Math.round(x*10000)/10000; }
-function r4str(x){ return r4(x).toFixed(4); }
+function r4str(x){ return r4(x).toFixed(4).replace('.', ','); }   // decimales con coma
+function dec(x){ return String(x).replace('.', ','); }
+// Lee la respuesta del alumno: admite coma o punto decimal (0,1234 · 0.1234 · ,1234). Devuelve NaN si no es un número.
+function leerNumero(txt){
+  const t=txt.trim().replace(/\s+/g,'');
+  if(!/^[+-]?(\d+([.,]\d*)?|[.,]\d+)$/.test(t)) return NaN;
+  return Number(t.replace(',', '.'));
+}
 
 // ═══════════════════════════════════════════
 // ESTADO GLOBAL
@@ -347,17 +354,17 @@ function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 // Contextos - Redactados correctamente sin redundancias
 const contextos=[
   { tema:'fabricación', exitoPlural:'productos', verboPasivo:'sean defectuosos', art:'los', sg:'producto', vs:'sea defectuoso', vi:'es defectuoso', vip:'son defectuosos',
-    enun:(n,p)=>`En un proceso de fabricación la probabilidad de que un producto sea defectuoso es <span class="dato">${p}</span>. Se seleccionan al azar <span class="dato">${n}</span> productos.` },
+    enun:(n,p)=>`En un proceso de fabricación la probabilidad de que un producto sea defectuoso es <span class="dato">${dec(p)}</span>. Se seleccionan al azar <span class="dato">${n}</span> productos.` },
   { tema:'medicina', exitoPlural:'pacientes', verboPasivo:'mejoren', art:'los', sg:'paciente', vs:'mejore', vi:'mejora', vip:'mejoran',
-    enun:(n,p)=>`Un tratamiento médico tiene una probabilidad de éxito de <span class="dato">${p}</span>. Se aplica a <span class="dato">${n}</span> pacientes independientes.` },
+    enun:(n,p)=>`Un tratamiento médico tiene una probabilidad de éxito de <span class="dato">${dec(p)}</span>. Se aplica a <span class="dato">${n}</span> pacientes independientes.` },
   { tema:'examen', exitoPlural:'alumnos', verboPasivo:'aprueben', art:'los', sg:'alumno', vs:'apruebe', vi:'aprueba', vip:'aprueban',
-    enun:(n,p)=>`La probabilidad de que un alumno apruebe un test es <span class="dato">${p}</span>. Se escogen al azar <span class="dato">${n}</span> alumnos.` },
+    enun:(n,p)=>`La probabilidad de que un alumno apruebe un test es <span class="dato">${dec(p)}</span>. Se escogen al azar <span class="dato">${n}</span> alumnos.` },
   { tema:'semillas', exitoPlural:'semillas', verboPasivo:'germinen', art:'las', sg:'semilla', vs:'germine', vi:'germina', vip:'germinan',
-    enun:(n,p)=>`La probabilidad de germinación de una semilla es <span class="dato">${p}</span>. Se plantan <span class="dato">${n}</span> semillas de forma independiente.` },
+    enun:(n,p)=>`La probabilidad de germinación de una semilla es <span class="dato">${dec(p)}</span>. Se plantan <span class="dato">${n}</span> semillas de forma independiente.` },
   { tema:'tiros libres', exitoPlural:'tiros', verboPasivo:'sean encestados', art:'los', sg:'tiro', vs:'sea encestado', vi:'es encestado', vip:'son encestados',
-    enun:(n,p)=>`Un jugador de baloncesto encesta un tiro libre con probabilidad <span class="dato">${p}</span>. Lanza <span class="dato">${n}</span> tiros libres consecutivos.` },
+    enun:(n,p)=>`Un jugador de baloncesto encesta un tiro libre con probabilidad <span class="dato">${dec(p)}</span>. Lanza <span class="dato">${n}</span> tiros libres consecutivos.` },
   { tema:'control de calidad', exitoPlural:'piezas', verboPasivo:'estén fuera de tolerancia', art:'las', sg:'pieza', vs:'esté fuera de tolerancia', vi:'está fuera de tolerancia', vip:'están fuera de tolerancia',
-    enun:(n,p)=>`En un lote industrial la probabilidad de que una pieza esté fuera de tolerancia es <span class="dato">${p}</span>. Se inspeccionan <span class="dato">${n}</span> piezas.` },
+    enun:(n,p)=>`En un lote industrial la probabilidad de que una pieza esté fuera de tolerancia es <span class="dato">${dec(p)}</span>. Se inspeccionan <span class="dato">${n}</span> piezas.` },
   { tema:'encuesta', exitoPlural:'personas', verboPasivo:'estén a favor', art:'las', sg:'persona', vs:'esté a favor', vi:'está a favor', vip:'están a favor',
     enun:(n,p)=>`En una encuesta el <span class="dato">${Math.round(p*100)} %</span> de los ciudadanos apoya una medida. Se pregunta a <span class="dato">${n}</span> personas.` },
 ];
@@ -457,7 +464,7 @@ function explicarExacta(n,p,q,k,res){
   const qnk = r4str(Math.pow(q,n-k));
   const pmf = r4str(binomPMF(n,k,p));
   return `<div class="res-titulo">📐 Resolución paso a paso</div>
-<div class="step"><span class="step-num">1</span><div class="step-body"><b>Identificar:</b> X ~ B(${n}, ${p}) → P(X = ${k})</div></div>
+<div class="step"><span class="step-num">1</span><div class="step-body"><b>Identificar:</b> X ~ B(${n}; ${dec(p)}) → P(X = ${k})</div></div>
 <div class="step"><span class="step-num">2</span><div class="step-body"><b>Fórmula:</b> ${fbox(`P(X=${k}) = C(${n},${k})·p^${k}·(1-p)^{${n-k}}`)}</div></div>
 <div class="step"><span class="step-num">3</span><div class="step-body"><b>Combinatorio:</b> ${fbox(`C(${n},${k}) = ${combVal}`)}</div></div>
 <div class="step"><span class="step-num">4</span><div class="step-body"><b>Potencia:</b> ${fbox(`p^${k}=${pk} · (1-p)^{${n-k}}=${qnk}`)}</div></div>
@@ -529,11 +536,10 @@ function comprobar(){
     document.getElementById('resp').focus();
     return;
   }
-  const val=rawVal.replace(',', '.');
-  const dado=parseFloat(val);
+  const dado=leerNumero(rawVal);
   if(isNaN(dado)){
     const fb=document.getElementById('fb');
-    fb.textContent='Ese valor no es un número válido.';
+    fb.textContent='Ese valor no es un número válido. Escribe, por ejemplo, 0,2541 o 0.2541.';
     fb.className='feedback vis mal';
     return;
   }
@@ -578,7 +584,7 @@ function actualizarPuntosHeader(){
 const tipoShort={exacta:'P(X=k)',almenos:'P(X≥k)',asumo:'P(X≤k)',entre:'P(k₁≤X≤k₂)',condic:'P(A|B)'};
 function addHist(ok){
   const {tipo,n,p,respuesta}=ej;
-  const label=`B(${n},${p}) · ${tipoShort[tipo]} = ${r4str(respuesta)}`;
+  const label=`B(${n}; ${dec(p)}) · ${tipoShort[tipo]} = ${r4str(respuesta)}`;
   const el=document.createElement('div');
   el.className=`hitem ${ok?'ok':'mal'}`;
   el.innerHTML=`<span>${ok?'✓':'✗'}</span>${label}`;
@@ -629,7 +635,7 @@ function mostrarModalFinal(){
   const infoHTML = `
     <p><strong>👤 Alumno:</strong> ${nombreActual}</p>
     <p><strong>📘 Ficha:</strong> Distribución Binomial</p>
-    <p><strong>⭐ Nota:</strong> ${nota.toFixed(2)} / 10</p>
+    <p><strong>⭐ Nota:</strong> ${nota.toFixed(2).replace('.', ',')} / 10</p>
     <p><strong>📅 Fecha:</strong> ${fechaStr}</p>
     <p><strong>⏰ Hora:</strong> ${horaStr}</p>
     <p><strong>⌛ Tiempo:</strong> ${tiempoTranscurrido} h:min</p>
