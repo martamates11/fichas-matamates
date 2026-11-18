@@ -172,6 +172,17 @@ button,input,select{font:inherit;color:inherit}
 .lim-ap{display:flex;flex-direction:column;gap:2mm;min-width:0}.lim-graf{display:block;width:46mm;max-width:100%;height:auto}.lim-preg{display:grid;grid-template-columns:repeat(auto-fill,minmax(34mm,1fr));gap:2.5mm 4mm;align-items:baseline}.lim-preg span{white-space:nowrap}.lim-preg span::after{content:"";display:inline-block;width:11mm;margin-left:1.5mm;border-bottom:.25mm solid #888}.lim-preg .ancho{grid-column:1/-1;display:flex;align-items:baseline}.lim-preg .ancho::after{flex:1;width:auto;min-width:15mm}.ap:has(.lim-ap),.sol-enun:has(.lim-ap){align-items:flex-start}.ap-txt:has(>.lim-ap){flex:1}.sol-enun .lim-preg{display:none}
 /* Pendientes (1.º, 2.º y 3.º ESO): figuras y textos */
 .pend-col{display:flex;flex-direction:column;align-items:flex-start;gap:2mm;min-width:0}.pend-fig,.pend-recta{display:block;max-width:100%;height:auto}.pend-nota{font-size:.9em;font-style:italic}.pend-texto{text-align:justify;hyphens:auto}.ap:has(.pend-col),.sol-enun:has(.pend-col){align-items:flex-start}.ap-txt:has(>.pend-col){flex:1}.sol-pasos .m .pend-recta{margin:1mm 0}
+/* Hojas anexas (p. ej., tabla de la binomial): se imprimen detrás del examen */
+#anexos{display:grid;gap:24px}#anexos:empty,#anexos[hidden]{display:none}
+.hoja-anexo{font-family:var(--f-texto)}
+.anx-cab{text-align:center;margin-bottom:3.5mm}.anx-etq{font:600 7.5pt var(--f-ui);letter-spacing:.16em;text-transform:uppercase;color:#444}
+.anx-tit{font-family:var(--f-titulo);font-weight:600;font-size:13pt;margin:.8mm 0 0}.anx-tit span{font-weight:400;font-size:.8em;color:#444}
+.anx-sub{margin:.8mm 0 0;font-size:8.5pt;color:#333}
+.tb-bin{width:100%;border-collapse:collapse;font-size:7.3pt;line-height:1;font-variant-numeric:tabular-nums;table-layout:fixed}
+.tb-bin th,.tb-bin td{border:.2mm solid #000;padding:.3mm .4mm;text-align:center;height:3.55mm}
+.tb-bin thead th{font-weight:600;background:#eee}.tb-bin .tb-p{border-bottom:none}
+.tb-bin .tb-n,.tb-bin .tb-k{width:5.5mm;font-weight:600}.tb-bin tbody .tb-n{font-size:8.5pt;background:#f4f4f4}
+.tb-bin tbody tr:first-child>*{border-top:.55mm solid #000}.tb-bin .tb-0{color:#8a8a8a}
 .ap-letra{font-style:italic}
 .ap.unico{padding-left:0}
 .otro{position:absolute;right:-2mm;top:-2mm;opacity:0;transition:opacity .15s;border:1px solid #c9ced8;background:#fff;color:#1a2744;border-radius:6px;font:500 11px var(--f-ui);padding:2px 6px;cursor:pointer}
@@ -335,6 +346,7 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
       <div class="escala" id="escala">
         <div class="hojas">
           <article class="hoja" id="hoja-examen" aria-label="Hoja del examen"></article>
+          <div id="anexos" aria-label="Hojas anexas del examen"></div>
           <article class="hoja" id="hoja-soluciones" aria-label="Hoja de soluciones" hidden></article>
         </div>
       </div>
@@ -408,6 +420,7 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
 <script src="generadores/arbol-prob.js"></script>
 <script src="generadores/tabla-contingencia.js"></script>
 <script src="generadores/combinatoria.js"></script>
+<script src="generadores/binomial.js"></script>
 <script>
 (function () {
   'use strict';
@@ -603,6 +616,11 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
     return h;
   }
 
+  /* Hojas anexas de las fichas usadas (cada ficha con anexo aporta sus páginas una sola vez) */
+  function paginasAnexo() {
+    return [...new Set(estado.items.map(it => it.ficha))].map(buscarFicha).filter(f => f && f.anexo).flatMap(f => f.anexo());
+  }
+
   function renderSoluciones() {
     /* La hoja de soluciones no lleva encabezado: así aprovecha mejor el folio. */
     let h = estado.modelo ? `<div class="sol-modelo">Soluciones · Modelo ${esc(estado.modelo)}</div>` : '';
@@ -643,6 +661,7 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
     he.classList.toggle('t-105', t105); hs.classList.toggle('t-105', t105);
     he.innerHTML = renderExamen();
     hs.innerHTML = renderSoluciones();
+    $('anexos').innerHTML = paginasAnexo().map(p => `<article class="hoja hoja-anexo">${p}</article>`).join('');
     tipografiar([he, hs]).then(() => { comprobarCara(); marcarCortes(); escalar(); });
     if (typeof premaquetarLuego === 'function') premaquetarLuego();
     comprobarCara(); marcarCortes(); escalar();
@@ -737,6 +756,7 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
     $('tab-sol').setAttribute('aria-selected', String(v === 'soluciones'));
     $('hoja-examen').hidden = v !== 'examen';
     $('hoja-soluciones').hidden = v !== 'soluciones';
+    $('anexos').hidden = v !== 'examen';
     $('estado-cara').style.visibility = v === 'examen' ? 'visible' : 'hidden';
     if (v === 'soluciones') marcarCortes();
     escalar();
@@ -881,6 +901,12 @@ dialog::backdrop{background:rgba(15,20,35,.45)}
         pie.textContent = `Página ${k + 1} de ${N}`;
         p.appendChild(pie);
       }
+    });
+    if (cual === 'examen') paginasAnexo().forEach(html => {   // hojas anexas, cada una en su folio
+      const p = document.createElement('div'); p.className = 'pp';
+      const c = document.createElement('div'); c.className = 'pp-cuerpo hoja hoja-anexo'; c.innerHTML = html;
+      const pie = document.createElement('div'); pie.className = 'pp-pie'; pie.textContent = 'Anexo';
+      p.appendChild(c); p.appendChild(pie); caja.appendChild(p);
     });
     return N;
   }

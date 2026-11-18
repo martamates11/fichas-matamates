@@ -346,23 +346,27 @@ function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 
 // Contextos - Redactados correctamente sin redundancias
 const contextos=[
-  { tema:'fabricación', exitoPlural:'productos', verboPasivo:'sean defectuosos',
+  { tema:'fabricación', exitoPlural:'productos', verboPasivo:'sean defectuosos', art:'los', sg:'producto', vs:'sea defectuoso', vi:'es defectuoso', vip:'son defectuosos',
     enun:(n,p)=>`En un proceso de fabricación la probabilidad de que un producto sea defectuoso es <span class="dato">${p}</span>. Se seleccionan al azar <span class="dato">${n}</span> productos.` },
-  { tema:'medicina', exitoPlural:'pacientes', verboPasivo:'mejoren',
+  { tema:'medicina', exitoPlural:'pacientes', verboPasivo:'mejoren', art:'los', sg:'paciente', vs:'mejore', vi:'mejora', vip:'mejoran',
     enun:(n,p)=>`Un tratamiento médico tiene una probabilidad de éxito de <span class="dato">${p}</span>. Se aplica a <span class="dato">${n}</span> pacientes independientes.` },
-  { tema:'examen', exitoPlural:'alumnos', verboPasivo:'aprueben',
-    enun:(n,p)=>`La probabilidad de que un alumno apruebe un test al azar es <span class="dato">${p}</span>. Se escogen <span class="dato">${n}</span> alumnos.` },
-  { tema:'semillas', exitoPlural:'semillas', verboPasivo:'germinen',
+  { tema:'examen', exitoPlural:'alumnos', verboPasivo:'aprueben', art:'los', sg:'alumno', vs:'apruebe', vi:'aprueba', vip:'aprueban',
+    enun:(n,p)=>`La probabilidad de que un alumno apruebe un test es <span class="dato">${p}</span>. Se escogen al azar <span class="dato">${n}</span> alumnos.` },
+  { tema:'semillas', exitoPlural:'semillas', verboPasivo:'germinen', art:'las', sg:'semilla', vs:'germine', vi:'germina', vip:'germinan',
     enun:(n,p)=>`La probabilidad de germinación de una semilla es <span class="dato">${p}</span>. Se plantan <span class="dato">${n}</span> semillas de forma independiente.` },
-  { tema:'tiros libres', exitoPlural:'tiros', verboPasivo:'sean encestados',
+  { tema:'tiros libres', exitoPlural:'tiros', verboPasivo:'sean encestados', art:'los', sg:'tiro', vs:'sea encestado', vi:'es encestado', vip:'son encestados',
     enun:(n,p)=>`Un jugador de baloncesto encesta un tiro libre con probabilidad <span class="dato">${p}</span>. Lanza <span class="dato">${n}</span> tiros libres consecutivos.` },
-  { tema:'control de calidad', exitoPlural:'piezas', verboPasivo:'estén fuera de tolerancia',
+  { tema:'control de calidad', exitoPlural:'piezas', verboPasivo:'estén fuera de tolerancia', art:'las', sg:'pieza', vs:'esté fuera de tolerancia', vi:'está fuera de tolerancia', vip:'están fuera de tolerancia',
     enun:(n,p)=>`En un lote industrial la probabilidad de que una pieza esté fuera de tolerancia es <span class="dato">${p}</span>. Se inspeccionan <span class="dato">${n}</span> piezas.` },
-  { tema:'encuesta', exitoPlural:'personas', verboPasivo:'estén a favor',
+  { tema:'encuesta', exitoPlural:'personas', verboPasivo:'estén a favor', art:'las', sg:'persona', vs:'esté a favor', vi:'está a favor', vip:'están a favor',
     enun:(n,p)=>`En una encuesta el <span class="dato">${Math.round(p*100)} %</span> de los ciudadanos apoya una medida. Se pregunta a <span class="dato">${n}</span> personas.` },
 ];
 
 const tipos=['exacta','almenos','asumo','entre','condic'];
+
+// Concordancia: «1 de los productos sea defectuoso», «3 de las semillas germinen»
+const deLos = (ctx,k)=>`de ${ctx.art} ${ctx.exitoPlural} ${k===1?ctx.vs:ctx.verboPasivo}`;
+const sabiendo = (ctx,k)=>`al menos ${k} de ${ctx.art==='las'?'ellas':'ellos'} ${k===1?ctx.vi:ctx.vip}`;
 
 function generarPregunta(n,p,tipo,ctx){
   let pregunta, respuesta, k, k1, k2;
@@ -370,30 +374,30 @@ function generarPregunta(n,p,tipo,ctx){
   if(tipo==='exacta'){
     k=rnd(0,Math.min(n,5));
     respuesta=r4(binomPMF(n,k,p));
-    if(k===1){
-      pregunta = `Calcula la probabilidad de que <b>exactamente 1</b> de los ${ctx.exitoPlural} ${ctx.verboPasivo}.`;
+    if(k===0){
+      pregunta = `Calcula la probabilidad de que <b>${ctx.art==='las'?'ninguna':'ningún'}</b> ${ctx.sg} ${ctx.vs}.`;
     } else {
-      pregunta = `Calcula la probabilidad de que <b>exactamente ${k}</b> de los ${ctx.exitoPlural} ${ctx.verboPasivo}.`;
+      pregunta = `Calcula la probabilidad de que <b>exactamente ${k}</b> ${deLos(ctx,k)}.`;
     }
     return {tipo,pregunta,respuesta,k,n,p,ctx};
   }
   if(tipo==='almenos'){
     k=rnd(1,Math.min(n,4));
     respuesta=r4(1-binomCDF(n,k-1,p));
-    pregunta = `Calcula la probabilidad de que <b>al menos ${k}</b> de los ${ctx.exitoPlural} ${ctx.verboPasivo}.`;
+    pregunta = `Calcula la probabilidad de que <b>al menos ${k}</b> ${deLos(ctx,k)}.`;
     return {tipo,pregunta,respuesta,k,n,p,ctx};
   }
   if(tipo==='asumo'){
     k=rnd(1,Math.min(n-1,5));
     respuesta=r4(binomCDF(n,k,p));
-    pregunta = `Calcula la probabilidad de que <b>a lo sumo ${k}</b> de los ${ctx.exitoPlural} ${ctx.verboPasivo}.`;
+    pregunta = `Calcula la probabilidad de que <b>a lo sumo ${k}</b> ${deLos(ctx,k)}.`;
     return {tipo,pregunta,respuesta,k,n,p,ctx};
   }
   if(tipo==='entre'){
     k1=rnd(1,Math.floor(n/2));
     k2=rnd(k1+1,Math.min(n,k1+4));
     respuesta=r4(binomCDF(n,k2,p)-binomCDF(n,k1-1,p));
-    pregunta = `Calcula la probabilidad de que haya <b>entre ${k1} y ${k2}</b> de los ${ctx.exitoPlural} ${ctx.verboPasivo} (ambos inclusive).`;
+    pregunta = `Calcula la probabilidad de que <b>entre ${k1} y ${k2}</b> ${deLos(ctx,2)} (ambos inclusive).`;
     return {tipo,pregunta,respuesta,k1,k2,n,p,ctx};
   }
   if(tipo==='condic'){
@@ -405,7 +409,7 @@ function generarPregunta(n,p,tipo,ctx){
     // independientes den un cociente >1 por ruido de coma flotante.
     const pAyB = (k2===n) ? pB : r4(binomCDF(n,k2,p)-binomCDF(n,k1-1,p));
     respuesta  = r4(pAyB/pB);
-    pregunta = `Calcula la probabilidad de que haya <b>entre ${k1} y ${k2}</b> de los ${ctx.exitoPlural} ${ctx.verboPasivo}, <b>sabiendo que hay al menos ${k1}</b>.`;
+    pregunta = `Calcula la probabilidad de que <b>entre ${k1} y ${k2}</b> ${deLos(ctx,2)}, <b>sabiendo que ${sabiendo(ctx,k1)}</b>.`;
     return {tipo,pregunta,respuesta,k1,k2,pAyB,pB,n,p,ctx};
   }
 }
