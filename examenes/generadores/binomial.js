@@ -4,12 +4,11 @@
    y probabilidad condicionada («entre k₁ y k₂ sabiendo que hay al menos k₁»), con los mismos
    contextos, n entre 5 y 14 y los mismos valores de p.
    Diferencias con la ficha:
-   · El enunciado incluye un extracto de la tabla de la binomial, P(X = k) con cuatro decimales,
-     para el n del problema y cuatro valores de p consecutivos (entre ellos el del problema), de
-     modo que el alumno tiene que localizar la columna. Las soluciones trabajan con los valores
-     de la tabla (sumas exactas de valores redondeados), que es lo que hará el alumno; cuando el
-     camino alternativo (complementario o suma directa) da una diezmilésima distinta por el
-     redondeo, se indica.
+   · El examen lleva una hoja anexa con la tabla completa de la binomial, P(X = k) con cuatro
+     decimales, para n de 1 a 14 y p de 0,05 a 0,70 (de 0,05 en 0,05; incluye todos los valores
+     de p de la ficha). Las soluciones trabajan con los valores de la tabla (sumas exactas de
+     valores redondeados), que es lo que hará el alumno; cuando el camino alternativo
+     (complementario o suma directa) da una diezmilésima distinta por el redondeo, se indica.
    · En «al menos» y «a lo sumo» se elige el camino con menos sumandos (la ficha usa siempre el
      complementario en «al menos» y la suma directa en «a lo sumo»).
    · Se evitan los resultados casi nulos (menores que 0,0010; en la tabla aparecerían como 0,0000 o 0,000x) y, en la condicionada, el caso k₂ = n
@@ -17,7 +16,7 @@
    · Las frases se han revisado para que concuerden en número («exactamente 1 producto sea
      defectuoso», «entre 2 y 4 productos sean defectuosos») y el contexto del test indica que
      los alumnos se eligen al azar.
-   · Se añade un sexto tipo, «problema completo», con una sola tabla y cuatro cuestiones. */
+   · Se añade un sexto tipo, «problema completo», con un solo contexto y cuatro cuestiones. */
 (function () {
   'use strict';
   const { registrarFicha } = window.EX;
@@ -45,54 +44,52 @@
   const qOf = p => Math.round((1 - p) * 100) / 100;
 
   /* ---------- Contextos (los de la ficha, con singular y plural) ---------- */
-  /* uno/varios: sustantivo; s/pl: verbo en subjuntivo singular/plural; X: descripción de la variable */
+  /* sg/pl: sustantivo; vs/vp: verbo en subjuntivo singular/plural; is/ip: en indicativo («sabiendo que…»); X: variable */
   const CONTEXTOS = [
-    { sg: 'producto', pl: 'productos', vs: 'sea defectuoso', vp: 'sean defectuosos', X: 'número de productos defectuosos',
+    { sg: 'producto', pl: 'productos', vs: 'sea defectuoso', vp: 'sean defectuosos', is: 'es defectuoso', ip: 'son defectuosos', X: 'número de productos defectuosos',
       enun: (n, p) => `En un proceso de fabricación, la probabilidad de que un producto sea defectuoso es ${pH(p)}. Se seleccionan al azar ${n} productos.` },
-    { sg: 'paciente', pl: 'pacientes', vs: 'mejore', vp: 'mejoren', X: 'número de pacientes que mejoran',
+    { sg: 'paciente', pl: 'pacientes', vs: 'mejore', vp: 'mejoren', is: 'mejora', ip: 'mejoran', X: 'número de pacientes que mejoran',
       enun: (n, p) => `Un tratamiento médico tiene una probabilidad de éxito de ${pH(p)}. Se aplica a ${n} pacientes, de forma independiente.` },
-    { sg: 'alumno', pl: 'alumnos', vs: 'apruebe', vp: 'aprueben', X: 'número de alumnos que aprueban',
+    { sg: 'alumno', pl: 'alumnos', vs: 'apruebe', vp: 'aprueben', is: 'aprueba', ip: 'aprueban', X: 'número de alumnos que aprueban',
       enun: (n, p) => `La probabilidad de que un alumno apruebe un test es ${pH(p)}. Se escogen al azar ${n} alumnos.` },
-    { sg: 'semilla', pl: 'semillas', vs: 'germine', vp: 'germinen', X: 'número de semillas que germinan', fem: true,
+    { sg: 'semilla', pl: 'semillas', vs: 'germine', vp: 'germinen', is: 'germina', ip: 'germinan', X: 'número de semillas que germinan', fem: true,
       enun: (n, p) => `La probabilidad de germinación de una semilla es ${pH(p)}. Se plantan ${n} semillas de forma independiente.` },
-    { sg: 'tiro', pl: 'tiros', vs: 'sea encestado', vp: 'sean encestados', X: 'número de tiros encestados',
+    { sg: 'tiro', pl: 'tiros', vs: 'sea encestado', vp: 'sean encestados', is: 'es encestado', ip: 'son encestados', X: 'número de tiros encestados',
       enun: (n, p) => `Un jugador de baloncesto encesta un tiro libre con probabilidad ${pH(p)}. Lanza ${n} tiros libres de forma independiente.` },
-    { sg: 'pieza', pl: 'piezas', vs: 'esté fuera de tolerancia', vp: 'estén fuera de tolerancia', X: 'número de piezas fuera de tolerancia', fem: true,
+    { sg: 'pieza', pl: 'piezas', vs: 'esté fuera de tolerancia', vp: 'estén fuera de tolerancia', is: 'está fuera de tolerancia', ip: 'están fuera de tolerancia', X: 'número de piezas fuera de tolerancia', fem: true,
       enun: (n, p) => `En un lote industrial, la probabilidad de que una pieza esté fuera de tolerancia es ${pH(p)}. Se inspeccionan ${n} piezas al azar.` },
-    { sg: 'persona', pl: 'personas', vs: 'esté a favor', vp: 'estén a favor', X: 'número de personas a favor', fem: true,
+    { sg: 'persona', pl: 'personas', vs: 'esté a favor', vp: 'estén a favor', is: 'está a favor', ip: 'están a favor', X: 'número de personas a favor', fem: true,
       enun: (n, p) => `En una encuesta, el ${Math.round(p * 100)} % de los ciudadanos apoya una medida. Se pregunta a ${n} personas elegidas al azar.` }
   ];
   /* «exactamente 1 producto sea defectuoso» / «exactamente 3 productos sean defectuosos» */
   const frase = (c, k) => (k === 1 ? `1 ${c.sg} ${c.vs}` : `${k} ${c.pl} ${c.vp}`);
   const ningun = c => (c.fem ? 'ninguna' : 'ningún');
 
-  /* ---------- Tabla de la binomial (blanco y negro, sobria) ---------- */
-  function tablaHTML(n, cols, pMarca) {
-    const B = 'border:.25mm solid #000;';
-    const celda = 'padding:.35mm 2mm;text-align:center;font-variant-numeric:tabular-nums;';
-    const head = cols.map(p => `<th style="${B}${celda}font-weight:600">${pH(p)}</th>`).join('');
-    const filas = Array.from({ length: n + 1 }, (_, k) =>
-      `<tr><th style="${B}${celda}font-weight:600">${k}</th>${cols.map(p => `<td style="${B}${celda}">${Dh(columna(n, p)[k])}</td>`).join('')}</tr>`).join('');
-    return `<table class="bin-tabla" data-p="${pMarca}" style="border-collapse:collapse;font-size:.8em;line-height:1.25;flex:none">`
-      + `<caption style="caption-side:top;font-size:.95em;padding-bottom:.8mm;text-align:center">Tabla de la binomial: \\(P(X = k)\\), \\(n = ${n}\\)</caption>`
-      + `<thead><tr><th style="${B}${celda}font-weight:600">\\(k \\,\\backslash\\, p\\)</th>${head}</tr></thead><tbody>${filas}</tbody></table>`;
+  /* ---------- Hoja anexa: tabla completa de la binomial ---------- */
+  /* n de 1 a 14, p de 0,05 a 0,70. Dos páginas: n = 1…10 y n = 11…14 (ningún bloque se parte). */
+  const PA = Array.from({ length: 14 }, (_, i) => Math.round((i + 1) * 5) / 100);
+  function paginaTabla(ns, cont) {
+    const cab = `<tr><th class="tb-n">n</th><th class="tb-k">k</th>${PA.map(p => `<th>${pH(p)}</th>`).join('')}</tr>`;
+    const cuerpo = ns.map(n => {
+      const cols = PA.map(p => columna(n, p));
+      return `<tbody>${Array.from({ length: n + 1 }, (_, k) =>
+        `<tr>${k === 0 ? `<th class="tb-n" rowspan="${n + 1}">${n}</th>` : ''}<th class="tb-k">${k}</th>${cols.map(c => `<td${c[k] === 0 ? ' class="tb-0"' : ''}>${Dh(c[k])}</td>`).join('')}</tr>`).join('')}</tbody>`;
+    }).join('');
+    return `<div class="anx-cab"><span class="anx-etq">Anexo</span><h2 class="anx-tit">Tabla de la distribución binomial${cont ? ' <span>(continuación)</span>' : ''}</h2>`
+      + `<p class="anx-sub">Probabilidades <i>P</i>(<i>X</i> = <i>k</i>) para <i>X</i> ~ <i>B</i>(<i>n</i>, <i>p</i>), redondeadas a cuatro decimales.</p></div>`
+      + `<table class="tb-bin"><thead><tr><th colspan="2"></th><th colspan="${PA.length}" class="tb-p"><i>p</i></th></tr>${cab}</thead>${cuerpo}</table>`;
   }
-  /* Cuatro valores consecutivos de la lista que contienen p, en posición al azar */
-  function columnas(R, p) {
-    const i = PS.indexOf(p);
-    const ini = R.int(Math.max(0, i - 3), Math.min(i, PS.length - 4));
-    return PS.slice(ini, ini + 4);
-  }
-  const caja = (txt, n, cols, p) =>
-    `<div class="bin-ap"><span class="bin-txt pend-texto">${txt}</span>${tablaHTML(n, cols, p)}</div>`;
+  const anexo = () => [paginaTabla([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], false), paginaTabla([11, 12, 13, 14], true)];
+
+  const caja = txt => `<div class="pend-col"><span class="pend-texto">${txt}</span></div>`;
 
   /* ---------- Planteamiento común ---------- */
   function datos(R) {
     const n = R.int(5, 14), p = R.pick(PS), c = R.pick(CONTEXTOS);
-    return { n, p, q: qOf(p), c, T: columna(n, p), cols: columnas(R, p) };
+    return { n, p, q: qOf(p), c, T: columna(n, p) };
   }
   const pasoModelo = d => ({
-    t: `Sea \\(X\\) = «${d.c.X}». Cada uno de los ${d.n} ${d.c.pl} es un ensayo independiente con dos resultados y la misma probabilidad de éxito, \\(p = ${pT(d.p)}\\). Por tanto, \\(X\\) sigue una distribución binomial (en la tabla, columna \\(p = ${pT(d.p)}\\)):`,
+    t: `Sea \\(X\\) = «${d.c.X}». Cada uno de los ${d.n} ${d.c.pl} es un ensayo independiente con dos resultados y la misma probabilidad de éxito, \\(p = ${pT(d.p)}\\). Por tanto, \\(X\\) sigue una distribución binomial; en la tabla del anexo se usa el bloque \\(n = ${d.n}\\) y la columna \\(p = ${pT(d.p)}\\):`,
     m: `X \\sim B(${d.n};\\ ${pT(d.p)})`
   });
   /* Escribe P(X=a) + … + P(X=b) y sus valores de la tabla */
@@ -115,7 +112,7 @@
       txt: k === 0 ? `Calcula la probabilidad de que ${ningun(c)} ${c.sg} ${c.vs}.` : `Calcula la probabilidad de que exactamente ${frase(c, k)}.`,
       pasos: [
         { t: `Se pide \\(P(X = ${k})\\). Por la fórmula de la binomial:`, m: `P(X = ${k}) = \\binom{${n}}{${k}} \\cdot ${pT(p)}^{${k}} \\cdot ${pT(q)}^{${n - k}} = ${comb(n, k)} \\cdot ${pT(p)}^{${k}} \\cdot ${pT(q)}^{${n - k}} \\approx ${D(T[k])}` },
-        { t: `Es el valor de la tabla en la fila \\(k = ${k}\\), columna \\(p = ${pT(p)}\\).` }
+        { t: `Es el valor de la tabla en \\(n = ${n}\\), fila \\(k = ${k}\\), columna \\(p = ${pT(p)}\\).` }
       ],
       res: `P(X = ${k}) = ${D(T[k])}`, valor: T[k]
     };
@@ -189,7 +186,7 @@
       const cociente = Math.round(A / B.valor * 10000);
       if (cociente >= 10000) continue;
       return {
-        txt: `Calcula la probabilidad de que entre ${k1} y ${k2} ${c.pl} ${c.vp}, sabiendo que al menos ${frase(c, k1)}.`,
+        txt: `Calcula la probabilidad de que entre ${k1} y ${k2} ${c.pl} ${c.vp}, sabiendo que al menos ${k1 === 1 ? `1 ${c.sg} ${c.is}` : `${k1} ${c.pl} ${c.ip}`}.`,
         pasos: [
           { t: `Llamamos \\(A\\) = «\\(${k1} \\le X \\le ${k2}\\)» y \\(B\\) = «\\(X \\ge ${k1}\\)». Se pide \\(P(A \\mid B)\\). Como todo resultado de \\(A\\) está en \\(B\\), \\(A \\cap B = A\\):`, m: `P(A \\mid B) = \\frac{P(A \\cap B)}{P(B)} = \\frac{P(${k1} \\le X \\le ${k2})}{P(X \\ge ${k1})}` },
           { t: 'Numerador, con los valores de la tabla:', ...sumaPaso(`P(${k1} \\le X \\le ${k2})`, T, k1, k2) },
@@ -211,7 +208,7 @@
         if (!Q) continue;
         return {
           html: true,
-          enun: caja(`${d.c.enun(d.n, d.p)} ${Q.txt}`, d.n, d.cols, d.p),
+          enun: caja(`${d.c.enun(d.n, d.p)} ${Q.txt}`),
           pasos: [pasoModelo(d), ...Q.pasos],
           res: Q.res
         };
@@ -233,7 +230,7 @@
       qs.forEach((x, i) => { pasos.push({ t: `<b>${i + 1}.</b>` }); pasos.push(...x.pasos); });
       return {
         html: true,
-        enun: caja(`${d.c.enun(d.n, d.p)} Calcula la probabilidad de que:<br>${lista}`, d.n, d.cols, d.p),
+        enun: caja(`${d.c.enun(d.n, d.p)} Calcula la probabilidad de que:<br>${lista}`),
         pasos,
         resHtml: `<span>${qs.map((x, i) => `${i + 1})&nbsp;\\(${x.res}\\)`).join('<br>')}</span>`
       };
@@ -241,21 +238,22 @@
     throw new Error('Sin datos válidos');
   }
 
-  const ENUN = ['Resuelve el siguiente problema con ayuda de la tabla de la distribución binomial:',
-                'Resuelve los siguientes problemas con ayuda de la tabla de la distribución binomial:'];
+  const ENUN = ['Resuelve el siguiente problema con ayuda de la tabla de la distribución binomial (anexo):',
+                'Resuelve los siguientes problemas con ayuda de la tabla de la distribución binomial (anexo):'];
   registrarFicha({
     id: 'binomial',
     titulo: 'Distribución binomial',
-    detalle: 'Probabilidades con la tabla de la binomial',
+    detalle: 'Probabilidades con la tabla de la binomial (hoja anexa)',
     grupo: 'Distribuciones de probabilidad',
     enlace: '../distribuciones/binomial.html',
+    anexo,
     ejercicios: [
       { id: 'exacta', nombre: 'Probabilidad de un valor exacto', peso: 1, columnas: 1, enunciado: ENUN, generar: ejercicio(qExacta) },
       { id: 'almenos', nombre: 'Al menos k éxitos', peso: 1, columnas: 1, enunciado: ENUN, generar: ejercicio(qAlMenos) },
       { id: 'asumo', nombre: 'A lo sumo k éxitos', peso: 1, columnas: 1, enunciado: ENUN, generar: ejercicio(qASumo) },
       { id: 'entre', nombre: 'Entre k₁ y k₂ éxitos', peso: 1, columnas: 1, enunciado: ENUN, generar: ejercicio(qEntre) },
       { id: 'condic', nombre: 'Probabilidad condicionada', peso: 1.5, columnas: 1, enunciado: ENUN, generar: ejercicio(qCondic) },
-      { id: 'completo', nombre: 'Problema completo (una tabla, cuatro cuestiones)', peso: 2.5, columnas: 1, enunciado: ENUN, generar: genCompleto }
+      { id: 'completo', nombre: 'Problema completo (cuatro cuestiones)', peso: 2.5, columnas: 1, enunciado: ENUN, generar: genCompleto }
     ]
   });
 })();
