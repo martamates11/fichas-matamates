@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Proporcionalidad (pendientes de 1.º ESO).
    Mismos tipos y rangos que la ficha interactiva pendientes/primero/proporcionalidad-1.html.
    Diferencias respecto a la ficha (no están aplicadas en ella): las fracciones equivalentes y

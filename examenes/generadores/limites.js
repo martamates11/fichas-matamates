@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: límites y continuidad (1.º y 2.º Bachillerato).
    Corresponden a las fichas de limites/: concepto de límite, tipos de discontinuidad,
    resolución de indeterminaciones y aplicaciones (asíntotas y continuidad con parámetro).

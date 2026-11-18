@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Sistemas de ecuaciones (pendientes de 2.º ESO).
    Mismos criterios que la ficha pendientes/segundo/sistemas-2.html: soluciones enteras
    entre −6 y 6 (aquí se excluye la solución trivial x = 0, y = 0, que la ficha sí permite)

@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Números decimales (pendientes de 1.º ESO).
    Mismos criterios que la ficha interactiva pendientes/primero/decimales-1.html, con estos ajustes
    para que se pueda hacer a mano y sin calculadora:

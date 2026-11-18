@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen del bloque de funciones:
    · Dominio de una función (polinómicas, racionales, logarítmicas, raíces, exponenciales y compuestas).
    · Estudio de funciones racionales (las mismas familias que la ficha, con otros parámetros).

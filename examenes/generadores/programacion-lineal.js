@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generador de examen: programación lineal (maximizar beneficios / minimizar costes).
    Contextos, rangos de números y criterios de calidad copiados de la ficha
    inecuaciones/prog-lineal.html. */

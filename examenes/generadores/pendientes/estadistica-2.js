@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Estadística (pendientes de 2.º ESO).
    Bancos, contextos y tipos de la ficha pendientes/segundo/estadistica-2.html, con estos
    ajustes (la ficha NO los tiene) pensados para hacer el examen sin calculadora y en papel:

@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Teorema de Pitágoras (pendientes de 2.º ESO).
    Mismos tipos de ejercicio que la ficha pendientes/segundo/pitagoras-2.html.
    Pensado para hacer el examen sin calculadora: la hipotenusa, el cateto, la altura

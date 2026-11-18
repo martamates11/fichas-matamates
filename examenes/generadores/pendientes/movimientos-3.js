@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Movimientos en el plano (pendientes de 3.º ESO).
    Mismos tipos y criterios de generación que la ficha pendientes/tercero/movimientos-3.html
    (cuadrícula de 18 × 12, triángulos y cuadriláteros con vértices en nudos, vectores de

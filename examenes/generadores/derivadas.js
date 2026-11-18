@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: derivadas (1.º y 2.º Bachillerato).
    Corresponden a las fichas de derivadas/: derivadas inmediatas, derivadas II (regla de la
    cadena con exponenciales, logaritmos, potencias, producto y cociente), derivadas III

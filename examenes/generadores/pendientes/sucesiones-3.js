@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Sucesiones y progresiones (pendientes de 3.º ESO).
    Criterios de la ficha pendientes/tercero/sucesiones-3.html:
    · aritméticas: a₁ entre −12 y 12, diferencia d = ±(1 a 7), se piden a₁, d, aₙ, a₂₀ y S₂₀;

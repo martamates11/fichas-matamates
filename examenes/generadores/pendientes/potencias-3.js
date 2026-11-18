@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Potencias de exponente racional (pendientes de 3.º ESO).
    Los números se generan con los mismos criterios que la ficha interactiva
    pendientes/tercero/potencias-3.html. Los ejercicios de la ficha que se resuelven

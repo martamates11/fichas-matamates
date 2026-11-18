@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Potencias de números enteros (pendientes de 2.º ESO).
    Cada apartado reproduce un bloque de la ficha pendientes/segundo/potencias-2.html
    (normalmente sus cuatro casos), con los mismos rangos. En la ficha los ejercicios de

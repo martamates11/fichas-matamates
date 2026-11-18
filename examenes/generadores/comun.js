@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Utilidades comunes de los generadores de exámenes: azar reproducible,
    fracciones y escritura en TeX. */
 (function () {

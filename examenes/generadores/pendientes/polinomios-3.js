@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Polinomios (pendientes de 3.º ESO).
    Los datos se generan con los mismos criterios que la ficha interactiva
    pendientes/tercero/polinomios-3.html. En la ficha cada tanda trae dos frases o dos

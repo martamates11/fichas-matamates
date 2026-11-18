@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Probabilidad de sucesos en contexto (CC.SS. II · PAU Extremadura).
    Mismos 8 tipos y contextos que la ficha probabilidad/prob-sucesos.html: unión de sucesos,
    probabilidad condicionada y unión, sucesos independientes y De Morgan, sucesos incompatibles,

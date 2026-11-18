@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Divisibilidad (pendientes de 1.º ESO).
    Tipos y rangos de la ficha interactiva pendientes/primero/divisibilidad-1.html, salvo
    lo indicado: la ficha usa listas fijas de 6-8 casos en «Divisores», «mcm», «MCD» y

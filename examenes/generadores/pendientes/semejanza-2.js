@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Semejanza (pendientes de 2.º ESO).
    Mismos tipos y rangos que la ficha interactiva pendientes/segundo/semejanza-2.html, con
    estos ajustes (la ficha NO los tiene) para trabajar sin calculadora:

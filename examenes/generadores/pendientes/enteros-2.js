@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Números enteros (pendientes de 2.º ESO).
    Los números se generan con los mismos criterios que la ficha interactiva
    pendientes/segundo/enteros-2.html (salvo lo indicado en cada ejercicio). */

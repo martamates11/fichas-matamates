@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Figuras planas (pendientes de 1.º ESO).
    Mismos contenidos que la ficha pendientes/primero/figuras-planas-1.html. Los ejercicios
    de arrastrar y unir se adaptan a papel: el alumno escribe el nombre de la figura, del

@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Probabilidad (pendientes de 3.º ESO).
    Mismos tipos y rangos que la ficha pendientes/tercero/probabilidad-3.html: extracción
    simple de una bolsa, dos extracciones con y sin reemplazamiento (diagrama de árbol)

@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: inecuaciones y sistemas de inecuaciones con una y dos incógnitas
    (fichas inec-1-incog, sist-inec-1-incog, inec-2-incog y sist-inec-2-incog).
    Los números se generan con los mismos criterios que las fichas interactivas. */

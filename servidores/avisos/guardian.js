@@ -75,7 +75,7 @@
       '@media(max-width:520px){.f{font-size:13.5px;padding:10px 14px}}' +
       '</style>' +
       '<div class="f" role="note"><span class="e">Copia no autorizada</span>' +
-      'Esta ficha es obra de <b>Marta López de Letona</b>. Úsala gratis en su web original: ' +
+      'Esta ficha es obra de <b>Marta López de Letona Sánchez</b>. Úsala gratis en su web original: ' +
       '<a href="' + enlace + '" target="_blank" rel="noopener">martamates11.github.io/fichas-matamates</a></div>';
     document.body.appendChild(cont);
     var alto = cont.getBoundingClientRect().height || 80;

@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Cuerpos geométricos y volúmenes (pendientes de 2.º ESO).
    Mismos tipos y rangos que la ficha pendientes/segundo/volumenes-2.html, con datos
    pensados para hacer el examen sin calculadora:

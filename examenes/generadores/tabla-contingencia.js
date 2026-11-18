@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Tablas de contingencia (Probabilidad y combinatoria).
    Mismos tipos y contextos que la ficha probabilidad/tabla-contingencia.html: a partir de los
    datos de un enunciado se completa una tabla de doble entrada 2×2 con sus totales y se

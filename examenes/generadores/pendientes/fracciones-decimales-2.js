@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Fracciones y decimales (pendientes de 2.º ESO).
    Mismos criterios que la ficha pendientes/segundo/fracciones-decimales-2.html, con estos
    ajustes (solo en el examen, la ficha no los tiene) pensados para hacerlo sin calculadora:

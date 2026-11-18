@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Álgebra (pendientes de 1.º ESO).
    Mismos criterios que la ficha interactiva pendientes/primero/algebra-1.html, con estos ajustes:
    - Lenguaje algebraico: la ficha pide dos frases a la vez (de un banco de 10); en el examen

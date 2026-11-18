@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Funciones (pendientes de 3.º ESO).
    Las funciones y gráficas se generan con los mismos criterios que la ficha interactiva
    pendientes/tercero/funciones-3.html: dominio [−6, 6], coordenadas enteras en los puntos

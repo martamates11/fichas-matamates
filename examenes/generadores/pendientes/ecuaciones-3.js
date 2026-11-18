@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Ecuaciones (pendientes de 3.º ESO).
    Los datos se generan con los mismos criterios que la ficha interactiva
    pendientes/tercero/ecuaciones-3.html. Diferencias con la ficha (que no se ha modificado):

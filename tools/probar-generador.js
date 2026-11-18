@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Prueba de generadores de examen (herramienta interna, no se publica en la web).
 
    Uso:

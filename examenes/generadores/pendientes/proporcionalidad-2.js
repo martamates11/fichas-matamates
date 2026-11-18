@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Proporcionalidad directa e inversa (pendientes de 2.º ESO).
    Mismos criterios que la ficha interactiva pendientes/segundo/proporcionalidad-2.html.
    Las fracciones equivalentes, la regla de tres y los problemas se generan con plantillas

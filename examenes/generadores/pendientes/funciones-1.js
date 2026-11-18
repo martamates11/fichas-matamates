@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Funciones (pendientes de 1.º ESO).
    Mismos criterios que la ficha pendientes/primero/funciones-1.html: coordenadas
    enteras entre −6 y 6, recorridos distancia-tiempo de 20 en 20 minutos y de 100 en

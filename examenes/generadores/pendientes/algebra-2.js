@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Expresiones algebraicas (pendientes de 2.º ESO).
    Mismos criterios que la ficha pendientes/segundo/algebra-2.html, con una diferencia:
    el banco de frases del lenguaje algebraico es de 24 en lugar de las 10 de la ficha

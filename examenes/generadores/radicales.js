@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: operaciones con radicales y racionalización de denominadores.
    Los números se generan con los mismos criterios que las fichas interactivas. */
 (function () {
