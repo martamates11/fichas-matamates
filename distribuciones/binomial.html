@@ -13,298 +13,210 @@
 <link rel="canonical" href="https://martamates11.github.io/fichas-matamates/distribuciones/binomial.html">
 <link rel="license" href="https://martamates11.github.io/fichas-matamates/aviso-legal.html">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "LearningResource", "name": "Distribución binomial", "url": "https://martamates11.github.io/fichas-matamates/distribuciones/binomial.html", "inLanguage": "es", "learningResourceType": "Ejercicio interactivo", "interactivityType": "active", "isAccessibleForFree": true, "about": "Estadística y probabilidad", "author": {"@type": "Person", "name": "Marta López de Letona"}, "copyrightHolder": {"@type": "Person", "name": "Marta López de Letona"}, "license": "https://martamates11.github.io/fichas-matamates/aviso-legal.html", "isPartOf": {"@type": "WebSite", "name": "Martamates Interactivo", "url": "https://martamates11.github.io/fichas-matamates/"}}</script>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg:      #f0f6ff;
-  --card:    #ffffff;
-  --pri:     #1a6fc4;
-  --pri-lt:  #dbeafe;
-  --acc:     #0ea5e9;
-  --ok:      #16a34a;
-  --ok-lt:   #dcfce7;
-  --err:     #dc2626;
-  --err-lt:  #fee2e2;
-  --warn:    #d97706;
-  --warn-lt: #fef3c7;
-  --text:    #0f172a;
-  --muted:   #64748b;
-  --border:  #cbd5e1;
-  --shadow:  0 6px 32px rgba(26,111,196,.11);
-  --r:       18px;
+:root{
+  --color-fondo:#F5F0E8; --color-fondo-card:#FDFAF3; --color-texto:#2C1F0E; --color-texto-suave:#6B4F35;
+  --color-acento:#A0522D; --color-acento-hover:#7B3B1E; --color-borde:#C9A96E; --color-borde-suave:#E0CEAA;
+  --color-cabecera:#3B2510; --color-cabecera-txt:#F5EDD8; --color-barra-alumno:#EFE4CC;
+  --color-correcto:#2E6B3E; --color-incorrecto:#8B1A1A; --color-neutro:#E8DFC8;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{
-  font-family:'Nunito',sans-serif;
-  background:var(--bg);
-  min-height:100vh;
-  display:flex;flex-direction:column;align-items:center;
-  padding:28px 14px 60px;
-  color:var(--text);
-  transition: background 0.3s ease;
-}
+body{font-family:'Lato',sans-serif;font-size:16px;color:var(--color-texto);background:var(--color-fondo);line-height:1.5;padding-bottom:40px}
+h1,h2,h3,.titulo-ficha{font-family:'Libre Baskerville',serif;color:var(--color-texto)}
 
-/* HEADER - con sombreado azul */
-.header{width:100%;max-width:760px;text-align:center;margin-bottom:20px}
-.header h1{display:inline-block;font-size:clamp(24px,6vw,38px);font-weight:900;color:var(--pri);line-height:1.2;margin-bottom:8px;background:var(--pri-lt);padding:8px 24px;border-radius:50px;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
+/* Cabecera (solo autoría) y contenedor */
+.cabecera{background:var(--color-cabecera);color:var(--color-cabecera-txt);font-family:'Libre Baskerville',serif;text-align:center;padding:12px 20px;border-bottom:3px solid var(--color-borde);font-size:.78rem;letter-spacing:.04em}
+.ficha-container{max-width:820px;margin:28px auto;background:var(--color-fondo-card);border:2px solid var(--color-borde);border-radius:6px;box-shadow:0 3px 12px rgba(44,31,14,.15);padding:32px 36px}
+.titulo-ficha{font-size:1.6rem;text-align:center}
+.titulo-ficha::after{content:'';display:block;width:60px;height:3px;background:var(--color-borde);margin:10px auto 0;border-radius:2px}
+.subtitulo{text-align:center;color:var(--color-texto-suave);font-family:'Libre Baskerville',serif;font-style:italic;font-size:1rem;margin:8px 0 20px}
 
-/* BARRA SUPERIOR - UNA SOLA LÍNEA */
-.top-bar{width:100%;max-width:760px;background:var(--card);border-radius:60px;padding:6px 20px;margin-bottom:20px;box-shadow:var(--shadow);border:1px solid var(--border);display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;gap:20px;overflow-x:auto}
-.alumno-section{display:flex;align-items:center;gap:8px;background:var(--pri-lt);padding:4px 16px;border-radius:40px;flex-shrink:0}
-.alumno-label{font-size:13px;font-weight:800;color:var(--pri);letter-spacing:0.5px}
-.alumno-input{font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;padding:5px 10px;border-radius:30px;border:1px solid var(--border);background:white;outline:none;width:130px;text-align:center;color:var(--text)}
-.alumno-input:focus{border-color:var(--pri);background:var(--pri-lt)}
-.stats-row{display:flex;flex-wrap:nowrap;align-items:center;gap:12px;flex-shrink:0}
-.stat-item{display:flex;align-items:center;gap:5px;background:var(--bg);padding:4px 14px;border-radius:30px;font-size:13px;font-weight:800}
-.stat-dot{width:8px;height:8px;border-radius:50%}
-.stat-dot.tot{background:var(--pri)}
-.stat-dot.ok{background:var(--ok)}
-.stat-dot.err{background:var(--err)}
-.stat-dot.puntos{background:var(--acc)}
-.stat-value{color:var(--text);margin-left:3px}
+/* Barra del alumno: nombre y marcador */
+.barra{position:sticky;top:0;z-index:50;background:var(--color-barra-alumno);border:1.5px solid var(--color-borde);border-radius:6px;margin:0 0 22px;box-shadow:0 2px 6px rgba(44,31,14,.08);padding:9px 20px;display:flex;flex-wrap:wrap;gap:8px 22px;align-items:center;justify-content:center;font-size:.92rem}
+.barra label{font-family:'Libre Baskerville',serif;font-size:.85rem;color:var(--color-texto-suave)}
+.barra input{background:var(--color-fondo-card);border:1.5px solid var(--color-borde);border-radius:4px;padding:6px 10px;font-family:'Lato',sans-serif;font-size:.95rem;color:var(--color-texto);width:200px;max-width:60vw;outline:none;transition:border-color .2s}
+.barra input:focus{border-color:var(--color-acento)}
+.barra .dato{color:var(--color-texto-suave);white-space:nowrap}
+.barra .dato b{color:var(--color-acento);font-family:'Libre Baskerville',serif}
+.barra .dato.ok b{color:var(--color-correcto)}
+.barra .dato.ko b{color:var(--color-incorrecto)}
 
-/* FÓRMULAS - centradas */
-.formula-strip{width:100%;max-width:760px;background:var(--pri-lt);border-radius:14px;padding:12px 20px;margin-bottom:20px;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px 20px;font-size:13px;font-weight:700;color:var(--pri)}
-.ftag{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;width:100%;text-align:center;opacity:.65;margin-bottom:4px}
-.f{font-family:'Space Mono',monospace;font-size:12px;background:#fff;padding:3px 8px;border-radius:8px}
+/* Recordatorio de fórmulas */
+.recordatorio{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:10px;margin-bottom:22px}
+.rec-item{background:#F8EFE0;border:1.5px solid var(--color-borde-suave);border-top:3px solid var(--color-acento);border-radius:5px;padding:10px 12px;text-align:center}
+.rec-tit{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--color-texto-suave);margin-bottom:3px}
+.rec-f{font-family:'Libre Baskerville',serif;font-size:.98rem;color:var(--color-texto);line-height:1.5}
+.rec-f i{font-style:italic}
+.comb{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1;font-size:.82em;margin:0 1px;padding:0 3px;border-left:1px solid currentColor;border-right:1px solid currentColor;border-radius:6px}
 
-/* BANNER MAX */
-.banner-max{width:100%;max-width:760px;background:var(--ok-lt);border:2px solid var(--ok);border-radius:16px;padding:10px 20px;text-align:center;margin-bottom:18px;display:none}
-.banner-max.vis{display:block;animation:pulse-ok .5s ease}
-.banner-max p{font-size:16px;font-weight:900;color:var(--ok)}
-.banner-max small{font-size:12px;font-weight:600;color:var(--ok);opacity:.8}
-@keyframes pulse-ok{0%{transform:scale(1)}40%{transform:scale(1.02)}100%{transform:scale(1)}}
+/* Puntuación máxima */
+.banner-max{background:#EAF4EC;border:2px solid var(--color-correcto);border-radius:6px;padding:12px 18px;text-align:center;margin-bottom:18px;display:none}
+.banner-max.vis{display:block;animation:pulso .5s ease}
+.banner-max p{font-family:'Libre Baskerville',serif;font-size:1.05rem;font-weight:700;color:var(--color-correcto)}
+.banner-max small{font-size:.85rem;color:var(--color-correcto)}
+@keyframes pulso{0%{transform:scale(1)}40%{transform:scale(1.02)}100%{transform:scale(1)}}
 
-/* CARD */
-.card{width:100%;max-width:760px;background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:28px 26px 24px;margin-bottom:20px;border:1.5px solid var(--border);transition: background 0.3s ease}
+/* Tarjeta del ejercicio */
+.ejercicio-card{background:var(--color-fondo);border:1.5px solid var(--color-borde-suave);border-left:4px solid var(--color-borde);border-radius:4px;padding:20px 24px;margin-bottom:20px;transition:background .4s}
+.ej-cab{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--color-borde-suave);padding-bottom:8px;margin-bottom:14px}
+.ej-tipo{font-family:'Libre Baskerville',serif;font-weight:700;color:var(--color-acento)}
+.ej-num{font-size:.85rem;color:var(--color-texto-suave)}
+.enunciado{font-family:'Libre Baskerville',serif;font-size:1.02rem;line-height:1.7;margin-bottom:18px}
+.enunciado .dato{color:var(--color-acento);font-weight:700}
+.enunciado b{color:var(--color-texto)}
 
-/* ENUNCIADO */
-.enunciado{background:var(--bg);border:2px solid var(--border);border-radius:14px;padding:18px 22px;margin-bottom:20px;font-size:15px;font-weight:700;line-height:1.7;color:var(--text)}
-.enunciado .dato{color:var(--pri);font-weight:900}
-
-/* INPUT RESPUESTA */
-.resp-row{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin-bottom:16px}
-.resp-label{font-size:14px;font-weight:800;color:var(--muted)}
-.resp-input{font-family:'Space Mono',monospace;font-size:24px;font-weight:700;width:150px;text-align:center;padding:8px 8px;border:3px solid var(--border);border-radius:12px;outline:none;color:var(--text);background:#fff;transition:border-color .2s,background .2s,transform .15s}
-.resp-input:focus{border-color:var(--pri);background:var(--pri-lt);transform:scale(1.02)}
-.resp-input.correcto{border-color:var(--ok);background:var(--ok-lt)}
-.resp-input.incorrecto{border-color:var(--err);background:var(--err-lt);animation:shake .3s}
-.resp-input:disabled{opacity:.7;cursor:not-allowed}
-.resp-hint{font-size:12px;font-weight:700;color:var(--muted);text-align:center;margin-bottom:10px}
-
+/* Respuesta */
+.resp-row{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.resp-label{font-family:'Libre Baskerville',serif;font-size:.95rem;color:var(--color-texto-suave)}
+.resp-input{background:var(--color-fondo-card);border:1.5px solid var(--color-borde);border-radius:4px;font-family:'Libre Baskerville',serif;font-size:1.35rem;font-weight:700;width:150px;text-align:center;padding:7px 8px;color:var(--color-texto);outline:none;font-variant-numeric:tabular-nums;transition:border-color .2s,background .2s}
+.resp-input:focus{border-color:var(--color-acento)}
+.resp-input.correcto{border-color:var(--color-correcto);background:#EAF4EC}
+.resp-input.incorrecto{border-color:var(--color-incorrecto);background:#F9EAEA;animation:shake .3s}
+.resp-input:disabled{opacity:.8;cursor:not-allowed}
+.resp-hint{font-size:.82rem;color:var(--color-texto-suave);text-align:center;margin-bottom:12px}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
 
-/* FEEDBACK */
-.feedback{min-height:36px;text-align:center;font-size:15px;font-weight:800;padding:8px 16px;border-radius:10px;margin-bottom:10px;opacity:0;transform:translateY(4px);transition:all .25s}
-.feedback.vis{opacity:1;transform:translateY(0)}
-.feedback.ok{background:var(--ok-lt);color:var(--ok)}
-.feedback.mal{background:var(--err-lt);color:var(--err)}
+/* Retroalimentación */
+.feedback{min-height:0;text-align:center;font-size:.95rem;font-weight:700;padding:0 16px;border-radius:4px;margin-bottom:10px;opacity:0;transform:translateY(4px);transition:opacity .25s,transform .25s}
+.feedback.vis{opacity:1;transform:translateY(0);padding:10px 16px}
+.feedback.ok{background:#EAF4EC;border:1.5px solid var(--color-correcto);color:var(--color-correcto)}
+.feedback.mal{background:#F9EAEA;border:1.5px solid var(--color-incorrecto);color:var(--color-incorrecto)}
 
-/* RESOLUCIÓN */
-.resolucion{background:var(--warn-lt);border-left:4px solid var(--warn);border-radius:12px;padding:18px 20px;font-size:14px;color:var(--text);margin-top:10px;display:none;line-height:1.6}
+/* Resolución paso a paso */
+.resolucion{background:#FBF5E6;border:1.5px solid var(--color-borde-suave);border-left:4px solid var(--color-acento);border-radius:4px;padding:16px 20px;font-size:.92rem;margin-top:10px;display:none;line-height:1.65}
 .resolucion.vis{display:block}
-.res-titulo{font-weight:900;color:var(--warn);font-size:15px;margin-bottom:12px}
+.res-titulo{font-family:'Libre Baskerville',serif;font-weight:700;color:var(--color-acento);font-size:1rem;margin-bottom:12px}
 .step{margin-bottom:10px;display:flex;align-items:flex-start;gap:10px}
-.step-num{display:inline-flex;align-items:center;justify-content:center;background:var(--warn);color:#fff;border-radius:50%;min-width:22px;height:22px;font-size:11px;font-weight:900;margin-top:2px;flex-shrink:0}
-.step-body{flex:1}
-.formula-box{background:#fff;border:1.5px solid var(--warn);border-radius:8px;padding:6px 12px;font-family:'Space Mono',monospace;font-size:12px;margin:6px 0;display:inline-block;color:var(--text);font-weight:600}
-.res-final{margin-top:12px;background:var(--ok-lt);border-radius:10px;padding:10px 16px;font-weight:900;color:var(--ok);font-size:15px;text-align:center}
+.step-num{display:inline-flex;align-items:center;justify-content:center;background:var(--color-acento);color:#FDFAF3;border-radius:50%;min-width:21px;height:21px;font-size:.72rem;font-weight:700;margin-top:2px;flex-shrink:0}
+.step-body{flex:1;font-variant-numeric:tabular-nums}
+.formula-box{background:var(--color-fondo-card);border:1.5px solid var(--color-borde-suave);border-radius:4px;padding:5px 12px;font-family:'Libre Baskerville',serif;font-size:.88rem;margin:5px 0;display:inline-block;color:var(--color-texto)}
+.res-final{margin-top:12px;background:#EAF4EC;border:1.5px solid var(--color-correcto);border-radius:4px;padding:9px 16px;font-family:'Libre Baskerville',serif;font-weight:700;color:var(--color-correcto);text-align:center}
 
-/* BOTONES */
-.btns{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:18px}
-.btn{font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;border:none;border-radius:12px;padding:10px 22px;cursor:pointer;transition:transform .12s,box-shadow .12s}
-.btn:active{transform:scale(.96)}
-.btn-check{background:var(--pri);color:#fff;box-shadow:0 4px 16px rgba(26,111,196,.28)}
-.btn-check:hover{background:#155fa8}
-.btn-next{background:var(--ok);color:#fff;box-shadow:0 4px 16px rgba(22,163,74,.25);display:none}
-.btn-next:hover{background:#15803d}
-.btn-nuevo{background:#fff;color:var(--pri);border:2px solid var(--pri)}
-.btn-nuevo:hover{background:var(--pri-lt)}
-.btn-finalizar{background:#4a4e69;color:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.2); border: none;}
-.btn-finalizar:hover{background:#22223b;}
+/* Botones */
+.btns{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:18px}
+.btn{font-family:'Lato',sans-serif;font-size:.95rem;font-weight:700;border-radius:4px;padding:10px 22px;cursor:pointer;letter-spacing:.03em;transition:background-color .2s,border-color .2s,color .2s}
+.btn:active{transform:scale(.97)}
+.btn-check{background:var(--color-acento);color:#FDFAF3;border:none}
+.btn-check:hover{background:var(--color-acento-hover)}
+.btn-next{background:var(--color-correcto);color:#FDFAF3;border:none;display:none}
+.btn-next:hover{background:#1e4f2c}
+.btn-nuevo{background:transparent;color:var(--color-acento);border:2px solid var(--color-borde);padding:8px 20px}
+.btn-nuevo:hover{border-color:var(--color-acento);color:var(--color-acento-hover)}
+.btn-finalizar{background:var(--color-cabecera);color:var(--color-cabecera-txt);border:2px solid var(--color-borde);font-family:'Libre Baskerville',serif;letter-spacing:.04em;padding:8px 22px}
+.btn-finalizar:hover{background:#2C1A0A}
 
-/* MODAL */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  visibility: hidden;
-  opacity: 0;
-  transition: visibility 0.2s, opacity 0.2s;
-}
-.modal-overlay.active {
-  visibility: visible;
-  opacity: 1;
-}
-.modal-container {
-  max-width: 440px;
-  width: 90%;
-  background: white;
-  border-radius: 28px;
-  box-shadow: 0 25px 40px rgba(0,0,0,0.3);
-  padding: 24px 22px 28px;
-  text-align: center;
-  font-family: 'Nunito', sans-serif;
-  transition: background 0.2s, color 0.2s;
-}
-.modal-container h3 {
-  font-size: 24px;
-  font-weight: 800;
-  margin-bottom: 18px;
-}
-.modal-info {
-  text-align: left;
-  background: rgba(0,0,0,0.05);
-  padding: 14px;
-  border-radius: 18px;
-  margin: 18px 0;
-  font-weight: 600;
-  line-height: 1.6;
-  font-size: 14px;
-}
-.modal-info p {
-  margin: 5px 0;
-}
-.modal-reminder {
-  background: #fff3cd;
-  color: #856404;
-  padding: 10px;
-  border-radius: 12px;
-  font-weight: 700;
-  margin: 14px 0;
-  font-size: 13px;
-}
-.close-modal-btn {
-  background: #2c3e66;
-  color: white;
-  border: none;
-  padding: 10px 24px;
-  border-radius: 36px;
-  font-weight: 800;
-  font-size: 14px;
-  cursor: pointer;
-  margin-top: 6px;
-}
-.close-modal-btn:active { transform: scale(0.96); }
+/* Historial */
+.separador{border:none;border-top:1px solid var(--color-borde-suave);margin:24px 0 16px}
+.hist-tit{font-family:'Libre Baskerville',serif;font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--color-texto-suave);margin-bottom:10px;text-align:center}
+.hist-grid{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.hitem{background:var(--color-fondo-card);border-radius:4px;padding:4px 10px;font-size:.76rem;font-weight:700;border:1.5px solid;display:flex;align-items:center;gap:6px}
+.hitem.ok{border-color:var(--color-correcto);color:var(--color-correcto)}
+.hitem.mal{border-color:var(--color-incorrecto);color:var(--color-incorrecto)}
 
-/* HISTORIAL */
-.historial{width:100%;max-width:760px;margin-top:6px}
-.hist-tit{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;text-align:center}
-.hist-grid{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
-.hitem{background:var(--card);border-radius:10px;padding:5px 12px;font-size:11px;font-weight:700;border:2px solid;display:flex;align-items:center;gap:6px}
-.hitem.ok{border-color:var(--ok);color:var(--ok)}
-.hitem.mal{border-color:var(--err);color:var(--err)}
+/* Modales */
+.modal-overlay{position:fixed;inset:0;background:rgba(44,31,14,.55);display:flex;justify-content:center;align-items:center;z-index:1000;visibility:hidden;opacity:0;transition:visibility .2s,opacity .2s}
+.modal-overlay.active{visibility:visible;opacity:1}
+.modal-container{max-width:440px;width:90%;background:var(--color-fondo-card);color:var(--color-texto);border:3px solid var(--color-borde);border-radius:8px;box-shadow:0 6px 24px rgba(44,31,14,.35);padding:28px 30px;text-align:center;font-family:'Libre Baskerville',serif;transition:background .2s,color .2s}
+.modal-container h3{font-size:1.3rem;margin-bottom:14px;color:inherit}
+.modal-container p{font-family:'Lato',sans-serif;line-height:1.6}
+.modal-info{text-align:left;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);padding:14px 16px;border-radius:6px;margin:16px 0;font-family:'Lato',sans-serif;line-height:1.7;font-size:.92rem}
+.modal-reminder{background:#FBF5E6;color:var(--color-texto-suave);border:1.5px solid var(--color-borde-suave);padding:10px;border-radius:4px;font-family:'Lato',sans-serif;font-weight:700;margin:14px 0;font-size:.85rem}
+.modal-botones{display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap}
+.close-modal-btn{background:var(--color-cabecera);color:var(--color-cabecera-txt);border:2px solid var(--color-borde);padding:9px 22px;border-radius:4px;font-family:'Lato',sans-serif;font-weight:700;font-size:.92rem;cursor:pointer}
+.close-modal-btn:hover{background:#2C1A0A}
+.close-modal-btn.secundario{background:transparent;color:var(--color-acento)}
+.close-modal-btn.secundario:hover{border-color:var(--color-acento);background:transparent}
 
 @media(max-width:650px){
-  .card{padding:20px 14px 18px}
-  .resp-input{width:120px;font-size:20px}
-  .enunciado{font-size:13px;padding:14px}
-  .top-bar{gap:10px;padding:12px 14px;flex-direction:column;border-radius:20px;overflow-x:visible}
-  .stats-row{flex-wrap:wrap;justify-content:center;width:100%}
-  .stat-item{padding:3px 10px;font-size:12px}
-  .alumno-section{padding:3px 12px}
-  .alumno-input{width:110px;font-size:12px}
+  .ficha-container{margin:14px 10px;padding:22px 16px}
+  .ejercicio-card{padding:16px 14px}
+  .enunciado{font-size:.95rem}
+  .resp-input{width:130px;font-size:1.15rem}
+  .barra{padding:9px 12px;gap:6px 14px}
 }
 </style>
 </head>
 <body>
 
-<div style="width:100%;max-width:760px;text-align:center;margin-bottom:4px">
-  <span style="font-size:10px;font-weight:700;color:var(--pri);opacity:.7">Material elaborado por Marta López de Letona Sánchez</span>
-</div>
+<div class="cabecera">Material elaborado por Marta López de Letona Sánchez</div>
 
-<div class="header">
-  <h1>Distribución Binomial</h1>
-</div>
+<main class="ficha-container">
+  <h1 class="titulo-ficha">Distribución binomial</h1>
+  <p class="subtitulo">Probabilidad · Distribución binomial B(n; p)</p>
 
-<!-- UNA SOLA LÍNEA: Alumno + Estadísticas -->
-<div class="top-bar">
-  <div class="alumno-section">
-    <label for="nombreAlumnoInput" class="alumno-label" aria-hidden="true">👤</label>
-    <input type="text" id="nombreAlumnoInput" class="alumno-input" placeholder="Nombre" value="" aria-label="Nombre del alumno">
-  </div>
-  <div class="stats-row">
-    <div class="stat-item"><span class="stat-dot tot"></span>Ejercicios: <span id="tot" class="stat-value">0</span></div>
-    <div class="stat-item"><span class="stat-dot ok"></span>Correctos: <span id="cor" class="stat-value">0</span></div>
-    <div class="stat-item"><span class="stat-dot err"></span>Errores: <span id="err" class="stat-value">0</span></div>
-    <div class="stat-item"><span class="stat-dot puntos"></span>Puntos: <span id="puntos-valor-header" class="stat-value">0</span>/<span id="puntos-max-header">10</span></div>
-  </div>
-</div>
-
-<!-- Fórmulas centradas -->
-<div class="formula-strip">
-  <div class="ftag">Fórmulas clave</div>
-  <span class="f">P(X=k) = C(n,k)·pᵏ·(1−p)ⁿ⁻ᵏ</span>
-  <span class="f">P(X≥k) = 1 − P(X≤k−1)</span>
-  <span class="f">P(X≤k) = Σ P(X=i)</span>
-  <span class="f">P(A|B) = P(A∩B)/P(B)</span>
-</div>
-
-<!-- Banner máximo -->
-<div class="banner-max" id="banner-max">
-  <p>🏆 ¡Puntuación máxima alcanzada!</p>
-  <small>Has conseguido 10 puntos. ¡Excelente trabajo!</small>
-</div>
-
-<!-- Tarjeta ejercicio -->
-<div class="card" id="mainCard">
-  <div class="ej-label" style="font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;text-align:center">
-    Ejercicio <span id="num-ej">1</span>
+  <div class="barra">
+    <label for="nombreAlumnoInput">Alumno/a:</label>
+    <input type="text" id="nombreAlumnoInput" placeholder="Nombre y apellidos" value="" autocomplete="off" aria-label="Nombre del alumno o alumna">
+    <span class="dato">Nota: <b id="puntos-valor-header">0</b> / <span id="puntos-max-header">10</span></span>
+    <span class="dato">Ejercicios: <b id="tot">0</b></span>
+    <span class="dato ok">Correctos: <b id="cor">0</b></span>
+    <span class="dato ko">Errores: <b id="err">0</b></span>
   </div>
 
-  <div class="enunciado" id="enunciado">…</div>
-
-  <div class="resp-row">
-    <label class="resp-label" for="resp">Resultado =</label>
-    <input class="resp-input" id="resp" type="text" inputmode="decimal" placeholder="0.0000" autocomplete="off">
+  <div class="recordatorio">
+    <div class="rec-item"><span class="rec-tit">Probabilidad puntual</span><span class="rec-f"><i>P</i>(<i>X</i> = <i>k</i>) = <span class="comb"><span><i>n</i></span><span><i>k</i></span></span> <i>p</i><sup><i>k</i></sup> <i>q</i><sup><i>n</i>−<i>k</i></sup></span></div>
+    <div class="rec-item"><span class="rec-tit">Al menos</span><span class="rec-f"><i>P</i>(<i>X</i> ≥ <i>k</i>) = 1 − <i>P</i>(<i>X</i> ≤ <i>k</i> − 1)</span></div>
+    <div class="rec-item"><span class="rec-tit">A lo sumo</span><span class="rec-f"><i>P</i>(<i>X</i> ≤ <i>k</i>) = Σ<sub><i>i</i>=0</sub><sup><i>k</i></sup> <i>P</i>(<i>X</i> = <i>i</i>)</span></div>
+    <div class="rec-item"><span class="rec-tit">Condicionada</span><span class="rec-f"><i>P</i>(<i>A</i> | <i>B</i>) = <i>P</i>(<i>A</i> ∩ <i>B</i>) / <i>P</i>(<i>B</i>)</span></div>
   </div>
-  <div class="resp-hint">Introduce el valor redondeado a 4 decimales</div>
 
-  <div class="feedback" id="fb" aria-live="polite"></div>
-  <div class="resolucion" id="res"></div>
-
-  <div class="btns">
-    <button class="btn btn-check" id="btn-check" onclick="comprobar()">✔ Comprobar</button>
-    <button class="btn btn-next"  id="btn-next"  onclick="siguiente()">Siguiente →</button>
-    <button class="btn btn-nuevo" onclick="nuevoEjercicio()">↺ Nuevo ejercicio</button>
-    <button class="btn btn-finalizar" id="finalizarBtn">🏁 Finalizar y Calificar</button>
+  <div class="banner-max" id="banner-max">
+    <p>🏆 ¡Puntuación máxima alcanzada!</p>
+    <small>Has conseguido 10 puntos. ¡Excelente trabajo!</small>
   </div>
-</div>
 
-<!-- Historial -->
-<div class="historial">
-  <div class="hist-tit">Historial</div>
-  <div class="hist-grid" id="hist"></div>
-</div>
+  <section class="ejercicio-card" id="mainCard">
+    <div class="ej-cab">
+      <span class="ej-tipo">Ejercicio <span id="num-ej">1</span></span>
+      <span class="ej-num">Redondea a 4 decimales</span>
+    </div>
+
+    <div class="enunciado" id="enunciado">…</div>
+
+    <div class="resp-row">
+      <label class="resp-label" for="resp">Resultado =</label>
+      <input class="resp-input" id="resp" type="text" inputmode="decimal" placeholder="0,0000" autocomplete="off">
+    </div>
+    <div class="resp-hint">Introduce el valor redondeado a 4 decimales (con coma o con punto)</div>
+
+    <div class="feedback" id="fb" aria-live="polite"></div>
+    <div class="resolucion" id="res"></div>
+
+    <div class="btns">
+      <button class="btn btn-check" id="btn-check" onclick="comprobar()">✔ Comprobar</button>
+      <button class="btn btn-next"  id="btn-next"  onclick="siguiente()">Siguiente →</button>
+      <button class="btn btn-nuevo" onclick="nuevoEjercicio()">↺ Nuevo ejercicio</button>
+      <button class="btn btn-finalizar" id="finalizarBtn">Finalizar y calificar</button>
+    </div>
+  </section>
+
+  <hr class="separador">
+  <div class="historial">
+    <div class="hist-tit">Historial</div>
+    <div class="hist-grid" id="hist"></div>
+  </div>
+</main>
 
 <!-- MODAL CONFIRMACIÓN FINALIZAR -->
 <div id="confirmOverlay" class="modal-overlay">
   <div class="modal-container">
-    <h3>⚠️ Confirmar finalización</h3>
-    <p style="font-weight:600;line-height:1.6;margin-bottom:6px">Vas a finalizar con <b id="confirmPuntos">0</b>/10 puntos.</p>
-    <p style="font-weight:600;line-height:1.6">Podrás seguir practicando después, pero esta calificación quedará registrada en el informe. ¿Deseas continuar?</p>
-    <div style="display:flex;gap:12px;justify-content:center;margin-top:18px">
-      <button class="close-modal-btn" id="cancelarFinalizarBtn" style="background:#94a3b8">Cancelar</button>
+    <h3>Confirmar finalización</h3>
+    <p>Vas a finalizar con <b id="confirmPuntos">0</b>/10 puntos.</p>
+    <p>Podrás seguir practicando después, pero esta calificación quedará registrada en el informe. ¿Deseas continuar?</p>
+    <div class="modal-botones">
+      <button class="close-modal-btn secundario" id="cancelarFinalizarBtn">Cancelar</button>
       <button class="close-modal-btn" id="confirmarFinalizarBtn">Sí, finalizar</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL -->
+<!-- MODAL INFORME -->
 <div id="modalOverlay" class="modal-overlay">
   <div id="modalCard" class="modal-container">
-    <h3>📋 Informe final</h3>
+    <h3>Informe final</h3>
     <div id="modalInfo" class="modal-info"></div>
-    <div class="modal-reminder">
-      📸 Haz una captura de pantalla y entrégala en Google Classroom.
-    </div>
+    <div class="modal-reminder">📸 Haz una captura de pantalla y entrégala en Google Classroom.</div>
     <button class="close-modal-btn" id="closeModalBtn">Cerrar y seguir practicando</button>
   </div>
 </div>
@@ -328,7 +240,14 @@ function binomCDF(n,k,p){
   let s=0; for(let i=0;i<=k;i++) s+=binomPMF(n,i,p); return s;
 }
 function r4(x){ return Math.round(x*10000)/10000; }
-function r4str(x){ return r4(x).toFixed(4); }
+function r4str(x){ return r4(x).toFixed(4).replace('.', ','); }   // decimales con coma
+function dec(x){ return String(x).replace('.', ','); }
+// Lee la respuesta del alumno: admite coma o punto decimal (0,1234 · 0.1234 · ,1234). Devuelve NaN si no es un número.
+function leerNumero(txt){
+  const t=txt.trim().replace(/\s+/g,'');
+  if(!/^[+-]?(\d+([.,]\d*)?|[.,]\d+)$/.test(t)) return NaN;
+  return Number(t.replace(',', '.'));
+}
 
 // ═══════════════════════════════════════════
 // ESTADO GLOBAL
@@ -347,17 +266,17 @@ function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 // Contextos - Redactados correctamente sin redundancias
 const contextos=[
   { tema:'fabricación', exitoPlural:'productos', verboPasivo:'sean defectuosos', art:'los', sg:'producto', vs:'sea defectuoso', vi:'es defectuoso', vip:'son defectuosos',
-    enun:(n,p)=>`En un proceso de fabricación la probabilidad de que un producto sea defectuoso es <span class="dato">${p}</span>. Se seleccionan al azar <span class="dato">${n}</span> productos.` },
+    enun:(n,p)=>`En un proceso de fabricación la probabilidad de que un producto sea defectuoso es <span class="dato">${dec(p)}</span>. Se seleccionan al azar <span class="dato">${n}</span> productos.` },
   { tema:'medicina', exitoPlural:'pacientes', verboPasivo:'mejoren', art:'los', sg:'paciente', vs:'mejore', vi:'mejora', vip:'mejoran',
-    enun:(n,p)=>`Un tratamiento médico tiene una probabilidad de éxito de <span class="dato">${p}</span>. Se aplica a <span class="dato">${n}</span> pacientes independientes.` },
+    enun:(n,p)=>`Un tratamiento médico tiene una probabilidad de éxito de <span class="dato">${dec(p)}</span>. Se aplica a <span class="dato">${n}</span> pacientes independientes.` },
   { tema:'examen', exitoPlural:'alumnos', verboPasivo:'aprueben', art:'los', sg:'alumno', vs:'apruebe', vi:'aprueba', vip:'aprueban',
-    enun:(n,p)=>`La probabilidad de que un alumno apruebe un test es <span class="dato">${p}</span>. Se escogen al azar <span class="dato">${n}</span> alumnos.` },
+    enun:(n,p)=>`La probabilidad de que un alumno apruebe un test es <span class="dato">${dec(p)}</span>. Se escogen al azar <span class="dato">${n}</span> alumnos.` },
   { tema:'semillas', exitoPlural:'semillas', verboPasivo:'germinen', art:'las', sg:'semilla', vs:'germine', vi:'germina', vip:'germinan',
-    enun:(n,p)=>`La probabilidad de germinación de una semilla es <span class="dato">${p}</span>. Se plantan <span class="dato">${n}</span> semillas de forma independiente.` },
+    enun:(n,p)=>`La probabilidad de germinación de una semilla es <span class="dato">${dec(p)}</span>. Se plantan <span class="dato">${n}</span> semillas de forma independiente.` },
   { tema:'tiros libres', exitoPlural:'tiros', verboPasivo:'sean encestados', art:'los', sg:'tiro', vs:'sea encestado', vi:'es encestado', vip:'son encestados',
-    enun:(n,p)=>`Un jugador de baloncesto encesta un tiro libre con probabilidad <span class="dato">${p}</span>. Lanza <span class="dato">${n}</span> tiros libres consecutivos.` },
+    enun:(n,p)=>`Un jugador de baloncesto encesta un tiro libre con probabilidad <span class="dato">${dec(p)}</span>. Lanza <span class="dato">${n}</span> tiros libres consecutivos.` },
   { tema:'control de calidad', exitoPlural:'piezas', verboPasivo:'estén fuera de tolerancia', art:'las', sg:'pieza', vs:'esté fuera de tolerancia', vi:'está fuera de tolerancia', vip:'están fuera de tolerancia',
-    enun:(n,p)=>`En un lote industrial la probabilidad de que una pieza esté fuera de tolerancia es <span class="dato">${p}</span>. Se inspeccionan <span class="dato">${n}</span> piezas.` },
+    enun:(n,p)=>`En un lote industrial la probabilidad de que una pieza esté fuera de tolerancia es <span class="dato">${dec(p)}</span>. Se inspeccionan <span class="dato">${n}</span> piezas.` },
   { tema:'encuesta', exitoPlural:'personas', verboPasivo:'estén a favor', art:'las', sg:'persona', vs:'esté a favor', vi:'está a favor', vip:'están a favor',
     enun:(n,p)=>`En una encuesta el <span class="dato">${Math.round(p*100)} %</span> de los ciudadanos apoya una medida. Se pregunta a <span class="dato">${n}</span> personas.` },
 ];
@@ -457,7 +376,7 @@ function explicarExacta(n,p,q,k,res){
   const qnk = r4str(Math.pow(q,n-k));
   const pmf = r4str(binomPMF(n,k,p));
   return `<div class="res-titulo">📐 Resolución paso a paso</div>
-<div class="step"><span class="step-num">1</span><div class="step-body"><b>Identificar:</b> X ~ B(${n}, ${p}) → P(X = ${k})</div></div>
+<div class="step"><span class="step-num">1</span><div class="step-body"><b>Identificar:</b> X ~ B(${n}; ${dec(p)}) → P(X = ${k})</div></div>
 <div class="step"><span class="step-num">2</span><div class="step-body"><b>Fórmula:</b> ${fbox(`P(X=${k}) = C(${n},${k})·p^${k}·(1-p)^{${n-k}}`)}</div></div>
 <div class="step"><span class="step-num">3</span><div class="step-body"><b>Combinatorio:</b> ${fbox(`C(${n},${k}) = ${combVal}`)}</div></div>
 <div class="step"><span class="step-num">4</span><div class="step-body"><b>Potencia:</b> ${fbox(`p^${k}=${pk} · (1-p)^{${n-k}}=${qnk}`)}</div></div>
@@ -529,11 +448,10 @@ function comprobar(){
     document.getElementById('resp').focus();
     return;
   }
-  const val=rawVal.replace(',', '.');
-  const dado=parseFloat(val);
+  const dado=leerNumero(rawVal);
   if(isNaN(dado)){
     const fb=document.getElementById('fb');
-    fb.textContent='Ese valor no es un número válido.';
+    fb.textContent='Ese valor no es un número válido. Escribe, por ejemplo, 0,2541 o 0.2541.';
     fb.className='feedback vis mal';
     return;
   }
@@ -578,7 +496,7 @@ function actualizarPuntosHeader(){
 const tipoShort={exacta:'P(X=k)',almenos:'P(X≥k)',asumo:'P(X≤k)',entre:'P(k₁≤X≤k₂)',condic:'P(A|B)'};
 function addHist(ok){
   const {tipo,n,p,respuesta}=ej;
-  const label=`B(${n},${p}) · ${tipoShort[tipo]} = ${r4str(respuesta)}`;
+  const label=`B(${n}; ${dec(p)}) · ${tipoShort[tipo]} = ${r4str(respuesta)}`;
   const el=document.createElement('div');
   el.className=`hitem ${ok?'ok':'mal'}`;
   el.innerHTML=`<span>${ok?'✓':'✗'}</span>${label}`;
@@ -629,7 +547,7 @@ function mostrarModalFinal(){
   const infoHTML = `
     <p><strong>👤 Alumno:</strong> ${nombreActual}</p>
     <p><strong>📘 Ficha:</strong> Distribución Binomial</p>
-    <p><strong>⭐ Nota:</strong> ${nota.toFixed(2)} / 10</p>
+    <p><strong>⭐ Nota:</strong> ${nota.toFixed(2).replace('.', ',')} / 10</p>
     <p><strong>📅 Fecha:</strong> ${fechaStr}</p>
     <p><strong>⏰ Hora:</strong> ${horaStr}</p>
     <p><strong>⌛ Tiempo:</strong> ${tiempoTranscurrido} h:min</p>
