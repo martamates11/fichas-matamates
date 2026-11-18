@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Funciones (pendientes de 2.º ESO).
    Mismos criterios que la ficha interactiva pendientes/segundo/funciones-2.html:
    cuadrícula de −6 a 6, rectas con cortes enteros, gráficas por tramos, recorridos

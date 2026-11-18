@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Utilidades comunes para los generadores de las fichas de pendientes (1.º, 2.º y 3.º ESO):
    números decimales con coma y figuras SVG en blanco y negro, pensadas para fotocopiar.
    Se carga después de comun.js y antes de los generadores de pendientes. */

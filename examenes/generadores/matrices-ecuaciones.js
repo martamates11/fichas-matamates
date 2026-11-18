@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: los cinco tipos de la ficha ecuacion-matricial
    (AX = B de orden 3, XA = B, AX = B − kX, XAB = A + XB y AXB = C)
    e inversa con parámetro (ficha matrices-y-determinantes, tipo 3).

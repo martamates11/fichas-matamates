@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Perímetros y áreas (pendientes de 1.º ESO).
    Figuras y rangos de medidas de la ficha pendientes/primero/perimetros-areas-1.html,
    con un cambio pensado para hacer el examen sin calculadora: cuando hace falta

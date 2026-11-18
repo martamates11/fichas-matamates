@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Probabilidad (Matemáticas CC.SS. II · PAU Extremadura).
    Tipos de la ficha probabilidad/probabilidad.html: tabla de contingencia (completar y
    calcular una intersección y una condicionada), árbol de probabilidad (probabilidad total

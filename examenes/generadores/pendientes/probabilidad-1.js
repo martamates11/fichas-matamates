@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Probabilidad (pendientes de 1.º ESO).
    Mismos tipos y criterios que la ficha interactiva pendientes/primero/probabilidad-1.html:
    conceptos, verdadero o falso, tabla de casos (regla de Laplace) y urna de tres colores.

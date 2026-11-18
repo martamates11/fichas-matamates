@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Geometría (pendientes de 3.º ESO).
    Mismos tipos y rangos que la ficha pendientes/tercero/geometria-3.html, salvo estos
    cambios (la ficha NO los tiene), pensados para hacer el examen sin calculadora:

@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: sistemas de dos ecuaciones lineales con dos incógnitas
    (sustitución, igualación y reducción; niveles básico y medio).
    Los números se generan con los mismos criterios que las fichas interactivas. */

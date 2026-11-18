@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Árbol de probabilidad (Matemáticas CC.SS. II, PAU Extremadura).
    Mismos contextos y datos que la ficha probabilidad/arbol-prob.html: cinco escenarios extremeños
    (cerezas de La Vera, especialistas de Badajoz, carreras de la UEx, Torta del Casar y jamón de dehesa)

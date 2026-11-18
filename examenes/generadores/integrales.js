@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: integrales (2.º Bachillerato).
    Corresponden a las fichas de integrales/: integrales inmediatas, integrales inmediatas II
    (nivel avanzado) y cálculo de áreas (área entre una curva y el eje OX, y límite de

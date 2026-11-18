@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: matemática financiera (1.º Bachillerato).
    Interés simple, interés compuesto, anualidades de capitalización y anualidades de
    amortización, con los mismos criterios numéricos que las fichas interactivas de

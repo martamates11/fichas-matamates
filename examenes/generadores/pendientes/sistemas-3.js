@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Problemas con sistemas de ecuaciones (pendientes de 3.º ESO).
    Los seis tipos de problema y sus rangos son los de la ficha interactiva
    pendientes/tercero/sistemas-3.html. La resolución se hace por reducción (tras

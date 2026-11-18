@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Perímetros y áreas (pendientes de 2.º ESO).
    Figuras y rangos de la ficha pendientes/segundo/perimetros-areas-2.html (rectángulo, triángulo
    rectángulo, paralelogramo, rombo, trapecio, pentágono regular, círculo y áreas compuestas),

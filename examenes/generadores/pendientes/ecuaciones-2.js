@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Ecuaciones (pendientes de 2.º ESO).
    Mismos criterios que la ficha pendientes/segundo/ecuaciones-2.html, con una diferencia:
    los problemas, que en la ficha son un banco fijo de seis enunciados, aquí se generan con

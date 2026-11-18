@@ -1,4 +1,4 @@
-/* © 2026 Marta López de Letona · Martamates Interactivo · Todos los derechos reservados.
+/* © 2026 Marta López de Letona Sánchez · Martamates Interactivo · Todos los derechos reservados.
    Generadores de examen: Combinatoria (probabilidad/combinatoria.html).
    Mismos cinco bloques, contextos y rangos que la ficha: variaciones, variaciones con
    repetición, combinaciones, combinaciones con repetición y permutaciones. La respuesta
