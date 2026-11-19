@@ -412,7 +412,9 @@ function generarOpciones(vc, dec, esProbabilidad){
     let alt=vc+(Math.random()*2-1)*margen;
     if(esProbabilidad) alt=Math.min(0.9999,Math.max(0.0001,alt));
     let s=fmtOp(alt);
-    if(Math.abs(parseFloat(s)-parseFloat(correctaStr))>Math.pow(10,-dec)*0.5) candidatos.add(s);
+    // separación mínima con la correcta y entre sí, para que el redondeo de la tabla no lleve a dudas
+    const sep = esProbabilidad ? Math.max(0.004, Math.abs(vc)*0.12) : Math.pow(10,-dec)*0.5;
+    if([...candidatos].every(c=>Math.abs(parseFloat(s)-parseFloat(c))>=sep)) candidatos.add(s);
   }
   while(candidatos.size<4){
     let fallback=esProbabilidad?fmtOp(Math.random()*0.9+0.05):fmtOp(vc+(Math.random()*2-1)*margen*3);
@@ -505,7 +507,7 @@ function genNormal(){
 function genAprox(){
   let ctx=pick(ctxAprox), n=pick([100,150,200,250,300]), p=r(0.2,0.8,2);
   let mu=n*p, sigma=Math.sqrt(n*p*(1-p));
-  let tipo=pick(["menor","mayor","rango"]);
+  let tipo=pick(["menor","mayor","rango","exacta"]);
   let k,k1,k2,corr,pregunta;
   if(tipo==="menor"){ 
     k=Math.floor(r(mu-2*sigma,mu-0.5*sigma,0)); 
@@ -521,6 +523,12 @@ function genAprox(){
     corr=1-phi(z); 
     pregunta=`¿cuál es la probabilidad de que más de ${k} de ellos ${ctx.evento}?`; 
   }
+  else if(tipo==="exacta"){ 
+    k=Math.round(r(mu-1.2*sigma,mu+1.2*sigma,0)); 
+    let z1=(k-0.5-mu)/sigma, z2=(k+0.5-mu)/sigma;
+    corr=phi(z2)-phi(z1); 
+    pregunta=`¿cuál es la probabilidad de que exactamente ${k} de ellos ${ctx.evento}?`; 
+  }
   else{ 
     k1=Math.floor(r(mu-1.5*sigma,mu-0.3*sigma,0)); 
     k2=Math.floor(r(mu+0.3*sigma,mu+1.5*sigma,0)); 
@@ -534,10 +542,10 @@ function genAprox(){
   return {
     tipoKey:"aprox",
     enunciado:`${ctx.intro} <strong>p = ${p}</strong>. Si se encuesta a ${n} ${ctx.plural} en ${ctx.lugar}, ${pregunta}`,
-    pista:`Aproxima X ~ B(${n},${p}) por Y ~ N(μ,σ) con corrección de continuidad de Yates.<br><br>📌 μ = n·p = ${fmt(mu,2)}<br>📌 σ = √(n·p·(1-p)) = ${fmt(sigma,4)}<br>📌 ${tipo==="menor"?`P(X < ${k}) → usar k-0.5 → z = (${k}-0.5-μ)/σ = ${fmt((k-0.5-mu)/sigma,3)}`:tipo==="mayor"?`P(X > ${k}) → usar k+0.5 → z = (${k}+0.5-μ)/σ = ${fmt((k+0.5-mu)/sigma,3)}`:`P(${k1} ≤ X ≤ ${k2}) → usar ${k1}-0.5 y ${k2}+0.5 → z₁ = ${fmt((k1-0.5-mu)/sigma,3)}, z₂ = ${fmt((k2+0.5-mu)/sigma,3)}`}<br>📌 Luego busca en la tabla N(0,1).`,
+    pista:`Aproxima X ~ B(${n},${p}) por Y ~ N(μ,σ) con corrección de continuidad de Yates.<br><br>📌 μ = n·p = ${fmt(mu,2)}<br>📌 σ = √(n·p·(1-p)) = ${fmt(sigma,4)}<br>📌 ${tipo==="menor"?`P(X < ${k}) → usar k-0.5 → z = (${k}-0.5-μ)/σ = ${fmt((k-0.5-mu)/sigma,3)}`:tipo==="mayor"?`P(X > ${k}) → usar k+0.5 → z = (${k}+0.5-μ)/σ = ${fmt((k+0.5-mu)/sigma,3)}`:tipo==="exacta"?`P(X = ${k}) → un valor suelto tiene probabilidad 0 en la normal: usa el intervalo (${k}-0.5, ${k}+0.5) → z₁ = ${fmt((k-0.5-mu)/sigma,3)}, z₂ = ${fmt((k+0.5-mu)/sigma,3)}`:`P(${k1} ≤ X ≤ ${k2}) → usar ${k1}-0.5 y ${k2}+0.5 → z₁ = ${fmt((k1-0.5-mu)/sigma,3)}, z₂ = ${fmt((k2+0.5-mu)/sigma,3)}`}<br>📌 Luego busca en la tabla N(0,1).`,
     correcta:fmt(corr,4),
     opciones:generarOpciones(corr,4,true),
-    explicacion:`<strong>Solución aproximada (corrección de Yates):</strong><br>μ = ${fmt(mu,2)}, σ = ${fmt(sigma,4)}<br>${tipo==="menor"?`P(X < ${k}) ≈ Φ((${k}-0.5-μ)/σ) = Φ(${fmt((k-0.5-mu)/sigma,3)})`:tipo==="mayor"?`P(X > ${k}) ≈ 1−Φ((${k}+0.5-μ)/σ) = 1−Φ(${fmt((k+0.5-mu)/sigma,3)})`:`P(${k1} ≤ X ≤ ${k2}) ≈ Φ((${k2}+0.5-μ)/σ) − Φ((${k1}-0.5-μ)/σ) = Φ(${fmt((k2+0.5-mu)/sigma,3)}) − Φ(${fmt((k1-0.5-mu)/sigma,3)})`} = <strong>${fmt(corr,4)}</strong><br><br>📌 Probabilidad aproximada: ${(corr*100).toFixed(1)}%.`
+    explicacion:`<strong>Solución aproximada (corrección de Yates):</strong><br>μ = ${fmt(mu,2)}, σ = ${fmt(sigma,4)}<br>${tipo==="menor"?`P(X < ${k}) ≈ Φ((${k}-0.5-μ)/σ) = Φ(${fmt((k-0.5-mu)/sigma,3)})`:tipo==="mayor"?`P(X > ${k}) ≈ 1−Φ((${k}+0.5-μ)/σ) = 1−Φ(${fmt((k+0.5-mu)/sigma,3)})`:tipo==="exacta"?`P(X = ${k}) ≈ P(${k}-0.5 < Y < ${k}+0.5) = Φ((${k}+0.5-μ)/σ) − Φ((${k}-0.5-μ)/σ) = Φ(${fmt((k+0.5-mu)/sigma,3)}) − Φ(${fmt((k-0.5-mu)/sigma,3)})`:`P(${k1} ≤ X ≤ ${k2}) ≈ Φ((${k2}+0.5-μ)/σ) − Φ((${k1}-0.5-μ)/σ) = Φ(${fmt((k2+0.5-mu)/sigma,3)}) − Φ(${fmt((k1-0.5-mu)/sigma,3)})`} = <strong>${fmt(corr,4)}</strong><br><br>📌 Probabilidad aproximada: ${(corr*100).toFixed(1)}%.${tipo==="exacta"?`<br>📌 Con la fórmula de la binomial saldría P(X = ${k}) = ${fmt(binomialProb(n,k,p),4)}: la aproximación evita calcular C(${n},${k}).`:''}`
   };
 }
 
