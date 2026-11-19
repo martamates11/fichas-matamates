@@ -374,9 +374,9 @@ function generarTabla(){
   for(let i=0;i<=40;i++){
     let row=document.createElement('tr');
     let zP=(i*0.1).toFixed(2); let zN=parseFloat(zP);
-    let cm=document.createElement('td'); cm.textContent=zP; cm.style.fontWeight='bold'; cm.style.background='var(--color-neutro)'; row.appendChild(cm);
+    let cm=document.createElement('td'); cm.textContent=zP.replace('.',','); cm.style.fontWeight='bold'; cm.style.background='var(--color-neutro)'; row.appendChild(cm);
     for(let j=0;j<=9;j++){
-      let z=zN+j*0.01; let cell=document.createElement('td'); cell.textContent=phiExact(z).toFixed(4); row.appendChild(cell);
+      let z=zN+j*0.01; let cell=document.createElement('td'); cell.textContent=phiExact(z).toFixed(4).replace('.',','); row.appendChild(cell);
     }
     body.appendChild(row);
   }
@@ -392,6 +392,8 @@ function buscarEnTabla(){
 }
 
 // ======== UTILS ========
+// Coma decimal en todo lo que ve el alumno (los cálculos internos siguen con punto)
+function coma(s){ return String(s).replace(/(\d)\.(\d)/g,'$1,$2'); }
 function r(min,max,dec=0){ return +(Math.random()*(max-min)+min).toFixed(dec); }
 function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 function mezclar(arr){ return [...arr].sort(()=>Math.random()-0.5); }
@@ -412,7 +414,9 @@ function generarOpciones(vc, dec, esProbabilidad){
     let alt=vc+(Math.random()*2-1)*margen;
     if(esProbabilidad) alt=Math.min(0.9999,Math.max(0.0001,alt));
     let s=fmtOp(alt);
-    if(Math.abs(parseFloat(s)-parseFloat(correctaStr))>Math.pow(10,-dec)*0.5) candidatos.add(s);
+    // separación mínima con la correcta y entre sí, para que el redondeo de la tabla no lleve a dudas
+    const sep = esProbabilidad ? Math.max(0.004, Math.abs(vc)*0.12) : Math.pow(10,-dec)*0.5;
+    if([...candidatos].every(c=>Math.abs(parseFloat(s)-parseFloat(c))>=sep)) candidatos.add(s);
   }
   while(candidatos.size<4){
     let fallback=esProbabilidad?fmtOp(Math.random()*0.9+0.05):fmtOp(vc+(Math.random()*2-1)*margen*3);
@@ -423,121 +427,125 @@ function generarOpciones(vc, dec, esProbabilidad){
 }
 
 // ======== CONTEXTOS ========
+// Binomial y aproximación comparten contextos. sg/pl: sustantivo; vs/vp: verbo en subjuntivo singular/plural.
 const ctxBin=[
-  {intro:"En la Feria de San Juan en Badajoz, la probabilidad de que un visitante pruebe la torta de la Serena es",plural:"visitantes",lugar:"la Feria de San Juan",verbo:"pruebe la torta"},
-  {intro:"En el Carnaval de Badajoz, la probabilidad de que un asistente se disfrace de personaje extremeño es",plural:"asistentes",lugar:"el Carnaval de Badajoz",verbo:"se disfrace"},
-  {intro:"Durante la Romería de la Virgen de la Montaña, la probabilidad de que un peregrino lleve traje tradicional es",plural:"peregrinos",lugar:"la Romería",verbo:"lleve traje tradicional"},
-  {intro:"En la recogida de la aceituna en la Sierra de Tentudía, la probabilidad de que un jornalero sea de la comarca es",plural:"jornaleros",lugar:"la Sierra de Tentudía",verbo:"sea de la comarca"},
-  {intro:"En la Fiesta de la Cereza del Valle del Jerte, la probabilidad de que un visitante compre cerezas al agricultor es",plural:"visitantes",lugar:"el Valle del Jerte",verbo:"compre cerezas directas"}
+  {sg:"visitante",pl:"visitantes",vs:"pruebe la torta de la Serena",vp:"prueben la torta de la Serena",
+   intro:"En la Feria de San Juan de Badajoz, la probabilidad de que un visitante pruebe la torta de la Serena es"},
+  {sg:"asistente",pl:"asistentes",vs:"se disfrace",vp:"se disfracen",
+   intro:"En el Carnaval de Badajoz, la probabilidad de que un asistente se disfrace es"},
+  {sg:"peregrino",pl:"peregrinos",vs:"lleve traje tradicional",vp:"lleven traje tradicional",
+   intro:"En la romería de la Virgen de la Montaña, en Cáceres, la probabilidad de que un peregrino lleve traje tradicional es"},
+  {sg:"jornalero",pl:"jornaleros",vs:"sea de la comarca",vp:"sean de la comarca",
+   intro:"En la recogida de la aceituna en la Sierra de Tentudía, la probabilidad de que un jornalero sea de la comarca es"},
+  {sg:"visitante",pl:"visitantes",vs:"compre cerezas directamente al agricultor",vp:"compren cerezas directamente al agricultor",
+   intro:"En plena temporada de la cereza en el Valle del Jerte, la probabilidad de que un visitante compre cerezas directamente al agricultor es"},
+  {sg:"empresa",pl:"empresas",vs:"exporte sus productos",vp:"exporten sus productos",fem:true,
+   intro:"Según la Cámara de Comercio de Cáceres, la probabilidad de que una empresa extremeña exporte sus productos es"},
+  {sg:"extremeño",pl:"extremeños",vs:"haya asistido a la Feria del Queso de Trujillo",vp:"hayan asistido a la Feria del Queso de Trujillo",
+   intro:"Un estudio de la Junta de Extremadura indica que la probabilidad de que un extremeño haya asistido alguna vez a la Feria del Queso de Trujillo es"},
+  {sg:"visitante",pl:"visitantes",vs:"sea estudiante de arte",vp:"sean estudiantes de arte",
+   intro:"En el Museo Vostell de Malpartida de Cáceres, la probabilidad de que un visitante sea estudiante de arte es"},
+  {sg:"asistente",pl:"asistentes",vs:"venga de fuera de la ciudad",vp:"vengan de fuera de la ciudad",
+   intro:"En la celebración de Los Palomos de Badajoz, la probabilidad de que un asistente venga de fuera de la ciudad es"},
+  {sg:"visitante",pl:"visitantes",vs:"haga senderismo",vp:"hagan senderismo",
+   intro:"En la Reserva de la Biosfera de La Siberia, la probabilidad de que un visitante haga senderismo es"}
 ];
-const ctxAprox=[
-  {intro:"Según la Cámara de Comercio de Cáceres, la probabilidad de que una empresa extremeña exporte sus productos es",plural:"empresas",lugar:"Extremadura",evento:"exporten sus productos"},
-  {intro:"Un estudio de la Junta de Extremadura indica que la probabilidad de que un extremeño asista a la Feria del Queso en Trujillo es",plural:"extremeños",lugar:"Trujillo",evento:"asistan a la Feria del Queso"},
-  {intro:"En el Museo Vostell de Malpartida de Cáceres, la probabilidad de que un visitante sea estudiante de arte es",plural:"visitantes",lugar:"Malpartida",evento:"sean estudiantes de arte"},
-  {intro:"Durante la celebración de Los Palomos en Badajoz, la probabilidad de que un asistente venga de fuera de la ciudad es",plural:"asistentes",lugar:"Los Palomos",evento:"vengan de fuera"},
-  {intro:"En la Reserva de la Biosfera de La Siberia, la probabilidad de que un visitante realice senderismo es",plural:"visitantes",lugar:"La Siberia",evento:"realicen senderismo"}
-];
+// «exactamente 1 visitante pruebe…», «exactamente 3 visitantes prueben…», «ningún visitante pruebe…»
+function fraseK(ctx,k,pre){
+  if(k===0) return `${ctx.fem?'ninguna':'ningún'} ${ctx.sg} ${ctx.vs}`;
+  return k===1 ? `${pre} 1 ${ctx.sg} ${ctx.vs}` : `${pre} ${k} ${ctx.pl} ${ctx.vp}`;
+}
+// Normal: medias y desviaciones realistas para cada contexto
 const ctxNormal=[
-  {nom:"estatura",uni:"cm",sujeto:"estudiantes extremeños",lugar:"Extremadura",verbo:"mide"},
-  {nom:"peso",uni:"kg",sujeto:"cerezas del Valle del Jerte",lugar:"el Valle del Jerte",verbo:"pesa"},
-  {nom:"tiempo de espera",uni:"minutos",sujeto:"usuarios del autobús urbano",lugar:"Mérida",verbo:"tarda"},
-  {nom:"consumo de vino",uni:"litros",sujeto:"habitantes de Almendralejo",lugar:"Almendralejo",verbo:"consume"},
-  {nom:"altura",uni:"metros",sujeto:"alcornoques de Monfragüe",lugar:"Monfragüe",verbo:"mide"}
+  {desc:"la estatura de los estudiantes extremeños de 2.º de Bachillerato",corto:"la estatura",uno:"un estudiante elegido al azar",ind:"los estudiantes",uni:"cm",mu:[168,170,172],sg:[6,7,8]},
+  {desc:"el peso de las cerezas del Valle del Jerte",corto:"el peso",uno:"una cereza elegida al azar",ind:"las cerezas",uni:"g",mu:[9,10,11,12],sg:[1.5,2]},
+  {desc:"el tiempo de espera en las paradas del autobús urbano de Mérida",corto:"el tiempo de espera",uno:"un usuario elegido al azar",ind:"los usuarios",uni:"minutos",mu:[8,10,12,15],sg:[2,3,4]},
+  {desc:"el consumo anual de vino de los habitantes de Almendralejo",corto:"el consumo anual",uno:"un habitante elegido al azar",ind:"los habitantes",uni:"litros",mu:[20,25,30],sg:[4,5,6]},
+  {desc:"la altura de los alcornoques del Parque Nacional de Monfragüe",corto:"la altura",uno:"un alcornoque elegido al azar",ind:"los alcornoques",uni:"m",mu:[8,10,12],sg:[1.5,2,2.5]}
 ];
+const indef = ctx => ctx.corto.replace(/^el /,'un ').replace(/^la /,'una ');   // «una estatura»
 
 // ======== GENERADORES ========
 function genBinomial(){
-  let ctx=pick(ctxBin), n=pick([5,6,7,8,9,10,12]), p=r(0.2,0.85,2), k=Math.floor(r(0,n,0));
-  let prob=binomialProb(n,k,p);
+  let ctx=pick(ctxBin), n=pick([5,6,7,8,9,10,12]), p=r(0.2,0.85,2), k, prob;
+  do { k=Math.floor(Math.random()*(n+1)); prob=binomialProb(n,k,p); } while(prob<0.001);
   return {
     tipoKey:"binomial",
-    enunciado:`${ctx.intro} <strong>p = ${p}</strong>. Si seleccionamos al azar ${n} ${ctx.plural} durante ${ctx.lugar}, ¿cuál es la probabilidad de que exactamente ${k} de ellos ${ctx.verbo}?`,
+    enunciado:`${ctx.intro} <strong>p = ${p}</strong>. Se eligen al azar ${n} ${ctx.pl}. ¿Cuál es la probabilidad de que ${fraseK(ctx,k,'exactamente')}?`,
     pista:`Usa la fórmula binomial: P(X=k) = C(n,k)·p^k·(1-p)^(n-k).<br><br>📌 n = ${n}, p = ${p}, k = ${k}<br>📌 C(${n},${k}) = ${Math.round(combMath(n,k))}`,
     correcta:fmt(prob,4),
     opciones:generarOpciones(prob,4,true),
-    explicacion:`<strong>Solución:</strong><br>P(X=${k}) = C(${n},${k})·${fmt(p,3)}^${k}·${fmt(1-p,3)}^${n-k}<br>= ${Math.round(combMath(n,k))} · ${fmt(Math.pow(p,k),5)} · ${fmt(Math.pow(1-p,n-k),5)} = <strong>${fmt(prob,4)}</strong><br><br>📌 La probabilidad es del ${(prob*100).toFixed(2)}%.`
+    explicacion:`<strong>Solución:</strong><br>X ~ B(${n}, ${p})<br>P(X=${k}) = C(${n},${k})·${p}^${k}·${fmt(1-p,2)}^${n-k}<br>= ${Math.round(combMath(n,k))} · ${fmt(Math.pow(p,k),5)} · ${fmt(Math.pow(1-p,n-k),5)} = <strong>${fmt(prob,4)}</strong><br><br>📌 La probabilidad es del ${(prob*100).toFixed(2)} %.`
   };
 }
 
 function genNormal(){
-  let ctx=pick(ctxNormal), mu=r(50,180,1), sigma=r(5,28,1);
+  let ctx=pick(ctxNormal), mu=pick(ctx.mu), sigma=pick(ctx.sg);
+  const base=`Se sabe que ${ctx.desc} sigue una distribución normal de media <strong>μ = ${mu} ${ctx.uni}</strong> y desviación típica <strong>σ = ${sigma} ${ctx.uni}</strong>. `;
   let esInversa=Math.random()<0.5;
   if(!esInversa){
     let tipo=pick(["menor","mayor","entre"]);
     let a,b,z1,z2,corr,pregunta;
-    if(tipo==="menor"){ a=r(mu-2*sigma,mu-0.5*sigma,1); z1=(a-mu)/sigma; corr=phi(z1); pregunta=`¿cuál es la probabilidad de que ${ctx.verbo} menos de ${a} ${ctx.uni}?`; }
-    else if(tipo==="mayor"){ a=r(mu+0.5*sigma,mu+2*sigma,1); z1=(a-mu)/sigma; corr=1-phi(z1); pregunta=`¿cuál es la probabilidad de que ${ctx.verbo} más de ${a} ${ctx.uni}?`; }
-    else{ a=r(mu-1.8*sigma,mu-0.3*sigma,1); b=r(mu+0.3*sigma,mu+1.8*sigma,1); if(a>b)[a,b]=[b,a]; z1=(a-mu)/sigma; z2=(b-mu)/sigma; corr=phi(z2)-phi(z1); pregunta=`¿cuál es la probabilidad de que su ${ctx.nom} esté entre ${a} y ${b} ${ctx.uni}?`; }
+    if(tipo==="menor"){ a=r(mu-2*sigma,mu-0.5*sigma,1); z1=(a-mu)/sigma; corr=phi(z1); pregunta=`¿Cuál es la probabilidad de que ${ctx.corto} de ${ctx.uno} sea inferior a ${a} ${ctx.uni}?`; }
+    else if(tipo==="mayor"){ a=r(mu+0.5*sigma,mu+2*sigma,1); z1=(a-mu)/sigma; corr=1-phi(z1); pregunta=`¿Cuál es la probabilidad de que ${ctx.corto} de ${ctx.uno} sea superior a ${a} ${ctx.uni}?`; }
+    else{ a=r(mu-1.8*sigma,mu-0.3*sigma,1); b=r(mu+0.3*sigma,mu+1.8*sigma,1); z1=(a-mu)/sigma; z2=(b-mu)/sigma; corr=phi(z2)-phi(z1); pregunta=`¿Cuál es la probabilidad de que ${ctx.corto} de ${ctx.uno} esté entre ${a} y ${b} ${ctx.uni}?`; }
     return {
       tipoKey:"normal",
-      enunciado:`La ${ctx.nom} de ${ctx.sujeto} sigue una distribución normal con media <strong>μ = ${mu} ${ctx.uni}</strong> y desviación típica <strong>σ = ${sigma} ${ctx.uni}</strong>. Si elegimos al azar un ${ctx.sujeto.split(" ")[0]} de ${ctx.lugar}, ${pregunta}`,
-      pista:`Tipifica: Z = (X−μ)/σ ~ N(0,1).<br><br>📌 μ = ${mu} ${ctx.uni}, σ = ${sigma} ${ctx.uni}<br>📌 ${tipo==="menor"?`z = (${a}−${mu})/${sigma} = ${fmt(z1,3)}`:tipo==="mayor"?`z = (${a}−${mu})/${sigma} = ${fmt(z1,3)}`:`z₁ = ${fmt(z1,3)}, z₂ = ${fmt(z2,3)}`}<br>📌 Luego busca en la tabla N(0,1) (desplegable abajo).`,
+      enunciado:base+pregunta,
+      pista:`Tipifica: Z = (X−μ)/σ ~ N(0,1).<br><br>📌 μ = ${mu} ${ctx.uni}, σ = ${sigma} ${ctx.uni}<br>📌 ${tipo==="entre"?`z₁ = (${a}−${mu})/${sigma} = ${fmt(z1,3)}, z₂ = (${b}−${mu})/${sigma} = ${fmt(z2,3)}`:`z = (${a}−${mu})/${sigma} = ${fmt(z1,3)}`}<br>📌 Luego busca en la tabla N(0,1) (desplegable abajo).`,
       correcta:fmt(corr,4),
       opciones:generarOpciones(corr,4,true),
-      explicacion:`<strong>Solución:</strong><br>Tipificación: Z = (X−μ)/σ<br>${tipo==="menor"?`P(X < ${a}) = P(Z < ${fmt(z1,3)})`:tipo==="mayor"?`P(X > ${a}) = 1 − P(Z < ${fmt(z1,3)})`:`P(${a} < X < ${b}) = P(${fmt(z1,3)} < Z < ${fmt(z2,3)})`} = <strong>${fmt(corr,4)}</strong><br><br>📌 Aproximadamente el ${(corr*100).toFixed(1)}% de los ${ctx.sujeto} cumplen esta condición.`
+      explicacion:`<strong>Solución:</strong><br>Tipificación: Z = (X−μ)/σ<br>${tipo==="menor"?`P(X < ${a}) = P(Z < ${fmt(z1,3)})`:tipo==="mayor"?`P(X > ${a}) = 1 − P(Z < ${fmt(z1,3)})`:`P(${a} < X < ${b}) = P(${fmt(z1,3)} < Z < ${fmt(z2,3)})`} = <strong>${fmt(corr,4)}</strong><br><br>📌 Aproximadamente el ${(corr*100).toFixed(1)} % de ${ctx.ind} cumple esta condición.`
     };
   } else {
-    let tipo=pick(["percentil_menor","percentil_mayor"]), percentil=r(0.05,0.95,2);
-    if(tipo==="percentil_menor"){
-      let z=invPhi(percentil), x=Math.round((mu+z*sigma)*10)/10;
-      return {
-        tipoKey:"normal",
-        enunciado:`La ${ctx.nom} de ${ctx.sujeto} sigue una distribución normal con media <strong>μ = ${mu} ${ctx.uni}</strong> y desviación típica <strong>σ = ${sigma} ${ctx.uni}</strong>. ¿Cuál es el valor de la ${ctx.nom} (en ${ctx.uni}) por debajo del cual se encuentra el ${(percentil*100).toFixed(0)}% de los ${ctx.sujeto}?`,
-        pista:`Busca en la tabla N(0,1) el valor de z que cumple Φ(z) = ${percentil}. Luego despeja: X = μ + z·σ.<br><br>📌 μ = ${mu}, σ = ${sigma}`,
-        correcta:fmt(x,1),
-        opciones:generarOpciones(x,1,false),
-        explicacion:`<strong>Solución:</strong><br>1. z tal que Φ(z) = ${percentil} → z = ${fmt(invPhi(percentil),3)}<br>2. X = ${mu} + ${fmt(invPhi(percentil),3)} · ${sigma} = <strong>${fmt(x,1)} ${ctx.uni}</strong><br><br>📌 El ${(percentil*100).toFixed(0)}% de los ${ctx.sujeto} tienen ${ctx.nom} inferior a ${fmt(x,1)} ${ctx.uni}.`
-      };
-    } else {
-      let z=invPhi(1-percentil), x=Math.round((mu+z*sigma)*10)/10;
-      return {
-        tipoKey:"normal",
-        enunciado:`La ${ctx.nom} de ${ctx.sujeto} sigue una distribución normal con media <strong>μ = ${mu} ${ctx.uni}</strong> y desviación típica <strong>σ = ${sigma} ${ctx.uni}</strong>. ¿Cuál es el valor de la ${ctx.nom} (en ${ctx.uni}) por encima del cual se encuentra el ${(percentil*100).toFixed(0)}% de los ${ctx.sujeto}?`,
-        pista:`Busca en la tabla N(0,1) el valor de z que cumple Φ(z) = ${1-percentil}. Luego despeja: X = μ + z·σ.<br><br>📌 μ = ${mu}, σ = ${sigma}`,
-        correcta:fmt(x,1),
-        opciones:generarOpciones(x,1,false),
-        explicacion:`<strong>Solución:</strong><br>1. z tal que Φ(z) = ${1-percentil} → z = ${fmt(invPhi(1-percentil),3)}<br>2. X = ${mu} + ${fmt(invPhi(1-percentil),3)} · ${sigma} = <strong>${fmt(x,1)} ${ctx.uni}</strong><br><br>📌 El ${(percentil*100).toFixed(0)}% de los ${ctx.sujeto} tienen ${ctx.nom} superior a ${fmt(x,1)} ${ctx.uni}.`
-      };
-    }
+    let abajo=Math.random()<0.5, percentil=r(0.05,0.95,2);
+    let pz=abajo?percentil:+(1-percentil).toFixed(2);   // P(X < x)
+    let z=invPhi(pz), x=Math.round((mu+z*sigma)*10)/10;
+    let pc=(percentil*100).toFixed(0);
+    return {
+      tipoKey:"normal",
+      enunciado:base+`¿Cuál es el valor (en ${ctx.uni}) por ${abajo?'debajo':'encima'} del cual se encuentra el ${pc} % de ${ctx.ind}?`,
+      pista:`${abajo?'':`Si el ${pc} % queda por encima, el ${(pz*100).toFixed(0)} % queda por debajo. `}Busca en la tabla N(0,1) el valor de z que cumple Φ(z) = ${pz}. Luego despeja: X = μ + z·σ.<br><br>📌 μ = ${mu}, σ = ${sigma}`,
+      correcta:fmt(x,1),
+      opciones:generarOpciones(x,1,false),
+      explicacion:`<strong>Solución:</strong><br>1. z tal que Φ(z) = ${pz} → z = ${fmt(z,3)}<br>2. X = ${mu} + (${fmt(z,3)}) · ${sigma} = <strong>${fmt(x,1)} ${ctx.uni}</strong><br><br>📌 El ${pc} % de ${ctx.ind} tiene ${indef(ctx)} ${abajo?'inferior':'superior'} a ${fmt(x,1)} ${ctx.uni}.`
+    };
   }
 }
 
 function genAprox(){
-  let ctx=pick(ctxAprox), n=pick([100,150,200,250,300]), p=r(0.2,0.8,2);
+  let ctx=pick(ctxBin), n=pick([100,150,200,250,300]), p=r(0.2,0.8,2);
   let mu=n*p, sigma=Math.sqrt(n*p*(1-p));
-  let tipo=pick(["menor","mayor","rango"]);
+  let tipo=pick(["menor","mayor","rango","exacta"]);
   let k,k1,k2,corr,pregunta;
-  if(tipo==="menor"){ 
-    k=Math.floor(r(mu-2*sigma,mu-0.5*sigma,0)); 
-    if(k<0)k=0; if(k>n)k=n; 
-    let z=(k-0.5-mu)/sigma;
-    corr=phi(z); 
-    pregunta=`¿cuál es la probabilidad de que menos de ${k} de ellos ${ctx.evento}?`; 
+  if(tipo==="menor"){
+    k=Math.floor(r(mu-2*sigma,mu-0.5*sigma,0));
+    corr=phi((k-0.5-mu)/sigma);
+    pregunta=`¿cuál es la probabilidad de que menos de ${k} ${ctx.pl} ${ctx.vp}?`;
   }
-  else if(tipo==="mayor"){ 
-    k=Math.floor(r(mu+0.5*sigma,mu+2*sigma,0)); 
-    if(k<0)k=0; if(k>n)k=n; 
-    let z=(k+0.5-mu)/sigma;
-    corr=1-phi(z); 
-    pregunta=`¿cuál es la probabilidad de que más de ${k} de ellos ${ctx.evento}?`; 
+  else if(tipo==="mayor"){
+    k=Math.floor(r(mu+0.5*sigma,mu+2*sigma,0));
+    corr=1-phi((k+0.5-mu)/sigma);
+    pregunta=`¿cuál es la probabilidad de que más de ${k} ${ctx.pl} ${ctx.vp}?`;
   }
-  else{ 
-    k1=Math.floor(r(mu-1.5*sigma,mu-0.3*sigma,0)); 
-    k2=Math.floor(r(mu+0.3*sigma,mu+1.5*sigma,0)); 
-    if(k1<0)k1=0; if(k2>n)k2=n; 
-    if(k1>k2)[k1,k2]=[k2,k1]; 
-    let z1=(k1-0.5-mu)/sigma;
-    let z2=(k2+0.5-mu)/sigma;
-    corr=phi(z2)-phi(z1); 
-    pregunta=`¿cuál es la probabilidad de que el número de ${ctx.plural} que ${ctx.evento} esté entre ${k1} y ${k2} (ambos incluidos)?`; 
+  else if(tipo==="exacta"){
+    k=Math.round(r(mu-1.2*sigma,mu+1.2*sigma,0));
+    corr=phi((k+0.5-mu)/sigma)-phi((k-0.5-mu)/sigma);
+    pregunta=`¿cuál es la probabilidad de que exactamente ${k} ${ctx.pl} ${ctx.vp}?`;
+  }
+  else{
+    k1=Math.floor(r(mu-1.5*sigma,mu-0.3*sigma,0));
+    k2=Math.floor(r(mu+0.3*sigma,mu+1.5*sigma,0));
+    corr=phi((k2+0.5-mu)/sigma)-phi((k1-0.5-mu)/sigma);
+    pregunta=`¿cuál es la probabilidad de que entre ${k1} y ${k2} ${ctx.pl} ${ctx.vp} (ambos incluidos)?`;
   }
   return {
     tipoKey:"aprox",
-    enunciado:`${ctx.intro} <strong>p = ${p}</strong>. Si se encuesta a ${n} ${ctx.plural} en ${ctx.lugar}, ${pregunta}`,
-    pista:`Aproxima X ~ B(${n},${p}) por Y ~ N(μ,σ) con corrección de continuidad de Yates.<br><br>📌 μ = n·p = ${fmt(mu,2)}<br>📌 σ = √(n·p·(1-p)) = ${fmt(sigma,4)}<br>📌 ${tipo==="menor"?`P(X < ${k}) → usar k-0.5 → z = (${k}-0.5-μ)/σ = ${fmt((k-0.5-mu)/sigma,3)}`:tipo==="mayor"?`P(X > ${k}) → usar k+0.5 → z = (${k}+0.5-μ)/σ = ${fmt((k+0.5-mu)/sigma,3)}`:`P(${k1} ≤ X ≤ ${k2}) → usar ${k1}-0.5 y ${k2}+0.5 → z₁ = ${fmt((k1-0.5-mu)/sigma,3)}, z₂ = ${fmt((k2+0.5-mu)/sigma,3)}`}<br>📌 Luego busca en la tabla N(0,1).`,
+    enunciado:`${ctx.intro} <strong>p = ${p}</strong>. Si se eligen al azar ${n} ${ctx.pl}, ${pregunta}`,
+    pista:`Aproxima X ~ B(${n}, ${p}) por Y ~ N(μ, σ) con corrección de continuidad de Yates (n·p = ${fmt(mu,2)} ≥ 5 y n·q = ${fmt(n-mu,2)} ≥ 5).<br><br>📌 μ = n·p = ${fmt(mu,2)}<br>📌 σ = √(n·p·(1-p)) = ${fmt(sigma,4)}<br>📌 ${tipo==="menor"?`P(X < ${k}) → usar k-0.5 → z = (${k}-0.5-μ)/σ = ${fmt((k-0.5-mu)/sigma,3)}`:tipo==="mayor"?`P(X > ${k}) → usar k+0.5 → z = (${k}+0.5-μ)/σ = ${fmt((k+0.5-mu)/sigma,3)}`:tipo==="exacta"?`P(X = ${k}) → un valor suelto tiene probabilidad 0 en la normal: usa el intervalo (${k}-0.5, ${k}+0.5) → z₁ = ${fmt((k-0.5-mu)/sigma,3)}, z₂ = ${fmt((k+0.5-mu)/sigma,3)}`:`P(${k1} ≤ X ≤ ${k2}) → usar ${k1}-0.5 y ${k2}+0.5 → z₁ = ${fmt((k1-0.5-mu)/sigma,3)}, z₂ = ${fmt((k2+0.5-mu)/sigma,3)}`}<br>📌 Luego busca en la tabla N(0,1).`,
     correcta:fmt(corr,4),
     opciones:generarOpciones(corr,4,true),
-    explicacion:`<strong>Solución aproximada (corrección de Yates):</strong><br>μ = ${fmt(mu,2)}, σ = ${fmt(sigma,4)}<br>${tipo==="menor"?`P(X < ${k}) ≈ Φ((${k}-0.5-μ)/σ) = Φ(${fmt((k-0.5-mu)/sigma,3)})`:tipo==="mayor"?`P(X > ${k}) ≈ 1−Φ((${k}+0.5-μ)/σ) = 1−Φ(${fmt((k+0.5-mu)/sigma,3)})`:`P(${k1} ≤ X ≤ ${k2}) ≈ Φ((${k2}+0.5-μ)/σ) − Φ((${k1}-0.5-μ)/σ) = Φ(${fmt((k2+0.5-mu)/sigma,3)}) − Φ(${fmt((k1-0.5-mu)/sigma,3)})`} = <strong>${fmt(corr,4)}</strong><br><br>📌 Probabilidad aproximada: ${(corr*100).toFixed(1)}%.`
+    explicacion:`<strong>Solución aproximada (corrección de Yates):</strong><br>μ = ${fmt(mu,2)}, σ = ${fmt(sigma,4)}<br>${tipo==="menor"?`P(X < ${k}) ≈ Φ((${k}-0.5-μ)/σ) = Φ(${fmt((k-0.5-mu)/sigma,3)})`:tipo==="mayor"?`P(X > ${k}) ≈ 1−Φ((${k}+0.5-μ)/σ) = 1−Φ(${fmt((k+0.5-mu)/sigma,3)})`:tipo==="exacta"?`P(X = ${k}) ≈ P(${k}-0.5 < Y < ${k}+0.5) = Φ((${k}+0.5-μ)/σ) − Φ((${k}-0.5-μ)/σ) = Φ(${fmt((k+0.5-mu)/sigma,3)}) − Φ(${fmt((k-0.5-mu)/sigma,3)})`:`P(${k1} ≤ X ≤ ${k2}) ≈ Φ((${k2}+0.5-μ)/σ) − Φ((${k1}-0.5-μ)/σ) = Φ(${fmt((k2+0.5-mu)/sigma,3)}) − Φ(${fmt((k1-0.5-mu)/sigma,3)})`} = <strong>${fmt(corr,4)}</strong><br><br>📌 Probabilidad aproximada: ${(corr*100).toFixed(1)} %.${tipo==="exacta"?`<br>📌 Con la fórmula de la binomial saldría P(X = ${k}) = ${fmt(binomialProb(n,k,p),4)}: la aproximación evita calcular C(${n},${k}).`:''}`
   };
 }
 
@@ -562,8 +570,8 @@ function renderEjercicio(){
   const ac = state.aciertosEnTipo[ejActual.tipoKey];
   const max = MAX_ACIERTOS_TIPO[ejActual.tipoKey];
   document.getElementById('card-tipo-label').textContent=`${tipoNombre} · ${ac}/${max} aciertos completados`;
-  document.getElementById('ej-enunciado').innerHTML=ejActual.enunciado;
-  document.getElementById('ej-opciones').innerHTML=ejActual.opciones.map((o,i)=>`<button class="opcion-btn" onclick="seleccionar(${i})">${o}</button>`).join('');
+  document.getElementById('ej-enunciado').innerHTML=coma(ejActual.enunciado);
+  document.getElementById('ej-opciones').innerHTML=ejActual.opciones.map((o,i)=>`<button class="opcion-btn" onclick="seleccionar(${i})">${coma(o)}</button>`).join('');
   document.getElementById('pista-box').className='pista-box'; document.getElementById('pista-box').innerHTML='';
   document.getElementById('ej-feedback').className='feedback'; document.getElementById('ej-feedback').innerHTML='';
   document.getElementById('btn-pista').disabled=false;
@@ -582,7 +590,7 @@ function seleccionar(i){
 
 function mostrarPista(){
   let box=document.getElementById('pista-box');
-  box.innerHTML='💡 <strong>Pista:</strong> '+ejActual.pista;
+  box.innerHTML='💡 <strong>Pista:</strong> '+coma(ejActual.pista);
   box.classList.add('show');
   document.getElementById('btn-pista').disabled=true;
 }
@@ -643,7 +651,7 @@ function corregir(){
     }
   } else {
     btns[state.seleccionada].classList.add('incorrecta');
-    btns.forEach(b=>{ if(Math.abs(parseFloat(b.textContent.trim())-parseFloat(ejActual.correcta))<0.001) b.classList.add('correcta'); });
+    btns.forEach((b,j)=>{ if(Math.abs(parseFloat(ejActual.opciones[j])-parseFloat(ejActual.correcta))<0.001) b.classList.add('correcta'); });
     mostrarFeedback(false,
       `❌ <strong>Incorrecto.</strong><br><br>${ejActual.explicacion}<br><br>` +
       `<em>💪 Inténtalo de nuevo con otro ejercicio del mismo tipo.</em>`
@@ -671,7 +679,7 @@ function corregir(){
 function mostrarFeedback(ok,html){
   let fb=document.getElementById('ej-feedback');
   fb.className='feedback '+(ok?'ok':'ko');
-  fb.innerHTML=html;
+  fb.innerHTML=coma(html);
 }
 
 function siguienteEjercicio(){
@@ -685,7 +693,7 @@ function siguienteEjercicio(){
 function actualizarPuntuacion(){
   document.getElementById('pts-pos').textContent=state.tiposCompletados.size;
   document.getElementById('pts-neg').textContent='/ '+TIPOS.length;
-  document.getElementById('pts-total').textContent=state.puntos.toFixed(2);
+  document.getElementById('pts-total').textContent=coma(state.puntos.toFixed(2));
 }
 
 function actualizarBadges(){
@@ -725,7 +733,7 @@ function actualizarProgreso(){
   document.getElementById('barra-fill').style.width=Math.min(100,pct)+'%';
   const completados=state.tiposCompletados.size;
   document.getElementById('progreso-label').textContent=
-    `📝 Ejercicio ${contadorEj} · Tipos completados: ${completados}/${TIPOS.length} · Puntos: ${state.puntos.toFixed(2)}/10`;
+    `📝 Ejercicio ${contadorEj} · Tipos completados: ${completados}/${TIPOS.length} · Puntos: ${coma(state.puntos.toFixed(2))}/10`;
 }
 
 function finalizar(){
@@ -749,7 +757,7 @@ function mostrarAvisoIncompleto(pendientes){
   const notaActual = Math.min(10, state.puntos);
   document.getElementById('aviso-incompleto-texto').innerHTML =
     `Todavía te falta por completar: <strong>${pendientes.map(t=>NOMBRE_TIPO[t]).join(', ')}</strong>.<br><br>` +
-    `Si finalizas ahora mismo, tu nota quedaría en <strong>${notaActual.toFixed(2)} / 10</strong> y no podrás subirla después.<br><br>` +
+    `Si finalizas ahora mismo, tu nota quedaría en <strong>${coma(notaActual.toFixed(2))} / 10</strong> y no podrás subirla después.<br><br>` +
     `¿Prefieres seguir practicando o finalizar ya con la nota actual?`;
   document.getElementById('overlayIncompleto').classList.add('show');
 }
@@ -770,12 +778,12 @@ function mostrarModalResultado(){
   let elapsed=Math.floor((Date.now()-state.inicio)/1000);
   let mm=String(Math.floor(elapsed/60)).padStart(2,'0'), ss=String(elapsed%60).padStart(2,'0');
   document.getElementById('modal-alumno').textContent=n;
-  document.getElementById('modal-nota').textContent=nota.toFixed(2)+' / 10';
+  document.getElementById('modal-nota').textContent=coma(nota.toFixed(2))+' / 10';
   
   const desglose=TIPOS.map(t=>{
     const ic=state.aciertosEnTipo[t], max=MAX_ACIERTOS_TIPO[t];
     const pts=Math.min(ic,max)*PUNTOS_POR_TIPO[t];
-    return `${NOMBRE_TIPO[t]}: ${ic}/${max} → ${pts.toFixed(1)} pts`;
+    return `${NOMBRE_TIPO[t]}: ${ic}/${max} → ${coma(pts.toFixed(1))} pts`;
   }).join('<br>');
   
   document.getElementById('modal-meta').innerHTML=
