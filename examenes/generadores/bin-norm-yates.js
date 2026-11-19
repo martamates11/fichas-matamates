@@ -5,6 +5,8 @@
    · Normal: probabilidades (menor, mayor, entre) y valor que deja un porcentaje (percentil).
    · Aproximación de la binomial por la normal con la corrección de continuidad de Yates:
      «menos de k», «más de k» y «entre k₁ y k₂ (ambos incluidos)».
+   · Tipo añadido (no está en la ficha): «exactamente k» por aproximación, P(k − 0,5 < Y < k + 0,5),
+     con el valor exacto de la binomial al final para comparar.
    Diferencias con la ficha:
    · La ficha es de opción múltiple; en el examen la respuesta es abierta y la solución trabaja con
      la tabla de la N(0, 1) de la hoja anexa (la misma que la de la ficha de la normal; si las dos
@@ -110,11 +112,11 @@
   const pasoAprox = d => [
     { t: `Sea \\(X\\) = «${d.c.X}». Cada ${d.c.sg} es un ensayo independiente con probabilidad de éxito \\(p = ${N(d.p)}\\), luego \\(X \\sim B(${d.n};\\ ${N(d.p)})\\).` },
     { t: `Como \\(n\\) es grande y \\(n \\cdot p = ${N(d.mu, 2)} \\ge 5\\), \\(n \\cdot q = ${N(d.n * d.q, 2)} \\ge 5\\), aproximamos por una normal con la misma media y desviación típica:`,
-      m: `\\mu = n p = ${d.n} \\cdot ${N(d.p)} = ${N(d.mu, 2)} \\qquad \\sigma = \\sqrt{n p q} = \\sqrt{${d.n} \\cdot ${N(d.p)} \\cdot ${N(d.q)}} = \\sqrt{${N(d.n * d.p * d.q, 4)}} ${igual(d.sg, sg4(d))} ${N(sg4(d), 4)} \\\\ X \\approx Y \\sim N(${N(d.mu, 2)};\\ ${N(sg4(d), 4)})`, multilinea: true }
+      m: `\\mu = n p = ${d.n} \\cdot ${N(d.p)} = ${N(d.mu, 2)} \\qquad \\sigma = \\sqrt{n p q} = \\sqrt{${d.n} \\cdot ${N(d.p)} \\cdot ${N(d.q)}} = \\sqrt{${N(d.n * d.p * d.q, 4)}} ${igual(d.sg, sg4(d))} ${sg4(d).toFixed(4).replace('.', '{,}')} \\\\ X \\approx Y \\sim N(${N(d.mu, 2)};\\ ${sg4(d).toFixed(4).replace('.', '{,}')})`, multilinea: true }
   ];
   /* z de un extremo corregido x (k ± 0,5) */
   const zDe = (d, x) => r2((x - d.mu) / d.sg);
-  const tipifY = (d, x, z, nom = 'z') => `${nom} = \\frac{${N(x)} - ${N(d.mu, 2)}}{${N(sg4(d), 4)}} \\approx ${Z(z)}`;
+  const tipifY = (d, x, z, nom = 'z') => `${nom} = \\frac{${N(x)} - ${N(d.mu, 2)}}{${sg4(d).toFixed(4).replace('.', '{,}')}} \\approx ${Z(z)}`;
   const simetria = z => (z < 0 ? [{ t: 'Por simetría (la tabla solo tiene valores positivos):', m: `P(Z < ${Z(z)}) = 1 - P(Z < ${Z(-z)}) = 1 - ${D(NO.phiT(-z))} = ${D(NO.phiT(z))}` }] : []);
 
   /* Cola izquierda: «menos de k» (X ≤ k − 1 → Y < k − 0,5) o «a lo sumo k» (X ≤ k → Y < k + 0,5) */
@@ -187,6 +189,36 @@
     return null;
   }
 
+  /* Exactamente k: Y entre k − 0,5 y k + 0,5 (la normal da probabilidad 0 a un punto) */
+  const lpmf = (n, k, p) => {                      // P(X = k) en escala logarítmica (n grande)
+    let l = k * Math.log(p) + (n - k) * Math.log(1 - p);
+    for (let i = 0; i < k; i++) l += Math.log(n - i) - Math.log(i + 1);
+    return Math.exp(l);
+  };
+  function qExactaY(R, d) {
+    for (let t = 0; t < 40; t++) {
+      const k = Math.round(d.mu + (R.rand() * 2.4 - 1.2) * d.sg);
+      if (k < 1 || k >= d.n) continue;
+      const x1 = k - 0.5, x2 = k + 0.5, z1 = zDe(d, x1), z2 = zDe(d, x2);
+      if (z1 === z2) continue;
+      const p1 = NO.phiT(z1), p2 = NO.phiT(z2), val = p2 - p1;
+      if (val < 50) continue;
+      const exacto = lpmf(d.n, k, d.p);
+      return {
+        txt: `Calcula la probabilidad de que exactamente ${frase(d.c, k)}.`,
+        pasos: [
+          { t: `En una distribución continua la probabilidad de un único valor es 0, así que, con la corrección de continuidad, el valor ${k} pasa a ser el intervalo \\((${N(x1)};\\ ${N(x2)})\\):`, m: `P(X = ${k}) \\approx P(${N(x1)} < Y < ${N(x2)})` },
+          { t: 'Tipificamos los dos extremos:', m: `${tipifY(d, x1, z1, 'z_1')} \\\\ ${tipifY(d, x2, z2, 'z_2')}`, multilinea: true },
+          ...simetria(z1), ...simetria(z2),
+          { t: 'Restamos las áreas acumuladas:', m: `P(${Z(z1)} < Z < ${Z(z2)}) = P(Z < ${Z(z2)}) - P(Z < ${Z(z1)}) = ${D(p2)} - ${D(p1)} = ${D(val)}` },
+          { t: `(Con la fórmula de la binomial se obtendría \\(P(X = ${k}) \\approx ${exacto.toFixed(4).replace('.', '{,}')}\\), valor con el que se puede comparar; la aproximación evita calcular \\(\\binom{${d.n}}{${k}}\\).)` }
+        ],
+        res: `P(X = ${k}) \\approx ${D(val)}`, valor: val
+      };
+    }
+    return null;
+  }
+
   function ejAprox(fq) {
     return function (R) {
       for (let t = 0; t < 40; t++) {
@@ -235,6 +267,7 @@
       { id: 'aproxizq', nombre: 'Aproximación: menos de k / a lo sumo k', peso: 1.5, columnas: 1, enunciado: ENUN, generar: ejAprox(qIzq) },
       { id: 'aproxder', nombre: 'Aproximación: más de k / al menos k', peso: 1.5, columnas: 1, enunciado: ENUN, generar: ejAprox(qDer) },
       { id: 'aproxentre', nombre: 'Aproximación: entre k₁ y k₂', peso: 1.5, columnas: 1, enunciado: ENUN, generar: ejAprox(qEntreY) },
+      { id: 'aproxexacta', nombre: 'Aproximación: exactamente k', peso: 1.5, columnas: 1, enunciado: ENUN, generar: ejAprox(qExactaY) },
       { id: 'completo', nombre: 'Problema completo tipo EBAU (binomial y aproximación)', peso: 2.5, columnas: 1, enunciado: ENUN, generar: genCompleto }
     ]
   });
