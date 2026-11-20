@@ -825,7 +825,7 @@ function ex5Render(){
   const xs = [-1,0,1];
   let tabla = '<table class="tabla-valores"><tr><th>x</th><th>y = f(x)</th></tr>';
   xs.forEach(x=>{ tabla += `<tr><td style="font-weight:bold;">${x}</td><td><input type="text" autocomplete="off" id="val_y_${x}" style="width:70px;" ${ex5.superado?'disabled':''}></td></tr>`; });
-  tabla += '</table><p style="font-size:0.72rem;margin-top:8px;">💡 Haz clic en el gráfico para marcar los puntos (x = -1, 0, 1)</p>';
+  tabla += '</table><p style="font-size:0.72rem;margin-top:8px;">💡 Haz clic en el gráfico para marcar los puntos (x = −1, 0, 1). Si algún valor no cabe en la cuadrícula (es menor que −6 o mayor que 6), no hace falta marcarlo.</p>';
   document.getElementById('tabla5-container').innerHTML = tabla;
 
   const cont = document.getElementById('grafica5-container'); cont.innerHTML='';
@@ -853,8 +853,18 @@ function ex5Render(){
   function comprobar(){
     if(ex5.superado) return;
     const vals = xs.map(x=> leerNum(document.getElementById(`val_y_${x}`).value));
-    if(vals.some(v=>isNaN(v)) || ex5.puntosUsuario.some(p=>!p)){
+    if(vals.some(v=>isNaN(v))){
       mostrarFeedback('feedback5','⚠️ Completa la tabla (solo números) y marca los tres puntos en la gráfica.'+SIN_FALLO,'aviso');
+      return;
+    }
+    // Un punto solo se exige si cabe en la cuadrícula (−6 a 6), tanto el valor correcto como el escrito por el alumno:
+    // lo que no cabe no se puede marcar y, por tanto, no se pide ni penaliza en la gráfica (la tabla sí se corrige).
+    const cabe = y => Math.abs(y)<=DOM_GRID;
+    const exigido = xs.map((x,i)=> cabe(ex5.puntosCorrectos[i].y) && cabe(vals[i]));
+    const nExigidos = exigido.filter(Boolean).length;
+    if(xs.some((x,i)=> exigido[i] && !ex5.puntosUsuario[i])){
+      const queda = nExigidos===3 ? 'los tres puntos' : `los puntos que caben en la cuadrícula (${nExigidos})`;
+      mostrarFeedback('feedback5',`⚠️ Marca ${queda} en la gráfica antes de comprobar.`+SIN_FALLO,'aviso');
       return;
     }
     let tablaOk = true;
@@ -865,16 +875,17 @@ function ex5Render(){
     let graficaOk = true;
     xs.forEach((x,i)=>{
       const p = ex5.puntosUsuario[i];
-      if(!p || Math.abs(p.y-ex5.puntosCorrectos[i].y)>0.5) graficaOk=false;
+      if(!cabe(ex5.puntosCorrectos[i].y) || !p) return;   // fuera de la cuadrícula o no exigido: no se corrige
+      if(Math.abs(p.y-ex5.puntosCorrectos[i].y)>0.5) graficaOk=false;
     });
     if(tablaOk && graficaOk){
       ex5.racha++;
       if(ex5.racha>=ex5.objetivo) ex5.superado=true;
-      mostrarFeedback('feedback5',`✅ Correcto (${ex5.racha}/${ex5.objetivo})`,'correcto');
+      mostrarFeedback('feedback5',`✅ Correcto (${ex5.racha}/${ex5.objetivo})${nExigidos<3 ? '. Los valores que no caben en la cuadrícula no hacía falta marcarlos.' : ''}`,'correcto');
       if(ex5.superado){
         // dibuja la recta y los puntos correctos como confirmación visual
         dibujarRectaCanvas(ctx,300,ex5.m,ex5.b);
-        ex5.puntosCorrectos.forEach(p=>dibujarPunto(ctx,300,p.x,p.y,'#1E6F5C'));
+        ex5.puntosCorrectos.forEach(p=>{ if(cabe(p.y)) dibujarPunto(ctx,300,p.x,p.y,'#1E6F5C'); });
         actualizarCabeceras(); pintarMarcador(); return;
       }
       btn.disabled = true;
