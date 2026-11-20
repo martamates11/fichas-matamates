@@ -1322,7 +1322,7 @@ function ex7Nuevo(){
 function ex7Render(){
   let tabla = '<table class="tabla-valores"><tr><th>x</th><th>y = f(x)</th></tr>';
   XS7.forEach((x,i)=>{ tabla += `<tr><td style="font-weight:bold;">${num(x)}</td><td><label for="val7_${i}" class="sr-only">Valor de y para x = ${x}</label><input type="text" autocomplete="off" id="val7_${i}"></td></tr>`; });
-  tabla += '</table><p style="font-size:0.72rem;margin-top:8px;">💡 Haz clic en la cuadrícula para marcar los cinco puntos (x = −2, −1, 0, 1, 2). Si te equivocas, vuelve a hacer clic en esa misma columna.</p>';
+  tabla += '</table><p style="font-size:0.72rem;margin-top:8px;">💡 Haz clic en la cuadrícula para marcar los cinco puntos (x = −2, −1, 0, 1, 2). Si te equivocas, vuelve a hacer clic en esa misma columna. Si algún valor no cabe en la cuadrícula (es menor que −6 o mayor que 6), no hace falta marcarlo.</p>';
   document.getElementById('tabla7-container').innerHTML = tabla;
 
   const c = prepararCanvas('grafica7-container','c7');
@@ -1353,7 +1353,15 @@ function ex7Render(){
     if(!puedeCorregir(7)) return;
     const vals = campos.map(el=> leerNumero(el.value));
     if(vals.some(isNaN)){ mostrarFeedback(7,'Completa los cinco valores de la tabla antes de comprobar. No cuenta como fallo.','aviso'); return; }
-    if(ex7.puntosUsuario.some(p=>p===null)){ mostrarFeedback(7,'⚠️ Aún no has marcado los cinco puntos en la gráfica. Haz clic en la cuadrícula para señalarlos antes de comprobar.'+' No cuenta como fallo.','aviso'); return; }
+    // Un punto solo se exige si cabe en la cuadrícula (−6 a 6), tanto el valor correcto como el que el alumno ha escrito:
+    // lo que no cabe no se puede marcar y, por tanto, no se pide ni penaliza en la gráfica (la tabla sí se corrige).
+    const cabe = y => Math.abs(y)<=DOM_GRID;
+    const exigido = XS7.map((x,i)=> cabe(ex7.ys[i]) && cabe(vals[i]));
+    const nExigidos = exigido.filter(Boolean).length;
+    if(XS7.some((x,i)=> exigido[i] && ex7.puntosUsuario[i]===null)){
+      const queda = nExigidos===5 ? 'los cinco puntos' : `los puntos que caben en la cuadrícula (${nExigidos})`;
+      mostrarFeedback(7,`⚠️ Aún no has marcado ${queda} en la gráfica. Haz clic en la cuadrícula para señalarlos antes de comprobar. No cuenta como fallo.`,'aviso'); return;
+    }
     const {a,b,c:cc} = ex7;
     const errores=[];
     let errCuadradoNeg=false, errSignoB=false;
@@ -1366,8 +1374,9 @@ function ex7Render(){
       errores.push(e);
     });
     const tablaOk = errores.length===0;
-    const puntosMal = XS7.filter((x,i)=> ex7.puntosUsuario[i].y!==ex7.ys[i]);
-    const puntosCoherentesConTabla = XS7.every((x,i)=> ex7.puntosUsuario[i].y===vals[i]);
+    // Solo se corrigen los puntos marcados cuyo valor correcto cabe en la cuadrícula
+    const puntosMal = XS7.filter((x,i)=> cabe(ex7.ys[i]) && ex7.puntosUsuario[i] && ex7.puntosUsuario[i].y!==ex7.ys[i]);
+    const puntosCoherentesConTabla = XS7.every((x,i)=> !ex7.puntosUsuario[i] || ex7.puntosUsuario[i].y===vals[i]);
     if(puntosMal.length){
       if(tablaOk) errores.push(`La tabla está bien, pero ${puntosMal.length===1 ? 'el punto con' : 'los puntos con'} x = ${puntosMal.map(num).join(', ')} no ${puntosMal.length===1 ? 'está colocado' : 'están colocados'} a la altura correcta. Cada fila (x, y) de la tabla es un punto de la gráfica.`);
       else if(puntosCoherentesConTabla) errores.push('Has dibujado bien los puntos de tu tabla, pero como algunos valores de la tabla están mal, esos puntos también lo están.');
@@ -1380,12 +1389,12 @@ function ex7Render(){
     if(ok && ex7.racha+1>=ex7.objetivo){
       // al superar, mostramos la parábola completa sobre los puntos
       dibujarFuncion(ctx,300, x=> a*x*x + b*x + cc, '#A0522D', 2);
-      ex7.puntosUsuario.forEach(p=> dibujarPunto(ctx,300,p.x,p.y,'#1E6F5C'));
+      ex7.puntosUsuario.forEach(p=>{ if(p) dibujarPunto(ctx,300,p.x,p.y,'#1E6F5C'); });
     }
     ex7.bloqueado = true;
     c.className='bloqueado';
     registrarIntento(7, ok,
-      `Los cinco puntos dibujan una parábola ${a>0 ? 'cóncava ∪ (a > 0)' : 'convexa ∩ (a < 0)'}.`,
+      `${nExigidos===5 ? 'Los cinco puntos dibujan' : 'Los puntos de la tabla dibujan'} una parábola ${a>0 ? 'cóncava ∪ (a > 0)' : 'convexa ∩ (a < 0)'}.${nExigidos<5 ? ' Los valores que no caben en la cuadrícula no hacía falta marcarlos.' : ''}`,
       `${listaErrores(errores)}${pista}`, campos, ex7Nuevo);
   }
   document.getElementById('btnCorregir7').onclick = comprobar;
