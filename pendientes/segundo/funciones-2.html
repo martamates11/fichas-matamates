@@ -1093,7 +1093,7 @@ function ex6Render(){
   const xs = [-1,0,1];
   let tabla = '<table class="tabla-valores"><tr><th>x</th><th>y = f(x)</th></tr>';
   xs.forEach(x=>{ tabla += `<tr><td style="font-weight:bold;">${x}</td><td><label for="val_y_${x}" class="sr-only">Valor de y para x = ${x}</label><input type="text" autocomplete="off" id="val_y_${x}" style="width:70px;" ${ex6.superado?'disabled':''}></td></tr>`; });
-  tabla += '</table><p style="font-size:0.72rem;margin-top:8px;">💡 Haz clic en el gráfico para marcar los puntos (x = -1, 0, 1)</p>';
+  tabla += '</table><p style="font-size:0.72rem;margin-top:8px;">💡 Haz clic en el gráfico para marcar los puntos (x = −1, 0, 1). Si algún valor no cabe en la cuadrícula (es menor que −6 o mayor que 6), no hace falta marcarlo.</p>';
   document.getElementById('tabla6-container').innerHTML = tabla;
 
   const cont = document.getElementById('grafica6-container'); cont.innerHTML='';
@@ -1125,8 +1125,14 @@ function ex6Render(){
       mostrarFeedback('feedback6','⚠️ Completa los tres valores de la tabla con números antes de comprobar.'+AVISO_NO_CUENTA,'aviso');
       return;
     }
-    if(ex6.puntosUsuario.some(p=> p===null)){
-      mostrarFeedback('feedback6','⚠️ Aún no has marcado los tres puntos en la gráfica. Haz clic en la cuadrícula para señalarlos antes de comprobar.'+AVISO_NO_CUENTA,'aviso');
+    // Un punto solo se exige si cabe en la cuadrícula (−6 a 6), tanto el valor correcto como el escrito por el alumno:
+    // lo que no cabe no se puede marcar y, por tanto, no se pide ni penaliza en la gráfica (la tabla sí se corrige).
+    const cabe = y => Math.abs(y)<=DOM_GRID;
+    const exigido = xs.map((x,i)=> cabe(ex6.puntosCorrectos[i].y) && cabe(valoresTabla[i]));
+    const nExigidos = exigido.filter(Boolean).length;
+    if(xs.some((x,i)=> exigido[i] && ex6.puntosUsuario[i]===null)){
+      const queda = nExigidos===3 ? 'los tres puntos' : `los puntos que caben en la cuadrícula (${nExigidos})`;
+      mostrarFeedback('feedback6',`⚠️ Aún no has marcado ${queda} en la gráfica. Haz clic en la cuadrícula para señalarlos antes de comprobar.`+AVISO_NO_CUENTA,'aviso');
       return;
     }
     let tablaOk = true;
@@ -1136,15 +1142,16 @@ function ex6Render(){
     let graficaOk = true;
     xs.forEach((x,i)=>{
       const p = ex6.puntosUsuario[i];
+      if(!cabe(ex6.puntosCorrectos[i].y) || !p) return;   // fuera de la cuadrícula o no exigido: no se corrige
       if(Math.abs(p.y-ex6.puntosCorrectos[i].y)>0.5) graficaOk=false;
     });
     if(tablaOk && graficaOk){
       ex6.racha++;
       if(ex6.racha>=ex6.objetivo) ex6.superado=true;
-      mostrarFeedback('feedback6',`✅ Correcto (${ex6.racha}/${ex6.objetivo})`,'correcto');
+      mostrarFeedback('feedback6',`✅ Correcto (${ex6.racha}/${ex6.objetivo})${nExigidos<3 ? '. Los valores que no caben en la cuadrícula no hacía falta marcarlos.' : ''}`,'correcto');
       if(ex6.superado){
         dibujarAsintota(ctx,300,ex6.h);
-        ex6.puntosCorrectos.forEach(p=>dibujarPunto(ctx,300,p.x,p.y,'#1E6F5C'));
+        ex6.puntosCorrectos.forEach(p=>{ if(cabe(p.y)) dibujarPunto(ctx,300,p.x,p.y,'#1E6F5C'); });
         actualizarEnunciado6(); actualizarCabeceras(); pintarMarcador(); return;
       }
       btn.disabled = true;
